@@ -1,0 +1,19 @@
+<section id="category-section" *ngIf="dataCategoryList">
+    <div class="container-fluid">
+        <div class="category-head justify-content-between d-flex">
+            <div class="titel">
+                <h4>Browse Category</h4>
+            </div>
+            <button ><a routerLink= '/categories'>See All<i class="fa fa-angle-right center"></i></a></button>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4" *ngFor="let type of (dataCategoryList|async)">
+                <app-category-item [dataCategory]="type"></app-category-item>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+

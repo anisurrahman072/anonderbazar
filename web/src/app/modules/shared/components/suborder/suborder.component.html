@@ -1,0 +1,167 @@
+<!-- {{data | json}} -->
+
+
+
+<section class="invoice container">
+        <div class="col-md-12">
+                <div class="col-md-6">
+                    <button mat-button>Print</button> 
+                </div>
+                <div class="col-md-6"><button mat-button style="float: right;" routerLink="/profile/orders/">Dashboard</button></div>
+            </div>
+
+    <mat-card class="example-card">
+        <mat-card-content>
+
+            <div *ngIf="data && order">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="header-logo">
+                            <img src="{{IMAGE_ENDPOINT+data.warehouse_id.logo}}" class="img-responsive" alt="img">
+                        </div>
+                        <div class="invoice-inner-left">
+                            <p>Dear {{order.user_id.first_name}} {{order.user_id.last_name}}, </p>
+                            <p>Thank you for shopping from our store.</p> 
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="header-text">
+                            <h4>Invoice</h4>
+                        </div>
+                        <div class="invoice-inner-right">
+                            <p>Order #{{order.id}}</p>
+                            <p>Sub-order #{{data.id}}</p>
+                            <p>{{currentDate | date}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-full">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center"
+                                   class="fullTable"
+                                   bgcolor="#e1e1e1">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
+                                               class="fullTable" bgcolor="#ffffff">
+                                            <tbody>
+                                            <tr>
+                                            <tr class="hiddenMobile">
+                                                <td height="60"></td>
+                                            </tr>
+                                            <tr class="visibleMobile">
+                                                <td height="40"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table width="1100" border="0" cellpadding="0" cellspacing="0"
+                                                           align="center" class="fullPadding" *ngIf="suborderItems">
+                                                        <tbody>
+                                                        <tr>
+                                                            <th style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 10px 7px 0;"
+                                                                width="55%" align="left">
+                                                                Product name
+                                                            </th>
+                                                            <th style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;"
+                                                                width="15%" align="left">
+                                                                <small>Unit price</small>
+                                                            </th>
+                                                            <th style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #5b5b5b; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 150px 7px;"
+                                                                width="15%" align="center">
+                                                                Quantity
+                                                            </th>
+                                                            <th style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #1e2b33; font-weight: bold; line-height: 1; vertical-align: top; padding: 0 0 7px;"
+                                                                width="15%" align="right">
+                                                                Total Price
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td height="1" style="background: #bebebe;"
+                                                                colspan="4"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td height="10" colspan="4"></td>
+                                                        </tr>
+                                                        <tr *ngFor="let suborderItem of suborderItems">
+                                                            <td style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #0000ff;  line-height: 18px;  vertical-align: top; padding:10px 0;"
+                                                                width="55%" class="article">
+                                                                {{suborderItem.product_id.name}}
+                                                            </td>
+                                                            <td style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #646a6e;  line-height: 18px;  vertical-align: top; padding:10px 0;" width="15%">
+                                                                <small>{{suborderItem.product_id.weight}}</small>
+                                                            </td>
+                                                            <td style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #646a6e;  line-height: 18px;  vertical-align: top; padding:10px 0;"
+                                                                width="15%" align="center">{{suborderItem.product_quantity}}
+                                                            </td>
+                                                            <td style="font-size: 14px; font-family: 'Open Sans', sans-serif; color: #1e2b33;  line-height: 18px;  vertical-align: top; padding:10px 0;"
+                                                                width="15%" align="right">{{suborderItem.product_total_price}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td height="1" colspan="4"
+                                                                style="border-bottom:1px solid #e4e4e4"></td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td height="20"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 100px">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>Grand Total</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>${{data.total_price}}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 100px; margin-left: 30px">
+                    <div class="col-md-6">
+                        <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
+                            <h5>Billing Address:</h5>
+                            <p> {{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
+                            <p> {{paymentAddress.address}}</p>
+                            <p> {{paymentAddress.upazila_id.name}} {{paymentAddress.zila_id.name}}</p>
+                            <p>{{paymentAddress.division_id.name}}</p>
+                            <p>T: {{paymentAddress.phone}}</p>
+                        </div>
+
+
+                        <div class="shopping-info-left" *ngIf="shippingAddress">
+                            <h5>Shipping Address:</h5>
+                            <p> {{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
+                            <p> {{shippingAddress.address}}</p>
+                            <p> {{shippingAddress.upazila_id.name}} {{shippingAddress.zila_id.name}}</p>
+                            <p>{{shippingAddress.division_id.name}}</p>
+                            <p>T: {{shippingAddress.phone}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bill-info-right" *ngIf="payment">
+                            <h5>Payment Type:</h5>
+                            {{payment.payment_type}}
+                        </div> 
+                    </div>
+                </div>
+                <span class="footer">Have a nice day.</span>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</section>

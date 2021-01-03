@@ -1,0 +1,40 @@
+<nz-header class="header header-main">
+    <i class="anticon trigger" [class.anticon-menu-fold]="!isCollapsed" [class.anticon-menu-unfold]="isCollapsed"
+        (click)="isCollapsedToggle()"></i>
+    <div class="logo">
+        <a routerLink="/">
+            <img src="assets/images/logo_white.png" alt="" height="40">
+
+        </a>
+    </div>
+    <ul>
+
+        <li>
+            <nz-dropdown nzPlacement="bottomCenter"> 
+                <nz-avatar class="ant-dropdown-link" nz-dropdown nzSize="large"
+                    [nzSrc]=" IMAGE_ENDPOINT +currentUser.avatar" nzIcon="user"></nz-avatar>
+
+                <ul nz-menu>
+                    <li nz-menu-item>
+                        <a routerLink="/dashboard/profile"> Profile </a>
+                    </li> 
+                    <li nz-menu-item>
+                        <a (click)="logOutClick()"> Logout </a>
+                    </li>
+
+                </ul>
+            </nz-dropdown>
+        </li>
+
+
+        <li>
+            <h5 class="user-name">{{currentUser.first_name}} {{currentUser.last_name}}</h5>
+        </li>
+
+        <li *ngIf="'warehouseselect'|accessControl">
+            <app-warehouse-select></app-warehouse-select>
+        </li>
+        <li> 
+        </li> 
+    </ul>
+</nz-header>

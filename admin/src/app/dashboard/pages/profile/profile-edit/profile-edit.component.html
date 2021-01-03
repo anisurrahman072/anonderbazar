@@ -1,0 +1,208 @@
+<nz-spin [nzSpinning]="_isSpinning">
+    <nz-card>
+        <ng-template #title>
+            Profile Edit for {{data?.first_name}}
+        </ng-template>
+        <ng-template #extra>
+            <button routerLink="/dashboard/profile/" nz-button [nzType]="'primary'" [nzSize]="'large'">
+                Details
+                <i class="anticon anticon-file-text"></i>
+
+            </button>
+        </ng-template>
+        <ng-template #body>
+            <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div nz-form-item nz-row>
+                                    <div nz-col [nzSpan]="7" nz-form-label>
+                                        <label>Picture</label>
+                                    </div>
+                                    <div nz-col [nzSpan]="12">
+                                        <image-upload [max]="1" buttonCaption="Select picture"
+                                        dropBoxMessage="Drop Picture here"
+                                        clearButtonCaption="remove it?"  (removed)="onRemoved($event)" [beforeUpload]="onBeforeUpload"></image-upload>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div nz-form-item nz-row>
+                            <!--name start-->
+
+                            <div nz-form-label nz-col [nzSpan]="7">
+                                <label> UserName </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-input formControlName="username" [nzType]="'text'" [nzDisabled]="'true'" [nzSize]="'large'">
+                                </nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
+                                    Please input username !
+                                </div>
+                                <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('duplicated')">
+                                    The username is redundant!
+                                </div>
+                                <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
+                                    Validating...
+                                </div>
+                            </div>
+                        </div>
+                        <!--username -->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> Email </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-input formControlName="email" [nzType]="'text'" [nzDisabled]="'true'" [nzSize]="'large'">
+                                </nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--email-->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label>First name</label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-input formControlName="first_name" [nzType]="'text'" [nzPlaceHolder]="'insert first_name'" [nzSize]="'large'">
+                                </nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('first_name').dirty&&getFormControl('first_name').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--first_name-->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label>Last name</label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-input formControlName="last_name" [nzType]="'text'" [nzPlaceHolder]="'insert last_name'" [nzSize]="'large'">
+                                </nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('last_name').dirty&&getFormControl('last_name').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--last_name-->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> Phone Number </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-input formControlName="phone" [nzType]="'text'" [nzPlaceHolder]="'insert phone'" [nzSize]="'large'">
+                                </nz-input>
+                                <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('phone')">
+                                    Please input valid phone number (Ex: +8801*********)!
+                                </div>
+
+                                <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('taken')">
+                                    "{{getFormControl('phone').value}}" is already taken!
+                                </div>
+                                <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').pending">
+                                    check availability ...
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <!--phone-->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> Gender </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-select formControlName="gender" nzAllowClear [nzPlaceHolder]="'Input Gender'" [nzFilter]="true" [nzNotFoundContent]="'Not found'"
+                                    nzShowSearch>
+                                    <nz-option *ngFor="let option of genderSearchOptions" [nzLabel]="option.label" [nzValue]="option.value">
+                                    </nz-option>
+                                </nz-select>
+                                <div nz-form-explain *ngIf="getFormControl('gender').dirty&&getFormControl('gender').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--gender-->
+
+                        <div nz-form-item nz-row>
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> division </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-select formControlName="division_id" nzAllowClear [nzPlaceHolder]="'input search text'" [nzFilter]="true" (ngModelChange)="divisionChange($event)"
+                                    (nzSearchChange)="divisionSearchChange($event)" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                    <nz-option *ngFor="let option of divisionSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                                    </nz-option>
+                                </nz-select>
+
+                                <div nz-form-explain *ngIf="getFormControl('division_id').dirty&&getFormControl('division_id').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--division_id-->
+
+                        <div nz-form-item nz-row [style.display]="validateForm.controls.division_id.value ? 'block' : 'none'">
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> District </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-select formControlName="zila_id" nzAllowClear [nzPlaceHolder]="'input search text'" [nzFilter]="true" (ngModelChange)="zilaChange($event)"
+                                    (nzSearchChange)="zilaSearchChange($event)" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                    <nz-option *ngFor="let option of zilaSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                                    </nz-option>
+                                </nz-select>
+                                <div nz-form-explain *ngIf="getFormControl('zila_id').dirty&&getFormControl('zila_id').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--district_id-->
+
+                        <div nz-form-item nz-row [style.display]="validateForm.controls.zila_id.value ? 'block' : 'none'">
+                            <div nz-col [nzSpan]="7" nz-form-label>
+                                <label> Upazila </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <nz-select formControlName="upazila_id" nzAllowClear [nzPlaceHolder]="'input search text'" [nzFilter]="true" (nzSearch)="upazilaSearchChange($event)"
+                                    (nzSearchChange)="upazilaSearchChange($event)" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                    <nz-option *ngFor="let option of upazilaSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                                    </nz-option>
+                                </nz-select>
+
+                                <div nz-form-explain *ngIf="getFormControl('upazila_id').dirty&&getFormControl('upazila_id').hasError('required')">
+                                    Please write something here!
+                                </div>
+                            </div>
+                        </div>
+                        <!--upazila_id-->
+
+                    </div>
+                </div>
+
+
+
+
+                <div nz-form-item nz-row>
+                    <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
+                        </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                    </div>
+                </div>
+            </form>
+
+        </ng-template>
+    </nz-card>
+</nz-spin>

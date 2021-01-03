@@ -1,0 +1,59 @@
+<div class="wholesale-details"  *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"> 
+    <div class="product-overlay-img">
+        <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
+        <div class="productlist-icon" style="position: absolute;
+        top: 10%;
+        right: 8%;">
+            <ul class="button1">
+                <li class="btn3 mb-3">
+                  <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
+                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><i class="fa fa-heart-o"></i></a>
+                  </span>
+                    <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id)">
+                      <a class="wishlist" title="Wishlisted"><i class="fa fa-heart-o checked"></i></a>
+                  </span>
+                </li>
+              <li class="btn3 mb-3"><a class="button add_to_cart_button" title="add to cart" (click)="addToCart(product)"><i class="fa fa-cart-plus"></i></a></li>
+              <li class="btn3">
+                <span *ngIf="!(compare$|async|isaddedtocompare:product)">
+                  <a class="compare" *ngIf="(compare$|async).length<3" (click)=" addToCompare(product)"
+                     title="compare"> <i class="fa fa-copy"></i>
+                  </a>
+                  <a class="compare" *ngIf="(compare$|async).length>=3" (click)=" erroralert()"
+                     title="compare"> <i class="fa fa-copy"></i>  </a>
+                </span> 
+              </li>
+            </ul>
+          </div>
+          <div class="productlist-overlay-icon" *ngIf="isDisplay">
+            <ul class="button">
+              <li class="btn1"><a (click)="buyNow(product)">Buy Now</a></li>
+              <li class="btn2"><a routerLink="/product-details/{{product.id}}">Details</a></li>
+            </ul>
+            <ul class="button-icon">
+                <li class="btn3 mb-3">
+                  <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
+                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><i class="fa fa-heart-o"></i></a>
+                  </span>
+                    <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id) as fav">
+                      <a class="wishlist" title="Wishlisted" (click)="removeFromFavourite(fav)"><i class="fa fa-heart-o checked"></i></a>
+                  </span>
+                </li>
+              <li class="btn3 mb-3"><a class="add_to_cart_button" title="add to cart"(click)="addToCart(product)"><i class="fa fa-cart-plus"></i></a></li>
+              <li class="btn3">
+                <span *ngIf="!(compare$|async|isaddedtocompare:product)">
+                  <a class="compare" *ngIf="(compare$|async).length<3" (click)=" addToCompare(product)"
+                     title="compare"> <i class="fa fa-copy"></i>
+                  </a>
+                  <a class="compare" *ngIf="(compare$|async).length>=3" (click)=" erroralert()"
+                     title="compare"> <i class="fa fa-copy"></i>  </a>
+                </span> 
+              </li>
+            </ul>
+          </div>
+        </div> 
+    <p><a routerLink="/product-details/{{product.id}}">{{product.name}}</a></p>
+    <span class="d-block">৳{{product.price}}</span>
+    <small>Min. Order: {{product.min_unit}}</small> 
+</div>
+

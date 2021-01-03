@@ -1,0 +1,89 @@
+import {Component, HostListener, OnInit} from '@angular/core';
+import {CmsService} from '../../services/cms.service';
+import {AppSettings} from '../../config/app.config';
+import { ShoppingModalService } from '../../services/ui/shoppingModal.service';
+import * as fromStore from "../../state-management";
+import {Store} from "@ngrx/store";
+import {Observable} from "rxjs/Observable";
+
+@Component({
+    selector: 'app-footer',
+    templateUrl: './footer.component.html',
+    styleUrls: ['./footer.component.scss','./footer.component.css'],
+})
+export class FooterComponent implements OnInit {
+    title = 'footer';
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    private cmsFeatureData: any;
+    private cmsFooterData: any;
+    private cmsFooterDataFurther: any;
+    private cmsFooterDataCustomer: any;
+    private cmsFooterDataShops: any;
+    private cmsFooterDataBrands: any;
+    private cmsFooterDataSocial: any;
+    cart$: Observable<any>;
+    showTopToBottom:boolean = false
+
+    /*
+    * constructor for footer component
+    */
+    constructor(
+        private cmsService: CmsService,
+        private shoppingModalService: ShoppingModalService,
+        private store: Store<fromStore.HomeState>,
+        ) {
+    }
+
+    // init the component
+    ngOnInit() {
+        //getting the footer feature data
+        this.getFeatureData();
+
+        //getting the footer link data
+        this.getFooterData();
+
+        //getting the cart value
+        this.cart$ = this.store.select<any>(fromStore.getCart);
+    }
+
+    @HostListener('window:scroll', ['$event']) // for window scroll events
+    onScroll(event) {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            this.showTopToBottom = true
+        } else {
+            this.showTopToBottom = false
+        }
+    }
+
+    //Event method for getting footer feature data
+    getFeatureData() {
+        this.cmsService.getBySubSectionName('LAYOUT','FOOTER','FEATURE').subscribe(result => {
+            this.cmsFeatureData = result[0].data_value;
+
+        });
+    }
+
+    //Method for showing shopping cart modal
+    showShoppingCartModal() { 
+        this.shoppingModalService.showshoppingModal(true);
+    }
+
+    //Event method for getting footer links data
+    getFooterData() {
+        this.cmsService.getBySubSectionName('LAYOUT','FOOTER','FOOTER').subscribe(result => {
+            this.cmsFooterData = result[0].data_value[0];
+            this.cmsFooterDataFurther = result[0].data_value[1];
+            this.cmsFooterDataCustomer = result[0].data_value[2];   
+            this.cmsFooterDataShops = result[0].data_value[3];
+            this.cmsFooterDataBrands = result[0].data_value[4];
+            this.cmsFooterDataSocial = result[0].data_value[5];     
+        });
+    }
+
+    //Event method for scrolling top to bottom
+    bottom_to_top(event) {
+        window.scroll(0,0);
+    }
+
+}
+

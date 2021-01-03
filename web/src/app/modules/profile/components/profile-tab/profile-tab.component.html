@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-md-12">
+        <mat-card>
+            <button mat-fab style="float: right" (click)="setValue()" color="primary">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <mat-card-header class="center imageDiv">
+                <div mat-card-avatar class="example-header-image" *ngIf="imageShow" style="width: 200px;height: 200px;">
+                    <img class="img-circle avatar-img " src="{{ IMAGE_ENDPOINT + user.avatar }}" />
+                </div>
+                <div *ngIf="imageUpload">
+                    <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"
+                    [beforeUpload]="onBeforeUpload" buttonCaption="Select Image"
+                    dropBoxMessage="Drop picture here"
+                    clearButtonCaption="Clear picture">
+                    </image-upload>
+                </div>
+                <button mat-mini-fab class="imageFab" color="primary" *ngIf="imageEdit" (click)="showImage()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-mini-fab class="imageFab" color="accent" *ngIf="imageDone" (click)="updateImage()">
+                    <mat-icon>done</mat-icon>
+                </button>
+            </mat-card-header>
+        </mat-card>
+    </div>
+    <div class="col-md-12">
+        <mat-card>
+            <form [formGroup]="updateProfileForm" class="example-container" *ngIf="user" (ngSubmit)="formUpdateProfile($event, updateProfileForm.value)">
+                <mat-card-content>
+                    <div class="example-container">
+                        <mat-form-field>
+                            <input matInput placeholder="First name" formControlName="first_name" [(ngModel)]="user.first_name"
+                                [readonly]="value ? 'readonly' : null" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput placeholder="Last name" formControlName="last_name" [(ngModel)]="user.last_name"
+                                [readonly]="value ? 'readonly' : null" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput placeholder="Username" formControlName="username" [(ngModel)]="user.username"
+                                   [readonly]="'readonly'" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput placeholder="Email" formControlName="email" [(ngModel)]="user.email"
+                                required [readonly]="value ? 'readonly' : null" />
+
+                        </mat-form-field> 
+                        <mat-form-field>
+                            <mat-select placeholder="Gender" formControlName="gender" [(ngModel)]="user.gender">
+                                <mat-option *ngFor="let gender of genderSearchOptions" value="{{ gender.value }}">{{
+                                    gender.label }}</mat-option>
+                            </mat-select>
+                        </mat-form-field> 
+                        <mat-form-field>
+                            <span matPrefix>+880 &nbsp;</span>
+                            <input type="tel" matInput placeholder="Phone Number" formControlName="phone" [(ngModel)]="user.phone"
+                                [readonly]="value ? 'readonly' : null" />
+                            <mat-error>
+                                <span *ngIf="getUpdateProfileFormControl('phone').dirty&&getUpdateProfileFormControl('phone').hasError('required')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                                <span *ngIf="getUpdateProfileFormControl('phone').dirty&&getUpdateProfileFormControl('phone').hasError('phoneNumber')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </mat-card-content>
+                <div class="button-row {{ buttonShowHide }}">
+                    <button mat-button color="primary" type="submit" [hidden]="value" [disabled]="updateProfileForm.invalid">Update</button>
+                    <button mat-button color="warn" routerLink="/profile/orders">Cancel</button>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>

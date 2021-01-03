@@ -1,0 +1,96 @@
+<nz-card>
+    <ng-template #title>
+        Attribute's Variant Details
+    </ng-template>
+    <ng-template #extra>
+
+        <button *ngIf="data && 'warehousevariant-edit'|accessControl" [routerLink]="['/dashboard/warehousevariant/edit', data.id]" nz-button [nzType]="'primary'"
+            [nzSize]="'large'">
+            <i class="anticon anticon-edit"></i>
+            <span>Edit</span>
+        </button>
+
+        <button  routerLink="/dashboard/warehousevariant" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i>
+            <span> List </span>
+        </button>
+    </ng-template>
+    <ng-template #body>
+        <div class="row" *ngIf="data">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h2>{{data.name}}</h2>
+                    <p *ngIf="data.variant_id.type ==1">
+                        {{data.variant_id.name}} (Price Variation: Yes)
+                    </p>
+                    <p *ngIf="data.variant_id.type !=1">
+                        {{data.variant_id.name}} (Price Variation: No)
+                    </p>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <span class="nav-link active h4" id="home-tab">Details</span>
+                        </li>
+                    </ul>
+                    <div class="row about">
+                        <div class="col-md-8 h4">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Code</label>
+                                </div>
+                                <div class="col-md-6" *ngIf="data.code && data.code!=='undefined'; else notShow">
+                                    <p>{{data.code}}</p>
+                                </div>
+                                <ng-template #notShow>
+                                    <div class="col-md-6">
+                                        <p>
+                                            N/A
+                                        </p>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Quantity</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{data.quantity}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Unit price</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{data.unit_price}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Unit Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                            {{data.unit_name}}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Brand</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="pull-left">{{data.brand_id?.name}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</nz-card>

@@ -1,0 +1,180 @@
+<ul nz-menu [nzMode]="isCollapsed?'vertical':'inline'">
+
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard">
+        <span>
+            <i class="fa fa-file-o"></i>
+            <span class="nav-text">Dashboard</span>
+        </span>
+    </li>
+
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/warehouse"
+        *ngIf="'warehouse'|accessControl">
+        <span>
+            <i class="fa fa-shopping-basket"></i>
+            <span class="nav-text">Shop</span>
+        </span>
+    </li>
+
+    <li nz-submenu *ngIf="'user'|accessControl">
+        <span title>
+            <i class="fa fa-user"></i>
+            <span class="nav-text">User</span>
+        </span>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/shop-user" *ngIf="'shop-user'|accessControl">
+                <i class="anticon anticon-user"></i>
+                Shop user
+            </li>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/customer" *ngIf="'customer'|accessControl">
+                <i class="anticon anticon-user"></i>
+                Customer
+            </li> 
+        </ul>
+    </li> 
+    <li nz-submenu *ngIf="'variant'|accessControl">
+        <span title>
+            <i class="fa fa-list-ul"></i>
+            <span class="nav-text">Attributes</span>
+        </span>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/variant" *ngIf="'variant-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Attributes
+            </li>
+
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/warehousevariant" *ngIf="'warehousevariant'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Attribute's Variant
+            </li>
+        </ul>
+    </li>
+
+    <li nz-submenu *ngIf="'producttype'|accessControl">
+        <span title>
+            <i class="fa fa-th-large"></i>
+            <span class="nav-text">Product</span>
+        </span>
+        <ul> 
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/category/product" *ngIf="'productcategory'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Product Category
+            </li>
+
+
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/brand" *ngIf="'brand'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Brand
+            </li> 
+        </ul>
+    </li>
+
+
+    <li nz-submenu *ngIf="'product'|accessControl">
+        <span title>
+            <i class="fa fa-th-list "></i>
+            <span class="nav-text">Product list</span>
+        </span>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/product" [queryParams]="{status: '1'}" *ngIf="'product'|accessControl">
+                Fixed Product
+            </li>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/product" [queryParams]="{status: '2'}" *ngIf="'product'|accessControl">
+                Variable Product
+            </li> 
+        </ul>
+    </li>
+
+    <li nz-submenu *ngIf="'order'|accessControl">
+        <span title>
+            <i class="fa fa-shopping-cart"></i>
+            <span class="nav-text">Order</span>
+        </span>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/order" *ngIf="'order-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Order
+            </li>
+            
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/suborder" *ngIf="'suborder'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Vendor's order
+            </li>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/requisition" *ngIf="'requisition'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Product Requisition
+            </li>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                routerLink="/dashboard/payment" *ngIf="'payment'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Financial Transactions
+            </li>
+        </ul>
+    </li> 
+    <li nz-submenu *ngIf="'courier'|accessControl">
+        <span title>
+            <i class="fa fa-truck"></i>
+            <span class="nav-text">Courier</span>
+        </span>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                routerLink="/dashboard/courier" *ngIf="'courier-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Courier Company List
+            </li>
+        </ul>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                routerLink="/dashboard/courier/price" *ngIf="'courier-price-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Courier Price List
+            </li>
+        </ul>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                routerLink="/dashboard/courier/orderlist" *ngIf="'courier-order-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Courier Order List
+            </li>
+        </ul>
+        <ul>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                routerLink="/dashboard/courier/suborderlist" *ngIf="'courier-suborder-list'|accessControl">
+                <i class="anticon anticon-file"></i>
+                Courier Sub-Order List
+            </li>
+        </ul>
+        
+    </li> 
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/cms/home"
+        *ngIf="'cms'|accessControl">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">CMS</span>
+        </span>
+    </li>
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" *ngIf="'offer'|accessControl" routerLink="/dashboard/offer">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Offer</span>
+        </span>
+    </li>
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/usercms/post">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">User CMS</span>
+        </span>
+    </li>
+
+
+</ul>

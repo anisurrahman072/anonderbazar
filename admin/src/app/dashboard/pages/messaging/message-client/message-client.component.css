@@ -1,0 +1,348 @@
+.card-height{ 
+}
+.title{
+    height: 50px;
+    background-color: #69178B;
+    text-align: center;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+
+.searchDiv{
+    height: 50px;
+    background-color: burlywood;
+}
+
+.ant-input-affix-wrapper{
+    padding-top: 10px;
+    width: 90%;
+    margin-left: 15px;
+}
+.anticon{
+    padding-top: 3px;
+}
+.usernameDiv{
+    height: 50px;
+    background-color: #dadada;
+}
+.username{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.active{
+    text-align: center;
+    font-size: 10px;
+}
+
+.messagelistDiv{
+    height: 500px;
+    overflow: auto; 
+}
+.messageactiondiv{
+    height: 50px;
+    padding-right: 0px; 
+}
+
+.ant-input-affix-wrapper{
+    padding-top: 0px !important;
+    width: 100% !important;
+    height: 50px !important;
+    margin-left: 0px !important;
+}
+
+.ant-menu-item .anticon, .ant-menu-submenu-title .anticon{
+  margin-right: 0px;
+}
+.ant-form-item{
+    width: 90%;
+}
+.ant-form-item-control-wrapper{
+    width: 100%;
+}
+
+.sendButton{
+    width: 100px;
+    height: 50px;
+}
+.ant-form-inline .ant-form-item {
+    margin-right: 0px !important;
+}
+.userInfo{
+    margin: 30px 0px 0 2px;
+    font-size: 11px;
+    opacity: 0.7;
+  }
+.clientlist{
+    height: 500px; 
+}
+.uploaded{
+  height: auto;
+  background-color: whitesmoke;
+}
+
+.attachIcondiv{
+  text-align: center;
+  height: 50px;
+  background-color: whitesmoke;
+}
+.attachIcon{
+  margin-top: 10px;
+}
+.sendButton mat-button {
+  width: 30px !important;
+  height: 30px;
+}
+
+/* General CSS Setup */
+  
+
+
+  .productname{
+    text-align: center;
+    font-size: 20px;
+    height: 50px;
+  }
+
+  .imagecard{
+    width: 75%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+
+  /* CSS talk bubble */
+  .talk-bubble {
+    margin: 0px 0px 0px 3px;
+    display: inline-block;
+    position: relative;
+    width: 170px;
+    height: auto;
+    background-color: #cccccc;
+  }
+  .border {
+    border: 8px solid #666;
+  }
+  .round {
+    border-radius: 30px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+  }
+/* Right triangle placed top left flush. */
+.tri-right.border.left-top:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -40px;
+    right: auto;
+    top: -8px;
+    bottom: auto;
+    border: 32px solid;
+    border-color: #666 transparent transparent transparent;
+  }
+  .tri-right.left-top:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -20px;
+    right: auto;
+    top: 0px;
+    bottom: auto;
+    border: 22px solid;
+    border-color: lightyellow transparent transparent transparent;
+  }
+  
+  /* Right triangle, left side slightly down */
+  .tri-right.border.left-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -40px;
+    right: auto;
+    top: 30px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.left-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -20px;
+    right: auto;
+    top: 38px;
+    bottom: auto;
+    border: 12px solid;
+    border-color: lightyellow lightyellow transparent transparent;
+  }
+  
+  /*Right triangle, placed bottom left side slightly in*/
+  .tri-right.border.btm-left:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -8px;
+    right: auto;
+    top: auto;
+    bottom: -40px;
+    border: 32px solid;
+    border-color: transparent transparent transparent #666;
+  }
+  .tri-right.btm-left:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0px;
+    right: auto;
+    top: auto;
+    bottom: -15px;
+    border: 15px solid;
+    border-color: transparent transparent transparent #cccccc;
+  }
+  
+  /*Right triangle, placed bottom left side slightly in*/
+  .tri-right.border.btm-left-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 30px;
+    right: auto;
+    top: auto;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 transparent transparent #666;
+  }
+  .tri-right.btm-left-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 38px;
+    right: auto;
+    top: auto;
+    bottom: -20px;
+    border: 12px solid;
+    border-color: lightyellow transparent transparent lightyellow;
+  }
+  
+  /*Right triangle, placed bottom right side slightly in*/
+  .tri-right.border.btm-right-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 30px;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.btm-right-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 38px;
+    bottom: -20px;
+    border: 12px solid;
+    border-color: lightyellow lightyellow transparent transparent;
+  } 
+  /*Right triangle, placed bottom right side slightly in*/
+  .tri-right.border.btm-right:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -8px;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.btm-right:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 0px;
+    bottom: -15px;
+    border: 15px solid;
+    border-color: #cccccc #cccccc transparent transparent;
+  }
+  
+  /* Right triangle, right side slightly down*/
+  .tri-right.border.right-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -40px;
+    top: 30px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: #666 transparent transparent #666;
+  }
+  .tri-right.right-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -20px;
+    top: 38px;
+    bottom: auto;
+    border: 12px solid;
+    border-color: #cccccc transparent transparent #cccccc;
+  }
+  
+  /* Right triangle placed top right flush. */
+  .tri-right.border.right-top:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -40px;
+    top: -8px;
+    bottom: auto;
+    border: 32px solid;
+    border-color: #666 transparent transparent transparent;
+  }
+  .tri-right.right-top:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -20px;
+    top: 0px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: lightyellow transparent transparent transparent;
+  }
+  
+  /* talk bubble contents */
+  .talktext {
+    padding: 10px;
+    text-align: left;
+    line-height: 1.5em;
+  }
+  .talktext p {
+    /* remove webkit p margins */
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+    font-size: 14px;
+  }

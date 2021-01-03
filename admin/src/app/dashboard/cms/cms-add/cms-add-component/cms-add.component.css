@@ -1,0 +1,58 @@
+ .navbar-inner {
+  background: #fff; 
+}
+
+.border {
+  border-bottom: 1px solid #36e527;
+}
+
+.navbar-menu {
+  /*margin-left: 3%;*/
+  background: #fff;
+}
+
+.title-1 {
+  margin-top: 4px;
+}
+
+.title-2 a {
+  margin-top: 3px;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.navbar-menu ul li {
+  float: left;
+  margin-right: 25px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 13px;
+  padding-bottom: 15px;
+  position: relative;
+}
+
+.navbar-menu ul li a:hover,
+.navbar-menu ul li a:hover:after {
+  visibility: visible;
+  right: 0;
+  color: #000;
+}
+
+.navbar-menu ul li a {
+  color: #888;
+  text-decoration: none;
+}
+
+.navbar-menu ul li a i {
+  padding-left: 15px;
+} 
+
+.col-md-6 {
+  margin-bottom: 5px;
+}
+
+.img-responsive {
+  height: 160px;
+  width: 240px;
+  margin-top: 10px;
+}

@@ -1,0 +1,139 @@
+<div class="col-md-12">
+    <div class="col-md-3">
+        <div class="row title">বার্তা</div>
+        <div class="row">
+            <mat-form-field appearance="outline">
+                <mat-label>অনুসন্ধান</mat-label>
+                <input matInput placeholder="অনুসন্ধান করুন">
+                <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+        </div>
+        <div class="row clienlist">
+            <ul>
+                <li *ngFor="let item of listOfUser" style="border-bottom: 1px solid #31a387;"
+                    (click)="showMessageData(item)">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div mat-card-avatar class="example-header-image">
+                                <img class="img-circle" src="{{  IMAGE_ENDPOINT + item.warehouse_id.logo}}"
+                                    alt="{{item.user_id.first_name}}">
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div>
+                                {{item.warehouse_id.name}}
+                            </div>
+                            <div>
+                                {{item.createdAt| date:'shortTime'}}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row usernameDiv">
+            <div class="username">{{warehouse?.name}}</div>
+            <div class="active">Active or Deactive</div>
+        </div>
+        <div #scrollMe class="row messagelistDiv">
+            <ul>
+                <li *ngFor="let item of listofmessage">
+                    <div class="col-md-12" [ngStyle]="{'text-align':item.person_status === 1 ? 'left' : 'right' }">
+                        <div class="userInfo">
+                            <ng-container *ngIf="item.person_status === 1; then thenTemplate; else elseTemplate">
+                            </ng-container>
+                            <ng-template #thenTemplate>
+                                {{chatuser.warehouse_id.name}}
+                            </ng-template>
+                            <ng-template #elseTemplate>
+                                {{chatuser.user_id.first_name}} {{chatuser.user_id.last_name}}
+                            </ng-template>
+                            <span> | </span>{{item.createdAt|date:'shortTime'}}
+                        </div>
+                        <div class="talk-bubble tri-right"
+                            [ngClass]="{'btm-left': item.person_status === 1, 'btm-right':item.person_status === 0}">
+                            <div class="talktext">
+                                <p *ngIf="item.message!== 'null'">{{item.message}}</p>
+                                <ul>
+                                    <li *ngFor="let file of item.files">
+                                        <a href="{{  IMAGE_ENDPOINT + file.file_location}}">{{file.file_name}}</a>
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="row messageactiondiv" *ngIf="selectUser">
+            <form [formGroup]="chatForm" id="chatForm" (ngSubmit)="submitForm($event, chatForm.value)">
+                <div class="col-md-10" style="padding-right: 0px">
+                    <div nz-form-item style="width: 100%">
+                        <mat-form-field appearance="legacy" class="inputform">
+                            <mat-label>বার্তা</mat-label>
+                            <input matInput class="messageinput" formControlName="message" autocomplete="off"
+                                placeholder="বার্তা লিপিবদ্ধ করুন">
+                        </mat-form-field>
+
+                    </div>
+                </div>
+                <div class="col-md-2" style="padding-left: 0px">
+                    <input type="file" formArrayName="files" id="file" style="display: none;"
+                        accept=".jpg,.jpeg,.doc,.pdf" (change)="handleFileInput($event.target.files)" multiple>
+                    <label for="file" class="md-button md-raised md-primary clearfix">
+                        <mat-icon>attach_file</mat-icon>
+                    </label>
+                </div>
+            </form>
+            <div class="col-md-12 uploaded" *ngIf="fileToUpload.length !== 0">
+                <ul>
+                    <li *ngFor="let item of fileToUpload; let i = index">
+                        <div class="col-md-12" style="padding-left: 5px">
+                            <div class="col-md-10">{{item.name}}</div>
+                            <div class="col-md-2"><i class="fa fa-close" (click)="removeFile(i)"></i></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-12" *ngIf="product">
+            <div class="row productname">
+                <span>{{product.name}}</span>
+            </div>
+            <div class="row">
+                <mat-card>
+                    <mat-card-content>
+                        <div class="custom-image">
+                            <img alt="#" width="100%" src="{{  IMAGE_ENDPOINT + product.image}}" />
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="row">
+                <table class="table table-responsive table-bordered" style="margin-top: 10px">
+                    <tr>
+                        <td>মূল্য</td>
+                        <td>{{product.price}}</td>
+                    </tr>
+                    <tr>
+                        <td>কারিগরের মূল্য</td>
+                        <td>{{product.craftsman_price}}</td>
+                    </tr>
+                    <tr>
+                        <td>পরিমাণ</td>
+                        <td>{{product.quantity}}</td>
+                    </tr>
+                    <tr>
+                        <td>উৎপাদন সময়</td>
+                        <td>{{product.produce_time}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

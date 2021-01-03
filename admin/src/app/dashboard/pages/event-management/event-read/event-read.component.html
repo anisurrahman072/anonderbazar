@@ -1,0 +1,116 @@
+<nz-card>
+        <ng-template #title>
+            {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} Description
+        </ng-template>
+        <ng-template #extra>
+            <button *ngIf="data && 'event-edit'|accessControl" [routerLink]="['/dashboard/event/edit', data.id, {status: status_id}]" nz-button
+                [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-edit"></i><span>Edit</span>
+            </button>
+    
+            <button routerLink="/dashboard/event" [queryParams]="{status: status_id}" nz-button [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-file-text"></i><span>List</span>
+            </button>
+        </ng-template>
+        <ng-template #body>
+            <div class="row" *ngIf="data">
+                <div class="col-md-4">
+                    <div class="profile-img">
+                        <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="profile-head">
+                        <h2>
+                            {{data.name}}
+                        </h2>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <span class="nav-link active h4" id="home-tab">Details</span>
+                            </li>
+                        </ul>
+                        <div class="row about">
+                            <div class="col-md-12 h5">
+                                <div class="row" *ngIf="data.event_place">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} স্থান</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p>{{data.event_place}}</p>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="data.admin_email">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলা ':(status_id==2)?'প্রশিক্ষণ ':' ইভেন্ট '}} পরিচালনাকারীর Email</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p>{{data.admin_email}}</p>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="data.admin_phone">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলা ':(status_id==2)?'প্রশিক্ষণ ':' ইভেন্ট '}} পরিচালনাকারীর Phone Number</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p>{{data.admin_phone}}</p>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="data.event_startdate && data.event_enddate">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} তারিখ</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        {{data.event_startdate | date}} থেকে {{data.event_enddate | date}} পর্যন্ত
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="data.event_starttime && data.event_endtime">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} সময়</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        {{data.event_starttime | date:'shortTime'}} থেকে {{data.event_endtime | date:'shortTime'}} পর্যন্ত
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="data.registration_lastdate">
+                                    <div class="col-md-4">
+                                        <label>{{status_id==1?' মেলা ':(status_id==2)?'প্রশিক্ষণ ':' ইভেন্ট '}} নিবন্ধনের শেষ
+                                            তারিখ</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p>{{data.registration_lastdate | date}}</p> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Description</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <p>{{data.description}}</p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-12" *ngIf="data.event_type===1 || data.event_type===2">
+                                    <nz-table #basicTable [nzIsPagination]="false" [nzSize]="'large'" [nzDataSource]="addedPrices">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Price</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let data of basicTable.data">
+                                                    <td>{{data.name}}</td>
+                                                    <td>{{data.price}}</td>
+                                                    <td>{{data.remarks}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </nz-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </nz-card>

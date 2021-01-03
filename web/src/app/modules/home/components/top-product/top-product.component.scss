@@ -1,0 +1,178 @@
+.block-box .block-head {
+    background-color: #4e4e4e;
+    color: #aaa;
+    padding: 18px 30px;
+
+}
+
+.block-box .block-head .title,
+.block-box .block-head .block-desc {
+    display: inline-block;
+}
+
+.block-box .block-head .block-desc {
+    float: right;
+    font-family: "SolaimanLipi";
+    font-weight: 300;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.block-box .block-head .title {
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+}
+
+.block-box .block-head .title:after {
+    content: '';
+    width: 40px;
+    height: 2px;
+    display: block;
+}
+
+.block-box .block-box-content {
+    border-left: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+}
+
+.block-box .product-item.style4 .product-inner {
+    padding: 35px 20px;
+    padding-bottom: 51px;
+}
+
+.block-box .product-item.style4 .info {
+    padding-top: 0;
+}
+
+.block-box .product-item.style4 .group-button {
+    padding-top: 15px;
+    text-align: left;
+}
+
+.block-box .product-item .wishlist,
+.block-box .product-item .add_to_cart_button,
+.block-box .product-item .compare {
+    margin: 0;
+}
+
+.block-box.no-border-left .block-box-content {
+    border-left: none;
+}
+
+.block-box.no-border-right .block-box-content {
+    border-right: none;
+}
+
+.product-item .product-name.short {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-item .product-name.short a {
+    color: #333333;
+}
+
+.product-item .product-name.short a:hover {
+    color: #e9c77b;
+}
+
+.product-item.hot-product .product-inner {
+    padding: 26px 0px;
+    display: table;
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 28px;
+}
+
+.thumb img {
+    max-width: 120%;
+}
+
+.block-box-content ul li {
+    display: inline-block;
+}
+
+.product-in li {
+    float: left;
+}
+
+.product-item.product-inner {
+    padding: 7px;
+}
+
+.product-item.style3 {
+    border-right: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.product-item {
+    list-style: none;
+}
+
+.pro-info span {
+    color: #444 !important;
+    margin-left: 40%;
+
+}
+
+.pro-info h3 {
+    margin-left: 32%;
+    font-size: 14px;
+}
+/* banner */
+.display-product-banner {
+    height: 215px;
+}
+
+.content {
+    max-width: 330px;
+    position: absolute;
+}
+.content .desc{
+    font-size: 12px;
+    font-family: "SolaimanLipi";
+    font-style: italic;
+    color: #666;
+}
+.content h3{
+    font-family: "SolaimanLipi";
+    font-size: 24px;
+    color: #333;
+    font-style: normal;
+}
+/* ---------------------- mobile nav --------------------------- */
+
+.mobile-navigation {
+    line-height: 35px;
+    text-transform: uppercase;
+    color: #333;
+    font-family: "SolaimanLipi";
+    padding: 10px 0;
+    display: none;
+
+}
+
+.mobile-navigation .icon {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    border: 1px solid #333;
+    padding: 10px;
+    float: left;
+    margin-right: 10px;
+}
+
+.mobile-navigation .icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    float: left;
+    margin-bottom: 4px;
+}
+
+.mobile-navigation .icon span:last-child {
+    margin-bottom: 0;
+}

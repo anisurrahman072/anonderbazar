@@ -1,0 +1,8 @@
+.desingCreateTable td{
+    float:center;
+    word-wrap:break-word;
+    padding: 0 5px 0 5px;
+    width: 180px;
+}
+
+.highlight{ background-color: #2BA8EA }

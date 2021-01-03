@@ -1,0 +1,58 @@
+<div class="margin-top-60">
+    <div class="container">
+        <!-- Box product -->
+        <div class="row margin-0">
+            <div class="col-md-3 col-sm-12  padding-0">
+                <div class="kt-box block-box no-boder-right" data-titlecolor='#fff'>
+                    <div class="block-head">
+                        <h3 class="title">শীর্ষ পণ্য</h3>
+                    </div>
+                    <div class="block-box-content">
+                        <ul>
+
+                            <ng-template ngFor let-d [ngForOf]=" dataReady  | async" let-i="index">
+                                <app-product-item-min [imgHeight]="'img160'" [dataProduct]="d" *ngIf="i<limit"></app-product-item-min>
+
+                            </ng-template>
+
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-sm-12 padding-0">
+                <div class="row">
+                    <div class="col-md-12 product-banner-text">
+                        <div class="display-product-banner" style="background-image: url('assets/images/64.jpg')">
+                            <div class="content text-center"
+                                 style="right: 75px; transform: translateY(-50%); top: 50%;">
+                                <h3 class="title">শীর্ষ বিক্রিত পণ্য</h3>
+                                <div class="desc">
+                                    নৈপুণ্য একটি সময় উপযোগী ই-ফেয়ার বাণিজ্য। উদ্যোক্তারা তাদের তৈরী করা পণ্য  খুব সহজে ম্যান নিয়ন্ত্রণ করে পৌঁছে দেন ভোক্তাদের কাছে। কোন কারিগর  তৈরী করছে সেটা জানতে পারবেন খুব সহজে।                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class=" has-carousel ">
+                    <ngu-carousel class="m-10" [inputs]="carouselTile">
+                        <ngu-item NguCarouselItem *ngFor="let d of dataCustom |async; let i = index">
+                            <app-product-item [dataProduct]="d"></app-product-item>
+
+                        </ngu-item>
+
+                        <button NguCarouselPrev class='leftRs carousal-button'>&lt;</button>
+                        <button NguCarouselNext class='rightRs carousal-button'>&gt;</button>
+                    </ngu-carousel>
+
+                </div>
+
+
+            </div>
+
+        </div>
+        <!-- ./Box product -->
+    </div>
+</div>

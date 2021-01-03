@@ -1,0 +1,75 @@
+<div class="row">
+
+    <div class="col-sm-12 col-md-10 col-md-offset-1">
+        <div class="row">
+                <h4>পণ্যের অংশের Picture</h4>
+                <div class="col-md-4 list-group items">
+                        <a class="list-group-item list-group-item-action active text-center">
+                            Picture
+                        </a>
+                        <div class="form-group">
+    
+                            <div class=" list-group-item list-group-item-action custom-control custom-radio">
+    
+    
+                                <div *ngIf="currentDesignImage">
+                                    <nz-spin [nzSpinning]="_imageSpinner">
+                                        <div *ngIf="!editMode">
+                                            <div *ngFor="let img of currentDesignImage?.images">
+                                                <img class="img img-responsive" height="100" width="100" src="{{IMAGE_ENDPOINT + img}}" />
+                                                <br>
+                                            </div>
+    
+                                            <button *ngIf="'productDesignImage-edit'|accessControl" class="btn btn-info"
+                                                (click)="editModeOn()">Edit</button>
+    
+                                        </div>
+                                        <div *ngIf="editMode">
+                                            <image-upload [max]="10" buttonCaption="Select picture" dropBoxMessage="Drop Picture here"
+                                                clearButtonCaption="remove it?" (removed)="onRemoved($event)"
+                                                [uploadedFiles]="ImageFileEdit" [beforeUpload]="onBeforeUpload">
+                                            </image-upload>
+    
+                                            <button *ngIf="ImageFile.length" class="btn btn-success" (click)="saveDesignImage()">Save
+                                            </button>
+    
+                                        </div>
+    
+                                    </nz-spin>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+        <div class="row">
+            <h4>পণ্যের অংশ</h4>
+            <div>
+
+                <div class="col-md-2 form-group list-group items" *ngFor="let item of designCombinationData">
+
+                    <a class="list-group-item list-group-item-action active text-center">
+                        {{item.part.name}}
+                    </a>
+                    <div class="form-group">
+
+                        <div class=" list-group-item list-group-item-action custom-control custom-radio" *ngFor="let design of item?.designs">
+
+                            <nz-radio-group [(ngModel)]="designImageCheck[item?.part.name]" [nzSize]="'large'"
+                                (ngModelChange)="chngCombination($event)">
+                                <label nz-radio-button [nzValue]="item?.part.id+':'+design.id">
+                                    <span>{{design.name}}</span>
+                                </label>
+                            </nz-radio-group>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+            </div>
+        </div>
+
+    </div>
+</div>

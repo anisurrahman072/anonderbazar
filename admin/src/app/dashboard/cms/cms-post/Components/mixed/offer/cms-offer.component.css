@@ -1,0 +1,137 @@
+ 
+.product-details{
+  padding: 175px 0px 0px 20px;
+}
+.product-details .proh1first{
+  font-size: 40px;
+  line-height: 3.9rem;
+  font-weight: 500;
+}
+.product-details .proh12nd{
+  font-size: 40px;
+  color: #FF6F74;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.product-details p{
+  margin-bottom: 30px;
+}
+.product-details button{
+  background: transparent;
+}
+.product-details button a{
+  text-decoration: underline;
+  color: #ED1C24;
+}
+.product-details button a i{
+  margin-left: 5px;
+}
+.productsub-details{
+  padding: 75px 0px 0px 20px;
+}
+.productsub-details .proh1first{
+  font-size: 24px;
+  line-height: 2.9rem;
+}
+.product-img img{
+  height: 547px;
+  width: 100%;
+}
+.productsub-details .proh12nd{
+  font-size: 24px;
+  color: #FF6F74;
+  margin-bottom: 20px;
+}
+.productsub-details button{
+  background: transparent;
+}
+.productsub-details button a{
+  text-decoration: underline;
+  color: #ED1C24;
+}
+.productsub-details button a i{
+  margin-left: 5px;
+}
+.col-pro{
+  background: #f2f2f2;
+}
+.productsub-img img{
+  width: 100%;
+  height: 266px;
+}
+
+/*====================================
+product - end
+====================================*/
+.navbar-inner {
+  background: #fff; 
+}
+
+.border {
+  border-bottom: 1px solid #36e527;
+}
+
+.navbar-menu { 
+  background: #fff;
+}
+
+.title-1 {
+  margin-top: 4px;
+}
+
+.title-2 a {
+  margin-top: 3px;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.navbar-menu ul li {
+  float: left;
+  margin-right: 25px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 13px;
+  padding-bottom: 15px;
+  position: relative;
+}
+
+.navbar-menu ul li a:hover,
+.navbar-menu ul li a:hover:after {
+  visibility: visible;
+  right: 0;
+  color: #000;
+}
+
+.navbar-menu ul li a {
+  color: #888;
+  text-decoration: none;
+}
+
+.navbar-menu ul li a i {
+  padding-left: 15px;
+} 
+
+.fa {
+  display: inline-block;
+  font: 14px/1 FontAwesome;
+  font-style: normal;
+  font-variant-ligatures: normal;
+  font-variant-caps: normal;
+  font-variant-numeric: normal;
+  font-variant-east-asian: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  font-size: inherit;
+  line-height: 1;
+  font-family: FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.img-responsive {
+  height: 160px;
+  width: 240px;
+  margin-top: 10px;
+}

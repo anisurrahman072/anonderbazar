@@ -1,0 +1,13 @@
+<div class="container" *ngIf="favouriteProducts">
+    <div class="category-head justify-content-between d-flex">
+        <div class="titel">
+            <h4>Favourite products</h4>
+        </div>
+        <button class="" (click)="onDeleteAll()"><a>Delete All<i class="fa fa-arrow-circle-o-right"></i></a></button>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4" *ngFor="let product of (favouriteProducts|async)?.data">
+            <app-product-item [dataProduct]="product.product_id"></app-product-item>
+        </div>
+    </div>
+</div>

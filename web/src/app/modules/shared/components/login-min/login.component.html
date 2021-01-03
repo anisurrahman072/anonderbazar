@@ -1,0 +1,654 @@
+<div *ngIf="isModalShown$|async" [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal"
+     class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
+                    <i class="fa  fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class=" container form-background" style="height: auto">
+                    <!--Login Form-->
+                    <ng-container *ngIf="!register && !isForgot">
+                        <section id="signup-section"  style="padding: 0px;">
+                            <div class="col-md-12">
+                                <div class="mb-3 mx-lg-auto w-25">
+                                    <img src="assets/images/logo.png" alt="">
+                                </div>
+                              <h4 class="signup-title">SIGN IN</h4>
+                                <div *ngIf="loginErrorMessage" class="alert alert-danger text-center text-capitalize" role="alert">
+                                   {{loginErrorMessage}}
+                                </div>
+
+                                <div class="signup-form">
+                                <form class="form-horizontal m-t-50" [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+                                  <div class="row">
+                                        <div class="form-group w-100" [ngClass]="{'has-error': getFormControl('username').dirty&&getFormControl('username').hasError('required'), 'has-success':getFormControl('username').dirty&&!getFormControl('username').hasError('required') }">
+                                            <label for="first_name" class="col-lg-12 control-label">Phone Number</label>
+                                            <div class="col-lg-12">
+                                                <input placeholder="Phone Number" class="form-control" formControlName="username" [autofocus]="true" required>
+                                                <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                <div class="validation-feedback">
+                                                    <span>
+                                                        <i class='fa fa-exclamation-circle'></i> Phone Number is required
+                                                    </span>
+    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="row">
+                                        <div class="form-group w-100" [ngClass]="{'has-error': getFormControl('password').dirty&&getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
+                                            <label for="password" class="col-lg-12 control-label">Password</label>
+                                            <div class="col-lg-12">
+                                                <input placeholder="Password" class="form-control" formControlName="password" type="password" required>
+                                                <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                <div class="validation-feedback">
+                                                <span>
+                                                    <i class='fa fa-exclamation-circle'></i> Password is required
+                                                </span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2"> 
+                                        <div class="col-md-12">
+                                            <a type="button" (click)="showForgot()" style="color: #ED1C24;">Forgot your password?</a>
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group signupbtn col-md-12">
+                                        <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
+                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForm.valid" data-loading-text="Please wait">Sign In</button> 
+                                        <p>
+                                          Create an account?<a class="btn-link" style="color: red" (click)="showSignUp()">Sign Up</a>
+                                        </p>
+                                    </div>
+                                  </div>
+                                </form> 
+                              </div>
+                            </div>
+                          </section>
+                        <!-- <form class="form-horizontal m-t-50" [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+
+
+                            <div class="form-group" [ngClass]="{'has-error': getFormControl('username').dirty&&getFormControl('username').hasError('required'), 'has-success':getFormControl('username').dirty&&!getFormControl('username').hasError('required') }">
+                                <label for="first_name" class="col-lg-3 control-label">ইউজারনেম</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="ইউজারনেম লিখুন" class="form-control" formControlName="username" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> ইউজারনেম লিখুন
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" [ngClass]="{'has-error': getFormControl('password').dirty&&getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
+                                <label for="password" class="col-lg-3 control-label">গোপন নাম্বার</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="গোপন নাম্বার লিখুন" class="form-control" formControlName="password" type="password" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> গোপন নাম্বার লিখুন
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9">
+                                    <input formControlName="remember" type="checkbox">
+                                    <span>মনে রাখুন</span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-lg-12">
+
+
+                                    <button class="w-100 btn btn-lg btn-login" [disabled]="!validateForm.valid">লগইন</button>
+
+
+
+                                </div>
+                            </div>
+                        </form>
+
+                        <button type="button" class="btn btn-lg btn-form-switch bg-theme" (click)="register = true">
+                            আপনি কি নতুন গ্রাহক? নিবন্ধন করুন
+                        </button>
+                        <div class="loginModalTagline">
+                            <p>
+                                আজ্ঞা(order) প্রদানের জন্য লগইন করুন
+                            </p>
+                        </div> -->
+                    </ng-container>
+                    <ng-container *ngIf="register && !isForgot">
+                        <!--Sign up form-->
+                        <section id="signup-section"  style="padding: 0px;">
+                            <div class="col-md-12 offset-md-12">
+                                <div class="mb-3 mx-lg-auto w-25">
+                                    <img class="text-center" src="assets/images/logo.png" alt="">
+                                </div>
+                                <h4 class="signup-title text-center">SIGN UP</h4>
+                                <div class="signup-form">
+                                    <form  class="form-horizontal m-t-50" [formGroup]="validateSignUpForm" (ngSubmit)="submitSignupForm($event,validateSignUpForm.value)">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('first_name').dirty&&validateSignUpForm.get('first_name').errors, 'has-success': validateSignUpForm.get('first_name').dirty&&!validateSignUpForm.get('first_name').errors }">
+                                                <label for="first_name" class="col-lg-12 control-label">First Name</label>
+                                                <div class="col-lg-12">
+                                                    <input placeholder="Input your first name" class="form-control" formControlName="first_name" [autofocus]="true" required>
+                                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                    <div class="validation-feedback">
+                                                        <span><i class='fa fa-exclamation-circle'></i> First name is required! </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('last_name').dirty&&validateSignUpForm.get('last_name').errors, 'has-success': validateSignUpForm.get('last_name').dirty&&!validateSignUpForm.get('last_name').errors }">
+                                                <label for="last_name" class="col-lg-12 control-label">Last Name</label>
+                                                <div class="col-lg-12">
+                                                    <input placeholder="Input your last name" class="form-control" formControlName="last_name" [autofocus]="true" required>
+                                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                    <div class="validation-feedback">
+                                                        <span>
+                                                            <i class='fa fa-exclamation-circle'></i> Last name is required! </span>
+        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('phone').dirty&&validateSignUpForm.get('phone').errors, 'has-success': validateSignUpForm.get('phone').dirty&&!validateSignUpForm.get('phone').errors }">
+                                                    <label for="phone" class="col-lg-12 control-label">Phone Number</label>
+                                                    <div class="col-lg-12">
+                                                        <input placeholder="Enter your phone number" class="form-control" formControlName="phone" [autofocus]="true" required ngModel
+                                                               (ngModelChange)="updatePhoneValidator()">
+                                                        <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                        <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                        <div class="validation-feedback">
+                                                            <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').hasError('required')"><i
+                                                                    class='fa fa-exclamation-circle mr-2'></i>Phone number is required!</span>
+                                                            <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').hasError('phoneNumber')"><i
+                                                                    class='fa fa-exclamation-circle mr-2'></i>Enter a right phone number!</span>
+                                                            <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').hasError('phoneNumberUnique')"><i
+                                                                    class='fa fa-exclamation-circle mr-2'></i>This number is already registered!</span>
+
+                                                            <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').pending">
+                                                                Checking...
+                                                            </span>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('gender').dirty&&validateSignUpForm.get('gender').errors, 'has-success': validateSignUpForm.get('gender').dirty&&!validateSignUpForm.get('gender').errors }">
+                                                    <label for="gender" class="col-lg-12 control-label">Gender</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="gender">
+                                                            <select name="gender" class="form-control"  formControlName="gender" placeholder="Select Gender">
+                                                                <option value="" [selected]="true">Select Gender</option>
+                                                                <option *ngFor="let option of genderSearchOptions" [ngValue]="option.value">
+                                                                    {{option.label}}
+                                                                </option>
+                                                            </select>
+                                                        </div><i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                        <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                        <div class="validation-feedback">
+                                                            <span>
+                                                                <i class='fa fa-exclamation-circle mr-2'></i>Gender is required!</span>
+            
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('password').dirty&&validateSignUpForm.get('password').errors, 'has-success':validateSignUpForm.get('password').dirty&&!validateSignUpForm.get('password').errors}">
+                                                    <label for="password" class="col-lg-12 control-label">Password</label>
+                                                    <div class="col-lg-12">
+                                                        <input placeholder="Input your password" class="form-control" formControlName="password" type="password" required ngModel
+                                                            (ngModelChange)="updateConfirmValidator()">
+                                                        <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                        <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                        <div class="validation-feedback">
+                                                            <span>
+                                                                <i class='fa fa-exclamation-circle'></i> Password  is required!</span>
+            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('confirmPassword').dirty&&validateSignUpForm.get('confirmPassword').errors,'has-success':validateSignUpForm.get('confirmPassword').dirty&&!validateSignUpForm.get('confirmPassword').errors}">
+                                                    <label for="confirmPassword" class="col-lg-12 control-label">Confirm Password</label>
+                                                    <div class="col-lg-12">
+                                                        <input placeholder="Input your password again" class="form-control" formControlName="confirmPassword" type="password" required>
+                                                        <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                        <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                        <div class="validation-feedback">
+                                                            <span>
+                                                                <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('confirmPassword').hasError('confirm')?'Incorrect Password':'Input password again'}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </div>
+    
+                                        
+                                        <div class="form-group col-md-12">
+                                        <div class="row">
+                                            
+                                            <div class="col-md-12"> 
+                                                <label for="inputBirthday">Birthday</label>
+                                                <div class="form-row">
+                                                    <div class="form-group col-md-4">
+                                                        <select id="inputState" formControlName="birthYear" class="form-control">
+                                                            <option value="" [selected]="true">Select Year</option>
+                                                                <option *ngFor="let year of yearList(70); let i = index" value="{{currentYear-i}}">{{currentYear-i}}</option>
+                                                        </select>
+    
+                                                    </div>
+                                                    <div class="form-group col-md-4"> 
+                                                        <select id="inputState" formControlName="birthMonth" class="form-control">
+                                                            <option value="" [selected]="true">Select Month</option>
+                                                            <option *ngFor="let month of birthMonthOption" value="{{month.value}}">
+                                                                {{month.label}}
+                                                            </option>
+                                                        
+                                                        </select>
+    
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <select id="inputState" formControlName="birthDay" class="form-control">
+                                                            <option value="">Select Day</option>
+                                                            <option>1</option>
+                                                            <option>2</option>
+                                                            <option>3</option>
+                                                            <option>4</option>
+                                                            <option>5</option>
+                                                            <option>6</option>
+                                                            <option>7</option>
+                                                            <option>8</option>
+                                                            <option>9</option>
+                                                            <option>10</option>
+                                                            <option>11</option>
+                                                            <option>12</option>
+                                                            <option>13</option>
+                                                            <option>14</option>
+                                                            <option>15</option>
+                                                            <option>16</option>
+                                                            <option>17</option>
+                                                            <option>18</option>
+                                                            <option>19</option>
+                                                            <option>20</option>
+                                                            <option>21</option>
+                                                            <option>22</option>
+                                                            <option>23</option>
+                                                            <option>24</option>
+                                                            <option>25</option>
+                                                            <option>26</option>
+                                                            <option>27</option>
+                                                            <option>28</option>
+                                                            <option *ngIf=" birthMonth!=2 ">29</option>
+                                                            <option>30</option>
+                                                            <option>31</option>
+                                                            </select>
+        
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                        </div>
+                                        <div class="form-group signupbtn d-flex col-md-12">
+                                        <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
+                                        <button type="sign-up" class="btn btn-flat" data-loading-text="Please wait" [disabled]="validateSignUpForm.invalid">Sign Up</button>
+                                        <p>Already have an account?<a (click)="register =false" style="color: red">Sign In</a></p>
+                                        </div>
+                                    </form> 
+                                  </div> 
+                              </div>
+                        </section>
+                        <!-- <form class="form-horizontal m-t-50" [formGroup]="validateSignUpForm" (ngSubmit)="submitSignupForm($event,validateSignUpForm.value)">
+
+
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('first_name').dirty&&validateSignUpForm.get('first_name').errors, 'has-success': validateSignUpForm.get('first_name').dirty&&!validateSignUpForm.get('first_name').errors }">
+                                <label for="first_name" class="col-lg-3 control-label">নামের প্রথম অংশ</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="নামের প্রথম অংশ লিখুন" class="form-control" formControlName="first_name" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> নামের প্রথম অংশ লিখুন </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('last_name').dirty&&validateSignUpForm.get('last_name').errors, 'has-success': validateSignUpForm.get('last_name').dirty&&!validateSignUpForm.get('last_name').errors }">
+                                <label for="last_name" class="col-lg-3 control-label">নামের দ্বিতীয় অংশ</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="নামের দ্বিতীয় অংশ লিখুন" class="form-control" formControlName="last_name" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> নামের দ্বিতীয় অংশ লিখুন </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('phone').dirty&&validateSignUpForm.get('phone').errors, 'has-success': validateSignUpForm.get('phone').dirty&&!validateSignUpForm.get('phone').errors }">
+                                <label for="phone" class="col-lg-3 control-label">মোবাইল নাম্বার</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="মোবাইল নাম্বার লিখুন" class="form-control" formControlName="phone" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i>মোবাইল নাম্বার লিখুন</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('gender').dirty&&validateSignUpForm.get('gender').errors, 'has-success': validateSignUpForm.get('gender').dirty&&!validateSignUpForm.get('gender').errors }">
+                                <label for="gender" class="col-lg-3 control-label">লিঙ্গ</label>
+                                <div class="col-lg-9">
+                                    <div class="gender">
+                                        <select name="gender" class="form-control"  formControlName="gender" placeholder="লিঙ্গ নির্বাচন করুন">
+                                            <option *ngFor="let gender of genderSearchOptions" value="{{gender.value}}">
+                                                {{gender.label}}
+                                            </option>
+                                        </select>
+                                    </div>                                            <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i>লিঙ্গ নির্বাচন করুন </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('username').dirty&&validateSignUpForm.get('username').errors, 'has-success': validateSignUpForm.get('username').dirty&&!validateSignUpForm.get('username').errors }">
+                                <label for="username" class="col-lg-3 control-label">ইউজারনেম</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="ইউজারনেম লিখুন" class="form-control" formControlName="username" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i>ইউজারনেম লিখুন  </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('email').dirty && validateSignUpForm.get('email').errors, 'has-success':validateSignUpForm.get('email').dirty&&!validateSignUpForm.get('email').errors }">
+                                <label for="email" class="col-lg-3 control-label">ইমেইল লিখুন</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="ইমেইল লিখুন" class="form-control" formControlName="email" [autofocus]="true" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('email').hasError('required')?'ইমেইল লিখুন':' invalid email'}}
+
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('password').dirty&&validateSignUpForm.get('password').errors, 'has-success':validateSignUpForm.get('password').dirty&&!validateSignUpForm.get('password').errors}">
+                                <label for="password" class="col-lg-3 control-label">গোপন নাম্বার</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="গোপন নাম্বার লিখুন" class="form-control" formControlName="password" type="password" required ngModel
+                                           (ngModelChange)="updateConfirmValidator()">
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> গোপন নাম্বার লিখুন</span>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('confirmPassword').dirty&&validateSignUpForm.get('confirmPassword').errors,'has-success':validateSignUpForm.get('confirmPassword').dirty&&!validateSignUpForm.get('confirmPassword').errors}">
+                                <label for="confirmPassword" class="col-lg-3 control-label">পুন: গোপন নাম্বার</label>
+                                <div class="col-lg-9">
+                                    <input placeholder="পুনরায় গোপন নাম্বার লিখুন" class="form-control" formControlName="confirmPassword" type="password" required>
+                                    <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                    <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                    <div class="validation-feedback">
+                                        <span>
+                                            <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('confirmPassword').hasError('confirm')?'অসামঞ্জস্যপূর্ণ গোপন নাম্বার':'পুনরায় গোপন নাম্বার লিখুন'}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <button class="w-100 btn btn-lg btn-signup" [disabled]="!validateSignUpForm.valid">জমা দিন</button>
+                                </div>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-lg btn-form-switch2 bg-theme" (click)="register =false">
+                            আপনি কি ইতিপূর্বে নিবন্ধন করেছেন ? লগইন করুন
+                        </button>
+                        <div class="loginModalTagline">
+                            <p>
+                                আজ্ঞা(order) প্রদানের জন্য নিবন্ধন করুন
+                            </p>
+                        </div> -->
+                    </ng-container>
+                    <ng-container *ngIf="isForgot">
+                        <section id="signup-section"  style="padding: 0px;">
+                            <div class="col-md-12">
+                                <div class="mb-3 mx-lg-auto w-25">
+                                    <img src="assets/images/logo.png" alt="">
+                                </div>
+                              <h4 class="signup-title">Forgot Password</h4>
+                                <div *ngIf="loginErrorMessage" class="alert alert-danger text-center text-capitalize" role="alert">
+                                   {{loginErrorMessage}}
+                                </div>
+
+                                <div class="signup-form">
+                                <form class="form-horizontal m-t-50" [formGroup]="validateForgotForm" (ngSubmit)="submitForgotForm($event,validateForgotForm.value)">
+                                  <div class="row">
+                                        <div class="form-group w-100" [ngClass]="{'has-error': getForgotFormControl('email').dirty&&getForgotFormControl('email').hasError('required'), 'has-success':getForgotFormControl('email').dirty&&!getForgotFormControl('email').hasError('required') }">
+                                            <label for="first_name" class="col-lg-12 control-label">Email</label>
+                                            <div class="col-lg-12">
+                                                <input placeholder="Enter Your Email" class="form-control" formControlName="email" [autofocus]="true" required>
+                                                <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                <div class="validation-feedback">
+                                                    <span>
+                                                        <i class='fa fa-exclamation-circle'></i> Enter Your Email
+                                                    </span>
+    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="row">
+                                        <div class="form-group w-100" [ngClass]="{'has-error': getForgotFormControl('phone').dirty&&getForgotFormControl('phone').hasError('required'), 'has-success':getForgotFormControl('phone').dirty&&!getForgotFormControl('phone').hasError('required') }">
+                                            <label for="phone" class="col-lg-12 control-label">Phone</label>
+                                            <div class="col-lg-12">
+                                                <input placeholder="Enter Phone Number" class="form-control" formControlName="phone" required>
+                                                <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                <div class="validation-feedback">
+                                                <span>
+                                                    <i class='fa fa-exclamation-circle'></i> Enter Phone Number
+                                                </span>
+
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="form-group signupbtn col-md-12">
+                                        <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
+                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForgotForm.valid" data-loading-text="Please wait">Send</button> 
+                                        <p>
+                                          Create an account?<a class="btn-link" style="color: red" (click)="showLogin()">Sign In</a>
+                                        </p>
+                                    </div>
+                                  </div>
+                                </form> 
+                              </div>
+                            </div>
+                          </section> 
+                    </ng-container>
+                </div>
+                <div class="col-md-12 col-xs-12">
+                    
+                </div>
+                <section style="padding: 0px;">
+                    <div class="row" [ngClass]="" style="background-position: center; /* Center the image */background-repeat: no-repeat; /* Do not repeat the image */background-size: cover; ">
+                        <!-- <div class="row" [ngClass]="register?'bg-theme':'bg-theme'" style="background-image: url(assets/images/fair-product-1.jpg); background-position: center; /* Center the image */background-repeat: no-repeat; /* Do not repeat the image */background-size: cover; "> -->
+    
+                        <!-- <div class="col-md-4 col-xs-12">
+                            <img style="width: 100%; height: auto; margin-left:2%" src="assets/images/fair-product-1.jpg" class="img-responsive" alt="শূন্য">
+    
+                            <div class="pop-left">
+                                <img src="assets/images/logo-w.png" class="img-responsive" alt="img">
+                                <h2 *ngIf="register == false">লগইন ফর্ম</h2>
+                                <h2 *ngIf="register == true">নিবন্ধন ফর্ম</h2>
+                            </div>
+                        </div> -->
+    
+                        
+                    </div>
+                </section>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!--<div *ngIf="isModalShown$|async" [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal-->
+     <!--#autoShownModal="bs-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">-->
+    <!--<div class="modal-dialog modal-md">-->
+        <!--<div class="modal-content">-->
+            <!--<button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">-->
+                <!--<i class="fa  fa-close"></i>-->
+            <!--</button>-->
+
+            <!--<section class="">-->
+                <!--<div class="row bg-theme">-->
+                    <!--<div class="col-md-4 col-xs-12">-->
+                        <!--<div class="pop-left">-->
+                            <!--<img src="/assets/images/logo-w.png" class="img-responsive" alt="img">-->
+                            <!--<h2>Login to bitcommerce</h2>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="col-md-8 col-xs-12">-->
+                        <!--<div class=" container-fluid form-background">-->
+
+                            <!--<form class="form-horizontal" [formGroup]="validateForm"-->
+                                  <!--(ngSubmit)="submitForm($event,validateForm.value)">-->
+
+                                <!--<mat-form-field class="w-80">-->
+                                    <!--<input matInput placeholder="Enter your username" formControlName="userName"-->
+                                           <!--[autofocus]="true"-->
+                                           <!--required>-->
+                                    <!--&lt;!&ndash; <mat-error *ngIf=".invalid">{{getErrorMessage()}}</mat-error> &ndash;&gt;-->
+                                <!--</mat-form-field>-->
+
+
+                                <!--<mat-form-field class="w-80">-->
+                                    <!--<input matInput placeholder="Enter your password" formControlName="password"-->
+                                           <!--type="password" required>-->
+                                    <!--&lt;!&ndash; <mat-error *ngIf=".invalid">{{getErrorMessage()}}</mat-error> &ndash;&gt;-->
+                                <!--</mat-form-field>-->
+
+                                <!--<mat-checkbox formControlName="remember">Remember Me</mat-checkbox>-->
+                                <!--<br>-->
+                                <!--<br>-->
+
+
+                                <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
+
+
+                                <!--&lt;!&ndash;&lt;!&ndash; <label form="inputEmail" class="col-lg-1 control-label">Email</label> &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<div class="col-lg-12">&ndash;&gt;-->
+
+                                <!--&lt;!&ndash;&lt;!&ndash; <div class="has-statusf has-success">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input type="text" placeholder="Username" formControlName="userName" size="18">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<span class="help-block">hi</span>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div> &ndash;&gt;&ndash;&gt;-->
+
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash; <label form="inputPassword" class="col-lg-1 control-label">Password</label> &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<div class="col-lg-12">&ndash;&gt;-->
+
+
+                                <!--&lt;!&ndash;&lt;!&ndash; <div class="has-statusf has-error">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input type="password" placeholder="Password" formControlName="password" size="8">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<span class="help-block"></span>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div> &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<div class="checkbox">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input type="checkbox"> Checkbox&ndash;&gt;-->
+                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--<div class="form-group">-->
+                                    <!--<div class="col-lg-10">-->
+
+                                        <!--<div class="submit">-->
+                                            <!--<button class="w-100">Login</button>-->
+
+                                        <!--</div>-->
+                                        <!--<button type="button" class="btn btn-lg w-100" (click)="register = true">-->
+                                            <!--New to bitcommerce?<br>-->
+                                            <!--SignUp Now-->
+                                        <!--</button>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad adipisci animi,-->
+                                    <!--assumenda,-->
+                                    <!--ea eligendi eos excepturi exercitationem fuga incidunt, odio odit placeat quia totam-->
+                                    <!--vel vitae. Libero nulla ratione soluta. </p>-->
+
+
+                            <!--</form>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</section>-->
+
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

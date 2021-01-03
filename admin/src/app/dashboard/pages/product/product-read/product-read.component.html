@@ -1,0 +1,247 @@
+<nz-card>
+    <ng-template #title>
+        Product Details
+    </ng-template>
+    <ng-template #extra>
+        <nz-button-group>
+            <button *ngIf="'product-edit'|accessControl" [routerLink]="['/dashboard/product/edit', id]" [queryParams]="{status: status}" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+                <i class="anticon anticon-edit"></i><span>Edit</span>
+            </button>
+
+            <button routerLink="/dashboard/product" [queryParams]="{status: status}" nz-button [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-file-text"></i><span> List </span>
+            </button>
+        </nz-button-group> 
+    </ng-template>
+    <ng-template #body>
+        <div class="row" *ngIf="data">
+            <div class="col-md-4">
+                <div class="col-md-12">
+                    <div class="images kt-images">
+                        <div class="kt-main-image ">
+                            <div class="custom-image">
+                                <img height="250px" width="375px" class="img  img-responsive " alt="{{data.name}}"
+                                    style="margin: auto;" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                            </div>
+                        </div>
+
+                        <div class="kt-thumbs" *ngIf="data.product_images">
+                            <div class="owl-carousel" data-items="1" data-nav="true" data-animateout="slideInUp"
+                                data-animatein="slideInUp">
+                                <div class="page-thumb" *ngFor="let img of data.product_images ">
+
+                                    <ng-container *ngIf="'product-delete'|accessControl">
+                                        <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                            [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteImageConfirm(i,img.id)"
+                                            class="close">
+                                            <a nz-popconfirm>
+                                                <span>&times;</span>
+                                            </a>
+                                        </nz-popconfirm>
+                                    </ng-container>
+                                    <img class="img img-responsive " alt="{{img.image_path}}" src="{{ IMAGE_ENDPOINT + img.image_path}}" />
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <ul class="list-group list">
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Name :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Code :</p>
+                            </div>
+                            <div class="col-md-9" *ngIf="data.code && data.code!=='undefined'; else notShow">
+                                <p class="pull-left">{{data.code}}</p>
+                            </div>
+                            <ng-template #notShow>
+                                <div class="col-md-9">
+                                    <p class="pull-left">
+                                        N/A
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item" *ngIf="currentUser.group_id === 'admin'">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Shop :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data?.warehouse_id.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Price :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left" *ngIf="data.promotion == 0">{{data.price}}</p>
+                                <p class="pull-left" *ngIf="data.promotion == 1"><del style="color: red">{{data.price}}</del>  {{data.promo_price}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Min Order Quantity:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data?.min_unit}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Quantity :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.quantity}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Alert Quantity:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.alert_quantity}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Product Brand :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.brand_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Product category :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.type_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Product s-category :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.category_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Product ss-category:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.subcategory_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Tag:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">
+
+                                    <nz-tag [nzColor]="'orange'" *ngFor="let i of tags">
+                                        {{i}}
+                                    </nz-tag>
+
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Weight :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.weight}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Status:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left">{{data.status==1?'Fixed':(data.status==2)?'Variable':'Fully Customize'}} Product</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right">Product Featured?:</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left" *ngIf="data.featured==0">No</p>
+                                <p class="pull-left" *ngIf="data.featured==1">Yes</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Product Details :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <div [innerHTML]="data.product_details"></div>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="col-md-12">
+            </div>
+
+        </div>
+
+    </ng-template>
+</nz-card>

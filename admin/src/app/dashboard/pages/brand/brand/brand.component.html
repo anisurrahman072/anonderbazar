@@ -1,0 +1,123 @@
+<section>
+    <nz-card class="card-height">
+        <ng-template #title>
+            Brand list
+        </ng-template>
+        <ng-template #extra>
+            <button *ngIf="'brand-create'|accessControl" routerLink="/dashboard/brand/create" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+                <i class="anticon anticon-download"></i><span> Add New </span>
+            </button>
+        </ng-template>
+        <ng-template #body>
+            <nz-spin [nzSpinning]="_isSpinning">
+
+                <nz-table [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
+                    [nzSize]="'default'" [nzShowTitle]="true">
+
+                    <thead nz-thead>
+                        <tr>
+                            <th nz-th>
+                                <span> Picture </span>
+                            </th>
+                            <th nz-th>
+                                <span> Name </span>
+                                <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)"></nz-table-sort>
+                            </th>
+                            <th nz-th>
+                                <span> Code </span>
+                                <nz-table-sort [(nzValue)]="sortValue.code" (nzValueChange)="sort('code',$event)"></nz-table-sort>
+                            </th>
+                            <th nz-th>
+                                <span>Slug</span>
+                                <nz-table-sort [(nzValue)]="sortValue.slug" (nzValueChange)="sort('slug',$event)"></nz-table-sort>
+                            </th>
+                            <th nz-th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead nz-thead>
+                        <!--search bar.....................-->
+                        <tr>
+                            <th nz-th>
+
+                            </th>
+                            <th nz-th>
+                                <nz-input [nzPlaceHolder]="'Name Search'" [(ngModel)]="nameSearchValue"
+                                    (ngModelChange)="page=1;getAllData()"></nz-input>
+                            </th>
+
+                            <th nz-th>
+
+                            </th>
+                            <th nz-th>
+
+                            </th>
+                            <th nz-th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody nz-tbody>
+                        <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i =  index ">
+                            <td nz-td>
+                                <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
+                                    [nzIcon]="'user'"></nz-avatar>
+                            </td>
+                            <td nz-td>{{data.name}}</td>
+                            <td nz-td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow">
+                                <nz-tag>{{data.code}}</nz-tag>
+                            </td>
+                            <ng-template #notShow>
+                                <td nz-td>
+                                    <nz-tag>N/A</nz-tag>
+                                </td>
+                            </ng-template>
+                            <td nz-td>
+                                <nz-tag>{{data.slug}}</nz-tag>
+                            </td>
+                            <td>
+                                <nz-button-group>
+                                    <button *ngIf="'brand-read'|accessControl" [routerLink]="['/dashboard/brand/details/', data.id]"
+                                        nz-button [nzType]="'info'" [nzSize]="'default'">
+                                        <i class="anticon anticon-info-circle"></i>
+                                    </button>
+                                    <button *ngIf="'brand-edit'|accessControl" [routerLink]="['/dashboard/brand/edit', data.id]"
+                                        nz-button [nzType]="'primary'" [nzSize]="'default'">
+                                        <i class="anticon anticon-edit"></i>
+                                    </button>
+                                </nz-button-group>
+                                <ng-container *ngIf="'brand-delete'|accessControl">
+
+                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
+                                        <a nz-popconfirm>
+                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <i class="anticon anticon-delete"></i>
+                                            </button>
+                                        </a>
+                                    </nz-popconfirm>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </nz-spin>
+            <div class="row">
+                <div class="col-md-offset-5" style="margin-top: 10px">
+                    <span nz-table-title class="col-md-6">
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
+                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                        </nz-pagination>
+                    </span>
+                    <span nz-table-title class="pull-right col-md-6">
+                        <button nz-button (click)="resetAllFilter()">Clear filter</button>
+                    </span>
+                </div>
+            </div>
+
+        </ng-template>
+
+    </nz-card>
+</section>

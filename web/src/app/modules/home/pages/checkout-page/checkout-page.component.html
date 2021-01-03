@@ -1,0 +1,422 @@
+<div class="shop-page-bar">
+  <div class="container-fluid">
+    <nav class="woocommerce-breadcrumb breadcrumbs">
+    <a routerLink="/">Home</a>
+    <a routerLink="/checkout" routerLinkActive="active">Checkout</a>
+    </nav>
+    <div class="page-bar-right"></div>
+  </div>
+</div>
+<form [formGroup]="checkoutForm">
+<div id="Checkout-Send" class="Checkout-Send" *ngIf="!showPayment && !successOrderId">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-lg-6 col-md-12 mb-4">
+          <div class="sendgift-btn d-flex">
+            <button class="btn1" [ngClass]="{'active': isDelivery === true}"><a type="button" [ngClass]="{'active': isDelivery === true}" (click)='showDelivarySection()'>Delivery</a></button>
+          </div>
+            <div class="Checkout-from1" *ngIf = 'isDelivery'>
+              <p>Shipping Address</p>
+
+              <div class="form-row" *ngIf="!newShippingAddress">
+                <div class="Checkout-from1">
+                  <label>Select address</label>
+                  <mat-radio-group formControlName="shipping_id" (change)="onAddressChange($event.value, 'shipping')">
+                    <div class="border-bottom radio2" *ngFor="let address of prevoius_address; let i = index">
+                      <mat-radio-button value="{{''+address.id}}">
+                        &nbsp;{{ address?.address }},{{ address?.division_id.name }},{{
+                        address?.upazila_id.name
+                        }},{{ address?.zila_id.name }}.
+                      </mat-radio-button>
+                    </div>
+                  </mat-radio-group>
+                </div>
+              </div>
+
+              <div class="row send-btn1 mb-2">
+                <button (click)="onAddressToggle($event, 'shipping')">
+                  <a *ngIf="!newShippingAddress">New Shipping address</a>
+                  <a *ngIf="newShippingAddress">Select from previous</a>
+                </button>
+              </div>
+
+                <div class="form-row" *ngIf="newShippingAddress">
+                  <div class="form-group col-md-6">
+                    <label>First Name</label>
+                    <input type="text" class="form-control" formControlName="shippingFirstName" placeholder="Input First Name">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Last Name</label>
+                    <input type="text" class="form-control" formControlName="shippingLastName" placeholder="Input Last Name">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Phone Number</label>
+                    <input type="text" class="form-control" formControlName="shippingPhone" placeholder="Enter your phone Number">
+
+                    <div class="validation-feedback">
+                      <span *ngIf="getSignUpFormControl('shippingPhone').dirty&&getSignUpFormControl('shippingPhone').hasError('required')"><i
+                              class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                      <span *ngIf="getSignUpFormControl('shippingPhone').dirty&&getSignUpFormControl('shippingPhone').hasError('phoneNumber')"><i
+                              class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+
+                    </div>
+
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label >Select Division</label>
+                    <select class="form-control" formControlName="shipping_division_id"
+                            (change)="divisionChange($event, 'shipping')">
+                            <option value="">Select Division</option>
+
+                      <option *ngFor="let division of divisionSearchOptions" value="{{division.id}}">
+                        {{division.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label >Select Zila</label>
+                    <select class="form-control" formControlName="shipping_zila_id"
+                            (change)="zilaChange($event, 'shipping')"
+                            (click)="checkAddressSegment('shipping', 'zila')">
+                            <option value="">Select Zila</option>
+
+                      <option *ngFor="let zila of shippingZilaSearchOptions" value="{{zila.id}}">
+                        {{zila.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label >Select Upazila</label>
+                    <select class="form-control" formControlName="shipping_upazila_id"
+                            (click)="checkAddressSegment('shipping', 'upazila')">
+                            <option value="">Select Upazila</option>
+
+                      <option *ngFor="let upazila of shippingUpazilaSearchOptions" value="{{upazila.id}}">
+                        {{upazila.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Address
+                    </label>
+                    <input type="text" class="form-control" formControlName="shippingAddress" placeholder="Enter address">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Post Code
+                    </label>
+                    <input type="number" class="form-control" formControlName="shippingPostCode" placeholder="Enter post code">
+                  </div>
+                </div>
+            </div>
+
+          <div class="checkbox">
+            <input type="checkbox" id="checkbox5" (change)="copyAll()" [(ngModel)]="isCopy" [ngModelOptions]="{standalone: true}" checked>
+            <label for="checkbox5"><span>Copy billing details to shipping</span></label>
+          </div>
+
+            <div class="Checkout-from1" *ngIf = 'isDelivery' [hidden]="isCopy">
+              <p>Billing address</p>
+
+              <div class="form-row" *ngIf="!newBillingAddress">
+                <div class="Checkout-from1">
+                  <label>Select address</label>
+                  <mat-radio-group formControlName="billing_id" (change)="onAddressChange($event.value, 'billing')">
+                    <div class="border-bottom radio2" *ngFor="let address of prevoius_address; let i = index">
+                      <mat-radio-button value="{{address.id}}">
+                        &nbsp;{{ address?.address }},{{ address?.division_id.name }},{{
+                        address?.upazila_id.name
+                        }},{{ address?.zila_id.name }}.
+                      </mat-radio-button>
+                    </div>
+                  </mat-radio-group>
+                </div>
+              </div>
+
+              <div class="row send-btn1 mb-2">
+                <button (click)="onAddressToggle($event, 'billing')">
+                  <a *ngIf="!newBillingAddress">New Billing address</a>
+                  <a *ngIf="newBillingAddress">Select from previous</a>
+                </button>
+              </div>
+
+                <div class="form-row" *ngIf="newBillingAddress">
+                  <div class="form-group col-md-6">
+                    <label>First Name</label>
+                    <input type="text" class="form-control" formControlName="firstName" placeholder="Input First Name">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Last Name</label>
+                    <input type="text" class="form-control"  formControlName="lastName" placeholder="Input Last Name">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Phone Number</label>
+                    <input type="text" class="form-control" formControlName="phone" placeholder="Enter your phone Number">
+
+                    <div class="validation-feedback">
+                      <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').hasError('required')"><i
+                              class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                      <span *ngIf="getSignUpFormControl('phone').dirty&&getSignUpFormControl('phone').hasError('phoneNumber')"><i
+                              class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Select Division</label>
+                    <select class="form-control" formControlName="division_id"
+                            (change)="divisionChange($event, 'billing')">
+                            <option value="">Select Division</option>
+
+                      <option *ngFor="let division of divisionSearchOptions" value="{{division.id}}">
+                        {{division.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label >Select Zila</label>
+                    <select class="form-control" formControlName="zila_id"
+                            (change)="zilaChange($event, 'billing')"
+                            (click)="checkAddressSegment('billing', 'zila')">
+                            <option value="">Select Zila</option>
+                      <option *ngFor="let zila of zilaSearchOptions" value="{{zila.id}}">
+                        {{zila.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Select Upazila</label>
+                    <select class="form-control" formControlName="upazila_id"
+                            (click)="checkAddressSegment('billing', 'upazila')">
+                            <option value="">Select Upazila</option>
+
+                      <option *ngFor="let upazila of upazilaSearchOptions" value="{{upazila.id}}">
+                        {{upazila.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Address
+                    </label>
+                    <input type="text" class="form-control" formControlName="address" placeholder="Enter address">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Post Code
+                    </label>
+                    <input type="number" class="form-control" formControlName="postCode" placeholder="Enter post code">
+                  </div>
+                </div>
+            </div>
+<!--            <div class="send-btn1">-->
+<!--              <button><a href="#">Save</a></button>-->
+<!--            </div>-->
+
+
+          <div class="pick-up" *ngIf = 'isPickup'>
+            <p>Who will pick up this order?</p>
+            <form>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Name</label>
+                  <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Name</label>
+                  <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="collect-from"  *ngIf = 'isPickup'>
+            <p>Where do you want to collect from?</p>
+            <form>
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="inputEmail4">Name</label>
+                  <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                </div>
+              </div>
+            </form>
+            <button class="collectbtn">Search</button>
+          </div>
+          <div class="nearst-shop"  *ngIf = 'isPickup'>
+            <p>Your nearst shop</p>
+            <div class="nearstshops">
+              <div class="nearst-media1">
+                <li class="media">
+                  <img class="mr-3" src="assets/images/nearst1.jpg" alt="Generic placeholder image">
+                  <div class="media-body">
+                    <h6 class="mt-0 mb-1">Trust Mobile BD</h6>
+                    <p>Dhaka, Dhaka North, Banani Road No. 12-19</p>
+                    <span>Open Time: 9:00 AM-10:00 PM</span>
+                  </div>
+                </li>
+              </div>
+              <div class="nearst-2">
+                <span>0.31 miles</span>
+                <button><a href="#">Select shop</a></button>
+              </div>
+            </div>
+            <div class="nearstshops border-bottom-0">
+              <div class="nearst-media1">
+                <li class="media">
+                  <img class="mr-3" src="assets/images/nearst2.jpg" alt="Generic placeholder image">
+                  <div class="media-body">
+                    <h6 class="mt-0">Best Electronics</h6>
+                    <p>Dhaka, Dhaka North, Banani Road No. 12-19</p>
+                    <span>Open Time: 9:00 AM-10:00 PM</span>
+                  </div>
+                </li>
+              </div>
+              <div class="nearst-2">
+                <span>0.31 miles</span>
+                <button><a href="#">Select shop</a></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+          <div class="bag-item">
+            <p>Your bag {{cartData?.data.total_quantity}} items</p>
+          </div>
+
+          <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
+            <div class="bagitem-1">
+              <img style="width:15%" src="{{IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="">
+              <div style="width:95%" class="text">
+                <div class="sub-text" style="width:70%" >
+                  <a routerLink="/product-details/{{cartItem.product_id.id}}">
+                    <p>{{cartItem.product_id.name}}</p>
+                  </a>
+<!--                  <span>Color:<small>Red</small></span>-->
+                  <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
+                    <span *ngFor="let variant of cartItem.cartitemvariant">
+                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                    </span>
+                  </ng-container>
+                </div>
+                <ul style="width:15%">
+                  <li class="cursor-pointer" (click)="changeCartItemQuantity(cartItem, 'decrease')">-</li>
+                  <li>{{cartItem.product_quantity}}</li>
+                  <li class="mr-0 cursor-pointer" (click)="changeCartItemQuantity(cartItem, 'increase')">+</li>
+                </ul>
+                <p style="width:15%">৳. {{cartItem.product_total_price}}
+                  <button (click)="removeCartItem(cartItem.id)"
+                          type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        <div class="tag3">
+          <p>Order Summary</p>
+          <table>
+            <tr>
+              <td class="td1 pr-5">Subtotal</td>
+              <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
+            </tr>
+            <tr>
+              <td class="td1 pr-5">Discount</td>
+              <td class="active ml-5">৳ 0.00</td>
+            </tr>
+            <tr>
+              <td class="td1 pr-5">Shipping</td>
+<!--              <td  class="ml-5">Free Shipping</td>-->
+            </tr>
+            <tr class="border-bottom-0">
+              <td class="td1 pr-5">Total</td>
+              <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
+            </tr>
+          </table>
+        </div>
+          <div class="send-btn1">
+            <button (click)="processToPay()" class="Summarybtn"><a>Process to Pay</a>
+            </button>
+          </div>
+
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div id="payment-method" class="payment-method" *ngIf="showPayment && !successOrderId">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-12 mb-4">
+
+          <div class="payment-method-details1 mt-5">
+            <p class="font-weight-bold">Payment Method</p>
+            <mat-radio-group formControlName="paymentType">
+              <div class="radio2">
+                <mat-radio-button value="Cash"><i class="fa fa-money"></i> Cash On Delivery</mat-radio-button><br>
+                <mat-radio-button value="SSLCommerce"><i class="fa fa-money"></i> Payment via SSLCommerz</mat-radio-button>
+              </div>
+            </mat-radio-group>
+          </div>
+
+          <div class="send-btn1">
+            <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)"><a>Process to
+              Order</a></button>
+          </div>
+
+        </div>
+        <div class="col-md-6 col-sm-6 col-12 mb-4">
+          <div class="payment-method-details2">
+            <div class="tag1">
+              <p>Shipping address<a (click)="showPayment=false" style="color: red">Edit</a></p>
+              <small>Address</small>
+              <p class="add">{{getAddress('shipping')}}</p>
+            </div>
+            <div class="tag2">
+              <p>Billing address<a (click)="showPayment=false" style="color: red">Edit</a></p>
+              <small>Address</small>
+              <p class="add">{{getAddress('billing')}}</p>
+            </div>
+            <div class="tag3">
+              <p>Order Summary</p>
+              <table>
+                <tr>
+                  <td class="td1">Subtotal</td>
+                  <td>৳ {{cartData?.data.total_price}}</td>
+                </tr>
+                <tr>
+                  <td class="td1 pr-5">Discount</td>
+                  <td class="active">৳ 0.00</td>
+                </tr>
+                <tr>
+                  <td class="td1 pr-5">Shipping</td>
+<!--                  <td>Free Shipping</td>-->
+                </tr>
+                <tr class="border-bottom-0">
+                  <td class="td1 pr-5">Total</td>
+                  <td>৳ {{cartData?.data.total_price}}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</form>
+
+
+
+
+<section id="success-section" *ngIf="successOrderId">
+  <div class="col-md-6 offset-md-3">
+    <div class="success-details text-center">
+      <img src="assets/images/tick.png" alt="">
+      <h6>Thanks, your order has been placed</h6>
+      <p>Your order number is {{successOrderId}} <br>
+        We;ve send you an email confirmation</p>
+      <button [routerLink]="['/profile/orders/invoice/', successOrderId]">
+        <a>View Invoice</a>
+      </button>
+      <button class="Summarybtn" routerLink="/"><a>Back to Home</a></button>
+
+    </div>
+  </div>
+</section>

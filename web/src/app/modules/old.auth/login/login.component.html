@@ -1,0 +1,47 @@
+<section class="container form-background">
+    <div class="login-header">
+        <h1>লগইন করুন</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-sm-8">
+
+            <div class="login">
+                <div class="col-sm-2 col-xs-6 login-title">
+                    <p class="icon">ইউজারনেম :</p>
+                    <p class="icon">গোপন নাম্বার :</p>
+                </div>
+                <div class="col-sm-4 col-xs-6">
+                    <form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+
+                        <div class="has-statusf has-success">
+                            <input type="text" placeholder="ইউজারনেম" formControlName="userName" size="18">
+                            <span class="help-block"></span>
+                        </div>
+
+                        <div class="has-statusf has-error">
+                            <input type="password" placeholder="গোপন নাম্বার" formControlName="password" size="8">
+                            <span class="help-block"></span>
+                        </div>
+
+                        <p class="remember_me">
+                            <label>
+                                <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+                                মনে রাখুন
+                            </label>
+                        </p>
+
+                        <div class="submit">
+                            <button>লগইন</button>
+                        </div>
+
+                    </form>
+                    <div class="login-help">
+                        <p>গোপন নাম্বার ভুলে গিয়েছেন? <a href="index.html">পুন:স্থাপন করার জন্য এখানে ক্লিক করুন।</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

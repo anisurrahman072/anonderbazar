@@ -1,0 +1,264 @@
+<section>
+    <nz-card class="">
+        <ng-template #extra>
+        </ng-template>
+        <ng-template #body>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="row title">বার্তা</div>
+                    <div class="row searchDiv">
+                        <nz-input [nzType]="'text'" class="searchInput" [nzSize]="'large'"
+                            [nzPlaceHolder]="'Search'">
+                            <ng-template #prefix>
+                                <i class="anticon anticon-search"></i>
+                            </ng-template>
+                        </nz-input>
+                    </div>
+                    <div class="row clienlist">
+                        <ul nz-menu>
+                            <li nz-menu-item *ngFor="let item of listOfUser">
+                                <div class="row" (click)="showMessageData(item)">
+                                    <div class="col-md-3">
+                                        <nz-avatar nzSize="large" [nzSrc]="" nzIcon="user"></nz-avatar>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div>{{item.user_id.first_name}} {{item.user_id.last_name}}</div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-4">{{item.message}}</div>
+                                            <div class="col-md-1">|</div>
+                                            <div class="col-md-5">{{item.createdAt|date:'shortTime'}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="row usernameDiv">
+                        <div class="username">{{userfullname}}</div>
+                        <div class="active">Active or Deactive</div>
+                    </div>
+                    <div #scrollMe class="row messagelistDiv">
+                        <ul>
+                            <li *ngFor="let item of listofmessage">
+                                <div class="col-md-12"
+                                    [ngStyle]="{'text-align':item.person_status === 1 ? 'right' : 'left' }">
+                                    <div class="userInfo">
+                                        <ng-container
+                                            *ngIf="item.person_status === 1; then thenTemplate; else elseTemplate">
+                                        </ng-container>
+                                        <ng-template #thenTemplate>
+                                            {{chatuser.warehouse_id.name}}
+                                        </ng-template>
+                                        <ng-template #elseTemplate>
+                                            {{chatuser.user_id.first_name}} {{chatuser.user_id.last_name}}
+                                        </ng-template>
+                                        <span> | </span>{{item.createdAt|date:'shortTime'}}
+                                    </div>
+                                    <div class="talk-bubble tri-right"
+                                        [ngClass]="{'btm-right': item.person_status === 1, 'btm-left':item.person_status === 0}">
+                                        <div class="talktext">
+                                            <p *ngIf="item.message!== 'null'">{{item.message}}</p>
+                                            <ul>
+                                                <li *ngFor="let file of item.files">
+                                                    <a
+                                                        href="{{  IMAGE_ENDPOINT + file.file_location}}">{{file.file_name}}</a>
+
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div *ngIf="selectUser" class="row messageactiondiv">
+                        <form nz-form [nzLayout]="'inline'" [formGroup]="chatForm" id="chatForm"
+                            (ngSubmit)="submitForm($event,chatForm.value)">
+                            <div class="col-md-10">
+                                <div nz-form-item style="width: 100%">
+                                    <div nz-form-control>
+                                        <nz-input class="messageinput" formControlName="message"
+                                            [nzPlaceHolder]="'বার্তা লিপিবদ্ধ করুন'" [nzSize]="'large'">
+                                            <ng-template #prefix>
+                                                <i class="fa fa-commenting-o fa-lg"></i>
+                                            </ng-template>
+                                        </nz-input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 attachIcondiv" style=""><input type="file" formArrayName="files"
+                                    id="file" style="display: none;" accept=".jpg,.jpeg,.doc,.pdf"
+                                    (change)="handleFileInput($event.target.files)" multiple>
+                                <!-- <input type="file" formArrayName="files" id="input-file-id" style="display: none;" accept=".jpg,.jpeg,.doc,.sql" (change)="handleFileInput($event, showFileNames)" multiple  /> -->
+                                <label for="file" class="md-button md-raised md-primary clearfix attachIcon"><i
+                                        class="fa fa-paperclip fa-2x"></i></label>
+                            </div>
+
+                        </form>
+                        <div class="col-md-10 uploaded" *ngIf="fileToUpload.length !== 0">
+                            <ul>
+                                <li *ngFor="let item of fileToUpload; let i = index">
+                                    <div class="col-md-12" style="padding-left: 5px">
+                                        <div class="col-md-10">{{item.name}}</div>
+                                        <div class="col-md-2"><i class="fa fa-close" (click)="removeFile(i)"></i></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-md-12" *ngIf="product">
+                        <div class="row productname">
+                            <span>{{product?.name}}</span>
+                        </div>
+                        <div class="row">
+                            <nz-card style="width:240px" class="imagecard">
+                                <ng-template #body>
+                                    <div class="custom-image">
+                                        <img alt="#" width="100%" src="{{  IMAGE_ENDPOINT + product.image}}" />
+                                    </div>
+                                </ng-template>
+                            </nz-card>
+                        </div>
+                        <div class="row">
+                            <table class="table table-responsive table-bordered" style="margin-top: 10px">
+                                <tr>
+                                    <td>Price</td>
+                                    <td>{{product.price}}</td>
+                                </tr>
+                                <tr>
+                                    <td>কারিগরের Price</td>
+                                    <td>{{product.craftsman_price}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td>{{product.quantity}}</td>
+                                </tr>
+                                <tr>
+                                    <td>উৎপাদন সময়</td>
+                                    <td>{{product.produce_time}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td>{{product.quantity}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-12" *ngIf="product">
+                        <button nz-button nzType="primary" (click)="showModal()" style="width: 100%"><span>Create Order</span></button>
+                        <nz-modal [nzFooter]="null" [nzVisible]="isVisible" nzWidth="50%" [nzTitle]="'নতুন অর্ডার যুক্তকরন'"
+                            [nzContent]="modalContent"
+                            (nzOnCancel)="handleCancel($event)">
+                            <ng-template #modalContent>
+                                <form nz-form [formGroup]="validateForm" class="clearfix" id="validateForm"
+                                    (ngSubmit)="submitOrderForm($event,validateForm.value)">
+                                    <div class="col-md-12">
+                                        <div nz-form-item nz-row>
+                                            <div nz-form-label nz-col [nzSpan]="3">
+                                                <label> পণ্যের Name </label>
+                                            </div>
+                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                                <nz-input formControlName="product_name" [nzType]="'text'"
+                                                    [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'"
+                                                    [nzDisabled]="'true'">
+                                                </nz-input>
+                                                <div nz-form-explain
+                                                    *ngIf="getFormControl('product_name').dirty&&getFormControl('product_name').hasError('required')">
+                                                    Name is required!
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--name -->
+                                        <div nz-form-item nz-row>
+                                            <div nz-form-label nz-col [nzSpan]="3">
+                                                <label> পণ্যের Price </label>
+                                            </div>
+                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                                <nz-input formControlName="product_price" [nzType]="'number'"
+                                                    [nzPlaceHolder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'"
+                                                    [nzDisabled]="'true'">
+                                                </nz-input>
+                                                <div nz-form-explain
+                                                    *ngIf="getFormControl('product_price').dirty&&getFormControl('product_price').hasError('required')">
+                                                    দয়া করে Price লিপিবদ্ধ করুন!
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--price -->
+                                        <div nz-form-item nz-row>
+                                            <div nz-form-label nz-col [nzSpan]="3">
+                                                <label> পণ্যের Amount </label>
+                                            </div>
+                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                                <nz-input formControlName="product_quantity"
+                                                    (change)="setTotalPrice($event)" [nzType]="'number'"
+                                                    [nzPlaceHolder]="'Amount লিপিবদ্ধ করুন'" [nzSize]="'large'">
+                                                </nz-input>
+                                                <div nz-form-explain
+                                                    *ngIf="getFormControl('product_quantity').dirty&&getFormControl('product_quantity').hasError('required')">
+                                                    দয়া করে Amount লিপিবদ্ধ করুন!
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--quantity -->
+
+                                        <div nz-form-item nz-row>
+                                            <div nz-form-label nz-col [nzSpan]="3">
+                                                <label> ক্রেতার Name </label>
+                                            </div>
+                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                                <nz-input formControlName="user_name" [nzType]="'text'"
+                                                    [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'"
+                                                    [nzDisabled]="'true'">
+                                                </nz-input>
+                                                <div nz-form-explain
+                                                    *ngIf="getFormControl('user_name').dirty&&getFormControl('user_name').hasError('required')">
+                                                    Name is required!
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--user name -->
+                                        <div nz-form-item nz-row>
+                                            <div nz-form-label nz-col [nzSpan]="3">
+                                                <label> পেমেন্ট Address </label>
+                                            </div>
+                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                                <nz-select formControlName="payment_address_id" style="width: 100%"
+                                                    nzPlaceHolder="Address নির্বাচন করুন">
+                                                    <nz-option *ngFor="let option of listOfAddresses"
+                                                        [nzLabel]="option.address" [nzValue]="option.id"></nz-option>
+                                                </nz-select>
+                                                <div nz-form-explain
+                                                    *ngIf="getFormControl('payment_address_id').dirty&&getFormControl('payment_address_id').hasError('required')">
+                                                    দয়া করে Address নির্বাচন করুন !
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--user name -->
+                                        <div nz-form-item nz-row>
+                                            <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                                                <nz-button-group>
+                                                    <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                                        [disabled]="!validateForm.valid">
+                                                        Save
+                                                    </button>
+                                                    <button nz-button [nzSize]="'large'" (click)="resetForm($event)">
+                                                        Reset</button>
+                                                </nz-button-group>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+                        </nz-modal>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </nz-card>
+</section>

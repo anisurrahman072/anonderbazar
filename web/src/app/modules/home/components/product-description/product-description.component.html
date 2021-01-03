@@ -1,0 +1,375 @@
+<section id="productdescription" *ngIf="data">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8 col-md-12 mb-4">
+                <div class="des-nav justify-content-between">
+                    <ul class="nav nav-pills mb-5" id="pills-tab" role="tablist">
+                        <li class="nav-item .list1">
+                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Specification</a>
+                        </li> 
+                    </ul>
+                </div>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade active show" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="des-detail">
+                                    <p [innerHTML]="data.product_details"></p> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="review-starno">
+                                            <h2>4.9</h2>
+                                            <rating [max]="5" [(ngModel)]="data.ratings" [customTemplate]="tt"
+                                                    (ngModelChange)="ratingChange($event)"></rating>
+                                            <ng-template #tt let-i="index" let-v="value">
+                                                <button class="btn btn-{{ i < v ? 'danger' : 'default' }}" [tooltip]="i + 1">
+                                                    {{ i < v ? "&#9733;" : "&#9734;" }}
+                                                </button>
+                                            </ng-template> 
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="review-stars d-flex">
+                                            <ul class="star d-flex mr-3">
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li><i class="fa fa-star-o"></i></li>
+                                            </ul>
+                                            <ul class="pogress d-flex">
+                                                <li class="pogress-bar mt-2"></li>
+                                                <li class="pogress-no">20</li>
+                                            </ul>
+                                        </div>
+                                        <div class="review-stars d-flex">
+                                            <ul class="star d-flex mr-3">
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li><i class="fa fa-star-o"></i></li>
+                                            </ul>
+                                            <ul class="pogress d-flex">
+                                                <li class="pogress-bar1 mt-2"></li>
+                                                <li class="pogress-no1">30</li>
+                                            </ul>
+                                        </div>
+                                        <div class="review-stars d-flex">
+                                            <ul class="star d-flex mr-3">
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li><i class="fa fa-star-o"></i></li>
+                                            </ul>
+                                            <ul class="pogress d-flex">
+                                                <li class="pogress-bar2 mt-2"></li>
+                                                <li class="pogress-no2">2</li>
+                                            </ul>
+                                        </div>
+                                        <div class="review-stars d-flex">
+                                            <ul class="star d-flex mr-3">
+                                                <li class="mr-1"><i class="fa fa-star"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li><i class="fa fa-star-o"></i></li>
+                                            </ul>
+                                            <ul class="pogress d-flex">
+                                                <li class="pogress-bar3 mt-2"></li>
+                                                <li class="pogress-no3">5</li>
+                                            </ul>
+                                        </div>
+                                        <div class="review-stars d-flex">
+                                            <ul class="star d-flex mr-3">
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                                <li><i class="fa fa-star-o"></i></li>
+                                            </ul>
+                                            <ul class="pogress d-flex">
+                                                <li class="pogress-bar4 mt-2"></li>
+                                                <li class="pogress-no4">20</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-12 col-md-12 my-4">
+                                <div class="pog-button text-right">
+                                    <a href="#">Write a review</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-head justify-content-between d-flex">
+                            <div class="titel">
+                                <h4>Product Reviews</h4>
+                            </div>
+                            <ul class="d-flex">
+                                <li class="sort"><i class="fa fa-exchange"></i><span>Sort:</span>Relevence</li>
+                                <li class="filter"><i class="fa fa-filter"></i><span>Filter:</span>All Star</li>
+                            </ul>
+                        </div>
+                        <div class="review-comment">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="review-reply">
+                                        <p>Jack</p>
+                                        <span>Verified Purchase</span>
+                                        <ul class="d-flex">
+                                            <li class="mr-1">4.5</li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="review-reply-des">
+                                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature,</p>
+                                        <div class="review-replybtm justify-content-between d-flex">
+                                            <div class="titel">
+                                                <span>Date</span>
+                                            </div>
+                                            <ul class="d-flex">
+                                                <li class="sort mr-3"><span>Was this helpful?</span></li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-up"></i></li>
+                                                <li class="mr-1">10</li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-down"></i></li>
+                                                <li>1</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-comment">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="review-reply">
+                                        <p>Jack</p>
+                                        <span>Verified Purchase</span>
+                                        <ul class="d-flex">
+                                            <li class="mr-1">4.5</li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="review-reply-des">
+                                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature,</p>
+                                        <div class="review-img d-flex">
+                                            <img src="images/reviewreplyimg.jpg" alt="">
+                                            <img src="images/reviewreplyimg1.jpg" alt="">
+                                            <img src="images/reviewreplyimg2.jpg" alt="">
+                                        </div>
+                                        <div class="review-replybtm justify-content-between d-flex">
+                                            <div class="titel">
+                                                <span>Date</span>
+                                            </div>
+                                            <ul class="d-flex">
+                                                <li class="sort mr-3"><span>Was this helpful?</span></li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-up"></i></li>
+                                                <li class="mr-1">10</li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-down"></i></li>
+                                                <li>1</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-comment border-bottom-0">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="review-reply">
+                                        <p>Jack</p>
+                                        <span>Verified Purchase</span>
+                                        <ul class="d-flex">
+                                            <li class="mr-1">4.5</li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                            <li class="mr-1"><i class="fa fa-star-o"></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="review-reply-des">
+                                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature,</p>
+                                        <div class="review-img d-flex">
+                                            <img src="images/reviewreplyimg.jpg" alt="">
+                                            <img src="images/reviewreplyimg1.jpg" alt="">
+                                        </div>
+                                        <div class="review-replybtm justify-content-between d-flex">
+                                            <div class="titel">
+                                                <span>Date</span>
+                                            </div>
+                                            <ul class="d-flex">
+                                                <li class="sort mr-3"><span>Was this helpful?</span></li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-up"></i></li>
+                                                <li class="mr-1">10</li>
+                                                <li class="mr-1"><i class="fa fa-thumbs-down"></i></li>
+                                                <li>1</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pagination justify-content-center">
+                            <ul class="pagination">
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                <li class="page-item next-item">
+                                    <a class="page-link next-link" href="#">Next<i class="fa fa-angle-right"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-planing" role="tabpanel" aria-labelledby="pills-plan-tab">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-6">
+                                <div class="ques-title">
+                                    <h4>Questions Answered by Anonder Bazar <span>(50)</span></h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-8 col-6">
+                                <div class="pog-button text-right">
+                                    <a href="#">Ask a question</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ques-head">
+                            <p><span>Sort:</span>Newest</p>
+                        </div>
+                        <div class="questions-details">
+                            <div class="question">
+                                <p class="qus-1">Question</p>
+                                <p class="qus-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="qus-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                            <div class="answer">
+                                <p class="ans-1">Answer</p>
+                                <p class="ans-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. lintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="ans-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                        </div>
+                        <div class="questions-details">
+                            <div class="question">
+                                <p class="qus-1">Question</p>
+                                <p class="qus-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="qus-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                            <div class="answer">
+                                <p class="ans-1">Answer</p>
+                                <p class="ans-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. lintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="ans-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                        </div>
+                        <div class="questions-details border-bottom-0">
+                            <div class="question">
+                                <p class="qus-1">Question</p>
+                                <p class="qus-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="qus-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                            <div class="answer">
+                                <p class="ans-1">Answer</p>
+                                <p class="ans-2">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. lintock, a Latin professor at Hampden-Sydney College in Virginia ?</p>
+                                <p class="ans-3">Jack</p>
+                                <span>Date</span>
+                            </div>
+                        </div>
+                        <div class="pagination justify-content-center">
+                            <ul class="pagination">
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                <li class="page-item next-item">
+                                    <a class="page-link next-link" href="#">Next<i class="fa fa-angle-right"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-eastpay" role="tabpanel" aria-labelledby="pills-eastpay-tab">
+                        <div class="row">
+                            <div class="emi-details">
+                                <ul class="emi-list1">
+                                    <li><span>•</span> The minimum order value to avail the EMI payment option is BDT 5,000.</li>
+                                    <li><span>•</span> Select EMI option at the time of payment.</li>
+                                    <li><span>•</span> Final EMI is calculated on the total value of your order at the time of payment.</li>
+                                    <li><span>•</span> The Bank charges annual interest rates according to the reducing monthly balance. In the monthly reducing cycle, the principal is reduced with every EMI and the interest is calculated on the outstanding balance.</li>
+                                    <li><span>•</span> While you will not be charged a processing fee for availing PriyoShop's EMI option, the interest charged by the bank shall not be refunded by PriyoShop.</li>
+                                    <li><span>•</span> You may check with the respective bank/issuer on how a cancellation, refund or pre-closure could affect the EMI terms, and what interest charges would be levied on you for the same.</li>
+                                </ul>
+                                <h5>EMI with Interest:</h5>
+                                <ul class="emi-list2">
+                                    <li><span>•</span> 3 months 3%</li>
+                                    <li><span>•</span> 6 months 4.5%</li>
+                                    <li><span>•</span> 9 months 6.5%</li>
+                                    <li><span>•</span> 12 months 8.5%</li>
+                                    <li><span>•</span> 18 months 11.5%</li>
+                                    <li><span>•</span> 24 months 15.5%</li>
+                                    <li><span>•</span> 30 Months 16.5%</li>
+                                    <li><span>•</span> 36 Months 19.5%</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="delivery-option-details">
+                    <div class="delivery-option-tag1">
+                        <div class="tag1">
+                            <p>Delivery Options<a routerLink="/profile/address-tab">Change</a></p>
+                            <p class="add">{{ address?.address }},{{ address?.division_id.name }},{{
+                                address?.upazila_id.name
+                                }},{{ address?.zila_id.name }}.</p>
+                        </div>
+                        <div class="tag2" style="display: none;">
+                            <p class="justify-contant-between">Home Delivery<a href="#">৳56</a></p>
+                            <small>3-5 Days</small>
+                            <span>Cash On <small><a href="#">Delivery</a></small> Available</span>
+                        </div>
+                    </div>
+                    <div class="tag3" style="display: none;">
+                        <p class="justify-contant-between">Shipping & return</p>
+                        <span>60 Day buyer protection</span>
+                        <span>Money back guarantee</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

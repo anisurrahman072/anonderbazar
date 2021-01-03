@@ -1,0 +1,9 @@
+.brand-create-img .img-ul-x-mark {
+    display: none !important;
+}
+.ant-calendar-picker{
+    width: 46%;
+}
+.ant-time-picker{
+    width: 46% !important;
+}

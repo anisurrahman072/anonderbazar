@@ -1,0 +1,62 @@
+
+.main-container {
+    padding: 25px 0px 90px;
+    overflow: hidden;
+}
+.shop-page-bar .breadcrumbs {
+    display: inline-block;
+    float: left;
+    margin-bottom: 0px;
+}
+
+.breadcrumbs a {
+    color: rgb(102, 102, 102);
+    display: inline-block;
+    padding: 8px 0px;
+}
+
+.breadcrumbs a::after {
+    content: "/";
+    display: inline-block;
+    padding: 0px 5px;
+}
+
+.sidebar.border .inner {
+    border: 1px solid #eaeaea;
+    padding: 30px;
+}
+
+.blog-sidebar .widget {
+
+    margin-bottom: 30px;
+
+}
+
+input[type="text"], input[type="email"], textarea, input[type="password"], input[type="tel"], select {
+    border: 1px solid #e5e5e5;
+    padding: 7px 25px;
+}
+
+.blog-sidebar .widget {
+    margin-bottom: 30px;
+}
+.widget_search .button-submit {
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    line-height: 50px;
+    text-align: center;
+    background-color: transparent;
+    color: #aaa;
+    font-size: 15px;
+
+}
+

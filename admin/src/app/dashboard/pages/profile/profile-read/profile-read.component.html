@@ -1,0 +1,151 @@
+<nz-card>
+    <ng-template #title>
+        প্রোফাইলের Description
+    </ng-template>
+    <ng-template #extra>
+
+        <button *ngIf="data" [routerLink]="['/dashboard/profile/edit']" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <i class="fa fa-edit"></i>
+            <span>Edit </span>
+        </button>
+    </ng-template>
+    <ng-template #body>
+
+        <div class="row" *ngIf="data">
+            <div class="col-md-4">
+                <div class="custom-image">
+                    <img height="250px" width="250px" class="img  img-responsive" alt="example.jpg" style="height:250px;margin: auto;border-radius: 50%;"
+                        src="{{  IMAGE_ENDPOINT + data.avatar}}" />
+                </div>
+            </div>
+            <div class="col-md-8">
+                <ul class="list-group list">
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> UserName :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.username}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Email :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.email}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Status :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left"> {{data?.active | profiletype}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right">First name:</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.first_name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right">Last name:</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.last_name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Phone Number :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.phone}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Gender :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.gender}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Entrepreneur :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.warehouse_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> Upazila :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.upazila_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> District :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.zila_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="pull-right"> division :</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="pull-left">{{data.division_id?.name}}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+
+    </ng-template>
+</nz-card>

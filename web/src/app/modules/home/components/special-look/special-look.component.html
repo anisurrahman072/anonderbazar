@@ -1,0 +1,21 @@
+<section id="how-order">
+    <div class="container-fluid">
+        <div class="ordr-title text-center">
+            <h4>How to order?</h4>
+        </div>
+        <div class="order-details">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-12 mb-4"  *ngFor="let item of middleblogList; let i=index">
+                    <div class="howorder-contant htorder1" *ngIf="i<2">
+                        <h6>{{item.data_value[0]?.title}}</h6>
+                        <p>{{item.data_value[0]?.description}}</p>
+                    </div>
+                    <div class="howorder-contant htorder1 border-right-0 " *ngIf="i==2">
+                        <h6>{{item.data_value[0]?.title}}</h6>
+                        <p>{{item.data_value[0]?.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

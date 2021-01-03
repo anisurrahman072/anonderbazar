@@ -1,0 +1,6 @@
+.ant-calendar-picker{
+    width: 46%;
+}
+.time-picker > .ant-time-picker{
+    width: 46% !important;
+}

@@ -1,0 +1,114 @@
+.block-banner-text .content {
+
+    left: 8%;
+    transform: translateY(-140%);
+}
+
+.bg-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    min-height: 1px;
+    display: table;
+    font-size: 0;
+    overflow: hidden;
+    -moz-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    position: relative;
+}
+
+.content h3 {
+    font-size: 18px;
+    font-family: "SolaimanLipi", serif;
+    font-style: italic;
+    font-weight: 300;
+    margin: 0;
+}
+
+.content h4 {
+    font-size: 24px;
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 21px;
+    color: #444444;
+    font-weight: 700;
+    padding-top: 5px;
+
+}
+
+.block-banner-text.white .content .title,
+.block-banner-text.white .content .subtitle,
+.block-banner-text.white .content .link-more {
+    color: #fff;
+}
+
+.block-banner-text .content .link-more {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    font-size: 10px;
+    color: #888;
+    border: 1px solid #888;
+    text-align: center;
+    line-height: 34px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border-radius: 50%;
+    margin-top: 25px;
+}
+
+.block-banner-text.white .content .link-more {
+    border-color: #fff;
+}
+
+.block-banner-text .content {
+    position: absolute;
+}
+
+.block-banner-text.style7 .content {
+    max-width: 330px;
+}
+
+.block-banner-text .content .title {
+    font-size: 16px;
+    color: #666;
+    font-family: "SolaimanLipi", serif;
+    font-style: italic;
+    font-weight: 300;
+    margin: 0;
+}
+
+.block-banner-text .content .subtitle {
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 21px;
+    color: #444444;
+    font-weight: 700;
+}
+
+.block-banner-text.style7 .desc {
+    font-size: 12px;
+    font-family: "SolaimanLipi";
+    font-style: italic;
+    color: #666;
+}
+
+.overlay {
+    position: relative;
+}
+
+.overlay::before {
+    background-color:rgba(0, 0, 0, 0.5);
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 80%;
+    width: 100%;
+    z-index: 99;
+}

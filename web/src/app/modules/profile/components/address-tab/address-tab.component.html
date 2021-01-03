@@ -1,0 +1,175 @@
+<div class="row">
+    <ng-container *ngFor="let address of addresses; let i = index">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Address #{{i+1}}</h5> 
+                    <div style="float: left">Name:</div>
+                    <div>
+                        &nbsp;{{ address?.first_name }}&nbsp;{{address?.last_name}}
+                    </div>
+                    <div style="float: left">Address:</div>
+                    <div>
+                        &nbsp;{{ address?.address }},{{ address?.division_id.name }},{{
+                        address?.upazila_id.name
+                        }},{{ address?.zila_id.name }}.
+                    </div>
+                    <div style="float: left">Phone number:</div>
+                    <div>&nbsp;{{ address?.phone }}</div>
+                    <div style="float: left">Postal code :</div>
+                    <div>&nbsp;{{ address?.postal_code }}</div>
+
+                    <a style="color: blue" class="card-link" (click)="addressEdit(address)">Edit</a>
+                    <a class="card-link" style="color: red" (click)="deleteAddress(address.id)">Delete</a>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
+<div class="col-md-12" style="margin-top: 2%" *ngIf="showEdit">
+    <h3>Edit Address</h3>
+    <mat-card>
+        <mat-card-content>
+            <div class="col-md-12">
+                <form [formGroup]="editAddressForm" class="example-container" (ngSubmit)="formEditAddress($event, editAddressForm.value)">
+                    <mat-card-content>
+                        <div class="example-container">
+                            <mat-form-field>
+                                <input matInput placeholder="First name" formControlName="first_name" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="Last name" formControlName="last_name" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <span matPrefix>+880 &nbsp;</span>
+                                <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
+                                <mat-error>
+                                    <span *ngIf="getEditAddressFormControl('phone').dirty&&getEditAddressFormControl('phone').hasError('required')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                                    <span *ngIf="getEditAddressFormControl('phone').dirty&&getEditAddressFormControl('phone').hasError('phoneNumber')"><i
+                                            class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                                </mat-error>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="Address" formControlName="address" /> 
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="postal code" formControlName="postal_code" type="number" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="division" formControlName="division_id" (change)="divisionChange($event)">
+                                    <mat-option *ngFor="let division of divisionSearchOptions" [value]="division.id">{{
+                                        division.name }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="zila" formControlName="zila_id" (change)="zilaChange($event)">
+                                    <mat-option *ngFor="let zila of zilaSearchOptions" value="{{ zila.id }}">{{
+                                        zila.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="upazila" formControlName="upazila_id">
+                                    <mat-option *ngFor="let upazila of upazilaSearchOptions" value="{{ upazila.id }}">
+                                        {{ upazila.name }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                    <div class="button-row ">
+                        <button mat-button color="danger" (click)="showEdit=false">
+                            Cancel
+                        </button>
+                        <button mat-button color="primary" type="submit">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </mat-card-content>
+        <mat-card-actions> <button mat-button></button> </mat-card-actions>
+    </mat-card>
+</div>
+
+<div class="col-md-12" style="margin-top: 2%">
+    <mat-card>
+        <mat-card-content>
+            <div class="col-md-12 text-center">
+                <div class="col-md-11">
+                    <div class="h3">Add new Address</div>
+                    <div>
+                        <button mat-button style="border: 1px solid #3854AF" (click)="setShow()"><i class="material-icons">add_box</i>Add new</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <a mat-button color="warn" *ngIf="showClear" (click)="removeShow()"><i class="material-icons">clear</i></a>
+                </div>
+
+
+
+            </div>
+            <div class="col-md-12" *ngIf="showForm">
+                <form [formGroup]="addAddressForm" class="example-container" (ngSubmit)="formCreateAddress($event, addAddressForm.value)">
+                    <mat-card-content>
+                        <div class="example-container">
+                            <mat-form-field>
+                                <input matInput placeholder="First name" formControlName="first_name" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="Last name" formControlName="last_name" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <span matPrefix>+880 &nbsp;</span>
+                                <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
+                                <mat-error>
+                                    <span *ngIf="getAddAddressFormControl('phone').dirty&&getAddAddressFormControl('phone').hasError('required')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                                    <span *ngIf="getAddAddressFormControl('phone').dirty&&getAddAddressFormControl('phone').hasError('phoneNumber')"><i
+                                            class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                                </mat-error>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="Address" formControlName="address" /> 
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput placeholder="postal code" formControlName="postal_code" type="number" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="division" formControlName="division_id" (change)="divisionChange($event)">
+                                    <mat-option *ngFor="let division of divisionSearchOptions" [value]="division.id">{{
+                                        division.name }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="zila" formControlName="zila_id" (change)="zilaChange($event)">
+                                    <mat-option *ngFor="let zila of zilaSearchOptions" value="{{ zila.id }}">{{
+                                        zila.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-select placeholder="upazila" formControlName="upazila_id">
+                                    <mat-option *ngFor="let upazila of upazilaSearchOptions" value="{{ upazila.id }}">
+                                        {{ upazila.name }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                    <div class="button-row ">
+                        <button mat-button color="danger" *ngIf="showClear" (click)="removeShow()">
+                           Cancel
+                        </button>
+                        <button mat-button color="primary" type="submit">
+                            Save
+                        </button>
+                        <button mat-button color="warn" (click)="reset($event)">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </mat-card-content>
+        <mat-card-actions> <button mat-button></button> </mat-card-actions>
+    </mat-card>
+</div>

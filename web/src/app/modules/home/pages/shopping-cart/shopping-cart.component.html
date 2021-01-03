@@ -1,0 +1,50 @@
+<div class="main-container no-sidebar">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 main-content">
+                <nav class="woocommerce-breadcrumb breadcrumbs">
+                    <a routerLink="/" routerLinkActive="active">হোম</a>
+                    <a >সেকশন</a> 
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>          
+<div class="main-container no-sidebar">
+    <div class="container">
+
+        <div class="block-form">
+            <div *ngIf="(cart$|async)?.data.cart_items.length>0;else no_cartitems">
+                <table class="shop_table cart">
+                    <thead>
+                    <tr>
+                        <th class="product">পণ্য / দাম</th>
+                        <th>সহজলভ্য</th>
+                        <th>পরিমাণ</th>
+                        <th>মোট</th>
+                        <th>অপসারণ</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let cartItem of (cart$|async)?.data.cart_items" [home-cart-item]="cartItem"></tr>
+
+                    <tr>
+                        <td colspan="2" ></td>
+                        <td colspan="1" class="order-total"> Item: {{(cart$|async)?.data.total_quantity}} </td>
+                        <td colspan="2" class="order-total">Total: ৳. {{(cart$|async)?.data.total_price}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="block-form-footer">
+
+                    <button routerLink="/checkout" class="button pull-right primary">Proceed to CHECK OUT</button>
+                </div>
+            </div>
+            <ng-template #no_cartitems>
+                Your Cart Is Empty....
+            </ng-template>
+        </div>
+
+    </div>
+</div>

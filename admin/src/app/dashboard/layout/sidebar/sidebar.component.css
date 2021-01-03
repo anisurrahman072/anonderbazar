@@ -1,0 +1,46 @@
+.ant-menu-item-selected {
+  background-color: #FF0000 !important;
+  color: white !important;
+}
+
+.sidebar-inner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
+  overflow-y: scroll;
+}
+
+.user-menu {
+  margin: 0 auto;
+  padding: 25px 2px;
+  background: #0e77ca;
+}
+
+::ng-deep .ant-layout-sider-collapsed .nav-text {
+  display: none;
+  transition-delay: all 1s;
+}
+
+::ng-deep .ant-layout-sider-collapsed .ant-menu-submenu-title:after {
+  display: none;
+  transition-delay: all 1s;
+}
+
+::ng-deep .ant-layout-sider-collapsed .anticon {
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+.user-email {
+  font-size: 8px;
+  color: #a6a6a6 !important;
+}
+.nav-text h5 {
+  color: #a6a6a6 !important;
+}
+
+.fa {
+  padding-right: 10px;
+}

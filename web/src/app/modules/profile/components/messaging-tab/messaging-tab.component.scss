@@ -1,0 +1,395 @@
+.example-header-image {
+    background-size: cover;
+  }
+
+  .title{
+    height: 50px;
+    // background-color: #69178B;
+    text-align: center;
+    // color: white;
+    font-size: 25px;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+.card-height{
+    height: 90vh;
+}
+.searchDiv{
+    height: 50px;
+    background-color: burlywood;
+}
+
+.usernameDiv{
+    height: 50px;
+    background-color: #dadada;
+}
+.username{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 3px;
+}
+
+.active{
+    text-align: center;
+    font-size: 10px;
+}
+.inputform{
+  width: 100%;
+}
+.messagelistDiv{
+    height: 440px;
+    overflow: auto;
+    /* background-color: crimson; */
+}
+.messageactiondiv{
+    height: 50px;
+    /* background-color: cornflowerblue; */
+}
+
+.sendButton{
+    width: 100px;
+    height: 50px;
+}
+.messagecard {
+    box-shadow: -4px 3px 10px -2px #00A188;
+    position: fixed;
+    bottom: 0px;
+    right: 30px;
+    z-index: 99;
+    width: 320px;
+    height: 413px;
+    cursor: pointer;
+  }
+  .warehousetitle{
+    background-color: #31a387;
+    height: 37px;
+    border-radius: 5px 5px 0 0;
+  }
+  .warehousetitle > p{
+    font-size: 20px;
+    padding-top: 5px;
+    margin-left: 10px;
+    color: white;
+  }
+  .message {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+  
+    cursor: pointer;
+  }
+  .closeChat {
+    position: fixed;
+      bottom: 400px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+    &::ng-deep .mat-button-wrapper {
+      line-height: 14px;
+      padding: 0;
+  
+      .mat-icon {
+        font-size: 20px;
+      }
+    }
+    z-index: 99;
+    cursor: pointer;
+  }
+  
+  .sendButton mat-button {
+    width: 30px !important;
+    height: 30px;
+  }
+  
+  .messageBox {
+    overflow-y: scroll;
+      width: 320px;
+      height: 333px;
+      background-color: whitesmoke;
+  }
+  .messagetextbox{
+    width: 100%;
+    height: 44px;
+    padding: 0px 10px 0px 10px;
+    background-color: whitesmoke;
+  }
+  .messagePosition {
+    float: right;
+  }
+  .userInfo{
+    margin: 20px 0px 0 2px;
+    font-size: 11px;
+    opacity: 0.7;
+  }
+.clientlist{
+    height: 500px;
+    overflow: auto;
+    /* background-color: coral; */
+}
+
+/* General CSS Setup */
+  
+
+
+  .productname{
+    text-align: center;
+    font-size: 20px;
+    height: 50px;
+  }
+
+  .imagecard{
+    width: 75%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  /* CSS talk bubble */
+.talk-bubble {
+    margin: 0px 0px 0px 3px;
+    display: inline-block;
+    position: relative;
+    width: auto;
+    height: auto;
+    max-width: 230px;
+    background-color: #cccccc;
+  }
+  .border {
+    border: 8px solid #666;
+  }
+  .round {
+    border-radius: 30px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+  }
+/* Right triangle placed top left flush. */
+.tri-right.border.left-top:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -40px;
+    right: auto;
+    top: -8px;
+    bottom: auto;
+    border: 32px solid;
+    border-color: #666 transparent transparent transparent;
+  }
+  .tri-right.left-top:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -20px;
+    right: auto;
+    top: 0px;
+    bottom: auto;
+    border: 22px solid;
+    border-color: lightyellow transparent transparent transparent;
+  }
+  
+  /* Right triangle, left side slightly down */
+  .tri-right.border.left-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -40px;
+    right: auto;
+    top: 30px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.left-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -20px;
+    right: auto;
+    top: 38px;
+    bottom: auto;
+    border: 12px solid;
+    border-color: lightyellow lightyellow transparent transparent;
+  }
+  
+  /*Right triangle, placed bottom left side slightly in*/
+  .tri-right.border.btm-left:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -8px;
+    right: auto;
+    top: auto;
+    bottom: -40px;
+    border: 32px solid;
+    border-color: transparent transparent transparent #666;
+  }
+  .tri-right.btm-left:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0px;
+    right: auto;
+    top: auto;
+    bottom: -15px;
+    border: 15px solid;
+    border-color: transparent transparent transparent #cccccc;
+  }
+  
+  /*Right triangle, placed bottom left side slightly in*/
+  .tri-right.border.btm-left-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 30px;
+    right: auto;
+    top: auto;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 transparent transparent #666;
+  }
+  .tri-right.btm-left-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 38px;
+    right: auto;
+    top: auto;
+    bottom: -20px;
+    border: 12px solid;
+    border-color: lightyellow transparent transparent lightyellow;
+  }
+  
+  /*Right triangle, placed bottom right side slightly in*/
+  .tri-right.border.btm-right-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 30px;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.btm-right-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 38px;
+    bottom: -20px;
+    border: 12px solid;
+    border-color: lightyellow lightyellow transparent transparent;
+  }
+  /*
+      left: -8px;
+    right: auto;
+    top: auto;
+      bottom: -40px;
+      border: 32px solid;
+      border-color: transparent transparent transparent #666;
+      left: 0px;
+    right: auto;
+    top: auto;
+      bottom: -20px;
+      border: 22px solid;
+      border-color: transparent transparent transparent lightyellow;
+  
+  /*Right triangle, placed bottom right side slightly in*/
+  .tri-right.border.btm-right:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -8px;
+    bottom: -40px;
+    border: 20px solid;
+    border-color: #666 #666 transparent transparent;
+  }
+  .tri-right.btm-right:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 0px;
+    bottom: -15px;
+    border: 15px solid;
+    border-color: #cccccc #cccccc transparent transparent;
+  }
+  
+  /* Right triangle, right side slightly down*/
+  .tri-right.border.right-in:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -40px;
+    top: 30px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: #666 transparent transparent #666;
+  }
+  .tri-right.right-in:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -20px;
+    top: 38px;
+    bottom: auto;
+    border: 12px solid;
+    border-color: #cccccc transparent transparent #cccccc;
+  }
+  
+  /* Right triangle placed top right flush. */
+  .tri-right.border.right-top:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -40px;
+    top: -8px;
+    bottom: auto;
+    border: 32px solid;
+    border-color: #666 transparent transparent transparent;
+  }
+  .tri-right.right-top:after {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: auto;
+    right: -20px;
+    top: 0px;
+    bottom: auto;
+    border: 20px solid;
+    border-color: lightyellow transparent transparent transparent;
+  }
+  
+  /* talk bubble contents */
+  .talktext {
+    padding: 10px;
+    text-align: left;
+    line-height: 1.5em;
+  }
+  .talktext p {
+    /* remove webkit p margins */
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+    font-size: 14px;
+  }

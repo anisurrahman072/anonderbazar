@@ -1,0 +1,119 @@
+<nz-card>
+    <ng-template #title>
+        Order Details
+    </ng-template>
+    <ng-template #extra>
+        <button nz-button [nzType]="'primary'"
+                [nzSize]="'large'" (click)="getPDF()">
+            <i class="anticon anticon-download"></i><span> Save  </span>
+        </button>
+        <button routerLink="/dashboard/order" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> List </span>
+        </button>
+    </ng-template>
+    <ng-template #body>
+
+        <div *ngIf="data && suborders" id="print-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="header-logo">
+                        <img style="height:100px !important" src="assets/images/logo.png" class="img-responsive" alt="img">
+                    </div>
+                    <div class="invoice-inner-left"><br>
+                        <br>
+                        <p>Hi, {{data.user_id.first_name}} {{data.user_id.last_name}}. </p>
+                        <p>Thank you for shopping from our store.</p>
+                        <p>Your order is <span style="color: #ed1c24">{{options[data.status-1].label}}</span>.</p> 
+                        <br>
+                        <br>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="header-text">
+                        <h4>Invoice</h4>
+                    </div>
+                    <div class="invoice-inner-right">
+                        <p>OrderID #{{data.id}}</p>
+                        <p><span style="color: #ed1c24">{{currentDate | date}}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-striped table-hover table-bordered" *ngFor="let suborder of suborders">
+                <thead>
+                <tr>
+                    <th colspan="5">Vendor Name: {{suborder.warehouse_id.name}}</th>
+                </tr>
+                <tr>
+                    <th>Sub-Order: {{suborder.id}}</th>
+                    <th>Product name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let suborderItem of suborder.suborderItems">
+                    <td>{{suborderItem.product_id.id}}</td>
+                    <td>{{suborderItem.product_id.name}}
+                        <br>
+                        <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
+                                    <span *ngFor="let variant of suborderItem.orderitemvariant">
+                                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                    </span>
+                        </ng-container>
+                    </td>
+                    <td>৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}</td>
+                    <td>{{suborderItem.product_quantity}}</td>
+                    <td>৳. {{suborderItem.product_total_price}}</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="row" style="margin-bottom: 100px">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>Grand Total</h5>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>৳. {{data.total_price}}</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px; margin-left: 30px">
+                <div class="col-md-6">
+                    <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
+                        <h5>BILLING INFORMATION</h5>
+                        <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
+                        <p>{{paymentAddress.address}}</p>
+                        <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}, {{paymentAddress.division_id.name}}</p>
+                        <p>T: {{paymentAddress.phone}}</p>
+                    </div>
+
+
+                    <div class="shopping-info-left" *ngIf="shippingAddress">
+                        <h5>SHIPPING/DELIVERY  INFORMATION</h5>
+                        <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
+                        <p>{{shippingAddress.address}}</p>
+                        <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}, {{shippingAddress.division_id.name}}</p>
+                        <p>T: {{shippingAddress.phone}}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bill-info-right" *ngIf="payment">
+                        <h5>Payment Method</h5>
+                        {{payment.payment_type}}
+                    </div>
+                </div>
+            </div>
+            <span class="footer">Happy Shopping!</span>
+
+        </div>
+    </ng-template>
+</nz-card>
+

@@ -1,0 +1,269 @@
+.section-daily-deal {
+  background-color: #00a388;
+  padding: 60px 0;
+}
+
+.block-daily-deal {
+  display: table;
+  width: 100%;
+}
+
+.block-daily-deal .percent {
+  display: inline-block;
+  position: absolute;
+  top: 20px;
+  left: -54px;
+  width: 230px;
+  height: 44px;
+  transform: rotate(317deg);
+  -webkit-transform: rotate(317deg);
+  -moz-transform: rotate(317deg);
+  -o-transform: rotate(317deg);
+  -ms-transform: rotate(317deg);
+  background-color: #e9c77b;
+  color: #fff;
+  text-align: center;
+  line-height: 44px;
+  font-size: 18px;
+  font-family: "SolaimanLipi", sans-serif;
+}
+
+.block-daily-deal .thumbs,
+.block-daily-deal .product-detail,
+.block-daily-deal .product-count-down {
+  display: table-cell;
+  vertical-align: top;
+}
+
+.block-daily-deal .thumbs {
+  width: 180px;
+  padding-right: 40px;
+}
+
+.block-daily-deal .thumbs a {
+  display: block;
+  background-color: #fff;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.block-daily-deal .thumbs a:after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10.5px 13px 10.5px 0;
+  border-color: transparent #ffffff transparent transparent;
+  position: absolute;
+  top: 50%;
+  right: -40px;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+  display: none;
+}
+
+.block-daily-deal .thumbs a.selected:after {
+  display: block;
+}
+
+.block-daily-deal .thumbs a:last-child {
+  margin-bottom: 0;
+}
+
+.block-daily-deal .product-count-down {
+  //width: 130px;
+  background-color: #ff6138;
+  padding: 0 20px;
+  padding-top: 15px;
+}
+
+.block-daily-deal .product-detail {
+  background-color: #fff;
+}
+
+.block-daily-deal .product-detail .inner {
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.block-daily-deal .product-image {
+  float: left;
+  position: relative;
+  overflow: hidden;
+  max-width: 50%;
+}
+
+.block-daily-deal .product-info {
+  overflow: hidden;
+  padding-left: 20px;
+  padding-top: 45px;
+  font-size: 13px;
+}
+
+.block-daily-deal .product-info .product-name {
+  margin-bottom: 10px;
+}
+
+.block-daily-deal .product-info .product-name a {
+  color: #555;
+  font-size: 18px;
+}
+
+.block-daily-deal .product-info .rating {
+  color: #888;
+}
+
+.block-daily-deal .product-info .rating span {
+  font-style: italic;
+}
+
+.block-daily-deal .product-info .rating .fa {
+  color: #ecc366;
+}
+
+.block-daily-deal .attributes {
+  color: #888;
+  margin-top: 10px;
+}
+
+.block-daily-deal .attributes p {
+  margin-bottom: 5px;
+}
+
+.block-daily-deal .attributes label {
+  font-weight: normal;
+  color: #444;
+  margin: 0;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+.block-daily-deal .price {
+  display: block;
+  margin-top: 30px;
+  font-size: 24px;
+  color: #444;
+  font-family: "SolaimanLipi", sans-serif;
+  overflow: hidden;
+}
+
+.block-daily-deal .price ins {
+  float: left;
+  margin-right: 10px;
+  text-decoration: none;
+}
+
+.block-daily-deal .price del {
+  color: #bbbbbb;
+  font-size: 20px;
+  line-height: 100%;
+}
+
+table.variations-table {
+  border-collapse: inherit;
+  display: block;
+  width: 100%;
+  float: left;
+  margin-bottom: 0;
+  border: none;
+}
+
+table.variations-table tr {
+  margin-bottom: 18px;
+}
+
+table.variations-table th,
+table.variations-table td {
+  padding: 0;
+  vertical-align: middle;
+  margin-bottom: 13px;
+  width: 100%;
+  display: table;
+  border: none;
+}
+
+table.variations-table th:last-child,
+table.variations-table td:last-child {
+  margin-bottom: 0;
+}
+
+table.variations-table tr {
+  margin-bottom: 5px;
+  display: block;
+}
+
+table.variations-table tr:last-child {
+  margin-bottom: 0;
+}
+
+table.variations-table .select-option a {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  text-align: center;
+  line-height: 34px;
+  font-size: 0;
+  float: left;
+  position: relative;
+}
+
+table.variations-table .select-option {
+  overflow: hidden;
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  position: relative;
+}
+
+table.variations-table .select-option.selected a:before {
+  font-family: 'FontAwesome';
+  content: "\f00c";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 13px;
+  color: #fff;
+}
+
+table.variations-table tbody {
+  display: block;
+  width: 100%;
+}
+
+.product-count-down ul li {
+  border-bottom: 1px solid #eee;
+  display: block;
+  height: 126px;
+}
+
+
+.product-count-down ul li:last-child {
+  border-bottom: none;
+}
+
+.product-count-down ul li h3 {
+  font-size: 30px;
+  text-align: center;
+  color: #fff;
+  padding-top: 20%;
+
+}
+
+.product-count-down p {
+  text-align: center;
+  color: #fff;
+  text-transform: capitalize;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: -10%;
+}
+
+.product-image-img{
+  height: 400px;
+  width: 400px;
+  margin-top: 10%;
+  padding-left: 5%;
+}

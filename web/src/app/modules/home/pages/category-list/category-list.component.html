@@ -1,0 +1,12 @@
+<div class="container-fluid">
+    <div class="category-head justify-content-between d-flex">
+        <div class="titel">
+            <h4>{{dataTitle}}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-4" *ngFor="let category of (dataCategoryList)">
+            <app-category-item [dataCategory]="category"></app-category-item>
+        </div>
+    </div>
+</div>

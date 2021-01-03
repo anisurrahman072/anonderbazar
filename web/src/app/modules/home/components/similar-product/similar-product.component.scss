@@ -1,0 +1,62 @@
+.owl-carousel .product-item {
+  position: relative;
+  min-height: 1px;
+  float: left;
+  -webkit-backface-visibility: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-right: 7px;
+}
+
+.product-item .flash {
+  padding: 5px 12px;
+  font-size: 10px;
+  font-family: "SolaimanLipi";
+  color: #fff;
+  background-color: #83ccd5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  display: inline-block;
+  text-transform: uppercase;
+  float: left;
+  margin: 0 3px;
+}
+
+.product-item .price {
+  color: #333;
+  font-family: "SolaimanLipi";
+  font-size: 14px;
+}
+.product-item .button.quick-view {
+  position: absolute;
+  left: 32%;
+  padding: 0 10px;
+  background-color: #aaaaaa;
+  color: #fefefe;
+  font-size: 10px;
+  font-family: "SolaimanLipi", serif;
+  font-style: italic;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: none;
+  -webkit-transition: all 0.8s ease 0s;
+  -o-transition: all 0.8s ease 0s;
+  transition: all 0.8s ease 0s;
+  z-index: 999;
+}
+
+.heading-section .title {
+  text-transform: uppercase;
+  margin-bottom: 0;
+  margin-top: 90px;
+}

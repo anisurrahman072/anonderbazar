@@ -1,0 +1,10 @@
+.parent-tr {
+    background: #f26522 !important;
+    /*color: ;*/
+}
+
+.parent-tr:hover {
+    background: gray !important;
+
+    color: initial;
+}

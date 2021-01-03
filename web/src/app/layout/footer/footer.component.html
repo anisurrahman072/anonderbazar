@@ -1,0 +1,65 @@
+<footer id="app-footer" style="position: relative">
+    <div class="footer-section">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="customer-footer">
+                        <h6 class="mb-3">{{this.cmsFooterDataCustomer?.title}}</h6>
+                        <ul [innerHTML]="this.cmsFooterDataCustomer?.description"> 
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="help-footer">
+                        <h6 class="mb-3">{{this.cmsFooterDataShops?.title}}</h6>
+                        <ul [innerHTML]="this.cmsFooterDataShops?.description">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="shopping-footer">
+                        <h6 class="mb-3">{{this.cmsFooterDataFurther?.title}}</h6>
+                        <ul [innerHTML]="this.cmsFooterDataFurther?.description"> 
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="footer-socile">
+                        <h6 class="mb-1"><a href="#">{{this.cmsFooterDataSocial?.title}}</a></h6> 
+                        <ul class="d-flex" [innerHTML]="this.cmsFooterDataSocial?.description">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" [innerHTML]="this.cmsFooterData?.description">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="bottom-footer-list">
+                        <ul class="justify-content-center">
+                            <li><a href="#">Intellectual Property Protetion</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Sitemap</a></li>
+                            <li><a href="#">Terms of Use</a></li>
+                            <li><a href="#">User information Legal Enquiry Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-to-bottom" [hidden]="!showTopToBottom"><a (click)="bottom_to_top($event)"><i class="fa fa-angle-up"></i></a></div>
+    <div class="footer-chart" *ngIf="(cart$|async)?.data.total_quantity>0">
+        <a (click)="showShoppingCartModal()">
+            <i class="fa fa-shopping-cart"></i>
+        </a>
+    </div>
+</footer>

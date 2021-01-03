@@ -1,0 +1,53 @@
+<!-- </section> -->
+<div class="my-account-section" *ngIf="(currentUser$ | async)" style="padding-bottom: 4%">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-4 col-md-12">
+        <div class="my-account-profile">
+          <div class="my-img-name">
+            <button mat-mini-fab class="imageFab" color="primary" *ngIf="imageEdit" (click)="showImage()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-mini-fab class="imageFab" color="accent" *ngIf="imageDone" (click)="updateImage()">
+                <mat-icon>done</mat-icon>
+            </button>
+            <img class="rounded-circle" height="200px" width="200px" *ngIf="imageShow" src="{{ IMAGE_ENDPOINT + user?.avatar }}" />
+            <div *ngIf="imageUpload" class="mx-auto mb-4" >
+              <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit" id="imageUploadSection"
+              [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
+              dropBoxMessage="Drop picture here!"
+              clearButtonCaption="clear">
+              </image-upload>
+            </div>
+             
+            <h4>{{ user?.first_name }}&nbsp;{{ user?.last_name }}</h4>
+          </div>
+          <div class="shipping-add">
+            <div class="shiptag">
+              <p>Shipping address<a routerLink="/profile/address-tab">View</a></p>
+              <small>Address</small>
+              <span>{{ addresses[0]?.address }},{{ addresses[0]?.zila_id.name }},{{addresses[0]?.upazila_id.name}},{{ addresses[0]?.division_id.name }}<br>{{ addresses[0]?.postal_code }}</span>
+            </div>
+          </div>
+          <div class="shipping-contact">
+            <div class="conttag">
+              <p>Profile<a routerLink="/profile/profile-tab">View</a></p>
+              <small>Phone</small>
+              <span>{{ addresses[0]?.phone }}</span>
+            </div>
+            <div class="conttag">
+              <small>Email</small>
+              <span>{{ user?.email }}</span>
+            </div>
+          </div> 
+          <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders">MY ORDERS</button>
+          <button class="btn btn-block text-center btn-profile" routerLink="/profile/favourites"> MY WISHLIST </button>
+          <button class="btn btn-block text-center btn-profile" (click)="logOut()" > SIGN OUT </button>
+        </div>
+      </div>
+      <div class="col-lg-8 col-md-12 my-account-order">  
+        <router-outlet></router-outlet> 
+      </div>
+    </div>
+  </div>
+</div>

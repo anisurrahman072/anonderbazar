@@ -1,0 +1,50 @@
+<section id="banner-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9 col-md-12"> 
+                   <carousel>
+                        <slide *ngFor="let slide of carousalList; let index=index">
+                            <div class="row">
+                                <div class="col-lg-7 col-md-6 col-sm-12">
+                                    <div class="banner-contant"> 
+                                        <p [innerHTML]='slide?.description.short1' style="
+                                        font-style: normal;
+                                        color: #232323;line-height: 103.6%;
+                                        font-weight: normal;
+                                        font-size: 65px; "></p>
+                                        <p [innerHTML]='slide?.description.short2' class="h1" style="
+                                        font-style: normal;
+                                        font-weight: normal;line-height: 103.6%;
+                                        font-size: 65px;
+                                        color: #ED1C24; "></p>
+                                        <p [innerHTML]='slide?.description.short3'></p>
+                                        <button *ngIf="slide?.description.link"><a routerLink="{{slide?.description.link}}"> {{slide?.description.linktext}} <i class="fa fa-angle-right"></i></a></button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-md-6 col-sm-12">
+                                    <div class="item">
+                                        <div class="slider-img">
+                                            <img [src]="IMAGE_ENDPOINT +slide?.image" alt="">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div> 
+                        </slide>
+                  </carousel>
+            </div>
+
+            <div class="col-lg-3 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-lg-12 col-md-6 col-sm-12" *ngFor="let item of cmsHEADERData">
+                        <div class="banner-serv text-center">
+                            <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="">
+                            <p class="bserp1">{{item?.title}}</p>
+                            <p class="bserp2">{{item?.description}}</p>
+                            <a href="#">Learn more<i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+</section> 

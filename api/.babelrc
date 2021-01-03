@@ -1,0 +1,21 @@
+{
+  "presets": [
+    "stage-2",
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "minify"
+  ],
+  "ignore": [
+    "package.json"
+  ]
+//,
+//  "plugins": [
+//    "transform-runtime","transform-export-default-name"
+//  ]
+}

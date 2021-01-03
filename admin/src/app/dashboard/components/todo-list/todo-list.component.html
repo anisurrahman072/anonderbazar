@@ -1,0 +1,306 @@
+<div class="row todo_con" style="background-color: white;margin-top: 10px">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12" style="margin-left: -5px;">
+      <div class="todo">
+        <div class="col-md-12">
+          <div class="col-md-6" style="padding-left: 0px">
+            <div class="todo-heading"><h2>Variable Product</h2></div>
+            <div
+              class="todo-order-title todo-heading-title row"
+              style="margin-left: 0px"
+            >
+              <h2>{{ now }}</h2>
+            </div>
+          </div>
+          <div class="todo-header-right" style="float: right">
+            <button
+              nz-button
+              [nzType]="'primary'"
+              (click)="showModalTodayTodo()"
+              [nzSize]="'default'"
+            >
+              See all
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="heading-todo-news">
+            <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
+              <thead nz-thead>
+                <tr>
+                  <th nz-th><span> Order number </span></th>
+                  <th nz-th><span> Buyer </span></th>
+                  <th nz-th><span> Product </span></th>
+                  <th nz-th><span> Amount </span></th>
+                  <th nz-th><span> Date of delivery </span></th>
+                  <th nz-th><span> Status </span></th>
+                  <th nz-th></th>
+                </tr>
+              </thead>
+              <tbody nz-tbody>
+                <tr
+                  nz-tbody-tr
+                  #dataFor
+                  *ngFor="let data of nzTable.data; let i = index"
+                >
+                  <td nz-td>
+                    <ng-container
+                      *ngIf="('order-read' | accessControl); else elseTemplate"
+                    > 
+                    </ng-container>
+                    <ng-template #elseTemplate> 
+                      {{ data.product_suborder_id[0].id }}
+                    </ng-template>
+                  </td>
+                  <td nz-td>
+                    <nz-tag>
+                      {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+                    </nz-tag>
+                  </td>
+
+                  <td nz-td>{{ data.product_id.name }}</td>
+                  <td nz-td>{{ data.product_quantity }}</td>
+                  <td nz-td>{{ now }}</td>
+                  <td nz-td><i class="fa fa-circle text-success"></i></td>
+                  <td>
+                    <button
+                      [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+                      nz-button
+                      [nzType]="'info'"
+                      [nzSize]="'default'"
+                    >
+                      <i class="anticon anticon-file-text"> </i>
+                    </button>
+                    </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div
+      class="col-md-12 col-sm-12 col-xs-12"
+      style="margin-left: -5px;height: 500px;"
+    >
+      <div class="todo">
+        <div class="col-md-12">
+          <div class="col-md-6" style="padding-left: 0px">
+            <div class="todo-heading"><h2>Ready Product</h2></div>
+          </div>
+          <div class="todo-header-right" style="float: right">
+            <button
+              nz-button
+              [nzType]="'primary'"
+              (click)="showModalAllTodo()"
+              [nzSize]="'default'"
+            >
+              See all
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="heading-todo-news">
+            <nz-table #nzTables [nzPageSize]="5" [nzDataSource]="newData">
+              <thead nz-thead>
+                <tr>
+                  <th nz-th><span> Order number </span></th>
+                  <th nz-th><span> Buyer </span></th>
+                  <th nz-th><span> Product </span></th>
+                  <th nz-th><span> Amount </span></th>
+                  <th nz-th><span> Date of delivery </span></th>
+                  <th nz-th><span> Status </span></th>
+                  <th nz-th></th>
+                </tr>
+              </thead>
+              <tbody nz-tbody>
+                <tr
+                  nz-tbody-tr
+                  #dataFor
+                  *ngFor="let data of nzTables.data; let i = index"
+                >
+                <td nz-td>
+                  <ng-container
+                    *ngIf="('order-read' | accessControl); else elseTemplate"
+                  >
+                    {{ data.product_suborder_id[0].product_order_id }}
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    {{ data.product_suborder_id[0].product_order_id }} /
+                    {{ data.product_suborder_id[0].id }}
+                  </ng-template>
+                </td>
+                  <td nz-td>
+                    <nz-tag>
+                      {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+                    </nz-tag>
+                  </td>
+
+                  <td nz-td>{{ data.product_id.name }}</td>
+                  <td nz-td>{{ data.product_quantity }}</td>
+                  <td nz-td>{{ data.createdAt | date }}</td>
+                  <td nz-td><i class="fa fa-circle text-success"></i></td>
+                  <td>
+                    <button
+                      [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+                      nz-button
+                      [nzType]="'info'"
+                      [nzSize]="'default'"
+                    >
+                      <i class="anticon anticon-file-text"> </i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </div>
+
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<nz-modal [nzFooter]="null"
+  [nzVisible]="isVisibleTodayTodo"
+  [nzTitle]="'All completed order'"
+  nzWidth="80%"
+  [nzStyle]="style"
+  nzOkText="Done"
+  nzCancelText="Cancel"
+  [nzContent]="modalContent"
+  (nzOnCancel)="handleCancel($event)"
+  (nzOnOk)="handleOk($event)"
+>
+  <ng-template #modalContent>
+    <nz-table #nzTable [nzDataSource]="allDataTodayTodo">
+      <thead nz-thead>
+        <tr>
+          <th nz-th><span> Order number </span></th>
+          <th nz-th><span> Buyer </span></th>
+          <th nz-th><span> Product </span></th>
+          <th nz-th><span> Amount </span></th>
+          <th nz-th><span> Date of delivery </span></th>
+          <th nz-th><span> Status </span></th>
+          <th nz-th></th>
+        </tr>
+      </thead>
+      <tbody nz-tbody>
+        <tr
+          nz-tbody-tr
+          #dataFor
+          *ngFor="let data of nzTable.data; let i = index"
+        >
+          <td nz-td>
+            <ng-container
+              *ngIf="('order-read' | accessControl); else elseTemplate"
+            >
+              {{ data.product_suborder_id[0].product_order_id }} /
+            </ng-container>
+            <ng-template #elseTemplate>
+              {{ data.product_suborder_id[0].product_order_id }} /
+              {{ data.product_suborder_id[0].id }}
+            </ng-template>
+          </td>
+          <td nz-td>
+            <nz-tag>
+              {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+            </nz-tag>
+          </td>
+
+          <td nz-td>{{ data.product_id.name }}</td>
+          <td nz-td>{{ data.product_quantity }}</td>
+          <td nz-td>{{ now }}</td>
+          <td nz-td><i class="fa fa-circle text-success"></i></td>
+          <td>
+            <button
+              [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+              nz-button
+              [nzType]="'info'"
+              [nzSize]="'default'"
+            >
+              <i class="anticon anticon-file-text"> </i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+</nz-modal>
+
+<nz-modal [nzFooter]="null"
+  [nzVisible]="isVisibleAllTodo"
+  [nzTitle]="'All Completed Order'"
+  nzWidth="80%"
+  [nzStyle]="style"
+  nzOkText="Done"
+  nzCancelText="Cancel"
+  [nzContent]="modalContentAll"
+  (nzOnCancel)="handleAllCancel($event)"
+  (nzOnOk)="handleAllOk($event)"
+>
+  <ng-template #modalContentAll>
+    <nz-table #nzTables [nzDataSource]="allDataAllTodo">
+      <thead nz-thead>
+        <tr>
+          <th nz-th><span> Order number </span></th>
+          <th nz-th><span> Buyer </span></th>
+          <th nz-th><span> Product </span></th>
+          <th nz-th><span> Amount </span></th>
+          <th nz-th><span> Date of delivery </span></th>
+          <th nz-th><span> Status </span></th>
+          <th nz-th></th>
+        </tr>
+      </thead>
+      <tbody nz-tbody>
+        <tr
+          nz-tbody-tr
+          #dataFor
+          *ngFor="let data of nzTables.data; let i = index"
+        >
+          <td nz-td>
+            <ng-container
+              *ngIf="('order-read' | accessControl); else elseTemplate"
+            >
+              {{ data.product_suborder_id[0].product_order_id }}
+            </ng-container>
+            <ng-template #elseTemplate>
+              {{ data.product_suborder_id[0].product_order_id }} /
+              {{ data.product_suborder_id[0].id }}
+            </ng-template>
+          </td>
+          <td nz-td>
+            <nz-tag>
+              {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+            </nz-tag>
+          </td>
+
+          <td nz-td>{{ data.product_id.name }}</td>
+          <td nz-td>{{ data.product_quantity }}</td>
+          <td nz-td>{{ data.createdAt | date }}</td>
+          <td nz-td><i class="fa fa-circle text-success"></i></td>
+
+          <!-- trying -->
+          
+          <td>
+            <button
+              [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+              nz-button
+              [nzType]="'info'"
+              [nzSize]="'default'"
+            >
+              <i class="anticon anticon-file-text"> </i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+</nz-modal>

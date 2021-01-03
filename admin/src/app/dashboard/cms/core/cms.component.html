@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-md-12">
+        <h3> CMS</h3>
+        <br>
+        <section>
+            <ul nz-menu [nzMode]="'horizontal'">
+                <li nz-menu-item routerLink="/dashboard/cms/home">
+                    <i class="anticon anticon-home"></i> Home
+                </li>
+                <li nz-menu-item routerLink="/dashboard/cms/layout">
+                    <i class="anticon anticon-appstore"></i> Layout
+                </li> 
+                <li nz-menu-item routerLink="/dashboard/cms/post">
+                    <i class="anticon anticon-global"></i>Post
+                </li>
+            </ul>
+
+
+            <nz-card>
+                <ng-template #body>
+                    <router-outlet></router-outlet>
+
+
+                </ng-template>
+            </nz-card>
+
+
+        </section>
+    </div>
+</div>

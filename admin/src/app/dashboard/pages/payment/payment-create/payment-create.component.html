@@ -1,0 +1,202 @@
+<nz-card>
+    <ng-template #title>
+        Add Transactions
+    </ng-template>
+    <ng-template #extra>
+
+        <button routerLink="/dashboard/payment" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> List </span>
+        </button>
+    </ng-template>
+    <ng-template #body>
+        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+
+            <!--Order start-->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Order </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-select
+                            formControlName="order_id"
+                            nzAllowClear
+                            [nzPlaceHolder]="'Select order'"
+                            [nzFilter]="true"
+                            (ngModelChange)="orderChange($event)"
+                            (nzSearchChange)="orderSearchChange($event)"
+                            [nzNotFoundContent]="'Not found'"
+                            nzShowSearch>
+                        <nz-option
+                                *ngFor="let option of orderSearchOptions"
+                                [nzLabel]="option.id"
+                                [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+
+
+                    <div nz-form-explain
+                         *ngIf="getFormControl('order_id').dirty&&getFormControl('order_id').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+            <!--order end-->
+
+            <!--Suborder start-->
+            <div nz-form-item nz-row
+                 *ngIf="validateForm.controls.order_id.value">
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Vendor Order </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-select
+                            formControlName="suborder_id"
+                            nzAllowClear
+                            [nzPlaceHolder]="'Select Vendor Order'"
+                            [nzFilter]="true"
+                            (nzSearch)="suborderSearchChange($event)"
+                            (nzSearchChange)="suborderSearchChange($event)"
+                            [nzNotFoundContent]="'Not found'"
+                            nzShowSearch>
+                        <nz-option
+                                *ngFor="let option of suborderSearchOptions"
+                                [nzLabel]="option.id"
+                                [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <div nz-form-explain
+                         *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+            <!--suborder end-->
+
+            <!--Customer start-->
+            <div nz-form-item nz-row
+                 *ngIf="validateForm.controls.order_id.value">
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Customer </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control>
+
+                    <nz-input formControlName="user_id"
+                              nzReadonly
+                              [nzSize]="'large'" [ngModel]="customer?.username">
+                    </nz-input>
+
+
+                </div>
+            </div>
+            <!--Customer end-->
+
+            <!--Receiver start-->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Vendor </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control>
+
+                    <nz-input formControlName="receiver_id"
+                              nzReadonly
+                              [nzSize]="'large'" [ngModel]="currentUser.userInfo.username">
+                    </nz-input>
+
+
+                </div>
+            </div>
+            <!--Receiver end-->
+
+            <!--payment type start-->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Payment type </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-select formControlName="payment_type" [nzSize]="size" nzPlaceHolder="Select Payment type">
+                        <nz-option
+                                *ngFor="let option of paymentTypeOptions"
+                                [nzLabel]="option.label"
+                                [nzValue]="option.value"
+                                [nzDisabled]="option.disabled">
+                        </nz-option>
+                    </nz-select>
+                    <div nz-form-explain
+                         *ngIf="getFormControl('payment_type').dirty&&getFormControl('payment_type').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+            <!--payment type end-->
+
+            <!--payment amount start-->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Payment Amount </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-input formControlName="payment_amount" [nzType]="'number'"
+                              [nzPlaceHolder]="'Enter payable amount'"
+                              [nzSize]="'large'">
+                    </nz-input>
+                    <div nz-form-explain
+                         *ngIf="getFormControl('payment_amount').dirty&&getFormControl('payment_amount').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+            <!--payment amount end-->
+
+            <!--Date picker start-->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Date </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-datepicker formControlName="payment_date"
+                                   [nzPlaceHolder]="'Select date'"></nz-datepicker>
+
+                    <div nz-form-explain
+                         *ngIf="getFormControl('payment_date').dirty&&getFormControl('payment_date').hasError('required')">
+                        Please insert date here!
+                    </div>
+                </div>
+            </div>
+            <!--date picker end-->
+
+            <!--status start -->
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Status </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+
+                    <nz-select formControlName="status" [nzSize]="size" nzPlaceHolder="Select Status">
+                        <nz-option
+                                *ngFor="let option of statusOptions"
+                                [nzLabel]="option.label"
+                                [nzValue]="option.value"
+                                [nzDisabled]="option.disabled">
+                        </nz-option>
+                    </nz-select>
+
+                    <div nz-form-explain
+                         *ngIf="getFormControl('status').dirty&&getFormControl('status').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+            <!--status end-->
+
+            <div nz-form-item nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid"> Save
+                    </button>
+                    <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                </div>
+            </div>
+
+        </form>
+    </ng-template>
+</nz-card>

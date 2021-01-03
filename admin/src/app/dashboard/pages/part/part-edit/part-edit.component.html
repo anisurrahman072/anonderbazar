@@ -1,0 +1,135 @@
+<nz-card>
+    <ng-template #title>
+        পণ্যের অংশেরEdit
+    </ng-template>
+    <ng-template #extra>
+        <button routerLink="/dashboard/part" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i>
+            <span> List </span>
+        </button>
+
+    </ng-template>
+    <ng-template #body>
+        <nz-spin [nzSpinning]="spinner">
+
+            <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+                <div class="col-md-3">
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
+                                dropBoxMessage="Drop Picture here"
+                                clearButtonCaption="remove it?" [uploadedFiles]="ImageFileEdit"
+                                [beforeUpload]="onBeforeUpload">
+                            </image-upload>
+                            <div nz-form-explain *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                দয়া করে Drop Picture here
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <!--image-->
+                </div>
+                <div class="col-md-9">
+                    <div nz-form-item nz-row>
+                        <!--name start-->
+                        <div nz-form-label nz-col [nzSpan]="2">
+                            <label> Name </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                                Name is required!
+                            </div>
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                                Name already exists!
+                            </div>
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                                Verifying ...
+                            </div>
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label>শ্রেণী </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-select formControlName="type_id" nzAllowClear [ngModel]="type_id" [nzPlaceHolder]="'শ্রেণী নির্বাচন করুন'"
+                                [nzFilter]="true" (nzSearch)="typeSearchChange($event)" (nzSearchChange)="typeSearchChange($event)"
+                                [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+                            <div nz-form-explain *ngIf="getFormControl('type_id').dirty&&getFormControl('type_id').hasError('required')">
+                                দয়া করে এখানে নির্বাচন করুন !
+                            </div>
+                        </div>
+                    </div>
+                    <!--type_id-->
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Product category </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-select [ngModel]="category_id" formControlName="category_id" nzAllowClear
+                                (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'Select Product category'"
+                                [nzFilter]="true" (nzSearch)="categorySearchChange($event)" (nzSearchChange)="categorySearchChange($event)"
+                                [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
+                                    [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+                            <div nz-form-explain *ngIf="getFormControl('category_id').dirty&&getFormControl('category_id').hasError('required')">
+                                দয়া করে এখানে নির্বাচন করুন !
+                            </div>
+                        </div>
+                    </div>
+                    <!--category_id-->
+                    <div nz-form-item nz-row *ngIf="subcategorySearchOptions.length>0">
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label>পণ্যের Subcategory</label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+
+                            <nz-select formControlName="subcategory_id" nzAllowClear [ngModel]="subcategory_id"
+                                [nzPlaceHolder]="'পণ্যের Select Product Subcategory'" [nzFilter]="true" (nzSearch)="subcategorySearchChange($event)"
+                                (nzSearchChange)="subcategorySearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                nzShowSearch>
+                                <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
+                                    [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+                            <div nz-form-explain *ngIf="getFormControl('subcategory_id').dirty&&getFormControl('subcategory_id').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                    <!--subcategory_id-->
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> নকশা Description </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+
+                            <ckeditor [(ngModel)]="details" formControlName="details" [config]="ckConfig" [readonly]="false"
+                                debounce="500">
+                            </ckeditor>
+                            <div nz-form-explain *ngIf="getFormControl('details').dirty&&getFormControl('details').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                    <!--details-->
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
+                            </button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </nz-spin>
+    </ng-template>
+</nz-card>

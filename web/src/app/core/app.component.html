@@ -1,0 +1,92 @@
+<ng-container *ngIf="moadlProgressRef.state$ | async; let state;">
+    <div *ngIf="state.active" class="modal fade in" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Loading</h4>
+                </div>
+                <div class="modal-body">
+                    <div>{{state.value}}%</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<!--main loader---------------------------------------------->
+<ng-progress id="mainLoader" [min]="1.0" [max]="100" [speed]="100" [ease]="'linear'" [meteor]="false"
+             [spinner]="true" [spinnerPosition]="'right'" [direction]="'ltr+'"
+             [color]="'green'" [trickleSpeed]="250" [thick]="true"
+></ng-progress>
+
+
+<jaspero-alerts [defaultSettings]="{showCloseButton:true,
+                                    overlay:false,
+                                    overlayClickToClose:false,
+                                    duration:null}"></jaspero-alerts>
+
+
+<simple-notifications [options]="{timeOut: 5000}"></simple-notifications>
+
+<mat-sidenav-container [ngClass]="{'example-container':sidebarOpened$}">
+    <mat-sidenav #sidenav [mode]="'over'" [(opened)]="sidebarOpened$">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Personal data
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Type your name and age
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <mat-form-field>
+                    <input matInput placeholder="First name">
+                </mat-form-field>
+
+                <mat-form-field>
+                    <input matInput placeholder="Age">
+                </mat-form-field>
+            </mat-expansion-panel>
+            <mat-expansion-panel (opened)="panelOpenState = true"
+                                 (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Self aware panel
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Currently I am {{panelOpenState ? 'open' : 'closed'}}
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p>I'm visible because I am open</p>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <!-- header part included here -->
+        <app-header></app-header> 
+
+        <div [hidden]="!loading" class="loading">
+            Loading&#8230;
+        </div>
+
+        <div class="router-output">
+            <div style="min-height: 80vh;">
+                <!-- content part included here -->
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+        <!-- footer part included here -->
+        <app-footer></app-footer>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+<!-- login popup part included here -->
+<app-front-login-min></app-front-login-min>
+
+<!-- shopping cart popup part included here -->
+<app-shopping-cart></app-shopping-cart>
+

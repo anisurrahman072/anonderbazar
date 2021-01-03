@@ -1,0 +1,130 @@
+<div class="login-wrapper bd-css">
+
+    <div class="bg-pic">
+
+        <img src="assets/images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg"
+             data-src-retina="images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg" alt="" class="lazy">
+
+
+        <div class="bg-caption pull-bottom">
+            <h2 class="">
+                Pages make it easy to enjoy what matters the most in the life</h2>
+            <p class="small">
+                images Displayed are solely for representation purposes only, All work copyright of respective owner,
+                otherwise
+                © 2020 Anonderbazar.com
+            </p>
+        </div>
+
+    </div>
+
+    <div class="login-container bg-white">
+        <div class="form-inner">
+
+            <img src="assets/images/logo.png" alt="logo" data-src="assets/imgages/logo.png"
+                 data-src-retina="assets/assets/img/logo_white.png" height="100">
+
+            <p style="text-align: center">
+                <!--Sign into your pages account-->
+                Sign in to your account
+            </p>
+
+            <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSpan]="7">
+                        <label> Username </label>
+                    </div>
+                    <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <nz-input formControlName="userName" [nzType]="'text'"
+                                  [nzPlaceHolder]="'EnterUsername'" [nzSize]="'large'">
+                        </nz-input>
+
+                        <div nz-form-explain
+                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').hasError('required') ">
+                            required!
+                        </div>
+                        <div nz-form-explain
+                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').hasError('duplicated')">
+                            The
+                            username is redundant!
+                        </div>
+                        <div nz-form-explain
+                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').pending">
+                            Validating...
+                        </div>
+                    </div>
+                </div>
+
+
+                <div nz-form-item nz-row>
+                    <div nz-col [nzSpan]="7" nz-form-label>
+                        <label> Password </label>
+                    </div>
+                    <div>
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="password" [nzPlaceHolder]="'Enter Passeord'" [nzType]="'password'"
+                                      [nzSize]="'large'"
+                            >
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('password').dirty&&getFormControl('password').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div nz-form-item nz-row>
+                    <div nz-col [nzSpan]="7" nz-form-label>
+                    </div> 
+                    <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <a routerLink="/auth/forgot-password">Forgot your password?</a>
+                    </div> 
+                </div> 
+                <div nz-form-item nz-row>
+                    <div style="text-align: center" nz-form-control nzValidateStatus="error" *ngIf="loginServerError.show">
+                        <div nz-form-explain>
+                            {{loginServerError.message}}
+                        </div>
+
+                    </div>
+                </div>
+
+                <div nz-form-item nz-row>
+                    <div nz-col [nzOffset]="6" [nzSpan]="16" nz-form-control>
+                        <button style="margin-right: 8%;" nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                            Login
+                        </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                    </div>
+                    <div nz-col [nzOffset]="6" [nzSpan]="16" nz-form-control>
+                        <a class="btn" routerLink="/auth/signup">
+                            <!--Sign Up for Your Shop-->
+                            Register for the shop
+                        </a>
+                    </div>
+                </div>
+                
+            </form>
+            
+            
+            <div class="pull-bottom ">
+                <div class="m-b-30 p-r-80 sm-m-t-20 sm-p-r-15 sm-p-b-20 clearfix">
+                    <div class="col-sm-3 col-md-2 page-img">
+                        <img alt="" class="m-t-5" data-src="assets/images/pages_icon.png"
+                             data-src-retina="assets/images/pages_icon_2x.png" height="60"
+                             src="assets/images/pages_icon.png"
+                             width="60">
+
+                    </div>
+                    <div class="col-sm-9 no-padding m-t-10">
+                        <p class="create-page-bottom"> 
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Login Right Container-->
+
+</div>
+

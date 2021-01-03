@@ -1,0 +1,115 @@
+<section class="container form-background">
+    <div class="login-header col-sm-6 col-xs-6 col-sm-offset-3">
+        <h1>নিবন্ধন করুন</h1>
+    </div>
+    <div class="row">
+        <div class="login">
+
+            <div class="col-sm-2 col-sm-offset-2 col-xs-6 login-title">
+                <p class="icon">ইউজারনেম লিখুন : </p>
+                <p class="icon">গোপন নাম্বার লিখুন: </p>
+                <p class="icon">পুনরায় গোপন নাম্বার লিখুন: </p>
+                <p class="icon">ইমেইল লিখুন :</p>
+                <p class="icon">নামের প্রথম অংশ লিখুন :</p>
+                <p class="icon">নামের দ্বিতীয় অংশ লিখুন  :</p>
+                <p class="icon">মোবাইল নাম্বার লিখুন :</p>
+                <p class="icon">লিঙ্গ নির্বাচন করুন:</p>
+                <p class="icon">বিভাগ নির্বাচন করুন:</p>
+                <p class="icon">জেলা নির্বাচন করুন:</p>
+                <p class="icon">উপজেলা নির্বাচন করুন:</p>
+
+            </div>
+            <div class="col-sm-4 col-xs-6">
+                <form [formGroup]="validateForm" id="validateForm"
+                      (ngSubmit)="submitForm($event,validateForm.value)">
+
+                    <div class="has-statusf has-success">
+                        <input type="text" formControlName="username" name="login"
+                               placeholder="ইউজারনেম লিখুন" size="18">
+                        <span class="help-block">১৮ বর্ণের মধ্যে লিখুন</span>
+                    </div>
+
+                    <div class="has-statusf has-error">
+                        <input type="password" name="password" formControlName="password" placeholder="Password"
+                               size="8">
+                        <span class="help-block">গোপন নাম্বার ৮ বর্ণের উপরে লিখুন</span>
+                    </div>
+
+                    <div class="has-statusf has-success">
+                        <input type="password" formControlName="confirmPassword" name="password"
+                               placeholder="পুনরায় গোপন নাম্বার লিখুন"
+                               size="8">
+                    </div>
+
+                    <div class="has-statusf has-error">
+                        <input type="email" name="email" formControlName="email" placeholder="ইমেইল লিখুন">
+                    </div>
+
+                    <div class="has-statusf has-success">
+                        <input type="text" formControlName="first_name" name="first_name"
+                               placeholder="নামের প্রথম অংশ লিখুন" size="18">
+                    </div>
+
+                    <div class="has-statusf has-success">
+                        <input type="text" formControlName="last_name" name="last_name"
+                               placeholder="নামের দ্বিতীয় অংশ লিখুন " size="18">
+                    </div>
+
+                    <div class="has-statusf has-success">
+                        <input type="text" id="participant_mobile_no" formControlName="phone"
+                               name="participant_mobile_no"
+                               placeholder="মোবাইল নাম্বার লিখুন" required>
+                    </div>
+
+                    <div class="gender">
+                        <select name="gender" formControlName="gender">
+                            <option *ngFor="let gender of genderSearchOptions" value="{{gender.value}}">
+                                {{gender.label}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="division">
+                        <select name="division" formControlName="division_id" (change)="divisionChange($event)">
+                            <option *ngFor="let division of divisionSearchOptions" value="{{division.id}}">
+                                {{division.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="zila">
+                        <select name="zila" formControlName="zila_id" (change)="zilaChange($event)">
+                            <option *ngFor="let zila of zilaSearchOptions"
+                                    value="{{zila.id}}">{{zila.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="upazila">
+                        <select name="upazila" formControlName="upazila_id">
+                            <option *ngFor="let upazila of upazilaSearchOptions" value="{{upazila.id}}">
+                                {{upazila.name}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <p class="remember_me">
+                        <label>
+                            <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+                            মনে রাখুন
+                        </label>
+                    </p>
+
+                    <div class="submit">
+                        <button>জমা দিন</button>
+                    </div>
+
+                </form>
+
+                <div class="login-help">
+                    <p>গোপন নাম্বার ভুলে গিয়েছেন? <a href="index.html">পুন:স্থাপন করার জন্য এখানে ক্লিক করুন।</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

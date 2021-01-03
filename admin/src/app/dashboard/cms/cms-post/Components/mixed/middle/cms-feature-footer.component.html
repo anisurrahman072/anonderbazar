@@ -1,0 +1,155 @@
+<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Banner'" [nzContent]="editmodalContent"
+    (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
+    <ng-template #editmodalContent>
+        <div class="spinning">
+            <nz-spin [nzSpinning]="_isSpinning">
+                <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
+                    <div nz-form-item nz-row *ngIf="sectionoptionsData">
+                        <!--title start-->
+                        <div nz-form-label nz-col [nzSpan]="7">
+                            <label>Section</label>
+                        </div>
+
+
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+
+
+
+                            <nz-select formControlName="section" [nzPlaceHolder]="" [(ngModel)]="selectedSection"
+                                (ngModelChange)="sectionChange($event)">
+                                <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section" [nzValue]="option.section">
+
+                                </nz-option>
+                            </nz-select>
+
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row *ngIf="subsectionOptions">
+                        <!--title start-->
+                        <div nz-form-label nz-col [nzSpan]="7">
+                            <label>SubSection</label>
+                        </div>
+
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+
+
+                            <nz-select [(ngModel)]="selectedSubSection" formControlName="sub_section"
+                                [nzPlaceHolder]=" 'input search text'">
+
+                                <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option" [nzValue]="option">
+                                </nz-option>
+                            </nz-select>
+
+                        </div>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <!--title start-->
+                        <div nz-form-label nz-col [nzSpan]="7">
+                            <label>Title</label>
+                        </div>
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'insert title'" [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                                Please input title !
+                            </div>
+                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                                Name already exists!
+                            </div>
+                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                                Validating...
+                            </div>
+                        </div>
+                    </div>
+                    <!--Title -->
+
+
+
+
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="7" nz-form-label>
+                            <label>Image</label>
+                        </div>
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                            <image-upload [max]="1" (removed)="onRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)"
+                                [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div nz-form-explain *ngIf="!ImageFile">
+                                Please upload an image here!
+                            </div>
+                        </div>
+                    </div>
+                    <!--image-->
+
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="7" nz-form-label>
+                            <label>Description</label>
+                        </div>
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
+
+                            </ckeditor>
+                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                                Please input description !
+                            </div>
+                        </div>
+                    </div>
+                    <!--description-->
+
+
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
+
+                                Submit
+                            </button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </nz-spin>
+        </div>
+    </ng-template>
+</nz-modal>
+
+
+<div class="row">
+    <div class="col-md-6" *ngFor="let feature of cmsFeatureData; let i = index" [attr.data-index]="feature.id">
+        <nz-card style="max-height: 260px;margin-bottom: 5px;">
+            <ng-template #title>
+                <h4>
+                    Title: {{feature.data_value[0].title}}
+                </h4>
+            </ng-template>
+            <ng-template #extra>
+                <div class="pull-right">
+                    <button nz-button [nzType]="'primary'" (click)="showEditModal(feature.id,i)">
+                        <span>
+                            <i class="anticon anticon-edit">Edit </i>
+                        </span>
+                    </button>
+                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,feature.id)">
+                        <a nz-popconfirm>
+                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                <i class="anticon anticon-delete "> Delete </i>
+                            </button>
+                        </a>
+                    </nz-popconfirm>
+                </div>
+            </ng-template>
+            <ng-template #body>
+                <div class="col-md-6">
+                    <div> Description:
+                        <div [innerHTML]="feature.data_value[0].description"></div> 
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div> 
+                        <img class="img img-responsive " alt="{{feature.data_value[0].image}}" src="{{ IMAGE_ENDPOINT + feature.data_value[0].image}}"
+                        />
+                    </div>
+                </div>
+            </ng-template>
+        </nz-card>
+    </div>
+</div>

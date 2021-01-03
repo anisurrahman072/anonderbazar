@@ -1,0 +1,28 @@
+<div class="product-item-min ">
+    <div class="product-inner row">
+        <div class="thumb has-second-image col-md-5 ">
+            <img class="{{imgHeight}} img-responsive" src="{{IMAGE_ENDPOINT + dataProduct.image}}" alt="{{dataProduct.name}}">
+
+            <a  routerLink="/product-details/{{dataProduct.id}}" title="Quick View" class="button quick-view yith-wcqv-button">এক পলকে</a>
+        </div>
+        <div class="info col-md-7">
+            <h3 class="product-name short"><a href="#">{{dataProduct.name}}</a></h3>
+            <span class="price">৳ {{dataProduct.price}}</span>
+            <div class="group-button">
+                <span *ngIf="!(favourites$|async|isaddedtofavourite:dataProduct.id)">
+                    <a class="product-item-option-1" tooltip="পছন্দের তালিকা"  (click)="addToFavourite(dataProduct)"></a>
+                </span>
+
+                    <a class="button product-item-option-2" tooltip="থলেতে যুক্ত করুন"  (click)="addToCart(product)"></a>
+
+                    <span *ngIf="!(compare$|async|isaddedtocompare:product)">
+
+                    <a class="product-item-option-3 button" *ngIf="(compare$|async).length<3" (click)=" addToCompare(product)" tooltip="তুলনায় যুক্ত করুন">
+                    </a>
+                    <a class="product-item-option-3 button" *ngIf="(compare$|async).length>=3" (click)=" erroralert()" tooltip="তুলনায় যুক্ত করুন"> </a>
+
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

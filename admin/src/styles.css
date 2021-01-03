@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600');
+@import url('https://fonts.googleapis.com/css?family=Galada');
+
+@font-face {
+  font-family: 'SolaimanLipi';
+  src: url('assets/fonts/solaiman-lipi/solaiman-lipi.eot');
+  src: local('☺'),
+    url('assets/fonts/solaiman-lipi/solaiman-lipi.woff') format('woff'),
+    url('assets/fonts/solaiman-lipi/solaiman-lipi.ttf') format('truetype'),
+    url('assets/fonts/solaiman-lipi/solaiman-lipi.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'SolaimanLipi', sans-serif !important;
+  font-size: 14px;
+  line-height: 24px;
+  color: #666666;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.flex-row {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.flex-column {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:focus {
+  border-color: transparent;
+}
+
+img {
+  border: 0;
+}
+
+.clr {
+  clear: both;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ol,
+ul,
+p,
+address,
+strong,
+i {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  line-height: normal;
+}
+
+.p-10 {
+  padding: 10px;
+}
+
+.p-30 {
+  padding: 30px;
+}
+
+.m-10 {
+  margin: 10px !important;
+}
+
+.m-30 {
+  margin: 30px !important;
+}
+
+.p-l-10 {
+  padding-left: 10px;
+}
+
+.online-orders[_ngcontent-c15] h3[_ngcontent-c15] {
+  font-family: 'SolaimanLipi', sans-serif !important;
+}
+
+h3.ant-card-head-title {
+  margin-top: 1.5%;
+}
+
+.ant-table-column-sorter span i {
+  font-size: 25px;
+}
+
+.brand-create-img .img-ul-x-mark {
+  display: none !important;
+}
+
+.suborder-daterange .ant-calendar-range .ant-calendar-in-range-cell > div {
+  background: #f26522 !important;
+}
+
+.ant-table-row-expand-icon {
+  background: #FF0000 !important;
+  color: #ffff !important;
+  font-size: 15px !important;
+  line-height: 2 !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+.ant-col-12 {
+  display: block;
+  width: 70% !important;
+}
+.ant-col-16 {
+  display: block;
+  width: 85% !important;
+}
+
+.card-height{
+  /* height: 140vh; */
+  margin-left: 5px;
+}

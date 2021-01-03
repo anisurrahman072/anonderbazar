@@ -1,0 +1,41 @@
+.kt-images {
+    padding: 10px 0 10px 10px;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.no-sidebar .single-product .kt-images .kt-main-image {
+    padding-left: 110px;
+}
+
+.no-sidebar .single-product .kt-images .kt-thumbs {
+    margin: 0;
+    width: 100px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+img{
+    margin:0;
+    width: 375px;
+    height: 250px;
+    margin-top: 10px;
+}
+.page-thumb {
+    position: relative;
+}
+.page-thumb .close {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    z-index: 100;
+    color: red;
+}
+.page-thumb .close span{
+
+    width: 20px;
+    height: 20px;
+}

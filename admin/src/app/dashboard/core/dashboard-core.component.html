@@ -1,0 +1,27 @@
+<nz-layout> 
+    <nz-header>
+
+        <app-header [currentUser]="currentUser" (logout)="logOut($event)"></app-header>
+    </nz-header>
+
+    <nz-layout>
+
+        <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" [nzWidth]="200" style="background:#fff">
+            <app-sidebar [isCollapsed]="isCollapsed"></app-sidebar>
+        </nz-sider>
+
+        <nz-layout>
+
+            <nz-content class="main-content">
+                <app-breadcrumb></app-breadcrumb>
+
+                <router-outlet>
+                    
+                </router-outlet>
+
+            </nz-content>
+
+
+        </nz-layout>
+    </nz-layout>
+</nz-layout>

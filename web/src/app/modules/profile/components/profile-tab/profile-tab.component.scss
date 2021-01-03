@@ -1,0 +1,63 @@
+.example-card {
+  max-width: 400px;
+}
+
+.example-header-image {
+//   background-image: url({{IMAGE_ENDPOINTuser.avatar}});
+  background-size: cover;
+  border: 1px solid black;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+}
+
+.example-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .example-container > * {
+    width: 100%;
+  }
+.imageDiv{
+  z-index: 5;
+  -ms-flex-item-align: end;
+  align-self: flex-end;
+  bottom: 10%;
+  margin-bottom: 0%;
+  padding-bottom: 0%;
+}
+.imageFab{
+  left:150px;
+  bottom: 60px;
+}
+
+.customClass {
+  background-color: #dd3;
+  border-radius: 5px;
+  margin:5px;
+  width: 500px;
+}
+.customClass .img-ul-upload {
+  background-color: #000 !important;
+}
+
+.customClass .img-ul-clear {
+  background-color: #B819BB !important;
+}
+
+.customClass .img-ul-drag-box-msg {
+  color: purple !important;
+}
+
+.customClass .img-ul-container {
+  background-color: #FF6CAD !important;
+}
+
+input{
+  min-height: 0px !important;
+  padding: 0px !important;
+}

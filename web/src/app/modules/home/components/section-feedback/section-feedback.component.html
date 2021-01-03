@@ -1,0 +1,36 @@
+<section id="productfeedback">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-6 col-lg-12 col-md-12">
+                <div class="category-head justify-content-between d-flex">
+                    <div class="titel">
+                        <h4>Top selection with feedback</h4>
+                    </div>
+                    <button class=""><a [routerLink]= "['/products']"
+                                        [queryParams]="{filter:'rating'}"
+                    >View All<i class="fa fa-angle-right text-center"></i></a></button>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12 mb-4" *ngFor="let product of feedbackProducts">
+                        <app-product-item-feedback [dataProductFeedback]="product"></app-product-item-feedback>
+                    </div> 
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-12 col-md-12">
+                <div class="category-head justify-content-between d-flex">
+                    <div class="titel">
+                        <h4>New Arrival Products</h4>
+                    </div>
+                    <button class=""><a [routerLink]= "['/products']"
+                                        [queryParams]="{filter:'newArrival'}"
+                    >View All<i class="fa fa-angle-right text-center"></i></a></button>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12 mb-4" *ngFor="let newItem of newProducts">
+                        <app-product-item-newarrival [dataProductNewArrival]="newItem"></app-product-item-newarrival>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,272 @@
+
+.todo_con {
+    margin-left: 1%;
+}
+
+.todo {
+    margin: 10px;
+    border-radius: 2px;
+    margin-left: 6px;
+    width: 98%;
+    padding: 20px 20px 0 20px;
+    position: relative;
+    background: #fff;
+}
+
+.todo-heading h2 {
+    color: #1dbb99 !important;
+}
+
+.todo-heading-title h2 {
+    font-size: 18px;
+    float: left;
+    padding-bottom: 20px;
+}
+
+.todo-heading-title ul {
+    margin-left: 85%;
+}
+
+.todo-heading-title ul li {
+    float: left;
+    padding-right: 7px;
+    padding-left: 8px;
+    font-size: 18px;
+}
+
+.todo-heading-title ul li a i {
+    color: #444;
+}
+
+.heading-todo-news ul li {
+    float: left;
+}
+
+.todo-news {
+    width: 250px;
+}
+
+.heading-todo-news {
+    margin-bottom: -2%;
+}
+
+.heading-todo-news ul li a {
+    font-size: 15px;
+    color: #888;
+    float: left;
+    padding-bottom: 25px;
+    text-decoration: none;
+}
+
+.last-news {
+    padding-bottom: 13%;
+}
+
+.new-todo-icon {
+    width: 50px;
+}
+
+.heading-todo-news ul li i {
+    font-size: 20px;
+    padding-left: 15px;
+    color: #c7c9cc;
+    padding-top: 5px;
+}
+
+.new-todo {
+    background-color: #e1e1e2;
+    position: relative;
+    width: 331px;
+    margin-left: -7%;
+}
+
+.new-todo p {
+    font-size: 14px;
+    color: #444;
+    padding-left: 20px;
+    padding-top: 14px;
+    padding-bottom: 10px;
+}
+
+.input-group input[type=text] {
+    padding: 8px;
+    width: 200px;
+    font-size: 12px;
+    border: none;
+    background: transparent;
+    color: #000;
+    text-decoration: none;
+    margin-left: 6%;
+    margin-bottom: 12px;
+}
+
+.new-todo-icon a img {
+    padding-top: 175%;
+}
+
+.todo-dashed {
+    border-right-width: 1px;
+    border-right-style: dashed;
+    border-right-color: #b6ddf9;
+}
+
+/*********************** responsive ***********************/
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .h2,
+    h2 {
+        font-size: 24px;
+    }
+
+    .todo {
+        width: 317px;
+        margin-left: 6.5%;
+    }
+
+    .todo-heading-title ul li {
+        padding-right: 6px;
+    }
+
+    .todo-news {
+        width: 244px;
+    }
+
+    .new-todo {
+        width: 317px;
+    }
+
+    .heading-todo-news ul li a {
+        padding-bottom: 36px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .margin {
+        margin-top: 50px;
+    }
+
+    .todo {
+        width: 385px;
+        margin-left: 37%;
+        margin-top: -141%;
+    }
+
+    .todo-news {
+        width: 312px;
+    }
+
+    .heading-todo-news {
+        margin-top: 25%;
+    }
+
+    .new-todo {
+        width: 400px;
+        margin-left: -6%;
+    }
+
+    .input-group input[type="text"] {
+        margin-bottom: 21px;
+    }
+
+    .last-news {
+        padding-bottom: 16%;
+    }
+
+    .watch-sell-para p {
+        width: 693px;
+    }
+
+    .icon-controls {
+        margin-top: -5%;
+    }
+
+    .icon-controls ul {
+        padding-left: 82%;
+        padding-top: 7%;
+        padding-bottom: 20%;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .todo {
+        width: 400px;
+        margin-left: 55%;
+        margin-top: -192%;
+    }
+
+    .todo-news {
+        width: 289px;
+    }
+
+    .heading-todo-news ul li a {
+        padding-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .heading-todo-news {
+        margin-top: 25%;
+    }
+
+    .new-todo {
+        width: 378px;
+        margin-left: -6%;
+    }
+
+    .input-group input[type="text"] {
+        margin-bottom: 1px;
+    }
+
+    .last-news {
+        padding-bottom: 2%;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    /*  .todo-heading-title h2{
+        font-size: 20px;
+      }*/
+    .running-order {
+        width: 310px;
+    }
+
+    .todo {
+        width: 311px;
+        margin-left: -144%;
+    }
+
+    .todo-news {
+        width: 238px;
+    }
+
+    .todo-heading-title ul li {
+        padding-right: 5px;
+    }
+
+    .new-todo {
+        width: 313px;
+        margin-left: -8%;
+    }
+
+    .online-orders {
+        width: 312px;
+        margin-left: -4%;
+    }
+
+    .online-header-left {
+        margin-right: 16%;
+        padding-bottom: 17px;
+    }
+
+    .watch-sell-para p {
+        width: 260px;
+    }
+
+    .icon-controls ul {
+        padding-left: 64%;
+    }
+
+    .copy2 span {
+        margin-left: -32%;
+    }
+}

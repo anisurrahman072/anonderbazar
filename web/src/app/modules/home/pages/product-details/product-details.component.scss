@@ -1,0 +1,699 @@
+.main-container {
+  padding: 25px 0 90px 0;
+  overflow: hidden;
+}
+
+.breadcrumbs a {
+  color: #666;
+
+  display: inline-block;
+  padding: 8px 0;
+}
+.variant .mat-button-toggle-group {
+  overflow: visible;
+}
+.productdetail-img img{
+  width: 415px;
+  height: 385px; 
+}
+.product-count-down {
+  display: table-cell;
+  vertical-align: top;
+}
+.product-count-down {
+  //width: 130px;
+  background-color: #ff6138;
+  padding: 0 20px;
+  padding-top: 15px;
+}
+.product-count-down ul li {
+  border-bottom: 1px solid #eee;
+  display: block;
+  height: 126px;
+}
+
+.product-count-down ul li:last-child {
+  border-bottom: none;
+}
+
+.product-count-down ul li h3 {
+  font-size: 30px;
+  text-align: center;
+  color: #fff;
+  padding-top: 20%;
+}
+
+.product-count-down p {
+  text-align: center;
+  color: #fff;
+  text-transform: capitalize;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: -10%;
+}
+.breadcrumbs a:after {
+  content: "/";
+  display: inline-block;
+  padding: 0 5px;
+}
+
+.breadcrumbs a:hover {
+  color: #ecc366;
+}
+
+.single-product {
+  border: 1px solid #ececec;
+}
+
+.single-product .kt-images {
+  padding: 10px 0 10px 10px;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.no-sidebar .single-product .kt-images .kt-main-image {
+  padding-left: 110px;
+}
+
+.no-sidebar .single-product .kt-images .kt-thumbs {
+  margin: 0;
+  width: 100px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+.Side-arrow ul li {
+  float: left;
+  display: block;
+  text-align: center;
+  width: 50px;
+  height: 30px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  line-height: 28px;
+  font-size: 14px;
+  background-color: #f5f5f5;
+  color: #666;
+  -webkit-transform: translateY(30%);
+  -ms-transform: translateY(30%);
+  -o-transform: translateY(30%);
+  transform: translateY(30%);
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+}
+
+.Side-arrow ul li:hover {
+  background-color: #aaaaaa;
+  color: #fff;
+}
+
+.single-product .summary {
+  margin-bottom: 60px;
+  padding-top: 50px;
+  padding-right: 30px;
+  color: #888;
+  font-size: 13px;
+}
+
+.single-product .summary .product_title {
+  font-family: "SolaimanLipi", serif;
+  font-style: italic;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.single-product .summary .price {
+  color: #333;
+  font-family: "SolaimanLipi", sans-serif;
+  font-size: 14px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.single-product .summary .stock {
+  margin-bottom: 10px;
+}
+
+.single-product .summary p {
+  margin: 0;
+}
+
+.single-product .summary label {
+  color: #444;
+  font-weight: normal;
+  margin: 0;
+}
+
+.single-product .summary .stock .fa {
+  color: #9dc879;
+}
+
+.single-product .summary .rating {
+  margin-bottom: 10px;
+}
+
+.single-product .summary .rating .fa {
+  color: #ecc366;
+}
+
+.single-product .summary .variation_form_section {
+  overflow: hidden;
+  padding-top: 25px;
+}
+
+.no-sidebar .single-product .summary table.variations-table tr {
+  width: 50%;
+  float: left;
+}
+
+.single-product .summary .quantity {
+  border-bottom: 1px solid #ececec;
+  padding-bottom: 30px;
+  margin-bottom: 15px;
+}
+
+.single-product .summary .quantity .qty {
+  width: 60px;
+  text-align: center;
+  padding: 4px 0;
+  margin-right: 23px;
+  min-height: 34px;
+}
+
+.single-product .summary .quantity label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+textarea,
+input[type="password"],
+input[type="tel"] {
+  border: 1px solid #e5e5e5;
+  padding: 7px 25px;
+}
+
+.single-product .summary .single_add_to_cart_button {
+  margin-right: 25px;
+  float: left;
+}
+
+.single-product .summary .button.wishlist,
+.single-product .summary .button.compare,
+.single-product .summary .button.mailto {
+  width: 40px;
+  height: 40px;
+  border: none;
+  text-align: center;
+  line-height: 40px;
+  font-size: 14px;
+  padding: 0;
+  background-color: #aaaaaa;
+  color: #fff;
+  float: left;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.single-product .summary .button.wishlist:hover {
+  background: #eec15b;
+  color: #ffffff;
+}
+
+.single-product .summary .button.compare:hover {
+  background: #eec15b;
+  color: #ffffff;
+}
+
+.single-product .summary .button.mailto:hover {
+  background: #eec15b;
+  color: #ffffff;
+}
+
+.button.primary,
+.single_add_to_cart_button {
+  background-color: #eec15b;
+  color: #fff;
+  border-color: #eec15b;
+  border-radius: 25px;
+  padding: 10px 35px;
+}
+
+table.variations-table {
+  border-collapse: inherit;
+  display: block;
+  width: 100%;
+  float: left;
+  margin-bottom: 0;
+  border: none;
+}
+
+table.variations-table tr {
+  margin-bottom: 18px;
+}
+
+table.variations-table th,
+table.variations-table td {
+  padding: 0;
+  vertical-align: middle;
+  margin-bottom: 13px;
+  width: 100%;
+  display: table;
+  border: none;
+}
+
+table.variations-table th:last-child,
+table.variations-table td:last-child {
+  margin-bottom: 0;
+}
+
+table.variations-table tr {
+  margin-bottom: 5px;
+  display: block;
+}
+
+table.variations-table .select-option a {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  text-align: center;
+  line-height: 34px;
+  font-size: 0;
+  float: left;
+  position: relative;
+}
+
+table.variations-table .select-option {
+  overflow: hidden;
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  position: relative;
+}
+
+table.variations-table .select-option.selected a:before {
+  font-family: "FontAwesome";
+  content: "\f00c";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 13px;
+  color: #fff;
+}
+
+table.variations-table tbody {
+  display: block;
+  width: 100%;
+}
+
+.variant_name {
+  float: left;
+  margin-top: 10px;
+  /*margin-top: 10px;*/
+}
+
+.ware_variants_items {
+  display: inline-block;
+  margin-left: 50px;
+}
+
+.ware_variants_items div {
+  display: inline-block;
+}
+
+.variant {
+  margin-bottom: 15px;
+}
+
+.option-button {
+  display: inline-block;
+  padding-bottom: 20px;
+}
+
+.put-quantity .plus {
+  margin-left: 3%;
+}
+
+:host .mat-button-toggle-checked {
+  background-color: #8bc34a !important;
+}
+.kt-thumbs img {
+  height: 70px;
+  width: 100px;
+  text-align: center;
+}
+.qcshop { 
+  border: 1px solid;
+  border-radius: 15px;
+  margin: 0px;
+}
+.craftman { 
+  border: 1px solid;
+  border-radius: 15px;
+  margin: 0px;
+}
+
+.pricepopup {
+  span {
+    display: block;
+    h5,
+    h6 {
+      display: inline;
+    }
+  }
+}
+.rating {
+  text-align: center;
+}
+.items {
+  padding: 0;
+}
+
+.ant-radio-button-wrapper-checked {
+  background: blueviolet;
+  color: #d6d7d8;
+}
+.highlight {
+  background-color: #2ba8ea;
+}
+.messagecard {
+  box-shadow: -4px 3px 10px -2px #00A188;
+  position: fixed;
+  bottom: 0px;
+  right: 30px;
+  z-index: 99;
+  width: 320px;
+  height: auto;
+  cursor: pointer;
+}
+.warehousetitle{
+  background-color: #31a387;
+  height: 37px;
+  border-radius: 5px 5px 0 0;
+}
+.warehousetitle > p{
+  font-size: 20px;
+  padding-top: 5px;
+  margin-left: 10px;
+  color: white;
+}
+.message {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+
+  cursor: pointer;
+}
+.closeChat {
+  position: fixed;
+    bottom: 400px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+  &::ng-deep .mat-button-wrapper {
+    line-height: 14px;
+    padding: 0;
+
+    .mat-icon {
+      font-size: 20px;
+    }
+  }
+  z-index: 99;
+  cursor: pointer;
+}
+.uploaded{
+  height: auto;
+  background-color: whitesmoke;
+}
+.sendButton mat-button {
+  width: 30px !important;
+  height: 30px;
+}
+.new{
+  font-size: 5px;
+}
+.chatform{
+  background-color: whitesmoke;
+}
+.messageBox {
+  overflow-y: scroll;
+    width: 320px;
+    height: 333px;
+    background-color: whitesmoke;
+}
+.messagetextbox{
+  width: 90%;
+  height: 44px;
+  padding: 0px 10px 0px 10px;
+  background-color: whitesmoke;
+}
+.messagePosition {
+  float: right;
+}
+.userInfo{
+  margin: 20px 0px 0 2px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+/* CSS talk bubble */
+.talk-bubble {
+  margin: 0px 0px 0px 3px;
+  display: inline-block;
+  position: relative;
+  width: auto;
+  height: auto;
+  max-width: 230px;
+  background-color: #cccccc;
+}
+.border {
+  border: 8px solid #666;
+}
+.round {
+  border-radius: 30px;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+}
+
+/* Right triangle placed top left flush. */
+.tri-right.border.left-top:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -40px;
+  right: auto;
+  top: -8px;
+  bottom: auto;
+  border: 32px solid;
+  border-color: #666 transparent transparent transparent;
+}
+.tri-right.left-top:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -20px;
+  right: auto;
+  top: 0px;
+  bottom: auto;
+  border: 22px solid;
+  border-color: lightyellow transparent transparent transparent;
+}
+
+/* Right triangle, left side slightly down */
+.tri-right.border.left-in:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -40px;
+  right: auto;
+  top: 30px;
+  bottom: auto;
+  border: 20px solid;
+  border-color: #666 #666 transparent transparent;
+}
+.tri-right.left-in:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -20px;
+  right: auto;
+  top: 38px;
+  bottom: auto;
+  border: 12px solid;
+  border-color: lightyellow lightyellow transparent transparent;
+}
+
+/*Right triangle, placed bottom left side slightly in*/
+.tri-right.border.btm-left:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -8px;
+  right: auto;
+  top: auto;
+  bottom: -40px;
+  border: 32px solid;
+  border-color: transparent transparent transparent #666;
+}
+.tri-right.btm-left:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 0px;
+  right: auto;
+  top: auto;
+  bottom: -15px;
+  border: 15px solid;
+  border-color: transparent transparent transparent #cccccc;
+}
+
+/*Right triangle, placed bottom left side slightly in*/
+.tri-right.border.btm-left-in:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 30px;
+  right: auto;
+  top: auto;
+  bottom: -40px;
+  border: 20px solid;
+  border-color: #666 transparent transparent #666;
+}
+.tri-right.btm-left-in:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 38px;
+  right: auto;
+  top: auto;
+  bottom: -20px;
+  border: 12px solid;
+  border-color: lightyellow transparent transparent lightyellow;
+}
+
+/*Right triangle, placed bottom right side slightly in*/
+.tri-right.border.btm-right-in:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: 30px;
+  bottom: -40px;
+  border: 20px solid;
+  border-color: #666 #666 transparent transparent;
+}
+.tri-right.btm-right-in:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: 38px;
+  bottom: -20px;
+  border: 12px solid;
+  border-color: lightyellow lightyellow transparent transparent;
+} 
+.tri-right.border.btm-right:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: -8px;
+  bottom: -40px;
+  border: 20px solid;
+  border-color: #666 #666 transparent transparent;
+}
+.tri-right.btm-right:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: 0px;
+  bottom: -15px;
+  border: 15px solid;
+  border-color: #cccccc #cccccc transparent transparent;
+}
+
+/* Right triangle, right side slightly down*/
+.tri-right.border.right-in:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: -40px;
+  top: 30px;
+  bottom: auto;
+  border: 20px solid;
+  border-color: #666 transparent transparent #666;
+}
+.tri-right.right-in:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: -20px;
+  top: 38px;
+  bottom: auto;
+  border: 12px solid;
+  border-color: #cccccc transparent transparent #cccccc;
+}
+
+/* Right triangle placed top right flush. */
+.tri-right.border.right-top:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: -40px;
+  top: -8px;
+  bottom: auto;
+  border: 32px solid;
+  border-color: #666 transparent transparent transparent;
+}
+.tri-right.right-top:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: auto;
+  right: -20px;
+  top: 0px;
+  bottom: auto;
+  border: 20px solid;
+  border-color: lightyellow transparent transparent transparent;
+}
+
+/* talk bubble contents */
+.talktext {
+  padding: 10px;
+  text-align: left;
+  line-height: 1.5em;
+}
+.talktext p {
+  /* remove webkit p margins */
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
+  font-size: 14px;
+}

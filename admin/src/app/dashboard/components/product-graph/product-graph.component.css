@@ -1,0 +1,89 @@
+.watch-sell {
+    border: 1px solid #e0e1e2;
+    margin-top: 3%;
+    margin-left: -1%;
+    border-radius: 1px;
+    position: relative;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    width: 102%;
+}
+
+.watch-sell-para {
+    padding-left: 5px;
+
+}
+
+.watch-sell-para h3 {
+    font-size: 29px;
+    padding-top: 30px;
+}
+
+.watch-sell-para p {
+    font-size: 13px;
+    padding-top: 8px;
+    color: #575a5d;
+    width: 327px;
+    text-align: left;
+    padding-bottom: 23px;
+    line-height: 24px;
+}
+
+.icon-controls ul {
+    padding-left: 30%;
+    padding-top: 20%;
+}
+
+.icon-controls ul li {
+    float: left;
+    padding-left: 18px;
+}
+
+.icon-controls ul li i {
+    font-size: 13px;
+    color: #c7c9cc;
+}
+
+.icon-controls ul li i:hover {
+    color: #888888;
+}
+
+/*********************** responsive ***********************/
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .h2,
+    h2 {
+        font-size: 24px;
+    }
+
+    .watch-sell-para h3 {
+        font-size: 24px;
+    }
+
+    .heading-todo-news ul li a {
+        padding-bottom: 36px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .watch-sell {
+        margin-left: -2.5%;
+    }
+
+    .watch-sell-para p {
+        width: 693px;
+    }
+}
+
+@media (max-width: 767px) {
+    .watch-sell-para p {
+        width: 693px;
+    }
+
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .watch-sell-para p {
+        width: 260px;
+    }
+}

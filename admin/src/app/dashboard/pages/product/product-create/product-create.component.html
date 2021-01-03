@@ -1,0 +1,37 @@
+<nz-card>
+    <ng-template #title>
+        Add Product
+    </ng-template>
+    <ng-template #extra>
+        <button routerLink="/dashboard/product" [queryParams]="{status: queryStatus}" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i>
+            <span> List </span>
+        </button>
+    </ng-template>
+
+
+    <ng-template #body>
+
+
+        <nz-tabset  [nzSelectedIndex]="status">
+            <nz-tab>
+                <ng-template #nzTabHeading >
+                    Fixed Product
+                </ng-template>
+
+                <app-fixed-product-create></app-fixed-product-create>
+
+            </nz-tab>
+            <nz-tab>
+                <ng-template #nzTabHeading>
+                    Variable Product
+                </ng-template>
+
+                <app-custom-product-create></app-custom-product-create>
+
+            </nz-tab>
+        </nz-tabset>
+
+
+    </ng-template>
+</nz-card>

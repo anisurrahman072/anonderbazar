@@ -1,0 +1,39 @@
+
+    <td class="product" *ngIf="cartItem">
+        <img class="product-thumb" src="{{IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="">
+        <div class="product-info">
+            <h3 class="product-name"><a routerLink="/product-details/{{cartItem.product_id.id}}">{{cartItem.product_id.name}}</a>
+            </h3>
+            <span class="product-price"> ৳. {{cartItem.product_unit_price}}</span>
+            <div class="product-variant" *ngFor="let cartItemVariant of cartItem.cart_item_variants">
+                {{cartItemVariant.variant_id?.name}} : {{cartItemVariant.warehouse_variant_id?.name}}
+            </div>
+        </div>
+    </td> 
+    <td *ngIf="cartItem">
+        <div class="quantity">
+            {{cartItem.product_quantity}} 
+
+        </div>
+
+
+    </td>
+    <td class="product-subtotal" *ngIf="cartItem">
+        <span class="amount"> ৳. {{cartItem.product_total_price}}</span>
+    </td>
+    <td class="product-remove" *ngIf="cartItem">
+
+        <ng-template #popTemplate>
+
+            <button mat-raised-button color="warn" (click)="removeCartItem(cartItem.id)">Ok</button>
+            <button mat-raised-button color="basic" (click)="pop.hide()">Cancel
+            </button>
+
+        </ng-template>
+        <button mat-mini-fab color="warn" class="remove" type="button" #pop="bs-popover"
+                [popover]="popTemplate" popoverTitle="Are you want to remove?" [outsideClick]="true">
+            <i class="fa fa-close"></i>
+        </button>
+
+    </td>
+

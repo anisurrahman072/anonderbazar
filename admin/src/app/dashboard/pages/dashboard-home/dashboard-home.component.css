@@ -1,0 +1,35 @@
+[nz-carousel-content] {
+  height: 350px !important;
+    text-align: center;
+    line-height: 160px;
+    overflow: hidden;
+  }
+
+  h3 {
+    color: #fff;
+  }
+
+  .eventbanner{
+    margin-left: 30px;
+    margin-bottom: 10px
+  }
+  .eventbanner-content{
+    left: 1%;
+  }
+
+  .eventbanner-images{
+    width: 100%;
+    height: 350px;
+  }
+
+  .online-order{
+    margin-left: 3px;
+  }
+
+  .dashboard-content{
+    margin-top: 2px;
+    height: 90vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-left: -20px;
+  }

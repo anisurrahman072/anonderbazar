@@ -1,0 +1,20 @@
+.copyright {
+    padding-top: 10px;
+    padding-bottom: 25px;
+    border-top: 1px solid rgba(87, 90, 93, 0.07);
+}
+
+.copyright p {
+    font-size: 14px;
+    color: #888;
+}
+
+.copy-color {
+    color: #444;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .copy2 span {
+        margin-left: -32%;
+    }
+}

@@ -1,0 +1,84 @@
+<header class="header-section sticky-header clearfix">
+    <!-- top header start-->
+    <div class="header_top_area">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-12">
+                    <div class="header_logo">
+                        <a class="navbar-brand" routerLink="/" href=""><img src="assets/images/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-8 col-md-12 col-sm-12 header-form">
+                    <form action="#" method="get">
+                        <div class="header-search-wrapper d-flex">
+                            <input type="search" class="form-control" name="q" id="q"
+                                   placeholder="Search for products and more..."
+                                   [matAutocomplete]="auto"
+                                   [formControl]="stateCtrl" (keyup)="main_search($event)"
+                            (keydown.enter)="onPressEnter($event)">
+                            <button class="icon-search p-0" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </form>
+                    <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]="true"
+                                      (optionSelected)="dda($event)" [displayWith]="displayFn">
+                        <div *ngFor="let p of filteredProducts "> 
+                            <mat-option *ngIf="p.type === 'product'" routerLink="/product-details/{{p.id}}"> 
+                                <a><small>{{p.name}}</small></a>
+
+                            </mat-option>
+                            <mat-option *ngIf="(filteredProducts )?.length<1" [value]="">
+                                There is no product to be found
+                            </mat-option>
+                        </div>
+
+                    </mat-autocomplete>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-sm-12">
+                    <div class="header_chart">
+                        <div class="widgets-wrap">
+                            <div class="widget-text">
+                                <span><a href="{{ADMIN_ENDPOINT1}}">Sell On Anonder Bazar</a></span>
+                                <span *ngIf="(currentUser$|async); else log_in">
+                                    <a routerLink="/profile/orders"> 
+                                        My Account
+                                    </a>
+                                </span>
+                                <ng-template #log_in>
+                                    <span><a type="button" (click)="showLoginModal()"><i class="fa fa-user-circle"></i>SIGN IN</a></span>
+                                </ng-template>
+                                <span><a href="#">Help</a></span>
+                            </div>
+                            <div class="widget-cart">
+                                <a routerLink="/profile/favourites">
+                                    <img src="assets/images/heart-black.svg" alt="heart">
+                                    <span class='badge badge-warning countLabel'> {{(favourites$|async)?.length}} </span>
+                                </a>
+
+                                <a routerLink="/compare" title="compare">
+                                    <img src="assets/images/compare-black.svg" alt="compare">
+                                    <span class='badge badge-warning countLabel'> {{(compare$|async)?.length}} </span>
+                                </a>
+
+                                <!-- Button trigger modal -->
+                                <button type="button" (click)="showShoppingCartModal()" class="btn" data-toggle="modal">
+                                    <a class="cart" >
+                                        <img src="assets/images/cart-black.svg" alt="cart">
+                                        <span class='badge badge-warning countLabel' *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}} </span>
+                                        <span class='badge badge-warning countLabel' *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
+                                    </a>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="button" >
+                            <button class="checkout"><a routerLink="/checkout">CHECKOUT</a></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- top header end-->
+    <!-- header menu start -->
+    <app-menu></app-menu>
+    <!-- header menu end -->
+</header>

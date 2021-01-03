@@ -1,0 +1,124 @@
+<nz-card>
+    <ng-template #title>
+        Transaction Details
+    </ng-template>
+    <ng-template #extra>
+
+        <button *ngIf="data"
+                [routerLink]="['/dashboard/payment/edit', data.id]" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-edit"></i><span>Edit</span>
+        </button>
+        <button routerLink="/dashboard/payment" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span>List</span>
+        </button>
+
+    </ng-template>
+    <ng-template #body>
+        <ul class="list-group list" *ngIf="data">
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Order :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.order_id.id}}</p>
+                    </div>
+                </div>
+            </li><!--order-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Vendor Order Id :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.suborder_id.id}}</p>
+                    </div>
+                </div>
+            </li><!--suborder-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Customer :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.user_id.first_name}} {{data.user_id.last_name}}</p>
+                    </div>
+                </div>
+            </li><!--user-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Customer Id :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.user_id.username  || 'n/a'}}</p>
+                    </div>
+                </div>
+            </li><!--Receiver-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right">Trasaction Key:</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.transection_key}}</p>
+                    </div>
+                </div>
+            </li><!--transection_key-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Payment type :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.payment_type}}</p>
+                    </div>
+                </div>
+            </li><!--payment_type-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Payment Amount :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.payment_amount}}</p>
+                    </div>
+                </div>
+            </li><!--transection_key-->
+
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Payment Date :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{(data.payment_date|date) || 'n/a'}}</p>
+                    </div>
+                </div>
+            </li><!--transection_key-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Status </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.status}}</p>
+                    </div>
+                </div>
+            </li><!--transection_key-->
+
+        </ul>
+    </ng-template>
+</nz-card>
+

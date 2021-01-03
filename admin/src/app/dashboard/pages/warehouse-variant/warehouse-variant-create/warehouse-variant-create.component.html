@@ -1,0 +1,185 @@
+<nz-spin [nzSpinning]="_isSpinning">
+    <nz-card>
+        <ng-template #title>
+            Add Attribute's Variant
+        </ng-template>
+        <ng-template #extra>
+
+            <button routerLink="/dashboard/warehousevariant/" nz-button [nzType]="'primary'"
+                    [nzSize]="'large'">
+                <i class="anticon anticon-file-text"></i><span> List </span>
+            </button>
+        </ng-template>
+        <ng-template #body>
+            <form nz-form [formGroup]="validateForm" id="validateForm"
+                  (ngSubmit)="submitForm($event,validateForm.value)">
+                <div class="col-md-3">
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==1">
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
+                            dropBoxMessage="Drop Picture here" clearButtonCaption="remove it?"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                Please upload an image here!
+                            </div>
+                        </div>
+                    </div><!--image-->
+                </div>
+                <div class="col-md-9">
+                    <div nz-form-item nz-row><!--name start-->
+                        <div nz-form-label nz-col [nzSpan]="2">
+                            <label> Name </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                                 Name is required!
+                            </div>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                                Name already exists!
+                            </div>
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                                Validating...
+                            </div>
+                        </div>
+                    </div><!--name -->
+    
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Attribute </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+    
+                            <nz-select
+                                    formControlName="variant_id"
+                                    nzAllowClear
+                                    [nzPlaceHolder]="'Select Attribute'"
+                                    [nzFilter]="true"
+                                    [nzNotFoundContent]="'Not found'"
+                                    [(ngModel)]="selectedVariant_id" 
+                                    (ngModelChange)="variantOptionChange($event)"
+                                    (nzSearch)="variantSearchChange($event)"
+                                     (nzSearchChange)="variantSearchChange($event)"
+                                    nzShowSearch>
+                                <nz-option
+                                        *ngFor="let option of variantSearchOptions"
+                                        [nzLabel]="option.name"
+                                        [nzValue]="option">
+                                </nz-option>
+                            </nz-select>
+    
+    
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('variant_id').dirty&&getFormControl('variant_id').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div><!--variant_id-->
+    
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Brand </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+    
+                            <nz-select
+                                    formControlName="brand_id"
+                                    nzAllowClear
+                                    [nzPlaceHolder]="'Select brand'"
+                                    [nzFilter]="true"
+                                    [nzNotFoundContent]="'Not found'"
+                                    nzShowSearch>
+                                <nz-option
+                                        *ngFor="let option of brandSearchOptions"
+                                        [nzLabel]="option.name"
+                                        [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+    
+    
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('brand_id').dirty&&getFormControl('brand_id').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div><!--brand_id-->
+    
+    
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Quantity </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="quantity" [nzType]="'number'" [nzPlaceHolder]="'Enter Quantity'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('quantity').dirty&&getFormControl('quantity').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div><!--quantity-->
+    
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Unit Name </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="unit_name" [nzType]="'text'" [nzPlaceHolder]="'Enter Unit Name'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('unit_name').dirty&&getFormControl('unit_name').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div><!--unit_name-->
+    
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2" nz-form-label>
+                            <label> Unit price </label>
+                        </div>
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="unit_price" [nzType]="'number'" [nzPlaceHolder]="'Enter Unit Price'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('unit_price').dirty&&getFormControl('unit_price').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div><!--unit_price-->
+    
+    
+                    <div nz-form-item nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="rack" [nzType]="'hidden'" [nzPlaceHolder]="'তাক লিপিবদ্ধ করুন'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                        </div>
+                    </div><!--rack-->
+    
+                    
+    
+    
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                                Save
+                            </button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+
+        </ng-template>
+    </nz-card>
+
+</nz-spin>

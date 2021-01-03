@@ -1,0 +1,83 @@
+<div class="margin-top-30 section-daily-deal">
+    <div class="container">
+
+        <div class="block-daily-deal" *ngIf="(promotionalProducts$|async)">
+            <!--Product thumbnails-->
+            <div class="thumbs">
+                <a class="thumb-object border-full-1"
+                   *ngFor="let promotionalProduct of (promotionalProducts$|async)">
+                    <a (click)="selectProduct(promotionalProduct);"><img style="width: 138px; height: 160px;" src="{{  IMAGE_ENDPOINT + promotionalProduct.image}}" alt=""></a>
+                </a>
+            </div>
+
+            <!--Promotion Detail-->
+            <div class="product-detail">
+                <div class="inner">
+                    <div class=" col-md-10">
+
+                        <div class="product-image kt-images">
+                            <span class="percent">-{{percentageCalculation()}}%</span>
+                            <a><img class="product-image-img" src="{{ IMAGE_ENDPOINT + selectedProduct?.image}}" alt=""></a>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name"><a href="#">{{selectedProduct?.name}}</a></h3>
+                            <div class="variation_form_section" *ngIf="selectedProduct">
+                                <div class="row">
+                                <div *ngFor="let v of selectedProductVariants">
+                                <!--{{v|json}}-->
+                                <div class="col-md-6">
+                                <div class="variant">
+                                <div class="variant_name">
+                                {{v.variant.name}}:
+                                </div>
+                                <div class="ware_variants">
+                                <div class="ware_variants_items">
+                                <div>
+                                <div *ngFor="let wv of v.warehouse_variants">
+                                <img *ngIf="wv.warehouses_variant_id.image"
+                                src="{{IMAGE_ENDPOINT + wv.warehouses_variant_id.image}}"
+                                style="height: 25px; width: 25px;">
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div> 
+                            <span class="price">
+								<del>৳ {{selectedProduct?.price}}</del>
+								<ins>৳ {{selectedProduct?.promo_price}}</ins>
+                        </span>
+                            <button mat-button color="primary" routerLink="/product-details/{{selectedProduct?.id}}">
+                                এখনই কিনুন
+                            </button>
+                        </div>
+                    </div>
+                    <div class=" col-md-2 product-count-down">
+                        <ul>
+                            <li>
+                                <h3>{{_days}}</h3>
+                                <p>দিন</p>
+                            </li>
+                            <li>
+                                <h3>{{_hours}}</h3>
+                                <p>ঘণ্টা</p>
+                            </li>
+                            <li>
+                                <h3>{{_minutes}}</h3>
+                                <p>মিনিট</p>
+                            </li>
+                            <li>
+                                <h3>{{_seconds}}</h3>
+                                <p>সেকেন্ড</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

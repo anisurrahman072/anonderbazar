@@ -1,0 +1,129 @@
+.form-background {
+    background: -webkit-linear-gradient(to right, #14e2a4 0%, #1b8dc1 100%);
+    background: -moz-linear-gradient(to right, #14e2a4 0%, #1b8dc1 100%);
+    background: -ms-linear-gradient(to right, #14e2a4 0%, #1b8dc1 100%);
+    background: -o-linear-gradient(to right, #14e2a4 0%, #1b8dc1 100%);
+    background: linear-gradient(to right, #14e2a4 0%, #1b8dc1 100%);
+    border: transparent;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.9);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.9);
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.login-header {
+    padding-bottom: 3%;
+}
+
+.login-header h1 {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+}
+
+.login-title {
+    padding: 0;
+}
+
+.login .login-title .icon {
+    text-align: right;
+    padding: 0 0 21% 0;
+    font-size: 16px;
+    color: #ffffff;
+    margin-top: 3%;
+}
+
+.has-statusf .help-block {
+    margin: 0;
+    color: #ffffff;
+    margin-left: 5px;
+    margin-bottom: 10%;
+    padding-top: 10px;
+}
+
+.has-statusf .form-control {
+    border-color: transparent;
+}
+
+input {
+    font-family: 'Lucida Grande', Tahoma, Verdana, sans-serif;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #d4d4d4;
+    position: relative;
+}
+label{
+    color: #ffffff;
+}
+.login-help p{
+    color: #ffffff;
+}
+input[type=text],
+// input[type=password],
+input[type=email] {
+    width: 350px;
+    padding: 5px 10px;
+}
+
+.has-statusf {
+    position: relative;
+}
+
+.has-statusf::after {
+    font-family: 'FontAwesome';
+    position: absolute;
+    z-index: 9;
+    top: 16%;
+    right: -55%;
+    font-size: 18px;
+}
+
+.has-statusf.has-success input {
+    border: 2px green solid;
+}
+
+.has-statusf.has-error input {
+    border: 2px red solid;
+}
+
+.has-statusf.has-success::after {
+    color: green;
+    content: "\f05d";
+}
+
+.has-statusf.has-error::after {
+    color: red;
+    content: "\f057";
+}
+
+.remember_me {
+    margin-top: 8%;
+}
+
+.submit input {
+    padding: 10px 40px;
+    border-radius: 2px;
+    margin-bottom: 5%;
+    background: transparent;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.submit input:hover {
+    background: #eec15b;
+    color: #ffffff;
+    border: 2px solid transparent;
+    font-size: 15px;
+    font-weight: 700;
+}

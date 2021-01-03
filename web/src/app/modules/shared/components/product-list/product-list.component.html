@@ -1,0 +1,23 @@
+<div class="shop-page-bar" *ngIf="data">
+    <div class="container-fluid">
+      <nav class="woocommerce-breadcrumb breadcrumbs">
+      <a routerLink="/" routerLinkActive="active">Home</a>
+      <a routerLink="/products" routerLinkActive="active"> OUR PRODUCTS000</a>
+      <a routerLink="/products/category/{{data.category_id.id}}" routerLinkActive="active"> {{data.category_id.name}}</a>
+      {{ data.name }}
+      </nav>
+      <div class="page-bar-right"></div>
+    </div>
+</div>
+<div class="container-fluid" *ngIf="dataProductList">
+    <div class="category-head justify-content-between d-flex">
+        <div class="titel">
+            <h4><a>{{dataTitle}}s</a></h4>
+        </div> 
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-4" *ngFor="let product of (dataProductList|async)">
+            <app-product-item [dataProduct]="product"></app-product-item>
+        </div>
+    </div>
+</div>

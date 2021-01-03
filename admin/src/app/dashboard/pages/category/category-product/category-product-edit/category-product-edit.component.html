@@ -1,0 +1,98 @@
+<nz-card>
+    <ng-template #title>
+        Edit Product category
+    </ng-template>
+    <ng-template #extra>
+        <button *ngIf="'productcategory-read'|accessControl" routerLink="/dashboard/category/product" nz-button
+            [nzType]="'primary'" [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i>
+            <span> List </span>
+        </button>
+    </ng-template>
+    <ng-template #body>
+        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <div class="col-md-3">
+                <div nz-form-item nz-row>
+                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                        <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
+                        dropBoxMessage="Drop Picture here"
+                        clearButtonCaption="remove it?" [uploadedFiles]="oldImages" [beforeUpload]="onBeforeUpload">
+                        </image-upload>
+                        <div nz-form-explain *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                Please upload an image here!
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div nz-form-item nz-row>
+                    <div nz-form-label nz-col [nzSpan]="2">
+                        <label nz-form-item-required> Name </label>
+                    </div>
+                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                        <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'">
+                        </nz-input>
+                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                            Name is required!
+                        </div>
+                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            Name already exists!
+                        </div>
+                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            Verifying ...
+                        </div>
+                    </div>
+                </div>
+                <!--Name-->
+
+                <div nz-form-item nz-row>
+                    <div nz-col [nzSpan]="2" nz-form-label>
+                        <label nz-form-item-required> Code </label>
+                    </div>
+                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                        <nz-input formControlName="code" [nzType]="'text'" [nzPlaceHolder]="'Enter Code'" [nzSize]="'large'">
+                        </nz-input>
+                        <div nz-form-explain
+                             *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
+                            Please enter category code !
+                        </div>
+                    </div>
+                </div>
+                <!--parent_id-->
+
+               <div nz-form-item nz-row *ngIf='data.parent_id==0'>
+                   <div nz-col [nzSpan]="2" nz-form-label>
+                       <label> Add Offer </label>
+                   </div>
+                   <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                       <nz-select [ngModel]="data?.id" formControlName="offer_id" nzAllowClear [nzPlaceHolder]="'Select Product category'"
+                           [nzFilter]="true" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                           <div *ngFor="let option of offers">
+                                   <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
+                                   </nz-option>
+                           </div>
+
+                       </nz-select>
+
+
+                       <div nz-form-explain *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
+                           required!                        </div>
+                   </div>
+               </div>
+                <!--parent_id-->
+
+
+
+                <div nz-form-item nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                            Save
+                        </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </ng-template>
+</nz-card>

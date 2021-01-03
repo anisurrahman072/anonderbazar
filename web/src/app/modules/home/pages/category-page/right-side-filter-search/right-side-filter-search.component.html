@@ -1,0 +1,148 @@
+<div class="row search_panel panel card boxShadow">
+  <div (click)="isCollapsed_filter = !isCollapsed_filter" class="search_label ">
+    <strong> ফিল্টারগুলি </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_filter">
+    <span class="filter_text btn fa fa-times">&nbsp;সব পরিষ্কার করে দাও</span>
+    <br />
+    <span class="filter_text btn fa fa-times">&nbsp;সব</span>
+    <span class="filter_text btn fa fa-times">&nbsp;পরিষ্কার</span>
+    <span class="filter_text btn fa fa-times">&nbsp;সব</span>
+    <span class="filter_text btn fa fa-times">&nbsp;পরিষ্কার</span>
+    <span class="filter_text btn fa fa-times">&nbsp;সব</span>
+    <span class="filter_text btn fa fa-times">&nbsp;পরিষ্কার</span>
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div (click)="isCollapsed_class = !isCollapsed_class" class="search_label ">
+    <strong> পণ্যের শ্রেণী </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_class">
+    <form>
+      <div class="form-group" *ngFor="let category of allCategory">
+        <input
+          type="checkbox"
+          value="{{ category.id }}"
+          id="category_{{ category.id }}"
+        />
+        <label for="category_{{ category.id }}">{{ category.name }}</label>
+      </div> 
+    </form>
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div
+    (click)="isCollapsed_category = !isCollapsed_category"
+    class="search_label "
+  >
+    <strong> পণ্যের ধরণ </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_category">
+    <form>
+      <div class="form-group" *ngFor="let category of allCategory">
+        <input
+          type="checkbox"
+          value="{{ category.id }}"
+          id="category_{{ category.id }}"
+        />
+        <label for="category_{{ category.id }}">{{ category.name }}</label>
+      </div> 
+    </form>
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div
+    (click)="isCollapsed_category_sub = !isCollapsed_category_sub"
+    class="search_label "
+  >
+    <strong> পণ্যের উপ ধরণ </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_category_sub">
+    <form>
+      <div class="form-group" *ngFor="let category of allCategory">
+        <input
+          type="checkbox"
+          value="{{ category.id }}"
+          id="category_{{ category.id }}"
+        />
+        <label for="category_{{ category.id }}">{{ category.name }}</label>
+      </div> 
+    </form>
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div (click)="isCollapsed_price = !isCollapsed_price" class="search_label ">
+    <strong> মুল্যমান অনুসারে </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_price">
+    <ng5-slider
+      [(value)]="minPrice"
+      [(highValue)]="maxPrice"
+      [options]="options"
+    ></ng5-slider>
+    <br />
+
+    <div class="col-sm-5 number_text">
+      <input
+        type="number"
+        step="any"
+        class="form-control text-center"
+        [(ngModel)]="minPrice"
+      />
+    </div>
+
+    <div class="col-sm-2"></div>
+    <div class="col-sm-5 number_text">
+      <input
+        type="number"
+        step="any"
+        class="form-control text-center"
+        [(ngModel)]="maxPrice"
+      />
+    </div>
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div (click)="isCollapsed_color = !isCollapsed_color" class="search_label ">
+    <strong> রঙ অনুসারে </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_color">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta blanditiis
+    atque accusamus. Illum, veniam ut. Laborum, quos? Sed necessitatibus nemo
+    sapiente molestias voluptatem quia, ut officiis, unde esse dolorum facilis
+    totam commodi cupiditate accusamus, beatae accusantium pariatur consequuntur
+    aperiam incidunt repudiandae soluta laborum corrupti. Atque vero aliquam
+    doloremque fuga cupiditate.
+  </div>
+</div>
+
+<div class="row search_panel panel card boxShadow">
+  <div (click)="isCollapsed_size = !isCollapsed_size" class="search_label ">
+    <strong> সাইজ অনুসারে </strong
+    ><span class="btn pull-right"><i class="fa fa-angle-down"></i></span>
+  </div>
+
+  <div class="search_type" *ngIf="isCollapsed_size">
+    <ul>
+      <li><a href="#">সকল</a></li>
+      <li><a href="#">সাইজ ১</a></li> 
+    </ul>
+  </div>
+</div>

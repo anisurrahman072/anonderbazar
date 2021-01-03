@@ -1,0 +1,121 @@
+.product-tabs {
+  border-top: 1px solid #ececec;
+}
+
+.no-sidebar .product-tabs .nav-tab li {
+  display: block;
+  padding: 0;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.no-sidebar .product-tabs .nav-tab li a {
+  width: 100%;
+}
+
+.no-sidebar .product-tabs .nav-tab {
+  display: table-cell;
+  margin: 0;
+  border-right: 1px solid #ececec;
+  width: 262px;
+  padding: 10px;
+}
+
+.product-tabs .nav-tab li a {
+  display: inline-block;
+  background-color: #f1f1f1;
+  padding: 9px 50px;
+  color: #666;
+}
+
+.product-tabs .nav-tab li {
+  list-style: none;
+  text-align: center;
+  display: inline-block;
+  float: left;
+  padding: 0 5px;
+}
+
+.product-tabs .nav-tab li.active a,
+.product-tabs .nav-tab li a:hover {
+  background-color: #3c3c3c;
+  color: #fff;
+}
+
+.tab-container {
+  position: relative;
+}
+
+.no-sidebar .product-tabs .tab-container {
+  display: table-cell;
+}
+
+.product-tabs .tab-container {
+  vertical-align: top;
+  padding: 30px;
+}
+
+.example-card {
+  max-width: 400px;
+  margin: 50px auto 0;
+}
+
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+/* try */
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: #ED1C24;
+}
+
+
+.tag-bg-color{
+  background-color: #f7f7f7;
+  padding: 10px;
+}
+
+.tag-bg-color2{
+  background-color: #f7f7f7;
+  padding: 0 10px;
+}
+
+.delivery-option-details .tag1 .add{
+  width: 100%;
+}
+.delivery-option-details .tag1 p{
+  color: #736B6B;
+}
+.delivery-option-details .tag1 p a{
+  margin-left: 165px;
+}
+.delivery-option-details .tag2{
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+.delivery-option-details .tag2 p a{
+  margin-left: 205px;
+}
+.delivery-option-details .tag2 span{
+  color: #736B6B;
+}
+.delivery-option-details .tag2 span small a{
+  color: #DEDEDE;
+}
+.delivery-option-details .tag2 span small{
+  display: inline-block;
+}
+.delivery-option-details .tag3 span{
+  display: block;
+  color: #736B6B;
+}
+.delivery-option-tag1{
+  padding: 15px 30px 0px 30px;
+  background-color: #f7f7f7;
+}
+.delivery-option-details .tag3{
+  padding: 15px 0px 15px 30px;
+  background-color: #f7f7f7;
+}

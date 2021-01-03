@@ -1,0 +1,411 @@
+
+.online-orders {
+    border-radius: 2px;
+    float: left;
+    background: #ffffff;
+    margin-top: 10px;
+    margin-left: 2%;
+}
+
+.online-header-left {
+    padding: 30px 25px 5px 25px;
+}
+
+.online-header-right {
+    float: right;
+    padding: 35px 30px 5px 25px;
+}
+
+.header-text {
+    color: #1dbb99 !important;
+}
+
+.online-header-left {
+    padding-bottom: 30px;
+}
+
+.online-orders h3 {
+    font-size: 30px;
+    line-height: 33px;
+    font-family: sans-serif;
+    color: #575a5d;
+}
+
+.online-header-right sup {
+    margin-right: -4px;
+}
+
+.widget-11-2-table {
+    height: 275px;
+    position: relative;
+}
+
+.auto-overflow {
+    overflow: auto !important;
+}
+
+.table tbody tr td {
+    background: #fff;
+    border-bottom: 1px solid rgba(225, 225, 226, 0.7);
+    padding: 13px;
+    color: #575a5d;
+}
+
+.table.table-hover tbody tr:hover td {
+    background: #cce6ff !important;
+}
+
+.online-orders-bottom {
+    padding-left: 30px;
+    padding-top: 70px;
+    margin-bottom: 8%;
+}
+
+.online-orders-bottom i {
+    font-size: 20px;
+    padding-right: 15px;
+    color: #1dbb99 !important;
+    padding-top: 8px;
+}
+
+.small-order span {
+    font-size: 15px;
+    color: #575a5d;
+}
+
+.b-dashed {
+    border-right-style: dashed;
+    border-right-width: 1px;
+    border-right-color: #e1e1e2;
+}
+
+/*********************** responsive ***********************/
+@media (min-width: 992px) and (max-width: 1199px) {
+    .h2,
+    h2 {
+        font-size: 24px;
+    }
+
+    .online-header-left {
+        padding-bottom: 53px;
+    }
+
+    .online-orders h3 {
+        font-size: 26px;
+        margin-top: 30%;
+        margin-left: 47%;
+
+    }
+
+    .online-header-right {
+        padding: 0px;
+    }
+
+    .icon-thumbnail-p3 p {
+        padding-right: 75px;
+    }
+
+    .icon-thumbnail-p h5 {
+        font-size: 17px;
+    }
+
+    .icon-thumbnail-p3 h5 {
+        font-size: 17px;
+        margin-right: -40%;
+    }
+
+    .btn {
+        margin-top: 13%;
+    }
+
+    .hint-text p {
+        padding-right: 55%;
+    }
+
+    .running-order {
+        margin-left: -9%;
+        width: 306px;
+        padding: 20px;
+    }
+
+    .todo {
+        width: 317px;
+        margin-left: 1%;
+    }
+
+    .online-orders {
+        width: 340px;
+        margin-left: 13%;
+    }
+
+    .todo-heading-title ul li {
+        padding-right: 6px;
+    }
+
+    .todo-news {
+        width: 244px;
+    }
+
+    .new-todo {
+        width: 317px;
+    }
+
+    .watch-sell-para h3 {
+        font-size: 24px;
+    }
+
+    .heading-todo-news ul li a {
+        padding-bottom: 36px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .running-order {
+        width: 365px;
+    }
+
+    .icon-thumbnail-p3 p {
+        padding-right: 45px;
+    }
+
+    .icon-thumbnail-p h5 {
+        font-size: 17px;
+    }
+
+    .icon-thumbnail-p3 h5 {
+        font-size: 15px;
+        margin-right: 1%;
+    }
+
+    .progress {
+        margin-bottom: -30px;
+    }
+
+    .todo {
+        width: 400px;
+        margin-left: 2%;
+    }
+
+    .todo-news {
+        width: 312px;
+    }
+
+    .heading-todo-news {
+        margin-top: 25%;
+    }
+
+    .new-todo {
+        width: 400px;
+        margin-left: -6%;
+    }
+
+    .input-group input[type="text"] {
+        margin-bottom: 21px;
+    }
+
+    .last-news {
+        padding-bottom: 16%;
+    }
+
+    .online-orders {
+        width: 758px;
+        margin-left: -4%;
+    }
+
+    .online-orders h3 {
+        font-size: 25px;
+    }
+
+    .online-header-left {
+        margin-right: 46%;
+    }
+
+    .online-header-right {
+        padding: 35px 0px 35px 0px;
+    }
+
+    .online-orders-bottom {
+        padding-left: 19px;
+        padding-top: 12px;
+        margin-bottom: 5%;
+    }
+
+    .watch-sell-para p {
+        width: 693px;
+    }
+
+    .icon-controls {
+        margin-top: -5%;
+    }
+
+    .icon-controls ul {
+        padding-left: 82%;
+        padding-top: 7%;
+        padding-bottom: 20%;
+    }
+}
+
+@media (max-width: 767px) {
+    .running-order {
+        width: 365px;
+    }
+
+    .icon-thumbnail-p3 p {
+        padding-right: 75px;
+    }
+
+    .icon-thumbnail-p h5 {
+        font-size: 17px;
+    }
+
+    .icon-thumbnail-p3 h5 {
+        font-size: 17px;
+        margin-right: -4%;
+    }
+
+    .progress {
+        margin-bottom: -30px;
+    }
+
+    .todo {
+        width: 376px;
+        margin-left: -1%;
+    }
+
+    .todo-news {
+        width: 289px;
+    }
+
+    .heading-todo-news ul li a {
+        padding-bottom: 20px;
+    }
+
+    .heading-todo-news {
+        margin-top: 25%;
+    }
+
+    .new-todo {
+        width: 378px;
+        margin-left: -6%;
+    }
+
+    .input-group input[type="text"] {
+        margin-bottom: 1px;
+    }
+
+    .last-news {
+        padding-bottom: 2%;
+    }
+
+    .online-orders {
+        width: 742px;
+        margin-left: -2%;
+    }
+
+    .online-orders h3 {
+        font-size: 25px;
+    }
+
+    .online-header-right {
+        padding: 35px 0px 35px 0px;
+    }
+
+    .online-header-left {
+        margin-right: 45%;
+    }
+
+    .online-orders-bottom {
+        padding-left: 19px;
+        padding-top: 12px;
+        margin-bottom: 5%;
+    }
+
+    .watch-sell-para p {
+        width: 693px;
+    }
+
+    .icon-controls {
+        margin-top: -5%;
+    }
+
+    .icon-controls ul {
+        padding-left: 82%;
+        padding-top: 7%;
+        padding-bottom: 20%;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .running-order {
+        width: 310px;
+    }
+
+    .todo {
+        width: 311px;
+        margin-left: -8%;
+    }
+
+    .todo-news {
+        width: 238px;
+    }
+
+    .todo-heading-title ul li {
+        padding-right: 5px;
+    }
+
+    .new-todo {
+        width: 313px;
+        margin-left: -8%;
+    }
+
+    .online-orders {
+        width: 312px;
+        margin-left: -4%;
+    }
+
+    .online-header-left {
+        margin-right: 16%;
+        padding-bottom: 17px;
+    }
+
+    .watch-sell-para p {
+        width: 260px;
+    }
+
+    .icon-controls ul {
+        padding-left: 64%;
+    }
+
+    .copy2 span {
+        margin-left: -32%;
+    }
+}
+
+.ant-input{
+    background: #fff;
+  }
+  .steps-content {
+    margin-top: 10px;
+    border: 1px dashed #e9e9e9;
+    border-radius: 6px;
+    background-color: #fafafa;
+    min-height: 200px;
+    text-align: center;
+    padding-top: 20px;
+  }
+  
+  .steps-action {
+    margin-top: 24px;
+  }
+  .step{
+    height: 520px;
+  }
+  .step-extra{
+    overflow-y: scroll;
+    height: 520px;
+  }
+
+  .ant-step{
+      margin-left: 15%;
+      margin-right: 15%;
+  }

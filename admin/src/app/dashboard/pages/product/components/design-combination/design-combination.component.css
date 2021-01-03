@@ -1,0 +1,8 @@
+.items{
+    padding: 0;
+}
+
+.ant-radio-button-wrapper-checked{
+    background: blueviolet;
+    color: #d6d7d8;
+}

@@ -1,0 +1,74 @@
+<nz-card>
+    <ng-template #title>
+        Vendor Order Details
+    </ng-template>
+    <ng-template #extra>
+        <button routerLink="/dashboard/suborder" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> List </span>
+        </button>
+    </ng-template>
+
+    <ng-template #body>
+        <ul class="list-group list" *ngIf="data">
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Vendor Order number :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.id}}</p>
+                    </div>
+                </div>
+            </li><!--Name-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Total Amount :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.total_quantity}}</p>
+                    </div>
+                </div>
+            </li><!--Total Quantity-->
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Total Amount :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.total_price}}</p>
+                    </div>
+                </div>
+            </li><!--Total Price-->
+
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Date of delivery :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left">{{data.delivery_date}}</p>
+                    </div>
+                </div>
+            </li><!--Total Price-->
+            
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="pull-right"> Status :</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="pull-left"> {{data?.status | statustype}} </p>
+                    </div>
+                </div>
+            </li><!--Total Price-->
+        </ul>
+    </ng-template>
+</nz-card>
+

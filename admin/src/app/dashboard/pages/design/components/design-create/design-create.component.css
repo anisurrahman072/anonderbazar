@@ -1,0 +1,10 @@
+.ant-col-15 {
+    display: block;
+    width: 70.5%;
+}
+
+.desingCreateTable td{
+    float:center;
+    word-wrap:break-word;
+    padding: 0 5px 0 5px;
+}

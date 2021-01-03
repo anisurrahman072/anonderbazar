@@ -1,0 +1,137 @@
+<nz-card>
+    <ng-template #title>
+        Shop details
+    </ng-template>
+    <ng-template #extra>
+        <button routerLink="/dashboard/warehouse" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i>
+            <span> List </span>
+        </button>
+        <button *ngIf="data" [routerLink]="['/dashboard/warehouse/edit', data.id]" nz-button [nzType]="'primary'"
+            [nzSize]="'large'">
+            <i class="fa fa-edit"></i>
+            <span>Edit </span>
+        </button>
+    </ng-template>
+
+    <ng-template #body>
+        <div class="row" *ngIf="data">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.logo}}" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h2>
+                        {{data.name}}
+                    </h2>
+                    <h5>
+                        {{data.email}}
+                    </h5>
+                    <h5>
+                        {{data.phone}}
+                    </h5>
+                    <p class="proile-rating">Gift Point : <span>{{data.award_points}} Point</span></p>
+                    <br>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <span class="nav-link active h4" id="home-tab">Details</span>
+                        </li>
+                    </ul>
+                    <div class="row about">
+                        <div class="col-md-8 h4">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Code</label>
+                                </div>
+                                <div class="col-md-6" *ngIf="data.code && data.code!=='undefined'; else notShow">
+                                    <p>{{data.code}}</p>
+                                </div>
+                                <ng-template #notShow>
+                                    <div class="col-md-6">
+                                        <p>
+                                            N/A
+                                        </p>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>License no:</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{data.license_no}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Tin number</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{data.tin_no}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Address</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>
+                                        {{data.address}},
+                                        {{data.zila_id.name}},
+                                        {{data.upazila_id.name}},
+                                        {{data.division_id.name}}-
+                                        {{data.postal_code}},
+                                        {{data.country}}.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <br>
+        <div class="title">
+            <ng-container *ngIf="!products; then thenTemplate; else elseTemplate"></ng-container>
+            <ng-template #thenTemplate>
+                <h2>
+                    Shop Product List
+                </h2>
+                <hr>
+            </ng-template>
+            <ng-template #elseTemplate>
+
+            </ng-template>
+        </div>
+
+        <br>
+        <div class="col-md-3" *ngFor="let product of products">
+            <div class="" routerLink="/dashboard/product/details/{{product.id}}" style="margin-bottom: 15px;height: 350px;">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <img class="img-responsive img-thumbnail" src="{{IMAGE_ENDPOINT + product.image}}" alt="{{product.name}}"
+                            style="height: 200px;width: 250px">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 text-center">
+                            <span class="h4"><a href="#">{{product.name}}</a></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-lg-offset-3 text-center">
+                            <span class="text-center h4">৳ {{product.price}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</nz-card>

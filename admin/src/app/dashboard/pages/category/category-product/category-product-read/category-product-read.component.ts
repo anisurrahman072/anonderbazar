@@ -1,0 +1,45 @@
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+    FormBuilder,
+} from '@angular/forms';
+import {Subscription} from 'rxjs';
+import {NzNotificationService} from 'ng-zorro-antd';
+import {ActivatedRoute} from '@angular/router';
+import {CategoryProductService} from '../../../../../services/category-product.service';
+
+import {environment} from "../../../../../../environments/environment";
+
+@Component({
+    selector: 'app-category-product-read',
+    templateUrl: './category-product-read.component.html',
+    styleUrls: ['./category-product-read.component.css']
+})
+export class CategoryProductReadComponent implements OnInit, OnDestroy {
+    sub: Subscription;
+    id: number;
+    data: any;
+    IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+
+
+    constructor(private route: ActivatedRoute,
+                private _notification: NzNotificationService,
+                private fb: FormBuilder, private categoryProductService: CategoryProductService) {
+    }
+    // init the component
+    ngOnInit() {
+        this.sub = this.route.params.subscribe(params => {
+            this.id = +params['id']; // (+) converts string 'id' to a number
+            this.categoryProductService.getById(this.id)
+                .subscribe(result => {
+                    this.data = result;
+                });
+        });
+
+    }
+    //Method for destroying the component
+    ngOnDestroy(): void {
+        this.sub ? this.sub.unsubscribe() : '';
+    
+    }
+
+}

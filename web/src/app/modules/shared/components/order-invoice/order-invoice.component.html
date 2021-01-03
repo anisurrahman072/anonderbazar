@@ -1,0 +1,132 @@
+<section class="invoice container">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3">
+                <button class="btn btn-block text-center btn-profile" (click)="SavePDF()" >Download</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders/">Dashboard</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="content" #content>
+        <mat-card class="example-card">
+            <mat-card-content>
+                <div *ngIf="data && suborders">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="header-logo">
+                                <img src="assets/images/logo.png" class="img-responsive" alt="img">
+                            </div>
+                            <div class="invoice-inner-left">
+                                <p>Dear {{data.user_id.first_name}} {{data.user_id.last_name}}, </p>
+                                <p>Thank you for shopping from our store</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="header-text">
+                                <h4>Invoice</h4>
+                            </div>
+                            <div class="invoice-inner-right">
+                                <p>Order #{{data.id}}</p>
+                                <p>{{data.createdAt | date}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Product name</th>
+                            <th>Unit price</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let suborderItem of suborderItems; let i = index;">
+                            <td width="10%" >{{ i+1}}</td>
+                            <td width="45%" >{{suborderItem.product_id?.name}}
+                                <br>
+                                <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
+                                    <span *ngFor="let variant of suborderItem.orderitemvariant">
+                                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                    </span>
+                                </ng-container>
+                            </td>
+                            <td width="15%" >৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}</td>
+                            <td width="15%" >{{suborderItem.product_quantity}}</td>
+                            <td width="15%" >৳. {{suborderItem.product_total_price}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="amount-text text-right">
+                                    <h5>Shipping Charge</h5>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount-text">
+                                     0
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="amount-text text-right">
+                                    <h5>Grand Total</h5>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount-text">
+                                    <h5>৳. {{data.total_price}}</h5>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <br>
+                    <br>
+                    <br>
+
+                    <div class="row" style="margin-bottom: 100px; margin-left: 30px">
+                        <div class="col-md-6">
+                            <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
+                                <h5>BILLING INFORMATION: </h5>
+                                <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
+                                <p>{{paymentAddress.address}}</p>
+                                <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}, {{paymentAddress.division_id.name}}</p>
+                                <p>T: {{paymentAddress.phone}}</p>
+                            </div>
+
+
+                            <div class="shopping-info-left" *ngIf="shippingAddress">
+                                <h5>SHIPPING/DELIVERY INFORMATION: </h5>
+                                <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
+                                <p>{{shippingAddress.address}}</p>
+                                <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}, {{shippingAddress.division_id.name}}</p>
+                                <p>T: {{shippingAddress.phone}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bill-info-right" *ngIf="payment">
+                                <h5>Payment Info</h5>
+                                <p> Payment type: {{payment.payment_type}}</p>
+                                <p> Transaction id: {{payment.transection_key}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="footer">Have a nice day.</span>
+
+                </div>
+
+
+            </mat-card-content>
+
+        </mat-card>
+    </div>
+
+
+</section>
