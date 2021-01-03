@@ -15,7 +15,7 @@
                 <i class="anticon anticon-download"></i><span> Download PR</span>
             </button>
             </nz-button-group>
-        </ng-template>  
+        </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
@@ -25,15 +25,15 @@
                         <tr>
                             <th nz-th>
                                 <span> Order number </span>
-                            </th> 
+                            </th>
                             <th nz-th>
                                 <span> Order Date </span>
                             </th>
                             <th nz-th>
-                                <span> Vendor Id </span> 
+                                <span> Vendor Id </span>
                             </th>
                             <th nz-th>
-                                <span> Vendor Name </span> 
+                                <span> Vendor Name </span>
                             </th>
                             <th nz-th>
                                 <span> Quantity </span>
@@ -59,12 +59,12 @@
                                 <nz-input [nzPlaceHolder]="'Order number Search'" [(ngModel)]="suborderNumberSearchValue"
                                     (ngModelChange)="page=1;getPageData()">
                                 </nz-input>
-                            </th> 
+                            </th>
                             <th nz-th class="suborder-daterange">
 
-                                <input class="form-control" placeholder="Select Order Date" type="text"
-                                    mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"
-                                    [altInput]="true" [convertModelValue]="true" mode="range"> 
+<!--                                <input class="form-control" placeholder="Select Order Date" type="text"-->
+<!--                                    mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
+<!--                                    [altInput]="true" [convertModelValue]="true" mode="range"> -->
                             </th>
                             <th nz-th>
                                 <nz-input [nzPlaceHolder]="'Vendor Name Search'" [(ngModel)]="suborderIdValue" *ngIf="currentUser.group_id=='admin'"
@@ -72,7 +72,7 @@
                                 </nz-input>
                             </th>
                             <th nz-th>
-                                
+
                             </th>
                             <th nz-th>
                                 <nz-input [nzPlaceHolder]="'Quantity Search'" [(ngModel)]="quantitySearchValue"
@@ -84,7 +84,7 @@
                                     (ngModelChange)="page=1;getPageData()">
                                 </nz-input>
                             </th>
-                            
+
 
                             <th nz-th>
                                 <span *ngIf="setStatus(i, data.status)"></span>
@@ -108,7 +108,7 @@
                     </thead>
                     <tbody nz-tbody>
                         <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>{{data.product_order_id.id}} / {{data.id}}</td> 
+                            <td nz-td>{{data.product_order_id.id}} / {{data.id}}</td>
                             <td nz-td>{{data.createdAt|date:'yyyy-MM-dd'}}</td>
                             <td nz-td>{{data.warehouse_id.id}}</td>
                             <td nz-td>{{data.warehouse_id.name}}</td>
@@ -126,11 +126,11 @@
                                         </nz-option>
                                     </nz-select>
                                   </div>
-                                  
+
                                   <ng-template #loggedOut>
                                     {{statusOptions[data.status-1]}}
                                   </ng-template>
-                                
+
                             </td>
                             <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
                             <td>
@@ -177,7 +177,7 @@
 </section>
 <nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" [nzTitle]="'Generate Document'" [nzContent]="modalProductContent"
 (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
-<ng-template #modalProductContent>  
+<ng-template #modalProductContent>
     <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm" (ngSubmit)="submitForm($event,validateProductForm.value)">
         <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
         <thead nz-thead>
@@ -189,9 +189,9 @@
                 </th>
                 <th nz-th>
                     <span> Order Date </span>
-                </th> 
+                </th>
                 <th nz-th>
-                    <span> Vendor Name </span> 
+                    <span> Vendor Name </span>
                 </th>
                 <th nz-th>
                     <span> Quantity </span>
@@ -204,13 +204,13 @@
                 </th>
                 <th nz-th>
                     <span> Status changed by </span>
-                </th> 
+                </th>
             </tr>
-        </thead> 
+        </thead>
         <tbody nz-tbody>
             <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
                 <td nz-td [nzCheckbox]="true">
-                    <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked' (ngModelChange)="_refreshStatus($event, data)"> 
+                    <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked' (ngModelChange)="_refreshStatus($event, data)">
                     </label>
                 </td>
                 <td nz-td>{{data.product_order_id.id}} / {{data.id}}</td>
@@ -223,8 +223,8 @@
 
             </tr>
         </tbody>
-        
-    </nz-table> 
+
+    </nz-table>
         <div nz-form-item>
 
             <div nz-form-control>
@@ -242,7 +242,7 @@
 
 <nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisiblePR" [nzTitle]="'Generate Document'" [nzContent]="modalProductContentPR"
 (nzOnCancel)="handleCancelPR($event)" (nzOnOk)="handleOkPR($event)">
-<ng-template #modalProductContentPR>  
+<ng-template #modalProductContentPR>
     <form nz-form [nzLayout]="'inline'" [formGroup]="validateFormPR" (ngSubmit)="submitFormPR($event,validateFormPR.value)">
         <div class="row">
             <div class="col-md-6">
@@ -260,7 +260,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div nz-form-label class="col-md-4">
                         <label> Seller Name </label>
@@ -315,7 +315,7 @@
                 </div>
             </div>
             <div class="col-md-6">
-                
+
                 <div class="row">
                     <div nz-form-label class="col-md-4">
                         <label> Pickup Carrier Name </label>
@@ -381,7 +381,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
 
         <nz-table #nzTable [nzBordered]="true" [nzDataSource]="dataPR" [nzIsPagination]="false">
@@ -396,7 +396,7 @@
                     <span> Date </span>
                 </th>
                 <th nz-th>
-                    <span> Vendor Name </span> 
+                    <span> Vendor Name </span>
                 </th>
                 <th nz-th>
                     <span> Quantity </span>
@@ -412,13 +412,13 @@
                 </th>
                 <th nz-th>
                     <span> Status changed by </span>
-                </th> 
+                </th>
             </tr>
         </thead>
         <tbody nz-tbody>
             <tr nz-tbody-tr *ngFor="let data1 of nzTable.data;let i=index;">
                 <td nz-td [nzCheckbox]="true">
-                    <label nz-checkbox formControlName='productCheckedPR' (ngModelChange)="_refreshStatusPR($event, data1)"> 
+                    <label nz-checkbox formControlName='productCheckedPR' (ngModelChange)="_refreshStatusPR($event, data1)">
                     </label>
                 </td>
                 <td nz-td>{{data1.product_order_id.id}} / {{data1.id}}</td>

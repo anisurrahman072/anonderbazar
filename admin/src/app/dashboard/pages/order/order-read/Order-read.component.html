@@ -24,7 +24,7 @@
                         <br>
                         <p>Hi, {{data.user_id.first_name}} {{data.user_id.last_name}}. </p>
                         <p>Thank you for shopping from our store.</p>
-                        <p>Your order is <span style="color: #ed1c24">{{options[data.status-1].label}}</span>.</p> 
+                        <p>Your order is <span style="color: #ed1c24">{{options[data.status-1].label}}</span>.</p>
                         <br>
                         <br>
                     </div>
@@ -70,7 +70,19 @@
                 </tr>
                 </tbody>
             </table>
-
+            <div class="row" style="margin-bottom: 15px">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h6>Shipping Price</h6>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>৳. {{data.courier_charge}}</h5>
+                    </div>
+                </div>
+            </div>
             <div class="row" style="margin-bottom: 100px">
                 <div class="col-md-6"></div>
                 <div class="col-md-3">

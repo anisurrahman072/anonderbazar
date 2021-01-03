@@ -9,8 +9,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../../services";
 import {Subscription} from "rxjs/Subscription";
 import { AppSettings } from '../../../../config/app.config';
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {add} from "ngx-bootstrap/chronos";
 import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
 import {LoaderService} from "../../../../services/ui/loader.service";
@@ -43,6 +41,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shippingFirstName: string;
     shippingLastName: string;
     shippingPhone: string;
+    courierCharges: any;
+    shippingCharge: Number;
     shipping_division_id: string;
     shipping_zila_id: string;
     shipping_upazila_id: string;
@@ -132,6 +132,16 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.loaderService.hideLoader();
         });
         this.prevoius_address_change(this.user_id);
+
+        this.loaderService.showLoader();
+        this.cartService.getCourierCharges().subscribe(globalConfig => {
+            console.log('globalConfig', globalConfig)
+            if(Array.isArray(globalConfig) && globalConfig.length > 0){
+                this.courierCharges = globalConfig[0]
+            }
+
+            this.loaderService.hideLoader();
+        });
     }
   //Method for loader hide
     ngAfterViewInit() {
@@ -218,6 +228,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     divisionChange($event, type) {
         var divisionId = $event.target.value;
         if (type == 'shipping') {
+            this.shippingCharge = null
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
                 this.shippingZilaSearchOptions = result;
                 this.shippingUpazilaSearchOptions = [];
@@ -237,6 +248,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.shippingUpazilaSearchOptions = result;
             });
+
+            if(this.courierCharges){
+                this.shippingCharge = zilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+            } else {
+                this.shippingCharge = null
+            }
+
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.upazilaSearchOptions = result;
@@ -310,6 +328,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             });
             this.shippingZilaSearchOptions.push(address.zila_id);
             this.shippingUpazilaSearchOptions.push(address.upazila_id);
+            if(this.courierCharges){
+                this.shippingCharge = address.zila_id.id == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+            }
         } else {
             this.checkoutForm.patchValue({
                 firstName: address.first_name,
@@ -330,6 +351,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     onAddressToggle(event, type) {
         event.preventDefault();
         if (type == 'shipping') {
+            this.shippingCharge = null
             this.newShippingAddress = !this.newShippingAddress;
             if (!this.newShippingAddress) {
                 let shipping_id = this.checkoutForm.get('shipping_id').value;

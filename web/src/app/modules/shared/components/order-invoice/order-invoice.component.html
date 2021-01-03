@@ -58,7 +58,7 @@
                             </td>
                             <td width="15%" >৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}</td>
                             <td width="15%" >{{suborderItem.product_quantity}}</td>
-                            <td width="15%" >৳. {{suborderItem.product_total_price}}</td>
+                            <td width="15%" class="text-right" >৳. {{suborderItem.product_total_price}}</td>
                         </tr>
                         <tr>
                             <td colspan="4">
@@ -67,8 +67,8 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="amount-text">
-                                     0
+                                <div class="amount-text text-right">
+                                    ৳. {{data.courier_charge}}
                                 </div>
                             </td>
                         </tr>
@@ -79,7 +79,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="amount-text">
+                                <div class="amount-text text-right">
                                     <h5>৳. {{data.total_price}}</h5>
                                 </div>
                             </td>

@@ -58,6 +58,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.orderService.getById(this.id)
                 .subscribe(order => {
+                    console.log('this.data', this.data)
                     this.data = order;
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
@@ -86,7 +87,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     getPDF() {
         let printContents = document.getElementById('print-section').innerHTML;
         console.log(printContents);
-        
+
         let cop = `
       <html>
         <head>
@@ -97,7 +98,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         </head>
     <body onload="window.print();window.close()">${printContents}</body>
       </html>`;
-        
+
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
                 return true;
@@ -112,7 +113,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             'elementHandlers': specialElementHandlers
         })
         doc.save('Test.pdf');
-        
-        
+
+
     }
 }

@@ -16,11 +16,11 @@
                     <!--Login Form-->
                     <ng-container>
                       <section id="signup-section"  style="padding: 0px;">
-                          <div class="col-md-12 col-cart"> 
+                          <div class="col-md-12 col-cart">
                               <div class="table-responsive">
                                 <table class="table">
                                     <thead class="text-dark">
-                                    <tr> 
+                                    <tr>
                                         <th class="product" colspan="2">Product</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
@@ -45,14 +45,14 @@
                                                     </ng-container>
                                                 </h3>
                                             </div>
-                                        </td> 
+                                        </td>
                                         <td *ngIf="cartItem">
                                             <div class="quantity text-dark" style="width: 65px">
                                                 <span class="cursor-pointer ml-2"
                                                       (click)="changeCartItemQuantity(cartItem, 'decrease')">-</span>
                                                 {{cartItem.product_quantity}}
                                                 <span class="cursor-pointer mr-2"
-                                                      (click)="changeCartItemQuantity(cartItem, 'increase')">+</span>  
+                                                      (click)="changeCartItemQuantity(cartItem, 'increase')">+</span>
                                             </div>
 
 
@@ -63,11 +63,8 @@
                                         <td class="product-remove text-center" *ngIf="cartItem">
 
                                             <ng-template #popTemplate>
-
                                                 <button mat-raised-button color="warn" (click)="removeCartItem(cartItem.id)">Ok</button>
-                                                <button mat-raised-button color="basic" (click)="pop.hide()">Cancel
-                                                </button>
-
+                                                <button mat-raised-button color="basic" (click)="pop.hide()">Cancel</button>
                                             </ng-template>
                                             <button mat-mini-fab color="basic" class="remove text-dark" type="button" #pop="bs-popover"
                                                     [popover]="popTemplate" popoverTitle="Are you want to remove?" popoverColor='#ffffff' [outsideClick]="true">

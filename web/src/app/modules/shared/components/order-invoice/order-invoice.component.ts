@@ -16,7 +16,7 @@ import * as html2canvas from "html2canvas";
     styleUrls: ['./order-invoice.component.scss']
 })
 export class OrderInvoiceComponent implements OnInit {
-    
+
     sub: Subscription;
     id: number;
     data: any;
@@ -58,6 +58,7 @@ export class OrderInvoiceComponent implements OnInit {
                         this.paymentAddress = paymentAddress;
                     });
                     this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
+                        console.log('this.shippingAddress', this.shippingAddress)
                         this.shippingAddress = shippingAddress;
                     });
                 });
@@ -78,11 +79,11 @@ export class OrderInvoiceComponent implements OnInit {
             pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight)
             pdf.save('invoice.pdf'); // Generated PDF
         });
-    } 
+    }
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 }
 

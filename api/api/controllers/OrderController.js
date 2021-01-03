@@ -133,19 +133,20 @@ module.exports = {
     }).populate(["cart_item_variants", "product_id"]);
 
     /** Create  order from cart........................START...........................*/
-    let courierCharge = await CourierCharges.findOne({
+    let globalConfigs = await GlobalConfigs.findOne({
       deletedAt: null
     });
 
+    const courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
     let order = await Order.create({
       user_id: req.param("user_id"),
       cart_id: cart.id,
-      total_price: cart.total_price,
+      total_price: (cart.total_price + courierCharge),
       total_quantity: cart.total_quantity,
       billing_address: req.param("billing_address").id,
       shipping_address: req.param("shipping_address").id,
       status: 1,
-      courier_charge: req.param("shipping_address").zila_id == 2942 ? courierCharge.dhaka_charge : courierCharge.dhaka_charge.outside_dhaka_charge,
+      courier_charge: courierCharge,
       courier_status: 1,
     });
 
