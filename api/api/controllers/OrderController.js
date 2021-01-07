@@ -137,7 +137,11 @@ module.exports = {
       deletedAt: null
     });
 
+/*    const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
+    console.log('shippingAddress', shippingAddress[0])*/
+
     const courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+
     let order = await Order.create({
       user_id: req.param("user_id"),
       cart_id: cart.id,
@@ -235,7 +239,8 @@ module.exports = {
       subordersTemp.push(d);
     }
 
-    /*.............Payment Section ...........*/
+    /** .............Payment Section ........... */
+
     let paymentTemp = [];
 
     try {
@@ -350,9 +355,9 @@ module.exports = {
       }
 
       let settings = {
-        isSandboxMode: true, //false if live version
-        store_id: "bitsp5e4e5f62b4c34",
-        store_passwd: "bitsp5e4e5f62b4c34@ssl"
+        isSandboxMode: false, //false if live version
+        store_id: "anonderbazarlive@ssl",
+        store_passwd: "Y&%fGSyS"
       };
 
       let sslcommerz = new SSLCommerz(settings);
@@ -413,24 +418,40 @@ module.exports = {
       }).populate(["cart_item_variants", "product_id"]);
 
       /*. Create  order from cart........................START...........................*/
+
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
+      const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
+
+      let courierCharge = 0
+      if(Array.isArray(shippingAddress) && shippingAddress.length) {
+        courierCharge = shippingAddress[0].zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+      }
+
       let order = await Order.create({
         user_id: req.query.user_id,
         cart_id: cart.id,
-        total_price: cart.total_price,
+        total_price: (cart.total_price + courierCharge),
         total_quantity: cart.total_quantity,
         billing_address: req.query.billing_address,
         shipping_address: req.query.shipping_address,
+        courier_charge: courierCharge,
         status: 1
       });
 
-      /*get unique warehouse Id for suborder................START.........................*/
+      /** get unique warehouse Id for suborder................START......................... */
       let uniqueTempWarehouses = _.uniqBy(cartItems, "product_id.warehouse_id");
 
       let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
 
-      /*get unique warehouse Id for suborder..................END.........................*/
+      /** get unique warehouse Id for suborder..................END......................... */
+
       let subordersTemp = [];
-      /*.............................START..........................*/
+
+      /** .............................START.......................... */
+
       let i = 0; // i init for loop
 
       for (i = 0; i < uniqueWarehouseIds.length; i++) {

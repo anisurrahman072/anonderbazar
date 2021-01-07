@@ -71,7 +71,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   };
 
   sortName: any;
-  TypeSearchOptions: any[] = []; 
+  TypeSearchOptions: any[] = [];
   categorySearchOptions: any;
   brandSearchOptions: any;
   subcategorySearchOptions: any;
@@ -127,8 +127,8 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
   // For initiating the section element with data
   ngOnInit(): void {
-    this.route.queryParams.filter(params => params.status).subscribe(params => {  
-      this.status = params.status; 
+    this.route.queryParams.filter(params => params.status).subscribe(params => {
+      this.status = params.status;
     });
 
     this.currentUser = this.authService.getCurrentUser();
@@ -143,7 +143,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.TypeSearchOptions = result;
     });
     this.brandService.getAll().subscribe((result: any) => {
-      this.brandSearchOptions = result; 
+      this.brandSearchOptions = result;
     });
   }
   // Event method for setting up filter data
@@ -189,7 +189,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       warehouses_variant_id: value.warehouses_variant_id,
       quantity: value.quantity,
       product_id: this.currentProduct.id
-    }; 
+    };
 
     this.productVariantService.insert(formValue).subscribe(result => {
       if (result) {
@@ -204,8 +204,8 @@ export class ProductComponent implements OnInit, OnDestroy {
     });
   }
   // Event method for deleting product
-  deleteConfirm(index, id) { 
-    this.productService.delete(id).subscribe(result => { 
+  deleteConfirm(index, id) {
+    this.productService.delete(id).subscribe(result => {
 
       this.getProductData();
       this._notification.create(
@@ -244,7 +244,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         } else {
           element.name = element.name + " (Price Variation: No)"
         }
-      }); 
+      });
     });
   };
   // Modal method
@@ -270,10 +270,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.validateForm.controls.warehouses_variant_id.patchValue(null);
     if (variantId !== 'null' && variantId !== 'undefined') {
       this.warehouseVariantService.getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId,this.currentUser.warehouse.id).subscribe(result => {
-          this.warehouseVariantOptions = result; 
+          this.warehouseVariantOptions = result;
         });
     } else {
-      this.warehouseVariantOptions = []; 
+      this.warehouseVariantOptions = [];
     }
   }
 
@@ -284,7 +284,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
   // Event method for deleting product variant
   deleteProductVariantConfirm(index, id) {
-    this.productVariantService.delete(id).subscribe(result => { 
+    this.productVariantService.delete(id).subscribe(result => {
       this.currentProduct_variants.splice(index, 1);
       this._notification.create('Success Message', 'Product variant has been removed successfully', '');
     });
@@ -336,7 +336,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.promotionFormReset();
           this.addNew = false;
           },
-      error => { 
+      error => {
       }
     );
   }
@@ -390,9 +390,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.data = result.data;
           this.total = result.total;
 
-          this._isSpinning = false; 
-          
-          // temporary
+          this._isSpinning = false;
         },
         result => {
           this._isSpinning = false;
@@ -400,7 +398,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       );
   }
   // Event method for setting up filter data
-  private filterTerm(sortValue: string): string { 
+  private filterTerm(sortValue: string): string {
     switch (sortValue) {
       case 'ascend':
         return 'ASC';
@@ -452,7 +450,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   brandIdChange($event) {
       this.page = 1;
       const query = encodeURI($event);
-      this.getProductData(); 
+      this.getProductData();
   }
   // Method called in subcategory option change
   categoryIdChange($event) {

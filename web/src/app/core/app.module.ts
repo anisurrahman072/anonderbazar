@@ -1,5 +1,5 @@
 import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
-import {ErrorHandler, NgModule,Component} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
@@ -22,8 +22,8 @@ import {
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
     ProductVariantService, SuborderItemService, SuborderService, VariantService, WarehouseService, CraftsmanService,
     UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService
-} from "../services"; 
-import {NgAisModule} from 'angular-instantsearch'; 
+} from "../services";
+import {NgAisModule} from 'angular-instantsearch';
 import {MaterialModule} from "./material.module";
 import {PrebootModule} from "preboot";
 import {metaReducers} from "../state-management/reducers/sync.reducer";
@@ -46,7 +46,7 @@ import {DesignimageService} from '../services/designimage.service';
 import { ToastrModule } from 'ngx-toastr';
 import { IonRangeSliderModule } from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
-import {FormValidatorService} from "../services/validator/form-validator.service"; 
+import {FormValidatorService} from "../services/validator/form-validator.service";
 
 @NgModule({
     declarations: [
@@ -54,12 +54,12 @@ import {FormValidatorService} from "../services/validator/form-validator.service
         HeaderComponent,
         FooterComponent,
         MenuComponent,
-        NgrxUniversalComponent, 
+        NgrxUniversalComponent,
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'my-app'}),
         BrowserAnimationsModule,
-        MaterialModule,  
+        MaterialModule,
         IonRangeSliderModule,
         AppRoutingModule,
         PrebootModule.withConfig({appRoot: "app-root"}),
@@ -116,7 +116,7 @@ import {FormValidatorService} from "../services/validator/form-validator.service
         SuborderService,
         SuborderItemService,
         SubrderItemVariantService,
-        PaymentService, 
+        PaymentService,
         PaymentAddressService,
         ShippingAddressService,
         CompareService,

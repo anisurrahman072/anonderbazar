@@ -47,3 +47,5 @@ package-lock.json
 
 /api/.tmp/public1/images/
 /.tmp/
+.idea
+
