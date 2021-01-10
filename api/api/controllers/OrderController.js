@@ -137,8 +137,10 @@ module.exports = {
       deletedAt: null
     });
 
-/*    const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
-    console.log('shippingAddress', shippingAddress[0])*/
+    /*
+        const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
+        console.log('shippingAddress', shippingAddress[0])
+    */
 
     const courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
 
@@ -154,7 +156,7 @@ module.exports = {
       courier_status: 1,
     });
 
-    /** get unique warehouse Id for suborder................START.........................*/
+    /** Get unique warehouse Id for suborder................START.........................*/
 
     let uniqueTempWarehouses = _.uniqBy(cartItems, "product_id.warehouse_id");
 
@@ -170,6 +172,7 @@ module.exports = {
 
     let i = 0; // i init for loop
 
+    let allOrderedProductsInventory = []
     for (i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
@@ -200,6 +203,13 @@ module.exports = {
           product_total_price: thisCartItem.product_total_price,
           status: 1
         };
+
+        const orderedProductInventory = {
+          product_id: thisCartItem.product_id.id,
+          ordered_quantity: thisCartItem.product_quantity,
+          existing_quantity: thisCartItem.product_id.quantity
+        }
+
         let newEndDate = new Date();
         newEndDate.setDate(new Date(
           new Date(order.createdAt).getTime() +
@@ -211,9 +221,13 @@ module.exports = {
         ).getDate() + 1);
         let suborderItem = await SuborderItem.create(newSuborderItemPayload);
         let suborderItemVariantsTemp = [];
+
         if (thisCartItem.cart_item_variants.length > 0) {
+
           for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
+
             let thisCartItemVariant = thisCartItem.cart_item_variants[j];
+
             let newSuborderItemVariantPayload = {
               product_suborder_item_id: suborderItem.id,
               product_id: thisCartItemVariant.product_id,
@@ -221,6 +235,16 @@ module.exports = {
               warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
               product_variant_id: thisCartItemVariant.product_variant_id
             };
+
+            if(typeof orderedProductInventory.variantPayload === 'undefined'){
+              orderedProductInventory.variantPayload = []
+            }
+
+            orderedProductInventory.variantPayload.push({
+              product_id: thisCartItemVariant.product_id,
+              variant_id: thisCartItemVariant.variant_id,
+              warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+            })
 
             let suborderItemVariant = await SuborderItemVariant.create(
               newSuborderItemVariantPayload
@@ -232,6 +256,8 @@ module.exports = {
         let d = Object.assign({}, suborderItem);
         d.suborderItemVariants = suborderItemVariantsTemp;
         suborderItemsTemp.push(d);
+
+        allOrderedProductsInventory.push(orderedProductInventory)
       }
 
       let d = Object.assign({}, suborder);
@@ -269,7 +295,7 @@ module.exports = {
       }
     }
     orderForMail[0].orderItems = allOrderedProducts;
-    EmailService.orderSubmitMail(orderForMail);
+
 
     // Start/Delete Cart after submitting the order
 
@@ -283,8 +309,32 @@ module.exports = {
           {deletedAt: new Date()}
         );
       }
+      console.log('allOrderedProductsInventory', allOrderedProductsInventory)
+      for (let i = 0; i < allOrderedProductsInventory.length; i++) {
+        const thisInventoryProd = allOrderedProductsInventory[i]
+        const quantityToUpdate = parseFloat(thisInventoryProd.existing_quantity) - parseFloat(thisInventoryProd.ordered_quantity)
+        await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate});
+
+        if(typeof thisInventoryProd.variantPayload !== 'undefined'){
+
+          for(let j = 0; j < thisInventoryProd.variantPayload.length; j++){
+            const thisVariant = thisInventoryProd.variantPayload[j]
+/*            await ProductVariant.update({
+              product_id: thisVariant.product_id,
+              variant_id: thisVariant.variant_id,
+              warehouse_variant_id: thisVariant.warehouse_variant_id,
+            }, {quantity: quantityToUpdate});*/
+          }
+        }
+      }
     } catch (err) {
 
+    }
+
+    try {
+      EmailService.orderSubmitMail(orderForMail);
+    } catch (err) {
+      console.log('Email Sending Error')
     }
     // End /Delete Cart after submitting the order
     let d = Object.assign({}, order);
@@ -426,7 +476,7 @@ module.exports = {
       const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
 
       let courierCharge = 0
-      if(Array.isArray(shippingAddress) && shippingAddress.length) {
+      if (Array.isArray(shippingAddress) && shippingAddress.length) {
         courierCharge = shippingAddress[0].zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
       }
 
@@ -453,6 +503,7 @@ module.exports = {
       /** .............................START.......................... */
 
       let i = 0; // i init for loop
+      let allOrderedProductsInventory = []
 
       for (i = 0; i < uniqueWarehouseIds.length; i++) {
         let thisWarehouseID = uniqueWarehouseIds[i];
@@ -484,6 +535,14 @@ module.exports = {
             product_total_price: thisCartItem.product_total_price,
             status: 1
           };
+
+
+          const orderedProductInventory = {
+            product_id: thisCartItem.product_id.id,
+            ordered_quantity: thisCartItem.product_quantity,
+            existing_quantity: thisCartItem.product_id.quantity
+          }
+
           let newEndDate = new Date();
           newEndDate.setDate(new Date(
             new Date(order.createdAt).getTime() +
@@ -506,16 +565,29 @@ module.exports = {
                 product_variant_id: thisCartItemVariant.product_variant_id
               };
 
+              if(typeof orderedProductInventory.variantPayload === 'undefined'){
+                orderedProductInventory.variantPayload = []
+
+              }
+              orderedProductInventory.variantPayload.push({
+                product_id: thisCartItemVariant.product_id,
+                variant_id: thisCartItemVariant.variant_id,
+                warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+              })
+
               let suborderItemVariant = await SuborderItemVariant.create(
                 newSuborderItemVariantPayload
               );
               suborderItemVariantsTemp.push(suborderItemVariant);
+
             }
           }
 
           let d = Object.assign({}, suborderItem);
           d.suborderItemVariants = suborderItemVariantsTemp;
           suborderItemsTemp.push(d);
+
+          allOrderedProductsInventory.push(orderedProductInventory)
         }
 
         let d = Object.assign({}, suborder);
@@ -554,7 +626,7 @@ module.exports = {
         }
       }
       orderForMail[0].orderItems = allOrderedProducts;
-      EmailService.orderSubmitMail(orderForMail);
+
 
       await Cart.update({id: cart.id}, {deletedAt: new Date()});
 
@@ -566,8 +638,18 @@ module.exports = {
             {deletedAt: new Date()}
           );
         }
+        console.log('allOrderedProductsInventory', allOrderedProductsInventory)
+        for (let i = 0; i < allOrderedProductsInventory.length; i++) {
+          const quantityToUpdate = parseFloat(allOrderedProductsInventory[i].existing_quantity) - parseFloat(allOrderedProductsInventory[i].ordered_quantity)
+          await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate});
+        }
       } catch (err) {
 
+      }
+      try {
+        EmailService.orderSubmitMail(orderForMail);
+      } catch (err){
+        console.log('Order Sending email failed')
       }
       // End /Delete Cart after submitting the order
       let d = Object.assign({}, order);
