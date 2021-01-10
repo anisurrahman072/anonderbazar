@@ -31,7 +31,6 @@ module.exports = {
         },
         name: {
             type: 'string',
-
         },
         quantity: {
             type: 'integer',

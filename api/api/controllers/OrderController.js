@@ -314,18 +314,6 @@ module.exports = {
         const thisInventoryProd = allOrderedProductsInventory[i]
         const quantityToUpdate = parseFloat(thisInventoryProd.existing_quantity) - parseFloat(thisInventoryProd.ordered_quantity)
         await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate});
-
-        if(typeof thisInventoryProd.variantPayload !== 'undefined'){
-
-          for(let j = 0; j < thisInventoryProd.variantPayload.length; j++){
-            const thisVariant = thisInventoryProd.variantPayload[j]
-/*            await ProductVariant.update({
-              product_id: thisVariant.product_id,
-              variant_id: thisVariant.variant_id,
-              warehouse_variant_id: thisVariant.warehouse_variant_id,
-            }, {quantity: quantityToUpdate});*/
-          }
-        }
       }
     } catch (err) {
 
