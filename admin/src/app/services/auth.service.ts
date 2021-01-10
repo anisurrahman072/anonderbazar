@@ -12,11 +12,11 @@ import {environment} from "../../environments/environment";
 export class AuthService {
     jwtHelper: JwtHelperService = new JwtHelperService();
     public token: string;
-    
-    
+
+
     constructor(private http: HttpClient) {
     }
-    
+
     login(username: string, password: string): Observable<any> {
         return this.http.post(environment.API_ENDPOINT + '/auth/dashboardlogin', {
             username: username,
@@ -24,7 +24,7 @@ export class AuthService {
         })
             ;
     }
-    
+
     logout(): void {
         // clear token remove user from local storage to log user out
         this.token = null;
@@ -32,8 +32,8 @@ export class AuthService {
         localStorage.removeItem('token');
         localStorage.removeItem('currentWarehouse');
     }
-    
-    
+
+
     getToken() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -41,8 +41,8 @@ export class AuthService {
         }
         return false;
     }
-    
-    
+
+
     getCurrentUserId() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -51,9 +51,9 @@ export class AuthService {
         } else {
             return false;
         }
-        
+
     }
-    
+
     getCurrentUser() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -62,9 +62,9 @@ export class AuthService {
         } else {
             return false;
         }
-        
+
     }
-    
+
     getCurrentUserInfo() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -73,9 +73,9 @@ export class AuthService {
         } else {
             return false;
         }
-        
+
     }
-    
+
     getCurrentUserAccessName() {
         const token = localStorage.getItem('token');
         if (token) {
@@ -85,7 +85,7 @@ export class AuthService {
             return false;
         }
     }
-    
+
     getCurrentUserAccessNameAsync(): Observable<any> {
         const token = localStorage.getItem('token');
         if (token) {
@@ -95,36 +95,37 @@ export class AuthService {
             return of(false);
         }
     }
-    
+
     setCurrentWarehouse(message: any) {
         localStorage.setItem('currentWarehouse', message);
-        
+
     }
-    
+
     getCurrentWarehouse() {
         let dd = localStorage.getItem('currentWarehouse');
         return dd ? parseInt(dd) : null;
     }
-    
+
     loginSuccess(result) {
-        
+
         localStorage.setItem('currentUser', JSON.stringify({username: result.username, token: result.token}));
         localStorage.setItem('token', result.token);
         localStorage.setItem('accessControlList', result.accessControlList);
     }
-    
-    
+
+
     getAccessControlList(): any[] {
         const accessControlList = localStorage.getItem('accessControlList');
         if (accessControlList) {
+
             const jwtPayload = this.jwtHelper.decodeToken(accessControlList);
             return jwtPayload.list;
         } else {
             return [];
         }
-        
-        
+
+
     }
-    
-    
+
+
 }

@@ -63,6 +63,8 @@ export class ProductComponent implements OnInit, OnDestroy {
   categoryId: any = null;
   subcategoryId: any = null;
 
+  approvalStatus: any = null;
+
   sortValue = {
     code: null,
     name: null,
@@ -210,8 +212,33 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.getProductData();
       this._notification.create(
         'Successfully Message',
-        'Product has been remove sucessfully',
+        'Product has been remove successfully',
         ''
+      );
+    });
+  }
+  // Event method for deleting product
+  approveConfirm(index, id) {
+    console.log('approveConfirm', id)
+    this.productService.approveByAdmin(id).subscribe(result => {
+
+      this.getProductData();
+      this._notification.create(
+        'Successfully Message',
+        'Product has been approved successfully',
+        ''
+      );
+    });
+  }
+  rejectConfirm(index, id) {
+    console.log('rejectConfirm', id)
+    this.productService.rejectByAdmin(id).subscribe(result => {
+
+      this.getProductData();
+      this._notification.create(
+          'Successfully Message',
+          'Product has been rejected successfully',
+          ''
       );
     });
   }
@@ -383,7 +410,8 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.filterTerm(this.sortValue.code),
         this.filterTerm(this.sortValue.name),
         this.filterTerm(this.sortValue.price),
-        this.filterTerm(this.sortValue.quantity)
+        this.filterTerm(this.sortValue.quantity),
+          this.approvalStatus || '',
       )
       .subscribe(
         result => {
@@ -425,7 +453,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.subcategoryId = null;
     this.categorySearchOptions = [];
     this.subcategorySearchOptions = [];
-
+    this.approvalStatus = null;
     this.getProductData();
   }
   // Method called in type option change
@@ -451,6 +479,14 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.page = 1;
       const query = encodeURI($event);
       this.getProductData();
+  }
+  // Method called in brand option change
+  approvalStatusChange($event) {
+    this.page = 1;
+    const query = encodeURI($event);
+    console.log('approvalStatusChange-query', query)
+    this.approvalStatus = query
+    this.getProductData();
   }
   // Method called in subcategory option change
   categoryIdChange($event) {

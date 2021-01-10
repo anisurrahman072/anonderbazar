@@ -109,6 +109,12 @@ module.exports = {
     status: {
       type: 'integer',
     },
+    approval_status: {
+      type: 'integer',
+    },
+    approval_status_updated_by: {
+      type: 'integer',
+    },
     featured: {
       type: 'text',
     },

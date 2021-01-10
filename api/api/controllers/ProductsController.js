@@ -18,6 +18,9 @@ module.exports = {
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
       }
+      if (req.query.approval_status) {
+        _where.approval_status = req.query.approval_status;
+      }
       if (req.token && req.token.userInfo.warehouse_id) {
         _where.warehouse_id = req.token.userInfo.warehouse_id.id;
       }

@@ -17,22 +17,26 @@ const routes: Routes = [
                 canActivate: [AccessControl],
                 data: {accessData: 'product',breadcrumbs: 'list'},
                 component: ProductComponent,
-            }, {
+            },
+            {
                 path: 'details/:id',
                 canActivate: [AccessControl],
                 data: {accessData: 'product-read',breadcrumbs: 'details'},
                 component: ProductReadComponent,
-            }, {
+            },
+            {
                 path: 'create',
                 canActivate: [AccessControl],
                 data: {accessData: 'product-create',breadcrumbs: 'create'},
                 component: ProductCreateComponent,
-            }, {
+            },
+            {
                 path: 'edit/:id',
                 canActivate: [AccessControl],
                 data: {accessData: 'product-edit',breadcrumbs: 'edit'},
                 component: ProductEditComponent,
-            }, {
+            },
+            {
                 path: '**',
                 redirectTo: '',
                 pathMatch: 'full'

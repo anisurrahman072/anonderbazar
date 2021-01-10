@@ -30,9 +30,9 @@
                 routerLink="/dashboard/customer" *ngIf="'customer'|accessControl">
                 <i class="anticon anticon-user"></i>
                 Customer
-            </li> 
+            </li>
         </ul>
-    </li> 
+    </li>
     <li nz-submenu *ngIf="'variant'|accessControl">
         <span title>
             <i class="fa fa-list-ul"></i>
@@ -58,7 +58,7 @@
             <i class="fa fa-th-large"></i>
             <span class="nav-text">Product</span>
         </span>
-        <ul> 
+        <ul>
             <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
                 routerLink="/dashboard/category/product" *ngIf="'productcategory'|accessControl">
                 <i class="anticon anticon-file"></i>
@@ -70,7 +70,7 @@
                 routerLink="/dashboard/brand" *ngIf="'brand'|accessControl">
                 <i class="anticon anticon-file"></i>
                 Brand
-            </li> 
+            </li>
         </ul>
     </li>
 
@@ -88,7 +88,11 @@
             <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
                 routerLink="/dashboard/product" [queryParams]="{status: '2'}" *ngIf="'product'|accessControl">
                 Variable Product
-            </li> 
+            </li>
+            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                routerLink="/dashboard/product/pending-approvals" [queryParams]="{status: '1'}" *ngIf="'product-pending-approvals'|accessControl">
+                 Pending Approval
+            </li>
         </ul>
     </li>
 
@@ -103,7 +107,7 @@
                 <i class="anticon anticon-file"></i>
                 Order
             </li>
-            
+
             <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
                 routerLink="/dashboard/suborder" *ngIf="'suborder'|accessControl">
                 <i class="anticon anticon-file"></i>
@@ -120,7 +124,7 @@
                 Financial Transactions
             </li>
         </ul>
-    </li> 
+    </li>
     <li nz-submenu *ngIf="'courier'|accessControl">
         <span title>
             <i class="fa fa-truck"></i>
@@ -154,8 +158,8 @@
                 Courier Sub-Order List
             </li>
         </ul>
-        
-    </li> 
+
+    </li>
     <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/cms/home"
         *ngIf="'cms'|accessControl">
         <span>
