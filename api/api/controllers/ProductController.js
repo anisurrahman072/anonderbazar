@@ -43,7 +43,7 @@ module.exports = {
   //Method called for finding product max price data
   //Model models/Product.js
   maxPrice: function (req, res) {
-    Product.query(`SELECT MAX(price) as max FROM products`, function (
+    Product.query(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`, function (
       err,
       rawResult
     ) {
@@ -56,7 +56,7 @@ module.exports = {
   //Method called for finding product min price data
   //Model models/Product.js
   minPrice: function (req, res) {
-    Product.query(`SELECT MIN(price) as min FROM products`, function (
+    Product.query(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`, function (
       err,
       rawResult
     ) {
@@ -198,7 +198,7 @@ module.exports = {
 
       await asyncForEach(categories, async (_category) => {
         _category.products = await Product.find({
-          where: { type_id: _category.id, deletedAt: null },
+          where: { type_id: _category.id, deletedAt: null, approval_status : 2 },
           limit: 5,
           sort: "updated_at DESC",
         });
