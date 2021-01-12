@@ -155,7 +155,6 @@
 .group-button a:hover {
   background: #eec15b;
 }
-
 .product-item .button.quick-view {
   position: absolute;
   top: -100px;
@@ -178,15 +177,12 @@
   transition: all 0.5s ease 0s;
   z-index: 2;
 }
-
 .product-item .button.quick-view:hover {
   background: #eec15b;
 }
-
 .product-item:hover .button.quick-view {
   top: 10px;
 }
-
 .product-item .has-second-image .second-image {
   position: absolute;
   top: 0;
@@ -199,22 +195,18 @@
   transform: translate(420px, 0);
   visibility: hidden;
 }
-
 .product-item:hover .has-second-image .second-image {
   -webkit-transform: translate(0, 0);
   -ms-transform: translate(0, 0);
   transform: translate(0, 0);
   visibility: inherit;
 }
-
 .new {
   background-color: #83ccd5;
 }
-
 .sale {
   background-color: #e9c77b;
 }
-
 .product-item-min .price {
   color: #333;
   font-family: "SolaimanLipi";
@@ -222,13 +214,10 @@
   margin-right: 9px;
   color: #ec5858;
 }
-
-
 .product-image{
   width: 380px;
   height: 300px;
 }
-
 .image-link {
   display: block;
 }
