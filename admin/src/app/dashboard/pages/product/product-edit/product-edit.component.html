@@ -1,6 +1,6 @@
 <nz-card>
     <ng-template #title>
-            Product Edit 
+            Product Edit
             <span *ngIf="currentUser.group_id=== 'admin'">(Shop: {{warehouse_name}})</span>
     </ng-template>
     <ng-template #extra>
@@ -66,6 +66,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzSpan]="7" nz-form-label>
+                            <label> Vendor Price </label>
+                        </div>
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="vendor_price" [nzType]="'number'" [nzPlaceHolder]="'Enter Vendor Price'" [nzSize]="'large'"></nz-input>
+                            <div nz-form-explain *ngIf="getFormControl('vendor_price').dirty&&getFormControl('vendor_price').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!--price-->
                 <div class="col-md-6">
                     <div nz-form-item nz-row>
@@ -73,16 +86,13 @@
                             <label>Min Order Quantity</label>
                         </div>
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-                            <nz-input formControlName="min_unit" [nzType]="'number'" [nzPlaceHolder]="'Enter Min Order Quantity'" [nzSize]="'large'">
-                            </nz-input>
+                            <nz-input formControlName="min_unit" [nzType]="'number'" [nzPlaceHolder]="'Enter Min Order Quantity'" [nzSize]="'large'"></nz-input>
                             <div nz-form-explain *ngIf="getFormControl('min_unit').dirty&&getFormControl('min_unit').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--min_unit-->
-
                 </div>
                 <div class="col-md-6">
                     <div nz-form-item nz-row>
@@ -153,7 +163,7 @@
                         </div>
                     </div>
                     <!--brand_id-->
-        
+
                 </div>
             </div>
 
@@ -286,7 +296,7 @@
                             <div nz-col [nzSpan]="7" nz-form-label>
                                 <label>Front Image</label>
                             </div>
-                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                                 <image-upload #Image [max]="1" buttonCaption="Select picture"
                                 dropBoxMessage="Drop Picture here"
                                 clearButtonCaption="remove" (removed)="onRemovedFront($event)" [uploadedFiles]="ImageFrontEdit" [beforeUpload]="onBeforeUploadFront">
@@ -304,21 +314,21 @@
                                 <label>Picture</label>
                             </div>
                             <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-    
+
                                 <image-upload #Image [max]="3" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                 dropBoxMessage="Drop Picture here"
                                 clearButtonCaption="remove it?" [uploadedFiles]="ImageFileEdit" [beforeUpload]="onBeforeUpload"></image-upload>
-    
+
                                 <div nz-form-explain *ngIf="getFormControl('image').dirty&&getFormControl('image').hasError('required')">
                                     required!
                                 </div>
                             </div>
                         </div>
                         <!--image-->
-    
+
                     </div>
                 </div>
-                
+
                 <div class="col-md-12">
                     <div nz-form-item nz-row>
                         <div nz-col [nzSpan]="3" nz-form-label>

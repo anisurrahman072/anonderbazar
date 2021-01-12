@@ -29,11 +29,14 @@ module.exports = {
       type: 'float',
       required: true,
     },
+    vendor_price: {
+      type: 'float',
+      required: false,
+    },
     min_unit: {
       type: 'integer',
       required: true,
       defaultsTo: 0
-
     },
     alert_quantity: {
       type: 'integer',

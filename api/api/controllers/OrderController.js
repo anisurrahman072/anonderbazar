@@ -391,15 +391,17 @@ module.exports = {
       } else if (req.param("is_copy") === true) {
         req.param("billing_address").id = req.param("shipping_address").id;
       }
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
 
       let settings = {
         isSandboxMode: false, //false if live version
-        store_id: "anonderbazarlive@ssl",
-        store_passwd: "Y&%fGSyS"
+        store_id: globalConfigs && globalConfigs.sslcommerce_user ? globalConfigs.sslcommerce_user : "anonderbazarlive@ssl",
+        store_passwd: globalConfigs && globalConfigs.sslcommerce_pass ? globalConfigs.sslcommerce_pass : "i2EFz@ZNt57@t@r",
       };
 
       let sslcommerz = new SSLCommerz(settings);
-
 
       let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
       let string_length = 16;

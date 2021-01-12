@@ -1,4 +1,4 @@
-<div class="menu-sticky">
+<div class="menu-sticky" id="anonder-bazar-sticky-menu">
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg px-0">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,12 +18,12 @@
                     </li>
                     <li class="has-child c-1">
                         <a routerLink="/">HOME</a>
-                    </li> 
+                    </li>
                     <li *ngFor="let category of categoryList" class="has-child c-2"
                         (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"
                         (mouseenter)="categoryHover(category)" [ngClass]="category.id==selectedCategoryId? 'active':''">
                         <a (click)="categoryClickEvent(category)" [ngClass]="category.id==selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
-                        <div class="dropdown-menu w-100" *ngIf='subCategoryList && subCategoryList.length>0'>
+                        <div class="dropdown-menu w-100" *ngIf='subCategoryList && subCategoryList.length>0 && isDisplay '>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="row">
@@ -52,24 +52,24 @@
                                 </div>
                                 <div class="col-md-4" *ngIf="category.offer_id">
                                     <div class="row">
-                                        
-                                        <a href="#" routerLink="/cms-details/{{category.offer_id.id}}">
+<!--                                        <a href="#" (click)="isDisplay=false" routerLink="/cms-details/{{category.offer_id.id}}">-->
+                                        <a href="#" (click)="navigateToCms($event,  category.offer_id.id)" >
                                         <div class="col-md-12 mb-3">
                                             <div class="dropdown-img text-center">
                                                 <img src="{{IMAGE_ENDPOINT + category.offer_id.data_value[0].image}}" alt="">
                                                 <p>{{category.offer_id.data_value[0].title}}</p>
                                             </div>
                                         </div>
-                                        </a> 
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </li> 
+                    </li>
                 </ul>
             </div>
         </nav>
-        
+
     </div>
 </div>
     <!-- mobile menu start -->
@@ -82,7 +82,7 @@
                 <a routerLink="/" href="">
                     <img class="img-1" src="assets/images/logo-white.png" alt="">
                     <img class="img-2" src="assets/images/logo.png" alt="">
-                </a> 
+                </a>
                 <span id="menu-icon"></span></label>
             <div class="widget-cart">
                 <a routerLink="/profile/favourites">
@@ -106,17 +106,17 @@
             </div>
             <ul>
                 <li>
-                    <a href="#"> 
+                    <a href="#">
                         HOME
                     </a>
-                </li> 
+                </li>
                 <li *ngFor="let category of categoryList"
                     (mouseenter)="categoryHover(category)"
                     (click)="categoryClickEvent(category)">
                     <a href="#" [routerLink]="['/products/category/',category.id]">{{category.name}}</a>
-                    
-                </li> 
-            </ul> 
+
+                </li>
+            </ul>
         </div>
     </nav>
 </div>

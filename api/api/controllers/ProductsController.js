@@ -199,6 +199,10 @@ module.exports = {
                   ];
               }
 
+              if(filters.approvalStatus){
+                _where.approval_status = filters.approvalStatus
+              }
+
               if (filters.categoryList.length) {
                   _where.category_id = filters.categoryList;
               }

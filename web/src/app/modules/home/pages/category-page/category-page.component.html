@@ -1,13 +1,20 @@
 <div class="shop-page-bar">
     <div class="container-fluid">
-      <nav class="woocommerce-breadcrumb breadcrumbs">
-          <a routerLink="/" routerLinkActive="active">Home</a>
-          <a routerLink="/products" routerLinkActive="active">OUR PRODUCTS</a>
-          <a *ngIf="categoryB != 0" style="text-transform: uppercase;" routerLink="/products/category/{{categoryB?.id}}" [queryParams]="{category: categoryB?.id}" routerLinkActive="active"> {{categoryB?.name}}</a>
-          <a *ngIf="subcategoryB != 0" style="text-transform: uppercase;" routerLink="/products/category/{{categoryB?.id}}" [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id}"  routerLinkActive="active">{{subcategoryB?.name}}</a>
-          <a *ngIf="subsubcategoryB != 0"  style="text-transform: uppercase;" routerLink="/products/category/{{categoryB?.id}}"  [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id, subsub: subsubcategoryB?.id}">{{subsubcategoryB?.name}}</a>
-      </nav>
-      <div class="page-bar-right"></div>
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home</a>
+            <a routerLink="/products" routerLinkActive="active">OUR PRODUCTS</a>
+            <a *ngIf="categoryB != 0" style="text-transform: uppercase;"
+               routerLink="/products/category/{{categoryB?.id}}" [queryParams]="{category: categoryB?.id}"
+               routerLinkActive="active"> {{categoryB?.name}}</a>
+            <a *ngIf="subcategoryB != 0" style="text-transform: uppercase;"
+               routerLink="/products/category/{{categoryB?.id}}"
+               [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id}"
+               routerLinkActive="active">{{subcategoryB?.name}}</a>
+            <a *ngIf="subsubcategoryB != 0" style="text-transform: uppercase;"
+               routerLink="/products/category/{{categoryB?.id}}"
+               [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id, subsub: subsubcategoryB?.id}">{{subsubcategoryB?.name}}</a>
+        </nav>
+        <div class="page-bar-right"></div>
     </div>
 </div>
 <div class="product-lists">
@@ -18,8 +25,9 @@
                 <div class="search_label ">
                     <strong> Search </strong><span class="btn pull-right"></span>
                     <div class="search_type">
-                        <input type="text" placeholder="Search here" style="border:1px solid #7D9A9D;" class="form-control"
-                            (change)="filter_result($event, 'search', '')" value="{{ searchTerm }}" />
+                        <input type="text" placeholder="Search here" style="border:1px solid #7D9A9D;"
+                               class="form-control"
+                               (change)="filter_result($event, 'search', '')" value="{{ searchTerm }}"/>
                     </div>
                 </div>
 
@@ -27,72 +35,62 @@
                     <div class="search_label">
                         <strong> Price </strong>
                     </div>
-                    <ng5-slider [(value)]="minPrice" [(highValue)]="maxPrice" [options]="options" (click)="filter_result($event, 'price', '')"></ng5-slider>
-                           <br /> 
-                           <div class="row rang-row">
-                            <div class="col-sm-12 col-12 col-md-5 number_text">
-                                <input type="number" step="any" class="form-control text-center" [(ngModel)]="minPrice"
-                                    (change)="filter_result($event, 'price', '')" />
-                            </div>
-                     
-                            <div class="col-sm-12 col-12 col-md-2 number-to">to</div>
-                            <div class="col-sm-12 col-12 col-md-5 number_text">
-                                <input type="number" step="any" class="form-control text-center" [(ngModel)]="maxPrice"
-                                    (change)="filter_result($event, 'price', '')" />
-                            </div>
-                           </div> 
-                       </div> 
+                    <ng5-slider [(value)]="minPrice" [(highValue)]="maxPrice" [options]="options"
+                                (click)="filter_result($event, 'price', '')"></ng5-slider>
+                    <br/>
+                    <div class="row rang-row">
+                        <div class="col-sm-12 col-12 col-md-5 number_text">
+                            <input type="number" step="any" class="form-control text-center" [(ngModel)]="minPrice"
+                                   (change)="filter_result($event, 'price', '')"/>
+                        </div>
+
+                        <div class="col-sm-12 col-12 col-md-2 number-to">to</div>
+                        <div class="col-sm-12 col-12 col-md-5 number_text">
+                            <input type="number" step="any" class="form-control text-center" [(ngModel)]="maxPrice"
+                                   (change)="filter_result($event, 'price', '')"/>
+                        </div>
+                    </div>
+                </div>
                 <div id="accordion3" class="filter-acco">
                     <div (click)="isCollapsed_class = !isCollapsed_class" class="search_label ">
-                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"> Category </strong><span class="btn pull-right"><i class="fa fa-minus" *ngIf='isCollapsed_class==true'></i><i class="fa fa-plus" *ngIf='isCollapsed_class==false'></i></span>
+                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;">
+                            Category </strong><span class="btn pull-right"><i class="fa fa-minus"
+                                                                              *ngIf='isCollapsed_class==true'></i><i
+                            class="fa fa-plus" *ngIf='isCollapsed_class==false'></i></span>
                     </div>
-                    <div *ngIf="isCollapsed_class" id="collapseFour" class="collapse show" aria-labelledby="headingfour" data-parent="#accordion">
+                    <div *ngIf="isCollapsed_class" id="collapseFour" class="collapse show" aria-labelledby="headingfour"
+                         data-parent="#accordion">
                         <div class="check-box-1">
                             <div class="checkbox" *ngFor="let category of allCategory">
                                 <input type="checkbox" value="{{ category.id }}" id="category_{{ category.id }}"
                                        [attr.checked]="currentCategoryId === category.id ? 'checked' : null"
-                                       name="category" (click)="filter_result($event, 'category', category.name)" />
+                                       name="category" (click)="filter_result($event, 'category', category.name)"/>
                                 <label for="category_{{ category.id }}">{{
-                                    category.name
+                                  category.name
                                     }}</label>
                             </div>
 
-<!--                            <a href="#">Show more<i class="fa fa-angle-down"></i></a>-->
+                            <!--                            <a href="#">Show more<i class="fa fa-angle-down"></i></a>-->
                         </div>
                     </div>
                 </div>
-                <div id="accordion2" class="filter-acco"  *ngIf="allsubCategory">
+                <div id="accordion2" class="filter-acco" *ngIf="allsubCategory">
                     <div (click)="isCollapsed_subclass = !isCollapsed_subclass" class="search_label ">
-                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"> Subcategory </strong><span class="btn pull-right"><i class="fa fa-minus" *ngIf='isCollapsed_subclass==true'></i><i class="fa fa-plus" *ngIf='isCollapsed_subclass==false'></i></span>
+                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;">
+                            Subcategory </strong><span class="btn pull-right"><i class="fa fa-minus"
+                                                                                 *ngIf='isCollapsed_subclass==true'></i><i
+                            class="fa fa-plus" *ngIf='isCollapsed_subclass==false'></i></span>
                     </div>
                     <!-- <button class="btn btn-link filter-btn pl-0" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
                         Product Sub Category<span class="icon-3"><i class="fa fa-minus"></i></span>
                     </button> -->
-                    <div *ngIf='isCollapsed_subclass' id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+                    <div *ngIf='isCollapsed_subclass' id="collapseThree" class="collapse show"
+                         aria-labelledby="headingThree" data-parent="#accordion">
                         <div class="check-box-1">
                             <div class="checkbox" *ngFor="let category of allsubCategory">
-                                <input type="checkbox" value="{{ category.id }}" id="category_{{ category.id }}" (click)="filter_result($event, 'sub_category', category.name)"
-                                       [attr.checked]="currentSubCategoryId === category.id ? 'checked' : null" />
-                                <label for="category_{{ category.id }}">{{category.name}}</label>
-                            </div>
-
-<!--                            <a href="#">Show more<i class="fa fa-angle-down"></i></a>-->
-                        </div>
-                    </div>
-                </div>
-
-                <div id="accordion2" class="filter-acco"  *ngIf="allSubSubCategory">
-                    <div (click)="isCollapsed_subsubclass = !isCollapsed_subsubclass" class="search_label ">
-                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"> Sub-Subcategory </strong><span class="btn pull-right"><i class="fa fa-minus" *ngIf='isCollapsed_subsubclass==true'></i><i class="fa fa-plus" *ngIf='isCollapsed_subsubclass==false'></i></span>
-                    </div>
-                    <!-- <button class="btn btn-link filter-btn pl-0" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                        Product Sub Category<span class="icon-3"><i class="fa fa-minus"></i></span>
-                    </button> -->
-                    <div *ngIf='isCollapsed_subsubclass' id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
-                        <div class="check-box-1">
-                            <div class="checkbox" *ngFor="let category of allSubSubCategory">
-                                <input type="checkbox" value="{{ category.id }}" id="category_{{ category.id }}" (click)="filter_result($event, 'sub_sub_category', category.name)"
-                                       [attr.checked]="currentSubSubCategoryId === category.id ? 'checked' : null" />
+                                <input type="checkbox" value="{{ category.id }}" id="category_{{ category.id }}"
+                                       (click)="filter_result($event, 'sub_category', category.name)"
+                                       [attr.checked]="currentSubCategoryId === category.id ? 'checked' : null"/>
                                 <label for="category_{{ category.id }}">{{category.name}}</label>
                             </div>
 
@@ -101,24 +99,54 @@
                     </div>
                 </div>
 
-                <div id="accordion2" class="filter-acco"  *ngIf="allBrand">
-                    <div (click)="isCollapsed_brand = !isCollapsed_brand" class="search_label ">
-                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"> Brand </strong><span class="btn pull-right"><i class="fa fa-minus" *ngIf='isCollapsed_brand==true'></i><i class="fa fa-plus" *ngIf='isCollapsed_brand==false'></i></span>
+                <div id="accordion2" class="filter-acco" *ngIf="allSubSubCategory">
+                    <div (click)="isCollapsed_subsubclass = !isCollapsed_subsubclass" class="search_label ">
+                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;">
+                            Sub-Subcategory </strong><span class="btn pull-right">
+                        <i class="fa fa-minus" *ngIf='isCollapsed_subsubclass==true'></i>
+                        <i class="fa fa-plus" *ngIf='isCollapsed_subsubclass==false'></i></span>
                     </div>
-                    <div *ngIf='isCollapsed_brand' id="collapseFive" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+                    <!-- <button class="btn btn-link filter-btn pl-0" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        Product Sub Category<span class="icon-3"><i class="fa fa-minus"></i></span>
+                    </button> -->
+                    <div *ngIf='isCollapsed_subsubclass' id="collapseThree" class="collapse show"
+                         aria-labelledby="headingThree" data-parent="#accordion">
                         <div class="check-box-1">
-                            <div class="checkbox" *ngFor="let brand of allBrand">
-                                <input type="checkbox" value="{{ brand.id }}" id="brand_{{ brand.id }}" (click)="filter_result($event, 'brand', brand.name)"
-                                       [attr.checked]="currentBrandId === brand.id ? 'checked' : null" />
-                                <label for="brand_{{ brand.id }}">{{brand.name}}</label>
-                            </div> 
+                            <div class="checkbox" *ngFor="let category of allSubSubCategory">
+                                <input type="checkbox" value="{{ category.id }}" id="category_{{ category.id }}"
+                                       (click)="filter_result($event, 'sub_sub_category', category.name)"
+                                       [attr.checked]="currentSubSubCategoryId === category.id ? 'checked' : null"/>
+                                <label for="category_{{ category.id }}">{{category.name}}</label>
+                            </div>
+
+                            <!--                            <a href="#">Show more<i class="fa fa-angle-down"></i></a>-->
                         </div>
                     </div>
-                </div> 
+                </div>
+
+                <div id="accordion2" class="filter-acco" *ngIf="allBrand">
+                    <div (click)="isCollapsed_brand = !isCollapsed_brand" class="search_label ">
+                        <strong style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;">
+                            Brand </strong><span class="btn pull-right"><i class="fa fa-minus"
+                                                                           *ngIf='isCollapsed_brand==true'></i><i
+                            class="fa fa-plus" *ngIf='isCollapsed_brand==false'></i></span>
+                    </div>
+                    <div *ngIf='isCollapsed_brand' id="collapseFive" class="collapse show"
+                         aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="check-box-1">
+                            <div class="checkbox" *ngFor="let brand of allBrand">
+                                <input type="checkbox" value="{{ brand.id }}" id="brand_{{ brand.id }}"
+                                       (click)="filter_result($event, 'brand', brand.name)"
+                                       [attr.checked]="currentBrandId === brand.id ? 'checked' : null"/>
+                                <label for="brand_{{ brand.id }}">{{brand.name}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="filter-clear-btn" (click)="clearAllFilter()">Clear filters</button>
             </div>
             <div class="col-lg-9 col-md-12">
-                <div class="des-nav justify-content-between"> 
+                <div class="des-nav justify-content-between">
                     <ul class="nav nav-pills mb-5">
                         <li class="list1 sort-by">Sort by:</li>
                         <li class="list1 sort-by">
@@ -136,7 +164,8 @@
                     </ul>
                 </div>
                 <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade active show" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="tab-pane fade active show" id="pills-home" role="tabpanel"
+                         aria-labelledby="pills-home-tab">
                         <div class="row">
                             <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4"
                                  *ngFor="let product of (allProductsByCategory | paginate: { itemsPerPage: 9, currentPage: p })">
@@ -145,11 +174,13 @@
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center"
                                  style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
                                  *ngIf="allProductsByCategory?.length<=0">
-                                <img class="img-fluid" src="assets/images/No_Product_Found.png" alt="No Product is available.">
+                                <img class="img-fluid" src="assets/images/No_Product_Found.png"
+                                     alt="No Product is available.">
                             </div>
                         </div>
-                        <div class="text-center"  *ngIf="allProductsByCategory?.length > 9">
-                            <pagination-controls (pageChange) = "onPageChange($event)" previousLabel="Previous" maxSize="5" responsive="true"
+                        <div class="text-center" *ngIf="allProductsByCategory?.length > 9">
+                            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
+                                                 maxSize="5" responsive="true"
                                                  nextLabel="Next">
                             </pagination-controls>
                         </div>

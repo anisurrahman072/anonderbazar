@@ -89,10 +89,6 @@
                 routerLink="/dashboard/product" [queryParams]="{status: '2'}" *ngIf="'product'|accessControl">
                 Variable Product
             </li>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/product/pending-approvals" [queryParams]="{status: '1'}" *ngIf="'product-pending-approvals'|accessControl">
-                 Pending Approval
-            </li>
         </ul>
     </li>
 

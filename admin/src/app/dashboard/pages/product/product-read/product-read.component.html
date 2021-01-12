@@ -12,7 +12,7 @@
             <button routerLink="/dashboard/product" [queryParams]="{status: status}" nz-button [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
-        </nz-button-group> 
+        </nz-button-group>
     </ng-template>
     <ng-template #body>
         <div class="row" *ngIf="data">
@@ -101,7 +101,16 @@
                             </div>
                         </div>
                     </li>
-
+                    <li class="list-group-item list-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="pull-right"> Vendor Price :</p>
+                            </div>
+                            <div class="col-md-9">
+                                <p class="pull-left" >{{data.vendor_price}}</p>
+                            </div>
+                        </div>
+                    </li>
                     <li class="list-group-item list-item">
                         <div class="row">
                             <div class="col-md-3">

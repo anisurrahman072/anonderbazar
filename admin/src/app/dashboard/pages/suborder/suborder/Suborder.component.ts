@@ -11,8 +11,8 @@ import { UIService } from '../../../../services/ui/ui.service';
 import { ExportService } from '../../../../services/export.service';
 import { StatusChangeService } from '../../../../services/statuschange.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import pdfMake from "pdfmake/build/pdfmake";  
-import pdfFonts from "pdfmake/build/vfs_fonts";  
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import { JsonPipe } from '@angular/common';
@@ -27,7 +27,7 @@ import { CourierService } from '../../../../services/courier.service';
 })
 export class SuborderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
-    
+
     basicDemoValue = '2017-01-01';
     modelValueAsDate: Date = new Date();
     dateTimeValue: Date = new Date();
@@ -37,7 +37,7 @@ export class SuborderComponent implements OnInit {
         to: (new Date() as any)['fp_incr'](10)
     };
     inlineDatePicker: Date = new Date();
-    
+
     options: any[];
     data = [];
     dataPR = [];
@@ -45,23 +45,23 @@ export class SuborderComponent implements OnInit {
     currentUser: any;
     selectedOption: any[] = [];
     viewNotRendered: boolean = true;
-    
-    
+
+
     limit: number = 10;
     page: number = 1;
     total: number;
     nameSearchValue: string = '';
-    
+
     sortValue = {
         name: null,
         price: null,
     };
     categoryId: any = null;
     subcategoryId: any = null;
-    
+
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
-    
+
     suborderNumberSearchValue: any = '';
     orderNumberSearchValue: string = '';
     suborderIdValue: string = '';
@@ -75,7 +75,7 @@ export class SuborderComponent implements OnInit {
     _dateRange: any;
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
-    isProductVisible = false;  
+    isProductVisible = false;
     validateProductForm: FormGroup;
     allOders: any = [];
     products = [];
@@ -83,10 +83,10 @@ export class SuborderComponent implements OnInit {
     currentProduct: any = {};
     storeOrderIds: any = [];
 
-    isProductVisiblePR = false;  
+    isProductVisiblePR = false;
     validateFormPR: FormGroup;
     storeOrderIdsPR: any = [];
-    warehouse: any; 
+    warehouse: any;
     constructor(private suborderService: SuborderService,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
@@ -97,25 +97,25 @@ export class SuborderComponent implements OnInit {
                 private uiService: UIService,
                 private authService: AuthService) {
         this.validateProductForm = this.fb.group({
-            productChecked: ['', []], 
+            productChecked: ['', []],
         });
         this.validateFormPR = this.fb.group({
-            productCheckedPR: ['', []], 
-            total_order: ['', []], 
-            pickup_carrier_name: ['', []], 
-            seller_name: ['', []], 
-            seller_phone: ['', []], 
-            seller_address: ['', []], 
-            k_a_m: ['', []], 
-            payment_method: ['', []], 
-            pickup_slot: ['', []], 
-            pickup_rider_name: ['', []], 
-            pickup_rider_contact_number: ['', []],  
+            productCheckedPR: ['', []],
+            total_order: ['', []],
+            pickup_carrier_name: ['', []],
+            seller_name: ['', []],
+            seller_phone: ['', []],
+            seller_address: ['', []],
+            k_a_m: ['', []],
+            payment_method: ['', []],
+            pickup_slot: ['', []],
+            pickup_rider_name: ['', []],
+            pickup_rider_contact_number: ['', []],
         });
     }
     // init the component
     ngOnInit(): void {
-        
+
         this.options = [
             { value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading' },
             { value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading' },
@@ -132,13 +132,13 @@ export class SuborderComponent implements OnInit {
         ];
         this.currentUser = this.authService.getCurrentUser();
         console.log(this.currentUser);
-        
+
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
               this.currentWarehouseId = warehouseId || '';
               this.getPageData();
             }
-          ); 
+          );
     }
     //Event method for getting all the data for the page
     getPageData() {
@@ -160,12 +160,12 @@ export class SuborderComponent implements OnInit {
             .subscribe(result => {
                     this.data = result.data;
                     console.log(result);
-                    
+
                     this.total = result.total;
                     this._isSpinning = false;
                 },
                 result => {
-                    
+
                     this._isSpinning = false;
                 });
     }
@@ -175,7 +175,7 @@ export class SuborderComponent implements OnInit {
     }
       //Event method for setting up filter data
     private filterTerm(sortValue: string): string {
-        
+
         switch (sortValue) {
             case ('ascend'):
                 return 'ASC';
@@ -183,7 +183,7 @@ export class SuborderComponent implements OnInit {
                 return 'DESC';
             default:
                 return '';
-        } 
+        }
     }
       //Event method for resetting all filters
     resetAllFilter() {
@@ -199,7 +199,7 @@ export class SuborderComponent implements OnInit {
         this.subcategoryId = null;
         this.subcategorySearchOptions = [];
         this.getPageData();
-        
+
     }
       //Event method for setting up filter data
     sort(sortName, sortValue) {
@@ -209,17 +209,17 @@ export class SuborderComponent implements OnInit {
     }
       //Event method for pagination change
     changePage(page: number, limit: number) {
-        
+
         this.page = page;
         this.limit = limit;
         this.getPageData();
         return false;
     }
-     
+
     categoryIdChange($event) {
         this.page = 1;
         const query = encodeURI($event);
-        
+
         this.subcategorySearchOptions = [];
         this.subcategoryId = null;
         this.getPageData();
@@ -227,15 +227,15 @@ export class SuborderComponent implements OnInit {
       //Method for download csv
 
     dowonloadCSV(data){
-        let csvData = [];    
-        
+        let csvData = [];
+
         data.forEach(suborder => {
             suborder.items.forEach(item => {
                 let i=0, varients = "";
                 item.suborderItemVariants.forEach(element => {
                     varients += element.variant_id.name + ': '+ element.product_variant_id.name+ ' '
-                }); 
-                
+                });
+
                 csvData.push({
                     'SL'                        : ++i,
                     'Order Id'                  : suborder.product_order_id.id,
@@ -267,23 +267,23 @@ export class SuborderComponent implements OnInit {
                     'Canceled'                  : (item.canceled) ? moment(item.canceled.date).format('YYYY-MM-DD') + '-' + item.canceled.changed_by.first_name+' '+ item.canceled.changed_by.last_name: 'N/a',
                 });
             });
-        });  
+        });
 
         const header = [
             'SL',
             'Order Id',
             'SubOrder Id',
-            'Vandor Name', 
-            'Vandor Phone', 
-            'Customer Name', 
-            'Customer Phone', 
-            'Product Description', 
+            'Vandor Name',
+            'Vandor Phone',
+            'Customer Name',
+            'Customer Phone',
+            'Product Description',
             'Price',
             'Quantity',
             'Total',
             'Suborder Status',
             'Suborder Changed By',
-            'Order Status', 
+            'Order Status',
             'Order Status Changed By',
             'Date',
             'Pending',
@@ -301,28 +301,28 @@ export class SuborderComponent implements OnInit {
         ];
         this.exportService.downloadFile(csvData, header);
     }
+
     categoryIdSearchChange($event) {
-    
+
     }
-    
+
     subcategoryIdChange($event) {
         this.page = 1;
         this.getPageData();
-        
+
     }
-    
+
     subcategoryIdSearchChange($event) {
-    
+
     }
-    
-    
+
     changeStatusConfirm($event, id, oldStatus) {
-        
+
         this.suborderService.update(id, {status: $event,changed_by: this.currentUser.id}).subscribe((res) => {
             this._notification.create('success', 'Successful Message', 'suborder has been removed successfully');
             this.courierService.updateSuborder($event, id)
                 .subscribe(arg => {});
-            
+
             this.getPageData();
         }, (err) => {
             this._notification.create('error', 'Error', 'Something is missing');
@@ -330,50 +330,50 @@ export class SuborderComponent implements OnInit {
         })
 
         this.statusChangeService.updateStatus({ order_id: $event.product_order_id, suborder_id: id,status: $event, changed_by: this.currentUser.id  })
-            .subscribe(arg => this.statusData = arg); 
+            .subscribe(arg => this.statusData = arg);
     }
-    
+
     setStatus(index, status) {
         if (!this.viewNotRendered) return;
         this.selectedOption[index] = status;
     }
-    
+
     ngAfterViewInit() {
         this.dataFor.changes.subscribe(t => {
             this.viewNotRendered = false;
         })
     }
-    
+
     deleteConfirm(id) {
         this.suborderService.delete(id)
             .subscribe(result => {
             });
     }
-    
+
     daterangeChange() {
-        if (this.dateSearchValue.from && this.dateSearchValue.to) { 
+        if (this.dateSearchValue.from && this.dateSearchValue.to) {
             this.page = 1;
             this.getPageData()
         }
-        
+
     }
     daterange1Change() {
         console.log('called');
-        
-        if (this.dateSearchValue1.from && this.dateSearchValue1.to) { 
+
+        if (this.dateSearchValue1.from && this.dateSearchValue1.to) {
             this.page = 1;
             this.allOders = this.getPageData();
-        } 
+        }
     }
-    handleOk = e => { 
-        this.isProductVisible = false; 
+    handleOk = e => {
+        this.isProductVisible = false;
     };
-    
-    handleCancel = e => { 
-        this.isProductVisible = false; 
+
+    handleCancel = e => {
+        this.isProductVisible = false;
     };
     //Method for showing the modal
-    showProductModal = data => { 
+    showProductModal = data => {
         this.suborderService.getAllsuborder(
             this.currentWarehouseId,
             this.page,
@@ -390,45 +390,45 @@ export class SuborderComponent implements OnInit {
             this.filterTerm(this.sortValue.name),
             this.filterTerm(this.sortValue.price))
             .subscribe(result => {
-                    this.allOders = result.data; 
+                    this.allOders = result.data;
 
-                    console.log(result); 
+                    console.log(result);
                 });
         console.log(this.allOders);
-        
-        this.isProductVisible = true; 
-        this.isProductVisiblePR = false; 
+
+        this.isProductVisible = true;
+        this.isProductVisiblePR = false;
     };
     //Event method for submitting the form
     submitForm = ($event, value) => {
-        let newlist = this.storeOrderIds; 
-    
-        this.isProductVisible = false;   
+        let newlist = this.storeOrderIds;
+
+        this.isProductVisible = false;
         this.dowonloadCSV(newlist);
       }
-    _refreshStatus($event, value) { 
+    _refreshStatus($event, value) {
         console.log($event);
         if ($event !== 'undefined') {
             if ($event) {
-                this.storeOrderIds.push(value); 
+                this.storeOrderIds.push(value);
             } else {
-                let findValue = this.storeOrderIds.indexOf(value); 
+                let findValue = this.storeOrderIds.indexOf(value);
                 this.storeOrderIds.splice(findValue, 1);
-            } 
+            }
         }
-         
+
     };
 
-    handleOkPR = e => { 
-        this.isProductVisiblePR = false; 
-    };
-    
-    handleCancelPR = e => { 
+    handleOkPR = e => {
         this.isProductVisiblePR = false;
-        this.validateFormPR.reset(); 
+    };
+
+    handleCancelPR = e => {
+        this.isProductVisiblePR = false;
+        this.validateFormPR.reset();
     };
     //Method for showing the modal
-    showPRModal = data => {  
+    showPRModal = data => {
         this.suborderService.getAllSuborderWithPR(
             this.currentWarehouseId,
             this.page,
@@ -445,20 +445,21 @@ export class SuborderComponent implements OnInit {
             this.filterTerm(this.sortValue.name),
             this.filterTerm(this.sortValue.price))
             .subscribe(result => {
-                    this.dataPR = result.data;  
+                console.log('getAllSuborderWithPR', result.data)
+                this.dataPR = result.data;
             });
-        this.isProductVisiblePR = true; 
+        this.isProductVisiblePR = true;
     };
     //Event method for submitting the form
     submitFormPR = ($event, value) => {
-        let newlist = this.storeOrderIdsPR; 
-        let pdfData = [];   
-        console.log(newlist); 
+        let newlist = this.storeOrderIdsPR;
+        let pdfData = [];
+        console.log(newlist);
 
         var i=0;
         newlist.forEach(suborder => {
-            
-            
+
+
             this.suborderService.update(suborder.id,{PR_status: 1}).subscribe(arg =>{
 
             });
@@ -467,7 +468,7 @@ export class SuborderComponent implements OnInit {
 
                 item.suborderItemVariants.forEach(element => {
                     varients += element.product_variant_id.name+ ','
-                }); 
+                });
                 pdfData.push({
                     'SL'                        : ++i,
                     'Vendor'                    : item.warehouse_id.name,
@@ -479,7 +480,7 @@ export class SuborderComponent implements OnInit {
                     'Amount'                    : item.product_total_price,
                 });
             });
-            let payload = { 
+            let payload = {
                 warehouse_id: suborder.items[0].warehouse_id.id,
                 total_quantity: pdfData.reduce(function (total, currentValue) { return total + currentValue.Count;}, 0),
                 total_amount: pdfData.reduce(function (total, currentValue) { return total + currentValue.Amount;}, 0),
@@ -500,114 +501,114 @@ export class SuborderComponent implements OnInit {
                 .subscribe(arg => {
 
                 });
-        }); 
-        let docDefinition = {  
-            content: [  
-                {  
-                    text: 'Product Requisition',  
-                    fontSize: 16,  
-                    alignment: 'center',  
-                    color: '#000000'  
+        });
+        let docDefinition = {
+            content: [
+                {
+                    text: 'Product Requisition',
+                    fontSize: 16,
+                    alignment: 'center',
+                    color: '#000000'
                 },
-                {  
-                    text: `Date: ${new Date().toDateString()}`,  
-                    alignment: 'left'  
+                {
+                    text: `Date: ${new Date().toDateString()}`,
+                    alignment: 'left'
                 },
-                {  
-                    table: {  
-                        headerRows: 1,  
-                        widths: ['auto', 'auto'],  
-                        body: [  
-                            ['Total Orders', value.total_order], 
-                            ['Pickup Carrier Name', value.pickup_carrier_name], 
-                            ['Seller Name', value.seller_name], 
-                            ['Seller Phone', value.seller_phone], 
-                            ['Seller Address', value.seller_address], 
-                            ['Seller Address', value.k_a_m], 
-                            ['Payment Method', value.payment_method], 
-                            ['Pickup Slot', value.pickup_slot], 
-                            ['Pickup Rider Name', value.pickup_rider_name], 
-                            ['Pickup Rider Contact Number', value.pickup_rider_contact_number], 
-                            ['Signature', ''], 
-                        ]  
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: ['auto', 'auto'],
+                        body: [
+                            ['Total Orders', value.total_order],
+                            ['Pickup Carrier Name', value.pickup_carrier_name],
+                            ['Seller Name', value.seller_name],
+                            ['Seller Phone', value.seller_phone],
+                            ['Seller Address', value.seller_address],
+                            ['Seller Address', value.k_a_m],
+                            ['Payment Method', value.payment_method],
+                            ['Pickup Slot', value.pickup_slot],
+                            ['Pickup Rider Name', value.pickup_rider_name],
+                            ['Pickup Rider Contact Number', value.pickup_rider_contact_number],
+                            ['Signature', ''],
+                        ]
                     },
-                    style: 'sections' 
+                    style: 'sections'
 
                 },
-                {  
-                    table: {  
-                        headerRows: 1,  
-                        widths: ['auto', 'auto','*', 'auto', 'auto', 'auto', 'auto', 'auto'],  
-                        body: [  
-                            ['SL', 'Vendor Name','Title', 'SKU', 'SIZE', 'COUNT', 'RATE', 'AMOUNT'],  
-                            // pdfData 
-                            ...pdfData.map(p => ([p.SL, p.Vendor,p.Title, p.SKU, p.Size, p.Count, p.Rate ,(p.Amount).toFixed(2)])),  
-                            [{ text: 'Total Amount', colSpan:7 }, {}, {}, {},{},{},{}, pdfData.reduce((sum, p) => sum + (p.Amount), 0).toFixed(2)]  
-                        ]  
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: ['auto', 'auto','*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                        body: [
+                            ['SL', 'Vendor Name','Title', 'SKU', 'SIZE', 'COUNT', 'RATE', 'AMOUNT'],
+                            // pdfData
+                            ...pdfData.map(p => ([p.SL, p.Vendor,p.Title, p.SKU, p.Size, p.Count, p.Rate ,(p.Amount).toFixed(2)])),
+                            [{ text: 'Total Amount', colSpan:7 }, {}, {}, {},{},{},{}, pdfData.reduce((sum, p) => sum + (p.Amount), 0).toFixed(2)]
+                        ]
                     },
-                    style: 'sections' 
+                    style: 'sections'
 
-                }  
-            ],  
-            styles: {  
-                sectionHeader: {  
-                    bold: true,  
-                    decoration: 'underline',  
-                    fontSize: 14,  
-                    margin: [0, 15, 0, 15]  
+                }
+            ],
+            styles: {
+                sectionHeader: {
+                    bold: true,
+                    decoration: 'underline',
+                    fontSize: 14,
+                    margin: [0, 15, 0, 15]
                 },
                 sections: {
-                    fontSize: 14,  
-                    margin: [0, 15, 0, 15] 
+                    fontSize: 14,
+                    margin: [0, 15, 0, 15]
                 }
-            }   
-          };  
-         
+            }
+          };
+
         pdfMake.createPdf(docDefinition).download();
-        this.isProductVisiblePR = false; 
-        this.validateFormPR.reset(); 
+        this.isProductVisiblePR = false;
+        this.validateFormPR.reset();
     }
-    _refreshStatusPR($event, value) { 
+    _refreshStatusPR($event, value) {
         console.log($event);
         if ($event !== 'undefined') {
-            if ($event) { 
-                this.storeOrderIdsPR.push(value); 
+            if ($event) {
+                this.storeOrderIdsPR.push(value);
                 console.log(value);
 
             } else {
-                let findValue = this.storeOrderIdsPR.indexOf(value); 
+                let findValue = this.storeOrderIdsPR.indexOf(value);
                 this.storeOrderIdsPR.splice(findValue, 1);
                 this.warehouse = value;
                 console.log(this.warehouse);
-                
+
                 this.validateFormPR.patchValue({
-                    seller_name: this.warehouse.name, 
-                }); 
-            } 
-        } 
+                    seller_name: this.warehouse.name,
+                });
+            }
+        }
         let itemCount = 0;
         if (this.storeOrderIdsPR.length > 0) {
             this.storeOrderIdsPR.forEach(element => {
                 itemCount += element.total_quantity;
             });
         }
-        
+
         if (this.storeOrderIdsPR[0]) {
-            this.warehouse = this.storeOrderIdsPR[0].warehouse_id; 
+            this.warehouse = this.storeOrderIdsPR[0].warehouse_id;
             this.validateFormPR.patchValue({
-                total_order: itemCount, 
-                seller_name: this.warehouse.name, 
-                seller_phone: this.warehouse.phone, 
-                seller_address: this.warehouse.address, 
-                k_a_m: this.warehouse.name, 
+                total_order: itemCount,
+                seller_name: this.warehouse.name,
+                seller_phone: this.warehouse.phone,
+                seller_address: this.warehouse.address,
+                k_a_m: this.warehouse.name,
             });
         }else{
             this.validateFormPR.patchValue({
-                total_order: '', 
-                seller_name: '', 
-                seller_phone: '', 
-                seller_address: '', 
-                k_a_m: '', 
+                total_order: '',
+                seller_name: '',
+                seller_phone: '',
+                seller_address: '',
+                k_a_m: '',
             });
         }
     };

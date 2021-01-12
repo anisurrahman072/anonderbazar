@@ -5,11 +5,7 @@ import {FavouriteProduct, Product} from "../../../../models/index";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {WOW} from "ngx-wow/services/wow.service";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
-import {catchError, map} from "rxjs/operators";
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {of} from "rxjs/observable/of";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
@@ -45,10 +41,11 @@ export class ProductItemComponent implements OnInit {
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,
                 private toastr: ToastrService,) {
-                    this.isDisplay = false;
+        this.isDisplay = false;
     }
-  //Event method for getting all the data for the page
-    ngOnInit() { 
+
+    //Event method for getting all the data for the page
+    ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.product = this.dataProduct;
@@ -61,14 +58,18 @@ export class ProductItemComponent implements OnInit {
                 this.cartTotalquantity = result.data.total_quantity;
             }
         });
-    } 
-  //Method for add to cart
+    }
+
+    //Method for add to cart
+    clickToImage(event, productId) {
+        this.router.navigate(['/product-details/', productId]);
+    }
 
     addToCart(product: any, callback?) {
-        if(this.product.product_variants){
+        if (this.product.product_variants) {
             for (let i = 0; i < this.product.product_variants.length; i++) {
                 let v = this.product.product_variants[i];
-                if(v.quantity > 0){
+                if (v.quantity > 0) {
                     this.router.navigate([`/product-details/${product.id}`]);
                     return false;
                 }
@@ -80,13 +81,13 @@ export class ProductItemComponent implements OnInit {
 
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price; 
-            const cartItemData={
-                cart_id:  this.cartId,
+            let product_total_price: number = this.product.promotion ? this.product.promo_price : this.product.price;
+            const cartItemData = {
+                cart_id: this.cartId,
                 product_id: this.product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
-            }; 
+            };
             this.cartItemService
                 .insert(cartItemData)
                 .subscribe(
@@ -95,7 +96,7 @@ export class ProductItemComponent implements OnInit {
                         this._progress.complete("mainLoader");
                         this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
 
-                        if(callback){
+                        if (callback) {
                             callback();
                         }
                     },
@@ -112,15 +113,16 @@ export class ProductItemComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for direct buy
 
-    buyNow(product){
-        this.addToCart(product, ()=>{
+    //Method for direct buy
+
+    buyNow(product) {
+        this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }
 
-  //Method for add to favourite
+    //Method for add to favourite
 
     addToFavourite(product: Product) {
 
@@ -138,7 +140,8 @@ export class ProductItemComponent implements OnInit {
 
         }
     }
-  //Method for remove from favourite
+
+    //Method for remove from favourite
 
     removeFromFavourite(favouriteProduct) {
         let userId = this.authService.getCurrentUserId();
@@ -154,7 +157,8 @@ export class ProductItemComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for add to compare
+
+    //Method for add to compare
 
     addToCompare(product: Product) {
 
@@ -164,15 +168,15 @@ export class ProductItemComponent implements OnInit {
             this.store.dispatch(new fromStore.AddToCompare(product));
             this.compareService.addToCompare(product);
             this._notify.success('add to compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
 
             this.loginModalService.showLoginModal(true)
 
         }
     }
-  //Method for remove from compare
+
+    //Method for remove from compare
 
     removeFromCompare(product: Product) {
         let userId = this.authService.getCurrentUserId();
@@ -180,14 +184,14 @@ export class ProductItemComponent implements OnInit {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));
             this.compareService.removeFromCompare(product);
             this._notify.success('remove from compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
-    } 
+    }
+
     // Method called in error
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
-    } 
+    }
 }

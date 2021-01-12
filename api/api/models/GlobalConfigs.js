@@ -22,6 +22,12 @@ module.exports = {
       type: 'float',
       defaultsTo: 80
     },
+    sslcommerce_user: {
+      type: 'string'
+    },
+    sslcommerce_pass: {
+      type: 'string'
+    },
     status: {
       type: 'integer',
     },

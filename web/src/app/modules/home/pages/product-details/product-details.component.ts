@@ -17,9 +17,8 @@ import {
   CraftsmanService, FavouriteProductService,
   ProductService,
   ProductVariantService
-} from "../../../../services"; 
+} from "../../../../services";
 import * as fromStore from "../../../../state-management";
-import {of} from "rxjs/observable/of";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {ToastrService} from "ngx-toastr";
 import {PartService} from "../../../../services/part.service";
@@ -200,7 +199,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     this.addTofavouriteLoading$ = this.store.select<any>(
       fromStore.getFavouriteProductLoading
     );
-    this.partService.getAllParts().subscribe(result => { 
+    this.partService.getAllParts().subscribe(result => {
       this.allTheParts = result.data;
     });
 
@@ -214,8 +213,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     this.partService
       .getAllCombinationByProductId(this.route.snapshot.params["id"])
       .subscribe(res => {
-        this.designCombinationData = res.data; 
-      }); 
+        this.designCombinationData = res.data;
+      });
 
     this.cart$ = this.store.select<any>(fromStore.getCart);
     this.cart$.subscribe(result => {
@@ -223,14 +222,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.cartId = result.data.id;
         this.cartTotalprice = result.data.total_price;
         this.cartTotalquantity = result.data.total_quantity;
-      } 
+      }
     });
 
     this.sub = this.route.params.subscribe(params => {
       this.id = +params["id"];
 
       this.getProductData();
-      this.getAllVariant(); 
+      this.getAllVariant();
     });
 
     this.getRecentlyViewedProducts();
@@ -253,14 +252,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
   }
     //Method for submitting the form
   public submitForm = ($event, value) => {
-    let person_status = 0; 
+    let person_status = 0;
     const formData: FormData = new FormData();
     formData.append("message", value.message);
     formData.append("chat_user_id", this.messageId);
     if (this.fileToUpload) {
       formData.append('hasFile', 'true');
       formData.append('fileCounter', this.fileToUpload.length.toString());
-      
+
       for (let i = 0; i < this.fileToUpload.length; i++) {
         formData.append('file' + i, this.fileToUpload[i], this.fileToUpload[i].name);
       }
@@ -268,26 +267,24 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       formData.append('hasFile', 'false');
     }
 
-    
-
     this.chatService.insert(formData).subscribe(
       result => {
-        this.createdData = result; 
+        this.createdData = result;
         this.messageId = this.createdData["chat_user_id"];
         this.getChatMessages();
         this.chatForm.reset();
-        this.fileToUpload = []; 
+        this.fileToUpload = [];
       },
-      error => { 
+      error => {
       }
     );
-    
+
   };
   handleFileInput(files: FileList) {
-    this.fileToUpload.push(files.item(0)); 
+    this.fileToUpload.push(files.item(0));
   }
   //Method for removing file
-  removeFile(index: number) { 
+  removeFile(index: number) {
     this.fileToUpload.splice(index, 1);
   }
   getChatMessages() {
@@ -302,14 +299,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     this.producttId = productId;
     this.warehouseId = warehouseId;
 
-    this.chatService.checkChatUser(this.userId, this.producttId, this.warehouseId).subscribe(result => { 
-      if (result[0]) { 
+    this.chatService.checkChatUser(this.userId, this.producttId, this.warehouseId).subscribe(result => {
+      if (result[0]) {
         this.userdata = result[0];
         this.messageId = result[0].id;
         this.getChatMessages();
       }
       else {
-        let person_status = 0; 
+        let person_status = 0;
         const formData: FormData = new FormData();
         formData.append("user_id", this.userId);
         formData.append("product_id", this.producttId);
@@ -343,33 +340,33 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       } else {
         output.push(input[i]);
       }
-    }  
+    }
     return output.join("");
-  }  
+  }
   getProductData() {
     this.loaderService.showLoader();
     this.productService.getById(this.id).subscribe(result => {
       this.loaderService.hideLoader();
       this.data = result;
-      
+
       if (result) {
         let allImages = [];
         this.primaryPicture = this.IMAGE_ENDPOINT + this.data.image;
         if (this.data.image) {
           allImages.push({'image_path': this.data.image});
-        } 
+        }
         if (result.product_images) {
           result.product_images.forEach(element => {
-            allImages.push(element); 
+            allImages.push(element);
           });
         }
-        
+
         result.product_images = allImages;
 
         this.buffer_time = this.data.warehouse_id.buffer_time;
         this.getProductAvailableDate(this.buffer_time);
 
-        this.mainImg = this.data.image; 
+        this.mainImg = this.data.image;
         this.tempRating = result.rating;
         if(result.tag!="undefined")
          this.tag = JSON.parse(result.tag);
@@ -391,7 +388,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         (this.unitPrice +
             this.variantCalculatedTotalPrice) *
         this.product_quantity;
-  } 
+  }
 
   getAllVariant() {
     this.loaderService.showLoader();
@@ -417,13 +414,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     if (this.productVariants.length !== this.variantCalculatedPrice.length) {
       this.toastr.error('Please select all variant!', 'Note');
       return false;
-    } 
+    }
     if (this.authService.getCurrentUserId()) {
       this._progress.start("mainLoader");
       let product_total_price: number =
         (this.unitPrice +
           this.variantCalculatedTotalPrice) *
-        this.product_quantity; 
+        this.product_quantity;
 
       let variants = [];
       let data = {};
@@ -433,7 +430,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
           variant_id: v.variant_id,
           product_variant_id: v.product_variant_id
         })
-      }); 
+      });
       if(variants.length==0) {
           data = {
               cart_id: this.cartId,
@@ -453,7 +450,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
           };
       }
       this.cartItemService
-        .insert(data) 
+        .insert(data)
         .subscribe(
           result => {
             this.store.dispatch(new fromStore.LoadCart());
@@ -477,7 +474,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         );
     } else {
       this.toastr.success("warning", "Please Login First");
-      this.loginModalService.showLoginModal(true); 
+      this.loginModalService.showLoginModal(true);
     }
   }
   //Method for direct buy
@@ -489,14 +486,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
   }
 
   getProductAvailableDate(buffer_time: any) {
-    this.availableDateLoading = true; 
+    this.availableDateLoading = true;
   }
 
   setProductAvailableSchedule(aDay, anHour, dayss, miliseconds) {
     this.days = this.replaceNumbers(
       Math.floor(miliseconds / aDay + 1).toString()
     );
-    let hour = Math.floor((miliseconds - dayss * aDay) / anHour); 
+    let hour = Math.floor((miliseconds - dayss * aDay) / anHour);
     this.hours = this.replaceNumbers(hour.toString());
     this.minutes = this.replaceNumbers(
       Math.round(
@@ -507,7 +504,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
   ngOnDestroy(): void {
     this.sub ? this.sub.unsubscribe() : "";
-    this.sub1 ? this.sub1.unsubscribe() : ""; 
+    this.sub1 ? this.sub1.unsubscribe() : "";
   }
 
   ratingChange(newValue): void {
@@ -517,7 +514,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       this._progress.start("mainLoader");
       this.productService
         .sendRating({ productId: this.data.id, rating: this.tempRating })
-        .subscribe(res => { 
+        .subscribe(res => {
           this._progress.complete("mainLoader");
           this._notify.success("success", "rating...");
         });
@@ -640,7 +637,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     this.variantCalculatedTotalPrice = 0;
     this.variantCalculatedPrice.map(vp=> {
       this.variantCalculatedTotalPrice += vp.quantity
-    }); 
+    });
     this.updateFinalprice();
   }
 
@@ -662,20 +659,20 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       }
     });
     this.updateFinalprice();
-  }  
+  }
     //Method for showing the modal
   openModal(template: TemplateRef<any>, id: any,part_id:number,part_name:string) {
     this.craftsman_id = null;
 
     this.designImageCheck[part_name] = `${part_id}:${id}`;
     let designCombinationObject = Object.assign({}, this.designImageCheck);
- 
+
     this.designImageService.getImageWithCombination(JSON.stringify(designCombinationObject), this.data.id).subscribe(result=>{
       this.imagedata = result.data.images;
     });
     this.modalRef = this.modalService.show(template);
     this.craftsmanService.getCraftsmanAndPriceById(id).subscribe(result => {
- 
+
       this.allCraftsmanPrice = result;
     });
   }
@@ -686,8 +683,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     this.part_id = part_id;
     // ... do other stuff here ...
   }
-  confirm(): void { 
-    
+  confirm(): void {
+
     this.craftsmanService
       .getCraftsmanByBothDesignAndCraftsmanId(
         this.design_id,
@@ -696,7 +693,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.data.id,
 
       )
-      .subscribe(result => { 
+      .subscribe(result => {
         if (result.pricedata[0].material_price.length > 0) {
           this.finalprice = result.pricedata[0].material_price[0].price + result.pricedata[0].price + this.finalprice;
           this.total = result.pricedata[0].material_price[0].price + result.pricedata[0].price;
@@ -725,4 +722,4 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       this.finalprice = this.finalprice - price;
     }
   }
-} 
+}

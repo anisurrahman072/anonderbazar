@@ -25,7 +25,7 @@ export class ProductService {
 
     filter_result(searchTerm: String, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number): Observable<any> {
 
-        return this.http.get(`${this.EndPoint2}/search?filters={"searchTerm":"${searchTerm}","typeList":[${categoryList}],"categoryList":[${subcategoryList}],"brandList":[${brandList}],"warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}],"craftsmanList":[${craftsmanList}],"priceRange":[${priceRange}]}&approval_status=2&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`);
+        return this.http.get(`${this.EndPoint2}/search?filters={"searchTerm":"${searchTerm}","approvalStatus": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}],"brandList":[${brandList}],"warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}],"craftsmanList":[${craftsmanList}],"priceRange":[${priceRange}]}&approval_status=2&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`);
     }
 
     getAllPromotionProduct(): Observable<any> {
