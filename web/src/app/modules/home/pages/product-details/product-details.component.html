@@ -3,7 +3,8 @@
     ৳{{(unitPrice + variantCalculatedTotalPrice) * product_quantity}}
 </div>
 <div class="alert alert-success text-center" role="alert" *ngIf="addToWhishlistSuccessProduct">
-    Product Successfully Added To Whishlist: {{addToWhishlistSuccessProduct.name}} - ৳{{addToWhishlistSuccessProduct.price}}
+    Product Successfully Added To Whishlist: {{addToWhishlistSuccessProduct.name}} -
+    ৳{{addToWhishlistSuccessProduct.price}}
 </div>
 
 <div id="breadcrumb" *ngIf="data">
@@ -12,11 +13,21 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a routerLink="/" routerLinkActive="active">Home</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a routerLink="/products" routerLinkActive="active"> OUR PRODUCTS</a></li>
-                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.type_id?.id" style="text-transform: uppercase;"><a routerLink="/products/category/{{data.type_id?.id}}"> {{data.type_id?.name}}</a></li>
-                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.category_id?.id" style="text-transform: uppercase;"><a routerLink="/products/category/{{data.type_id?.id}}" [queryParams]="{category: data.type_id?.id, sub: data.category_id?.id}">{{data.category_id?.name}}</a></li>
-                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.subcategory_id?.id" style="text-transform: uppercase;"><a routerLink="/products/category/{{data.type_id?.id}}"  [queryParams]="{category: data.type_id?.id, sub: data.category_id?.id, subsub: data.subcategory_id?.id}">{{data.subcategory_id?.name}}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page" style="text-transform: uppercase;"><a style="color: red" routerLink="/product-details/{{data.id}}">{{ data.name }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a routerLink="/products" routerLinkActive="active">
+                        OUR PRODUCTS</a></li>
+                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.type_id?.id"
+                        style="text-transform: uppercase;"><a
+                            routerLink="/products/category/{{data.type_id?.id}}"> {{data.type_id?.name}}</a></li>
+                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.category_id?.id"
+                        style="text-transform: uppercase;"><a routerLink="/products/category/{{data.type_id?.id}}"
+                                                              [queryParams]="{category: data.type_id?.id, sub: data.category_id?.id}">{{data.category_id?.name}}</a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page" *ngIf="data.subcategory_id?.id"
+                        style="text-transform: uppercase;"><a routerLink="/products/category/{{data.type_id?.id}}"
+                                                              [queryParams]="{category: data.type_id?.id, sub: data.category_id?.id, subsub: data.subcategory_id?.id}">{{data.subcategory_id?.name}}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" style="text-transform: uppercase;"><a
+                            style="color: red" routerLink="/product-details/{{data.id}}">{{ data.name }}</a></li>
                 </ol>
             </nav>
         </div>
@@ -30,13 +41,17 @@
                 <div class="row">
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
-                            <img src="{{primaryPicture}}" alt="">
+                            <div class="productdetail-inner-img">
+                                <img *ngIf="data.promotion" src="{{discountBadgeIcon}}" alt="" class="product-discount-badge" />
+                                <img src="{{primaryPicture}}" alt="" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-12 col-12">
                         <div class="productdetailsub-img">
                             <ng-container *ngFor="let image of data?.product_images; let i = index">
-                                <img height="70px" width="70px" src="{{IMAGE_ENDPOINT + image.image_path}}" (click)="primaryPicture = IMAGE_ENDPOINT + image.image_path" alt="">
+                                <img style="cursor: pointer; height: 70px; width: 70px;"   src="{{IMAGE_ENDPOINT + image.image_path}}"
+                                     (click)="primaryPicture = IMAGE_ENDPOINT + image.image_path" alt="">
                             </ng-container>
                         </div>
                     </div>
@@ -46,9 +61,11 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 mb-4">
                         <div class="productdetail">
-                           <p class="pro-de-1">{{data.brand_id?.name}}</p>
+                            <p class="pro-de-1">{{data.brand_id?.name}}</p>
                             <h6 class="pro-de-2">{{data.name}}</h6>
-                            <h6 class="pro-de-3" style="color: red">৳ <del *ngIf="data.promotion">{{ data.price }}</del> {{ finalprice }}</h6>
+                            <h6 class="pro-de-3" style="color: red">৳
+                                <del *ngIf="data.promotion">{{ data.price }}</del>
+                                {{ finalprice }}</h6>
                             <div class="sku">
                                 <ul class="d-flex">
                                     <li class="first pl-0">Code:{{data.code}}</li>
@@ -78,7 +95,9 @@
                                         <ng-container *ngFor="let variant of v.warehouse_variants;">
                                             <li class="c1 mr-2"
                                                 [ngStyle]="{'border-color': checkSelected(variant) ? 'red' : 'black'}"
-                                                (click)="onVariantChange(variant)"><div class="div" [style.background-color]="variant.name"></div></li>
+                                                (click)="onVariantChange(variant)">
+                                                <div class="div" [style.background-color]="variant.name"></div>
+                                            </li>
                                         </ng-container>
                                     </ul>
                                 </ng-container>
@@ -89,7 +108,7 @@
                                         <ng-container *ngFor="let variant of v.warehouse_variants;">
                                             <li class="mr-2"
                                                 [ngStyle]="{'border-color': checkSelected(variant) ? 'red' : 'black'}"
-                                                (click)="onVariantChange(variant)"><a >{{variant.name}}</a></li>
+                                                (click)="onVariantChange(variant)"><a>{{variant.name}}</a></li>
                                         </ng-container>
                                     </ul>
                                 </ng-container>
@@ -108,18 +127,20 @@
                                    (click)="addToFavourite(data)">
                                     <i class="fa fa-heart-o"></i>Add to Wishlist</a>
                             </div>
-                            <div class="add-wishlist" *ngIf="(favourites$ | async | isaddedtofavourite: data?.id) as fav">
+                            <div class="add-wishlist"
+                                 *ngIf="(favourites$ | async | isaddedtofavourite: data?.id) as fav">
                                 <a class="wishlist mt-1" style="color: red" (click)="removeFromFavourite(fav)">
                                     <i class="fa fa-heart-o"></i>Wishlisted</a>
                             </div>
-                        </div> 
+                        </div>
                         <div class="add-cartbtn">
-                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false">Add to cart</a>
+                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false">Add to
+                                cart</a>
                             <a class="addto2" (click)="data.quantity > 0 ? buyNow(data): false">Buy now</a>
                         </div>
                     </div>
-                    
-                    
+
+
                 </div>
             </div>
         </div>

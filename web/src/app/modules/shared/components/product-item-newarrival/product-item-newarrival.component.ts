@@ -28,7 +28,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
     isDisplay: boolean;
-
+    discountBadgeIcon: any;
 
     product: Product;
     cart$: Observable<any>;
@@ -45,6 +45,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
                 private cartItemService: CartItemService,
                 private toastr: ToastrService) {
                     this.isDisplay = false;
+        this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
   //Event method for getting all the data for the page
     ngOnInit() {

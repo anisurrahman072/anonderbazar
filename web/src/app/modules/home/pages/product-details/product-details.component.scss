@@ -3,6 +3,22 @@
   overflow: hidden;
 }
 
+.productdetail-inner-img {
+  height: auto;
+  width: auto;
+  display: inline-block;
+  position:relative;
+}
+.productdetail-img .productdetail-inner-img .product-discount-badge {
+  position: absolute;
+  left:0;
+  top:0;
+  background:white;
+  border-radius: 30px 30px 30px 30px;
+  color:white;
+  width: 45px;
+  height: 45px;
+}
 .breadcrumbs a {
   color: #666;
 
@@ -14,7 +30,7 @@
 }
 .productdetail-img img{
   width: 415px;
-  height: 385px; 
+  height: 385px;
 }
 .product-count-down {
   display: table-cell;
@@ -350,12 +366,12 @@ table.variations-table tbody {
   width: 100px;
   text-align: center;
 }
-.qcshop { 
+.qcshop {
   border: 1px solid;
   border-radius: 15px;
   margin: 0px;
 }
-.craftman { 
+.craftman {
   border: 1px solid;
   border-radius: 15px;
   margin: 0px;
@@ -609,7 +625,7 @@ table.variations-table tbody {
   bottom: -20px;
   border: 12px solid;
   border-color: lightyellow lightyellow transparent transparent;
-} 
+}
 .tri-right.border.btm-right:before {
   content: " ";
   position: absolute;

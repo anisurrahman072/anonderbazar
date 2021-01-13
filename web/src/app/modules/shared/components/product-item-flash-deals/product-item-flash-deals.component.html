@@ -1,27 +1,33 @@
-<div class="reward-details"   *ngIf="product"  (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false" (click)="clickToImage($event, product.id)">
-        <div class="product-overlay-img">
-        <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
+<div class="reward-details" *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"
+     (click)="clickToImage($event, product.id)">
+    <div class="product-overlay-img">
+        <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
+            <img *ngIf="product.promotion" src="{{discountBadgeIcon}}" alt="" class="product-discount-badge" />
+            <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="product-image">
+        </div>
         <div class="productlist-icon" style="position: absolute;
         top: 10%;
         right: 8%;">
             <ul class="button1">
-              <li class="btn3 mb-3">
+                <li class="btn3 mb-3">
                   <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
-                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><img src="assets/images/heart.svg" alt="heart"></a>
+                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><img
+                              src="assets/images/heart.svg" alt="heart"></a>
                   </span>
-                  <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id)">
+                    <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id)">
                       <a class="wishlist" title="Wishlisted"><img src="assets/images/heart-red.svg" alt="heart"></a>
                   </span>
-              </li>
-              <li class="btn3 mb-3"><a class="button add_to_cart_button" title="add to cart" (click)="addToCart(product)">
-                  <ng-container *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
-                      <img src="assets/images/cart.svg" alt="cart">
-                  </ng-container>
-                  <ng-template #addedInCart>
-                      <img src="assets/images/cart-red.svg" alt="cart">
-                  </ng-template>
-              </a></li>
-              <li class="btn3">
+                </li>
+                <li class="btn3 mb-3"><a class="button add_to_cart_button" title="add to cart"
+                                         (click)="addToCart(product)">
+                    <ng-container *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
+                        <img src="assets/images/cart.svg" alt="cart">
+                    </ng-container>
+                    <ng-template #addedInCart>
+                        <img src="assets/images/cart-red.svg" alt="cart">
+                    </ng-template>
+                </a></li>
+                <li class="btn3">
                 <span *ngIf="!(compare$|async|isaddedtocompare:product)">
                   <a class="compare" *ngIf="(compare$|async).length<3" (click)=" addToCompare(product)"
                      title="compare"> <img src="assets/images/compare.svg" alt="compare">
@@ -30,36 +36,39 @@
                      title="compare"> <img src="assets/images/compare.svg" alt="compare">  </a>
                 </span>
 
-                  <span *ngIf="(compare$|async|isaddedtocompare:product)">
-                      <a class="compare" title="added in compare list" (click)="removeFromCompare(product)"> <img src="assets/images/compare-red.svg" alt="compare">
+                    <span *ngIf="(compare$|async|isaddedtocompare:product)">
+                      <a class="compare" title="added in compare list" (click)="removeFromCompare(product)"> <img
+                              src="assets/images/compare-red.svg" alt="compare">
                       </a>
                   </span>
-              </li>
+                </li>
             </ul>
-          </div>
-          <div class="productlist-overlay-icon" *ngIf="isDisplay">
+        </div>
+        <div class="productlist-overlay-icon" *ngIf="isDisplay">
             <ul class="button">
-              <li class="btn1"><a (click)="buyNow(product)">Buy Now</a></li>
-              <li class="btn2"><a routerLink="/product-details/{{product.id}}">Details</a></li>
+                <li class="btn1"><a (click)="buyNow(product)">Buy Now</a></li>
+                <li class="btn2"><a routerLink="/product-details/{{product.id}}">Details</a></li>
             </ul>
             <ul class="button-icon">
                 <li class="btn3 mb-3">
                   <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
-                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><img src="assets/images/heart.svg" alt="heart"></a>
+                      <a class="wishlist" title="wishlist" (click)="addToFavourite(product)"><img
+                              src="assets/images/heart.svg" alt="heart"></a>
                   </span>
                     <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id) as fav">
-                      <a class="wishlist" title="Wishlisted" (click)="removeFromFavourite(fav)"><img src="assets/images/heart-red.svg" alt="heart"></a>
+                      <a class="wishlist" title="Wishlisted" (click)="removeFromFavourite(fav)"><img
+                              src="assets/images/heart-red.svg" alt="heart"></a>
                   </span>
                 </li>
-              <li class="btn3 mb-3"><a class="add_to_cart_button" title="add to cart"(click)="addToCart(product)">
-                  <ng-container *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
-                      <img src="assets/images/cart.svg" alt="cart">
-                  </ng-container>
-                  <ng-template #addedInCart>
-                      <img src="assets/images/cart-red.svg" alt="cart">
-                  </ng-template>
-              </a></li>
-              <li class="btn3">
+                <li class="btn3 mb-3"><a class="add_to_cart_button" title="add to cart" (click)="addToCart(product)">
+                    <ng-container *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
+                        <img src="assets/images/cart.svg" alt="cart">
+                    </ng-container>
+                    <ng-template #addedInCart>
+                        <img src="assets/images/cart-red.svg" alt="cart">
+                    </ng-template>
+                </a></li>
+                <li class="btn3">
                 <span *ngIf="!(compare$|async|isaddedtocompare:product)">
                   <a class="compare" *ngIf="(compare$|async).length<3" (click)=" addToCompare(product)"
                      title="compare"> <img src="assets/images/compare.svg" alt="compare">
@@ -67,26 +76,28 @@
                   <a class="compare" *ngIf="(compare$|async).length>=3" (click)=" erroralert()"
                      title="compare"> <img src="assets/images/compare.svg" alt="compare"> </a>
                 </span>
-                  <span *ngIf="(compare$|async|isaddedtocompare:product)">
-                      <a class="compare" title="added in compare list" (click)="removeFromCompare(product)"> <img src="assets/images/compare-red.svg" alt="compare">
+                    <span *ngIf="(compare$|async|isaddedtocompare:product)">
+                      <a class="compare" title="added in compare list" (click)="removeFromCompare(product)"> <img
+                              src="assets/images/compare-red.svg" alt="compare">
                       </a>
                   </span>
-              </li>
+                </li>
             </ul>
-          </div>
         </div>
-        <p><a routerLink="/product-details/{{product.id}}">{{product.name}}</a></p>
-        <!-- Rating view goes here -->
-        <!-- <ul class="d-flex">
-            <li class="mr-1 star-no">4.5</li>
-            <li class="mr-1"><i class="fa fa-star"></i></li>
-            <li class="mr-1"><i class="fa fa-star"></i></li>
-            <li class="mr-1"><i class="fa fa-star"></i></li>
-            <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
-            <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
-        </ul> -->
-        <span *ngIf="!product.promotion">৳. {{product.price}}</span>
-        <span *ngIf="product.promotion">৳. <del>{{product.price}}</del> {{product.promo_price}}</span>
+    </div>
+    <p><a routerLink="/product-details/{{product.id}}">{{product.name}}</a></p>
+    <!-- Rating view goes here -->
+    <!-- <ul class="d-flex">
+        <li class="mr-1 star-no">4.5</li>
+        <li class="mr-1"><i class="fa fa-star"></i></li>
+        <li class="mr-1"><i class="fa fa-star"></i></li>
+        <li class="mr-1"><i class="fa fa-star"></i></li>
+        <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
+        <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
+    </ul> -->
+    <span *ngIf="!product.promotion">৳. {{product.price}}</span>
+    <span *ngIf="product.promotion">৳. <del>{{product.price}}</del>
+        {{product.promo_price}}</span>
 
 </div>
 

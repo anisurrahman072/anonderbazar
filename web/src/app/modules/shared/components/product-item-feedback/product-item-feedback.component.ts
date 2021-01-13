@@ -31,7 +31,7 @@ export class ProductItemFeedbackComponent implements OnInit {
     isDisplay: boolean;
     cart$: Observable<any>;
     cartId: any;
-
+    discountBadgeIcon: any;
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
                 private authService: AuthService,
@@ -42,6 +42,7 @@ export class ProductItemFeedbackComponent implements OnInit {
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,) {
                     this.isDisplay = false;
+        this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
   //Event method for getting all the data for the page
     ngOnInit() {

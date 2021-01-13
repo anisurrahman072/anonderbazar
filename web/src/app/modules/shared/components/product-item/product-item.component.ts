@@ -13,6 +13,7 @@ import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
 
 
+
 @Component({
     selector: 'app-product-item',
     templateUrl: './product-item.component.html',
@@ -29,6 +30,7 @@ export class ProductItemComponent implements OnInit {
     cartId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
+    discountBadgeIcon: any;
     @Input() productname: any;
     @Input() productprice: any;
 
@@ -41,7 +43,9 @@ export class ProductItemComponent implements OnInit {
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,
                 private toastr: ToastrService,) {
+
         this.isDisplay = false;
+        this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
 
     //Event method for getting all the data for the page

@@ -1,8 +1,10 @@
 <div class="reward-details" *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false">
     <div class="product-overlay-img" (click)="clickToImage($event, product.id)">
 
-        <img class="product-image" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
-
+        <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
+            <img *ngIf="product.promotion" src="{{discountBadgeIcon}}" alt="" class="product-discount-badge" />
+            <img class="product-image" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
+        </div>
         <div class="productlist-icon" style="position: absolute;
         top: 10%;
         right: 8%;">

@@ -47,7 +47,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
   private sub: Subscription;
   private sub1: Subscription;
   IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-
+  discountBadgeIcon: any;
   cart$: Observable<any>;
   cartId: any;
   //cartId: any=1;
@@ -185,6 +185,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
       message: ["", Validators.required],
       files: [""]
     });
+    this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
   }
   //Event method for getting all the data for the page
 

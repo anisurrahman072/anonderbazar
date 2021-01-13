@@ -33,6 +33,7 @@ export class ProductItemFlashDealComponent implements OnInit {
     cartId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
+    discountBadgeIcon: any;
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -44,6 +45,7 @@ export class ProductItemFlashDealComponent implements OnInit {
                 private cartItemService: CartItemService,
                 private toastr: ToastrService,) {
                     this.isDisplay = false;
+        this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
   //Event method for getting all the data for the page
     ngOnInit() {
