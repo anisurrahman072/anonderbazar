@@ -55,6 +55,12 @@ export class ProductItemFeedbackComponent implements OnInit {
             }
         });
     }
+
+
+    //Method for add to cart
+    clickToImage(event, productId) {
+        this.router.navigate(['/product-details/', productId]);
+    }
   //Method for add to cart
 
     addToCart(product: any, callback?) {
@@ -64,7 +70,7 @@ export class ProductItemFeedbackComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price; 
+            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
             const cartItemData={
                 cart_id:  this.cartId,
                 product_id: this.product.id,
@@ -168,8 +174,8 @@ export class ProductItemFeedbackComponent implements OnInit {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
-    } 
+    }
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
-    } 
+    }
 }

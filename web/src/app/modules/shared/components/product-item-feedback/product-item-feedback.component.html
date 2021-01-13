@@ -1,4 +1,4 @@
-<div class="feedback-details profeedback-details"  *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"> 
+<div class="feedback-details profeedback-details"  *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"  (click)="clickToImage($event, product.id)">
     <div class="product-overlay-img">
         <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
         <div class="productlist-icon" style="position: absolute;
@@ -73,7 +73,7 @@
               </li>
             </ul>
           </div>
-        </div> 
+        </div>
     <p><a routerLink="/product-details/{{product.id}}">{{product?.name}}</a></p>
     <small>471 Positive Feedback</small>
     <span *ngIf="!product.promotion">৳. {{product.price}}</span>

@@ -236,7 +236,7 @@ module.exports = {
               product_variant_id: thisCartItemVariant.product_variant_id
             };
 
-            if(typeof orderedProductInventory.variantPayload === 'undefined'){
+            if (typeof orderedProductInventory.variantPayload === 'undefined') {
               orderedProductInventory.variantPayload = []
             }
 
@@ -321,6 +321,10 @@ module.exports = {
 
     try {
       EmailService.orderSubmitMail(orderForMail);
+      const phone = req.param("shipping_address").phone
+
+      SmsService.sendingOneMessageToMany([phone], 'Order Confirmation SMS')
+
     } catch (err) {
       console.log('Email Sending Error')
     }
@@ -423,25 +427,30 @@ module.exports = {
       post_body['cus_name'] = user.first_name + " " + user.last_name;
       post_body['cus_email'] = user.email;
       post_body['cus_phone'] = user.phone;
+      post_body['cus_postcode'] = req.param("shipping_address").postal_code ? req.param("shipping_address").postal_code : '1205';
       post_body['cus_add1'] = req.param("shipping_address").address;
       post_body['cus_city'] = "Dhaka";
       post_body['cus_country'] = "Bangladesh";
       post_body['shipping_method'] = "NO";
-      post_body['multi_card_name'] = ""
+      // post_body['multi_card_name'] = ""
       post_body['num_of_item'] = cart.total_quantity;
       post_body['product_name'] = "Test";
-      post_body['product_category'] = "Test Category";
+      post_body['product_category'] = "Anonder Bazar";
       post_body['product_profile'] = "general";
 
       sslcommerz.init_transaction(post_body).then(response => {
+        console.log('slcommerz.init_transaction success', response)
         return res.json(response);
       }).catch(error => {
+        console.log('slcommerz.init_transaction error', error)
         res.writeHead(301,
           {Location: webURL + '/checkout'}
         );
         res.end()
       });
-    } else return res.json(req.body, 400);
+    } else {
+      return res.json(req.body, 400);
+    }
   },
   //Method called when sslcommerz success from frontend
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js
@@ -555,7 +564,7 @@ module.exports = {
                 product_variant_id: thisCartItemVariant.product_variant_id
               };
 
-              if(typeof orderedProductInventory.variantPayload === 'undefined'){
+              if (typeof orderedProductInventory.variantPayload === 'undefined') {
                 orderedProductInventory.variantPayload = []
 
               }
@@ -638,7 +647,7 @@ module.exports = {
       }
       try {
         EmailService.orderSubmitMail(orderForMail);
-      } catch (err){
+      } catch (err) {
         console.log('Order Sending email failed')
       }
       // End /Delete Cart after submitting the order

@@ -58,9 +58,16 @@ export class ProductItemNewArrivalComponent implements OnInit {
             }
         });
     }
+
+
+    //Method for add to cart
+    clickToImage(event, productId) {
+        this.router.navigate(['/product-details/', productId]);
+    }
+
   //Method for add to cart
 
-    addToCart(product: any, callback?) { 
+    addToCart(product: any, callback?) {
         if (product.product_variants.length > 0) {
             this.router.navigate([`/product-details/${product.id}`]);
             return false;
@@ -73,7 +80,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
                 product_id: product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
-            }; 
+            };
             this.cartItemService
                 .insert(cartItemData)
                 .subscribe(
@@ -98,7 +105,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
   //Method for add to favourite
 
-    addToFavourite(newItem: Product) { 
+    addToFavourite(newItem: Product) {
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {

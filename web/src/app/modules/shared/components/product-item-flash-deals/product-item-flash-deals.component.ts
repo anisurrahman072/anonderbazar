@@ -46,7 +46,7 @@ export class ProductItemFlashDealComponent implements OnInit {
                     this.isDisplay = false;
     }
   //Event method for getting all the data for the page
-    ngOnInit() { 
+    ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.product = this.dataProduct;
@@ -59,23 +59,29 @@ export class ProductItemFlashDealComponent implements OnInit {
                 this.cartTotalquantity = result.data.total_quantity;
             }
         });
-    } 
+    }
+
+
+    //Method for add to cart
+    clickToImage(event, productId) {
+        this.router.navigate(['/product-details/', productId]);
+    }
   //Method for add to cart
 
-    addToCart(product: any, callback?) { 
+    addToCart(product: any, callback?) {
         if (this.product.product_variants.length > 0) {
             this.router.navigate([`/product-details/${product.id}`]);
             return false;
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price; 
+            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
             const cartItemData={
                 cart_id:  this.cartId,
                 product_id: this.product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
-            }; 
+            };
             this.cartItemService
                 .insert(cartItemData)
                 .subscribe(
@@ -171,8 +177,8 @@ export class ProductItemFlashDealComponent implements OnInit {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
-    } 
+    }
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
-    } 
+    }
 }
