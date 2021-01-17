@@ -10,13 +10,12 @@ module.exports={
         user: obj,
         password: password,
         commonUrl: commonUrl,
-
       },
       {
         to: obj[0].email,
         subject: "Welcome to Anonder Bazar"
       },
-      function(err) {console.log(err || "It worked!");}
+      function(err) {console.log( 'Sending Password Reset Email: ', err || "It worked!");}
     )
   },
   sendWelcomeMailCustomer : function(obj) {

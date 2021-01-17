@@ -321,9 +321,9 @@ module.exports = {
 
     try {
       EmailService.orderSubmitMail(orderForMail);
-      const phone = req.param("shipping_address").phone
 
-      SmsService.sendingOneMessageToMany([phone], 'Order Confirmation SMS')
+      const phone = req.param("shipping_address").phone
+      SmsService.sendingOneMessageToMany([phone], 'Your Order has been successfully received by anonderbazar.com')
 
     } catch (err) {
       console.log('Email Sending Error')
@@ -646,7 +646,14 @@ module.exports = {
 
       }
       try {
+
         EmailService.orderSubmitMail(orderForMail);
+
+        if (shippingAddress && shippingAddress.phone) {
+          const phone = shippingAddress.phone
+          SmsService.sendingOneMessageToMany([phone], 'Your Order has been successfully received by anonderbazar.com')
+        }
+
       } catch (err) {
         console.log('Order Sending email failed')
       }

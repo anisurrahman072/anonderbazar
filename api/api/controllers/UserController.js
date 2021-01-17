@@ -73,6 +73,7 @@ module.exports = {
         }
         if (user) {
           EmailService.sendPasswordResetMail(user, req.body.password);
+
           res.json(200, { user: user, token: jwToken.issue({ id: user.id }) });
         }
       });

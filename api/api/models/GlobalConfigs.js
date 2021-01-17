@@ -28,6 +28,12 @@ module.exports = {
     sslcommerce_pass: {
       type: 'string'
     },
+    delivery_charge_text_en: {
+      type: 'string'
+    },
+    delivery_charge_text_bn: {
+      type: 'string'
+    },
     status: {
       type: 'integer',
     },

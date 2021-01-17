@@ -1,19 +1,19 @@
 <section id="flashdeal" *ngIf="dataProductList">
     <div class="container-fluid">
-    <div class="category-head cate-flash justify-content-between d-flex">
-        <div class="titel d-flex">
-            <h4>Featured Products</h4>
-    <div class="slideicon d-none">
-      <a class="mr-4" href="#"><i class="fa fa-long-arrow-left"></i></a>
-      <a class="mr-0 active" href="#"><i class="fa fa-long-arrow-right"></i></a>
-    </div>
+        <div class="category-head cate-flash justify-content-between d-flex">
+            <div class="titel d-flex">
+                <h4>Featured Products</h4>
+                <div class="slideicon d-none">
+                    <a class="mr-4" href="#"><i class="fa fa-long-arrow-left"></i></a>
+                    <a class="mr-0 active" href="#"><i class="fa fa-long-arrow-right"></i></a>
+                </div>
+            </div>
+            <button class="flash d-none"><a href="#">Ends in:<span>12 : 06 : 32</span></a></button>
         </div>
-        <button class="flash d-none"><a href="#">Ends in:<span>12 : 06 : 32</span></a></button>
-    </div>
-    <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-12 mb-4"  *ngFor="let product of (dataProductList|async)">
-            <app-product-item-flash-deals [dataProduct]="product"></app-product-item-flash-deals>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4" *ngFor="let product of (dataProductList|async)">
+                <app-product-item-flash-deals [dataProduct]="product"></app-product-item-flash-deals>
+            </div>
         </div>
     </div>
-</div>
 </section>

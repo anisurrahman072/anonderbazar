@@ -1,4 +1,4 @@
-import { PaymentAddressService } from './../../../../services/payment-address.service';
+import {PaymentAddressService} from './../../../../services/payment-address.service';
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import * as fromStore from "../../../../state-management";
@@ -8,7 +8,7 @@ import {Cart, User} from "../../../../models";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../../services";
 import {Subscription} from "rxjs/Subscription";
-import { AppSettings } from '../../../../config/app.config';
+import {AppSettings} from '../../../../config/app.config';
 import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
 import {LoaderService} from "../../../../services/ui/loader.service";
@@ -31,9 +31,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     checkoutForm: FormGroup;
     help1Show: boolean = false;
     help2Show: boolean = false;
-    isAddNew=false;
-    isDelivery=true;
-    isPickup=false;
+    isAddNew = false;
+    isDelivery = true;
+    isPickup = false;
     cart$: Observable<Cart>;
     cartData: any;
     user_id: any;
@@ -42,7 +42,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shippingLastName: string;
     shippingPhone: string;
     courierCharges: any;
-    shippingCharge: Number;
+    shippingCharge: number = 0;
+    grantTotal: number = 0;
     shipping_division_id: string;
     shipping_zila_id: string;
     shipping_upazila_id: string;
@@ -58,11 +59,11 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     billpostCode: string;
     private currentUser: User;
     private currentUserSub: Subscription;
-    newShippingAddress:boolean = false;
-    newBillingAddress:boolean = false;
-    isCopy:boolean = true;
-    showPayment:boolean = false;
-    successOrderId:any = false;
+    newShippingAddress: boolean = false;
+    newBillingAddress: boolean = false;
+    isCopy: boolean = true;
+    showPayment: boolean = false;
+    successOrderId: any = false;
     orderId;
 
     constructor(private route: ActivatedRoute,
@@ -73,8 +74,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 private orderService: OrderService,
                 private PaymentAddressService: PaymentAddressService,
                 private store: Store<fromStore.HomeState>,
-                private cartItemService:CartItemService,
-                private cartService:CartService,
+                private cartItemService: CartItemService,
+                private cartService: CartService,
                 public _progress: NgProgress,
                 private toastr: ToastrService,
                 public loaderService: LoaderService) {
@@ -108,14 +109,20 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             paymentType: ['Cash', []]
         });
     }
-     // init the component
+
+    // init the component
     ngOnInit() {
+
         let queryParams = this.route.snapshot.queryParams;
-        if(queryParams['order']){
+
+        if (queryParams['order']) {
             this.successOrderId = queryParams['order'];
         }
+
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
+
         // this.cart$ = this.store.select<any>(fromStore.getCart);
+
         this.areaService.getAllDivision().subscribe(result => {
             this.divisionSearchOptions = result;
         });
@@ -127,49 +134,75 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.user_id = this.authService.getCurrentUserId();
 
         this.loaderService.showLoader();
+
+        this.grantTotal = 0;
         this.cartService.getByUserId(this.user_id).subscribe(cartData => {
             this.cartData = cartData;
-            this.loaderService.hideLoader();
+
+            this.updateGrandTotal()
+            this.cartService.getCourierCharges().subscribe(globalConfig => {
+                if (Array.isArray(globalConfig) && globalConfig.length > 0) {
+                    this.courierCharges = globalConfig[0]
+                }
+                this.loaderService.hideLoader();
+            });
+
         });
+
         this.prevoius_address_change(this.user_id);
-
-        this.loaderService.showLoader();
-        this.cartService.getCourierCharges().subscribe(globalConfig => {
-            console.log('globalConfig', globalConfig)
-            if(Array.isArray(globalConfig) && globalConfig.length > 0){
-                this.courierCharges = globalConfig[0]
-            }
-
-            this.loaderService.hideLoader();
-        });
     }
-  //Method for loader hide
+
+    updateGrandTotal(shouldUpateShippingCharge: boolean = true, zilaId: number = 0) {
+        this.grantTotal = 0;
+
+        if (typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined') {
+            this.grantTotal = this.cartData.data.total_price;
+        }
+        if (shouldUpateShippingCharge) {
+            this.shippingCharge = 0;
+            if (zilaId > 0) {
+                if (this.courierCharges) {
+                    this.shippingCharge = zilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                }
+
+                if (this.shippingCharge) {
+                    this.grantTotal = this.grantTotal + this.shippingCharge;
+                }
+            }
+        }
+    }
+
+    //Method for loader hide
     ngAfterViewInit() {
         this.loaderService.hideLoader();
     }
+
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
         this.checkoutForm.reset();
+        this.updateGrandTotal()
         for (const key in this.checkoutForm.controls) {
             this.checkoutForm.controls[key].markAsPristine();
         }
     }
+
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.checkoutForm.controls[name];
     }
+
     //Event method for submitting the form
     public formCheckout = ($event, value) => {
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
-            this.toastr.error( "You have no items in your cart!", "Empty cart!");
+            this.toastr.error("You have no items in your cart!", "Empty cart!");
             return false;
         }
         let requestPayload = {
             user_id: this.user_id,
 
             billing_address: {
-                id: this.newBillingAddress ? '': value.billing_id,
+                id: this.newBillingAddress ? '' : value.billing_id,
                 firstName: value.firstName,
                 lastName: value.lastName,
                 address: value.address,
@@ -181,7 +214,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 division_id: value.division_id
             },
             shipping_address: {
-                id: this.newShippingAddress ? '':value.shipping_id,
+                id: this.newShippingAddress ? '' : value.shipping_id,
                 firstName: value.shippingFirstName,
                 lastName: value.shippingLastName,
                 address: value.shippingAddress,
@@ -196,15 +229,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             is_copy: this.isCopy,
         };
         this._progress.start("mainLoader");
-        if( value.paymentType == "SSLCommerce"){
+        if (value.paymentType == "SSLCommerce") {
             this.orderService.sslcommerzInsert(requestPayload).subscribe(result => {
                 this._progress.complete("mainLoader");
                 this.store.dispatch(new fromStore.LoadCart());
-                window.location.href=result.GatewayPageURL;
+                window.location.href = result.GatewayPageURL;
             });
-        }
-        else
-        {
+        } else {
             this.orderService.customInsert(requestPayload).subscribe(result => {
                 this._progress.complete("mainLoader");
                 this.store.dispatch(new fromStore.LoadCart());
@@ -214,21 +245,24 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             });
         }
     }
-      //Method for previous address change
 
-    prevoius_address_change(user_id:number) {
+    //Method for previous address change
+
+    prevoius_address_change(user_id: number) {
         // var prevoius_address_id = $event.target.value;
         this.PaymentAddressService.getpaymentaddress(user_id).subscribe(result => {
             this.prevoius_address = result;
         });
     }
 
-      //Method for division change
+
+
+    //Method for division change
 
     divisionChange($event, type) {
         var divisionId = $event.target.value;
         if (type == 'shipping') {
-            this.shippingCharge = null
+            this.updateGrandTotal()
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
                 this.shippingZilaSearchOptions = result;
                 this.shippingUpazilaSearchOptions = [];
@@ -240,42 +274,40 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             });
         }
     }
-      //Method for zila change
+
+    // Method for zila change
 
     zilaChange($event, type) {
         var zilaId = $event.target.value;
-        if(type == 'shipping'){
+        if (type == 'shipping') {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.shippingUpazilaSearchOptions = result;
             });
-
-            if(this.courierCharges){
-                this.shippingCharge = zilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
-            } else {
-                this.shippingCharge = null
-            }
-
+            this.updateGrandTotal(true, zilaId)
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.upazilaSearchOptions = result;
             });
         }
     }
-      //Method for showing delivery section
 
-    showDelivarySection(){
+    //Method for showing delivery section
+
+    showDelivarySection() {
         this.isDelivery = true;
         this.isPickup = false;
     }
-      //Method for showing pickup location in front view
 
-    showPickupSection(){
+    //Method for showing pickup location in front view
+
+    showPickupSection() {
         this.isDelivery = false;
         this.isPickup = true;
     }
-  //Method for coping shipping address
-    copyAll(){
-        if(this.isCopy) {
+
+    //Method for coping shipping address
+    copyAll() {
+        if (this.isCopy) {
             let formValue = this.checkoutForm.getRawValue();
             this.checkoutForm.patchValue({
                 billing_id: formValue.shipping_id,
@@ -291,31 +323,34 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
             let zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
             let upZila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
-            if(zila){
+            if (zila) {
                 this.zilaSearchOptions.push(zila);
             }
-            if(upZila){
+            if (upZila) {
                 this.upazilaSearchOptions.push(upZila);
             }
         }
     }
+
     //Event method for removing cart items
-    removeCartItem(cartItemId){
+    removeCartItem(cartItemId) {
         this._progress.start("mainLoader");
         this.cartItemService.delete(cartItemId).subscribe(res => {
             this.cartService.getByUserId(this.user_id).subscribe(cartData => {
                 this.cartData = cartData;
+                this.updateGrandTotal(false)
                 this._progress.complete("mainLoader");
                 this.toastr.info("Item removed from cart Successfully", 'Note');
             });
             this.store.dispatch(new fromStore.LoadCart());
         });
     }
-  //Method for address change
 
-    onAddressChange(id, type){
-        let address = this.prevoius_address.find(x=> x.id==id);
-        if(type=='shipping'){
+    //Method for address change
+
+    onAddressChange(id, type) {
+        let address = this.prevoius_address.find(x => x.id == id);
+        if (type == 'shipping') {
             this.checkoutForm.patchValue({
                 shippingFirstName: address.first_name,
                 shippingLastName: address.last_name,
@@ -328,9 +363,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             });
             this.shippingZilaSearchOptions.push(address.zila_id);
             this.shippingUpazilaSearchOptions.push(address.upazila_id);
-            if(this.courierCharges){
-                this.shippingCharge = address.zila_id.id == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
-            }
+
+            this.updateGrandTotal(true, address.zila_id.id);
         } else {
             this.checkoutForm.patchValue({
                 firstName: address.first_name,
@@ -346,19 +380,20 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.upazilaSearchOptions.push(address.upazila_id);
         }
     }
-  //Method for address toggle in checkout page
+
+    //Method for address toggle in checkout page
 
     onAddressToggle(event, type) {
         event.preventDefault();
         if (type == 'shipping') {
-            this.shippingCharge = null
+
             this.newShippingAddress = !this.newShippingAddress;
             if (!this.newShippingAddress) {
                 let shipping_id = this.checkoutForm.get('shipping_id').value;
                 if (shipping_id) {
                     this.onAddressChange(shipping_id, 'shipping')
                 }
-            } else{
+            } else {
                 this.checkoutForm.patchValue({
                     shipping_id: '',
                     shippingFirstName: '',
@@ -371,6 +406,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                     shipping_division_id: '',
                 });
             }
+            this.updateGrandTotal()
 
         } else {
             this.newBillingAddress = !this.newBillingAddress;
@@ -394,7 +430,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             }
         }
     }
-  //Method for get all addresses for current user
+
+    //Method for get all addresses for current user
 
     getAddress(type) {
         let formValue = this.checkoutForm.getRawValue();
@@ -418,25 +455,28 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             return fullAddress;
         }
     }
-  //Method for proceed to pay
+
+    //Method for proceed to pay
 
     processToPay() {
         console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
-        if(this.isCopy){
+        if (this.isCopy) {
             this.copyAll();
         }
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
-            this.toastr.error( "You have no items in your cart!", "Empty cart!");
+            this.toastr.error("You have no items in your cart!", "Empty cart!");
             return false;
         }
         if (this.checkoutForm.invalid) {
-            this.toastr.error( "Both shipping and billing address is required!", "Sorry!");
+            this.toastr.error("Both shipping and billing address is required!", "Sorry!");
             return false;
         }
         this.showPayment = true
     }
-  //Method for update cart
-    updateCartItem(cartItem){
+
+    // Method for update cart
+
+    updateCartItem(cartItem) {
         this._progress.start("mainLoader");
         let data = {
             "cart_id": cartItem.cart_id,
@@ -444,19 +484,21 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             "product_quantity": cartItem.product_quantity,
             "product_total_price": cartItem.product_total_price
         };
+
         this.loaderService.showLoader();
         this.cartItemService.update(cartItem.id, data).subscribe(res => {
             this.cartService.getByUserId(this.user_id).subscribe(cartData => {
                 this.loaderService.hideLoader();
                 this.cartData = cartData;
+                this.updateGrandTotal(false)
                 this._progress.complete("mainLoader");
                 this.toastr.info("Cart Item updated Successfully", 'Note');
             })
         });
     }
 
-    changeCartItemQuantity(cartItem, action){
-        if(action == 'increase'){
+    changeCartItemQuantity(cartItem, action) {
+        if (action == 'increase') {
             let maxProductQuantity = cartItem.product_id.quantity;
             if (cartItem.product_quantity < maxProductQuantity) {
                 cartItem.product_quantity += 1;
@@ -491,6 +533,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             }
         }
     }
+
 //Event method for setting up form in validation
     getSignUpFormControl(type) {
         return this.checkoutForm.controls[type];

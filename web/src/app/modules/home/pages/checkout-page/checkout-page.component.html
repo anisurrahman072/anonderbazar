@@ -325,9 +325,14 @@
             </tr>
             <tr class="border-bottom-0">
               <td class="td1 pr-5">Total</td>
-              <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
+              <td class="ml-5">৳ {{grantTotal}}</td>
             </tr>
           </table>
+          <p class="alert alert-info text-info">
+            Delivery Charge: <br>
+            Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is heavier)<br>
+            Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is heavier)
+          </p>
         </div>
           <div class="send-btn1">
             <button (click)="processToPay()" class="Summarybtn"><a>Process to Pay</a>

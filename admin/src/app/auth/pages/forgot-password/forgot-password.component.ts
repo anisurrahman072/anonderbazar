@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import {Observable} from 'rxjs';
 import {UIService} from "../../../services/ui/ui.service";
-import { NzNotificationService } from 'ng-zorro-antd';
+import {NzNotificationService} from 'ng-zorro-antd';
 
 @Component({
     selector: 'app-forgot-password',
@@ -36,12 +36,13 @@ export class ForgotPasswordComponent implements OnInit {
 
         });
     }
+
 //Event method for submitting the form
     submitForm = ($event, value) => {
         if (value.email && value.phone) {
             var email = '';
             this.userService.checkEmailPhone(value.email, value.phone).subscribe(result => {
-                let user = result.data[0];  
+                let user = result.data[0];
                 if (user) {
                     let resetpassword = this.generatePassword();
                     this.userService.updatepassword(user.id, {password: resetpassword})
@@ -51,7 +52,7 @@ export class ForgotPasswordComponent implements OnInit {
                                 this.router.navigate(['/auth', arg]);
                             }
                         });
-                }else{
+                } else {
                     this.loginServerError.show = true;
                     this.loginServerError.message = "No user found.";
                     $event.preventDefault();
@@ -60,10 +61,10 @@ export class ForgotPasswordComponent implements OnInit {
                         this.validateForm.controls[key].markAsPristine();
                     }
                 }
-            }); 
+            });
         }
     }
-    
+
     generatePassword() {
         var length = 8,
             charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
@@ -73,6 +74,7 @@ export class ForgotPasswordComponent implements OnInit {
         }
         return retVal;
     }
+
 //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -80,12 +82,14 @@ export class ForgotPasswordComponent implements OnInit {
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsPristine();
         }
-    } 
+    }
+
 //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-  //Event method for user search for validation of user existance
+
+    //Event method for user search for validation of user existance
 
     userNameServerValidator = (control: FormControl) => {
         return Observable.create(function (observer) {
@@ -99,6 +103,7 @@ export class ForgotPasswordComponent implements OnInit {
             }, 1000);
         });
     }
+
     ngOnInit() {
     }
 }

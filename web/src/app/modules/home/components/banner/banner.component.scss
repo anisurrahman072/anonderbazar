@@ -5,7 +5,9 @@
   height: 225px;
   margin-left: 4%;
 }
-
+#banner-section {
+  padding: 0
+}
 .sec-banner-img img {
   height: 449px;
   width: 100%;
@@ -30,14 +32,17 @@
 .banner_text h3, .banner_text p{
   color: #fff;
 }
- 
+
 
 .slider-img{
-  width: 326px;
-  height: 435px;
+  width: 100%;
+  height: 100%;
 }
 
-
+.banner-section .item {
+  width: 100%;
+  height: 100%;
+}
 .banner {
   margin-bottom: 60px;
 }
