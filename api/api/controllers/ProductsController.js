@@ -1,4 +1,5 @@
-import {Helper, asyncForEach, initLogPlaceholder, pagination } from '../../libs';
+import {Helper, asyncForEach, initLogPlaceholder, pagination} from '../../libs';
+
 module.exports = {
   //Method called for getting all products
   //Model models/Product.js
@@ -40,15 +41,15 @@ module.exports = {
       if (req.query.search_term) {
 
         _where.or = [
-          { name: { like: `%${req.query.search_term}%` } },
-          { code: { like: `%${req.query.search_term}%` } }
+          {name: {like: `%${req.query.search_term}%`}},
+          {code: {like: `%${req.query.search_term}%`}}
         ];
-      }else if (req.query.search_code) {
-          // class: { 'like': '%history%' }})
+      } else if (req.query.search_code) {
+        // class: { 'like': '%history%' }})
 
-          _where.or = [
-              { code: { like: `%${req.query.search_code}%` } }
-          ];
+        _where.or = [
+          {code: {like: `%${req.query.search_code}%`}}
+        ];
       }
       /* WHERE condition..........END................*/
 
@@ -74,14 +75,14 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort
-      }).populate("product_images",{deletedAt:null})
-        .populate("product_variants",{deletedAt:null})
-        .populate("category_id",{deletedAt:null})
-        .populate("subcategory_id",{deletedAt:null})
-        .populate("type_id",{deletedAt:null})
-        .populate("warehouse_id",{deletedAt:null})
-        .populate("craftsman_id",{deletedAt:null})
-        .populate("brand_id",{deletedAt:null});
+      }).populate("product_images", {deletedAt: null})
+        .populate("product_variants", {deletedAt: null})
+        .populate("category_id", {deletedAt: null})
+        .populate("subcategory_id", {deletedAt: null})
+        .populate("type_id", {deletedAt: null})
+        .populate("warehouse_id", {deletedAt: null})
+        .populate("craftsman_id", {deletedAt: null})
+        .populate("brand_id", {deletedAt: null});
 
       res.status(200).json({
         success: true,
@@ -139,7 +140,7 @@ module.exports = {
       let productId = req.params._id;
 
       let productDesignData = await ProductDesign.find({
-        where: { product_id: req.params._id, deletedAt: null }
+        where: {product_id: req.params._id, deletedAt: null}
       }).populateAll();
 
       let data = [];
@@ -184,154 +185,162 @@ module.exports = {
   //Method called for getting products with search term
   //Model models/Product.js
   search: async (req, res) => {
-      try {
-          let _pagination = pagination(req.query);
+    try {
+      let _pagination = pagination(req.query);
 
-          let _where = {};
-          _where.deletedAt = null;
+      let _where = {};
+      _where.deletedAt = null;
 
-          if (req.query.filters) {
-              let filters = JSON.parse(req.query.filters);
+      if (req.query.filters) {
+        let filters = JSON.parse(req.query.filters);
 
-              if (filters.searchTerm) {
-                  _where.or = [
-                      { name: { contains: filters.searchTerm } }
-                  ];
-              }
+        if (filters.searchTerm) {
+          _where.or = [
+            {name: {contains: filters.searchTerm}}
+          ];
+        }
 
-              if(filters.approvalStatus){
-                _where.approval_status = filters.approvalStatus
-              }
+        if (filters.approvalStatus) {
+          _where.approval_status = filters.approvalStatus
+        }
 
-              if (filters.categoryList.length) {
-                  _where.category_id = filters.categoryList;
-              }
+        if (typeof filters.featured !== 'undefined') {
+          _where.featured = filters.featured
+        }
 
-              if (filters.subcategoryList.length) {
-                  _where.subcategory_id = filters.subcategoryList;
-              }
 
-              if (filters.typeList.length) {
-                  _where.type_id = filters.typeList;
-              }
+        if (filters.categoryList.length) {
+          _where.category_id = filters.categoryList;
+        }
 
-              if (filters.brandList.length) {
-                  _where.brand_id = filters.brandList;
-              }
+        if (filters.subcategoryList.length) {
+          _where.subcategory_id = filters.subcategoryList;
+        }
 
-              if (filters.priceRange) {
-                if(filters.priceRange[0] && filters.priceRange[1]){
-                  _where.price = {
-                    '>=': filters.priceRange[0],
-                    '<=': filters.priceRange[1]
-                };
-                }
-              }
-              if (filters.craftsmanList.length) {
-                  _where.craftsman_id = filters.craftsmanList;
-              }
-              if (filters.warehousesList.length) {
-                  _where.warehouse_id = filters.warehousesList;
-              }
+        if (filters.typeList.length) {
+          _where.type_id = filters.typeList;
+        }
+
+        if (filters.brandList.length) {
+          _where.brand_id = filters.brandList;
+        }
+
+        if (filters.priceRange) {
+          if (filters.priceRange[0] && filters.priceRange[1]) {
+            _where.price = {
+              '>=': filters.priceRange[0],
+              '<=': filters.priceRange[1]
+            };
           }
-          /*sort................*/
-          let _sort = {};
-          if (req.query.sortTitle) {
-            _sort[req.query.sortTitle] = parseInt(req.query.sortTerm);
-          }else{
-            _sort['name'] = 0;
-          }
-
-          let total = await Product.count(_where);
-          let products = await Product.find({
-              where: _where,
-              limit: _pagination.limit,
-              sort: _sort,
-              skip: _pagination.skip
-          }).populate([
-              'category_id',
-              'subcategory_id',
-              'type_id',
-              'craftsman_id',
-              'product_variants',
-              'product_images',
-              'brand_id',
-              'warehouse_id'
-          ]);
-
-          return res.status(200).json({
-              success: true,
-              message: 'get product in search',
-              total,
-              data: products,
-              limit: _pagination.limit,
-              skip: _pagination.skip,
-              page: _pagination.page
-          });
-      } catch (error) {
-          return res.status(400).json({
-              success: false,
-              message: 'error in search product',
-              error
-          });
+        }
+        if (filters.craftsmanList.length) {
+          _where.craftsman_id = filters.craftsmanList;
+        }
+        if (filters.warehousesList.length) {
+          _where.warehouse_id = filters.warehousesList;
+        }
       }
+
+      _where.deleted_at = null;
+
+      /* sort................ */
+      let _sort = {};
+      if (req.query.sortTitle) {
+        _sort[req.query.sortTitle] = parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC';
+      } else {
+        _sort['name'] = 'ASC';
+      }
+
+      let total = await Product.count(_where);
+      let products = await Product.find({
+        where: _where,
+        limit: _pagination.limit,
+        sort: _sort,
+        skip: _pagination.skip
+      }).populate([
+        'category_id',
+        'subcategory_id',
+        'type_id',
+        'craftsman_id',
+        'product_variants',
+        'product_images',
+        'brand_id',
+        'warehouse_id'
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'get product in search',
+        total,
+        data: products,
+        limit: _pagination.limit,
+        skip: _pagination.skip,
+        page: _pagination.page
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'error in search product',
+        error
+      });
+    }
   },
   //Method called for getting products with search term
   //Model models/Product.js,models/Category.js
   getBySearchTerm: async (req, res) => {
 
-      try {
-          let _pagination = pagination(req.query);
+    try {
+      let _pagination = pagination(req.query);
 
-          let _where = {};
-          _where.deletedAt = null;
+      let _where = {};
+      _where.deletedAt = null;
 
-          if (req.query.searchterm) {
-              _where.or = [
-                  { name: { contains: req.query.searchterm } }
-              ];
-          }
-
-          let productTotal = await Product.count(_where);
-          let products = await Product.find(
-              { where: _where },
-              { select: ['id', 'name', 'subcategory_id'] }
-          )
-              .populate('subcategory_id')
-              .paginate({ page: _pagination._page, limit: _pagination._limit });
-
-          let _products = products.map(p => {
-              p.type = 'product';
-          return p;
-      });
-          let categoryTotal = await Category.count(_where);
-          let categories = await Category.find(
-              {
-                  where: Object.assign({}, _where, {
-                      type_id: 2
-                  })
-              },
-              { select: ['id', 'name','parent_id'] }
-          ).paginate({ page: _pagination._page, limit: _pagination._limit });
-
-          let _categories = categories.map(p => {
-              p.type =  p.parent_id==0 ?  'category' : 'subcategory';
-          return p;
-      });
-
-          const total = productTotal;
-          return res.status(200).json({
-              success: true,
-              message: 'get product in search ',
-              total,
-              data: _categories.concat(_products)
-          });
-      } catch (error) {
-          return res.status(400).json({
-              success: false,
-              message: 'error in search product',
-              error
-          });
+      if (req.query.searchterm) {
+        _where.or = [
+          {name: {contains: req.query.searchterm}}
+        ];
       }
+
+      let productTotal = await Product.count(_where);
+      let products = await Product.find(
+        {where: _where},
+        {select: ['id', 'name', 'subcategory_id']}
+      )
+        .populate('subcategory_id')
+        .paginate({page: _pagination._page, limit: _pagination._limit});
+
+      let _products = products.map(p => {
+        p.type = 'product';
+        return p;
+      });
+      let categoryTotal = await Category.count(_where);
+      let categories = await Category.find(
+        {
+          where: Object.assign({}, _where, {
+            type_id: 2
+          })
+        },
+        {select: ['id', 'name', 'parent_id']}
+      ).paginate({page: _pagination._page, limit: _pagination._limit});
+
+      let _categories = categories.map(p => {
+        p.type = p.parent_id == 0 ? 'category' : 'subcategory';
+        return p;
+      });
+
+      const total = productTotal;
+      return res.status(200).json({
+        success: true,
+        message: 'get product in search ',
+        total,
+        data: _categories.concat(_products)
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'error in search product',
+        error
+      });
+    }
   }
 };
