@@ -56,6 +56,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     cartItemId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
+    discountPercentage: any;
     currentUser: Observable<any>;
     product_quantity: any = 1;
     cartVariants: any[] = [];
@@ -363,6 +364,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             this.loaderService.hideLoader();
             this.data = result;
 
+            this.discountPercentage = 0
+            if(this.data.promotion){
+                this.discountPercentage  =  (( this.data.price - this.data.promo_price ) / this.data.price) * 100.0
+            }
+            console.log('getProductData', this.data)
             if (result) {
                 let allImages = [];
                 this.primaryPicture = this.IMAGE_ENDPOINT + this.data.image;

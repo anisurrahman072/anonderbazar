@@ -133,7 +133,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             min_unit: [0, [Validators.required]],
             alert_quantity: [0, []],
             category_id: ['', [Validators.required]],
-            brand_id: ['', [Validators.required]],
+            brand_id: ['', []],
             subcategory_id: ['', []],
             quantity: ['', [Validators.required]],
             product_details: ['', [Validators.required]],
@@ -179,18 +179,16 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
         try {
             if (this.ImageEditFront.length > 0) {
-
                 formData.append('hasImageFront', 'true');
                 formData.append('frontimage', this.ImageEditFront[0], this.ImageEditFront[0].name);
-
             } else {
                 formData.append('hasImageFront', 'false');
             }
-
         } catch (e) {
             formData.append('hasImage', 'false');
             formData.append('hasImageFront', 'false');
         }
+
         this.isSubmit = false;
         this.productService.update(this.id, formData).subscribe(result => {
             if (result) {

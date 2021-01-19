@@ -31,6 +31,7 @@ export class ProductItemComponent implements OnInit {
     cartTotalprice: any;
     cartTotalquantity: any;
     discountBadgeIcon: any;
+    discountPercentage: number = 0;
     @Input() productname: any;
     @Input() productprice: any;
 
@@ -62,6 +63,11 @@ export class ProductItemComponent implements OnInit {
                 this.cartTotalquantity = result.data.total_quantity;
             }
         });
+
+        this.discountPercentage = 0
+        if (this.product.promotion) {
+            this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
+        }
     }
 
     //Method for add to cart

@@ -43,8 +43,11 @@ export class BannerComponent implements OnInit {
         });
         this.cmsService.getBySectionName('HOME', "CAROUSEL").subscribe(result => {
             this.carousalList = result.data_value;
+
             this.carousalList.forEach(element => {
+
                 element.description = JSON.parse(element.description);
+                console.log('this.carousalList-element ', element)
             });
         });
     }

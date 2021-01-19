@@ -1,7 +1,8 @@
-<div class="menu-sticky" id="anonder-bazar-sticky-menu">
+<div class="menu-sticky">
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg px-0">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 <span class="navbar-toggler-icon"></span>
                 <span class="navbar-toggler-icon"></span>
@@ -16,25 +17,23 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="has-child c-1">
-                        <a routerLink="/">HOME</a>
-                    </li>
                     <li *ngFor="let category of categoryList" class="has-child c-2"
                         (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"
-                        (mouseenter)="categoryHover(category)" [ngClass]="category.id==selectedCategoryId? 'active':''">
-                        <a (click)="categoryClickEvent(category)" [ngClass]="category.id==selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
-                        <div class="dropdown-menu w-100" *ngIf='subCategoryList && subCategoryList.length>0 && isDisplay '>
+                        (mouseenter)="categoryHover(category)" [ngClass]="category.id == selectedCategoryId? 'active':''">
+                        <a (click)="categoryClickEvent(category)"
+                           [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
+                        <div class="dropdown-menu w-100" *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col-md-3 submenu" *ngFor='let sub of subCategoryList'>
                                             <ul class="mb-3" *ngIf='sub'>
-                                                <li class="text-th"
-                                                    (click)="navigateBySubCategory($event,category,sub)">
-                                                    <a>{{sub.name}}</a>
+                                                <li class="text-th">
+                                                    <a (click)="navigateBySubCategory($event,category,sub)">{{sub.name}}</a>
                                                 </li>
                                                 <ng-container *ngFor='let subC of sub.subCategory'>
-                                                    <li class="text-ot" (click)="navigateBySubSubCategory($event,category,sub,subC)">
+                                                    <li class="text-ot"
+                                                        (click)="navigateBySubSubCategory($event,category,sub,subC)">
                                                         <a>{{subC.name}}</a>
                                                     </li>
                                                 </ng-container>
@@ -52,14 +51,15 @@
                                 </div>
                                 <div class="col-md-4" *ngIf="category.offer_id">
                                     <div class="row">
-<!--                                        <a href="#" (click)="isDisplay=false" routerLink="/cms-details/{{category.offer_id.id}}">-->
-                                        <a href="#" (click)="navigateToCms($event,  category.offer_id.id)" >
-                                        <div class="col-md-12 mb-3">
-                                            <div class="dropdown-img text-center">
-                                                <img src="{{IMAGE_ENDPOINT + category.offer_id.data_value[0].image}}" alt="">
-                                                <p>{{category.offer_id.data_value[0].title}}</p>
+                                        <!--                                        <a href="#" (click)="isDisplay=false" routerLink="/cms-details/{{category.offer_id.id}}">-->
+                                        <a href="#" (click)="navigateToCms($event,  category.offer_id.id)">
+                                            <div class="col-md-12 mb-3">
+                                                <div class="dropdown-img text-center">
+                                                    <img src="{{IMAGE_ENDPOINT + category.offer_id.data_value[0].image}}"
+                                                         alt="">
+                                                    <p>{{category.offer_id.data_value[0].title}}</p>
+                                                </div>
                                             </div>
-                                        </div>
                                         </a>
                                     </div>
                                 </div>
@@ -72,7 +72,7 @@
 
     </div>
 </div>
-    <!-- mobile menu start -->
+<!-- mobile menu start -->
 <div class="mobile-menu">
     <nav>
         <div class="con">
@@ -97,10 +97,12 @@
 
                 <!-- Button trigger modal -->
                 <button type="button" (click)="showShoppingCartModal()" class="btn" data-toggle="modal">
-                    <a class="cart" >
+                    <a class="cart">
                         <img src="assets/images/cart-black.svg" alt="cart">
-                        <span class='badge badge-warning countLabel' *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}} </span>
-                        <span class='badge badge-warning countLabel' *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
+                        <span class='badge badge-warning countLabel'
+                              *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}} </span>
+                        <span class='badge badge-warning countLabel'
+                              *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
                     </a>
                 </button>
             </div>

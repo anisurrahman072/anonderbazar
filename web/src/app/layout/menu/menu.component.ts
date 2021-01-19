@@ -1,9 +1,9 @@
 import {Component, HostListener, Inject, Input, OnInit} from "@angular/core";
-import { NavigationStart, Router} from "@angular/router";
+import {NavigationStart, Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {CategoryTypeService} from "../../services/category-type.service";
 import {CategoryProductService} from "../../services/category-product.service";
-import { DOCUMENT } from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../state-management";
 import {Observable} from "rxjs/Observable";
@@ -109,7 +109,11 @@ export class MenuComponent implements OnInit {
         this.filterUIService.changeCategoryId(id);
         this.filterUIService.changeCategoryType(type);
         this.filterUIService.changeCategoryName(name);
-        this.router.navigate(['/products/category/', id]);
+        this.router.navigate(['/products/category/', id], {
+            queryParams: {
+                category: id
+            }
+        });
     }
 
     //Event method for redirecting to subcategory page
@@ -164,14 +168,4 @@ export class MenuComponent implements OnInit {
         this.router.navigate(['/cms-details', categoryOfferId]);
     }
 
-    @HostListener('window:scroll', ['$event'])
-    onWindowScroll(e) {
-        if (window.pageYOffset > 100) {
-            let element = document.getElementById('anonder-bazar-sticky-menu');
-            element.classList.add('menu-sticky-fixed');
-        } else {
-            let element = document.getElementById('anonder-bazar-sticky-menu');
-            element.classList.remove('menu-sticky-fixed');
-        }
-    }
 }

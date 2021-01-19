@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, OnInit} from '@angular/core';
 import {State, Store} from '@ngrx/store';
 import {Observable} from 'rxjs/Observable';
 import * as fromStore from '../../state-management';
@@ -10,20 +10,20 @@ import {NotificationsService} from 'angular2-notifications';
 import {NgProgress} from '@ngx-progressbar/core';
 import {UIService} from '../../services/ui/ui.service';
 import {FormControl} from '@angular/forms';
-import {map, startWith} from 'rxjs/operators';
 import {FavouriteProduct, Product, User} from '../../models';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import {MatAutocompleteSelectedEvent} from '@angular/material';
 import {CmsService} from '../../services/cms.service';
-import { FilterUiService } from './../../services/ui/filterUi.service';
-import {MatDialog, MAT_DIALOG_DATA} from '@angular/material';
-import { ShoppingModalService } from '../../services/ui/shoppingModal.service';
+import {FilterUiService} from './../../services/ui/filterUi.service';
+import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
+import {DOCUMENT} from "@angular/common";
 
 export interface DialogData {
-user: 'user A' | 'user B' | 'user C';
+    user: 'user A' | 'user B' | 'user C';
 }
+
 // import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 @Component({
     selector: 'app-header',
@@ -77,12 +77,14 @@ export class HeaderComponent implements OnInit {
     navCollapsed: boolean = false;
     private products: Observable<Product[]>;
     private cmsLogoData: any;
-    serach_result:any;
-    isUser : boolean = false;
+    serach_result: any;
+    isUser: boolean = false;
+
     /*
     * constructor for header component
     */
-    constructor(private store: Store<fromStore.HomeState>,
+    constructor(@Inject(DOCUMENT) document,
+                private store: Store<fromStore.HomeState>,
                 private router: Router,
                 private authService: AuthService,
                 private cartItemService: CartItemService,
@@ -95,13 +97,24 @@ export class HeaderComponent implements OnInit {
                 private shoppingModalService: ShoppingModalService,
                 private cmsService: CmsService,
                 // private modalService: NgbModal,
-                
-    private FilterUiService: FilterUiService
-                ) {
+
+                private FilterUiService: FilterUiService
+    ) {
         this.stateCtrl = new FormControl();
 
-        this.products = this.productService.getAll(); 
-    } 
+        this.products = this.productService.getAll();
+    }
+
+    @HostListener('window:scroll', ['$event'])
+    onWindowScroll(e) {
+        if (window.pageYOffset > 0) {
+            let element = document.getElementById('anonder-bazar-sticky-menu');
+            element.classList.add('sticky-header-fixed');
+        } else {
+            let element = document.getElementById('anonder-bazar-sticky-menu');
+            element.classList.remove('sticky-header-fixed');
+        }
+    }
 
     filter(val: string) {
         return this.products.map(response =>
@@ -113,16 +126,16 @@ export class HeaderComponent implements OnInit {
 
     // init the component
     ngOnInit() {
-        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);  
+        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
         if (this.authService.getCurrentUserId()) {
             this.isUser = true;
         }
-        
+
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.compare$ = this.store.select<any>(fromStore.getCompare);
 
-        this.cmsService.getBySectionName('LAYOUT','LOGO').subscribe(result => {
+        this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe(result => {
             this.cmsLogoData = result.data_value[0].image;
         });
     }
@@ -140,8 +153,9 @@ export class HeaderComponent implements OnInit {
     showLoginModal() {
         this.loginModalService.showLoginModal(true);
     }
+
     //Event method for showing shopping cart modal
-    showShoppingCartModal() { 
+    showShoppingCartModal() {
         this.shoppingModalService.showshoppingModal(true);
     }
 
@@ -157,7 +171,7 @@ export class HeaderComponent implements OnInit {
         this.cartItemService.delete(id).subscribe(result => {
             this.store.dispatch(new fromStore.LoadCart());
             this._notify.error('remove from cart succeeded');
-            this.progress.complete('mainLoader'); 
+            this.progress.complete('mainLoader');
         });
     }
 
@@ -173,20 +187,20 @@ export class HeaderComponent implements OnInit {
     }
 
     //Event method for search filter
-    main_search(event: any){
+    main_search(event: any) {
         this.FilterUiService.changesearchterm(event.target.value);
         this.get_search_result(event.target.value)
     }
 
     //Event for search enter press
-    onPressEnter(event){
-        this.router.navigate(['/products'], {queryParams: {search:event.target.value}});
+    onPressEnter(event) {
+        this.router.navigate(['/products'], {queryParams: {search: event.target.value}});
     }
 
     //Event method for getting search result
-    private get_search_result(data:any) {
+    private get_search_result(data: any) {
         this.productService.serach_result(data).subscribe(result => {
-        this.filteredProducts = result.data;
-    });
-}
+            this.filteredProducts = result.data;
+        });
+    }
 }

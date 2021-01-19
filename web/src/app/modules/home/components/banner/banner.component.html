@@ -4,8 +4,10 @@
         <div class="col-12">
             <carousel [interval]="myInterval" [(activeSlide)]="activeSlideIndex">
                 <slide *ngFor="let slide of carousalList; let index=index">
-                    <img [src]="IMAGE_ENDPOINT + slide?.image" alt=""
-                         style="width: 100%; height: auto; text-align: center;"/>
+                    <a href="{{slide.description.link}}" title="{{slide.description.linktext}}">
+                        <img [src]="IMAGE_ENDPOINT + slide?.image" alt=""
+                             style="width: 100%; height: auto; text-align: center;"/>
+                    </a>
                 </slide>
             </carousel>
         </div>

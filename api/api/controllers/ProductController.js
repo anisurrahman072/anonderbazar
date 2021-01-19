@@ -94,6 +94,10 @@ module.exports = {
             console.log(`${newPath} was copied to assets dir`);
           });
 
+          if(body.brand_id === ''){
+            body.brand_id = null
+          }
+          console.log('create-body: ', body)
           var product = await Product.create(body);
 
           if (req.body.ImageBlukArray) {
@@ -151,7 +155,9 @@ module.exports = {
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
           var body = req.body;
-
+          if(body.brand_id === ''){
+            body.brand_id = null
+          }
           fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);

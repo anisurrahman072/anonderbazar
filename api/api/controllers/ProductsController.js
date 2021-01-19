@@ -194,20 +194,21 @@ module.exports = {
       if (req.query.filters) {
         let filters = JSON.parse(req.query.filters);
 
+        console.log('filters', filters)
+
         if (filters.searchTerm) {
           _where.or = [
             {name: {contains: filters.searchTerm}}
           ];
         }
 
-        if (filters.approvalStatus) {
-          _where.approval_status = filters.approvalStatus
+        if (filters.approval_status) {
+          _where.approval_status = filters.approval_status
         }
 
         if (typeof filters.featured !== 'undefined') {
           _where.featured = filters.featured
         }
-
 
         if (filters.categoryList.length) {
           _where.category_id = filters.categoryList;
@@ -241,9 +242,9 @@ module.exports = {
         }
       }
 
-      _where.deleted_at = null;
+      console.log('search-_where', _where)
 
-      /* sort................ */
+      /* Sort................ */
       let _sort = {};
       if (req.query.sortTitle) {
         _sort[req.query.sortTitle] = parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC';

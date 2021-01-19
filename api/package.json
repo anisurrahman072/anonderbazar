@@ -37,6 +37,7 @@
     "sails-hook-email-updated": "^0.0.15",
     "sails-mysql": "^0.11.5",
     "save": "^2.3.2",
+    "sharp": "^0.27.0",
     "skipper": "^0.7.6",
     "sslcommerz-nodejs": "^1.0.8",
     "ts-node": "^8.9.0",

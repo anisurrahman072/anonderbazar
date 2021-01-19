@@ -319,43 +319,37 @@ export class CategoryPageComponent implements OnInit {
             if (type == "category") {
                 this.categoryList_ids.push(event.target.value);
                 this.categoryList_filter_list.push(name);
+
                 this.getAllSubcategory();
-                this.subCategory_ids = [];
-                this.subsubCategory_ids = [];
-                this.brand_ids = [];
+
+                // this.subCategory_ids = [];
+                // this.subsubCategory_ids = [];
+                // this.brand_ids = [];
 
                 this.currentBrandId = '';
                 this.currentSubCategoryId = '';
                 this.currentSubSubCategoryId = '';
                 this.isCollapsed_subclass = true;
-            }
-
-            if (type == "sub_category") {
+            } else if (type == "sub_category") {
                 this.subCategory_ids.push(event.target.value);
                 this.subCategory_filter_list.push(name);
                 this.getAllSubSubcategory();
 
-                this.subsubCategory_ids = [];
-                this.brand_ids = [];
+                // this.subsubCategory_ids = [];
+                // this.brand_ids = [];
 
                 this.currentBrandId = '';
                 this.currentSubSubCategoryId = '';
                 this.isCollapsed_subsubclass = true;
-            }
-            if (type == "sub_sub_category") {
+            } else if (type == "sub_sub_category") {
                 this.subsubCategory_ids.push(event.target.value);
-            }
-            if (type == "brand") {
+            } else if (type == "brand") {
                 this.brand_ids.push(event.target.value);
                 this.brand_filter_list.push(name);
-            }
-
-            if (type == "class") {
+            } else if (type == "class") {
                 this.classList_ids.push(event.target.value);
                 this.classList_filter_list.push(name);
-            }
-
-            if (type == "warehouses") {
+            } else if (type == "warehouses") {
                 this.warehouses_filter_list.push(name);
                 this.warehouses_ids.push(event.target.value);
                 this.allCraftsman.forEach(craftsman => {
@@ -363,33 +357,38 @@ export class CategoryPageComponent implements OnInit {
                         if (craftsman.warehouse_id.id == event.target.value)
                             this.craftsmen.push(craftsman);
                 });
-            }
-
-            if (type == "craftsman") {
+            } else if (type == "craftsman") {
                 this.craftsmanList_ids.push(event.target.value);
                 this.craftsmanList_filter_list.push(name);
             }
         } else {
             if (type == "category") {
+
                 this.categoryList_filter_list.splice(
                     this.categoryList_ids.indexOf(event.target.value),
                     1
                 );
+
                 this.categoryList_ids.splice(
                     this.categoryList_ids.indexOf(event.target.value),
                     1
                 );
+
                 this.getAllSubcategory();
-                this.subCategory_ids = [];
-                this.subsubCategory_ids = [];
-                this.brand_ids = [];
+
+                // this.subCategory_ids = [];
+                // this.subsubCategory_ids = [];
+                // this.brand_ids = [];
+
+                this.allsubCategory = [];
+                this.allSubSubCategory = [];
+                this.allBrand = [];
 
                 this.currentBrandId = '';
                 this.currentSubCategoryId = '';
                 this.currentSubSubCategoryId = '';
-            }
 
-            if (type == "sub_category") {
+            } else if (type == "sub_category") {
                 this.subCategory_filter_list.splice(
                     this.subCategory_ids.indexOf(event.target.value),
                     1
@@ -398,20 +397,24 @@ export class CategoryPageComponent implements OnInit {
                     this.subCategory_ids.indexOf(event.target.value),
                     1
                 );
+
                 this.getAllSubSubcategory();
-                this.subsubCategory_ids = [];
-                this.brand_ids = [];
+
+                this.allSubSubCategory = [];
+                this.allBrand = [];
+
+                // this.subsubCategory_ids = [];
+                // this.brand_ids = [];
 
                 this.currentBrandId = '';
                 this.currentSubSubCategoryId = '';
-            }
-            if (type == "sub_sub_category") {
+
+            } else if (type == "sub_sub_category") {
                 this.subsubCategory_ids.splice(
                     this.subsubCategory_ids.indexOf(event.target.value),
                     1
                 );
-            }
-            if (type == "brand") {
+            } else if (type == "brand") {
                 this.brand_filter_list.splice(
                     this.brand_ids.indexOf(event.target.value),
                     1
@@ -420,9 +423,7 @@ export class CategoryPageComponent implements OnInit {
                     this.brand_ids.indexOf(event.target.value),
                     1
                 );
-            }
-
-            if (type == "warehouses") {
+            } else if (type == "warehouses") {
                 this.warehouses_filter_list.splice(
                     this.warehouses_ids.indexOf(event.target.value),
                     1
@@ -445,9 +446,7 @@ export class CategoryPageComponent implements OnInit {
                             );
                         }
                 });
-            }
-
-            if (type == "class") {
+            } else if (type == "class") {
                 this.classList_filter_list.splice(
                     this.classList_ids.indexOf(event.target.value),
                     1
@@ -456,9 +455,7 @@ export class CategoryPageComponent implements OnInit {
                     this.classList_ids.indexOf(event.target.value),
                     1
                 );
-            }
-
-            if (type == "craftsman") {
+            } else if (type == "craftsman") {
                 this.craftsmanList_filter_list.splice(
                     this.craftsmanList_ids.indexOf(event.target.value),
                     1
@@ -521,7 +518,7 @@ export class CategoryPageComponent implements OnInit {
         this.filter_search_result();
     }
 
-    //Event method for setting up filter data
+    /** Event method for setting up filter data */
     private filter_search_result() {
         this.loaderService.showLoader();
         this.productService
@@ -537,13 +534,13 @@ export class CategoryPageComponent implements OnInit {
                 this.priceRange,
                 this.sortTitle,
                 this.sortTerm,
-                1
+                1,
+                0
             )
             .subscribe(result => {
                 this.allProductsByCategory = result.data;
                 this.loaderService.hideLoader();
             });
-
 
     }
 
@@ -553,6 +550,14 @@ export class CategoryPageComponent implements OnInit {
         if (this.categoryList_ids.length > 0) {
             this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids).subscribe(result => {
                 this.allsubCategory = result;
+
+                this.subCategory_ids = this.subCategory_ids.filter((subCategoryId) => {
+                    return this.allsubCategory.find((subCategory) => {
+                        return subCategory.id == subCategoryId
+                    })
+                });
+
+                this.getAllSubSubcategory();
             });
         } else {
             this.allsubCategory = [];

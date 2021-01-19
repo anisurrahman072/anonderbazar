@@ -5,11 +5,7 @@ import {FavouriteProduct, Product} from "../../../../models/index";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {WOW} from "ngx-wow/services/wow.service";
-import {AuthService,CartItemService, FavouriteProductService} from "../../../../services";
-import {catchError, map} from "rxjs/operators";
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {of} from "rxjs/observable/of";
+import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
@@ -29,12 +25,13 @@ export class ProductItemNewArrivalComponent implements OnInit {
     favourites$: Observable<FavouriteProduct>;
     isDisplay: boolean;
     discountBadgeIcon: any;
-
+    discountPercentage: number = 0;
     product: Product;
     cart$: Observable<any>;
     cartId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
+
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
                 private authService: AuthService,
@@ -44,10 +41,12 @@ export class ProductItemNewArrivalComponent implements OnInit {
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,
                 private toastr: ToastrService) {
-                    this.isDisplay = false;
+
+        this.isDisplay = false;
         this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
-  //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
@@ -58,15 +57,19 @@ export class ProductItemNewArrivalComponent implements OnInit {
                 this.cartId = result.data.id;
             }
         });
-    }
 
+        this.discountPercentage = 0
+        if (this.newItem.promotion) {
+            this.discountPercentage = ((this.newItem.price - this.newItem.promo_price) / this.newItem.price) * 100.0
+        }
+    }
 
     //Method for add to cart
     clickToImage(event, productId) {
         this.router.navigate(['/product-details/', productId]);
     }
 
-  //Method for add to cart
+    //Method for add to cart
 
     addToCart(product: any, callback?) {
         if (product.product_variants.length > 0) {
@@ -75,9 +78,9 @@ export class ProductItemNewArrivalComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  product.promotion ? product.promo_price : product.price;
-            const cartItemData={
-                cart_id:  this.cartId,
+            let product_total_price: number = product.promotion ? product.promo_price : product.price;
+            const cartItemData = {
+                cart_id: this.cartId,
                 product_id: product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
@@ -90,7 +93,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
                         this._progress.complete("mainLoader");
                         this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
 
-                        if(callback){
+                        if (callback) {
                             callback();
                         }
                     },
@@ -104,7 +107,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for add to favourite
+
+    //Method for add to favourite
 
     addToFavourite(newItem: Product) {
         let userId = this.authService.getCurrentUserId();
@@ -121,7 +125,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
 
         }
     }
-  //Method for remove from favourite
+
+    //Method for remove from favourite
 
     removeFromFavourite(favouriteProduct) {
         let userId = this.authService.getCurrentUserId();
@@ -137,7 +142,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for add to compare
+
+    //Method for add to compare
 
     addToCompare(newItem: Product) {
 
@@ -147,15 +153,15 @@ export class ProductItemNewArrivalComponent implements OnInit {
             this.store.dispatch(new fromStore.AddToCompare(newItem));
             this.compareService.addToCompare(newItem);
             this._notify.success('add to compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
 
             this.loginModalService.showLoginModal(true)
 
         }
     }
-  //Method for remove from compare
+
+    //Method for remove from compare
 
     removeFromCompare(product: Product) {
         let userId = this.authService.getCurrentUserId();
@@ -163,16 +169,16 @@ export class ProductItemNewArrivalComponent implements OnInit {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));
             this.compareService.removeFromCompare(product);
             this._notify.success('remove from compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
     }
-  //Method for direct buy
 
-    buyNow(product){
-        this.addToCart(product, ()=>{
+    //Method for direct buy
+
+    buyNow(product) {
+        this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }

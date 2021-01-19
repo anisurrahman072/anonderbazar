@@ -5,23 +5,19 @@ import {FavouriteProduct, Product} from "../../../../models/index";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {WOW} from "ngx-wow/services/wow.service";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
-import {catchError, map} from "rxjs/operators";
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {of} from "rxjs/observable/of";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 import {ToastrService} from "ngx-toastr";
 import {NgProgress} from "@ngx-progressbar/core";
 
-
 @Component({
     selector: 'app-product-item-feedback',
     templateUrl: './product-item-feedback.component.html',
     styleUrls: ['./product-item-feedback.component.scss']
 })
+
 export class ProductItemFeedbackComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     @Input() dataProductFeedback;
@@ -32,6 +28,7 @@ export class ProductItemFeedbackComponent implements OnInit {
     cart$: Observable<any>;
     cartId: any;
     discountBadgeIcon: any;
+    discountPercentage: number;
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
                 private authService: AuthService,
@@ -55,6 +52,11 @@ export class ProductItemFeedbackComponent implements OnInit {
                 this.cartId = result.data.id;
             }
         });
+
+        this.discountPercentage = 0
+        if(this.product.promotion){
+            this.discountPercentage  =  (( this.product.price - this.product.promo_price ) / this.product.price) * 100.0
+        }
     }
 
 

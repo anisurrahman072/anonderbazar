@@ -2,7 +2,7 @@
      (click)="clickToImage($event, product.id)">
     <div class="product-overlay-img">
         <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
-            <img *ngIf="product.promotion" src="{{discountBadgeIcon}}" alt="" class="product-discount-badge" />
+            <span *ngIf="product.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
             <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="product-image">
         </div>
         <div class="productlist-icon" style="position: absolute;

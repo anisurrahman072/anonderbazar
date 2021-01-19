@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'; 
+import { Component, OnInit } from '@angular/core';
 import { ProductService, CategoryProductService } from '../../../../../services';
 import { Observable } from 'rxjs/Observable';
 import { Options, LabelType } from 'ng5-slider';
@@ -17,9 +17,6 @@ export class RightSideFilterSearchComponent implements OnInit {
   public isCollapsed_filter = true;
   public isCollapsed_category_sub = false;
   public isCollapsed_class = false;
-
-
-  
 
   minPrice: any = 0;
   maxPrice: any = 0;
@@ -50,7 +47,7 @@ export class RightSideFilterSearchComponent implements OnInit {
   ngOnInit() {
     this.getAllCategories();
     this.getMinPriceOfProduct();
-    this.getMaxPriceOfProduct(); 
+    this.getMaxPriceOfProduct();
   }
   //Event method for getting all the data for the page
   private getAllCategories() {
@@ -62,14 +59,14 @@ export class RightSideFilterSearchComponent implements OnInit {
   private getMinPriceOfProduct() {
     this.productService.getMinPrice().subscribe(result => {
       this.minPrice = result.min;
-      
+
     });
   }
   //Event method for getting all the data for the page
   private getMaxPriceOfProduct() {
     this.productService.getMaxPrice().subscribe(result => {
       this.maxPrice = result.max;
-      
+
     });
   }
 

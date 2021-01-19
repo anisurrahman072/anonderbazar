@@ -1,4 +1,4 @@
-<header class="header-section sticky-header clearfix">
+<header class="header-section sticky-header clearfix" id="anonder-bazar-sticky-menu">
     <!-- top header start-->
     <div class="header_top_area">
         <div class="container-fluid">
@@ -21,8 +21,8 @@
                     </form>
                     <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]="true"
                                       (optionSelected)="dda($event)" [displayWith]="displayFn">
-                        <div *ngFor="let p of filteredProducts "> 
-                            <mat-option *ngIf="p.type === 'product'" routerLink="/product-details/{{p.id}}"> 
+                        <div *ngFor="let p of filteredProducts ">
+                            <mat-option *ngIf="p.type === 'product'" routerLink="/product-details/{{p.id}}">
                                 <a><small>{{p.name}}</small></a>
 
                             </mat-option>
@@ -39,7 +39,7 @@
                             <div class="widget-text">
                                 <span><a href="{{ADMIN_ENDPOINT1}}">Sell On Anonder Bazar</a></span>
                                 <span *ngIf="(currentUser$|async); else log_in">
-                                    <a routerLink="/profile/orders"> 
+                                    <a routerLink="/profile/orders">
                                         My Account
                                     </a>
                                 </span>

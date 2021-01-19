@@ -5,11 +5,7 @@ import {FavouriteProduct, Product} from "../../../../models/index";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {WOW} from "ngx-wow/services/wow.service";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
-import {catchError, map} from "rxjs/operators";
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {of} from "rxjs/observable/of";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
@@ -34,6 +30,7 @@ export class ProductItemFlashDealComponent implements OnInit {
     cartTotalprice: any;
     cartTotalquantity: any;
     discountBadgeIcon: any;
+    discountPercentage: number = 0;
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -61,6 +58,11 @@ export class ProductItemFlashDealComponent implements OnInit {
                 this.cartTotalquantity = result.data.total_quantity;
             }
         });
+
+        this.discountPercentage = 0
+        if (this.product.promotion) {
+            this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
+        }
     }
 
 

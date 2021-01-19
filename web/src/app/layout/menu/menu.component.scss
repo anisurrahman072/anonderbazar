@@ -1,12 +1,7 @@
 .main-menu {
     margin-left: 0%;
 }
-.menu-sticky-fixed {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 99999
-}
+
 .header.style2 .main-menu > li > a {
     padding: 15px 35px;
     color: #fff;
@@ -55,7 +50,6 @@
 .mat-button {
     line-height: unset !important;
 }
-
 
 /* sub-menu */
 .sub-menu{

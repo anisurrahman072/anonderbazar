@@ -37,6 +37,12 @@ module.exports = {
     status: {
       type: 'integer',
     },
+    default_image_width_ratio: {
+      type: 'integer',
+    },
+    default_image_height_ratio: {
+      type: 'integer',
+    },
     createdAt: {
       type: 'datetime',
       columnName: 'created_at',

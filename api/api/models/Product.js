@@ -51,10 +51,11 @@ module.exports = {
     },
     brand_id: {
       model: 'brand',
+      required: false,
     },
     type_id: {
-        model: 'category',
-        required: true,
+      model: 'category',
+      required: true,
     },
     category_id: {
       model: 'category',
@@ -126,7 +127,7 @@ module.exports = {
     },
     produce_time: {
       type: 'integer',
-     // required: true,
+      // required: true,
     },
     last_order_completed_date: {
       type: 'datetime',

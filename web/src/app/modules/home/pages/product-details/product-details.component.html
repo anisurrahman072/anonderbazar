@@ -42,7 +42,7 @@
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
-                                <img *ngIf="data.promotion" src="{{discountBadgeIcon}}" alt="" class="product-discount-badge" />
+                                <span *ngIf="data.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
                                 <img src="{{primaryPicture}}" alt="" />
                             </div>
                         </div>

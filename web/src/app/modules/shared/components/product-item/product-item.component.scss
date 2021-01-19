@@ -208,7 +208,6 @@
   background-color: #e9c77b;
 }
 .product-item-min .price {
-  color: #333;
   font-family: "SolaimanLipi";
   font-size: 14px;
   margin-right: 9px;
@@ -227,11 +226,15 @@
 
 .productimage-wrapper .product-discount-badge {
   position: absolute;
-  left:0;
-  top:0;
-  background:white;
+  left: 0;
+  top: 0;
+  background: #ED1C24;
   border-radius: 30px 30px 30px 30px;
-  color:white;
-  width: 45px;
-  height: 45px;
+  color: white;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  padding-top: 13px;
+  padding-left: 2px;
+  font-size: 12px;
 }

@@ -113,9 +113,10 @@ export class FixedProductCreateComponent implements OnInit {
             image: [null, []],
             frontimage: [null, []],
             price: ['0', []],
+            vendor_price: ['', []],
             min_unit: [1, [Validators.required]],
             alert_quantity: [10, []],
-            brand_id: ['', [Validators.required]],
+            brand_id: ['', []],
             category_id: ['', [Validators.required]],
             subcategory_id: ['', []],
             quantity: ['1', [Validators.required]],
@@ -138,6 +139,7 @@ export class FixedProductCreateComponent implements OnInit {
         formData.append('code', value.code);
         formData.append('min_unit', value.min_unit);
         formData.append('price', value.price);
+        formData.append('vendor_price', value.vendor_price);
         formData.append('alert_quantity', value.alert_quantity || '0');
         formData.append('brand_id', value.brand_id);
         formData.append('category_id', value.category_id);
