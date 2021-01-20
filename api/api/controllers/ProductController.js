@@ -76,29 +76,40 @@ module.exports = {
       var imageCounter = parseInt(req.body.imageCounter);
       var i = 0;
       if (req.body.hasImageFront === 'true') {
+
         req.file("frontimage").upload({
           maxBytes: 10000000,
           dirname: "../../.tmp/public/images/"
         }, async function (err, uploaded) {
           if (err) {
+            console.log(err)
             return res.json(err.status, {err: err});
           }
-          if (err) return res.serverError(err);
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          var body = req.body;
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          const body = req.body;
           body.image = "/images/" + newPath;
+
+          if (body.brand_id === '' || body.brand_id === 'undefined') {
+            body.brand_id = null
+          }
+          if (body.tag === '' || body.tag === 'undefined') {
+            body.tag = null
+          }
+
+          console.log('request body: ', body)
 
           fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
           });
 
-          if(body.brand_id === ''){
-            body.brand_id = null
-          }
-          console.log('create-body: ', body)
-          var product = await Product.create(body);
+          const product = await Product.create(body);
 
           if (req.body.ImageBlukArray) {
             let imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
@@ -117,7 +128,7 @@ module.exports = {
         if (req.body.ImageBlukArray) {
           var imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
           for (i = 0; i < imagearraybulk.length; i++) {
-            if (i == 0) {
+            if (i === 0) {
               var productimage = ProductImage.findOne(product.id);
               await product.update(product.id, {image: productimage.image_path});
             }
@@ -137,7 +148,7 @@ module.exports = {
       if (req.body.price) {
         req.body.price = parseFloat(req.body.price); //parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
       }
-      if (req.body.promo_price){
+      if (req.body.promo_price) {
         req.body.promo_price = parseFloat(req.body.promo_price);
       }
 
@@ -155,10 +166,15 @@ module.exports = {
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
           var body = req.body;
-          if(body.brand_id === ''){
+          if (body.brand_id === '' || body.brand_id === 'undefined') {
             body.brand_id = null
           }
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
+          if (body.tag === '' || body.tag === 'undefined') {
+            body.tag = null
+          }
+          console.log('request body: ', body)
+
+          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
           });
@@ -322,7 +338,7 @@ module.exports = {
 
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
+          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
           });
@@ -343,7 +359,7 @@ module.exports = {
 
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
+          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
           });

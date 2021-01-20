@@ -75,8 +75,10 @@ module.exports.http = {
      *                                                                          *
      ***************************************************************************/
 
+    // bodyParser: require('skipper')({
+    //   maxWaitTimeBeforePassingControlToApp: 1000
+    // })
 
-    // bodyParser: require('skipper')({strict: true})
 
   },
 
