@@ -39,6 +39,7 @@
     "save": "^2.3.2",
     "sharp": "^0.27.0",
     "skipper": "^0.7.6",
+    "skipper-disk": "^0.5.12",
     "sslcommerz-nodejs": "^1.0.8",
     "ts-node": "^8.9.0",
     "waterline": "^0.13.1",
@@ -52,7 +53,8 @@
     "babel-preset-minify": "^0.4.1",
     "babel-preset-stage-2": "^6.24.1",
     "grunt-sync": "0.5.2",
-    "nodemon": "^1.19.0"
+    "nodemon": "^1.19.0",
+    "skipper-s3": "^0.6.0"
   },
   "scripts": {
     "debug": "node --inspect app.js",

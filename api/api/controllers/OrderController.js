@@ -6,8 +6,9 @@
  */
 const _ = require("lodash");
 const SSLCommerz = require('sslcommerz-nodejs');
-const webURL = "https://web.bitspeek.com";
-const APIURL = "https://api.bitspeek.com/api/v1";
+const webURL = "https://anonderbazar.com";
+const APIURL = "https://api.anonderbazar.com/api/v1";
+
 const {asyncForEach} = require("../../libs");
 import moment from "moment";
 
@@ -420,9 +421,11 @@ module.exports = {
       post_body['total_amount'] = cart.total_price;
       post_body['currency'] = "BDT";
       post_body['tran_id'] = randomstring;
+
       post_body['success_url'] = APIURL + "/order/sslcommerzsuccess/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
       post_body['fail_url'] = APIURL + "/order/sslcommerzfail/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
       post_body['cancel_url'] = APIURL + "/order/sslcommerzerror/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
+
       post_body['emi_option'] = 0;
       post_body['cus_name'] = user.first_name + " " + user.last_name;
       post_body['cus_email'] = user.email;

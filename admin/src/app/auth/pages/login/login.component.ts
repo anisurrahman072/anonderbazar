@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
     //Event method for submitting the form
 
     submitForm = ($event, value) => {
+        console.log('submitForm', value)
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -61,10 +62,10 @@ export class LoginComponent implements OnInit {
                             this.authService.loginSuccess(result);
                             this.router.navigate(['/dashboard']);
                         }
-                        
-                    } 
-                    
-                    
+
+                    }
+
+
 
                 },
                 (err) => {
