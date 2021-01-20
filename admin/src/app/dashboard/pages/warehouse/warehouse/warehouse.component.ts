@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {WarehouseService} from '../../../../services/warehouse.service';
+import {UserService} from "../../../../services/user.service";
+import {UIService} from "../../../../services/ui/ui.service";
 
 import {environment} from "../../../../../environments/environment";
 import { NzNotificationService } from 'ng-zorro-antd';
@@ -16,20 +18,31 @@ export class WarehouseComponent implements OnInit {
     limit: number = 10;
     page: number = 1;
     total: number;
+    private currentWarehouseSubscriprtion: any;
+    private currentWarehouseId: any | string;
 
     constructor(private warehouseService: WarehouseService,
-        private _notification: NzNotificationService) {
+        private _notification: NzNotificationService,
+        private uiService: UIService) {
     }
      // init the component
     ngOnInit(): void {
         this.getAllData();
+      
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
+            warehouseId => {
+                this.currentWarehouseId = warehouseId || '';
+                this.getAllData();
+            }
+        );
     }
       //Event method for getting all the data for the page
     getAllData() {
         
         this.warehouseService.getAllIndex(
             this.page,
-            this.limit
+            this.limit,
+            this.currentWarehouseId,
         )
             .subscribe(result => {
                     this.data = result.data; 

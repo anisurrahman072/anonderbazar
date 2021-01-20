@@ -23,8 +23,8 @@ export class WarehouseService {
     return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
       ;
   }
-  getAllIndex(page: number, limit: number): Observable<any> {  
-    return this.http.get(this.EndPoint + '/getAll?page='+page+'&limit='+limit+'&where={"deletedAt":null}')
+  getAllIndex(page: number, limit: number, warehouseId?: number): Observable<any> {  
+    return this.http.get(this.EndPoint + '/getAll?page='+page+'&limit='+limit+`${warehouseId?'&warehouse_id='+warehouseId:''}&where={"deletedAt":null}`)
       ;
   }
   getById(id): Observable<any> {

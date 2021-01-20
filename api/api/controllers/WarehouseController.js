@@ -22,7 +22,10 @@ module.exports = {
       /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
-
+      let query = req.query
+      if (query.warehouse_id) {
+        _where.id = parseInt(query.warehouse_id);
+      }
 
       /* WHERE condition..........END................*/
 
