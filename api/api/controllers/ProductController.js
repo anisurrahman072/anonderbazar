@@ -104,10 +104,10 @@ module.exports = {
 
           console.log('request body: ', body)
 
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath +  "/assets/images/" + newPath, (err) => {
+/*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
-          });
+          });*/
 
           const product = await Product.create(body);
 
@@ -153,7 +153,7 @@ module.exports = {
       }
 
       let imageCounter = parseInt(req.body.imageCounter);
-      var i = 0;
+      let i = 0;
       if (req.body.hasImageFront === 'true') {
         req.file("frontimage").upload({
           maxBytes: 10000000,
@@ -163,9 +163,9 @@ module.exports = {
             return res.json(err.status, {err: err});
           }
           if (err) return res.serverError(err);
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          var body = req.body;
+          let body = req.body;
           if (body.brand_id === '' || body.brand_id === 'undefined') {
             body.brand_id = null
           }
@@ -174,18 +174,89 @@ module.exports = {
           }
           console.log('request body: ', body)
 
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
+/*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
             if (err) throw err;
             console.log(`${newPath} was copied to assets dir`);
-          });
+          });*/
 
-          body.image = "/images/" + newPath;
+          body.image = newPath;
           let product = await Product.update({id: req.param("id")}, body);
           return res.json(200, product);
         });
       } else {
         let product = await Product.update({id: req.param("id")}, req.body);
         return res.json(200, product);
+      }
+    } catch (err) {
+      res.json(400, {message: "wrong"});
+    }
+  },
+  //Method called for uploading product images
+  //Model models/ProductImage.js
+  upload: async function (req, res) {
+    try {
+      if (req.body.hasImage === "true" && req.body.product_id) {
+        req.file("image").upload({
+          adapter: require('skipper-s3'),
+          key: 'AKIATYQRUSGN2DDD424I',
+          secret: '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',
+          bucket: 'anonderbazar'
+        }, async function (err, uploaded) {
+          if (err) {
+            return res.json(err.status, {err: err});
+          }
+
+
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          console.log('uploaded-newPath', newPath)
+          /*
+                    fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
+                                if (err) throw err;
+                                console.log(`${newPath} was copied to assets dir`);
+                    });
+          */
+
+          const product = await ProductImage.create({
+            product_id: req.body.product_id,
+            image_path: newPath,
+            created_at: new Date(),
+          });
+          return res.json(200, product);
+        });
+      } else if (req.body.hasImage === "true") {
+        req.file("image").upload({
+          adapter: require('skipper-s3'),
+          key: 'AKIATYQRUSGN2DDD424I',
+          secret: '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',
+          bucket: 'anonderbazar'
+        }, async function (err, uploaded) {
+
+          if (err) {
+            return res.json(err.status, {err: err});
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          console.log('uploaded-newPath', newPath)
+          /*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
+                      if (err) throw err;
+                      console.log(`${newPath} was copied to assets dir`);
+                    });
+          */
+
+          const product = await ProductImage.create({
+            product_id: null,
+            image_path: newPath,
+            created_at: new Date(),
+          });
+          return res.json(200, product);
+        });
+
+      } else if (req.body.id) {
+        ProductImage.update({id: req.body.id}, {deletedAt: new Date()}).exec(function (err, product) {
+          if (err) return res.json(err, 400);
+          return res.json(product[0]);
+        });
+      } else {
+        res.json(400, {message: "wrong"});
       }
     } catch (err) {
       res.json(400, {message: "wrong"});
@@ -325,63 +396,5 @@ module.exports = {
       });
     }
   },
-  //Method called for uploading product images
-  //Model models/ProductImage.js
-  upload: async function (req, res) {
-    try {
-      if (req.body.hasImage === "true" && req.body.product_id) {
-        req.file("image").upload({dirname: "../../.tmp/public/images/"}, async function (err, uploaded) {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (err) return res.serverError(err);
 
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
-            if (err) throw err;
-            console.log(`${newPath} was copied to assets dir`);
-          });
-
-          var product = await ProductImage.create({
-            product_id: req.body.product_id,
-            image_path: "/images/" + newPath,
-            created_at: new Date(),
-          });
-          return res.json(200, product);
-        });
-      } else if (req.body.hasImage === "true") {
-        req.file("image").upload({dirname: "../../.tmp/public/images/"}, async function (err, uploaded) {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (err) return res.serverError(err);
-
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
-            if (err) throw err;
-            console.log(`${newPath} was copied to assets dir`);
-          });
-
-          var product = await ProductImage.create({
-            product_id: null,
-            image_path: "/images/" + newPath,
-            created_at: new Date(),
-          });
-          return res.json(200, product);
-        });
-
-      } else if (req.body.id) {
-        ProductImage.update({id: req.body.id}, {deletedAt: new Date()}).exec(function (err, product) {
-          if (err) return res.json(err, 400);
-          return res.json(product[0]);
-        });
-      } else {
-        res.json(400, {message: "wrong"});
-      }
-    } catch (err) {
-      res.json(400, {message: "wrong"});
-    }
-  },
 };

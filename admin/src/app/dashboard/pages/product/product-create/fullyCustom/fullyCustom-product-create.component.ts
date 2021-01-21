@@ -1,16 +1,11 @@
 import {
     Component,
-    ElementRef,
-    EventEmitter,
-    Input,
     OnInit,
-    Output,
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-    NzInputDirectiveComponent,
     NzNotificationService
 } from 'ng-zorro-antd';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
@@ -19,7 +14,7 @@ import {CategoryTypeService} from '../../../../../services/category-type.service
 import {CategoryProductService} from '../../../../../services/category-product.service';
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
-import { BrandService } from '../../../../../services/brand.service';
+import {BrandService} from '../../../../../services/brand.service';
 
 @Component({
     selector: 'app-fully-custom-product-create',
@@ -73,13 +68,14 @@ export class FullyCustomProductCreateComponent implements OnInit {
     inputVisible = false;
     inputValue = '';
     statusOptions = [
-        { label: 'Inactive Product', value: 0 },
-        { label: 'Fixed Product', value: 1 },
-        { label: 'Variable Product', value: 2 },
+        {label: 'Inactive Product', value: 0},
+        {label: 'Fixed Product', value: 1},
+        {label: 'Variable Product', value: 2},
     ];
 
     currentUser: any;
     queryStatus: any;
+
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -92,13 +88,14 @@ export class FullyCustomProductCreateComponent implements OnInit {
                 private productService: ProductService) {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code:[''],
+            code: [''],
             image: [null, []],
             price: ['', []],
+            vendor_price: ['', []],
             min_unit: [0, [Validators.required]],
             alert_quantity: [0.0, []],
             category_id: ['', [Validators.required]],
-            brand_id: ['', [Validators.required]],
+            brand_id: ['', []],
             subcategory_id: ['', []],
             quantity: ['', [Validators.required]],
             product_details: ['', [Validators.required]],
@@ -111,6 +108,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
             weight: ['', []]
         });
     }
+
     // Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -123,6 +121,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
         formData.append('code', value.code);
         formData.append('min_unit', value.min_unit);
         formData.append('price', value.price);
+        formData.append('vendor_price', value.vendor_price);
         formData.append('alert_quantity', value.alert_quantity || '0');
         formData.append('category_id', value.category_id);
         formData.append('quantity', value.quantity);
@@ -163,6 +162,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
             }
         });
     };
+
     // Event method for removing picture
     onRemoved(_file: FileHolder) {
         this.ImageFile.splice(
@@ -170,11 +170,13 @@ export class FullyCustomProductCreateComponent implements OnInit {
             1
         );
     }
+
     // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile.push(metadata.file);
         return metadata;
     };
+
     // Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -183,32 +185,35 @@ export class FullyCustomProductCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
     // Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
+
     // For initiating the section element with data
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
-        this.route.queryParams.filter(params => params.status).subscribe(params => {  
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
             this.queryStatus = params.status;
         });
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.typeSearchOptions = result;
         });
         this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result; 
-            
-        }); 
+            this.brandSearchOptions = result;
+
+        });
         this.userService
             .getAllCraftsmanByWarehouseId(this.currentUser.warehouse.id)
             .subscribe(result => {
-                this.craftsmanSearchOptions=result.data;
+                this.craftsmanSearchOptions = result.data;
             });
     }
 
     categorySearchChange($event) {
     }
+
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -222,6 +227,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
             this.subcategorySearchOptions = {};
         }
     }
+
     // Method called on category change
     categoryChange($event) {
         const query = encodeURI($event);

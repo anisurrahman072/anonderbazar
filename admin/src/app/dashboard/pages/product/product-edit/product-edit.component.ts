@@ -1,8 +1,6 @@
-///<reference path="../../../../../../node_modules/@angular/forms/src/model.d.ts"/>
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
     FormBuilder,
-    FormControl,
     FormGroup,
     Validators
 } from '@angular/forms';
@@ -19,7 +17,6 @@ import {CategoryProductService} from '../../../../services/category-product.serv
 import {BrandService} from '../../../../services/brand.service';
 import {UserService} from '../../../../services/user.service';
 import {AuthService} from '../../../../services/auth.service';
-
 import {environment} from "../../../../../environments/environment";
 
 @Component({

@@ -1,16 +1,11 @@
 import {
     Component,
-    ElementRef,
-    EventEmitter,
-    Input,
     OnInit,
-    Output,
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
-    NzInputDirectiveComponent,
     NzNotificationService
 } from 'ng-zorro-antd';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
@@ -19,8 +14,7 @@ import {CategoryTypeService} from '../../../../../services/category-type.service
 import {CategoryProductService} from '../../../../../services/category-product.service';
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
-import {forEach} from "@angular/router/src/utils/collection";
-import { BrandService } from '../../../../../services/brand.service';
+import {BrandService} from '../../../../../services/brand.service';
 
 @Component({
     selector: 'app-fixed-product-create',
@@ -32,22 +26,22 @@ export class FixedProductCreateComponent implements OnInit {
     validateForm: FormGroup;
     ImageBlukArray: any = [];
     ImageFile: File[] = [];
-    ImageFrontFile: File[] =[];
+    ImageFrontFile: File[] = [];
     @ViewChild('Image') Image;
-    isSubmit:boolean =true;
+    isSubmit: boolean = true;
 
-/*    ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            { name: 'document', groups: ['mode', 'document', 'doctools'] },
-            {
-                name: 'editing',
-                groups: ['find', 'selection', 'spellchecker', 'editing']
-            },
-            { name: 'forms', groups: ['forms'] }
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
+    /*    ckConfig = {
+            uiColor: '#662d91',
+            toolbarGroups: [
+                { name: 'document', groups: ['mode', 'document', 'doctools'] },
+                {
+                    name: 'editing',
+                    groups: ['find', 'selection', 'spellchecker', 'editing']
+                },
+                { name: 'forms', groups: ['forms'] }
+            ],
+            removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
+        };*/
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -90,13 +84,14 @@ export class FixedProductCreateComponent implements OnInit {
     inputVisible = false;
     inputValue = '';
     statusOptions = [
-        { label: 'Inactive Product', value: 0 },
-        { label: 'Fixed Product', value: 1 },
-        { label: 'Variable Product', value: 2 },
+        {label: 'Inactive Product', value: 0},
+        {label: 'Fixed Product', value: 1},
+        {label: 'Variable Product', value: 2},
     ];
 
     currentUser: any;
     queryStatus: any;
+
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -109,7 +104,7 @@ export class FixedProductCreateComponent implements OnInit {
                 private productService: ProductService) {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code:[''],
+            code: [''],
             image: [null, []],
             frontimage: [null, []],
             price: ['0', []],
@@ -127,6 +122,7 @@ export class FixedProductCreateComponent implements OnInit {
             weight: ['0.0', [Validators.required]]
         });
     }
+
     // Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -157,21 +153,21 @@ export class FixedProductCreateComponent implements OnInit {
 
         formData.append('warehouse_id', this.currentUser.warehouse.id);
 
-        if (this.ImageBlukArray.length>0) {
-            let ImageBluk=[];
+        if (this.ImageBlukArray.length > 0) {
+            let ImageBluk = [];
             for (let i = 0; i < this.ImageBlukArray.length; i++) {
-                ImageBluk[i]=this.ImageBlukArray[i].id;
+                ImageBluk[i] = this.ImageBlukArray[i].id;
             }
             formData.append('ImageBlukArray', ImageBluk.toString());
         }
-        if (this.ImageFrontFile.length>0) {
+        if (this.ImageFrontFile.length > 0) {
             formData.append('hasImageFront', 'true');
             formData.append('frontimage', this.ImageFrontFile[0], this.ImageFrontFile[0].name);
         } else {
             formData.append('hasImageFront', 'false');
 
         }
-        this.isSubmit=false;
+        this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
             console.log(result);
             if (result.id) {
@@ -184,6 +180,7 @@ export class FixedProductCreateComponent implements OnInit {
             }
         });
     };
+
     // Event method for removing picture
     onRemoved(_file: FileHolder) {
         var index = this.ImageFile.findIndex(e => e.name === _file.file.name);
@@ -191,7 +188,7 @@ export class FixedProductCreateComponent implements OnInit {
         const formData: FormData = new FormData();
         formData.append('id', this.ImageBlukArray[index].id);
 
-        this.ImageFile.splice(index,1);
+        this.ImageFile.splice(index, 1);
         this.ImageBlukArray.splice(index, 1);
 
         this.productService.upload(formData).subscribe(result => {
@@ -199,6 +196,7 @@ export class FixedProductCreateComponent implements OnInit {
 
 
     }
+
     // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         const formData: FormData = new FormData();
@@ -211,18 +209,21 @@ export class FixedProductCreateComponent implements OnInit {
         this.ImageFile.push(metadata.file);
         return metadata;
     };
+
     // Event method for removing front picture
     onRemovedFront(_file: FileHolder) {
         this.ImageFrontFile.splice(
-          this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
-          1
+            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
+            1
         );
     }
+
     // Event method for storing front imgae in variable
     onBeforeUploadFront = (metadata: UploadMetadata) => {
         this.ImageFrontFile.push(metadata.file);
         return metadata;
     }
+
     // Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -231,10 +232,12 @@ export class FixedProductCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
     // Event method for resetting the form
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
+
     // For initiating the section element with data
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
@@ -252,6 +255,7 @@ export class FixedProductCreateComponent implements OnInit {
 
     categorySearchChange($event) {
     }
+
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -265,6 +269,7 @@ export class FixedProductCreateComponent implements OnInit {
             this.subcategorySearchOptions = {};
         }
     }
+
     // Method called on category change
     categoryChange($event) {
         const query = encodeURI($event);

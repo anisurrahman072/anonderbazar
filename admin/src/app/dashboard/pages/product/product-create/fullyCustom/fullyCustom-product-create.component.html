@@ -53,6 +53,19 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label> Vendor Price </label>
+                </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-input formControlName="vendor_price" [nzType]="'number'" [nzPlaceHolder]="'Enter Vendor Price'" [nzSize]="'large'"></nz-input>
+                    <div nz-form-explain *ngIf="getFormControl('vendor_price').dirty&&getFormControl('vendor_price').hasError('required')">
+                        required!
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--price-->
         <div class="col-md-6">
             <div nz-form-item nz-row>

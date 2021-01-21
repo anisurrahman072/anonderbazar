@@ -1,15 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {
-    FormBuilder
-} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute} from '@angular/router';
 import {ProductService} from '../../../../services/product.service';
-
 import {DesignImagesService} from "../../../../services/design-images.service";
 import {environment} from "../../../../../environments/environment";
-import { AuthService } from '../../../../services/auth.service';
+import {AuthService} from '../../../../services/auth.service';
 
 @Component({
     selector: 'app-product-read',
@@ -24,37 +20,41 @@ export class ProductReadComponent implements OnInit, OnDestroy {
     tags = [];
     status: any;
     currentUser: any;
+
     constructor(private route: ActivatedRoute,
                 private designImagesService: DesignImagesService,
                 private authService: AuthService,
                 private _notification: NzNotificationService,
                 private productService: ProductService) {
     }
+
     // For initiating the section element with data
-    ngOnInit() { 
+    ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
 
-        this.route.queryParams.filter(params => params.status).subscribe(params => {  
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
             this.status = params.status;
         });
         this.sub = this.route.params.subscribe(params => {
-            this.id = +params['id']; // (+) converts string 'id' to a number 
-            this.getPageData();            
+            this.id = +params['id']; // (+) converts string 'id' to a number
+            this.getPageData();
         });
 
     }
+
     // Event method for getting all the data for the page
-    getPageData(){
+    getPageData() {
         this.productService.getById(this.id)
-        .subscribe(result => {
-            if (result) {
-                this.data = result;
-                if(result.tag!="undefined")
-                    this.tags = JSON.parse(result.tag);
-            }
+            .subscribe(result => {
+                if (result) {
+                    this.data = result;
+                    if (result.tag != "undefined")
+                        this.tags = JSON.parse(result.tag);
+                }
 
-        });
+            });
     }
+
     // Method for deleting image
     deleteImageConfirm(index, id) {
         this.productService.deleteProductImage(id).subscribe(result => {
