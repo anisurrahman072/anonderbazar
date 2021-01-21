@@ -239,6 +239,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         this.getRecentlyViewedProducts();
     }
+    
+    defaultVariantSelection() {
+        for (let v of this.productVariants) {
+            let variant = v.warehouse_variants[0]
+            this.onVariantChange(variant)
+        }
+    }
 
     //Event method for getting all recently viewed product
 
@@ -420,6 +427,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 if (result) {
                     this.productVariants = result;
                     console.log('this.productVariants', this.productVariants)
+                    this.defaultVariantSelection();
                 }
             });
     }
@@ -648,6 +656,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     onVariantChange(variant) {
+        console.log('EEE')
         let isExist = this.variantCalculatedPrice.find(v => v.variant_name == variant.variant_id.name);
         if (isExist) {
             let index = this.variantCalculatedPrice.indexOf(isExist);
