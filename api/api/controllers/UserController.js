@@ -6,6 +6,7 @@
  */
 import { initLogPlaceholder, pagination } from "../../libs";
 import bcrypt from "bcryptjs";
+import {imageUploadConfig} from "../../libs/helper";
 
 
 module.exports = {
@@ -26,17 +27,14 @@ module.exports = {
 
     if (req.body.hasImage === "true") {
 
-      req.file("avatar").upload(
-        {
-          dirname: "../../.tmp/public/images/"
-        },
+      req.file("avatar").upload(imageUploadConfig,
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
           }
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.avatar = "/images/" + newPath;
+          req.body.avatar = "/" + newPath;
 
 
           User.create(req.body).exec(function(err, user) {
@@ -85,17 +83,15 @@ module.exports = {
   //Model models/User.js
   update: function(req, res) {
     if (req.body.hasImage === "true") {
-      req.file("avatar").upload(
-        {
-          dirname: "../../.tmp/public/images/"
-        },
+      req.file("avatar").upload(imageUploadConfig,
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
           }
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.avatar = "/images/" + newPath;
+          req.body.avatar = "/" + newPath;
           User.update({ id: req.param("id") }, req.body).exec(function(
             err,
             user

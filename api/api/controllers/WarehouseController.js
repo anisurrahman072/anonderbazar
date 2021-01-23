@@ -5,12 +5,11 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 import {
-    asyncForEach,
-    uploadImgAsync,
-    initLogPlaceholder,
-    baseFilter,
-    pagination
+  initLogPlaceholder,
+  pagination
 } from "../../libs";
+import {imageUploadConfig} from "../../libs/helper";
+
 module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
@@ -30,7 +29,7 @@ module.exports = {
       /* WHERE condition..........END................*/
 
 
-      let totalWarehouse = await  Warehouse.count().where(_where);
+      let totalWarehouse = await Warehouse.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouse;
       let Warehouses = await Warehouse.find(
         {
@@ -62,18 +61,18 @@ module.exports = {
   //Method called for deleting a warehouse data
   //Model models/Warehouse.js
   destroy: function (req, res) {
-    Warehouse.update({ id: req.param('id') }, { deletedAt: new Date() })
+    Warehouse.update({id: req.param('id')}, {deletedAt: new Date()})
       .exec(function (err, warehouse) {
-        User.update({ warehouse_id: req.param("id") }, { deletedAt: new Date() }).exec(
-            function(err, user) {
-                if (err) return res.json(err, 400);
-                return res.json(user[0]);
-            }
+        User.update({warehouse_id: req.param("id")}, {deletedAt: new Date()}).exec(
+          function (err, user) {
+            if (err) return res.json(err, 400);
+            return res.json(user[0]);
+          }
         );
-        Product.update({ warehouse_id: req.param("id") }, { deletedAt: new Date() }).exec(
-          function(err, product) {
-              if (err) return res.json(err, 400);
-              return res.json(product[0]);
+        Product.update({warehouse_id: req.param("id")}, {deletedAt: new Date()}).exec(
+          function (err, product) {
+            if (err) return res.json(err, 400);
+            return res.json(product[0]);
           }
         );
         if (err) return res.json(err, 400);
@@ -85,18 +84,16 @@ module.exports = {
   create: function (req, res) {
 
     if (req.body.haslogo === 'true') {
-      req.file('logo').upload({
-        dirname: '../../.tmp/public/images/'
-      }, function (err, uploaded) {
+      req.file('logo').upload(imageUploadConfig, function (err, uploaded) {
         if (err) {
-          return res.json(err.status, { err: err });
+          return res.json(err.status, {err: err});
         }
         var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         if (err) return res.serverError(err);
-        req.body.logo = '/images/' + newPath;
+        req.body.logo = '/' + newPath;
         Warehouse.create(req.body).exec(function (err, Warehouse) {
           if (err) {
-            return res.json(err.status, { err: err });
+            return res.json(err.status, {err: err});
           }
           if (Warehouse) {
             res.json(200, Warehouse);
@@ -106,7 +103,7 @@ module.exports = {
     } else {
       Warehouse.create(req.body).exec(function (err, Warehouse) {
         if (err) {
-          return res.json(err.status, { err: err });
+          return res.json(err.status, {err: err});
         }
         if (Warehouse) {
           res.json(200, Warehouse);
@@ -118,24 +115,22 @@ module.exports = {
   //Model models/Warehouse.js
   update: function (req, res) {
     if (req.body.haslogo === 'true') {
-        req.file('logo').upload({
-        dirname: '../../.tmp/public/images/'
-      }, function (err, uploaded) {
-            if (err) {
-          return res.json(err.status, { err: err });
+      req.file('logo').upload(imageUploadConfig, function (err, uploaded) {
+        if (err) {
+          return res.json(err.status, {err: err});
         }
-        var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-            if (err) return res.serverError(err);
-        req.body.logo = '/images/' + newPath;
-        Warehouse.update({ id: req.param('id') }, req.body)
+        if (err) return res.serverError(err);
+        req.body.logo = '/' + newPath;
+        Warehouse.update({id: req.param('id')}, req.body)
           .exec(function (err, warehouse) {
             if (err) return res.json(err, 400);
             return res.json(200, warehouse);
           });
       });
     } else {
-      Warehouse.update({ id: req.param('id') }, req.body)
+      Warehouse.update({id: req.param('id')}, req.body)
         .exec(function (err, warehouse) {
           if (err) return res.json(err, 400);
           return res.json(200, warehouse);

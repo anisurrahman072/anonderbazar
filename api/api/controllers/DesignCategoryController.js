@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 import { initLogPlaceholder } from '../../libs';
+import {imageUploadConfig} from "../../libs/helper";
 
 let asyncForEach = require('../../libs').asyncForEach;
 
@@ -26,7 +27,7 @@ module.exports = {
     if (req.body.hasImage === 'true') {
       req.file('image').upload(
         {
-          dirname: '../../.tmp/public/images/',
+          ...imageUploadConfig,
           saveAs: Date.now() + '_designCategory.jpg'
         },
         function(err, uploaded) {
@@ -35,7 +36,7 @@ module.exports = {
           }
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.image = '/images/' + newPath;
+          req.body.image = '/' + newPath;
           create(req.body);
         }
       );
@@ -81,16 +82,16 @@ module.exports = {
     if (req.body.hasImage == 'true') {
       req.file('image').upload(
         {
-          dirname: '../../.tmp/public/images/',
+          ...imageUploadConfig,
           saveAs: Date.now() + '_designcategory.jpg'
         },
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
           }
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.image = '/images/' + newPath;
+          req.body.image = '/' + newPath;
           DesignCategory.update({ id: req.param('id') }, req.body).exec(
             function(err, designCategory) {
               if (err) return res.json(err, 400);

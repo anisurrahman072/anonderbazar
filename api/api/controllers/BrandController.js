@@ -1,4 +1,5 @@
 import { initLogPlaceholder, pagination, uploadImgAsync } from '../../libs';
+import {imageUploadConfig} from "../../libs/helper";
 
 /**
  * BrandController
@@ -26,14 +27,12 @@ module.exports = {
             let imageCounter = 1;
             let i;
             let body, body1;
-            req.file('image').upload({
-                dirname: '../../.tmp/public/images/'
-            }, function (err, files) {
-                maxBytes: 10000000;
+            req.file('image').upload(imageUploadConfig, function (err, files) {
+                // maxBytes: 10000000;
                 if (err) return res.serverError(err);
                 var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                 body=req.body;
-                body.image= '/images/' + newPath;
+                body.image= '/' + newPath;
                 Brand.create(body).exec(function(err, returnBrand) {
                     if (err) {
                         return res.json(err.status, { err: err });
@@ -67,17 +66,14 @@ module.exports = {
 
     if (req.body.hasImage == 'true') {
 
-      req.file("image").upload(
-        {
-          dirname: "../../.tmp/public/images/"
-        },
+      req.file("image").upload(imageUploadConfig,
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
           }
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.image = "/images/" + newPath;
+          req.body.image = "/" + newPath;
           Brand.update({ id: req.param("id") }, req.body).exec(function(
             err,
             brand

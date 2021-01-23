@@ -5,6 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+import {imageUploadConfig} from "../../libs/helper";
+
 module.exports = {
     //Method called for sending a image data
   sendImage: function (req, res) {
@@ -17,10 +19,8 @@ module.exports = {
     if (req.method === 'GET')
       return res.json({'status': 'GET not allowed'});
 
-    req.file('imageFile').upload({
-      dirname: '../../.tmp/public/images/'
-    }, function (err, files) {
-      maxBytes: 10000000;
+    req.file('imageFile').upload(imageUploadConfig, function (err, files) {
+      // maxBytes: 10000000;
       if (err) return res.serverError(err);
       res.json(200, files);
     });

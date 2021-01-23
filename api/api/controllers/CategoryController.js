@@ -1,4 +1,5 @@
 import { asyncForEach, initLogPlaceholder } from '../../libs';
+import {imageUploadConfig} from "../../libs/helper";
 /**
  * CategoryController
  *
@@ -14,14 +15,12 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body, body1;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   Category.create(body).exec(function(err, returnCategory) {
                       if (err) {
                           return res.json(err.status, { err: err });
@@ -124,14 +123,12 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   body.type_id = 1;
 
                   Category.create(body).exec(function(err, returnCategory) {
@@ -167,14 +164,12 @@ module.exports = {
               let imageCounter = 2;
               let i;
               let body;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   body.type_id = 1;
 
                   Category.create(body).exec(function(err, returnCategory) {
@@ -211,14 +206,12 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
                       if (err) {
                           return res.json(err.status, { err: err });
@@ -252,14 +245,12 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   body.type_id = 1;
 
                   Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
@@ -296,14 +287,12 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload({
-                  dirname: '../../.tmp/public/images/'
-              }, function (err, files) {
-                  maxBytes: 10000000;
+              req.file('image0').upload(imageUploadConfig, function (err, files) {
+                  // maxBytes: 10000000;
                   if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+                  const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
                   body=req.body;
-                  body.image= '/images/' + newPath;
+                  body.image= '/' + newPath;
                   body.type_id = 2;
 
                   Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {

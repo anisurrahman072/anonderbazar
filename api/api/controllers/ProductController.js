@@ -1,9 +1,8 @@
 import {
   asyncForEach,
-  uploadImgAsync,
   initLogPlaceholder,
-  baseFilter,
 } from "../../libs";
+import {imageUploadConfig} from "../../libs/helper";
 
 const fs = require('fs');
 
@@ -77,10 +76,7 @@ module.exports = {
       var i = 0;
       if (req.body.hasImageFront === 'true') {
 
-        req.file("frontimage").upload({
-          maxBytes: 10000000,
-          dirname: "../../.tmp/public/images/"
-        }, async function (err, uploaded) {
+        req.file("frontimage").upload(imageUploadConfig, async function (err, uploaded) {
           if (err) {
             console.log(err)
             return res.json(err.status, {err: err});
@@ -93,7 +89,7 @@ module.exports = {
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
           const body = req.body;
-          body.image = "/images/" + newPath;
+          body.image = '/' + newPath;
 
           if (body.brand_id === '' || body.brand_id === 'undefined') {
             body.brand_id = null
@@ -104,10 +100,10 @@ module.exports = {
 
           console.log('request body: ', body)
 
-/*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
-            if (err) throw err;
-            console.log(`${newPath} was copied to assets dir`);
-          });*/
+          /*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
+                      if (err) throw err;
+                      console.log(`${newPath} was copied to assets dir`);
+                    });*/
 
           const product = await Product.create(body);
 
@@ -155,10 +151,7 @@ module.exports = {
       let imageCounter = parseInt(req.body.imageCounter);
       let i = 0;
       if (req.body.hasImageFront === 'true') {
-        req.file("frontimage").upload({
-          maxBytes: 10000000,
-          dirname: "../../.tmp/public/images/"
-        }, async function (err, uploaded) {
+        req.file("frontimage").upload(imageUploadConfig, async function (err, uploaded) {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -174,12 +167,12 @@ module.exports = {
           }
           console.log('request body: ', body)
 
-/*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
-            if (err) throw err;
-            console.log(`${newPath} was copied to assets dir`);
-          });*/
+          /*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {
+                      if (err) throw err;
+                      console.log(`${newPath} was copied to assets dir`);
+                    });*/
 
-          body.image = newPath;
+          body.image = '/' + newPath;
           let product = await Product.update({id: req.param("id")}, body);
           return res.json(200, product);
         });
@@ -196,16 +189,10 @@ module.exports = {
   upload: async function (req, res) {
     try {
       if (req.body.hasImage === "true" && req.body.product_id) {
-        req.file("image").upload({
-          adapter: require('skipper-s3'),
-          key: 'AKIATYQRUSGN2DDD424I',
-          secret: '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',
-          bucket: 'anonderbazar'
-        }, async function (err, uploaded) {
+        req.file("image").upload(imageUploadConfig, async function (err, uploaded) {
           if (err) {
             return res.json(err.status, {err: err});
           }
-
 
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath)
@@ -218,18 +205,13 @@ module.exports = {
 
           const product = await ProductImage.create({
             product_id: req.body.product_id,
-            image_path: newPath,
+            image_path: '/' + newPath,
             created_at: new Date(),
           });
           return res.json(200, product);
         });
       } else if (req.body.hasImage === "true") {
-        req.file("image").upload({
-          adapter: require('skipper-s3'),
-          key: 'AKIATYQRUSGN2DDD424I',
-          secret: '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',
-          bucket: 'anonderbazar'
-        }, async function (err, uploaded) {
+        req.file("image").upload(imageUploadConfig, async function (err, uploaded) {
 
           if (err) {
             return res.json(err.status, {err: err});
@@ -244,7 +226,7 @@ module.exports = {
 
           const product = await ProductImage.create({
             product_id: null,
-            image_path: newPath,
+            image_path: '/' + newPath,
             created_at: new Date(),
           });
           return res.json(200, product);

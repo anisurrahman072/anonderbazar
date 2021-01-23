@@ -8,6 +8,7 @@ import {
 
 const fs = require('fs');
 import _ from 'lodash';
+import {imageUploadConfig} from "../../libs/helper";
 
 module.exports = {
   //Method called for getting all design image list data
@@ -127,10 +128,10 @@ module.exports = {
 
       for (let i = 0; i < req.body.newImageCounter; i++) {
         let tempImg = await uploadImgAsync(req.file('image' + i), {
-          dirname: '../../.tmp/public/images/',
+          ...imageUploadConfig,
           saveAs: Date.now() + '_brand.jpg'
         });
-        let newPath = '/images/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
+        let newPath = '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
         newImages.push(newPath);
       }
 
@@ -225,11 +226,11 @@ module.exports = {
       if (req.body.hasImage === 'true') {
         for (let i = 0; i < parseInt(req.body.newImageCounter); i++) {
           let tempImg = await uploadImgAsync(req.file('image' + i), {
-            dirname: '../../.tmp/public/images/',
+           ...imageUploadConfig,
             saveAs: Date.now() + '_design.jpg'
           });
           let newPath =
-            '/images/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
+            '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
           newImages.push(newPath);
         }
       }

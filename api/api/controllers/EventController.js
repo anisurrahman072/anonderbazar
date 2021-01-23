@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 import { initLogPlaceholder, pagination, uploadImgAsync } from '../../libs';
+import {imageUploadConfig} from "../../libs/helper";
 module.exports = {
   //Method called for getting a event data
   //Model models/EventManagement.js
@@ -41,12 +42,12 @@ module.exports = {
 
     if (req.body.hasImage === 'true') {
       let tempImg = await uploadImgAsync(req.file('image'), {
-        dirname: '../../.tmp/public/images/',
+        ...imageUploadConfig,
         saveAs: Date.now() + '_event.jpg'
       });
 
       let newPath = tempImg[0].fd.split(/[\\//]+/).reverse()[0];
-      req.body.image = '/images/' + newPath;
+      req.body.image = '/' + newPath;
       create(req.body);
     } else {
       create(req.body);
@@ -57,17 +58,14 @@ module.exports = {
   update: function (req, res) {
     if (req.body.hasImage === "true") {
 
-      req.file("image").upload(
-        {
-          dirname: "../../.tmp/public/images/"
-        },
+      req.file("image").upload( imageUploadConfig,
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
           }
-          var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           if (err) return res.serverError(err);
-          req.body.image = "/images/" + newPath;
+          req.body.image = "/" + newPath;
 
 
           EventManagement.update({ id: req.param("id") }, req.body).exec(function(

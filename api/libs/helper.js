@@ -53,3 +53,15 @@ export const baseFilter = (reqBody, Model, localWhere) => {
 });
     return where;
 };
+
+export const imageUploadConfig = {
+  adapter: require('skipper-s3'),
+  key: 'AKIATYQRUSGN2DDD424I',
+  secret: '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',
+  bucket: 'anonderbazar'
+}
+
+/*
+          maxBytes: 10000000,
+          dirname: "../../.tmp/public/images/"
+ */

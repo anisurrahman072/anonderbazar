@@ -1,3 +1,5 @@
+import {imageUploadConfig} from "../../libs/helper";
+
 module.exports = {
   // destroy a row
   destroy: (req, res) => {
@@ -15,14 +17,12 @@ module.exports = {
 
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload({
-            dirname: '../../.tmp/public/images/'
-        }, async function (err, files) {
-            maxBytes: 10000000;
+        req.file('image').upload(imageUploadConfig, async function (err, files) {
+            // maxBytes: 10000000;
             if (err) return res.serverError(err);
-            var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-            body=req.body;
-            body.image= '/images/' + newPath;
+            const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+            body = req.body;
+            body.image= '/' + newPath;
             let data_value=[];
 
             if (req.body.subsection == "OFFER") {
@@ -129,14 +129,12 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload({
-            dirname: '../../.tmp/public/images/'
-        }, async function (err, files) {
-            maxBytes: 10000000;
+        req.file('image').upload(imageUploadConfig, async function (err, files) {
+            // maxBytes: 10000000;
             if (err) return res.serverError(err);
             var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
             body=req.body;
-            body.image= '/images/' + newPath;
+            body.image= '/' + newPath;
             let data_value=[];
 
             if (req.body.subsection === "OFFER") {
@@ -230,16 +228,14 @@ module.exports = {
   customPostInsert: async (req, res) => {
     try {
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(
-          {
-            dirname: '../../.tmp/public/images/'
-          },
+        req.file('image').upload(imageUploadConfig,
 
           async function(err, uploaded) {
             if (err) {
               return res.json(err.status, { err: err });
             }
-            var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
             if (err) return res.serverError(err);
 
             let data_value = [
@@ -247,7 +243,7 @@ module.exports = {
                 title: req.body.title,
                 description: req.body.description,
                 slug: (req.body.title.toLowerCase()).replace(' ', '_'),
-                image: '/images/' + newPath
+                image: '/' + newPath
               }
             ];
 
@@ -313,16 +309,13 @@ module.exports = {
     try {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(
-          {
-            dirname: '../../.tmp/public/images/'
-          },
+        req.file('image').upload(imageUploadConfig,
 
           async function(err, uploaded) {
             if (err) {
               return res.json(err.status, { err: err });
             }
-            var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
             if (err) return res.serverError(err);
 
             let data_value = [
@@ -332,7 +325,7 @@ module.exports = {
                 category_id: req.body.category_id,
                 lowerlimit: req.body.lowerlimit,
                 upperlimit: req.body.upperlimit,
-                image: '/images/' + newPath
+                image: '/' + newPath
               }
             ];
 
@@ -397,10 +390,7 @@ module.exports = {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
 
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(
-          {
-            dirname: '../../.tmp/public/images/'
-          },
+        req.file('image').upload(imageUploadConfig,
 
           async function(err, uploaded) {
             if (err) {
@@ -412,13 +402,13 @@ module.exports = {
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,
               description: req.body.description,
-              image: '/images/' + newPath
+              image: '/' + newPath
             };
 
             let _payload = {
               title: req.body.title,
               description: req.body.description,
-              image: '/images/' + newPath
+              image: '/' + newPath
             };
             cms.data_value.push(_payload);
 
@@ -465,10 +455,7 @@ module.exports = {
     try {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(
-          {
-            dirname: '../../.tmp/public/images/'
-          },
+        req.file('image').upload(imageUploadConfig,
           async function(err, uploaded) {
             if (err) {
               return res.json(err.status, { err: err });
@@ -479,7 +466,7 @@ module.exports = {
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,
               description: req.body.description,
-              image: '/images/' + newPath
+              image: '/' + newPath
             };
 
             let data = await CMS.update({ id: cms.id }, cms);

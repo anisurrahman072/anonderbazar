@@ -7,7 +7,8 @@
 // import {EmailService } from '../services/Email.service';
 
 import bcrypt from "bcryptjs";
-import { json } from "body-parser";
+import {json} from "body-parser";
+import {imageUploadConfig} from "../../libs/helper";
 
 module.exports = {
 
@@ -35,7 +36,7 @@ module.exports = {
     var password = req.param('password');
 
     if (!username || !password) {
-      return res.json(401,{model: 'userName', message: 'username and password required'});
+      return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
       User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec(function (err, user) {
@@ -65,7 +66,7 @@ module.exports = {
         });
       })
     }
-  }  ,
+  },
 
   // Entry of Auth/login
   //Method called for vendor/admin login for backend
@@ -81,7 +82,7 @@ module.exports = {
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number or username is invalid'});
       }
-      let valid = await  bcrypt.compare(password, user.password);
+      let valid = await bcrypt.compare(password, user.password);
 
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
@@ -90,11 +91,11 @@ module.exports = {
           return res.json(401, {model: 'userName', message: 'Customer is restricted here.'});
         }
         if (!user.active) {
-          return res.json(401,{model: 'userName', message: 'Not an active user'});
+          return res.json(401, {model: 'userName', message: 'Not an active user'});
         }
         let isWarehouseActivated, accessList, group;
         if (user.group_id.name === 'owner') {
-          if(user.warehouse_id!=null)
+          if (user.warehouse_id != null)
             isWarehouseActivated = (user.warehouse_id.status === 2);
           accessList = {};
           accessList.list = (await Group.findOne({name: 'owner'})).accessList;
@@ -104,9 +105,9 @@ module.exports = {
         } else if (user.group_id.name === 'craftsman') {
           accessList = {};
           accessList.list = (await Group.findOne({name: 'craftsman'})).accessList;
-        } else{
-            accessList = {};
-            accessList.list = [];
+        } else {
+          accessList = {};
+          accessList.list = [];
         }
         res.json({
           user: user.toJSON(),
@@ -178,16 +179,14 @@ module.exports = {
   warehouseSignup: function (req, res) {
 
     if (req.body.hasImage === 'true') {
-      req.file('avatar').upload({
-        dirname: '../../.tmp/public/images/'
-      }, function (err, uploaded) {
+      req.file('avatar').upload(imageUploadConfig, function (err, uploaded) {
 
         if (err) {
           return res.json(err.status, {err: err});
         }
-        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        if (err) return res.serverError(err);
-        req.body.avatar = '/images/' + newPath;
+
+        req.body.avatar =  uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
         User.create(req.body).exec(function (err, user) {
 
           if (err) {
@@ -217,34 +216,34 @@ module.exports = {
   //Method called for customer signup for frontend
   //Model models/User.js
   signup: async (req, res) => {
-      let user = await User.create(req.body);
-      let cart = await Cart.create({
-        user_id: user.id,
-        ip_address: '',
-        total_quantity: 0,
-        total_price: 0,
-        status: 1
+    let user = await User.create(req.body);
+    let cart = await Cart.create({
+      user_id: user.id,
+      ip_address: '',
+      total_quantity: 0,
+      total_price: 0,
+      status: 1
     });
     EmailService.sendWelcomeMailCustomer(user);
 
     let data = Object.assign({}, cart);
     data.cart_items = [];
     if (user) {
-        return res.json(200, { user: user, cart:data, token: jwToken.issue({ id: user.id }) });
+      return res.json(200, {user: user, cart: data, token: jwToken.issue({id: user.id})});
     }
   },
-    //Method called for user unique check for frontend
+  //Method called for user unique check for frontend
   //Model models/User.js
   usernameUnique: async (req, res) => {
     try {
-        let user = await User.find({ username: req.body.username });
-      if (user[0].username==req.body.username ) {
-          return res.json(200, { isunique: false });
-      }else{
-          return res.json(200, { isunique: true});
+      let user = await User.find({username: req.body.username});
+      if (user[0].username == req.body.username) {
+        return res.json(200, {isunique: false});
+      } else {
+        return res.json(200, {isunique: true});
       }
     } catch (error) {
-        return res.json(200, { isunique: true});
+      return res.json(200, {isunique: true});
     }
   },
 };
