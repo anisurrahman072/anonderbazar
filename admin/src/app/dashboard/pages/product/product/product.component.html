@@ -284,8 +284,9 @@
                     <span nz-table-title class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
-                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
-                                       [nzPageSize]="limit">
+                                       nzShowTotal [nzPageIndex]="page"
+                                       [nzTotal]="total"
+                                       [nzPageSize]="limit" nzShowSizeChanger>
                         </nz-pagination>
                     </span>
                     <span nz-table-title class="pull-right col-md-6">

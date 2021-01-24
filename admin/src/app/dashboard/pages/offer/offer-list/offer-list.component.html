@@ -369,8 +369,15 @@
                     </tr>
                 </tbody>
             </nz-table>
+            <div>
+                <nz-pagination (nzPageIndexClickChange)="changePage($event, allProductLimit)"
+                               (nzPageSizeChange)="changePage(1,$event)"
+                               nzShowTotal [nzPageIndex]="allProductPage"
+                               [nzTotal]="allProductTotal"
+                               [nzPageSize]="allProductLimit" nzShowSizeChanger>
+                </nz-pagination>
+            </div>
             <div nz-form-item>
-
                 <div nz-form-control>
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
                         [disabled]="!validateProductForm.valid">

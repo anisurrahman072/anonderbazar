@@ -9,6 +9,7 @@ const fs = require('fs');
 module.exports = {
   //Method called for getting a product data
   //Model models/Product.js
+
   findOne: async (req, res) => {
     try {
       res

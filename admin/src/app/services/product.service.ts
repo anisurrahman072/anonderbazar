@@ -58,7 +58,12 @@ export class ProductService {
     }
 
     getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
+        return this.http.get(this.EndPoint + `?where={"deletedAt":null}`);
+    }
+
+    getAllWithPagination(page = 1, limit = 30): Observable<any> {
+        const skip = (page - 1) * limit ;
+        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&page=${page}&skip=${skip}&limit=${limit}`);
     }
 
     getById(id): Observable<any> {

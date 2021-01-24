@@ -56,31 +56,31 @@
                         <!--search bar.....................-->
                         <tr>
                             <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Order number Search'" [(ngModel)]="suborderNumberSearchValue"
-                                    (ngModelChange)="page=1;getPageData()">
+                                <nz-input [nzPlaceHolder]="'Order number'" [(ngModel)]="suborderNumberSearchValue"
+                                    (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}" >
                                 </nz-input>
                             </th>
                             <th nz-th class="suborder-daterange">
 
-<!--                                <input class="form-control" placeholder="Select Order Date" type="text"-->
+<!--                            <input class="form-control" placeholder="Select Order Date" type="text"-->
 <!--                                    mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
 <!--                                    [altInput]="true" [convertModelValue]="true" mode="range"> -->
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Vendor Name Search'" [(ngModel)]="suborderIdValue" *ngIf="currentUser.group_id=='admin'"
-                                    (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
                             </th>
                             <th nz-th>
 
                             </th>
                             <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Quantity Search'" [(ngModel)]="quantitySearchValue"
+                                <nz-input [nzPlaceHolder]="'Vendor Name'" [(ngModel)]="suborderIdValue" *ngIf="currentUser.group_id=='admin'"
+                                          (ngModelChange)="page=1; getPageData()">
+                                </nz-input>
+                            </th>
+                            <th nz-th>
+                                <nz-input [nzPlaceHolder]="'Quantity'" [(ngModel)]="quantitySearchValue"
                                     (ngModelChange)="page=1;getPageData()">
                                 </nz-input>
                             </th>
                             <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Total price Search'" [(ngModel)]="totalPriceSearchValue"
+                                <nz-input [nzPlaceHolder]="'Total Price'" [(ngModel)]="totalPriceSearchValue"
                                     (ngModelChange)="page=1;getPageData()">
                                 </nz-input>
                             </th>

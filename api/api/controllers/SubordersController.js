@@ -19,8 +19,8 @@ module.exports = {
 
       /* WHERE condition for .......START.....................*/
 
-
       let _where = {};
+
       _where.deletedAt = null;
 
       if (req.query.warehouse_id) {
@@ -33,10 +33,6 @@ module.exports = {
 
       if (req.query.orderNumberSearchValue) {
         _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
-      }
-
-      if (req.query.suborderIdValue) {
-        _where.warehouse_id = {'like': `%${req.query.suborderIdValue}%`}
       }
 
       if (req.query.quantitySearchValue) {
@@ -69,7 +65,6 @@ module.exports = {
 
       /*.....SORT END..............................*/
 
-
       let totalSuborder = await Suborder.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
       let suborders = await Suborder.find(
@@ -78,8 +73,24 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        })
-        .populateAll();
+        }).populateAll();
+
+      // .populate('warehouse_id', {
+      //   where: _vendorWhere
+      // });
+      // .populate('division_id')
+      // .populate('user');
+
+      suborders = suborders.filter((suborder) => {
+        if (req.query.suborderIdValue) {
+          if (typeof suborder.warehouse_id !== 'undefined' && typeof suborder.warehouse_id.name !== 'undefined') {
+            return suborder.warehouse_id.name.includes(req.query.suborderIdValue.trim())
+          }
+          return false;
+        }
+        return true;
+      })
+
       await asyncForEach(suborders, async suborder => {
         suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}}).populateAll();
         suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
@@ -172,8 +183,8 @@ module.exports = {
         message: 'Get All Suborder with pagination',
         data: suborders
       })
-    } catch
-      (error) {
+    } catch (error) {
+      console.log('error', error)
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
