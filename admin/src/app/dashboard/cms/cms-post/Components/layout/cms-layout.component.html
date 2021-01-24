@@ -1,5 +1,4 @@
 <div>
-    
     <nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Create Post'" [nzContent]="modalContent"
               (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)" footer={null}
               class="create-modal">
@@ -14,48 +13,36 @@
                             <div nz-form-label nz-col [nzSpan]="7">
                                 <label>Section</label>
                             </div>
-
-
                             <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-
-
                                 <nz-select formControlName="section"
                                            [nzPlaceHolder]=" 'input search text'" [(ngModel)]="selectedSection"
                                            (ngModelChange)="sectionChange($event)">
                                     <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section"
                                                [nzValue]="option.section">
-
                                     </nz-option>
                                 </nz-select>
-
                             </div>
                         </div>
-                        <div nz-form-item nz-row *ngIf="subsectionOptions">
+                        <div nz-form-item nz-row *ngIf="subsectionOptions !== null">
                             <!--title start-->
                             <div nz-form-label nz-col [nzSpan]="7">
                                 <label>SubSection</label>
                             </div>
 
                             <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-
                                 <nz-select [(ngModel)]="selectedSubSection" formControlName="sub_section" [nzPlaceHolder]=" 'input search text'">
 
                                     <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option" [nzValue]="option">
                                     </nz-option>
                                 </nz-select>
-
                             </div>
                         </div>
-                        
+
                         <div nz-form-item nz-row>
                             <!--title start-->
                             <div nz-form-label nz-col [nzSpan]="7">
                                 <label>Title</label>
                             </div>
-
-
                             <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
 
                                 <nz-input formControlName="title" [nzType]=" 'text'" [nzPlaceHolder]=" 'insert title'" [nzSize]=" 'large'">
@@ -86,11 +73,9 @@
                                 <div nz-form-explain *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
                                     Please input description !
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <!--description-->
-
-
                         <div nz-form-item nz-row>
                             <div nz-col [nzSpan]="7" nz-form-label>
                                 <label>Image</label>
@@ -103,8 +88,6 @@
                             </div>
                         </div>
                         <!--image-->
-
-
                         <div nz-form-item nz-row>
                             <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
                                 <button nz-button [nzType]=" 'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || !ImageFile">
@@ -122,7 +105,7 @@
     </nz-modal>
 
 
-    <nz-tabset> 
+    <nz-tabset>
         <nz-tab>
             <div class="col-md-12">
                 <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
@@ -141,7 +124,7 @@
             </span>
 
 
-        </nz-tab> 
+        </nz-tab>
         <nz-tab>
             <div class="col-md-12">
                 <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
@@ -160,11 +143,11 @@
         </nz-tab>
         <nz-tab>
             <ng-template #nzTabHeading>
-                <i [ngClass]=" 'anticon anticon-gift'"></i>Category 
-            </ng-template> 
+                <i [ngClass]=" 'anticon anticon-gift'"></i>Category
+            </ng-template>
             <span>
                 <app-cms-offer></app-cms-offer>
-            </span> 
+            </span>
         </nz-tab>
 
         <nz-tab>

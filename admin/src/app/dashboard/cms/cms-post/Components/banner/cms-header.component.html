@@ -20,7 +20,7 @@
                                 <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section" [nzValue]="option.section">
 
                                 </nz-option>
-                            </nz-select> 
+                            </nz-select>
                         </div>
                     </div>
                     <div nz-form-item nz-row *ngIf="subsectionOptions">
@@ -81,7 +81,7 @@
                             <label>Description</label>
                         </div>
 
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                             <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
                             </ckeditor>
@@ -105,15 +105,12 @@
                             </button>
                             <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                         </div>
-                    </div> 
+                    </div>
                 </form>
             </nz-spin>
         </div>
     </ng-template>
 </nz-modal>
-
-
-
 
 <div class="row">
     <div class="col-md-6" *ngFor="let header of cmsHeaderData; let i = index" [attr.data-index]="header.id">
@@ -122,7 +119,7 @@
                 <div class="pull-right">
                     <button nz-button [nzType]="'primary'" (click)="showEditModal(header.id,i)">
                         <span>
-                            <i class="anticon anticon-edit">Edit </i>
+                            <i class="anticon anticon-edit">Edit</i>
                         </span>
                     </button>
                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
@@ -143,7 +140,7 @@
 
                 <div class="col-md-6">
                     <div> Description:
-                        <div [innerHTML]="header.data_value[0].description"></div> 
+                        <div [innerHTML]="header.data_value[0].description"></div>
                     </div>
                 </div>
 
@@ -151,7 +148,7 @@
 
                     <div>
                         <img class="img img-responsive " alt="{{header.data_value[0].image}}" src="{{ IMAGE_ENDPOINT + header.data_value[0].image}}"
-                        /> 
+                        />
                     </div>
                 </div>
             </ng-template>

@@ -28,7 +28,8 @@ export class CmsPostComponent implements OnInit {
     editValidateForm: FormGroup;
 
     validateForm: FormGroup;
-    ImageFile: File;
+    ImageFile: File = null;
+
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -60,31 +61,33 @@ export class CmsPostComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
+
     @ViewChild('Image')
     Image: any;
     imageIndex: any;
-
     _isSpinning: any = false;
-
     id: any;
-
     currentPostId: any;
 
     constructor(private cmsService: CmsService,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder) {
+
+    }
+
+    //Event method for getting all the data for the page
+    ngOnInit() {
         this.editValidateForm = this.fb.group({
             section: ['', [Validators.required]],
             sub_section: ['', [Validators.required]],
             title: ['', [Validators.required]],
             description: ['', [Validators.required]]
         });
-    }
-  //Event method for getting all the data for the page
-    ngOnInit() {
+
         this.getData();
-    } 
-  //Event method for getting all the data for the page
+    }
+
+    //Event method for getting all the data for the page
     getData() {
         this.cmsService
             .getAllSearch({page: 'POST', section: 'NONE', subsection: 'NONE'})
@@ -93,6 +96,7 @@ export class CmsPostComponent implements OnInit {
                 this.cmsPostData = result;
             });
     }
+
     //Method for cms section change
     sectionChange(value) {
 
@@ -102,10 +106,13 @@ export class CmsPostComponent implements OnInit {
             return item.section === value;
         });
 
-        if (typeof subsectionOptions[0].sub_section !== 'undefined')
+        if (subsectionOptions.length > 0 && typeof subsectionOptions[0].sub_section !== 'undefined'){
             this.subsectionOptions = subsectionOptions[0].sub_section;
+        }
+
     }
-      //Method for showing the edit modal
+
+    //Method for showing the edit modal
     showEditModal = (id, i) => {
         this.currentPostId = i;
         this.id = id;
@@ -119,16 +126,21 @@ export class CmsPostComponent implements OnInit {
     };
 
     handleModalOk = e => {
-        this.isEditModalVisible = false;
+        // this.isEditModalVisible = false;
     };
 
     handleModalCancel = e => {
         this.resetForm(e);
 
-        this.isEditModalVisible = false;
-    }; 
-//Event method for submitting the edit form
+        // this.isEditModalVisible = false;
+    };
+
+    testSubmit = ($event, value) => {
+        console.log('testSubmit', value);
+    }
+    // Event method for submitting the edit form
     submitEditForm = ($event, value) => {
+        console.log('submitEditForm', value)
         $event.preventDefault();
 
         this._isSpinning = true;
@@ -154,7 +166,8 @@ export class CmsPostComponent implements OnInit {
             );
         }
 
-        this.cmsService.customPostUpdate(formData).subscribe(result => { 
+        this.cmsService.customPostUpdate(formData).subscribe(result => {
+            console.log('customPostUpdate', result)
             this.getData();
             this._notification.success('success', 'Post Update Succeeded');
             this._isSpinning = false;
@@ -162,8 +175,10 @@ export class CmsPostComponent implements OnInit {
             this.resetForm(null);
         });
     };
-//Event method for resetting the form
+
+    //Event method for resetting the form
     resetForm($event: MouseEvent) {
+        console.log('resetForm')
         this.ImageFile = null;
         $event ? $event.preventDefault() : null;
         this.editValidateForm.reset();
@@ -171,30 +186,35 @@ export class CmsPostComponent implements OnInit {
             this.editValidateForm.controls[key].markAsPristine();
         }
     }
-  //Method for removing the image
+
+    //Method for removing the image
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
 
     selected($event) {
     }
-  //Method for storing image in variable
+
+    //Method for storing image in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
     };
-//Event method for setting up form in validation
+
+    //Event method for setting up form in validation
     getFormControl(title) {
         return this.validateForm.controls[title];
     }
-//Event method for setting up edit form in validation
+
+    //Event method for setting up edit form in validation
     getEditFormControl(title) {
         return this.editValidateForm.controls[title];
     }
 
     onUploadStateChanged(state: boolean) {
     }
- //Event method for deleting post
+
+    //Event method for deleting post
     deleteConfirm(index, id) {
         this.cmsService.delete(id).subscribe(result => {
             this.getData();

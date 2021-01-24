@@ -1,6 +1,6 @@
 <!--Update Carousel Modal-->
-<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Carousel'" [nzContent]="editmodalContent"
-    (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
+<nz-modal  [nzFooter]="null" [(nzVisible)]="isEditModalVisible" [nzTitle]="'Edit Carousel'" [nzContent]="editmodalContent"
+    (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)"   [nzClosable]="false" [nzMaskClosable]="false">
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
@@ -10,43 +10,30 @@
                         <div nz-form-label nz-col [nzSpan]="7">
                             <label>Section</label>
                         </div>
-
-
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-
-
                             <nz-select  formControlName="section" [nzPlaceHolder]=" 'input search text'"
                                 [(ngModel)]="selectedSection" (ngModelChange)="sectionChange($event)">
                                 <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section" [nzValue]="option.section">
 
                                 </nz-option>
                             </nz-select>
-
                         </div>
                     </div>
-                    <div nz-form-item nz-row *ngIf="subsectionOptions">
+                    <div nz-form-item nz-row *ngIf="subsectionOptions !== null">
                         <!--title start-->
                         <div nz-form-label nz-col [nzSpan]="7">
                             <label>SubSection</label>
                         </div>
-
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-
-                            <nz-select formControlName="sub_section"
-                                [nzPlaceHolder]=" 'input search text'">
-
-                                <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option" [nzValue]="option">
-                                </nz-option>
+                            <nz-select formControlName="sub_section" [nzPlaceHolder]=" 'input search text'">
+                                <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option" [nzValue]="option"></nz-option>
                             </nz-select>
-
                         </div>
                     </div>
                     <div nz-form-item nz-row>
                         <!--title start-->
                         <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Title</label>
+                            <label>Title -- 1</label>
                         </div>
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                             <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'insert title'" [nzSize]="'large'">
@@ -64,15 +51,12 @@
                     </div>
                     <!--Title -->
 
-
-
-
                     <div nz-form-item nz-row>
                         <div nz-col [nzSpan]="7" nz-form-label>
                             <label>Image</label>
                         </div>
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFile" (uploadStateChanged)="onUploadStateChanged($event)"
+                            <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFile === null ?  [] : ImageFile" (uploadStateChanged)="onUploadStateChanged($event)"
                                 [beforeUpload]="onBeforeUpload"></image-upload>
                             <div nz-form-explain *ngIf="!ImageFile">
                                 Please upload an image here!
@@ -84,12 +68,12 @@
                         <div nz-col [nzSpan]="7" nz-form-label>
                             <label>Description</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                             <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
                             </ckeditor>
 
-                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty && getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>
                         </div>
@@ -98,11 +82,11 @@
 
                     <div nz-form-item nz-row>
                         <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
-
+                            <button   nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid"
+                                      (click)="testSubmit($event,editValidateForm.value)">
                                 Submit
                             </button>
-                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button> 
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                         </div>
                     </div>
                 </form>
@@ -110,10 +94,6 @@
         </div>
     </ng-template>
 </nz-modal>
-
-
-
-
 
 <div class="row">
     <div class="col-md-6" *ngFor="let post of cmsPostData; let i = index" [attr.data-index]="post.id">
@@ -143,18 +123,17 @@
             <ng-template #body>
                 <div class="col-md-6">
                     <div> Description:
-                        <div [innerHTML]="post.data_value[0].description"></div> 
+                        <div [innerHTML]="post.data_value[0].description"></div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <div> 
+                    <div>
                         <img class="img img-responsive " alt="{{post.data_value[0].image}}" src="{{ IMAGE_ENDPOINT + post.data_value[0].image}}"
                         />
                     </div>
                 </div>
                 <br>
-
             </ng-template>
         </nz-card>
     </div>

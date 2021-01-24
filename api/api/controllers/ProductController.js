@@ -120,7 +120,16 @@ module.exports = {
         });
       } else {
         req.body.price = parseFloat(req.body.price); // parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
-        let product = await Product.create(req.body);
+        let body = req.body;
+        if (body.brand_id === '' || body.brand_id === 'undefined') {
+          body.brand_id = null
+        }
+        if (body.tag === '' || body.tag === 'undefined') {
+          body.tag = null
+        }
+
+        let product = await Product.create(body);
+
         if (req.body.ImageBlukArray) {
           var imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
           for (i = 0; i < imagearraybulk.length; i++) {
@@ -177,11 +186,19 @@ module.exports = {
           return res.json(200, product);
         });
       } else {
-        let product = await Product.update({id: req.param("id")}, req.body);
+        let body = req.body;
+        if (body.brand_id === '' || body.brand_id === 'undefined') {
+          body.brand_id = null
+        }
+        if (body.tag === '' || body.tag === 'undefined') {
+          body.tag = null
+        }
+        let product = await Product.update({id: req.param("id")}, body);
         return res.json(200, product);
       }
     } catch (err) {
-      res.json(400, {message: "wrong"});
+      console.log(err);
+      res.json(400, {message: "Something went wrong!"});
     }
   },
   //Method called for uploading product images

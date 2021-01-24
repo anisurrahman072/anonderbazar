@@ -1,12 +1,9 @@
 import {Injectable} from '@angular/core';
-
 import 'rxjs/add/operator/map';
-
 import {Observable} from 'rxjs/Observable';
 import {AuthService} from './auth.service';
 import {environment} from '../../environments/environment';
-import {HttpClient,HttpHeaders} from '@angular/common/http';
-import {Headers, RequestOptions} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class CmsService {
@@ -100,11 +97,13 @@ export class CmsService {
             .post(this.EndPoint + '/offerProductUpdate', data)
             .map(response => response);
     }
+
     updateOffer(data): Observable<any> {
         return this.http
             .post(this.EndPoint + `/updateOffer`, data)
             .map(response => response);
     }
+
     customUpdate(data): Observable<any> {
         return this.http
             .post(this.EndPoint + '/customUpdate', data) //, {headers: headers})

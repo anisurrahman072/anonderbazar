@@ -23,7 +23,7 @@ export class CmsService {
   }
   getById(id): Observable<any> {
     return this.http.get(this.EndPoint + '/' + id).map(response => response);
-  } 
+  }
   insert(data): Observable<any> {
     return this.http.post(this.EndPoint, data).map(response => response);
   }
@@ -43,13 +43,20 @@ export class CmsService {
       )
       .map(response => response);
   }
-  getBySectionName(pageName: String,sectionName: String): Observable<any> {
+  getBySectionName(pageName: String, sectionName: String): Observable<any> {
     return this.http
       .get(
         this.EndPoint + `?where={"page":"${pageName}","section":"${sectionName}","deletedAt":null}`
       )
       .map(response => response[0]);
   }
+/*  getBySectionName(sectionName: any): Observable<any> {
+    return this.http
+        .get(
+            this.EndPoint + `?where={"section":"${sectionName}","deletedAt":null}`
+        )
+        .map(response => response);
+  }*/
   getBySubSectionName(pageName: String,sectionName: String, subSectionName: any): Observable<any> {
     return this.http
       .get(

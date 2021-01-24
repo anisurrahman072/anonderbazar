@@ -1,11 +1,10 @@
-import {map} from 'rxjs/operators';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
 import {Validators} from '@angular/forms';
 import {FormBuilder} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {FormGroup} from '@angular/forms';
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {CmsService} from '../../../../../services/cms.service';
 import {environment} from "../../../../../../environments/environment";
 
@@ -28,8 +27,6 @@ export class CmsLayoutComponent implements OnInit {
     cmsData: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
 
-    ngOnInit() {
-    }
 
     isAddModalVisible = false;
 
@@ -75,9 +72,12 @@ export class CmsLayoutComponent implements OnInit {
 
     currentPostId: any;
 
-    constructor(private cmsService: CmsService,
+    constructor(private cdr: ChangeDetectorRef, private cmsService: CmsService,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder) {
+    }
+
+    ngOnInit() {
         this.validateForm = this.fb.group({
             section: ['', [Validators.required]],
             sub_section: ['', [Validators.required]],
@@ -85,6 +85,7 @@ export class CmsLayoutComponent implements OnInit {
             description: ['', [Validators.required]]
         });
     }
+
     //Event method for layout section change
     sectionChange(value) {
 
@@ -93,10 +94,10 @@ export class CmsLayoutComponent implements OnInit {
         let filteredSubsectionOptions = this.sectionoptionsData.filter(item => {
             return item.section === value;
         });
-        
-        if (typeof filteredSubsectionOptions[0].sub_section !== 'undefined')
-            this.subsectionOptions = filteredSubsectionOptions[0].sub_section;
 
+        if (filteredSubsectionOptions.length > 0 && typeof filteredSubsectionOptions[0].sub_section !== 'undefined')
+            this.subsectionOptions = filteredSubsectionOptions[0].sub_section;
+        this.cdr.detectChanges();
     }
   //Method for showing the modal
     showCreateModal = () => {

@@ -12,7 +12,6 @@
 
     <ng-template #body>
         <form *ngIf="data" nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-
             <div class="row">
                 <div class="col-md-6">
                     <div nz-form-item nz-row>
@@ -24,13 +23,13 @@
                         <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                             <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'">
                             </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty && getFormControl('name').hasError('required')">
                                     Name is required!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty && getFormControl('name').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div nz-form-explain *ngIf="getFormControl('name').dirty && getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>

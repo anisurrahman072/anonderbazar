@@ -1,0 +1,13 @@
+<section id="services-section" class="section-service-bg-color">
+    <div class="container-fluid">
+        <div class="row" style="justify-content: center;">
+            <div class="col-lg-3 col-md-6 col-12 mb-4" *ngFor = "let item of serviceFooterList">
+                <div class="services-details text-center">
+                    <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="">
+                    <h6>{{item?.title}}</h6>
+                    <p>{{item?.description}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
