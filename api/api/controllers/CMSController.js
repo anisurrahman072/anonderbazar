@@ -17,7 +17,7 @@ module.exports = {
 
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload(imageUploadConfig, async function (err, files) {
+        req.file('image').upload(imageUploadConfig(), async function (err, files) {
             // maxBytes: 10000000;
             if (err) return res.serverError(err);
             const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -129,7 +129,7 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload(imageUploadConfig, async function (err, files) {
+        req.file('image').upload(imageUploadConfig(), async function (err, files) {
             // maxBytes: 10000000;
             if (err) return res.serverError(err);
             var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -228,7 +228,7 @@ module.exports = {
   customPostInsert: async (req, res) => {
     try {
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(imageUploadConfig,
+        req.file('image').upload(imageUploadConfig(),
 
           async function(err, uploaded) {
             if (err) {
@@ -309,7 +309,7 @@ module.exports = {
     try {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(imageUploadConfig,
+        req.file('image').upload(imageUploadConfig(),
 
           async function(err, uploaded) {
             if (err) {
@@ -390,7 +390,7 @@ module.exports = {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
 
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(imageUploadConfig,
+        req.file('image').upload(imageUploadConfig(),
 
           async function(err, uploaded) {
             if (err) {
@@ -455,7 +455,7 @@ module.exports = {
     try {
       let cms = await CMS.findOne({ id: req.body.id, deletedAt: null });
       if (req.body.hasImage == 'true') {
-        req.file('image').upload(imageUploadConfig,
+        req.file('image').upload(imageUploadConfig(),
           async function(err, uploaded) {
             if (err) {
               return res.json(err.status, { err: err });

@@ -7,7 +7,6 @@
 // import {EmailService } from '../services/Email.service';
 
 import bcrypt from "bcryptjs";
-import {json} from "body-parser";
 import {imageUploadConfig} from "../../libs/helper";
 
 module.exports = {
@@ -179,7 +178,7 @@ module.exports = {
   warehouseSignup: function (req, res) {
 
     if (req.body.hasImage === 'true') {
-      req.file('avatar').upload(imageUploadConfig, function (err, uploaded) {
+      req.file('avatar').upload(imageUploadConfig(), function (err, uploaded) {
 
         if (err) {
           return res.json(err.status, {err: err});

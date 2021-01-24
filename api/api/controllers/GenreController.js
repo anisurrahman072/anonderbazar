@@ -33,8 +33,9 @@ module.exports = {
         }
 
         if (req.body.hasImage == 'true') {
+          const uploadConfig = imageUploadConfig();
             req.file('image').upload({
-                ...imageUploadConfig,
+                ...uploadConfig,
                 saveAs: Date.now() + '_genre.jpg'
             }, function (err, uploaded) {
 
@@ -55,7 +56,7 @@ module.exports = {
     //Model models/Genre.js
     update: function (req, res) {
         if (req.body.hasImage == 'true') {
-        req.file("image").upload(imageUploadConfig,
+        req.file("image").upload(imageUploadConfig(),
         function(err, uploaded) {
             if (err) {
             return res.json(err.status, { err: err });

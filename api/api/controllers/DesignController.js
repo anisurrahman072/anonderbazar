@@ -26,8 +26,9 @@ module.exports = {
     }
 
     if (req.body.hasImage === 'true') {
+      const uploadConfig = imageUploadConfig();
       req.file('image').upload({
-        ...imageUploadConfig,
+        ...uploadConfig,
         saveAs: Date.now() + '_design.jpg'
       }, function (err, uploaded) {
 
@@ -49,8 +50,9 @@ module.exports = {
   //Model models/Design.js
   update: function (req, res) {
     if (req.body.hasImage == 'true') {
+      const uploadConfig = imageUploadConfig();
       req.file('image').upload({
-        ...imageUploadConfig,
+        ...uploadConfig,
         saveAs: Date.now() + '_design.jpg'
       }, function (err, uploaded) {
 

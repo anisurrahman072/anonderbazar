@@ -76,7 +76,7 @@ module.exports = {
       var i = 0;
       if (req.body.hasImageFront === 'true') {
 
-        req.file("frontimage").upload(imageUploadConfig, async function (err, uploaded) {
+        req.file("frontimage").upload(imageUploadConfig(), async function (err, uploaded) {
           if (err) {
             console.log(err)
             return res.json(err.status, {err: err});
@@ -151,7 +151,7 @@ module.exports = {
       let imageCounter = parseInt(req.body.imageCounter);
       let i = 0;
       if (req.body.hasImageFront === 'true') {
-        req.file("frontimage").upload(imageUploadConfig, async function (err, uploaded) {
+        req.file("frontimage").upload(imageUploadConfig(), async function (err, uploaded) {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -189,7 +189,7 @@ module.exports = {
   upload: async function (req, res) {
     try {
       if (req.body.hasImage === "true" && req.body.product_id) {
-        req.file("image").upload(imageUploadConfig, async function (err, uploaded) {
+        req.file("image").upload(imageUploadConfig(), async function (err, uploaded) {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -211,7 +211,7 @@ module.exports = {
           return res.json(200, product);
         });
       } else if (req.body.hasImage === "true") {
-        req.file("image").upload(imageUploadConfig, async function (err, uploaded) {
+        req.file("image").upload(imageUploadConfig(), async function (err, uploaded) {
 
           if (err) {
             return res.json(err.status, {err: err});

@@ -19,7 +19,7 @@ module.exports = {
     initLogPlaceholder(req, 'update user avatar');
 
     try {
-      let tempImg = await uploadImgAsync(req.file('image'), imageUploadConfig);
+      let tempImg = await uploadImgAsync(req.file('image'), imageUploadConfig());
       req.body.avatar = tempImg;
 
       let user = await User.update({id: req.params._id}, req.body);

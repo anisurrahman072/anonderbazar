@@ -41,8 +41,9 @@ module.exports = {
     }
 
     if (req.body.hasImage === 'true') {
+      const uploadConfig = imageUploadConfig();
       let tempImg = await uploadImgAsync(req.file('image'), {
-        ...imageUploadConfig,
+        ...uploadConfig,
         saveAs: Date.now() + '_event.jpg'
       });
 
@@ -58,7 +59,7 @@ module.exports = {
   update: function (req, res) {
     if (req.body.hasImage === "true") {
 
-      req.file("image").upload( imageUploadConfig,
+      req.file("image").upload( imageUploadConfig(),
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });

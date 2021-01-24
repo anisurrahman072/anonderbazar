@@ -15,7 +15,7 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body, body1;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -123,7 +123,7 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -164,7 +164,7 @@ module.exports = {
               let imageCounter = 2;
               let i;
               let body;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -206,7 +206,7 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -245,7 +245,7 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -287,7 +287,7 @@ module.exports = {
               let imageCounter = 1;
               let i;
               let body;
-              req.file('image0').upload(imageUploadConfig, function (err, files) {
+              req.file('image0').upload(imageUploadConfig(), function (err, files) {
                   // maxBytes: 10000000;
                   if (err) return res.serverError(err);
                   const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];

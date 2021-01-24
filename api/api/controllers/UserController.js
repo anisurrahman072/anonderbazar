@@ -27,7 +27,7 @@ module.exports = {
 
     if (req.body.hasImage === "true") {
 
-      req.file("avatar").upload(imageUploadConfig,
+      req.file("avatar").upload(imageUploadConfig(),
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });
@@ -83,7 +83,7 @@ module.exports = {
   //Model models/User.js
   update: function(req, res) {
     if (req.body.hasImage === "true") {
-      req.file("avatar").upload(imageUploadConfig,
+      req.file("avatar").upload(imageUploadConfig(),
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });

@@ -18,8 +18,9 @@ module.exports = {
   create: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
+        const uploadConfig = imageUploadConfig();
         let tempImg = await uploadImgAsync(req.file('image'), {
-          ...imageUploadConfig,
+          ...uploadConfig,
           saveAs: Date.now() + '_warehouse_variant.jpg'
         });
 
@@ -41,7 +42,7 @@ module.exports = {
   //Model models/WarehouseVariant.js
   update: function(req, res) {
     if (req.body.hasImage === 'true') {
-      req.file('image').upload(imageUploadConfig,
+      req.file('image').upload(imageUploadConfig(),
         function(err, uploaded) {
           if (err) {
             return res.json(err.status, { err: err });

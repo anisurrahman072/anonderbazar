@@ -1,3 +1,5 @@
+import {devEnv} from '../config/softbd';
+
 export const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array)
@@ -42,26 +44,33 @@ export const deleteImages = async (imageList, path) => {
 
 export const baseFilter = (reqBody, Model, localWhere) => {
 
-    const where = localWhere ? localWhere : {};
-    where.deletedAt=null;
-    const modelAttributes = Object.keys(Model.definition);
+  const where = localWhere ? localWhere : {};
+  where.deletedAt = null;
+  const modelAttributes = Object.keys(Model.definition);
 
-    modelAttributes.map((attr) => {
-        if (reqBody[attr]) {
-        where[attr] = reqBody[attr];
+  modelAttributes.map((attr) => {
+    if (reqBody[attr]) {
+      where[attr] = reqBody[attr];
     }
-});
-    return where;
+  });
+  return where;
 };
 
-export const imageUploadConfig = {
-  adapter: require('skipper-s3'),
-  key: 'AKIATYQRUSGN2DDD424I',
-  secret: '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',
-  bucket: 'anonderbazar'
+export const imageUploadConfig = function () {
+
+  if(devEnv){
+    return {
+      maxBytes: 10000000,
+      dirname: sails.config.appPath + "/.tmp/public/images/",
+    }
+  }
+  return {
+    adapter: require('skipper-s3'),
+    key: 'AKIATYQRUSGN2DDD424I',
+    secret: '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',
+    bucket: 'anonderbazar',
+    maxBytes: 10000000
+  }
+
 }
 
-/*
-          maxBytes: 10000000,
-          dirname: "../../.tmp/public/images/"
- */

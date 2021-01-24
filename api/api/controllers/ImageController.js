@@ -19,7 +19,7 @@ module.exports = {
     if (req.method === 'GET')
       return res.json({'status': 'GET not allowed'});
 
-    req.file('imageFile').upload(imageUploadConfig, function (err, files) {
+    req.file('imageFile').upload(imageUploadConfig(), function (err, files) {
       // maxBytes: 10000000;
       if (err) return res.serverError(err);
       res.json(200, files);

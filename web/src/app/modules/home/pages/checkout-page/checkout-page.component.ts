@@ -64,6 +64,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     isCopy: boolean = true;
     showPayment: boolean = false;
     successOrderId: any = false;
+    showFormError: boolean = false;
     orderId;
 
     constructor(private route: ActivatedRoute,
@@ -79,6 +80,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 public _progress: NgProgress,
                 private toastr: ToastrService,
                 public loaderService: LoaderService) {
+
+    }
+
+    // init the component
+    ngOnInit() {
+
+
         this.checkoutForm = this.fb.group({
             // billing
             billing_id: ['', []],
@@ -108,10 +116,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             //paymentType
             paymentType: ['Cash', []]
         });
-    }
-
-    // init the component
-    ngOnInit() {
 
         let queryParams = this.route.snapshot.queryParams;
 
@@ -468,6 +472,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             return false;
         }
         if (this.checkoutForm.invalid) {
+            this.showFormError = true;
             this.toastr.error("Both shipping and billing address is required!", "Sorry!");
             return false;
         }

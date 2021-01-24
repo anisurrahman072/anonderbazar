@@ -124,11 +124,12 @@ module.exports = {
     if (req.body.hasImage === 'true') {
       let newImages = [];
 
-      for (let i = 0; i < req.body.oldImages.length; i++) {}
+      // for (let i = 0; i < req.body.oldImages.length; i++) {}
 
+      const uploadConfig = imageUploadConfig();
       for (let i = 0; i < req.body.newImageCounter; i++) {
         let tempImg = await uploadImgAsync(req.file('image' + i), {
-          ...imageUploadConfig,
+          ...uploadConfig,
           saveAs: Date.now() + '_brand.jpg'
         });
         let newPath = '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
@@ -224,9 +225,10 @@ module.exports = {
       let newImages = [];
 
       if (req.body.hasImage === 'true') {
+        const uploadConfig = imageUploadConfig();
         for (let i = 0; i < parseInt(req.body.newImageCounter); i++) {
           let tempImg = await uploadImgAsync(req.file('image' + i), {
-           ...imageUploadConfig,
+           ...uploadConfig,
             saveAs: Date.now() + '_design.jpg'
           });
           let newPath =

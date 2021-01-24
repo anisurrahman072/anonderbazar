@@ -84,7 +84,7 @@ module.exports = {
   create: function (req, res) {
 
     if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig, function (err, uploaded) {
+      req.file('logo').upload(imageUploadConfig(), function (err, uploaded) {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -115,7 +115,7 @@ module.exports = {
   //Model models/Warehouse.js
   update: function (req, res) {
     if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig, function (err, uploaded) {
+      req.file('logo').upload(imageUploadConfig(), function (err, uploaded) {
         if (err) {
           return res.json(err.status, {err: err});
         }
