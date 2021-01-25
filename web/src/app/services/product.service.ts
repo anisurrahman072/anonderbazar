@@ -158,18 +158,13 @@ export class ProductService {
             .map(response => response);
     }
 
-// ovi
-
     serach_result(data: any): Observable<any> {
 
-
+        const searchTerm = encodeURIComponent(data);
         return this.http
-            .get(`${this.EndPoint2}/getbysearchterm?searchterm=${data}`)
+            .get(`${this.EndPoint2}/getbysearchterm?searchterm=${searchTerm}`)
             .map(response => response);
     }
-
-// ovi
-
 
     getAvailableDate(product: any, quantity: number): Observable<any> {
         return this.http

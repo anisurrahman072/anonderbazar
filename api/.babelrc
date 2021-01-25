@@ -14,8 +14,4 @@
   "ignore": [
     "package.json"
   ]
-//,
-//  "plugins": [
-//    "transform-runtime","transform-export-default-name"
-//  ]
 }

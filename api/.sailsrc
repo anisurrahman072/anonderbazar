@@ -1,9 +1,10 @@
 {
   "generators": {
-    "modules": {}
+    "modules": {
+    }
   },
-   "hooks": {
-          "views": false,
-          "grunt":false
-      }
+  "hooks": {
+      "views": false,
+      "grunt":false
+  }
 }

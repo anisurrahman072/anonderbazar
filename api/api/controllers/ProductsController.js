@@ -293,6 +293,7 @@ module.exports = {
     try {
       let _pagination = pagination(req.query);
 
+      console.log('getBySearchTerm-req.query', req.query)
       let _where = {};
       _where.deletedAt = null;
 
