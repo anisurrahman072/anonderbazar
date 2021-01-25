@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Observable} from "rxjs/Observable";
-import {Product} from "../../../../models";
 
 @Component({
     selector: 'app-product-list',
@@ -11,14 +10,14 @@ import {Product} from "../../../../models";
 export class ProductListComponent implements OnInit {
     @Input() dataProductList: Observable<any>;
     @Input() dataTitle;
-    
-    
+    data: any = null;
+
     constructor() {
     }
-    
+
     ngOnInit() {
-    
-        
+
+
     }
-    
+
 }

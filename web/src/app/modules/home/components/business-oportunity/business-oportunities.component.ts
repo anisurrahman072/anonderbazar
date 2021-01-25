@@ -1,26 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-
-import { CmsService } from '../../../../services/cms.service';
+import {Component, OnInit} from '@angular/core';
+import {CmsService} from '../../../../services/cms.service';
 import {AppSettings} from "../../../../config/app.config";
+
 @Component({
-  selector: 'app-business-oportunities',
-  templateUrl: './business-oportunities.component.html',
-  styleUrls: ['./business-oportunities.component.scss']
+    selector: 'app-business-oportunities',
+    templateUrl: './business-oportunities.component.html',
+    styleUrls: ['./business-oportunities.component.scss']
 })
 export class BusinessOportunitiesComponent implements OnInit {
-    private serviceFooterList: any;
-    private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    serviceFooterList: any;
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     constructor(private cmsService: CmsService) {
     }
-      //Event method for getting all the data for the page
-  ngOnInit() {
-      this.cmsService.getBySectionName('LAYOUT','HEADER').subscribe(result => {
-          console.log('getBySectionName', result)
-          this.serviceFooterList = result.data_value;
-      });
+
+    //Event method for getting all the data for the page
+    ngOnInit() {
+        this.cmsService.getBySectionName('LAYOUT', 'HEADER').subscribe(result => {
+            console.log('getBySectionName', result)
+            this.serviceFooterList = result.data_value;
+        });
 
 
-  }
+    }
 
 }

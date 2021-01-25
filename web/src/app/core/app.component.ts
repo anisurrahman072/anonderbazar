@@ -32,8 +32,8 @@ export class AppComponent implements AfterViewInit {
     moadlProgressRef: NgProgressRef;
     loading;
     sidebarOpened$: any = false;
-    
-    
+    panelOpenState: boolean = false;
+
     constructor(@Inject(PLATFORM_ID) private platformId: Object,
                 private router: Router,
                 private readonly renderer: Renderer2,
@@ -49,7 +49,7 @@ export class AppComponent implements AfterViewInit {
                 private cdr: ChangeDetectorRef) {
         this.loading = true;
     }
-    
+
     // init the component
     ngOnInit() {
         this.renderer.listen('window', 'storage', event => {
@@ -57,14 +57,14 @@ export class AppComponent implements AfterViewInit {
                 this.store.dispatch(new SyncStorage(event.key));
             }
         });
-        
+
         this.moadlProgressRef = this.progress.ref('loadingModal');
-        
+
         this.user_id = this.authService.getCurrentUserId();
-        
+
         this.initialize();
         this.scrollTopAndTitleChange();
-        
+
         this.uiService.currentsidebarShowInfo.subscribe((r) => {
             this.sidebarOpened$ = r;
         });
@@ -76,15 +76,15 @@ export class AppComponent implements AfterViewInit {
             });
         }
     }
-    
+
     initialize() {
         this.store.dispatch(new fromStore.LoadCart());
         this.store.dispatch(new fromStore.LoadCurrentUser());
         this.store.dispatch(new fromStore.LoadFavouriteProduct());
         this.store.dispatch(new fromStore.LoadCompare());
-        
+
     }
-    
+
     // scroll top function
     scrollTopAndTitleChange() {
         if (isPlatformBrowser(this.platformId)) {
@@ -103,7 +103,7 @@ export class AppComponent implements AfterViewInit {
                 });
         }
     }
-    
+
     ngAfterViewInit() {
         this.router.events
             .subscribe((event) => {

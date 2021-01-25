@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-
 import {CmsService} from '../../../../services/cms.service';
 import {AppSettings} from "../../../../config/app.config";
 
@@ -10,13 +9,14 @@ import {AppSettings} from "../../../../config/app.config";
 })
 export class SectionBlogComponent implements OnInit {
 
-    private bottomblogList: any;
-    private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    bottomblogList: any;
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
 
     constructor(private cmsService: CmsService) {
     }
-  //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.cmsService.getBySubSectionName('POST', 'HOME', "BOTTOM").subscribe(result => {
             this.bottomblogList = result;

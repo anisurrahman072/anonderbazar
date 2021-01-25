@@ -2,8 +2,6 @@ import {FilterUiService} from "./../../../../services/ui/filterUi.service";
 import {
     Component,
     Injector,
-    Inject,
-    PLATFORM_ID,
     OnInit,
     Input,
 } from "@angular/core";
@@ -17,12 +15,12 @@ import {
 } from "../../../../services";
 import {Observable} from "rxjs/Observable";
 import {AppSettings} from "../../../../config/app.config";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {makeStateKey, TransferState} from "@angular/platform-browser";
+import {HttpClient} from "@angular/common/http";
+import {TransferState} from "@angular/platform-browser";
 import {Options, LabelType} from "ng5-slider";
 import {ActivatedRoute} from '@angular/router';
-import {type} from "os";
 import {LoaderService} from "../../../../services/ui/loader.service";
+
 
 @Component({
     selector: "app-category-page",
@@ -224,6 +222,14 @@ export class CategoryPageComponent implements OnInit {
         this.getAllCategories();
         this.getMinPriceOfProduct();
         this.getMaxPriceOfProduct();
+    }
+
+    isNotEmptyArray(val) {
+        return (Array.isArray(val) && val.length > 0);
+    }
+
+    isNotEmptyObject(val) {
+        return (typeof val === 'object' && val !== null && Object.keys(val).length > 0);
     }
 
     //Method called for product filtering

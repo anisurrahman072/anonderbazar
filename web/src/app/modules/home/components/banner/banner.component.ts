@@ -1,11 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { CmsService } from '../../../../services/cms.service';
+import {CmsService} from '../../../../services/cms.service';
 import {AppSettings} from "../../../../config/app.config";
 
 import {
     SwiperComponent,
     SwiperDirective
 } from "ngx-swiper-wrapper";
+
 @Component({
     selector: 'home-banner',
     templateUrl: './banner.component.html',
@@ -24,21 +25,22 @@ export class BannerComponent implements OnInit {
     myInterval = 5000;
     showNavigationArrows = false;
     showNavigationIndicators = false;
-    private cmsBANNERData: any;
-    private cmsHEADERData: any;
+    cmsBANNERData: any;
+    cmsHEADERData: any;
 
-    private carousalList: any;
-    private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    carousalList: any;
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     constructor(private cmsService: CmsService) {
     }
-  //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
-        this.cmsService.getBySectionName('HOME','BANNER').subscribe(result => {
+        this.cmsService.getBySectionName('HOME', 'BANNER').subscribe(result => {
             this.cmsBANNERData = result.data_value[0];
 
         });
-        this.cmsService.getBySectionName('LAYOUT','HEADER').subscribe(result => {
+        this.cmsService.getBySectionName('LAYOUT', 'HEADER').subscribe(result => {
             this.cmsHEADERData = result.data_value;
         });
         this.cmsService.getBySectionName('HOME', "CAROUSEL").subscribe(result => {

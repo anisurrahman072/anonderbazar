@@ -10,8 +10,8 @@ import {CmsService} from '../../../../services';
 })
 export class SpecialLookComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    private dataWarehouseList;
-    private middleblogList: any;
+    dataWarehouseList;
+    middleblogList: any;
 
     constructor(private productService: ProductService,
                 private cmsService: CmsService) {

@@ -1,9 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions, Response} from '@angular/http';
-
-
-
-
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
@@ -19,11 +14,11 @@ export class WarehouseService {
               private authenticationService: AuthService) {
   }
 
-  getAll(page: number, limit: number): Observable<any> {  
+  getAll(page: number, limit: number): Observable<any> {
     return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
       ;
   }
-  getAllIndex(page: number, limit: number, warehouseId?: number): Observable<any> {  
+  getAllIndex(page: number, limit: number, warehouseId?: number): Observable<any> {
     return this.http.get(this.EndPoint + '/getAll?page='+page+'&limit='+limit+`${warehouseId?'&warehouse_id='+warehouseId:''}&where={"deletedAt":null}`)
       ;
   }

@@ -3,16 +3,19 @@
         <nav class="woocommerce-breadcrumb breadcrumbs">
             <a routerLink="/" routerLinkActive="active">Home</a>
             <a routerLink="/products" routerLinkActive="active">OUR PRODUCTS</a>
-            <a *ngIf="categoryB != 0" style="text-transform: uppercase;"
+            <a *ngIf="isNotEmptyObject(categoryB)" style="text-transform: uppercase;"
                routerLink="/products/category/{{categoryB?.id}}" [queryParams]="{category: categoryB?.id}"
-               routerLinkActive="active"> {{categoryB?.name}}</a>
-            <a *ngIf="subcategoryB != 0" style="text-transform: uppercase;"
+               routerLinkActive="active"> {{categoryB?.name}}
+            </a>
+            <a *ngIf="isNotEmptyObject(categoryB) && isNotEmptyObject(subcategoryB)" style="text-transform: uppercase;"
                routerLink="/products/category/{{categoryB?.id}}"
                [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id}"
-               routerLinkActive="active">{{subcategoryB?.name}}</a>
-            <a *ngIf="subsubcategoryB != 0" style="text-transform: uppercase;"
+               routerLinkActive="active">{{subcategoryB?.name}}
+            </a>
+            <a *ngIf="isNotEmptyObject(categoryB) && isNotEmptyObject(subcategoryB) && isNotEmptyObject(subsubcategoryB)" style="text-transform: uppercase;"
                routerLink="/products/category/{{categoryB?.id}}"
-               [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id, subsub: subsubcategoryB?.id}">{{subsubcategoryB?.name}}</a>
+               [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id, subsub: subsubcategoryB?.id}">{{subsubcategoryB?.name}}
+            </a>
         </nav>
         <div class="page-bar-right"></div>
     </div>

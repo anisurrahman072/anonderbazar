@@ -1,7 +1,7 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {CmsService} from '../../services/cms.service';
 import {AppSettings} from '../../config/app.config';
-import { ShoppingModalService } from '../../services/ui/shoppingModal.service';
+import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import * as fromStore from "../../state-management";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
@@ -9,20 +9,20 @@ import {Observable} from "rxjs/Observable";
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
-    styleUrls: ['./footer.component.scss','./footer.component.css'],
+    styleUrls: ['./footer.component.scss', './footer.component.css'],
 })
 export class FooterComponent implements OnInit {
     title = 'footer';
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    private cmsFeatureData: any;
-    private cmsFooterData: any;
-    private cmsFooterDataFurther: any;
-    private cmsFooterDataCustomer: any;
-    private cmsFooterDataShops: any;
-    private cmsFooterDataBrands: any;
-    private cmsFooterDataSocial: any;
+    cmsFeatureData: any;
+    cmsFooterData: any;
+    cmsFooterDataFurther: any;
+    cmsFooterDataCustomer: any;
+    cmsFooterDataShops: any;
+    cmsFooterDataBrands: any;
+    cmsFooterDataSocial: any;
     cart$: Observable<any>;
-    showTopToBottom:boolean = false
+    showTopToBottom: boolean = false
 
     /*
     * constructor for footer component
@@ -31,7 +31,7 @@ export class FooterComponent implements OnInit {
         private cmsService: CmsService,
         private shoppingModalService: ShoppingModalService,
         private store: Store<fromStore.HomeState>,
-        ) {
+    ) {
     }
 
     // init the component
@@ -57,32 +57,32 @@ export class FooterComponent implements OnInit {
 
     //Event method for getting footer feature data
     getFeatureData() {
-        this.cmsService.getBySubSectionName('LAYOUT','FOOTER','FEATURE').subscribe(result => {
+        this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE').subscribe(result => {
             this.cmsFeatureData = result[0].data_value;
 
         });
     }
 
     //Method for showing shopping cart modal
-    showShoppingCartModal() { 
+    showShoppingCartModal() {
         this.shoppingModalService.showshoppingModal(true);
     }
 
     //Event method for getting footer links data
     getFooterData() {
-        this.cmsService.getBySubSectionName('LAYOUT','FOOTER','FOOTER').subscribe(result => {
+        this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER').subscribe(result => {
             this.cmsFooterData = result[0].data_value[0];
             this.cmsFooterDataFurther = result[0].data_value[1];
-            this.cmsFooterDataCustomer = result[0].data_value[2];   
+            this.cmsFooterDataCustomer = result[0].data_value[2];
             this.cmsFooterDataShops = result[0].data_value[3];
             this.cmsFooterDataBrands = result[0].data_value[4];
-            this.cmsFooterDataSocial = result[0].data_value[5];     
+            this.cmsFooterDataSocial = result[0].data_value[5];
         });
     }
 
     //Event method for scrolling top to bottom
     bottom_to_top(event) {
-        window.scroll(0,0);
+        window.scroll(0, 0);
     }
 
 }

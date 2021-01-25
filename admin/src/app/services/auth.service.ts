@@ -1,11 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-
 import {JwtHelperService} from '@auth0/angular-jwt';
-
 import {HttpClient} from "@angular/common/http";
-import {ActivatedRoute, Router} from "@angular/router";
-import {AccessControl} from "../auth/core/guard/AccessControl.guard";
 import {environment} from "../../environments/environment";
 
 @Injectable()
@@ -21,8 +17,7 @@ export class AuthService {
         return this.http.post(environment.API_ENDPOINT + '/auth/dashboardlogin', {
             username: username,
             password: password
-        })
-            ;
+        });
     }
 
     logout(): void {
