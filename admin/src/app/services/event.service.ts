@@ -1,7 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions, Response} from '@angular/http';
-
-
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
@@ -34,5 +31,5 @@ export class EventService {
   delete(id: any): any {
     return this.http.delete(this.EndPoint + '/destroy/' + id);
   }
-  
+
 }

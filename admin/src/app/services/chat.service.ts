@@ -1,7 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions, Response } from '@angular/http';
-
-
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -39,7 +36,7 @@ export class ChatService {
     return this.http.post(this.EndPoint3, formData)
       .map((response) => response);
   }
-  
+
   insert(formData: FormData): Observable<any> {
     return this.http.post(this.EndPoint1, formData)
       .map((response) => response);

@@ -1,15 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions, Response} from '@angular/http';
-
-
-
-
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AreaService {
 
   private EndPoint = `${environment.API_ENDPOINT}/area`;

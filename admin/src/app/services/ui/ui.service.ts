@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../auth.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UIService {
   private sidebarIsCollapsed = new BehaviorSubject<boolean>(false);
   currentSidebarIsCollapsed = this.sidebarIsCollapsed.asObservable();

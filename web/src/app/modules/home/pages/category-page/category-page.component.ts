@@ -19,14 +19,15 @@ import {HttpClient} from "@angular/common/http";
 import {TransferState} from "@angular/platform-browser";
 import {Options, LabelType} from "ng5-slider";
 import {ActivatedRoute} from '@angular/router';
+import { combineLatest } from 'rxjs/observable/combineLatest'
 import {LoaderService} from "../../../../services/ui/loader.service";
-
 
 @Component({
     selector: "app-category-page",
     templateUrl: "./category-page.component.html",
     styleUrls: ["./category-page.component.scss"]
 })
+
 export class CategoryPageComponent implements OnInit {
 
     p;
@@ -163,7 +164,8 @@ export class CategoryPageComponent implements OnInit {
         this.categoryB = [];
         this.subcategoryB = [];
         this.subsubcategoryB = [];
-        Observable.combineLatest(
+
+        combineLatest(
             this.route.params,
             this.route.queryParams
         ).subscribe(

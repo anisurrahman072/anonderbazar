@@ -1,6 +1,7 @@
 import {initLogPlaceholder, pagination, asyncForEach} from "../../libs";
 import moment from "moment";
 
+const Promise = require('bluebird');
 /**
  * SuborderController
  *
@@ -19,39 +20,57 @@ module.exports = {
 
       /* WHERE condition for .......START.....................*/
 
-      let _where = {};
+      const SuborderQuery = Promise.promisify(Suborder.query);
 
-      _where.deletedAt = null;
+      let rawSelect = "SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,";
+      rawSelect += " suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ";
+      rawSelect += " suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ";
+      rawSelect += " warehouses.name,  CONCAT(users.first_name, ' ',users.first_name) as changedBy  ";
+
+      let fromSQL = " FROM product_suborders as suborder LEFT JOIN warehouses ON warehouses.id = suborder.warehouse_id  ";
+      fromSQL += "  LEFT JOIN users ON users.id = suborder.changed_by  ";
+
+      let _where = ' WHERE suborder.deleted_at IS NULL ';
 
       if (req.query.warehouse_id) {
 
-        _where.warehouse_id = req.query.warehouse_id;
+        // _where.warehouse_id = req.query.warehouse_id;
+        _where += ` AND suborder.warehouse_id = ${req.query.warehouse_id}`;
       }
+
       if (req.query.suborderNumberSearchValue) {
-        _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`}
+        // _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`}
+        _where += ` AND suborder.id LIKE '%${req.query.suborderNumberSearchValue}%' `;
       }
 
       if (req.query.orderNumberSearchValue) {
-        _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
+        // _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
+        _where += ` AND suborder.product_order_id LIKE '%${req.query.orderNumberSearchValue}%' `;
       }
 
       if (req.query.quantitySearchValue) {
-        _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`}
+        // _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`}
+        _where += ` AND suborder.total_quantity LIKE '%${req.query.quantitySearchValue}%' `;
       }
       if (req.query.totalPriceSearchValue) {
-        _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`}
+        // _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`}
+        _where += ` AND suborder.total_price LIKE '%${req.query.totalPriceSearchValue}%' `;
       }
 
       if (req.query.dateSearchValue) {
         let dateSearchValue = JSON.parse(req.query.dateSearchValue);
         let from = moment((moment(dateSearchValue.from).format('YYYY-MM-DD'))).toISOString();
         let to = moment((moment(dateSearchValue.to).format('YYYY-MM-DD'))).toISOString();
-        _where.created_at = {'>=': from, '<=': to};
+        // _where.created_at = {'>=': from, '<=': to};
+        _where += ` AND ( suborder.created_at >= '${from}' AND suborder.created_at <= '${to}') `;
       }
       if (req.query.statusSearchValue) {
-        _where.status = {'like': `%${req.query.statusSearchValue}%`}
+        // _where.status = {'like': `%${req.query.statusSearchValue}%`}
+        _where += ` AND suborder.status = '${req.query.statusSearchValue}' `;
       }
-
+      if (req.query.suborderIdValue) {
+        _where += ` AND warehouses.name LIKE '%${req.query.suborderIdValue}%' `;
+      }
 
       /* WHERE condition..........END................*/
 
@@ -59,40 +78,44 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        // _sort.name = req.query.sortName
+        _where += ' ORDER BY suborder.created_at DESC '
+      } else {
+        _where += ' ORDER BY suborder.created_at DESC '
       }
+
 
 
       /*.....SORT END..............................*/
 
-      let totalSuborder = await Suborder.count().where(_where);
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
-      let suborders = await Suborder.find(
-        {
-          where: _where,
-          limit: _pagination.limit,
-          skip: _pagination.skip,
-          sort: _sort,
-        }).populateAll();
+      /*      let totalSuborder = await Suborder.count().where(_where);
+
+            let suborders = await Suborder.find(
+              {
+                where: _where,
+                limit: _pagination.limit,
+                skip: _pagination.skip,
+                sort: _sort,
+              }).populateAll();*/
 
       // .populate('warehouse_id', {
       //   where: _vendorWhere
       // });
       // .populate('division_id')
       // .populate('user');
+      const totalSuborderRaw = await SuborderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      const totalSuborder = totalSuborderRaw[0].totalCount;
 
-      suborders = suborders.filter((suborder) => {
-        if (req.query.suborderIdValue) {
-          if (typeof suborder.warehouse_id !== 'undefined' && typeof suborder.warehouse_id.name !== 'undefined') {
-            return suborder.warehouse_id.name.includes(req.query.suborderIdValue.trim())
-          }
-          return false;
-        }
-        return true;
-      })
+      _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
+
+      let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `
+      const suborders = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
+
+      console.log('totalCount', totalSuborderRaw, totalSuborder)
 
       await asyncForEach(suborders, async suborder => {
-        suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}}).populateAll();
+        console.log('suborder', suborder)
+        suborder.order = await Order.findOne({where: {id: suborder.product_order_id}}).populateAll();
         suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
         await asyncForEach(suborder.items, async item => {
           let varientitems = [];
@@ -168,10 +191,13 @@ module.exports = {
               status: 12
             }
           }).populate('changed_by');
+
           await asyncForEach(item.suborderItemVariants, async varientitem => {
             varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
           });
+
           item.suborderItemVariants = varientitems;
+
         });
       });
       res.status(200).json({

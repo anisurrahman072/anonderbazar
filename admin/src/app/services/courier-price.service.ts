@@ -1,9 +1,6 @@
 import { Injectable } from "@angular/core";
-import { Http, Headers, RequestOptions, Response } from "@angular/http";
-
 import { Observable } from "rxjs";
 import { AuthService } from "./auth.service";
-
 import { HttpClient } from "@angular/common/http";
 import {environment} from "../../environments/environment";
 
@@ -11,7 +8,7 @@ import {environment} from "../../environments/environment";
   providedIn: "root"
 })
 export class CourierPriceService {
-  
+
   private EndPoint1 = `${environment.API_ENDPOINT}/courierprice`;
   private EndPoint2 = `${environment.API_ENDPOINT}/courierprices`;
 

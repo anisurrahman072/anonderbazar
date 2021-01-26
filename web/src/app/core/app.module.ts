@@ -3,7 +3,7 @@ import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import { SwiperModule } from "ngx-swiper-wrapper";
+import {SwiperModule} from "ngx-swiper-wrapper";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
 import {HeaderComponent} from "../layout/header/header.component";
@@ -12,7 +12,6 @@ import {MenuComponent} from "../layout/menu/menu.component";
 import {TabsModule} from 'ngx-bootstrap';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
-
 import {effects, reducers} from "../state-management";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {NgProgressModule} from '@ngx-progressbar/core';
@@ -43,10 +42,11 @@ import {FilterUiService} from '../services/ui/filterUi.service';
 import {PartService} from '../services/part.service';
 import {ChatService} from '../services/chat.service';
 import {DesignimageService} from '../services/designimage.service';
-import { ToastrModule } from 'ngx-toastr';
-import { IonRangeSliderModule } from "ng2-ion-range-slider";
+import {ToastrModule} from 'ngx-toastr';
+import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
+import {combineLatest} from 'rxjs/observable/combineLatest'
 
 @NgModule({
     declarations: [

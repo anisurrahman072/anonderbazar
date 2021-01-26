@@ -7,7 +7,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { enUS, NZ_LOCALE } from 'ng-zorro-antd';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
@@ -62,13 +61,13 @@ import { ChatService } from '../services/chat.service';
 @NgModule({
   declarations: [AppComponent],
   imports: [
+    HttpClientModule,
     BrowserModule.withServerTransition({ appId: 'my-app' }),
     BrowserAnimationsModule,
     TransferHttpCacheModule,
     AppRoutingModule,
     PrebootModule.withConfig({ appRoot: 'app-root' }),
     BrowserTransferStateModule,
-    HttpClientModule,
     UiModule,
   ],
   providers: [

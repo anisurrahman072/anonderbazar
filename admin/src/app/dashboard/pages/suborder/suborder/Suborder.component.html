@@ -108,10 +108,10 @@
                     </thead>
                     <tbody nz-tbody>
                         <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>{{data.product_order_id.id}} / {{data.id}}</td>
-                            <td nz-td>{{data.createdAt|date:'yyyy-MM-dd'}}</td>
-                            <td nz-td>{{data.warehouse_id.id}}</td>
-                            <td nz-td>{{data.warehouse_id.name}}</td>
+                            <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
+                            <td nz-td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
+                            <td nz-td>{{data.warehouse_id}}</td>
+                            <td nz-td>{{data.name}}</td>
                             <td nz-td>{{data.total_quantity}}</td>
                             <td nz-td>{{data.total_price}}</td>
                             <td nz-td>
@@ -132,7 +132,7 @@
                                   </ng-template>
 
                             </td>
-                            <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
+                            <td nz-td>{{data.changedBy}}</td>
                             <td>
                                 <nz-button-group>
                                     <!--Invoice-->

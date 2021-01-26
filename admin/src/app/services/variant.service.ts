@@ -1,15 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions, Response} from '@angular/http';
-
-
-
-
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class VariantService {
 
   private EndPoint = `${environment.API_ENDPOINT}/variant`;
@@ -39,8 +36,8 @@ export class VariantService {
                   categoryId: number,
                   subcategoryId: number,
                   sortName: string): Observable<any> {
-      
-      
+
+
       return this.http.get(`${this.EndPoint2
           }?page=${page
           }&limit=${limit

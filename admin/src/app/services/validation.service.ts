@@ -6,14 +6,16 @@ import "rxjs/add/observable/timer";
 import "rxjs/add/operator/switchMap";
 import "rxjs-compat/add/operator/map";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ValidationService {
-  
-  
+
+
   constructor(private userService: UserService) {
-  
+
   }
-  
+
   emailValidator(control: FormControl): { [s: string]: boolean } {
     const EMAIL_REGEXP = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!control.value) {
@@ -22,7 +24,7 @@ export class ValidationService {
       return {error: true, email: true};
     }
   };
-  
+
   phoneValidator(control: FormControl): { [s: string]: boolean } {
     const PHONE_REGEXP = /^(?:\+88|01)?(?:\d{11}|\d{13})$/im;
     if (!control.value) {
@@ -31,7 +33,7 @@ export class ValidationService {
       return {error: true, phone: true};
     }
   };
-  
+
   userNameTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkUsername(control.value).map(res => {
@@ -62,6 +64,6 @@ export class ValidationService {
       });
     });
   };
-  
-  
+
+
 }
