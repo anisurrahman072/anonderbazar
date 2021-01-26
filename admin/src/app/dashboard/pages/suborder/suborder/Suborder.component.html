@@ -6,165 +6,174 @@
         <ng-template #extra>
             <nz-button-group>
 
-            <button nz-button [nzType]="'primary'"
-                [nzSize]="'large'" (click)='showProductModal(data)' *ngIf="currentUser.group_id==='admin'">
-                <i class="anticon anticon-download" ></i><span> Download CSV </span>
-            </button>
-            <button nz-button [nzType]="'primary'"
-                [nzSize]="'large'" (click)='showPRModal(data)' *ngIf="currentUser.group_id==='admin'">
-                <i class="anticon anticon-download"></i><span> Download PR</span>
-            </button>
+                <button nz-button [nzType]="'primary'"
+                        [nzSize]="'large'" (click)='showProductModal(data)' *ngIf="currentUser.group_id==='admin'">
+                    <i class="anticon anticon-download"></i><span> Download CSV </span>
+                </button>
+                <button nz-button [nzType]="'primary'"
+                        [nzSize]="'large'" (click)='showPRModal(data)' *ngIf="currentUser.group_id==='admin'">
+                    <i class="anticon anticon-download"></i><span> Download PR</span>
+                </button>
             </nz-button-group>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
-                    [nzSize]="'default'" [nzShowTitle]="true">
+                          [nzSize]="'default'" [nzShowTitle]="true">
 
                     <thead nz-thead>
-                        <tr>
-                            <th nz-th>
-                                <span> Order number </span>
-                            </th>
-                            <th nz-th>
-                                <span> Order Date </span>
-                            </th>
-                            <th nz-th>
-                                <span> Vendor Id </span>
-                            </th>
-                            <th nz-th>
-                                <span> Vendor Name </span>
-                            </th>
-                            <th nz-th>
-                                <span> Quantity </span>
-                            </th>
-                            <th nz-th>
-                                <span> Total Price</span>
-                            </th>
-                            <th nz-th>
-                                <span> Status </span>
-                            </th>
-                            <th nz-th>
-                                <span> Status changed by </span>
-                            </th>
-                            <th nz-th>
+                    <tr>
+                        <th nz-th>
+                            <span> Order number </span>
+                        </th>
+                        <th nz-th>
+                            <span> Order Date </span>
+                        </th>
+                        <th nz-th>
+                            <span> Vendor Id </span>
+                        </th>
+                        <th nz-th>
+                            <span> Vendor Name </span>
+                        </th>
+                        <th nz-th>
+                            <span> Quantity </span>
+                        </th>
+                        <th nz-th>
+                            <span> Total Price</span>
+                        </th>
+                        <th nz-th>
+                            <span> Status </span>
+                        </th>
+                        <th nz-th>
+                            <span> Status changed by </span>
+                        </th>
+                        <th nz-th>
 
-                            </th>
-                        </tr>
+                        </th>
+                    </tr>
                     </thead>
                     <thead nz-thead>
-                        <!--search bar.....................-->
-                        <tr>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Order number'" [(ngModel)]="suborderNumberSearchValue"
-                                    (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}" >
-                                </nz-input>
-                            </th>
-                            <th nz-th class="suborder-daterange">
+                    <!--search bar.....................-->
+                    <tr>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Order number'" [(ngModel)]="suborderNumberSearchValue"
+                                      (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}">
+                            </nz-input>
+                        </th>
+                        <th nz-th class="suborder-daterange">
 
-<!--                            <input class="form-control" placeholder="Select Order Date" type="text"-->
-<!--                                    mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
-<!--                                    [altInput]="true" [convertModelValue]="true" mode="range"> -->
-                            </th>
-                            <th nz-th>
+                            <!--                            <input class="form-control" placeholder="Select Order Date" type="text"-->
+                            <!--                                    mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
+                            <!--                                    [altInput]="true" [convertModelValue]="true" mode="range"> -->
+                        </th>
+                        <th nz-th>
 
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Vendor Name'" [(ngModel)]="suborderIdValue" *ngIf="currentUser.group_id=='admin'"
-                                          (ngModelChange)="page=1; getPageData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Quantity'" [(ngModel)]="quantitySearchValue"
-                                    (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Total Price'" [(ngModel)]="totalPriceSearchValue"
-                                    (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
-                            </th>
+                        </th>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Vendor Name'" [(ngModel)]="suborderIdValue"
+                                      *ngIf="currentUser.group_id=='admin'"
+                                      (ngModelChange)="page=1; getPageData()">
+                            </nz-input>
+                        </th>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Quantity'" [(ngModel)]="quantitySearchValue"
+                                      (ngModelChange)="page=1;getPageData()">
+                            </nz-input>
+                        </th>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Total Price'" [(ngModel)]="totalPriceSearchValue"
+                                      (ngModelChange)="page=1;getPageData()">
+                            </nz-input>
+                        </th>
 
 
-                            <th nz-th>
+                        <th nz-th>
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
+                                       nzAllowClear (ngModelChange)="page=1;getPageData()"
+                                       [nzPlaceHolder]="'Select Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th nz-th>
+                        </th>
+                        <th nz-th>
+
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody nz-tbody>
+                    <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
+                        <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
+                        <td nz-td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
+                        <td nz-td>{{data.warehouse_id}}</td>
+                        <td nz-td>{{data.name}}</td>
+                        <td nz-td>{{data.total_quantity}}</td>
+                        <td nz-td>{{data.total_price}}</td>
+                        <td nz-td>
+                            <div *ngIf="currentUser.group_id==='admin'; else loggedOut">
                                 <span *ngIf="setStatus(i, data.status)"></span>
-                                <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
-                                    nzAllowClear (ngModelChange)="page=1;getPageData()" [nzPlaceHolder]="'Select Status'"
-                                    [nzNotFoundContent]="'Not found'">
-                                    <nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value">
+                                <nz-select style="width: 180px;" [(ngModel)]="data.status"
+                                           [nzPlaceHolder]="'choose option'"
+                                           (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
+                                    <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                               [nzValue]="option.value">
                                         <ng-template #nzOptionTemplate>
                                             <i class="anticon " [ngClass]="option.icon"></i>
                                             {{option.label}}
                                         </ng-template>
                                     </nz-option>
                                 </nz-select>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
+                            </div>
 
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
-                            <td nz-td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
-                            <td nz-td>{{data.warehouse_id}}</td>
-                            <td nz-td>{{data.name}}</td>
-                            <td nz-td>{{data.total_quantity}}</td>
-                            <td nz-td>{{data.total_price}}</td>
-                            <td nz-td>
-                                <div *ngIf="currentUser.group_id==='admin'; else loggedOut">
-                                    <span *ngIf="setStatus(i, data.status)"></span>
-                                    <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'" (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
-                                        <nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value">
-                                            <ng-template #nzOptionTemplate>
-                                                <i class="anticon " [ngClass]="option.icon"></i>
-                                                {{option.label}}
-                                            </ng-template>
-                                        </nz-option>
-                                    </nz-select>
-                                  </div>
+                            <ng-template #loggedOut>
+                                {{statusOptions[data.status - 1]}}
+                            </ng-template>
 
-                                  <ng-template #loggedOut>
-                                    {{statusOptions[data.status-1]}}
-                                  </ng-template>
-
-                            </td>
-                            <td nz-td>{{data.changedBy}}</td>
-                            <td>
-                                <nz-button-group>
-                                    <!--Invoice-->
-                                    <button [routerLink]="['/dashboard/suborder/invoice/', data.id]" nz-button [nzType]="'info'"
+                        </td>
+                        <td nz-td>{{data.changedBy}}</td>
+                        <td>
+                            <nz-button-group>
+                                <!--Invoice-->
+                                <button [routerLink]="['/dashboard/suborder/invoice/', data.id]" nz-button
+                                        [nzType]="'info'"
                                         [nzSize]="'default'">
-                                        <i class="anticon anticon-file-text"> </i>
-                                    </button>
-                                </nz-button-group>
-                                <!--Details-->
+                                    <i class="anticon anticon-file-text"> </i>
+                                </button>
+                            </nz-button-group>
+                            <!--Details-->
 
 
-                                <!--Delete-->
-                                <ng-container *ngIf="'suborder-delete'|accessControl">
-                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
-                                        <a nz-popconfirm>
-                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                <i class="anticon anticon-delete"> </i>
-                                            </button>
-                                        </a>
-                                    </nz-popconfirm>
-                                </ng-container>
-                            </td>
-                        </tr>
+                            <!--Delete-->
+                            <ng-container *ngIf="'suborder-delete'|accessControl">
+                                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                               [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
+                                    <a nz-popconfirm>
+                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <i class="anticon anticon-delete"> </i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </ng-container>
+                        </td>
+                    </tr>
                     </tbody>
                 </nz-table>
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
                     <span nz-table-title class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
+                                       (nzPageSizeChange)="changePage(1,$event)"
+                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
+                                       [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
                     <span nz-table-title class="pull-right col-md-6">
@@ -175,272 +184,311 @@
         </ng-template>
     </nz-card>
 </section>
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" [nzTitle]="'Generate Document'" [nzContent]="modalProductContent"
-(nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
-<ng-template #modalProductContent>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm" (ngSubmit)="submitForm($event,validateProductForm.value)">
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
-        <thead nz-thead>
-            <tr>
-                <th nz-th>
-                </th>
-                <th nz-th>
-                    <span> Order number </span>
-                </th>
-                <th nz-th>
-                    <span> Order Date </span>
-                </th>
-                <th nz-th>
-                    <span> Vendor Name </span>
-                </th>
-                <th nz-th>
-                    <span> Quantity </span>
-                </th>
-                <th nz-th>
-                    <span> Total Price</span>
-                </th>
-                <th nz-th>
-                    <span> Status </span>
-                </th>
-                <th nz-th>
-                    <span> Status changed by </span>
-                </th>
-            </tr>
-        </thead>
-        <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                <td nz-td [nzCheckbox]="true">
-                    <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked' (ngModelChange)="_refreshStatus($event, data)">
-                    </label>
-                </td>
-                <td nz-td>{{data.product_order_id.id}} / {{data.id}}</td>
-                <td nz-td>{{data.createdAt|date}}</td>
-                <td nz-td>{{data.warehouse_id.name}}</td>
-                <td nz-td>{{data.total_quantity}}</td>
-                <td nz-td>{{data.total_price}}</td>
-                <td nz-td>{{statusOptions[data.status-1]}}</td>
-                <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
+<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" [nzTitle]="'Generate Document'"
+          [nzContent]="modalProductContent"
+          (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
+    <ng-template #modalProductContent>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
+              (ngSubmit)="submitForm($event,validateProductForm.value)">
+            <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
+                <thead nz-thead>
+                <tr>
+                    <th nz-th>
+                    </th>
+                    <th nz-th>
+                        <span> Order number </span>
+                    </th>
+                    <th nz-th>
+                        <span> Order Date </span>
+                    </th>
+                    <th nz-th>
+                        <span> Vendor Name </span>
+                    </th>
+                    <th nz-th>
+                        <span> Quantity </span>
+                    </th>
+                    <th nz-th>
+                        <span> Total Price</span>
+                    </th>
+                    <th nz-th>
+                        <span> Status </span>
+                    </th>
+                    <th nz-th>
+                        <span> Status changed by </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody nz-tbody>
+                <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
+                    <td nz-td [nzCheckbox]="true">
+                        <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
+                               (ngModelChange)="_refreshStatus($event, data)">
+                        </label>
+                    </td>
+                    <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
+                    <td nz-td>{{data.created_at|date}}</td>
+                    <td nz-td>{{data.name}}</td>
+                    <td nz-td>{{data.total_quantity}}</td>
+                    <td nz-td>{{data.total_price}}</td>
+                    <td nz-td>{{statusOptions[data.status - 1]}}</td>
+                    <td nz-td>{{data.changed_by}}</td>
 
-            </tr>
-        </tbody>
+                </tr>
+                </tbody>
 
-    </nz-table>
-        <div nz-form-item>
-
-            <div nz-form-control>
-                <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateProductForm.valid">
-                    Create CSV
-                </button>
+            </nz-table>
+            <div class="row">
+                <div class="col-md-offset-5" style="margin-top: 10px">
+                    <span nz-table-title class="col-md-6">
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
+                                       (nzPageSizeChange)="changePage(1,$event)"
+                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
+                                       [nzPageSize]="limit">
+                        </nz-pagination>
+                    </span>
+                    <span nz-table-title class="pull-right col-md-6">
+                        <button nz-button (click)="resetAllFilter()">Clear filter</button>
+                    </span>
+                </div>
             </div>
-        </div>
-    </form>
-</ng-template>
+            <div nz-form-item>
+
+                <div nz-form-control>
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateProductForm.valid">
+                        Create CSV
+                    </button>
+                </div>
+            </div>
+        </form>
+    </ng-template>
 </nz-modal>
 
 
+<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisiblePR" [nzTitle]="'Generate Document'"
+          [nzContent]="modalProductContentPR"
+          (nzOnCancel)="handleCancelPR($event)" (nzOnOk)="handleOkPR($event)">
+    <ng-template #modalProductContentPR>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateFormPR"
+              (ngSubmit)="submitFormPR($event,validateFormPR.value)">
+            <div class="row">
+                <div class="col-md-6">
 
-
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisiblePR" [nzTitle]="'Generate Document'" [nzContent]="modalProductContentPR"
-(nzOnCancel)="handleCancelPR($event)" (nzOnOk)="handleOkPR($event)">
-<ng-template #modalProductContentPR>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateFormPR" (ngSubmit)="submitFormPR($event,validateFormPR.value)">
-        <div class="row">
-            <div class="col-md-6">
-
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Total Orders </label>
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Total Orders </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="total_order" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter total order'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('total_order').dirty&&getFormControl('total_order').hasError('required')">
+                                Please enter total order!
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="total_order" [nzType]="'text'" [nzPlaceHolder]="'Please enter total order'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('total_order').dirty&&getFormControl('total_order').hasError('required')">
-                            Please enter total order!
+
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Seller Name </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="seller_name" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter seller name'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('seller_name').dirty&&getFormControl('seller_name').hasError('required')">
+                                Please enter seller name!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Seller Phone </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="seller_phone" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter seller phone'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('seller_phone').dirty&&getFormControl('seller_phone').hasError('required')">
+                                Please enter seller phone!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Seller Address </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="seller_address" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter seller address'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('seller_address').dirty&&getFormControl('seller_address').hasError('required')">
+                                Please enter seller address!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> KAM </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="k_a_m" [nzType]="'text'" [nzPlaceHolder]="'Please enter KAM'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('k_a_m').dirty&&getFormControl('k_a_m').hasError('required')">
+                                Please enter KAM!
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-6">
 
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Seller Name </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="seller_name" [nzType]="'text'" [nzPlaceHolder]="'Please enter seller name'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('seller_name').dirty&&getFormControl('seller_name').hasError('required')">
-                            Please enter seller name!
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Pickup Carrier Name </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="pickup_carrier_name" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter pickup carrier name'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('pickup_carrier_name').dirty&&getFormControl('pickup_carrier_name').hasError('required')">
+                                Please enter pickup carrier name!
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Seller Phone </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="seller_phone" [nzType]="'text'" [nzPlaceHolder]="'Please enter seller phone'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('seller_phone').dirty&&getFormControl('seller_phone').hasError('required')">
-                            Please enter seller phone!
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Payment Method </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="payment_method" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter payment method'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('payment_method').dirty&&getFormControl('payment_method').hasError('required')">
+                                Please enter payment method!
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Seller Address </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="seller_address" [nzType]="'text'" [nzPlaceHolder]="'Please enter seller address'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('seller_address').dirty&&getFormControl('seller_address').hasError('required')">
-                            Please enter seller address!
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Pickup Slot </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="pickup_slot" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter pickup slot'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('pickup_slot').dirty&&getFormControl('pickup_slot').hasError('required')">
+                                Please enter pickup slot!
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> KAM </label>
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Pickup Rider Name </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="pickup_rider_name" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter pickup rider name'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('pickup_rider_name').dirty&&getFormControl('pickup_rider_name').hasError('required')">
+                                Please enter pickup rider name!
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="k_a_m" [nzType]="'text'" [nzPlaceHolder]="'Please enter KAM'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('k_a_m').dirty&&getFormControl('k_a_m').hasError('required')">
-                            Please enter KAM!
+                    <div class="row">
+                        <div nz-form-label class="col-md-4">
+                            <label> Pickup Rider Contact Number </label>
+                        </div>
+                        <div class="col-md-5" nz-form-control nzHasFeedback>
+                            <nz-input formControlName="pickup_rider_contact_number" [nzType]="'text'"
+                                      [nzPlaceHolder]="'Please enter pickup rider contact number'"
+                                      [nzSize]="'large'">
+                            </nz-input>
+                            <div nz-form-explain
+                                 *ngIf="getFormControl('pickup_rider_contact_number').dirty&&getFormControl('pickup_rider_contact_number').hasError('required')">
+                                Please enter pickup rider contact number!
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
 
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Pickup Carrier Name </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="pickup_carrier_name" [nzType]="'text'" [nzPlaceHolder]="'Please enter pickup carrier name'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('pickup_carrier_name').dirty&&getFormControl('pickup_carrier_name').hasError('required')">
-                            Please enter pickup carrier name!
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Payment Method </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="payment_method" [nzType]="'text'" [nzPlaceHolder]="'Please enter payment method'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('payment_method').dirty&&getFormControl('payment_method').hasError('required')">
-                            Please enter payment method!
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Pickup Slot </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="pickup_slot" [nzType]="'text'" [nzPlaceHolder]="'Please enter pickup slot'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('pickup_slot').dirty&&getFormControl('pickup_slot').hasError('required')">
-                            Please enter pickup slot!
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Pickup Rider Name </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="pickup_rider_name" [nzType]="'text'" [nzPlaceHolder]="'Please enter pickup rider name'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('pickup_rider_name').dirty&&getFormControl('pickup_rider_name').hasError('required')">
-                            Please enter pickup rider name!
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div nz-form-label class="col-md-4">
-                        <label> Pickup Rider Contact Number </label>
-                    </div>
-                    <div class="col-md-5" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="pickup_rider_contact_number" [nzType]="'text'" [nzPlaceHolder]="'Please enter pickup rider contact number'"
-                            [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('pickup_rider_contact_number').dirty&&getFormControl('pickup_rider_contact_number').hasError('required')">
-                            Please enter pickup rider contact number!
-                        </div>
-                    </div>
+            <nz-table #nzTable [nzBordered]="true" [nzDataSource]="dataPR" [nzIsPagination]="false">
+                <thead nz-thead>
+                <tr>
+                    <th nz-th>
+                    </th>
+                    <th nz-th>
+                        <span> Order number </span>
+                    </th>
+                    <th nz-th>
+                        <span> Date </span>
+                    </th>
+                    <th nz-th>
+                        <span> Vendor Name </span>
+                    </th>
+                    <th nz-th>
+                        <span> Quantity </span>
+                    </th>
+                    <th nz-th>
+                        <span> Total Price</span>
+                    </th>
+                    <th nz-th>
+                        <span> Date of delivery </span>
+                    </th>
+                    <th nz-th>
+                        <span> Status </span>
+                    </th>
+                    <th nz-th>
+                        <span> Status changed by </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody nz-tbody>
+                <tr nz-tbody-tr *ngFor="let data1 of nzTable.data;let i=index;">
+                    <td nz-td [nzCheckbox]="true">
+                        <label nz-checkbox formControlName='productCheckedPR'
+                               (ngModelChange)="_refreshStatusPR($event, data1)">
+                        </label>
+                    </td>
+                    <td nz-td>{{data1.product_order_id}} / {{data1.id}}</td>
+                    <td nz-td>{{data1.created_at|date}}</td>
+                    <td nz-td>{{data1.name}}</td>
+                    <td nz-td>{{data1.total_quantity}}</td>
+                    <td nz-td>{{data1.total_price}}</td>
+                    <td nz-td>{{data1.delivery_date|date:'yyyy-MM-dd'}}</td>
+                    <td nz-td>{{statusOptions[data1.status - 1]}}</td>
+                    <td nz-td>{{data1.changedBy}}</td>
+
+                </tr>
+                </tbody>
+            </nz-table>
+            <div nz-form-item>
+
+                <div nz-form-control>
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateFormPR.valid">
+                        Create PR PDF
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="dataPR" [nzIsPagination]="false">
-        <thead nz-thead>
-            <tr>
-                <th nz-th>
-                </th>
-                <th nz-th>
-                    <span> Order number </span>
-                </th>
-                <th nz-th>
-                    <span> Date </span>
-                </th>
-                <th nz-th>
-                    <span> Vendor Name </span>
-                </th>
-                <th nz-th>
-                    <span> Quantity </span>
-                </th>
-                <th nz-th>
-                    <span> Total Price</span>
-                </th>
-                <th nz-th>
-                    <span> Date of delivery </span>
-                </th>
-                <th nz-th>
-                    <span> Status </span>
-                </th>
-                <th nz-th>
-                    <span> Status changed by </span>
-                </th>
-            </tr>
-        </thead>
-        <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let data1 of nzTable.data;let i=index;">
-                <td nz-td [nzCheckbox]="true">
-                    <label nz-checkbox formControlName='productCheckedPR' (ngModelChange)="_refreshStatusPR($event, data1)">
-                    </label>
-                </td>
-                <td nz-td>{{data1.product_order_id.id}} / {{data1.id}}</td>
-                <td nz-td>{{data1.createdAt|date}}</td>
-                <td nz-td>{{data1.warehouse_id.name}}</td>
-                <td nz-td>{{data1.total_quantity}}</td>
-                <td nz-td>{{data1.total_price}}</td>
-                <td nz-td>{{data1.delivery_date|date:'yyyy-MM-dd'}}</td>
-                <td nz-td>{{statusOptions[data1.status-1]}}</td>
-                <td nz-td>{{data1.changed_by?.first_name}} {{data1.changed_by?.last_name}}</td>
-
-            </tr>
-        </tbody>
-    </nz-table>
-        <div nz-form-item>
-
-            <div nz-form-control>
-                <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateFormPR.valid">
-                    Create PR PDF
-                </button>
-            </div>
-        </div>
-    </form>
-</ng-template>
+        </form>
+    </ng-template>
 </nz-modal>

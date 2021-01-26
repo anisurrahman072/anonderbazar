@@ -46,7 +46,6 @@ import {ToastrModule} from 'ngx-toastr';
 import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
-import {combineLatest} from 'rxjs/observable/combineLatest'
 
 @NgModule({
     declarations: [

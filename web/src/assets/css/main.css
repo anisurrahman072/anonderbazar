@@ -3739,3 +3739,12 @@ del {
 .compare-img .btn1 button {
     padding: 10px 18px !important;
 }
+.mat-radio-label {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.mat-radio-label .mat-radio-label-content {
+    white-space: normal;
+    padding-right: 30px;
+    line-break: anywhere;
+}

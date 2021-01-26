@@ -169,6 +169,56 @@ export class SuborderComponent implements OnInit {
                     this._isSpinning = false;
                 });
     }
+    //Method for showing the modal
+    showProductModal = data => {
+        this.suborderService.getAllsuborder(
+            this.currentWarehouseId,
+            this.page,
+            this.limit,
+            this.suborderNumberSearchValue || '',
+            this.orderNumberSearchValue || '',
+            this.suborderIdValue || '',
+            this.quantitySearchValue || '',
+            this.totalPriceSearchValue || '',
+            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
+            this.statusSearchValue || '',
+            this.categoryId || '',
+            this.subcategoryId || '',
+            this.filterTerm(this.sortValue.name),
+            this.filterTerm(this.sortValue.price))
+            .subscribe(result => {
+                this.allOders = result.data;
+
+                console.log(result);
+            });
+        console.log(this.allOders);
+
+        this.isProductVisible = true;
+        this.isProductVisiblePR = false;
+    };
+    //Method for showing the modal
+    showPRModal = data => {
+        this.suborderService.getAllSuborderWithPR(
+            this.currentWarehouseId,
+            this.page,
+            this.limit,
+            this.suborderNumberSearchValue || '',
+            this.orderNumberSearchValue || '',
+            this.suborderIdValue || '',
+            this.quantitySearchValue || '',
+            this.totalPriceSearchValue || '',
+            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
+            this.statusSearchValue || '',
+            this.categoryId || '',
+            this.subcategoryId || '',
+            this.filterTerm(this.sortValue.name),
+            this.filterTerm(this.sortValue.price))
+            .subscribe(result => {
+                console.log('getAllSuborderWithPR', result)
+                this.dataPR = result.data;
+            });
+        this.isProductVisiblePR = true;
+    };
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateFormPR.controls[name];
@@ -372,33 +422,7 @@ export class SuborderComponent implements OnInit {
     handleCancel = e => {
         this.isProductVisible = false;
     };
-    //Method for showing the modal
-    showProductModal = data => {
-        this.suborderService.getAllsuborder(
-            this.currentWarehouseId,
-            this.page,
-            200,
-            this.suborderNumberSearchValue || '',
-            this.orderNumberSearchValue || '',
-            this.suborderIdValue || '',
-            this.quantitySearchValue || '',
-            this.totalPriceSearchValue || '',
-            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
-            this.statusSearchValue || '',
-            this.categoryId || '',
-            this.subcategoryId || '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price))
-            .subscribe(result => {
-                    this.allOders = result.data;
 
-                    console.log(result);
-                });
-        console.log(this.allOders);
-
-        this.isProductVisible = true;
-        this.isProductVisiblePR = false;
-    };
     //Event method for submitting the form
     submitForm = ($event, value) => {
         let newlist = this.storeOrderIds;
@@ -427,29 +451,7 @@ export class SuborderComponent implements OnInit {
         this.isProductVisiblePR = false;
         this.validateFormPR.reset();
     };
-    //Method for showing the modal
-    showPRModal = data => {
-        this.suborderService.getAllSuborderWithPR(
-            this.currentWarehouseId,
-            this.page,
-            200,
-            this.suborderNumberSearchValue || '',
-            this.orderNumberSearchValue || '',
-            this.suborderIdValue || '',
-            this.quantitySearchValue || '',
-            this.totalPriceSearchValue || '',
-            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
-            this.statusSearchValue || '',
-            this.categoryId || '',
-            this.subcategoryId || '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price))
-            .subscribe(result => {
-                console.log('getAllSuborderWithPR', result.data)
-                this.dataPR = result.data;
-            });
-        this.isProductVisiblePR = true;
-    };
+
     //Event method for submitting the form
     submitFormPR = ($event, value) => {
         let newlist = this.storeOrderIdsPR;

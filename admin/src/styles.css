@@ -143,3 +143,10 @@ h3.ant-card-head-title {
   /* height: 140vh; */
   margin-left: 5px;
 }
+.product-grid tr td .ant-tag {
+  white-space: normal;
+  max-width: 150px;
+  display: inline-block;
+  height: auto;
+  word-break: break-word;
+}

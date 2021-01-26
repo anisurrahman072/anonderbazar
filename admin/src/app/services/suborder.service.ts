@@ -92,7 +92,7 @@ export class SuborderService {
     return this.http.get(
       `${
         this.EndPoint2
-      }/getsuborderwithpr?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&orderNumberSearchValue=${orderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&category_id=${categoryId}&subcategory_id=${subcategoryId}&sortName=${sortName}&sortPrice=${sortPrice}`
+      }?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&orderNumberSearchValue=${orderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&category_id=${categoryId}&subcategory_id=${subcategoryId}&sortName=${sortName}&sortPrice=${sortPrice}`
     );
 
   }

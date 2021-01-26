@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ProductService} from "../../../../services/product.service";
+import {ProductService} from "../../../../services";
 import {AppSettings} from "../../../../config/app.config";
 import {CmsService} from '../../../../services';
 

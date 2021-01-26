@@ -34,6 +34,9 @@ module.exports = {
       if (req.query.brand_id) {
         _where.brand_id = req.query.brand_id;
       }
+      if (req.query.price) {
+        _where.price = req.query.price;
+      }
       if (req.query.subcategory_id) {
         _where.subcategory_id = req.query.subcategory_id;
       }
@@ -53,7 +56,8 @@ module.exports = {
       }
       /* WHERE condition..........END................*/
 
-      /*sort................*/
+      /* sort................ */
+      console.log('req.query', req.query)
       let _sort = {};
       if (req.query.sortCode) {
         _sort.code = req.query.sortCode;
@@ -67,7 +71,11 @@ module.exports = {
       if (req.query.sortQuantity) {
         _sort.quantity = req.query.sortQuantity;
       }
+      if (req.query.sortUpdatedAt) {
+        _sort.updatedAt = req.query.sortUpdatedAt;
+      }
       /*.....SORT END..............................*/
+
       let totalProduct = await Product.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
       let products = await Product.find({

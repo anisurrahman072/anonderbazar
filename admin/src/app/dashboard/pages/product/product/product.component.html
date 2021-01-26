@@ -15,10 +15,8 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations">
                 </div>
-                <nz-table [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
+                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
                           [nzSize]="'default'" [nzShowTitle]="true">
-
-
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
@@ -43,6 +41,9 @@
                             <span> Approved ? </span>
                         </th>
                         <th nz-th>
+                            <span> Product Type </span>
+                        </th>
+                        <th nz-th>
                             <span> Brand </span>
                         </th>
                         <th nz-th>
@@ -52,12 +53,14 @@
                             <span> S-category </span>
                         </th>
                         <th nz-th>
-                            <span> SS-category </span>
-                        </th>
-                        <th nz-th>
                             <span> Quantity </span>
                             <nz-table-sort [(nzValue)]="sortValue.quantity"
-                                           (nzValueChange)="sort('quantity',$event)"></nz-table-sort>
+                                           (nzValueChange)="sort('quantity', $event)"></nz-table-sort>
+                        </th>
+                        <th nz-th>
+                            <span>Last Updated</span>
+                            <nz-table-sort [(nzValue)]="sortValue.updatedAt"
+                                           (nzValueChange)="sort('updatedAt', $event)"></nz-table-sort>
                         </th>
                         <th nz-th>
                             <span> Action </span>
@@ -71,29 +74,21 @@
 
                         </th>
                         <th nz-th>
-                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Code Search'"
+                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Code'"
                                       [(ngModel)]="codeSearchValue"
                                       (ngModelChange)="page=1;getProductData()"></nz-input>
                         </th>
 
                         <th nz-th>
-                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Name Search'"
+                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Name'"
                                       [(ngModel)]="nameSearchValue"
                                       (ngModelChange)="page=1;getProductData()"></nz-input>
                         </th>
 
-
                         <th nz-th>
-                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
-                                       (ngModelChange)="brandIdChange($event)"
-                                       [nzPlaceHolder]="'Select Brand'" [nzFilter]="true"
-                                       (nzSearch)="brandIdSearchChange($event)"
-                                       (nzSearchChange)="brandIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                                       nzShowSearch>
-                                <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
+                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Price'"
+                                      [(ngModel)]="priceSearchValue"
+                                      (ngModelChange)="page=1;getProductData()"></nz-input>
                         </th>
                         <th nz-th>
                             <nz-select style="width: 100px;" [nzPlaceHolder]="'Select Approval Status'"
@@ -114,7 +109,19 @@
                                            [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
+                        </th>
+                        <th nz-th>
 
+                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
+                                       (ngModelChange)="brandIdChange($event)"
+                                       [nzPlaceHolder]="'Select Brand'" [nzFilter]="true"
+                                       (nzSearch)="brandIdSearchChange($event)"
+                                       (nzSearchChange)="brandIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                       nzShowSearch>
+                                <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
+                                           [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
                         </th>
                         <th nz-th>
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="categoryId"
@@ -175,14 +182,15 @@
                                     <del style="color: red">{{data.price}}</del>
                                     {{data.promo_price}}</nz-tag>
                             </td>
+
                             <td nz-td>
                                 <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
+                                <nz-tag>{{data.type_id?.name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.type_id?.name}}</nz-tag>
+                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
                             </td>
                             <td nz-td>
                                 <nz-tag>{{data.category_id?.name}}</nz-tag>
@@ -194,6 +202,9 @@
                                 <nz-tag [nzColor]="data.quantity<data.alert_quantity? '#f50':''">
                                     {{data.quantity}}
                                 </nz-tag>
+                            </td>
+                            <td nz-td>
+                                <nz-tag>{{formattedDate(data.updatedAt)}}</nz-tag>
                             </td>
                             <td>
                                 <nz-button-group>

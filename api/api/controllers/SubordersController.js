@@ -72,6 +72,10 @@ module.exports = {
         _where += ` AND warehouses.name LIKE '%${req.query.suborderIdValue}%' `;
       }
 
+      if(req.query.PR_status){
+        _where += ` AND suborder.PR_status = '${req.query.PR_status}' `;
+      }
+
       /* WHERE condition..........END................*/
 
 
@@ -236,6 +240,7 @@ module.exports = {
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
       }
+
       if (req.query.suborderNumberSearchValue) {
         _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`}
       }
@@ -251,6 +256,7 @@ module.exports = {
       if (req.query.quantitySearchValue) {
         _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`}
       }
+
       if (req.query.totalPriceSearchValue) {
         _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`}
       }
@@ -261,15 +267,14 @@ module.exports = {
         let to = moment((moment(dateSearchValue.to).format('YYYY-MM-DD'))).toISOString();
         _where.created_at = {'>=': from, '<=': to};
       }
-      if (req.query.statusSearchValue) {
-        _where.status = {'like': `%${req.query.statusSearchValue}%`}
-      }
 
+      if (req.query.statusSearchValue) {
+        _where.status = req.query.statusSearchValue
+      }
 
       /* WHERE condition..........END................*/
 
-
-      /*sort................*/
+      /* sort................*/
       let _sort = {};
       if (req.query.sortName) {
         _sort.name = req.query.sortName
