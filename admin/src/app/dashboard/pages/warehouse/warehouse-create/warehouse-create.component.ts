@@ -82,7 +82,7 @@ export class WarehouseCreateComponent implements OnInit {
             tin_no: ['', []],
 
             buffer_time: ['', []],
-            code:[''],
+            code: [''],
             address: ['', [Validators.required]],
             division_id: [null, [Validators.required]],
             zila_id: [null, [Validators.required]],
@@ -94,6 +94,7 @@ export class WarehouseCreateComponent implements OnInit {
             logo: ['']
         });
     }
+
     //Method for password form control validation
     passwordConfirmationValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
@@ -102,6 +103,7 @@ export class WarehouseCreateComponent implements OnInit {
             return {confirm: true, error: true};
         }
     };
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -109,47 +111,65 @@ export class WarehouseCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsDirty();
         }
 
+        if (value.username) {
+            this.userService.checkUsername(value.username).subscribe(result => {
+                if(result.total == 0){
+                    console.log('checkUsername', result)
+
+                    const formData: FormData = new FormData();
+
+                    formData.append('name', value.name);
+                    formData.append('phone', value.phone);
+                    formData.append('email', value.email);
+                    formData.append('code', '');
+                    formData.append('buffer_time', '0');
+                    formData.append('license_no', value.license_no);
+                    formData.append('tin_no', value.tin_no);
+                    formData.append('country', "Bangladesh");
+                    formData.append('division_id', value.division_id);
+                    formData.append('zila_id', value.zila_id);
+                    formData.append('upazila_id', value.upazila_id);
+                    formData.append('address', value.address);
+                    formData.append('postal_code', value.postal_code);
+                    formData.append('status', "1");
+
+                    if (this.logoFile) {
+                        console.log(this.logoFile);
+                        formData.append('logo', this.logoFile, this.logoFile.name);
+                        formData.append('hasLogo', 'true');
+                    } else {
+                        formData.append('hasLogo', 'false');
+                    }
+
+                    formData.append('invoice_footer', value.invoice_footer);
+                    this.warehouseService.insert(formData).subscribe(result => {
+                        if (result.id) {
+                            this.userInsert(value, result);
+                        }
+                    });
+                } else {
+                    this._notification.create(
+                        'error',
+                        'User already exists',
+                        'User already exists with this provided username'
+                    );
+                }
+
+            })
+        }
+    };
+
+    // Event method for submitting the form
+    userInsert(value, warehouse) {
+
         const formData: FormData = new FormData();
 
-        formData.append('name', value.name);
-        formData.append('phone', value.phone);
-        formData.append('email', value.email);
-        formData.append('code', '');
-        formData.append('buffer_time', '0');
-        formData.append('license_no', value.license_no);
-        formData.append('tin_no', value.tin_no);
-        formData.append('country', "Bangladesh");
-        formData.append('division_id', value.division_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('address', value.address);
-        formData.append('postal_code', value.postal_code);
-        formData.append('status', "1");
-        
-        if (this.logoFile) {
-            console.log(this.logoFile);
-            formData.append('logo', this.logoFile, this.logoFile.name);
-            formData.append('hasLogo', 'true');
-        } else {
-            formData.append('hasLogo', 'false');
-        }
-        formData.append('invoice_footer', value.invoice_footer);
-        this.warehouseService.insert(formData).subscribe(result => {
-            if (result.id) {
-                this.userInsert(value, result);
-            }
-        });
-    };
-//Event method for submitting the form
-    userInsert(value, warehouse) {
-        const formData: FormData = new FormData();
         formData.append('username', value.username);
         formData.append('password', value.password);
         formData.append('confirmPassword', value.password);
         formData.append('email', value.email);
         formData.append('first_name', value.first_name);
         formData.append('last_name', value.last_name);
-
         formData.append('phone', value.phone);
         formData.append('national_id', value.national_id);
         formData.append('gender', value.gender);
@@ -160,6 +180,7 @@ export class WarehouseCreateComponent implements OnInit {
         formData.append('division_id', value.division_id);
         formData.append('active', '1');
         formData.append('warehouse_id', warehouse.id);
+
         if (this.ImageFile) {
             formData.append('avatar', this.ImageFile, this.ImageFile.name);
             formData.append('hasImage', 'true');
@@ -170,46 +191,52 @@ export class WarehouseCreateComponent implements OnInit {
         }
         this.userService.insert(formData)
             .subscribe((result => {
+                    console.log('userService.insert-result', result)
                     if (result) {
                         this._notification.create(
                             'success',
-                            'নতুন দোকান সফলভাবে যুক্ত করা হয়েছে।',
+                            'New Shop has been successfully created!',
                             result.name
                         );
                         this.router.navigate(['/dashboard/warehouse/details/', warehouse.id]);
 
                     } else {
-                        this._notification.create('error', 'Failure message', 'আপনার নিবন্ধকরণ সফল হয়নি');
+                        this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
 
                     }
                 }),
                 (err => {
-                    this._notification.create('error', 'Failure message', 'আপনার নিবন্ধকরণ সফল হয়নি');
+                    this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
                 })
             );
     }
+
     //Event method for removing picture
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
-//Event method for storing imgae in variable
+
+    // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
 
         return metadata;
     }
-    //Event method for removing logo
+
+    // Event method for removing logo
     onLogoRemoved(file: FileHolder) {
         this.logoFile = null;
     }
-    //Event method for storing logo in variable
+
+    // Event method for storing logo in variable
     onBeforeLogoUpload = (metadata: UploadMetadata) => {
         this.logoFile = metadata.file;
         console.log(this.logoFile);
-        
+
         return metadata;
     }
-//Event method for resetting the form
+
+    // Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
         this.validateForm.reset();
@@ -217,22 +244,26 @@ export class WarehouseCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
-//Event method for setting up form in validation
+
+    // Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
- // init the component
+
+    // init the component
     ngOnInit() {
         this.areaService.getAllDivision().subscribe(result => {
             this.divisionSearchOptions = result;
         });
     }
-  //Method for division search change
+
+    //Method for division search change
 
     divisionSearchChange($event: string) {
         const query = encodeURI($event);
     }
-  //Method for division change
+
+    //Method for division change
 
     divisionChange($event) {
         const query = encodeURI($event);
@@ -241,7 +272,8 @@ export class WarehouseCreateComponent implements OnInit {
             this.zilaSearchOptions = result;
         });
     }
-  //Method for zila change
+
+    //Method for zila change
 
     zilaChange($event) {
         const query = encodeURI($event);

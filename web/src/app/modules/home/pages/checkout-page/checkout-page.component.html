@@ -23,7 +23,7 @@
 
                         <div class="form-row" *ngIf="!newShippingAddress">
                             <div class="Checkout-from1">
-                                <label>Select address -------</label>
+                                <label>Select address</label>
                                 <mat-radio-group formControlName="shipping_id" (change)="onAddressChange($event.value, 'shipping')">
                                     <div class="border-bottom radio2" *ngFor="let address of prevoius_address; let i = index">
                                         <mat-radio-button value="{{''+address.id}}">{{ address?.address }},{{ address?.division_id.name }},{{address?.upazila_id.name}},{{ address?.zila_id.name }}.</mat-radio-button>

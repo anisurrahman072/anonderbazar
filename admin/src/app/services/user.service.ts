@@ -21,8 +21,7 @@ export class UserService {
 
     getAll(): Observable<any> {
         // get users from api
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`);
     }
 
     getAllShopOwner(page: number, warehouseId: number, limit: number,
@@ -50,6 +49,7 @@ export class UserService {
             }&sortPrice=${sortPrice}`
         );
     }
+
     getAllCustomer(page: number, warehouseId: number, limit: number,
                    emailSearchValue: string,
                    searchTermName: string,
@@ -76,56 +76,47 @@ export class UserService {
 
     getAllCraftsman(): Observable<any> {
 
-        let dd = this.currentUser.warehouse ? this.currentUser.warehouse.id ? `"warehouse_id":${this.currentUser.warehouse.id }}` : `` : ``;
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"group_id":6,` + dd)
-            ;
+        let dd = this.currentUser.warehouse ? this.currentUser.warehouse.id ? `"warehouse_id":${this.currentUser.warehouse.id}}` : `` : ``;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"group_id":6,` + dd);
     }
 
     getAllCraftsmanByWarehouseId(id: number): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"group_id":6,"warehouse_id":${id}}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"group_id":6,"warehouse_id":${id}}`);
     }
 
     getById(id: number) {
-        return this.http.get(this.EndPoint + '/' + id)
-            ;
-
+        return this.http.get(this.EndPoint + '/' + id);
     }
 
     update(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/' + id, data)
-            ;
+        return this.http.put(this.EndPoint + '/' + id, data);
     }
+
     updatepassword(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/updatepassword/' + id, data)
-            ;
+        return this.http.put(this.EndPoint + '/updatepassword/' + id, data);
     }
+
     insert(data): Observable<any> {
-        return this.http.post(this.EndPoint, data)
-            ;
+        return this.http.post(this.EndPoint, data);
     }
 
     delete(id): Observable<any> {
-        return this.http.delete(`${this.EndPoint}/${id}`)
-            ;
+        return this.http.delete(`${this.EndPoint}/${id}`);
     }
 
     checkUsername(username: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"username":"${username}"}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&username=${username}`);
     }
 
     checkEmail(email: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"searchTermEmail":"${email}"}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"searchTermEmail":"${email}"}`);
     }
 
     checkPhone(phone: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"phone":"${phone}"}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"phone":"${phone}"}`);
     }
+
     checkEmailPhone(email: any, phone: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`);
     }
 }
