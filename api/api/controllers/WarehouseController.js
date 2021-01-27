@@ -28,7 +28,6 @@ module.exports = {
 
       /* WHERE condition..........END................*/
 
-
       let totalWarehouse = await Warehouse.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouse;
       let Warehouses = await Warehouse.find(

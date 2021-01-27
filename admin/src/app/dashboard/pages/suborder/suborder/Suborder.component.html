@@ -193,6 +193,8 @@
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
+                            <input type="checkbox" id="order_check_all_csv" (change)="selectAllCsv($event)"
+                                   [checked]="pageAllCheckedStatusCsv[pageCsv]">
                         </th>
                         <th nz-th>
                             <span> Order number </span>
@@ -219,10 +221,9 @@
                     </thead>
                     <tbody nz-tbody>
                     <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                        <td nz-td [nzCheckbox]="true">
-                            <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
-                                   (ngModelChange)="_refreshStatus($event, data)">
-                            </label>
+                        <td nz-td>
+                            <input type="checkbox" id="{{'order_'+data.id}}" (change)="_refreshStatus($event, data)"
+                                   [checked]="data.checked">
                         </td>
                         <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
                         <td nz-td>{{data.created_at|date}}</td>
@@ -231,10 +232,8 @@
                         <td nz-td>{{data.total_price}}</td>
                         <td nz-td>{{statusOptions[data.status - 1]}}</td>
                         <td nz-td>{{data.changedBy}}</td>
-
                     </tr>
                     </tbody>
-
                 </nz-table>
             </nz-spin>
             <div class="row">
@@ -430,6 +429,8 @@
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
+                            <input type="checkbox" id="order_check_all_pr" (change)="selectAllPr($event)"
+                                   [checked]="pageAllCheckedStatusPr[pagePr]">
                         </th>
                         <th nz-th>
                             <span> Order number </span>
@@ -459,10 +460,9 @@
                     </thead>
                     <tbody nz-tbody>
                     <tr nz-tbody-tr *ngFor="let data1 of nzTable.data;let i=index;">
-                        <td nz-td [nzCheckbox]="true">
-                            <label nz-checkbox formControlName='productCheckedPR'
-                                   (ngModelChange)="_refreshStatusPR($event, data1)">
-                            </label>
+                        <td nz-td>
+                            <input type="checkbox" id="{{'order_checked_pr' + data1.id}}"
+                                   (change)="_refreshStatusPR($event, data1)" [checked]="data1.checked"/>
                         </td>
                         <td nz-td>{{data1.product_order_id}} / {{data1.id}}</td>
                         <td nz-td>{{data1.created_at|date}}</td>
@@ -480,7 +480,7 @@
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
                     <span nz-table-title class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePagePr($event, limitCsv)"
+                        <nz-pagination (nzPageIndexClickChange)="changePagePr($event, limitPr)"
                                        (nzPageSizeChange)="changePagePr(1, $event)"
                                        nzShowTotal [nzPageIndex]="pagePr" [nzTotal]="totalPr" nzShowSizeChanger
                                        [nzPageSize]="limitPr">
@@ -491,7 +491,7 @@
             <div nz-form-item>
                 <div nz-form-control>
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
-                            [disabled]="!validateFormPR.valid">
+                            [disabled]="!validateFormPR.valid || _isSpinningPr">
                         Create PR PDF
                     </button>
                 </div>
