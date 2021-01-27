@@ -5,6 +5,7 @@ import {ProductReadComponent} from './product-read/product-read.component';
 import {ProductCreateComponent} from './product-create/product-create.component';
 import {ProductEditComponent} from './product-edit/product-edit.component';
 import {AccessControl} from "../../../auth/core/guard/AccessControl.guard";
+import {BulkUploadComponent} from "./bulk-upload/bulk-upload.component";
 
 const routes: Routes = [
     {
@@ -17,6 +18,12 @@ const routes: Routes = [
                 canActivate: [AccessControl],
                 data: {accessData: 'product',breadcrumbs: 'list'},
                 component: ProductComponent,
+            },
+            {
+                path: 'bulk-upload',
+                canActivate: [AccessControl],
+                data: {accessData: 'product',breadcrumbs: 'bulk-upload'},
+                component: BulkUploadComponent,
             },
             {
                 path: 'details/:id',

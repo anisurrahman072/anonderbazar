@@ -1,0 +1,130 @@
+<section>
+    <nz-card class="card-height">
+        <ng-template #title>
+            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product Bulk Upload
+        </ng-template>
+        <ng-template #extra>
+
+        </ng-template>
+        <ng-template #body>
+            <div class="form-group">
+                <label for="upload_bulk_import">Uplaod Excel</label>
+                <input type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
+            </div>
+            <nz-spin [nzSpinning]="_isSpinning">
+                <div class="table-operations"></div>
+                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="importProducts"
+                          [nzPageSize]="limit"
+                          [nzSize]="'default'" [nzShowTitle]="true">
+                    <thead nz-thead>
+                    <tr>
+                        <th nz-th>
+                            <span>Code</span>
+                        </th>
+                        <th nz-th>
+                            <span> Name </span>
+                        </th>
+                        <th nz-th>
+                            <span> Approv. Status </span>
+                        </th>
+                        <th nz-th>
+                            <span> Brand </span>
+                        </th>
+                        <th nz-th>
+                            <span> Type </span>
+                        </th>
+                        <th nz-th>
+                            <span> Category </span>
+                        </th>
+                        <th nz-th>
+                            <span> S. Category </span>
+                        </th>
+                        <th nz-th>
+                            <span> Price </span>
+                        </th>
+                        <th nz-th>
+                            <span> V. Price </span>
+                        </th>
+                        <th nz-th>
+                            <span> Qty </span>
+                        </th>
+                        <th nz-th>
+                            <span> Picture </span>
+                        </th>
+                        <th nz-th>
+                            <span> Tag </span>
+                        </th>
+                        <th nz-th>
+                            <span> Min Order Qty </span>
+                        </th>
+                        <th nz-th>
+                            <span> Alert Qty </span>
+                        </th>
+                        <th nz-th>
+                            <span> Weight </span>
+                        </th>
+                        <th nz-th>
+                            <span> Desc. </span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody nz-tbody>
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
+                        <tr nz-tbody-tr>
+                            <td nz-td>{{data.code}}</td>
+                            <td nz-td>{{data.name}}</td>
+                            <td nz-td>
+                                <nz-select style="width: 80px;" [nzPlaceHolder]="'Select Approval Status'"
+                                           [(ngModel)]="data.approval_status"
+                                           ngModel="approval_status" (ngModelChange)="approvalStatusChange($event, data.code)">
+                                    <nz-option nzValue="1" nzLabel="Pending"></nz-option>
+                                    <nz-option nzValue="2" nzLabel="Approved"></nz-option>
+                                    <nz-option nzValue="99" nzLabel="Rejected"></nz-option>
+                                </nz-select>
+                            </td>
+                            <td nz-td>
+                                <nz-select style="width: 120px;" nzAllowClear [(ngModel)]="data.brand_id"
+                                           (ngModelChange)="brandIdChange($event, data.code)"
+                                           [nzPlaceHolder]="'Select Brand'" [nzFilter]="true"
+                                           [nzNotFoundContent]="'Not found'"
+                                           nzShowSearch>
+                                    <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
+                                               [nzValue]="option.id">
+                                    </nz-option>
+                                </nz-select>
+                            </td>
+                            <td nz-td>
+                                <nz-select style="width: 120px;" nzAllowClear [(ngModel)]="data.type_id"
+                                           (ngModelChange)="typeIdChange($event, data.code)"
+                                           [nzPlaceHolder]="'Select Product Type'" [nzFilter]="true"
+                                            [nzNotFoundContent]="'Not found'"
+                                           nzShowSearch>
+                                    <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
+                                               [nzValue]="option.id">
+                                    </nz-option>
+                                </nz-select>
+                            </td>
+                            <td nz-td></td>
+                            <td nz-td></td>
+                            <td nz-td>{{data.price}}</td>
+                            <td nz-td>{{data.vendor_price}}</td>
+                            <td nz-td>{{data.quantity}}</td>
+                            <td nz-td></td>
+                            <td nz-td>{{data.tag}}</td>
+                            <td nz-td>{{data.min_unit}}</td>
+                            <td nz-td>{{data.alert_quantity}}</td>
+                            <td nz-td>{{data.weight}}</td>
+                            <td nz-td>{{data.product_details}}</td>
+                        </tr>
+                    </ng-template>
+                    </tbody>
+                </nz-table>
+            </nz-spin>
+            <div nz-form-item nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts()" >Save</button>
+                </div>
+            </div>
+        </ng-template>
+    </nz-card>
+</section>

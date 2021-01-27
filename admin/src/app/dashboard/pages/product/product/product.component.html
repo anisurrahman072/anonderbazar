@@ -1,7 +1,7 @@
 <section>
     <nz-card [hidden]="!showList" class="card-height">
         <ng-template #title>
-            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable ' : 'Fully Customize'}} Product List
+            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable 111' : 'Fully Customize'}} Product List
         </ng-template>
         <ng-template #extra>
             <button *ngIf="'product-create'|accessControl" routerLink="/dashboard/product/create"
@@ -10,12 +10,18 @@
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
+            <button *ngIf="'product-bulk-upload'|accessControl" routerLink="/dashboard/product/bulk-upload"
+                    [queryParams]="{status: status}" nz-button [nzType]="'primary'"
+                    [nzSize]="'large'">
+                <i class="anticon anticon-upload"></i>
+                <span> Bulk Upload Products </span>
+            </button>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <div class="table-operations">
-                </div>
-                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
+                <div class="table-operations"></div>
+                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data"
+                          [nzPageSize]="limit"
                           [nzSize]="'default'" [nzShowTitle]="true">
                     <thead nz-thead>
                     <tr>
@@ -25,17 +31,17 @@
                         <th nz-th>
                             <span>Code</span>
                             <nz-table-sort [(nzValue)]="sortValue.code"
-                                           (nzValueChange)="sort('code',$event)"></nz-table-sort>
+                                           (nzValueChange)="sort('code', $event)"></nz-table-sort>
                         </th>
                         <th nz-th>
-                            <span>Name</span>
+                            <span> Name </span>
                             <nz-table-sort [(nzValue)]="sortValue.name"
-                                           (nzValueChange)="sort('name',$event)"></nz-table-sort>
+                                           (nzValueChange)="sort('name', $event)"></nz-table-sort>
                         </th>
                         <th nz-th>
                             <span> Price </span>
                             <nz-table-sort [(nzValue)]="sortValue.price"
-                                           (nzValueChange)="sort('price',$event)"></nz-table-sort>
+                                           (nzValueChange)="sort('price', $event)"></nz-table-sort>
                         </th>
                         <th nz-th>
                             <span> Approved ? </span>
@@ -587,3 +593,4 @@
 
     </ng-template>
 </nz-modal>
+

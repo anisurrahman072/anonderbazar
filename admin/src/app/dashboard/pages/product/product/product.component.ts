@@ -34,7 +34,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     showList: boolean = true;
     showAddPart: boolean = false;
-
+    isBulkUploadModalVisible = false;
     isVariantVisible = false;
     isPromotionVisible = false;
     currentProduct: any = {};
@@ -114,24 +114,6 @@ export class ProductComponent implements OnInit, OnDestroy {
         });
     }
 
-    // Method for close modals
-    receiveCloseEvent($event) {
-        if ($event) {
-            this.showList = true;
-            this.showAddPart = false;
-            this.currentProductForAddPart = null;
-        }
-    }
-
-    // Method for setting validation
-    setRequired() {
-        if (this.selectedVariant_id && this.selectedVariant_id.type === 1) {
-            return [Validators.required];
-        } else {
-            return [];
-        }
-    }
-
     // For initiating the section element with data
     ngOnInit(): void {
         this.route.queryParams.filter(params => params.status).subscribe(params => {
@@ -149,9 +131,28 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.categoryProductService.getAllCategory().subscribe((result: any) => {
             this.TypeSearchOptions = result;
         });
+
         this.brandService.getAll().subscribe((result: any) => {
             this.brandSearchOptions = result;
         });
+    }
+
+    // Method for close modals
+    receiveCloseEvent($event) {
+        if ($event) {
+            this.showList = true;
+            this.showAddPart = false;
+            this.currentProductForAddPart = null;
+        }
+    }
+
+    // Method for setting validation
+    setRequired() {
+        if (this.selectedVariant_id && this.selectedVariant_id.type === 1) {
+            return [Validators.required];
+        } else {
+            return [];
+        }
     }
 
     // Event method for setting up filter data
@@ -292,12 +293,15 @@ export class ProductComponent implements OnInit, OnDestroy {
     handleOk = e => {
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
+        this.isBulkUploadModalVisible = false;
     };
     // Modal method
     handleCancel = e => {
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
+        this.isBulkUploadModalVisible = false;
     };
+
 
     // Method called in variant option change
     variantOptionChange($event) {
