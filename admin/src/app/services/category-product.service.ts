@@ -42,7 +42,6 @@ export class CategoryProductService {
             )
     }
 
-
     getById(id) {
 
         return this.http.get(this.EndPoint + '/' + id);
@@ -53,7 +52,6 @@ export class CategoryProductService {
         return this.http.post(this.EndPoint, categoryType);
     }
 
-
     delete(id) {
 
         return this.http.delete(`${this.EndPoint}/${id}`);
@@ -63,7 +61,6 @@ export class CategoryProductService {
         return this.http.put(this.EndPoint + '/' + id, data);
     }
 
-
     getAllCategory() {
         return this.http.get(`${this.EndPoint
         }?where={"type_id":2,"deletedAt":null,"parent_id":0}`);
@@ -71,7 +68,6 @@ export class CategoryProductService {
 
     getSubcategoryByCategoryId(id: string) {
         return this.http.get(`${this.EndPoint
-        }?where={"type_id":2,"deletedAt":null,"parent_id":${id}}`)
-            ;
+        }?where={"type_id":2,"deletedAt":null,"parent_id":${id}}`);
     }
 }

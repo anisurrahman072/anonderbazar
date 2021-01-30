@@ -56,9 +56,12 @@ export const baseFilter = (reqBody, Model, localWhere) => {
   return where;
 };
 
+export const escapeExcel = function (str) {
+  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/s+/g, ' ');
+}
 export const imageUploadConfig = function () {
 
-  if(devEnv){
+  if (devEnv) {
     return {
       maxBytes: 10000000,
       dirname: sails.config.appPath + "/.tmp/public/images/",

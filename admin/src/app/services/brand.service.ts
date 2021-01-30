@@ -24,6 +24,7 @@ export class BrandService {
 
     getAllBrands(page: number, limit: number, searchTerm: string, warehouseId: number,
                  sortName: string, sortCode: string, sortSlug: string): Observable<any> {
+
         return this.http.get(`${this.EndPoint2
             }?page=${page
             }&limit=${limit
@@ -32,8 +33,7 @@ export class BrandService {
             }&sortName=${sortName
             }&sortCode=${sortCode
             }&sortSlug=${sortSlug}`
-        )
-            ;
+        );
     }
 
     getAllByWarehouseId(id): Observable<any> {

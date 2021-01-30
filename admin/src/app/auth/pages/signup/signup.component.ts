@@ -7,12 +7,11 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {WarehouseService} from '../../../services/warehouse.service';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
-import {Subscription, Observable} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {ValidationService} from "../../../services/validation.service";
 import "rxjs/add/operator/delay";
 import "rxjs/add/observable/timer";
 import "rxjs/add/operator/switchMap";
-import {FormValidatorService} from "../../../services/validator/form-validator.service";
 
 @Component({
     selector: 'app-signup',
@@ -30,8 +29,8 @@ export class SignupComponent implements OnInit {
 
     index = 'first';
     loginServerError: any;
-    
-    
+
+
     genderSearchOptions = [
         {label: 'Male', value: 'male'},
         {label: 'Female', value: 'female'},
@@ -115,7 +114,7 @@ export class SignupComponent implements OnInit {
         formData.append('address', value.address);
         formData.append('upazila_id', value.upazila_id);
         formData.append('zila_id', value.zila_id);
-        formData.append('division_id', value.division_id); 
+        formData.append('division_id', value.division_id);
         formData.append('active', '1');
         formData.append('warehouse_id', warehouse.id);
         if (this.ImageFile) {
@@ -157,9 +156,9 @@ export class SignupComponent implements OnInit {
             return {confirm: true, error: true};
         }
     };
-    
-    
-    
+
+
+
     constructor(private router: Router, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
@@ -183,7 +182,7 @@ export class SignupComponent implements OnInit {
             upazila_id: ['', [Validators.required]],
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
-            postal_code: ['', [Validators.required]], 
+            postal_code: ['', [Validators.required]],
             avatar: ['', []],
             logo: ['', []],
         });
@@ -195,7 +194,7 @@ export class SignupComponent implements OnInit {
     //storing the image before upload
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
-        
+
         return metadata;
     }
     //storing the logo before upload
@@ -222,13 +221,13 @@ export class SignupComponent implements OnInit {
       //Event method for getting all the data for the page
 
     ngOnInit() {
-        
+
         this.areaService.getAllDivision().subscribe(result => {
             this.divisionSearchOptions = result;
             this.permanent_divisionSearchOptions = result;
         });
     }
-    
+
       //Method for division search change
 
     divisionSearchChange($event: string) {
@@ -248,7 +247,7 @@ export class SignupComponent implements OnInit {
     zilaChange($event) {
         const query = encodeURI($event);
         this.validateForm.controls.upazila_id.patchValue(null);
-        
+
         this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {
             this.upazilaSearchOptions = result;
         });
@@ -256,13 +255,13 @@ export class SignupComponent implements OnInit {
       //Method for zila search change
 
     zilaSearchChange($event: string) {
-    
+
     }
-    
+
       //Method for upazila search change
 
     upazilaSearchChange($event: string) {
-    
+
     }
   //Method for get permanent address
 
@@ -270,7 +269,7 @@ export class SignupComponent implements OnInit {
         const query = encodeURI($event);
     }
   //Method for get permanent division address
-    
+
     permanent_divisionChange($event) {
         const query = encodeURI($event);
         this.validateForm.controls.permanent_zila_id.patchValue(null);
@@ -279,46 +278,46 @@ export class SignupComponent implements OnInit {
         });
     }
   //Method for get permanent zila address
-    
+
     permanent_zilaChange($event) {
         const query = encodeURI($event);
         this.validateForm.controls.permanent_upazila_id.patchValue(null);
-        
+
         this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {
             this.permanent_upazilaSearchOptions = result;
         });
     }
   //Method for get permanent zila search address
-    
+
     permanent_zilaSearchChange($event: string) {
-    
+
     }
-    
+
   //Method for get permanent upazila search address
-    
+
     permanent_upazilaSearchChange($event: string) {
-    
+
     }
 
     pre() {
         this.current -= 1;
         this.changeContent();
       }
-    
+
       next() {
         this.current += 1;
         this.changeContent();
       }
-    
+
       done() {
-          
+
       }
 
       toggle(current){
           this.current = current;
           this.changeContent();
       }
-    
+
       changeContent(): void {
         switch (this.current) {
             case 0: {
