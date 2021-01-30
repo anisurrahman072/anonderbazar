@@ -1,26 +1,29 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product Bulk Upload
-        </ng-template>
-        <ng-template #extra>
+    <div class="row" style="display: flex; justify-content: center;">
 
-        </ng-template>
-        <ng-template #body>
-            <div class="form-group">
-                <label for="upload_bulk_import">Uplaod Excel</label>
-                <input type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
-            </div>
-            <div class="form-group">
-                <button type="button" id="download_bulk_excel" (click)="downloadExcel()">
-                    <span>Download Excel</span>
-                </button>
-            </div>
-            <div nz-form-item nz-row>
-                <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts()" >Save</button>
-                </div>
-            </div>
-        </ng-template>
-    </nz-card>
+            <nz-card class="card-height" style="width: 50%;">
+                <ng-template #title>
+                    {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product Bulk Upload
+                </ng-template>
+                <ng-template #body>
+                    <div class="form-group">
+                        <button type="button" id="download_bulk_excel" (click)="downloadExcel()">
+                            <span>Download Product Upload Excel File</span>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="upload_bulk_import">Upload Product Upload Excel File</label>
+                        <input type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
+                    </div>
+                    <div nz-form-item nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts()">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
+            </nz-card>
+
+    </div>
 </section>

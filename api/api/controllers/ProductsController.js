@@ -556,15 +556,30 @@ module.exports = {
   },
   bulkUpload: async (req, res) => {
     try {
-      const dataToSave = req.body.filter((item) => {
-        return (
-          item.name !== '' && item.code !== '' && item.price !== '' && item.quantity !== '' &&
-          item.type_id !== '' && item.type_id.indexOf('|') !== -1 &&
-          item.category_id !== '' && item.category_id.indexOf('|') !== -1 &&
-          item.subcategory_id !== '' && item.subcategory_id.indexOf('|') !== -1 &&
-          item.product_details !== ''
-        )
-      }).map((item) => {
+      const len = req.body.length;
+      let problematicRow = 0;
+      for (let i = 0; i < len; i++) {
+        if (
+          !(req.body[i].name !== '' && req.body[i].code !== '' && req.body[i].price !== '' && req.body[i].quantity !== '' &&
+            req.body[i].type_id !== '' && req.body[i].type_id.indexOf('|') !== -1 &&
+            req.body[i].category_id !== '' && req.body[i].category_id.indexOf('|') !== -1 &&
+            req.body[i].subcategory_id !== '' && req.body[i].subcategory_id.indexOf('|') !== -1 &&
+            req.body[i].product_details !== '')
+        ) {
+          problematicRow = i + 1;
+          break;
+        }
+      }
+
+      if (problematicRow > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'There is a problem in row ' + problematicRow,
+          error: null
+        });
+      }
+
+      const dataToSave = req.body.map((item) => {
         const newItem = {
           ...item,
           min_unit: item.min_unit ? parseFloat(item.min_unit) : 1,
@@ -589,20 +604,25 @@ module.exports = {
 
         newItem.price = parseFloat(item.price);
         newItem.vendor_price = parseFloat(item.vendor_price);
+        newItem.featured = 0;
+        newItem.promotion = 0;
 
         return newItem;
 
       });
 
-      console.log('bulkUpload-dataToSave', dataToSave);
-
       let count = 0;
       for (const item of dataToSave) {
-        try {
-          const product = await Product.create(item);
-          count++;
-        } catch (e) {
-          console.error(e);
+        const foundProduct = await Product.findOne({
+          code: item.code
+        })
+        if (foundProduct === null) {
+          try {
+            await Product.create(item);
+            count++;
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
 

@@ -82,9 +82,7 @@ module.exports = {
       defaultsTo: null
     },
     toJSON: function () {
-      var obj = this.toObject();
-
-      return obj;
+      return this.toObject();
     }
   },
   tableName: "product_orders",

@@ -30,6 +30,7 @@ class ProductBulk {
     approval_status: string = "2";
     warehouse_id: string = "0";
     status: string = "0";
+    created_by: string = "0";
 }
 
 @Component({
@@ -103,6 +104,8 @@ export class BulkUploadComponent implements OnInit {
                         obj[k] = this.currentUser.warehouse.id;
                     } else if (k === 'status') {
                         obj[k] = this.status;
+                    } else if (k === 'created_by') {
+                        obj[k] = this.currentUser.id;
                     } else {
                         obj[k] = arr[i];
                     }

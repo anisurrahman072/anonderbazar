@@ -47,7 +47,6 @@ module.exports = {
     },
     rating: {
       type: 'float'
-
     },
     brand_id: {
       model: 'brand',
@@ -132,6 +131,12 @@ module.exports = {
     last_order_completed_date: {
       type: 'datetime',
       columnName: 'last_order_completed_date',
+    },
+    updated_by: {
+      model: 'user'
+    },
+    created_by: {
+      model: 'user'
     },
     createdAt: {
       type: 'datetime',
