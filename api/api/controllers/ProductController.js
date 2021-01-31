@@ -4,6 +4,7 @@ import {
 } from "../../libs";
 import {imageUploadConfig} from "../../libs/helper";
 
+const AWS = require('aws-sdk');
 const fs = require('fs');
 
 module.exports = {
@@ -232,10 +233,39 @@ module.exports = {
       var output = require('fs').createWriteStream('./assets/' + file.fd);
 
       var resizeTransform = sharp().resize({
-        fit: sharp.fit.contain,
-        width: 800
-      });
-      file.pipe(resizeTransform).pipe(output);
+        kernel: sharp.kernel.nearest,
+        fit: 'contain',
+        width: 620,
+        height: 413,
+        background: {r: 0, g: 0, b: 0, alpha: 0}
+      }).toFormat('jpeg').toBuffer().then(
+        (readStream) => {
+
+          console.log('readStream', readStream)
+
+          var s3Bucket = new AWS.S3({params: {
+              Bucket: 'anonderbazar',
+              Key: 'AKIATYQRUSGN2DDD424I',
+              Secret: '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'
+          }})
+          var data = {
+            Key: 's3-test-image-asmmahmud.jpg', // file from form
+            Body: readStream,
+            ACL: "public-read",
+            ContentType: 'image/jpg'
+          };
+
+          s3Bucket.putObject(data, function (err, data) {
+            if (err) {
+              console.log('Error uploading image to s3');
+            } else {
+              console.log('succesfully uploaded the image!');
+            }
+          });
+
+        });
+
+      file.pipe(resizeTransform);
 
       cb();
     };
