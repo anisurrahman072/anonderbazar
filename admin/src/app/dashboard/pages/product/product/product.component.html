@@ -1,7 +1,7 @@
 <section>
     <nz-card [hidden]="!showList" class="card-height">
         <ng-template #title>
-            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable 111' : 'Fully Customize'}} Product List
+            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product List
         </ng-template>
         <ng-template #extra>
             <button *ngIf="'product-create'|accessControl" routerLink="/dashboard/product/create"

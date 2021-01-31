@@ -1,11 +1,11 @@
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Subscription} from "rxjs";
+import {NzNotificationService} from "ng-zorro-antd";
 import {ExcelService} from "../../../../services/excel.service";
 import {AuthService} from "../../../../services/auth.service";
 import {UIService} from "../../../../services/ui/ui.service";
-import {Subscription} from "rxjs";
 import {ProductService} from "../../../../services/product.service";
-import {NzNotificationService} from "ng-zorro-antd";
 
 class ProductBulk {
     name: string = "";
