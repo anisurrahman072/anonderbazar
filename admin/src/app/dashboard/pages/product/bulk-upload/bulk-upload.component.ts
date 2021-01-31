@@ -1,13 +1,9 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ExcelService} from "../../../../services/excel.service";
 import {AuthService} from "../../../../services/auth.service";
-import {BrandService} from "../../../../services/brand.service";
-import {CategoryProductService} from "../../../../services/category-product.service";
 import {UIService} from "../../../../services/ui/ui.service";
 import {Subscription} from "rxjs";
-import {environment} from "../../../../../environments/environment";
-import {HttpClient} from "@angular/common/http";
 import {ProductService} from "../../../../services/product.service";
 import {NzNotificationService} from "ng-zorro-antd";
 
@@ -53,6 +49,9 @@ export class BulkUploadComponent implements OnInit {
     total: number = 0;
 
     brandSearchOptions: any;
+
+    @ViewChild('uploadFileInputField')
+    fileInputVariable: ElementRef;
 
     constructor(
         private router: Router,
@@ -120,11 +119,12 @@ export class BulkUploadComponent implements OnInit {
 
     }
 
-    saveImportedProducts() {
-        console.log('this.importProducts', this.importProducts);
-        this._isSpinning = true;
+    saveImportedProducts(isApproved: number = 0) {
 
-        return this.productService.submitDataForBulkUpload(this.importProducts).subscribe((result: any) => {
+        this._isSpinning = true;
+        console.log('this.importProducts',this.importProducts)
+        this.fileInputVariable.nativeElement.value = "";
+        return this.productService.submitDataForBulkUpload(this.importProducts, isApproved).subscribe((result: any) => {
             console.log('result', result)
             this._isSpinning = false;
             if (result.success) {

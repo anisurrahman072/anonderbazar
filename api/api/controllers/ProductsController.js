@@ -556,6 +556,9 @@ module.exports = {
   },
   bulkUpload: async (req, res) => {
     try {
+      const isApproved = parseInt(req.query.isApproved);
+
+      // console.log('req.body', req.body)
       const len = req.body.length;
       let problematicRow = 0;
       for (let i = 0; i < len; i++) {
@@ -572,6 +575,7 @@ module.exports = {
       }
 
       if (problematicRow > 0) {
+        console.log('There is a problem in row ' + problematicRow)
         return res.status(400).json({
           success: false,
           message: 'There is a problem in row ' + problematicRow,
@@ -585,8 +589,19 @@ module.exports = {
           min_unit: item.min_unit ? parseFloat(item.min_unit) : 1,
           alert_quantity: parseFloat(item.alert_quantity) ? item.alert_quantity : 1,
           weight: item.weight ? parseFloat(item.weight) : null,
-          image: item.image ? '/' + item.image : null,
+          // image: item.image ? '/' + item.image : null,
         };
+
+        let additionalImages = [];
+        if (item.image) {
+          additionalImages = item.image.split(',');
+          newItem.image = additionalImages[0].trim();
+          if (additionalImages.length > 1) {
+            newItem.additional_images = additionalImages.slice(1)
+          }
+        } else {
+          newItem.image = null;
+        }
 
         let parts = item.type_id.split('|');
         newItem.type_id = parts[0].trim();
@@ -607,6 +622,10 @@ module.exports = {
         newItem.featured = 0;
         newItem.promotion = 0;
 
+        if (isApproved !== 0) {
+          newItem.approval_status = 2;
+          newItem.approval_status_updated_by = newItem.created_by;
+        }
         return newItem;
 
       });
@@ -616,9 +635,23 @@ module.exports = {
         const foundProduct = await Product.findOne({
           code: item.code
         })
-        if (foundProduct === null) {
+
+        if (foundProduct === null || foundProduct === undefined) {
           try {
-            await Product.create(item);
+            let additionalImages = [];
+            if (typeof item.additional_images !== 'undefined') {
+              additionalImages = item.additional_images;
+              delete item.additional_images;
+            }
+
+            const createdProduct = await Product.create(item);
+
+            if (createdProduct && additionalImages.length > 0) {
+
+              for (let additionalImage of additionalImages) {
+                await ProductImage.create({image_path: additionalImage.trim(), product_id: createdProduct.id});
+              }
+            }
             count++;
           } catch (e) {
             console.error(e);

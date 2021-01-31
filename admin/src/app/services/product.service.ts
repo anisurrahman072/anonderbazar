@@ -117,7 +117,7 @@ export class ProductService {
     getGeneratedExcelFile(): Observable<any> {
         return this.http.get(this.EndPoint2 + '/generateProductUploadExcel', { responseType: 'blob' });
     }
-    submitDataForBulkUpload(data): Observable<any> {
-        return this.http.post(this.EndPoint2 + '/bulkUpload', data);
+    submitDataForBulkUpload(data, isApproved = 1): Observable<any> {
+        return this.http.post(this.EndPoint2 + '/bulkUpload?isApproved='+isApproved, data);
     }
 }

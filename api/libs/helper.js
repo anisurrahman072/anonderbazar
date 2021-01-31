@@ -57,7 +57,7 @@ export const baseFilter = (reqBody, Model, localWhere) => {
 };
 
 export const escapeExcel = function (str) {
-  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/s+/g, ' ');
+  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
 }
 export const imageUploadConfig = function () {
 
