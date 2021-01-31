@@ -3748,3 +3748,12 @@ del {
     padding-right: 30px;
     line-break: anywhere;
 }
+.product-lists img.product-image {
+    width: 380px;
+    height: auto;
+}
+
+.feedback-details .product-img {
+    width: 188px !important;
+    height: auto !important;
+}

@@ -1,17 +1,16 @@
 import {Component, Directive, Input, OnInit} from '@angular/core';
-import {AppSettings} from "../../../../config/app.config";
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models/index";
-import * as fromStore from "../../../../state-management/index";
+import {NgProgress} from "@ngx-progressbar/core";
+import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {AppSettings} from "../../../../config/app.config";
+import {FavouriteProduct, Product} from "../../../../models";
+import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
-import {NgProgress} from "@ngx-progressbar/core";
-import {ToastrService} from "ngx-toastr";
-
 
 
 @Component({
@@ -34,6 +33,9 @@ export class ProductItemComponent implements OnInit {
     discountPercentage: number = 0;
     @Input() productname: any;
     @Input() productprice: any;
+
+    productImageWidth: number = 0;
+    productImageHeight: number = 0;
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -68,6 +70,19 @@ export class ProductItemComponent implements OnInit {
         if (this.product.promotion) {
             this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
         }
+
+        // const img = new Image();
+
+        // img.onload = () => {
+        //     this.productImageHeight = img.height;
+        //     this.productImageWidth = img.width;
+        //
+        //     const expectedHeight = ((this.productImageHeight * this.productImageHeight * 1.267 ) /   this.productImageWidth);
+        //     console.log('Image Dimention: ', this.productImageWidth, this.productImageHeight);
+        //     // code here to use the dimensions
+        // }
+        //
+        // img.src = this.IMAGE_ENDPOINT + this.product.image;
     }
 
     //Method for add to cart

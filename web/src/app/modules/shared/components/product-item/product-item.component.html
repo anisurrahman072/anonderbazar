@@ -3,7 +3,7 @@
 
         <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
             <span *ngIf="product.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
-            <img class="product-image" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
+            <img class="product-image" src="{{IMAGE_ENDPOINT + product.image}}" alt="Product Image">
         </div>
         <div class="productlist-icon" style="position: absolute;
         top: 10%;

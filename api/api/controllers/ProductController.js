@@ -77,12 +77,31 @@ module.exports = {
       var i = 0;
       if (req.body.hasImageFront === 'true') {
 
-        req.file("frontimage").upload(imageUploadConfig(), async function (err, uploaded) {
+        var sharp = require('sharp');
+        var Writable = require('stream').Writable;
+
+        var receiver = new Writable({objectMode: true});
+        receiver._write = function (file, enc, cb) {
+          var output = require('fs').createWriteStream('./assets/' + file.fd);
+
+          var resizeTransform = sharp().resize(100);
+          file.pipe(resizeTransform).pipe(output);
+
+          cb();
+        };
+        /*        const s3Adapter = require('skipper-s3')();
+                req.file("frontimage").on('error', function onError() {  })
+                  .on('finish', function onSuccess() {  })
+                  .pipe(receiver)
+                  .pipe(s3Adapter.receive());*/
+
+        req.file("frontimage").upload(receiver, async function (err, uploaded) {
           if (err) {
             console.log(err)
             return res.json(err.status, {err: err});
           }
 
+          console.log('uploaded', uploaded)
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
@@ -205,12 +224,33 @@ module.exports = {
   //Method called for uploading product images
   //Model models/ProductImage.js
   upload: async function (req, res) {
+    var sharp = require('sharp');
+    var Writable = require('stream').Writable;
+
+    var receiver = new Writable({objectMode: true});
+    receiver._write = function (file, enc, cb) {
+      var output = require('fs').createWriteStream('./assets/' + file.fd);
+
+      var resizeTransform = sharp().resize({
+        fit: sharp.fit.contain,
+        width: 800
+      });
+      file.pipe(resizeTransform).pipe(output);
+
+      cb();
+    };
+
     try {
       if (req.body.hasImage === "true" && req.body.product_id) {
-        req.file("image").upload(imageUploadConfig(), async function (err, uploaded) {
+
+
+        req.file("image").upload(receiver, async function (err, uploaded) {
+          console.log('err', err)
           if (err) {
             return res.json(err.status, {err: err});
           }
+
+          console.log('uploaded', uploaded);
 
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath)
@@ -229,11 +269,15 @@ module.exports = {
           return res.json(200, product);
         });
       } else if (req.body.hasImage === "true") {
-        req.file("image").upload(imageUploadConfig(), async function (err, uploaded) {
 
+        req.file("image").upload(receiver, async function (err, uploaded) {
+
+          console.log('err', err)
           if (err) {
             return res.json(err.status, {err: err});
           }
+          console.log('uploaded', uploaded);
+
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath)
           /*          fs.copyFile(sails.config.appPath + "/.tmp/public/images/" + newPath, sails.config.appPath + "/assets/images/" + newPath, (err) => {

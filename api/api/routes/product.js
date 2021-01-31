@@ -3,5 +3,6 @@ export const productRoute = {
   'POST /api/v1/products': 'ProductsController.create',
   'GET /api/v1/products/_id': 'ProductsController.findOne',
   'GET /api/v1/products/:_id/designcombination':
-    'ProductsController.designCombination'
+    'ProductsController.designCombination',
+  'POST /api/v1/products/bulk-upload': 'ProductsController.bulkUpload',
 };

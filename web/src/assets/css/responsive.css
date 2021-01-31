@@ -53,7 +53,7 @@
     margin-left: 220px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 140px !important; 
+    margin-left: 140px !important;
   }
   .header_chart .widget-cart button{
     padding-left: 0px;
@@ -62,12 +62,12 @@
   .bagitem-1 .text p span {
     margin-left: 20px;
   }
-  
+
 }
 
 
 @media screen and (max-width: 1199.98px){
-  
+
   .container-fluid {
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -112,7 +112,7 @@
     margin-left: 170px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 100px !important; 
+    margin-left: 100px !important;
   }
   .counter{
     padding: 5px 15px !important;
@@ -136,12 +136,12 @@
     width: 100% !important;
     height: 300px !important;
 }
-  
+
 
 }
 
 @media screen and (max-width: 991.98px){
-  
+
 .menu-sticky{
   display: none;
 }
@@ -174,7 +174,7 @@
   margin-left: 615px !important;
 }
 .shipping-add .shiptag p a{
-  margin-left: 530px !important; 
+  margin-left: 530px !important;
 }
 .mobile-menu .widget-cart{
   display: none;
@@ -329,7 +329,7 @@ nav ul#social-media > li {
     display: none;
   }
   .menu-sticky{
-    padding: 0px 0px; 
+    padding: 0px 0px;
   }
   .navbar-collapse .menu-btn .menu-contac-button{
     padding: 15px 30px;
@@ -342,9 +342,9 @@ nav ul#social-media > li {
     outline: none !important;
   }
   .navbar-toggler-icon{
-    width: 30px; 
-    height: 1px; 
-    display: flex; 
+    width: 30px;
+    height: 1px;
+    display: flex;
     padding: 1px 0px;
     background: #ffffff;
     margin: 6px 0px 4px 0px;
@@ -518,7 +518,7 @@ nav ul a {
     margin-left: 495px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 410px !important; 
+    margin-left: 410px !important;
   }
   .banner-serv img {
     width: 20%;
@@ -552,9 +552,6 @@ nav ul a {
     height: 350px !important;
     width: 100% !important;
   }
-  
-  
-  
 }
 
 @media screen and (max-width: 641px){
@@ -562,7 +559,7 @@ nav ul a {
     margin-left: 395px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 310px !important; 
+    margin-left: 310px !important;
   }
   nav label #menu-icon {
     float: right;
@@ -634,7 +631,7 @@ nav ul a {
   }
   .mobile-menu nav {
     padding: 20px 0px 0px;
-  }  
+  }
   .con label {
     padding: 0px 20px 0px 20px;
     margin-bottom: 0px !important;
@@ -646,8 +643,8 @@ nav ul a {
     height: 300px !important;
     width: 100% !important;
   }
-    
-  
+
+
 }
 
 @media screen and (max-width: 601px){
@@ -736,7 +733,7 @@ nav ul a {
   margin-left: 295px !important;
 }
 .shipping-add .shiptag p a{
-  margin-left: 210px !important; 
+  margin-left: 210px !important;
 }
 .modal-content .product img{
   display: none;
@@ -825,7 +822,7 @@ nav ul li{
     margin-left: 195px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 110px !important; 
+    margin-left: 110px !important;
   }
   .modal-content {
     padding: 0px 0px;
@@ -894,7 +891,7 @@ nav ul li{
   .ngx-pagination a {
     padding: .5rem .75rem !important;
   }
-   
+
 }
 
 @media screen and (max-width: 414.98px){
@@ -904,7 +901,7 @@ nav ul li{
   .add-cart .addto{
     padding: 5px 15px;
   }
-  
+
   .pro-de-8 li{
     margin-bottom: 10px;
     width: 20%;
@@ -919,8 +916,8 @@ nav ul li{
   .bagitem-1 .text p span {
     margin-left: 20px;
   }
-  
-  
+
+
   .add-cartbtn .addto1 {
     padding: 10px 95px;
     color: #ED1C24;
@@ -955,14 +952,14 @@ nav ul li{
     height: 220px !important;
     width: 380px !important;
   }
-  
+
 
 
 }
-	
+
 @media screen and (max-width: 386px){
   .offer-contant p {
-    padding-right: 0px; 
+    padding-right: 0px;
   }
   .add-cart ul li {
     margin-right: 15px;
@@ -974,7 +971,7 @@ nav ul li{
     margin-left: 140px !important;
   }
   .shipping-add .shiptag p a{
-    margin-left: 55px !important; 
+    margin-left: 55px !important;
   }
   .bagitem-1 .text{
     padding-right: 0px;
@@ -983,7 +980,7 @@ nav ul li{
   .form-background{
     padding: 0px 0px;
   }
- 
+
 
 }
 
@@ -1099,7 +1096,7 @@ nav ul li{
     height: 190px !important;
     width: 380px !important;
   }
-   
+
 }
 @media screen and (max-width: 281px){
 

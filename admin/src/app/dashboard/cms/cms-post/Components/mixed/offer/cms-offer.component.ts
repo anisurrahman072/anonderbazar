@@ -5,7 +5,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 
 import {environment} from "../../../../../../../environments/environment";
-import { CategoryProductService } from '../../../../../../services/category-product.service';
+import {CategoryProductService} from '../../../../../../services/category-product.service';
 
 @Component({
     selector: 'app-cms-offer',
@@ -23,10 +23,10 @@ export class CmsOfferComponent implements OnInit {
         {value: 'aliwangwang', label: 'aliwangwang'},
         {value: 'dingding', label: 'dingding'}
     ];
-    selectedOption = this.options[0]; 
+    selectedOption = this.options[0];
     selectedSubSection: any = 'CATEGORY';
     subsectionOptions: any;
-    ImageFileEdit: any[] = []; 
+    ImageFileEdit: any[] = [];
     sectionoptionsData = [
         {
             section: 'HOME',
@@ -34,7 +34,7 @@ export class CmsOfferComponent implements OnInit {
         },
         {section: 'NONE', sub_section: ['NONE']}
     ];
-    selectedSection = this.sectionoptionsData[0]; 
+    selectedSection = this.sectionoptionsData[0];
     cmsFeatureData: any[];
     isEditModalVisible = false;
     editValidateForm: FormGroup;
@@ -104,46 +104,52 @@ export class CmsOfferComponent implements OnInit {
         let subsectionOptions = this.sectionoptionsData.filter(item => {
             return item.section === value;
         });
-        if (typeof subsectionOptions[0].sub_section !== 'undefined')
+        if (typeof subsectionOptions[0] !== 'undefined' && typeof subsectionOptions[0].sub_section !== 'undefined')
             this.subsectionOptions = subsectionOptions[0].sub_section;
     }
-  //Event method for getting all the data for the page
 
-    ngOnInit() { 
+    //Event method for getting all the data for the page
+
+    ngOnInit() {
         this.getData();
     }
-  //Event method for getting all the data for the page
- 
+
+    //Event method for getting all the data for the page
+
     getData() {
         this.cmsService
-        .getBySubSectionName('CATEGORY')
-        .subscribe(result => {
-            this.cmsFeatureData = result; 
-            this.cmsFeatureData.forEach(element => {
-              this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => { 
-                element.data_value[0].category_id = category;
-              }); 
+            .getBySubSectionName('CATEGORY')
+            .subscribe(result => {
+                this.cmsFeatureData = result;
+                this.cmsFeatureData.forEach(element => {
+                    this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => {
+                        element.data_value[0].category_id = category;
+                    });
 
-            }); 
-        }); 
-        this.categoryProductService.getAllCategory().subscribe(result => { 
+                });
+            });
+        this.categoryProductService.getAllCategory().subscribe(result => {
             this.allcategories = result;
-            });   
+        });
     }
-  //Method for showing the modal
+
+    //Method for showing the modal
 
     showEditModal = (id, i) => {
-        this.currentFeatureId = i;
-        this.id = id;
-        this.imageIndex = i;
-        let editValue = this.cmsFeatureData[i].data_value[0];
-        editValue.section = this.cmsFeatureData[i].section;
-        editValue.sub_section = this.cmsFeatureData[i].sub_section;
-        editValue.category_id = this.cmsFeatureData[i].data_value[0].category_id;
-        editValue.images = this.cmsFeatureData[i].image;
-        this.editValidateForm.patchValue(editValue); 
-        
-        this.isEditModalVisible = true;
+        if (typeof this.cmsFeatureData[i] !== 'undefined') {
+            this.currentFeatureId = i;
+            this.id = id;
+            this.imageIndex = i;
+            let editValue = this.cmsFeatureData[i].data_value[0];
+            editValue.section = this.cmsFeatureData[i].section;
+            editValue.sub_section = this.cmsFeatureData[i].sub_section;
+            editValue.category_id = this.cmsFeatureData[i].data_value[0].category_id;
+            editValue.images = this.cmsFeatureData[i].image;
+            this.editValidateForm.patchValue(editValue);
+
+            this.isEditModalVisible = true;
+        }
+
     };
 
     handleModalOk = e => {
@@ -157,7 +163,7 @@ export class CmsOfferComponent implements OnInit {
 
     submitEditForm = ($event, value) => {
         $event.preventDefault();
-        
+
         this._isSpinning = true;
         for (const key in this.editValidateForm.controls) {
             this.editValidateForm.controls[key].markAsDirty();
@@ -172,29 +178,32 @@ export class CmsOfferComponent implements OnInit {
         formData.append('upperlimit', value.upperlimit);
         formData.append('description', value.description);
         formData.append('id', this.id.toString());
-        formData.append('dataValueId', this.currentFeatureId.toString()); 
+        formData.append('dataValueId', this.currentFeatureId.toString());
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            this.getData(); 
+            this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);
         });
     };
+
 //Event method for resetting the form
     resetForm($event: MouseEvent) {
-        this.ImageFile = null; 
+        this.ImageFile = null;
         $event ? $event.preventDefault() : null;
         this.editValidateForm.reset();
         for (const key in this.editValidateForm.controls) {
             this.editValidateForm.controls[key].markAsPristine();
         }
     }
+
 //Event method for setting up form in validation
 
     getEditFormControl(title) {
         return this.editValidateForm.controls[title];
-    } 
+    }
+
 //Event method for deleting category offer
     deleteConfirm(index, id) {
         this.cmsService.delete(id).subscribe(result => {
