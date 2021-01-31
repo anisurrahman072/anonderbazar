@@ -667,7 +667,7 @@ module.exports = {
     } catch (error) {
       return res.status(400).json({
         success: false,
-        message: 'error in search product',
+        message: 'error in bulk product upload',
         error
       });
     }
