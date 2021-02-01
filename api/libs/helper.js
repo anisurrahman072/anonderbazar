@@ -67,7 +67,7 @@ export const imageUploadConfig = function () {
       dirname: sails.config.appPath + "/.tmp/public/images/",
     }
   }
-  return {
+ return {
     adapter: require('skipper-s3'),
     key: 'AKIATYQRUSGN2DDD424I',
     secret: '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',
