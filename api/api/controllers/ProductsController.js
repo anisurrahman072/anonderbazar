@@ -1,4 +1,6 @@
 import {asyncForEach, initLogPlaceholder, pagination} from '../../libs';
+import {escapeExcel} from "../../libs/helper";
+import xl from 'excel4node';
 
 module.exports = {
   //Method called for getting all products
@@ -349,6 +351,205 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message: 'error in search product',
+        error
+      });
+    }
+  },
+  generateExcel: async (req, res) => {
+    try {
+
+      // Create a new instance of a Workbook class
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+
+      // Add Worksheets to the workbook
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Product List', options);
+      const categorySheet = wb.addWorksheet('Category', options);
+      const subCategorySheet = wb.addWorksheet('Sub Category', options);
+      const subSubCategorySheet = wb.addWorksheet('Sub Sub Category', options);
+      const brandSheet = wb.addWorksheet('Brand', options);
+
+      /* Fetch Category List */
+      let categoryList = await Category.find({
+        where: {type_id: 2, deletedAt: null, parent_id: 0},
+        sort: 'name ASC'
+      });
+
+      // let categoryListValues = [];
+      let categoryIds = [];
+      categoryList.forEach((item, i) => {
+        categorySheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+        categoryIds.push(item.id);
+      });
+
+
+      /* Fetch Sub Category List */
+      let subCategoryList = await Category.find({
+        where: {type_id: 2, deletedAt: null, parent_id: categoryIds},
+        sort: 'name ASC'
+      });
+
+      let subCategoryIds = [];
+      subCategoryList.forEach((item, i) => {
+        subCategorySheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+        subCategoryIds.push(item.id);
+      });
+
+      /* Fetch Sub Sub Category List */
+      let subSubCategoryList = await Category.find({
+        where: {type_id: 2, deletedAt: null, parent_id: subCategoryIds},
+        sort: 'name ASC'
+      });
+
+      subSubCategoryList.forEach((item, i) => {
+        subSubCategorySheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+      });
+
+      /* Fetch Brand List */
+      let brandList = await Brand.find({
+        where: {deletedAt: null},
+        sort: 'name ASC'
+      });
+      brandList.forEach((item, i) => {
+        brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+      });
+
+
+// Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+
+// Set value of cell A1 to 100 as a number type styled with paramaters of style
+      ws.column(1).setWidth(30); // Name
+      ws.column(2).setWidth(12); // Code
+      ws.column(3).setWidth(15); // Price
+      ws.column(4).setWidth(15); // Vendor Price
+      ws.column(5).setWidth(15); // Quantity
+      ws.column(6).setWidth(15);  // Min Order Quantity
+      ws.column(7).setWidth(15);  // Alert Quantity
+      ws.column(8).setWidth(12);  // Weight
+      ws.column(9).setWidth(30);  // Type
+      ws.column(10).setWidth(30);  // Category
+      ws.column(11).setWidth(30);  // Sub Category
+      ws.column(12).setWidth(30);  // Brand
+      ws.column(13).setWidth(25);  // Image
+      ws.column(14).setWidth(15);  // Tag
+      ws.column(15).setWidth(30);  // Description
+
+      ws.cell(1, 1).string("Name").style(headerStyle);
+      ws.cell(1, 2).string("Code").style(headerStyle);
+      ws.cell(1, 3).string("Price").style(headerStyle);
+      ws.cell(1, 4).string("V.Price").style(headerStyle);
+      ws.cell(1, 5).string("Quantity").style(headerStyle);
+      ws.cell(1, 6).string("Min Order Qty").style(headerStyle);
+      ws.cell(1, 7).string("Alert Qty").style(headerStyle);
+      ws.cell(1, 8).string("Weight").style(headerStyle);
+      ws.cell(1, 9).string("Category").style(headerStyle);
+      ws.cell(1, 10).string("Sub Category").style(headerStyle);
+      ws.cell(1, 11).string("Sub Sub Category").style(headerStyle);
+      ws.cell(1, 12).string("Brand").style(headerStyle);
+      ws.cell(1, 13).string("Image").style(headerStyle);
+      ws.cell(1, 14).string("Tag").style(headerStyle);
+      ws.cell(1, 15).string("Description").style(headerStyle);
+
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: false,
+        sqref: 'C2:C100',
+      });
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: false,
+        sqref: 'D2:D100',
+      });
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: false,
+        sqref: 'E2:E100',
+      });
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: false,
+        sqref: 'F2:F100',
+      });
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: false,
+        sqref: 'G2:G100',
+      });
+      ws.addDataValidation({
+        type: 'decimal',
+        allowBlank: true,
+        sqref: 'H2:H100',
+      });
+
+      ws.addDataValidation({
+        type: 'list',
+        allowBlank: false,
+        prompt: 'Choose from dropdown',
+        error: 'Invalid choice was chosen',
+        showDropDown: true,
+        sqref: 'I2:I1000',
+        formulas: ['=Category!$A:$A'],
+      });
+      ws.addDataValidation({
+        type: 'list',
+        allowBlank: false,
+        prompt: 'Choose from dropdown',
+        error: 'Invalid choice was chosen',
+        showDropDown: true,
+        sqref: 'J2:J1000',
+        formulas: ["='Sub Category'!$A:$A"],
+      });
+      ws.addDataValidation({
+        type: 'list',
+        allowBlank: false,
+        prompt: 'Choose from dropdown',
+        error: 'Invalid choice was chosen',
+        showDropDown: true,
+        sqref: 'K2:K1000',
+        formulas: ["='Sub Sub Category'!$A:$A"],
+      });
+
+      ws.addDataValidation({
+        type: 'list',
+        allowBlank: false,
+        prompt: 'Choose from dropdown',
+        error: 'Invalid choice was chosen',
+        showDropDown: true,
+        sqref: 'L2:L1000',
+        formulas: ['=Brand!$A:$A'],
+      });
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.error(error)
+      return res.status(400).json({
+        success: false,
+        message: 'error in generating excel',
         error
       });
     }
