@@ -1,4 +1,4 @@
-<section id="recommend-section" *ngIf="dataProductList">
+<section id="recommend-section" *ngIf="dataProductList" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
         <div class="category-head">
             <div class="titel">
@@ -6,11 +6,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-4"  *ngFor="let product of dataProductList">
+            <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-4"  *ngFor="let product of dataProductList">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>
-        <div class="recommend-btn"> 
+        <div class="recommend-btn">
             <button *ngIf="productDataTrue" (click)="showMore()">Load More</button>
         </div>
     </div>

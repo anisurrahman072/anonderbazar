@@ -1,4 +1,5 @@
 import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import {Store} from "@ngrx/store";
@@ -162,6 +163,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     constructor(
         private route: ActivatedRoute,
         private chatService: ChatService,
+        private title: Title,
+        private meta: Meta,
         private _notify: NotificationsService,
         private _alert: AlertsService,
         public _progress: NgProgress,
@@ -194,6 +197,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     //Event method for getting all the data for the page
 
     ngOnInit() {
+
 
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
@@ -239,7 +243,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         this.getRecentlyViewedProducts();
     }
-    
+
     defaultVariantSelection() {
         for (let v of this.productVariants) {
             let variant = v.warehouse_variants[0]
@@ -371,10 +375,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             this.loaderService.hideLoader();
             this.data = result;
 
-            this.discountPercentage = 0
-            if(this.data.promotion){
-                this.discountPercentage  =  (( this.data.price - this.data.promo_price ) / this.data.price) * 100.0
+            this.addPageTitleNMetaTag();
+
+            this.discountPercentage = 0;
+
+            if (this.data.promotion) {
+                this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
             }
+
             console.log('getProductData', this.data)
             if (result) {
                 let allImages = [];
@@ -772,5 +780,43 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             this.total = this.total - price;
             this.finalprice = this.finalprice - price;
         }
+    }
+
+    private addPageTitleNMetaTag() {
+        this.title.setTitle(this.data.name);
+        this.meta.addTag({
+            property: 'og:title',
+            content: this.data.name
+        });
+
+        this.meta.addTag({
+            property: 'og:description',
+            content: this.data.product_details
+        });
+        this.meta.addTag({
+            property: 'og:image',
+            content: this.IMAGE_ENDPOINT + this.data.image
+        });
+
+        this.meta.addTag({
+            property: 'og:url',
+            content: AppSettings.FRONTEND_ENDPOINT + '/product-details/127'
+        });
+
+        this.meta.addTag({
+            name: 'twitter:title',
+            content: this.data.name
+        });
+
+        this.meta.addTag({
+            name: 'twitter:description',
+            content: this.data.product_details
+        });
+        this.meta.addTag({
+            name: 'twitter:image',
+            content: this.IMAGE_ENDPOINT + this.data.image
+        });
+
+
     }
 }

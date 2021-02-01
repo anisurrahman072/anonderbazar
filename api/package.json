@@ -67,6 +67,7 @@
     "babel": "nodemon --inspect --exec babel-node app.js",
     "prod": "NODE_ENV=production & babel-node app.js",
     "prod:server": "NODE_ENV=production & babel-node  app.js",
+    "prod:server-win": "NODE_ENV=production & babel-node  ./build/app.js",
     "local": "NODE_ENV=development & npm run babel",
     "pm2": "pm2 start npm --no-automation --name gogApi -- run prod",
     "build": "NODE_ENV=development babel  ./  --out-dir ./build  --ignore node_modules,build && cp ./package.json ./build && cp ./server.sh ./build",

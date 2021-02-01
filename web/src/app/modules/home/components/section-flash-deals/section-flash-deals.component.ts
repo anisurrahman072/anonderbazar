@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from "rxjs/Observable";
 import * as fromStore from "../../../../state-management/index";
-
-import { CmsService } from '../../../../services/cms.service';
+import { CmsService } from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import { FavouriteProduct, Product } from '../../../../models';
 import { Router } from '@angular/router';
@@ -13,6 +12,7 @@ import { CompareService } from '../../../../services/compare.service';
 import { NotificationsService } from 'angular2-notifications';
 import { NgProgress } from '@ngx-progressbar/core';
 import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-flash-deals',
   templateUrl: './section-flash-deals.component.html',
@@ -27,7 +27,7 @@ export class FlashDealsComponent implements OnInit {
   cart$: Observable<any>;
   cartId: any;
   cartTotalprice: any;
-  cartTotalquantity: any;   
+  cartTotalquantity: any;
 
     private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
@@ -57,13 +57,13 @@ export class FlashDealsComponent implements OnInit {
       }
       if (this.authService.getCurrentUserId()) {
           this._progress.start("mainLoader");
-          let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price; 
+          let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
           const cartItemData={
               cart_id:  this.cartId,
               product_id: this.product.id,
               product_quantity: 1,
               product_total_price: product_total_price,
-          }; 
+          };
           this.cartItemService
               .insert(cartItemData)
               .subscribe(
@@ -125,7 +125,7 @@ export class FlashDealsComponent implements OnInit {
             this.loginModalService.showLoginModal(true)
 
         }
-    } 
+    }
     //Method called in error
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');

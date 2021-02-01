@@ -86,7 +86,7 @@ export class ProductService {
 
     getFlashDealsProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4')
+            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=6')
             .map(response => response);
     }
 

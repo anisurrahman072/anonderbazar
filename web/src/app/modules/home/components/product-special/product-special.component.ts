@@ -1,5 +1,5 @@
 import { AppSettings } from "../../../../config/app.config";
-import { Component, OnDestroy, Input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
 import { Store } from "@ngrx/store";
@@ -19,7 +19,6 @@ import {
   ProductVariantService
 } from "../../../../services";
 import * as fromStore from "../../../../state-management";
-import { CartItemVariant } from "../../../../models/cartItemVariant";
 import { of } from "rxjs/observable/of";
 import { LoginModalService } from "../../../../services/ui/loginModal.service";
 import { MatButtonToggleChange } from "@angular/material";
@@ -30,7 +29,7 @@ import {ToastrService} from "ngx-toastr";
   templateUrl: "./product-special.component.html",
   styleUrls: ["./product-special.component.scss"]
 })
-export class ProductSpecialComponent implements OnInit { 
+export class ProductSpecialComponent implements OnInit {
 
   data: Product;
   IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
@@ -153,23 +152,23 @@ export class ProductSpecialComponent implements OnInit {
         this.cartTotalprice = result.total_price;
         this.cartTotalquantity = result.total_quantity;
       }
-    }); 
+    });
     this.getPromoCategoey();
-    
+
   }
   //Event method for getting all promo category
   private getPromoCategoey(){
     this.cmsService
         .getBySubSectionName('POST', 'HOME', 'CATEGORY')
         .subscribe(result => {
-            this.promoCategoey = result; 
+            this.promoCategoey = result;
             this.promoCategoey.forEach(element => {
-              this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => { 
+              this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => {
                 element.data_value[0].category_id = category;
-              }); 
+              });
 
-            }); 
-        }); 
+            });
+        });
 
   }
   //Event method for getting all product data
@@ -179,7 +178,7 @@ export class ProductSpecialComponent implements OnInit {
         this.data = result;
         this.getProductAvailableDate();
 
-        this.mainImg = this.data.image; 
+        this.mainImg = this.data.image;
         this.tempRating = result.rating;
 
           if(result.tag!="undefined")
@@ -187,7 +186,7 @@ export class ProductSpecialComponent implements OnInit {
         this.updateFinalprice();
       }
     });
-  } 
+  }
   //Event method for getting selected product
   selectProduct(selectProduct) {
     this.data = selectProduct;
@@ -228,7 +227,7 @@ export class ProductSpecialComponent implements OnInit {
   //Method for add to cart
   addProductToCart() {
     this._progress.start("mainLoader");
-    let product_total_price=this.finalprice; 
+    let product_total_price=this.finalprice;
       const cartItemData={
           cart_id:  this.cartId,
           product_id: this.data.id,
@@ -264,14 +263,14 @@ export class ProductSpecialComponent implements OnInit {
   }
   //Event method for getting delivery date
   getProductAvailableDate() {
-    this.availableDateLoading = true; 
+    this.availableDateLoading = true;
   }
 
   setProductAvailableSchedule(aDay, anHour, dayss, miliseconds) {
     this.days = this.replaceNumbers(
       Math.floor(miliseconds / aDay + 1).toString()
     );
-    let hour = Math.floor((miliseconds - dayss * aDay) / anHour); 
+    let hour = Math.floor((miliseconds - dayss * aDay) / anHour);
     this.hours = this.replaceNumbers(hour.toString());
     this.minutes = this.replaceNumbers(Math.round(
       (miliseconds - dayss * aDay - hour * anHour) / 60000
@@ -286,7 +285,7 @@ export class ProductSpecialComponent implements OnInit {
       } else {
         output.push(input[i]);
       }
-    } 
+    }
     return output.join("");
   }
 
@@ -302,7 +301,7 @@ export class ProductSpecialComponent implements OnInit {
       this._progress.start("mainLoader");
       this.productService
         .sendRating({ productId: this.data.id, rating: this.tempRating })
-        .subscribe(res => { 
+        .subscribe(res => {
           this._progress.complete("mainLoader");
           this._notify.success("success", "rating...");
         });

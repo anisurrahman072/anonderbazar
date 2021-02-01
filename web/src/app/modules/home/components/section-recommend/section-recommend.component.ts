@@ -14,8 +14,8 @@ export class RecommendComponent implements OnInit {
     private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     dataProductList: any[] = [];
-    limit: number = 8;
-    skip: number = 3;
+    limit: number = 24;
+    skip: number = 6;
     productDataTrue: boolean = true;
 
     constructor(private productService: ProductService,
