@@ -3748,6 +3748,10 @@ del {
     padding-right: 30px;
     line-break: anywhere;
 }
+#recommend-section .productimage-wrapper .product-image {
+    height: 242px !important;
+    width: 242px !important;
+}
 /*
 .product-lists img.product-image {
     width: 380px;
