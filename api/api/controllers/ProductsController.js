@@ -355,6 +355,8 @@ module.exports = {
       });
     }
   },
+  //Method called for generating bulk product upload excel file
+  //Model models/Product.js, models/Category.js
   generateExcel: async (req, res) => {
     try {
 
@@ -554,6 +556,8 @@ module.exports = {
       });
     }
   },
+  //Method called for creating bulk products
+  //Model models/Product.js ,models/Category.js
   bulkUpload: async (req, res) => {
     try {
       const isApproved = parseInt(req.query.isApproved);

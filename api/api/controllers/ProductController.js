@@ -169,6 +169,9 @@ module.exports = {
           if (err) {
             return res.json(err.status, {err: err});
           }
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
 
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 

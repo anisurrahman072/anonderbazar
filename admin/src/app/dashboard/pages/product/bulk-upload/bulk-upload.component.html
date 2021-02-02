@@ -6,7 +6,7 @@
             </ng-template>
             <ng-template #body>
                 <div class="form-group">
-                    <button type="button" id="download_bulk_excel" (click)="downloadExcel()">
+                    <button [disabled]="isLoading" type="button" id="download_bulk_excel" (click)="downloadExcel()">
                         <span>Download Product Upload Excel File</span>
                     </button>
                 </div>
@@ -15,7 +15,6 @@
                     <input  #uploadFileInputField type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
                 </div>
                 <div nz-form-item nz-row>
-
                     <div style="display: flex; justify-content: center; ">
                         <button style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)">
                             Save & Approve

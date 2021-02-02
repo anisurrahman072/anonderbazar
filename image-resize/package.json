@@ -1,0 +1,14 @@
+{
+  "name": "anonderbazarimageresize",
+  "version": "1.0.0",
+  "description": "Image resize code for anonder bazar to use in lamda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mahmud.softbdltd@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "sharp": "^0.27.1"
+  }
+}

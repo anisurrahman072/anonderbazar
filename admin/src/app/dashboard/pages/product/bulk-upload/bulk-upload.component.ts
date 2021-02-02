@@ -53,6 +53,8 @@ export class BulkUploadComponent implements OnInit {
     @ViewChild('uploadFileInputField')
     fileInputVariable: ElementRef;
 
+    isLoading: boolean = false;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -122,7 +124,7 @@ export class BulkUploadComponent implements OnInit {
     saveImportedProducts(isApproved: number = 0) {
 
         this._isSpinning = true;
-        console.log('this.importProducts',this.importProducts)
+        console.log('this.importProducts', this.importProducts)
         this.fileInputVariable.nativeElement.value = "";
         return this.productService.submitDataForBulkUpload(this.importProducts, isApproved).subscribe((result: any) => {
             console.log('result', result)
@@ -141,6 +143,7 @@ export class BulkUploadComponent implements OnInit {
     }
 
     downloadExcel() {
+        this.isLoading = true;
         return this.productService.getGeneratedExcelFile().subscribe((result: any) => {
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
@@ -163,9 +166,10 @@ export class BulkUploadComponent implements OnInit {
             // this is necessary as link.click() does not work on the latest firefox
             link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
 
-            setTimeout(function () {
+            setTimeout(() => {
                 // For Firefox it is necessary to delay revoking the ObjectURL
-                window.URL.revokeObjectURL(data);
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
                 link.remove();
             }, 100);
         });
