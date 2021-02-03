@@ -67,6 +67,11 @@ module.exports = {
       type: 'integer',
       required: true,
     },
+    is_coupon_product: {
+      type: 'integer',
+      required: false,
+      defaultsTo: 0
+    },
     warehouse_id: {
       model: 'warehouse',
       required: true,

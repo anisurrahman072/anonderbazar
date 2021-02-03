@@ -38,6 +38,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     cartData: any;
     user_id: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     shippingFirstName: string;
     shippingLastName: string;
     shippingPhone: string;

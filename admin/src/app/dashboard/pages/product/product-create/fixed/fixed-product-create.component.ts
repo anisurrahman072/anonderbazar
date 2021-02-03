@@ -21,11 +21,13 @@ import {BrandService} from '../../../../../services/brand.service';
     templateUrl: './fixed-product-create.component.html',
     styleUrls: ['./fixed-product-create.component.css']
 })
+
 export class FixedProductCreateComponent implements OnInit {
     tagOptions: any = [];
     validateForm: FormGroup;
     ImageBlukArray: any = [];
     ImageFile: File[] = [];
+    CouponProductBannerImages: File[] = [];
     ImageFrontFile: File[] = [];
     @ViewChild('Image') Image;
     isSubmit: boolean = true;
@@ -41,7 +43,9 @@ export class FixedProductCreateComponent implements OnInit {
                 { name: 'forms', groups: ['forms'] }
             ],
             removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-        };*/
+        };
+    */
+
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -102,11 +106,17 @@ export class FixedProductCreateComponent implements OnInit {
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
                 private productService: ProductService) {
+
+    }
+
+    // For initiating the section element with data
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
             image: [null, []],
             frontimage: [null, []],
+            // couponBannerImages: [null, []],
             price: ['0', []],
             vendor_price: ['', []],
             min_unit: [1, [Validators.required]],
@@ -119,12 +129,26 @@ export class FixedProductCreateComponent implements OnInit {
             type_id: ['', []],
             tag: ['', []],
             featured: [false, []],
+            // is_coupon_product: [false, []],
             weight: ['0.0', [Validators.required]]
+        });
+
+        this.currentUser = this.authService.getCurrentUser();
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.queryStatus = params.status;
+        });
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
+
         });
     }
 
     // Event method for submitting the form
     submitForm = ($event, value) => {
+
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -144,6 +168,7 @@ export class FixedProductCreateComponent implements OnInit {
         formData.append('type_id', value.type_id);
         formData.append('tag', JSON.stringify(value.tag));
         formData.append('featured', value.featured ? '1' : '0');
+        // formData.append('is_coupon_product', value.is_coupon_product ? '1' : '0');
         formData.append('weight', value.weight);
         formData.append('status', '1');
 
@@ -165,8 +190,17 @@ export class FixedProductCreateComponent implements OnInit {
             formData.append('frontimage', this.ImageFrontFile[0], this.ImageFrontFile[0].name);
         } else {
             formData.append('hasImageFront', 'false');
-
         }
+
+/*        if (value.is_coupon_product && this.CouponProductBannerImages.length > 0) {
+            formData.append('hasCouponBannerImage', 'true');
+            for (let i = 0; i < this.CouponProductBannerImages.length; i++) {
+                formData.append('CouponProductBannerImages[]', this.CouponProductBannerImages[i], this.CouponProductBannerImages[i].name);
+            }
+        } else {
+            formData.append('hasCouponBannerImage', 'false');
+        }*/
+
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
             console.log(result);
@@ -178,8 +212,25 @@ export class FixedProductCreateComponent implements OnInit {
                 );
                 this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
             }
+        }, error => {
+            this.isSubmit = true;
+            console.log('error', error);
+            this._notification.create(
+                'error',
+                'Ooops!',
+                'There was a problem creating the product'
+            );
         });
     };
+
+
+    // Event method for removing front picture
+    onRemovedFront(_file: FileHolder) {
+        this.ImageFrontFile.splice(
+            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
 
     // Event method for removing picture
     onRemoved(_file: FileHolder) {
@@ -193,8 +244,20 @@ export class FixedProductCreateComponent implements OnInit {
 
         this.productService.upload(formData).subscribe(result => {
         });
+    }
 
+    // Event method for removing picture
+    onRemovedBanner(_file: FileHolder) {
+        this.CouponProductBannerImages.splice(
+            this.CouponProductBannerImages.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
 
+    // Event method for storing imgae in variable
+    onBeforeUploadBanner = (metadata: UploadMetadata) => {
+        this.CouponProductBannerImages.push(metadata.file);
+        return metadata;
     }
 
     // Event method for storing imgae in variable
@@ -210,13 +273,6 @@ export class FixedProductCreateComponent implements OnInit {
         return metadata;
     };
 
-    // Event method for removing front picture
-    onRemovedFront(_file: FileHolder) {
-        this.ImageFrontFile.splice(
-            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
-            1
-        );
-    }
 
     // Event method for storing front imgae in variable
     onBeforeUploadFront = (metadata: UploadMetadata) => {
@@ -235,23 +291,10 @@ export class FixedProductCreateComponent implements OnInit {
 
     // Event method for resetting the form
     getFormControl(name) {
+
         return this.validateForm.controls[name];
     }
 
-    // For initiating the section element with data
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.queryStatus = params.status;
-        });
-        this.categoryProductService.getAllCategory().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
-
-        });
-    }
 
     categorySearchChange($event) {
     }

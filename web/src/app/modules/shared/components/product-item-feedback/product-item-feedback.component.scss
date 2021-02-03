@@ -1,4 +1,4 @@
-.boxShadow{
+.boxShadow {
   // margin-left: 10px;
   // margin-right: 10px;
   // margin-top:20px;
@@ -9,6 +9,7 @@
   // padding-right: 10px;
 
 }
+
 .productimage-wrapper .product-discount-badge {
   position: absolute;
   left: 0;
@@ -27,6 +28,7 @@
 .profeedback-details {
   cursor: pointer;
 }
+
 .product-item {
   padding: 5px;
   margin-top: 15px;
@@ -118,19 +120,23 @@ img {
   border-radius: 2px;
   margin-bottom: 20px;
 }
+
 .product-item .status {
   right: 7px;
+
   &.fixed {
     background-color: #4D2677;
-     opacity: 0.9;
+    opacity: 0.9;
   }
+
   &.custom {
     background-color: #2702fa;
-     opacity: 0.7;
+    opacity: 0.7;
   }
+
   &.full-custom {
     background-color: #00A188;
-     opacity: 0.7;
+    opacity: 0.7;
   }
 }
 
@@ -226,14 +232,13 @@ img {
 }
 
 .product-item-min .price {
-  color: #333;
-  font-family: "SolaimanLipi";
+  font-family: "SolaimanLipi", Sans-Serif;
   font-size: 14px;
   margin-right: 9px;
   color: #ec5858;
 }
 
-.product-img{
-  height: 175px;
-  width: 188px;
+.product-img {
+  height: 250px;
+  width: 250px;
 }

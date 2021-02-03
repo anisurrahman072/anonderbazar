@@ -1,7 +1,7 @@
 import {Component, Directive, Input, OnInit} from '@angular/core';
 import {AppSettings} from "../../../../config/app.config";
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models/index";
+import {FavouriteProduct, Product} from "../../../../models";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
@@ -12,15 +12,17 @@ import {CompareService} from "../../../../services/compare.service";
 import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
 
-
 @Component({
     selector: 'app-product-item-flash-deals',
     templateUrl: './product-item-flash-deals.component.html',
     styleUrls: ['./product-item-flash-deals.component.scss']
 })
 export class ProductItemFlashDealComponent implements OnInit {
-    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     @Input() dataProduct;
+
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
     product: Product;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -41,10 +43,12 @@ export class ProductItemFlashDealComponent implements OnInit {
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,
                 private toastr: ToastrService,) {
-                    this.isDisplay = false;
+
+        this.isDisplay = false;
         this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
-  //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
@@ -70,7 +74,8 @@ export class ProductItemFlashDealComponent implements OnInit {
     clickToImage(event, productId) {
         this.router.navigate(['/product-details/', productId]);
     }
-  //Method for add to cart
+
+    //Method for add to cart
 
     addToCart(product: any, callback?) {
         if (this.product.product_variants.length > 0) {
@@ -79,9 +84,9 @@ export class ProductItemFlashDealComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
-            const cartItemData={
-                cart_id:  this.cartId,
+            let product_total_price: number = this.product.promotion ? this.product.promo_price : this.product.price;
+            const cartItemData = {
+                cart_id: this.cartId,
                 product_id: this.product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
@@ -94,7 +99,7 @@ export class ProductItemFlashDealComponent implements OnInit {
                         this._progress.complete("mainLoader");
                         this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
 
-                        if(callback){
+                        if (callback) {
                             callback();
                         }
                     },
@@ -108,15 +113,16 @@ export class ProductItemFlashDealComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for direct buy
 
-    buyNow(product){
-        this.addToCart(product, ()=>{
+    //Method for direct buy
+
+    buyNow(product) {
+        this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }
 
-  //Method for add to favourite
+    //Method for add to favourite
 
     addToFavourite(product: Product) {
 
@@ -134,7 +140,8 @@ export class ProductItemFlashDealComponent implements OnInit {
 
         }
     }
-  //Method for remove from favourite
+
+    //Method for remove from favourite
 
     removeFromFavourite(favouriteProduct) {
         let userId = this.authService.getCurrentUserId();
@@ -151,7 +158,7 @@ export class ProductItemFlashDealComponent implements OnInit {
         }
     }
 
-  //Method for add to compare
+    //Method for add to compare
 
     addToCompare(product: Product) {
 
@@ -161,27 +168,27 @@ export class ProductItemFlashDealComponent implements OnInit {
             this.store.dispatch(new fromStore.AddToCompare(product));
             this.compareService.addToCompare(product);
             this._notify.success('add to compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
 
             this.loginModalService.showLoginModal(true)
 
         }
     }
-  //Method for remove from compare
+
+    //Method for remove from compare
     removeFromCompare(product: Product) {
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));
             this.compareService.removeFromCompare(product);
             this._notify.success('remove from compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
     }
+
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
     }

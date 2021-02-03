@@ -15,7 +15,8 @@
                 <div class="col-lg-6 col-md-12 mb-4">
                     <div class="sendgift-btn d-flex">
                         <button class="btn1" [ngClass]="{'active': isDelivery === true}">
-                            <a type="button" [ngClass]="{'active': isDelivery === true}" (click)='showDelivarySection()'>Delivery</a>
+                            <a type="button" [ngClass]="{'active': isDelivery === true}"
+                               (click)='showDelivarySection()'>Delivery</a>
                         </button>
                     </div>
                     <div class="Checkout-from1" *ngIf='isDelivery'>
@@ -24,9 +25,14 @@
                         <div class="form-row" *ngIf="!newShippingAddress">
                             <div class="Checkout-from1">
                                 <label>Select address</label>
-                                <mat-radio-group formControlName="shipping_id" (change)="onAddressChange($event.value, 'shipping')">
-                                    <div class="border-bottom radio2" *ngFor="let address of prevoius_address; let i = index">
-                                        <mat-radio-button value="{{''+address.id}}">{{ address?.address }},{{ address?.division_id.name }},{{address?.upazila_id.name}},{{ address?.zila_id.name }}.</mat-radio-button>
+                                <mat-radio-group formControlName="shipping_id"
+                                                 (change)="onAddressChange($event.value, 'shipping')">
+                                    <div class="border-bottom radio2"
+                                         *ngFor="let address of prevoius_address; let i = index">
+                                        <mat-radio-button value="{{''+address.id}}">{{ address?.address }}
+                                            ,{{ address?.division_id.name }},{{address?.upazila_id.name}}
+                                            ,{{ address?.zila_id.name }}.
+                                        </mat-radio-button>
                                     </div>
                                 </mat-radio-group>
                             </div>
@@ -125,7 +131,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Address</label>
-                                <input type="text" class="form-control" formControlName="shippingAddress" placeholder="Enter address">
+                                <input type="text" class="form-control" formControlName="shippingAddress"
+                                       placeholder="Enter address">
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('shippingAddress').dirty || showFormError) && getSignUpFormControl('shippingAddress').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Address is required!
@@ -181,7 +188,8 @@
                         <div class="form-row" *ngIf="newBillingAddress">
                             <div class="form-group col-md-6">
                                 <label>First Name</label>
-                                <input type="text" class="form-control" formControlName="firstName" placeholder="Input First Name">
+                                <input type="text" class="form-control" formControlName="firstName"
+                                       placeholder="Input First Name">
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('firstName').dirty || showFormError) && getSignUpFormControl('firstName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>First name is required!
@@ -190,7 +198,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Last Name</label>
-                                <input type="text" class="form-control" formControlName="lastName"  placeholder="Input Last Name">
+                                <input type="text" class="form-control" formControlName="lastName"
+                                       placeholder="Input Last Name">
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('lastName').dirty || showFormError) && getSignUpFormControl('lastName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!
@@ -199,7 +208,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Phone Number</label>
-                                <input type="text" class="form-control" formControlName="phone" placeholder="Enter your phone Number">
+                                <input type="text" class="form-control" formControlName="phone"
+                                       placeholder="Enter your phone Number">
 
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('phone').dirty  || showFormError) && getSignUpFormControl('phone').hasError('required')">
@@ -258,7 +268,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Address </label>
-                                <input type="text" class="form-control" formControlName="address" placeholder="Enter address">
+                                <input type="text" class="form-control" formControlName="address"
+                                       placeholder="Enter address">
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('address').dirty || showFormError) && getSignUpFormControl('address').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Address is required!
@@ -267,7 +278,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Post Code </label>
-                                <input type="number" class="form-control" formControlName="postCode" placeholder="Enter post code">
+                                <input type="number" class="form-control" formControlName="postCode"
+                                       placeholder="Enter post code">
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('postCode').dirty || showFormError) && getSignUpFormControl('postCode').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Post Code is required!
@@ -352,7 +364,7 @@
 
                     <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
                         <div class="bagitem-1">
-                            <img style="width:15%" src="{{IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="">
+                            <img src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="product image">
                             <div style="width:95%" class="text">
                                 <div class="sub-text" style="width:70%">
                                     <a routerLink="/product-details/{{cartItem.product_id.id}}">
@@ -360,9 +372,9 @@
                                     </a>
                                     <!--                  <span>Color:<small>Red</small></span>-->
                                     <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
-                    <span *ngFor="let variant of cartItem.cartitemvariant">
-                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
-                    </span>
+                                    <span *ngFor="let variant of cartItem.cartitemvariant">
+                                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                    </span>
                                     </ng-container>
                                 </div>
                                 <ul style="width:15%">

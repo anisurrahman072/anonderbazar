@@ -49,6 +49,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     private sub: Subscription;
     private sub1: Subscription;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    RESIZED_IMAGE_ENDPOINT = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT;
     discountBadgeIcon: any;
     cart$: Observable<any>;
     cartId: any;
@@ -386,7 +387,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             console.log('getProductData', this.data)
             if (result) {
                 let allImages = [];
-                this.primaryPicture = this.IMAGE_ENDPOINT + this.data.image;
+
+                this.primaryPicture = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT + this.data.image;
+
                 if (this.data.image) {
                     allImages.push({'image_path': this.data.image});
                 }

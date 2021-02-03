@@ -10,7 +10,10 @@ import { ProductService } from '../../../../services';
 export class OfferComponent implements OnInit {
     private middleblogList: any;
     homeOfferData: any = [];
-    private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
     products: any = [];
     offers: any = [];
 

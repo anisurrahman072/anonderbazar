@@ -1,16 +1,16 @@
-import {Component, Directive, Input, OnInit} from '@angular/core';
-import {AppSettings} from "../../../../config/app.config";
+import {Component, Input, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models/index";
-import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {ToastrService} from "ngx-toastr";
+import {NgProgress} from "@ngx-progressbar/core";
+import {AppSettings} from "../../../../config/app.config";
+import {FavouriteProduct, Product} from "../../../../models";
+import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
-import {NgProgress} from "@ngx-progressbar/core";
-import {ToastrService} from "ngx-toastr";
 
 @Component({
     selector: 'app-product-item-newarrival',
@@ -18,8 +18,12 @@ import {ToastrService} from "ngx-toastr";
     styleUrls: ['./product-item-newarrival.component.scss']
 })
 export class ProductItemNewArrivalComponent implements OnInit {
-    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+
     @Input() dataProductNewArrival;
+
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
     newItem: Product;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;

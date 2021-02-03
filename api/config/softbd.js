@@ -1,3 +1,3 @@
 module.exports = {
-  devEnv: false
+  devEnv: true
 }

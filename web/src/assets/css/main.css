@@ -1006,10 +1006,6 @@ offer - end
     border-radius: 500px;
 }
 
-/* .offer-mainimg img{
-  position: relative;
-
-} */
 .offer-mainimg .offer-parsent {
     position: absolute;
     width: 50px;
@@ -1026,15 +1022,7 @@ offer - end
     color: #ffffff;
 }
 
-.offer-mainimg {
-    width: 100%;
-    height: 282px;
-}
 
-.offerimg2 {
-    width: 134px;
-    height: 91px;
-}
 
 
 /*====================================
@@ -3707,10 +3695,6 @@ footer - start
     text-decoration: none;
 }
 
-.feedback-details .product-img {
-    height: 175px !important;
-    width: 188px !important;
-}
 
 del {
     color: #ED1C24;
@@ -3748,10 +3732,7 @@ del {
     padding-right: 30px;
     line-break: anywhere;
 }
-#recommend-section .productimage-wrapper .product-image {
-    height: 242px !important;
-    width: 242px !important;
-}
+
 /*
 .product-lists img.product-image {
     width: 380px;

@@ -16,10 +16,10 @@ import {
 import {Observable} from "rxjs/Observable";
 import {AppSettings} from "../../../../config/app.config";
 import {HttpClient} from "@angular/common/http";
-import {TransferState} from "@angular/platform-browser";
+import {Meta, Title, TransferState} from "@angular/platform-browser";
 import {Options, LabelType} from "ng5-slider";
 import {ActivatedRoute} from '@angular/router';
-import { combineLatest } from 'rxjs/observable/combineLatest'
+import {combineLatest} from 'rxjs/observable/combineLatest'
 import {LoaderService} from "../../../../services/ui/loader.service";
 
 @Component({
@@ -135,6 +135,8 @@ export class CategoryPageComponent implements OnInit {
         private httpClient: HttpClient,
         private transferState: TransferState,
         private injector: Injector,
+        private title: Title,
+        private meta: Meta,
         private productService: ProductService,
         private categoryProductService: CategoryProductService,
         private ProductVariantService: ProductVariantService,
@@ -200,7 +202,6 @@ export class CategoryPageComponent implements OnInit {
                     this.showcraftsman = false;
                     this.showWarehouse = false;
                 }
-
 
                 if (this.currentCategoryId > 0) {
                     this.isCollapsed_class = true;
@@ -549,11 +550,9 @@ export class CategoryPageComponent implements OnInit {
                 this.allProductsByCategory = result.data;
                 this.loaderService.hideLoader();
             });
-
     }
 
-    //Event method for getting all the subcategory data for the page
-
+    // Event method for getting all the subcategory data for the page
     private getAllSubcategory() {
         if (this.categoryList_ids.length > 0) {
             this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids).subscribe(result => {

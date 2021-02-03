@@ -56,6 +56,18 @@ export const baseFilter = (reqBody, Model, localWhere) => {
   return where;
 };
 
+export const uploadImages = (imageFile) => {
+  return new Promise((resolve, reject) => {
+    imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
+      if (err) {
+        console.log(err)
+        reject(err);
+      } else {
+        resolve(uploaded);
+      }
+    });
+  });
+}
 export const escapeExcel = function (str) {
   return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
 }
@@ -64,10 +76,10 @@ export const imageUploadConfig = function () {
   if (devEnv) {
     return {
       maxBytes: 10000000,
-      dirname: sails.config.appPath + "/.tmp/public/images/",
+      dirname: sails.config.appPath + "/assets/",
     }
   }
- return {
+  return {
     adapter: require('skipper-s3'),
     key: 'AKIATYQRUSGN2DDD424I',
     secret: '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',

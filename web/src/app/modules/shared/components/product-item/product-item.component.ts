@@ -12,15 +12,19 @@ import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 
-
 @Component({
     selector: 'app-product-item',
     templateUrl: './product-item.component.html',
     styleUrls: ['./product-item.component.scss']
 })
 export class ProductItemComponent implements OnInit {
-    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    @Input() productname: any;
+    @Input() productprice: any;
     @Input() dataProduct;
+
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
     product: Product;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -31,8 +35,6 @@ export class ProductItemComponent implements OnInit {
     cartTotalquantity: any;
     discountBadgeIcon: any;
     discountPercentage: number = 0;
-    @Input() productname: any;
-    @Input() productprice: any;
 
     productImageWidth: number = 0;
     productImageHeight: number = 0;

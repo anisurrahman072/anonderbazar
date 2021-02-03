@@ -43,15 +43,15 @@
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
                                 <span *ngIf="data.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
-                                <img src="{{primaryPicture}}" alt="" />
+                                <img src="{{primaryPicture}}" alt="Product Image" />
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12 col-12">
                         <div class="productdetailsub-img">
                             <ng-container *ngFor="let image of data?.product_images; let i = index">
-                                <img style="cursor: pointer; height: 70px; width: 70px;"   src="{{IMAGE_ENDPOINT + image.image_path}}"
-                                     (click)="primaryPicture = IMAGE_ENDPOINT + image.image_path" alt="">
+                                <img style="cursor: pointer; height: 70px; width: 70px;"   src="{{RESIZED_IMAGE_ENDPOINT + image.image_path}}"
+                                     (click)="primaryPicture = RESIZED_IMAGE_ENDPOINT + image.image_path" alt="Product Image">
                             </ng-container>
                         </div>
                     </div>

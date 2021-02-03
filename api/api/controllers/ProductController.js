@@ -2,9 +2,10 @@ import {
   asyncForEach,
   initLogPlaceholder,
 } from "../../libs";
-import {imageUploadConfig} from "../../libs/helper";
+import {imageUploadConfig, uploadImages} from "../../libs/helper";
 
 /*
+
 const fs = require('fs');
 const AWS = require('aws-sdk');
 
@@ -12,7 +13,8 @@ AWS.config.update({
   accessKeyId: 'AKIATYQRUSGN2DDD424I',
   secretAccessKey: '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',
   region: 'ap-southeast-1'
-})
+});
+
 */
 
 module.exports = {
@@ -84,57 +86,74 @@ module.exports = {
       req.body.price = parseFloat(req.body.price);
       //parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
       let imageCounter = parseInt(req.body.imageCounter);
-      let i = 0;
+      let body = req.body;
+      console.log('request body', body);
+
+      if (body.brand_id === '' || body.brand_id === 'undefined') {
+        body.brand_id = null
+      }
+      if (body.tag === '' || body.tag === 'undefined') {
+        body.tag = null
+      }
+
       if (req.body.hasImageFront === 'true') {
+        try {
+          console.log('req.file("frontimage")', req.file("frontimage"));
 
-        req.file("frontimage").upload(imageUploadConfig(), async function (err, uploaded) {
-          if (err) {
-            console.log(err)
-            return res.json(err.status, {err: err});
-          }
-
+          const uploaded = await uploadImages(req.file("frontimage"));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
-
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
           const body = req.body;
           body.image = '/' + newPath;
 
-          if (body.brand_id === '' || body.brand_id === 'undefined') {
-            body.brand_id = null
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
+      }
+
+      if (req.body.hasCouponBannerImage === 'true') {
+        try {
+          console.log('req.file("CouponProductBannerImages")', req.file("CouponProductBannerImages[]"));
+
+          const uploaded = await uploadImages(req.file("CouponProductBannerImages[]"));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
-          if (body.tag === '' || body.tag === 'undefined') {
-            body.tag = null
+          const uploadCount = uploaded.length;
+
+          const bannerImages = [];
+          for(let i = 0; i < uploadCount; i++){
+            bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
           }
 
-          const product = await Product.create(body);
+          console.log('bannerImages', bannerImages);
 
-          if (req.body.ImageBlukArray) {
-            let imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
-            for (i = 0; i < imagearraybulk.length; i++) {
-              console.log('bulk image: ', imagearraybulk[i])
-              await ProductImage.update(imagearraybulk[i], {product_id: product.id});
-            }
-            return res.json(200, product);
-          } else {
-            return res.json(200, product);
-          }
-        });
+          body.coupon_product_banners = bannerImages;
+
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
+      }
+
+      const product = await Product.create(body);
+
+      if (body.ImageBlukArray) {
+        let imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
+        for (let i = 0; i < imagearraybulk.length; i++) {
+          await ProductImage.update(imagearraybulk[i], {product_id: product.id});
+        }
+        return res.json(200, product);
       } else {
-        req.body.price = parseFloat(req.body.price); // parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
-        let body = req.body;
-        if (body.brand_id === '' || body.brand_id === 'undefined') {
-          body.brand_id = null
-        }
-        if (body.tag === '' || body.tag === 'undefined') {
-          body.tag = null
-        }
+        return res.json(200, product);
+      }
 
-        let product = await Product.create(body);
-
-        if (req.body.ImageBlukArray) {
+      /*
+       if (req.body.ImageBlukArray) {
           var imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
           for (i = 0; i < imagearraybulk.length; i++) {
             if (i === 0) {
@@ -143,10 +162,10 @@ module.exports = {
             }
             await ProductImage.update(imagearraybulk[i], {product_id: product.id});
           }
-        }
-        return res.json(200, product);
-      }
-    } catch (err) {
+       }
+      */
+    } catch (error) {
+      console.log('error', error);
       res.json(400, {message: "wrong"});
     }
   },

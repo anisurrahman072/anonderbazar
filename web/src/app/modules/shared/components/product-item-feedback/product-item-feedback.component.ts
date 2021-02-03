@@ -1,7 +1,7 @@
-import {Component, Directive, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AppSettings} from "../../../../config/app.config";
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models/index";
+import {FavouriteProduct, Product} from "../../../../models";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
@@ -17,10 +17,12 @@ import {NgProgress} from "@ngx-progressbar/core";
     templateUrl: './product-item-feedback.component.html',
     styleUrls: ['./product-item-feedback.component.scss']
 })
-
 export class ProductItemFeedbackComponent implements OnInit {
-    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     @Input() dataProductFeedback;
+
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
     product: Product;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
