@@ -3,11 +3,11 @@
         <div class="row">
             <div class="col-lg-3 col-md-6 col-12 mb-4" *ngFor = "let item of serviceFooterList">
                 <div class="services-details text-center">
-                    <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="">
+                    <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="service image" >
                     <h6>{{item?.title}}</h6>
                     <p>{{item?.description}}</p>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </section>

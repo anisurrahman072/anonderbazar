@@ -19,8 +19,6 @@ export class HomeComponent implements OnInit {
         private productService: ProductService,
         private categoryProductService: CategoryProductService
         ) {
-
-
     }
     // init the component
     ngOnInit() {
@@ -29,7 +27,6 @@ export class HomeComponent implements OnInit {
         this.getProductCategory();
         this.getRewardProducts();
         this.getWholeSaleProducts();
-
     }
     //Event method for getting all the data for the page
     private getHotProducts() {

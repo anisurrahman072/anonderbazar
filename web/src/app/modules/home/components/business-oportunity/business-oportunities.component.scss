@@ -4,11 +4,11 @@
 }
 
 .section-services {
-   padding: 132px 0 0 0;
+  padding: 132px 0 0 0;
   background-size: cover;
-  background-image: url('/assets/images/7.jpg') ;
+  background-image: url('/assets/images/7.jpg');
   margin-top: 60px;
- }
+}
 
 .box-icon {
   text-align: center;
@@ -68,8 +68,14 @@
   background-color: #eec15b;
 }
 
-.section-service-bg-color{
-  background-color: #FFFFFF;
-  padding-top: 10px;
-  padding-bottom: 30px;
+#business-oportunities {
+  background-color: #fafafa;
+  padding-top: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 0;
+}
+
+#business-oportunities .services-details img {
+  width: 60px;
+  height: 61px;
 }
