@@ -42,16 +42,19 @@
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
-                                <span *ngIf="data.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
-                                <img src="{{primaryPicture}}" alt="Product Image" />
+                                <span *ngIf="data.promotion"
+                                      class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
+                                <img src="{{primaryPicture}}" alt="Product Image"/>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12 col-12">
                         <div class="productdetailsub-img">
                             <ng-container *ngFor="let image of data?.product_images; let i = index">
-                                <img style="cursor: pointer; height: 70px; width: 70px;"   src="{{RESIZED_IMAGE_ENDPOINT + image.image_path}}"
-                                     (click)="primaryPicture = RESIZED_IMAGE_ENDPOINT + image.image_path" alt="Product Image">
+                                <img style="cursor: pointer; height: 70px; width: 70px;"
+                                     src="{{RESIZED_IMAGE_ENDPOINT + image.image_path}}"
+                                     (click)="primaryPicture = RESIZED_IMAGE_ENDPOINT + image.image_path"
+                                     alt="Product Image">
                             </ng-container>
                         </div>
                     </div>
@@ -134,9 +137,13 @@
                             </div>
                         </div>
                         <div class="add-cartbtn">
-                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false">Add to
-                                cart</a>
-                            <a class="addto2" (click)="data.quantity > 0 ? buyNow(data): false">Buy now</a>
+                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false">
+                                Add to cart
+                            </a>
+                            <a class="addto2" (click)="data.quantity > 0 ? buyNow(data): false">
+                                <span *ngIf="data.id != 6016">Buy Now</span>
+                                <span *ngIf="data.id == 6016">Buy Coupon</span>
+                            </a>
                         </div>
                     </div>
 
