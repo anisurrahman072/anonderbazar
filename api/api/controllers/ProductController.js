@@ -35,6 +35,7 @@ module.exports = {
             .populate("warehouse_id", {deletedAt: null})
             .populate("craftsman_id", {deletedAt: null})
             .populate("brand_id", {deletedAt: null})
+            .populate("coupon_banner_images", {deletedAt: null})
         );
     } catch (error) {
       let message = "Error in Geting the product";
@@ -115,30 +116,30 @@ module.exports = {
         }
       }
 
-      if (req.body.hasCouponBannerImage === 'true') {
-        try {
-          console.log('req.file("CouponProductBannerImages")', req.file("CouponProductBannerImages[]"));
+      /*      if (req.body.hasCouponBannerImage === 'true') {
+              try {
+                console.log('req.file("CouponProductBannerImages")', req.file("CouponProductBannerImages[]"));
 
-          const uploaded = await uploadImages(req.file("CouponProductBannerImages[]"));
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          const uploadCount = uploaded.length;
+                const uploaded = await uploadImages(req.file("CouponProductBannerImages[]"));
+                if (uploaded.length === 0) {
+                  return res.badRequest('No file was uploaded');
+                }
+                const uploadCount = uploaded.length;
 
-          const bannerImages = [];
-          for(let i = 0; i < uploadCount; i++){
-            bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
-          }
+                const bannerImages = [];
+                for(let i = 0; i < uploadCount; i++){
+                  bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
+                }
 
-          console.log('bannerImages', bannerImages);
+                console.log('bannerImages', bannerImages);
 
-          body.coupon_product_banners = bannerImages;
+                body.coupon_product_banners = bannerImages;
 
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
-        }
-      }
+              } catch (err) {
+                console.log('err', err);
+                return res.json(err.status, {err: err});
+              }
+            }*/
 
       const product = await Product.create(body);
 
@@ -221,6 +222,7 @@ module.exports = {
       res.json(400, {message: "Something went wrong!"});
     }
   },
+
   //Method called for uploading product images
   //Model models/ProductImage.js
   upload: async function (req, res) {
@@ -277,6 +279,58 @@ module.exports = {
         res.json(400, {message: "wrong"});
       }
     } catch (err) {
+      res.json(400, {message: "wrong"});
+    }
+  },
+  //Method called for uploading product images
+  //Model models/ProductImage.js
+  uploadCouponBanners: async function (req, res) {
+    if (!req.body.product_id) {
+      return res.badRequest('No Associated Product to attach banners');
+    }
+
+    console.log('req.body', req.body, req.file.images);
+
+    if (req.file.images && req.file.images.size > 0) {
+      console.log('req.file.images', req.file.images)
+    }
+    try {
+      let bannerImages = [];
+      if (req.file.images && req.file.images.size > 0) {
+        const uploaded = await uploadImages(req.file("images"));
+        if (uploaded.length === 0) {
+          return res.badRequest('No image was uploaded');
+        }
+        const uploadCount = uploaded.length;
+
+        for (let i = 0; i < uploadCount; i++) {
+          bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
+        }
+      }
+      console.log('uploaded images-', bannerImages);
+      if (req.body.existingFiles && Array.isArray(req.body.existingFiles) && req.body.existingFiles.length) {
+        bannerImages = req.body.existingFiles.concat(bannerImages);
+      }
+
+      let productBanner = await ProductCouponBannerImage.findOne({
+        where: {product_id: req.body.product_id, deletedAt: null},
+      });
+
+      console.log('all bannerImages', bannerImages);
+      if (productBanner && typeof productBanner.id !== 'undefined') {
+        await ProductCouponBannerImage.update({id: productBanner.id}, {banner_images: bannerImages});
+      } else {
+        productBanner = await ProductCouponBannerImage.create({
+          product_id: req.body.product_id,
+          banner_images: bannerImages,
+          created_at: new Date(),
+        });
+      }
+
+      return res.json(200, productBanner);
+
+    } catch (err) {
+      console.log('err', err);
       res.json(400, {message: "wrong"});
     }
   },

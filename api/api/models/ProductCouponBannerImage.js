@@ -13,8 +13,8 @@ module.exports = {
       autoIncrement: true
     },
     product_id: {
-      type: 'integer',
-      required: false
+      model: 'product',
+      required: true
     },
     banner_images: {
       type: 'array',

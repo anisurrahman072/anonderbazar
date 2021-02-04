@@ -254,7 +254,6 @@
                     </div>
                 </div>
             </div>
-            <!--tag-->
         </div>
         <div class="col-md-6">
             <div nz-form-item nz-row>
@@ -272,7 +271,8 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <div nz-form-item nz-row>
                 <div nz-col [nzSpan]="7" nz-form-label>
@@ -289,42 +289,22 @@
                     </div>
                 </div>
             </div>
-            <!--featured-->
         </div>
-<!--        <div class="col-md-12">
-            <div class="row">
-                <div [ngClass]="{'col-md-6': getFormControl('is_coupon_product').value, 'col-md-12': !getFormControl('is_coupon_product').value}"
-                     class="col-md-6">
-                    <div class="row">
-                        <div nz-col [nzSpan]="7" nz-form-label>
-                            <label> Is a Coupon Product? </label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-switch formControlName="is_coupon_product">
-                                <span checked>Yes</span>
-                                <span unchecked>No</span>
-                            </nz-switch>
-                        </div>
-                    </div>
+        <div class="col-md-6">
+            <div nz-form-item nz-row>
+                <div nz-col [nzSpan]="7" nz-form-label>
+                    <label>Is a Coupon Product?</label>
                 </div>
-                <div class="col-md-6" *ngIf="getFormControl('is_coupon_product').value">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
-                            <label>Banner Images</label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <image-upload #Image [max]="5" buttonCaption="Select picture"
-                                          dropBoxMessage="Drop Picture here"
-                                          clearButtonCaption="remove"
-                                          (removed)="onRemovedBanner($event)"
-                                          [uploadedFiles]="CouponProductBannerImages"
-                                          [beforeUpload]="onBeforeUploadBanner">
-                            </image-upload>
-                        </div>
-                    </div>
+                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <nz-switch formControlName="is_coupon_product">
+                        <span checked>Yes</span>
+                        <span unchecked>No</span>
+                    </nz-switch>
                 </div>
             </div>
-        </div>-->
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <div class="col-md-6">
                 <div nz-form-item nz-row>
@@ -351,7 +331,6 @@
                         <label>Picture</label>
                     </div>
                     <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                        <!-- {{ImageFile | json}} -->
                         <image-upload #Image [max]="5" buttonCaption="Select picture"
                                       dropBoxMessage="Drop Picture here"
                                       clearButtonCaption="remove" (removed)="onRemoved($event)"
@@ -363,9 +342,7 @@
                         </div>
                     </div>
                 </div>
-                <!--image-->
             </div>
-            <!--Image-->
         </div>
 
         <div class="col-md-12">
@@ -378,12 +355,11 @@
                     <ckeditor formControlName="product_details" [config]="ckConfig" [readonly]="false" debounce="500">
                     </ckeditor>
                     <div nz-form-explain
-                         *ngIf="getFormControl('product_details').dirty&&getFormControl('product_details').hasError('required')">
+                         *ngIf="getFormControl('product_details').dirty && getFormControl('product_details').hasError('required')">
                         required!
                     </div>
                 </div>
             </div>
-            <!--product_details-->
         </div>
     </div>
 

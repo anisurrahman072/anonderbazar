@@ -1,16 +1,17 @@
-import {Component, Directive, Input, OnInit} from '@angular/core';
-import {AppSettings} from "../../../../config/app.config";
+import {Component, Input, OnInit} from '@angular/core';
+import {NgProgress} from "@ngx-progressbar/core";
+import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models";
-import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {AppSettings} from "../../../../config/app.config";
+import {FavouriteProduct, Product} from "../../../../models";
+import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
-import {NgProgress} from "@ngx-progressbar/core";
-import {ToastrService} from "ngx-toastr";
+
 
 @Component({
     selector: 'app-product-item-flash-deals',

@@ -23,13 +23,12 @@ import {BrandService} from '../../../../../services/brand.service';
 })
 
 export class FixedProductCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     tagOptions: any = [];
     validateForm: FormGroup;
     ImageBlukArray: any = [];
     ImageFile: File[] = [];
-    CouponProductBannerImages: File[] = [];
     ImageFrontFile: File[] = [];
-    @ViewChild('Image') Image;
     isSubmit: boolean = true;
 
     /*    ckConfig = {
@@ -81,7 +80,6 @@ export class FixedProductCreateComponent implements OnInit {
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
     brandSearchOptions: any;
-
     craftsmanSearchOptions: any;
     tag: any;
     tags = [];
@@ -116,7 +114,6 @@ export class FixedProductCreateComponent implements OnInit {
             code: [''],
             image: [null, []],
             frontimage: [null, []],
-            // couponBannerImages: [null, []],
             price: ['0', []],
             vendor_price: ['', []],
             min_unit: [1, [Validators.required]],
@@ -129,7 +126,6 @@ export class FixedProductCreateComponent implements OnInit {
             type_id: ['', []],
             tag: ['', []],
             featured: [false, []],
-            // is_coupon_product: [false, []],
             weight: ['0.0', [Validators.required]]
         });
 
@@ -168,7 +164,6 @@ export class FixedProductCreateComponent implements OnInit {
         formData.append('type_id', value.type_id);
         formData.append('tag', JSON.stringify(value.tag));
         formData.append('featured', value.featured ? '1' : '0');
-        // formData.append('is_coupon_product', value.is_coupon_product ? '1' : '0');
         formData.append('weight', value.weight);
         formData.append('status', '1');
 
@@ -191,15 +186,6 @@ export class FixedProductCreateComponent implements OnInit {
         } else {
             formData.append('hasImageFront', 'false');
         }
-
-/*        if (value.is_coupon_product && this.CouponProductBannerImages.length > 0) {
-            formData.append('hasCouponBannerImage', 'true');
-            for (let i = 0; i < this.CouponProductBannerImages.length; i++) {
-                formData.append('CouponProductBannerImages[]', this.CouponProductBannerImages[i], this.CouponProductBannerImages[i].name);
-            }
-        } else {
-            formData.append('hasCouponBannerImage', 'false');
-        }*/
 
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
@@ -246,19 +232,6 @@ export class FixedProductCreateComponent implements OnInit {
         });
     }
 
-    // Event method for removing picture
-    onRemovedBanner(_file: FileHolder) {
-        this.CouponProductBannerImages.splice(
-            this.CouponProductBannerImages.findIndex(e => e.name === _file.file.name),
-            1
-        );
-    }
-
-    // Event method for storing imgae in variable
-    onBeforeUploadBanner = (metadata: UploadMetadata) => {
-        this.CouponProductBannerImages.push(metadata.file);
-        return metadata;
-    }
 
     // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {

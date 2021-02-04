@@ -8,10 +8,12 @@
                             <h2 class="proh1first">{{promoCategoey[0]?.data_value[0].category_id.name}}</h2>
                             <h2 class="proh12nd">{{(promoCategoey[0]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[0]?.data_value[0].lowerlimit}}
                                 - ৳ {{promoCategoey[0]?.data_value[0].upperlimit}}</h2>
-                            <button><a
-                                    routerLink="/products/category/{{promoCategoey[0]?.data_value[0].category_id.id}}"
-                                    [queryParams]="{min: promoCategoey[0]?.data_value[0].lowerlimit, max:promoCategoey[0]?.data_value[0].upperlimit}">Shop
-                                now<i class="fa fa-angle-right text-center"></i></a></button>
+                            <button>
+                                <a routerLink="/products/category/{{promoCategoey[0]?.data_value[0].category_id.id}}"
+                                   [queryParams]="{min: promoCategoey[0]?.data_value[0].lowerlimit, max:promoCategoey[0]?.data_value[0].upperlimit}">Shop
+                                    now<i class="fa fa-angle-right text-center"></i>
+                                </a>
+                            </button>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-6 pl-0">

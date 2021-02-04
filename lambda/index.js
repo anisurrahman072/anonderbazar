@@ -19,7 +19,7 @@ exports.handler = async (event, context) => {
   const destinationBuckets = [
     {
       backet: "anonderbazar-list-sized-images",
-      dimension: 250
+      dimension: 400
     },
     {
       backet: "anonderbazar-thumb-images",

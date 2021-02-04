@@ -497,7 +497,6 @@ export class SuborderComponent implements OnInit {
         this.dowonloadCSV(newlist);
     }
 
-
     handleOkPR = e => {
         this.isProductVisiblePR = false;
     };

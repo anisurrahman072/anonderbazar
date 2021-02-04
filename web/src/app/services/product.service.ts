@@ -86,7 +86,7 @@ export class ProductService {
 
     getFlashDealsProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=6')
+            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4')
             .map(response => response);
     }
 
@@ -104,13 +104,13 @@ export class ProductService {
 
     getFeedbackProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=3&sort="rating DESC"')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort="rating DESC"')
             .map(response => response);
     }
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=3&sort="createdAt DESC"')
+            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=4&sort="createdAt DESC"')
             .map(response => response);
     }
 

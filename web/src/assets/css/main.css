@@ -3732,15 +3732,22 @@ del {
     padding-right: 30px;
     line-break: anywhere;
 }
-
-/*
-.product-lists img.product-image {
-    width: 380px;
-    height: auto;
+.offer-details .offer-img .offerimg2 {
+    width: 130px;
+    height: 130px;
+}
+.offer-details .offer-img .offer-mainimg {
+    width: 300px;
+    height: 300px;
 }
 
-.feedback-details .product-img {
-    width: 188px !important;
-    height: auto !important;
+.productimage-wrapper {
+    height: 300px;
+    width: 300px;
+    position: relative;
 }
-*/
+.productimage-wrapper .product-image {
+    height: 300px;
+    width: 300px;
+}
+

@@ -4,11 +4,11 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {ToastrService} from "ngx-toastr";
 import {NgProgress} from "@ngx-progressbar/core";
+import {NotificationsService} from "angular2-notifications";
 import {AppSettings} from "../../../../config/app.config";
 import {FavouriteProduct, Product} from "../../../../models";
 import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
-import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 

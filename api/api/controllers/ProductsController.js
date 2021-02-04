@@ -610,6 +610,16 @@ module.exports = {
         let parts = item.type_id.split('|');
         newItem.type_id = parts[0].trim();
 
+        if (item.product_details) {
+          newItem.product_details = item.product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
+        }
+        if (item.tag) {
+          const tagArr = item.tag.split(',').map((t) => {
+            return t.trim();
+          });
+          newItem.tag = JSON.stringify(tagArr);
+        }
+
         parts = item.category_id.split('|');
         newItem.category_id = parts[0].trim();
 

@@ -38,10 +38,7 @@ img {
   height: 300px !important;
   background: #d0d0d0;
 }
-.product-img {
-  width: 250px;
-  height: 250px;
-}
+
 .product-item .thumb {
   position: relative;
   overflow: hidden;
@@ -89,14 +86,11 @@ img {
 
 .product-item .flash {
   position: absolute;
-  top: 10px;
-  right: 7px;
   z-index: 1;
   top: 15px;
   right: 15px;
   /*display: inline-block;*/
   color: #fff;
-
   text-transform: uppercase;
   padding: 5px 15px;
   font-size: 11px;
@@ -216,7 +210,6 @@ img {
 }
 
 .product-item-min .price {
-  color: #333;
   font-family: "SolaimanLipi";
   font-size: 14px;
   margin-right: 9px;

@@ -25,14 +25,26 @@ import {environment} from "../../../../../environments/environment";
     styleUrls: ['./product-edit.component.css']
 })
 export class ProductEditComponent implements OnInit, OnDestroy {
+
+    @ViewChild('Image') Image;
+    @ViewChild('input') input: NzInputDirectiveComponent;
+    sub: Subscription;
+
     tagOptions: any = [];
     validateForm: FormGroup;
+    validateFormCouponBanner: FormGroup;
     ImageFileEdit: any[] = [];
     ImageEditFile: any = [];
     ImageFrontEdit: any[] = [];
     ImageEditFront: any[] = [];
     ImageBlukArray: any = [];
+
+    ImageBannerFilesShow: any[] = [];
+    ImageBannerFiles: any[] = [];
+
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+
+    couponProductModalVisible: boolean = false;
     isSubmit: boolean = true;
 
     /*  ckConfig = {
@@ -79,7 +91,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-    @ViewChild('Image') Image;
+
     categorySearchOptions: any;
     brandSearchOptions: any;
     subcategorySearchOptions: any = {};
@@ -96,8 +108,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         {label: 'Variable Product', value: 2},
     ];
 
-    @ViewChild('input') input: NzInputDirectiveComponent;
-    sub: Subscription;
+    isCouponProductEnabled: boolean = false;
+
     id: number;
     data: any;
     category_id: any;
@@ -120,6 +132,11 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         private categoryProductService: CategoryProductService,
         private productService: ProductService
     ) {
+
+    }
+
+    // For initiating the section element with data
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
@@ -137,8 +154,100 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             type_id: ['', []],
             tag: ['', []],
             featured: [false, []],
+            is_coupon_product: [false, []],
             weight: ['', []],
             status: ['', [Validators.required]]
+        });
+        this.validateFormCouponBanner = this.fb.group({});
+
+        this.currentUser = this.authService.getCurrentUser();
+        this.ImageEditFile = [];
+        this.ImageBlukArray = [];
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.queryStatus = params.status;
+        });
+        this.sub = this.route.params.subscribe(params => {
+            this.id = +params['id']; // (+) converts string 'id' to a number
+            this.productService.getById(this.id).subscribe(result => {
+                console.log('product', result);
+                this.warehouse_name = result.warehouse_id.name;
+                this.data = result;
+
+                this.validateForm.patchValue(this.data);
+                if (this.data && this.data.brand_id && this.data.brand_id) {
+                    this.brand_id = this.data.brand_id.id;
+                }
+
+                if (this.data && this.data.category_id && this.data.category_id) {
+                    this.category_id = this.data.category_id.id;
+                }
+                this.isCouponProductEnabled = !!this.data.is_coupon_product;
+
+                if (this.data && this.data.subcategory_id && this.data.subcategory_id) {
+                    this.subcategory_id = this.data.subcategory_id.id;
+                }
+
+                if (this.data && this.data.type_id && this.data.type_id.id) {
+                    this.type_id = this.data.type_id.id;
+                }
+
+                if (this.data && this.data.product_details) {
+                    this.product_details = this.data.product_details;
+                }
+
+                if (this.data && this.data.image) {
+                    this.ImageFrontEdit.push(this.IMAGE_ENDPOINT + this.data.image);
+                }
+
+                if (this.data && this.data.product_images) {
+                    for (let i = 0; i < this.data.product_images.length; i++) {
+                        // show frontend
+                        this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.product_images[i].image_path);
+
+                        // compare to upload or remove
+                        let file = {name: ""};
+                        file.name = this.IMAGE_ENDPOINT + this.data.product_images[i].image_path;
+
+                        this.ImageEditFile.push(file);
+                        this.ImageBlukArray.push(this.data.product_images[i]);
+                        this.ImageBlukArray[i].image_path = this.IMAGE_ENDPOINT + this.data.product_images[i].image_path;
+                    }
+                }
+
+                if (this.data && this.data.coupon_banner_images) {
+                    for (let i = 0; i < this.data.coupon_banner_images.length; i++) {
+                        for (let j = 0; j < this.data.coupon_banner_images[i].banner_images.length; j++) {
+                            this.ImageBannerFiles.push({
+                                name: this.IMAGE_ENDPOINT + this.data.coupon_banner_images[i].banner_images[j]
+                            });
+                            this.ImageBannerFilesShow.push(this.IMAGE_ENDPOINT + this.data.coupon_banner_images[i].banner_images[j]);
+                        }
+
+                    }
+                }
+
+                if (this.ImageBannerFilesShow.length > 0) {
+                    this.ImageBannerFilesShow = [...this.ImageBannerFilesShow];
+                }
+
+                console.log('this.ImageBannerFilesShow', this.ImageBannerFilesShow);
+
+                if (this.data.tag != "undefined") {
+                    this.tagOptions = JSON.parse(this.data.tag);
+                }
+
+                if (this.data.tag != "undefined") {
+                    this.tag = JSON.parse(this.data.tag);
+                }
+
+            });
+        });
+
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
         });
     }
 
@@ -148,7 +257,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
-        console.log(this.currentUser);
 
         const formData: FormData = new FormData();
         formData.append('name', value.name);
@@ -164,6 +272,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         formData.append('brand_id', value.brand_id);
         formData.append('tag', JSON.stringify(value.tag));
         formData.append('featured', value.featured ? '1' : '0');
+        formData.append('is_coupon_product', value.is_coupon_product ? '1' : '0');
         formData.append('weight', value.weight);
         formData.append('status', value.status);
 
@@ -198,6 +307,40 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             }
         });
     };
+    //Event method for submitting the form
+    submitFormCouponBanner = ($event, value) => {
+        const formData: FormData = new FormData();
+
+        formData.append('product_id', this.id.toString());
+
+        let hasImage = false;
+        this.ImageBannerFiles.forEach((file, index) => {
+
+            if (file.constructor.name === 'File') {
+                hasImage = true;
+                formData.append('images', file, file.name);
+            } else {
+                const fileName = file.name.replace(environment.IMAGE_ENDPOINT, '');
+                formData.append('existingFiles', fileName);
+            }
+        });
+
+        console.log('submitFormCouponBanner-existingImages', formData.getAll('existingFiles'), formData.getAll('images[]'));
+
+        this.productService.uploadCouponBanners(formData).subscribe(result => {
+            console.log('submit banners', result);
+        }, err => {
+            console.log('err', err);
+        });
+    }
+
+    // Event method for removing front picture
+    onRemovedFront(_file: FileHolder) {
+        this.ImageEditFront.splice(
+            this.ImageEditFront.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
 
     // Event method for removing picture
     onRemoved(_file: FileHolder) {
@@ -215,6 +358,15 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         });
     }
 
+    // Event method for removing picture
+    onRemovedBanners(_file: FileHolder) {
+        console.log('_file', _file);
+        this.ImageBannerFiles.splice(
+            this.ImageBannerFiles.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
+
     // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         ///new uploaded
@@ -228,26 +380,21 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         });
         this.ImageEditFile.push(metadata.file);
 
-        console.log(this.ImageEditFile);
-        console.log(this.ImageBlukArray);
         return metadata;
     };
 
-    // Event method for removing front picture
-    onRemovedFront(_file: FileHolder) {
-        this.ImageEditFront.splice(
-            this.ImageEditFront.findIndex(e => e.name === _file.file.name),
-            1
-        );
-    }
-
     // Event method for storing front imgae in variable
     onBeforeUploadFront = (metadata: UploadMetadata) => {
-        console.log(metadata.file);
-
         this.ImageEditFront.push(metadata.file);
         return metadata;
     }
+
+    // Event method for storing imgae in variable
+    onBeforeBannerUpload = (metadata: UploadMetadata) => {
+        console.log('metadata.file', metadata.file.constructor.name);
+        this.ImageBannerFiles.push(metadata.file);
+        return metadata;
+    };
 
     // Event method for resetting the form
     resetForm($event: MouseEvent) {
@@ -261,70 +408,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     // Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
-    }
-
-    // For initiating the section element with data
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.ImageEditFile = [];
-        this.ImageBlukArray = [];
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.queryStatus = params.status;
-        });
-        this.sub = this.route.params.subscribe(params => {
-            this.id = +params['id']; // (+) converts string 'id' to a number
-            this.productService.getById(this.id).subscribe(result => {
-                this.warehouse_name = result.warehouse_id.name;
-                this.data = result;
-
-                this.validateForm.patchValue(this.data);
-                if (this.data && this.data.brand_id && this.data.brand_id) {
-                    this.brand_id = this.data.brand_id.id;
-                }
-                if (this.data && this.data.category_id && this.data.category_id) {
-                    this.category_id = this.data.category_id.id;
-                }
-                if (this.data && this.data.subcategory_id && this.data.subcategory_id) {
-                    this.subcategory_id = this.data.subcategory_id.id;
-                }
-                if (this.data && this.data.type_id && this.data.type_id.id) {
-                    this.type_id = this.data.type_id.id;
-                }
-                if (this.data && this.data.product_details) {
-                    this.product_details = this.data.product_details;
-                }
-                if (this.data && this.data.product_images) {
-                    for (let i = 0; i < this.data.product_images.length; i++) {
-                        // showfrontend
-                        this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.product_images[i].image_path);
-
-                        // compare to upload or remove
-                        let file = {name: ""};
-                        file.name = this.IMAGE_ENDPOINT + this.data.product_images[i].image_path;
-
-                        this.ImageEditFile.push(file);
-                        this.ImageBlukArray.push(this.data.product_images[i]);
-                        this.ImageBlukArray[i].image_path = this.IMAGE_ENDPOINT + this.data.product_images[i].image_path;
-                    }
-                }
-                if (this.data && this.data.image) {
-                    this.ImageFrontEdit.push(this.IMAGE_ENDPOINT + this.data.image);
-                }
-
-                if (this.data.tag != "undefined")
-                    this.tagOptions = JSON.parse(this.data.tag);
-                if (this.data.tag != "undefined")
-                    this.tag = JSON.parse(this.data.tag);
-            });
-        });
-
-        this.categoryProductService.getAllCategory().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
-
-        });
     }
 
     ngOnDestroy(): void {
@@ -381,6 +464,21 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                 });
         } else {
             this.categorySearchOptions = {};
+        }
+    }
+
+    handleCancelModal($event) {
+        this.couponProductModalVisible = false;
+    }
+
+    handleOkModal($event) {
+        this.couponProductModalVisible = false;
+    }
+
+    onChangeCouponProduct($event) {
+        this.isCouponProductEnabled = $event;
+        if ($event) {
+            this.couponProductModalVisible = true;
         }
     }
 }

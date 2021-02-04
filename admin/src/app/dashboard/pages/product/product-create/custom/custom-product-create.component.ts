@@ -22,14 +22,21 @@ import {BrandService} from '../../../../../services/brand.service';
     styleUrls: ['./custom-product-create.component.css']
 })
 export class CustomProductCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
+
     tagOptions: any = [];
     validateForm: FormGroup;
+
     ImageBlukArray: any = [];
+
     ImageFile: File[] = [];
     ImageFrontFile: File[] = [];
+
+    tag: any;
+    tags = [];
+
     isSubmit: boolean = true;
 
-    @ViewChild('Image') Image;
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
@@ -68,8 +75,7 @@ export class CustomProductCreateComponent implements OnInit {
     brandSearchOptions: any;
 
     craftsmanSearchOptions: any;
-    tag: any;
-    tags = [];
+
     inputVisible = false;
     inputValue = '';
     statusOptions = [
@@ -91,6 +97,11 @@ export class CustomProductCreateComponent implements OnInit {
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
                 private productService: ProductService) {
+
+    }
+
+    // For initiating the section element with data
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
@@ -108,6 +119,18 @@ export class CustomProductCreateComponent implements OnInit {
             tag: ['', []],
             featured: [false, []],
             weight: ['0.0', [Validators.required]]
+        });
+
+        this.currentUser = this.authService.getCurrentUser();
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.queryStatus = params.status;
+        });
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
+
         });
     }
 
@@ -166,8 +189,19 @@ export class CustomProductCreateComponent implements OnInit {
                 );
                 this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
             }
+            this.isSubmit = true;
+        }, (error)=> {
+            this.isSubmit = true;
         });
     };
+
+    // Event method for removing front picture
+    onRemovedFront(_file: FileHolder) {
+        this.ImageFrontFile.splice(
+            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
 
     // Event method for removing picture
     onRemoved(_file: FileHolder) {
@@ -191,19 +225,12 @@ export class CustomProductCreateComponent implements OnInit {
         formData.append('image', metadata.file, metadata.file.name);
 
         this.productService.upload(formData).subscribe(result => {
+            this.ImageFile.push(metadata.file);
             this.ImageBlukArray.push(result);
         });
-        this.ImageFile.push(metadata.file);
+
         return metadata;
     };
-
-    // Event method for removing front picture
-    onRemovedFront(_file: FileHolder) {
-        this.ImageFrontFile.splice(
-            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
-            1
-        );
-    }
 
     // Event method for storing front imgae in variable
     onBeforeUploadFront = (metadata: UploadMetadata) => {
@@ -225,20 +252,6 @@ export class CustomProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    // For initiating the section element with data
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.queryStatus = params.status;
-        });
-        this.categoryProductService.getAllCategory().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
-
-        });
-    }
 
     categorySearchChange($event) {
     }
@@ -279,4 +292,8 @@ export class CustomProductCreateComponent implements OnInit {
 
     craftsmanSearchChange($event) {
     }
+
+
+
+
 }

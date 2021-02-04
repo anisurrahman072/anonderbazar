@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
 @Injectable()
@@ -113,7 +113,14 @@ export class ProductService {
     upload(data): Observable<any> {
         return this.http.post(this.EndPoint + '/upload', data);
     }
-
+    uploadCouponBanners(data): Observable<any> {
+        let headers = new HttpHeaders();
+        //this is the important step. You need to set content type as null
+        headers.set('Content-Type', null);
+        headers.set('Accept', "multipart/form-data");
+        let params = new HttpParams();
+        return this.http.post(this.EndPoint + '/uploadCouponBanners', data,  { params, headers });
+    }
     getGeneratedExcelFile(): Observable<any> {
         return this.http.get(this.EndPoint2 + '/generate-excel', { responseType: 'blob' });
     }

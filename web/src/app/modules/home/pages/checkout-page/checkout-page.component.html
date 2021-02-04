@@ -364,7 +364,10 @@
 
                     <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
                         <div class="bagitem-1">
-                            <img src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="product image">
+                            <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
+                                <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
+                                     alt="product image">
+                            </div>
                             <div style="width:95%" class="text">
                                 <div class="sub-text" style="width:70%">
                                     <a routerLink="/product-details/{{cartItem.product_id.id}}">

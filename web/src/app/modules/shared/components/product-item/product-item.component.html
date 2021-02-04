@@ -1,7 +1,7 @@
 <div class="reward-details" *ngIf="product" (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false">
     <div class="product-overlay-img" (click)="clickToImage($event, product.id)">
 
-        <div class="productimage-wrapper" style="width: auto; height: auto; position: relative;">
+        <div class="productimage-wrapper" >
             <span *ngIf="product.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
             <img class="product-image" src="{{IMAGE_LIST_ENDPOINT + product.image}}" alt="Product Image">
         </div>

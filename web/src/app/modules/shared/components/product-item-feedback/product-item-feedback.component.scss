@@ -194,15 +194,12 @@ img {
   transition: all 0.5s ease 0s;
   z-index: 2;
 }
-
 .product-item .button.quick-view:hover {
   background: #eec15b;
 }
-
 .product-item:hover .button.quick-view {
   top: 10px;
 }
-
 .product-item .has-second-image .second-image {
   position: absolute;
   top: 0;
@@ -215,14 +212,12 @@ img {
   transform: translate(420px, 0);
   visibility: hidden;
 }
-
 .product-item:hover .has-second-image .second-image {
   -webkit-transform: translate(0, 0);
   -ms-transform: translate(0, 0);
   transform: translate(0, 0);
   visibility: inherit;
 }
-
 .new {
   background-color: #83ccd5;
 }
@@ -236,9 +231,4 @@ img {
   font-size: 14px;
   margin-right: 9px;
   color: #ec5858;
-}
-
-.product-img {
-  height: 250px;
-  width: 250px;
 }

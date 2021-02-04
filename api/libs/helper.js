@@ -76,7 +76,7 @@ export const imageUploadConfig = function () {
   if (devEnv) {
     return {
       maxBytes: 10000000,
-      dirname: sails.config.appPath + "/assets/",
+      dirname: sails.config.appPath + "/.tmp/public/images",
     }
   }
   return {
