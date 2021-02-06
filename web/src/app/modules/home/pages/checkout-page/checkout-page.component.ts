@@ -163,9 +163,18 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         if (typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined') {
             this.grantTotal = this.cartData.data.total_price;
         }
+
         if (shouldUpateShippingCharge) {
             this.shippingCharge = 0;
-            if (zilaId > 0) {
+            let noShippingCharge = false;
+            if (typeof this.cartData.data !== 'undefined' && typeof this.cartData.data.cart_items !== 'undefined' && this.cartData.data.cart_items.length > 0) {
+                const foundCouponProduct = this.cartData.data.cart_items.find((item) => {
+                    return item.product_id && !!item.product_id.is_coupon_product;
+                });
+                noShippingCharge = foundCouponProduct && this.cartData.data.cart_items.length === 1;
+            }
+
+            if (zilaId > 0 && !noShippingCharge) {
                 if (this.courierCharges) {
                     this.shippingCharge = zilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
@@ -259,7 +268,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.prevoius_address = result;
         });
     }
-
 
 
     //Method for division change

@@ -133,17 +133,26 @@ module.exports = {
       deletedAt: null
     }).populate(["cart_item_variants", "product_id"]);
 
+    let noShippingCharge = false;
+    if (cartItems && cartItems.length > 0) {
+      const couponProductFound = cartItems.find((cartItem) => {
+        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+      });
+      noShippingCharge = couponProductFound && cartItems.length === 1;
+    }
+
     /** Create  order from cart........................START...........................*/
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    /*
-        const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
-        console.log('shippingAddress', shippingAddress[0])
-    */
-
-    const courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+    let courierCharge = 0;
+    if (!noShippingCharge) {
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+      /*
+          const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
+          console.log('shippingAddress', shippingAddress[0])
+      */
+      courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+    }
 
     let order = await Order.create({
       user_id: req.param("user_id"),

@@ -373,7 +373,6 @@
                                     <a routerLink="/product-details/{{cartItem.product_id.id}}">
                                         <p>{{cartItem.product_id.name}}</p>
                                     </a>
-                                    <!--                  <span>Color:<small>Red</small></span>-->
                                     <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
                                     <span *ngFor="let variant of cartItem.cartitemvariant">
                                       {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
