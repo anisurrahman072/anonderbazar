@@ -91,16 +91,18 @@ module.exports = {
       console.log('request body', body);
 
       if (body.brand_id === '' || body.brand_id === 'undefined') {
-        body.brand_id = null
+        body.brand_id = null;
       }
       if (body.tag === '' || body.tag === 'undefined') {
-        body.tag = null
+        body.tag = null;
+      }
+
+      if (body.is_coupon_product === '' || body.is_coupon_product === 'undefined') {
+        body.is_coupon_product = false;
       }
 
       if (req.body.hasImageFront === 'true') {
         try {
-          console.log('req.file("frontimage")', req.file("frontimage"));
-
           const uploaded = await uploadImages(req.file("frontimage"));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
@@ -116,30 +118,6 @@ module.exports = {
         }
       }
 
-      /*      if (req.body.hasCouponBannerImage === 'true') {
-              try {
-                console.log('req.file("CouponProductBannerImages")', req.file("CouponProductBannerImages[]"));
-
-                const uploaded = await uploadImages(req.file("CouponProductBannerImages[]"));
-                if (uploaded.length === 0) {
-                  return res.badRequest('No file was uploaded');
-                }
-                const uploadCount = uploaded.length;
-
-                const bannerImages = [];
-                for(let i = 0; i < uploadCount; i++){
-                  bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
-                }
-
-                console.log('bannerImages', bannerImages);
-
-                body.coupon_product_banners = bannerImages;
-
-              } catch (err) {
-                console.log('err', err);
-                return res.json(err.status, {err: err});
-              }
-            }*/
 
       const product = await Product.create(body);
 
@@ -236,7 +214,9 @@ module.exports = {
             console.log('err', err)
             return res.json(err.status, {err: err});
           }
-
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath)
 
@@ -291,23 +271,20 @@ module.exports = {
 
     console.log('req.body', req.body, req.file.images);
 
-    if (req.file.images && req.file.images.size > 0) {
-      console.log('req.file.images', req.file.images)
-    }
+
     try {
       let bannerImages = [];
-      if (req.file.images && req.file.images.size > 0) {
-        const uploaded = await uploadImages(req.file("images"));
-        if (uploaded.length === 0) {
-          return res.badRequest('No image was uploaded');
-        }
-        const uploadCount = uploaded.length;
 
-        for (let i = 0; i < uploadCount; i++) {
-          bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
-        }
+      const uploaded = await uploadImages(req.file("images"));
+
+      const uploadCount = uploaded.length;
+
+      for (let i = 0; i < uploadCount; i++) {
+        bannerImages.push('/' + uploaded[i].fd.split(/[\\//]+/).reverse()[0]);
       }
+
       console.log('uploaded images-', bannerImages);
+
       if (req.body.existingFiles && Array.isArray(req.body.existingFiles) && req.body.existingFiles.length) {
         bannerImages = req.body.existingFiles.concat(bannerImages);
       }

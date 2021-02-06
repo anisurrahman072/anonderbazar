@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {CmsService} from '../../../../services/cms.service';
+import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 
 import {
@@ -19,8 +19,10 @@ export class BannerComponent implements OnInit {
 
     @ViewChild(SwiperComponent)
     componentRef: SwiperComponent;
+
     @ViewChild(SwiperDirective)
     directiveRef: SwiperDirective;
+
     activeSlideIndex = 0;
     myInterval = 5000;
     showNavigationArrows = false;

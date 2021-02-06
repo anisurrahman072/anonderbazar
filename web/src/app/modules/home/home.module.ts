@@ -47,6 +47,7 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {RecentlyViewesComponent} from './components/recently-viewes/recently-viewes.component';
 import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
+import {CouponBannersComponent} from "./pages/product-details/coupon-banners/coupon-banners.component";
 
 const routes: Routes = [
     // ovi
@@ -219,7 +220,8 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         CmsPageComponent,
         CmsDetailsPageComponent,
         RightSideFilterSearchComponent,
-        RecentlyViewesComponent
+        RecentlyViewesComponent,
+        CouponBannersComponent
     ],
     providers: [
         {

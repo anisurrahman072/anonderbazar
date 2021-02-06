@@ -305,6 +305,12 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                 );
                 this.router.navigate(['/dashboard/product/details/', this.id], {queryParams: {status: this.queryStatus}});
             }
+        }, error => {
+            this._notification.create(
+                'error',
+                'Problem in updating the product',
+                this.data.name
+            );
         });
     };
     //Event method for submitting the form
@@ -313,11 +319,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
         formData.append('product_id', this.id.toString());
 
-        let hasImage = false;
         this.ImageBannerFiles.forEach((file, index) => {
-
             if (file.constructor.name === 'File') {
-                hasImage = true;
                 formData.append('images', file, file.name);
             } else {
                 const fileName = file.name.replace(environment.IMAGE_ENDPOINT, '');
@@ -325,11 +328,19 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             }
         });
 
-        console.log('submitFormCouponBanner-existingImages', formData.getAll('existingFiles'), formData.getAll('images[]'));
-
         this.productService.uploadCouponBanners(formData).subscribe(result => {
             console.log('submit banners', result);
+            this._notification.create(
+                'success',
+                'Banner Image updated successfully',
+                ''
+            );
         }, err => {
+            this._notification.create(
+                'error',
+                'Failed to update banner images',
+                ''
+            );
             console.log('err', err);
         });
     }

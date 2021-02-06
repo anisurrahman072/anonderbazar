@@ -1,16 +1,14 @@
 <section id="banner-section">
-
     <div class="row">
         <div class="col-12">
             <carousel [interval]="myInterval" [(activeSlide)]="activeSlideIndex">
                 <slide *ngFor="let slide of carousalList; let index=index">
                     <a href="{{slide.description.link}}" title="{{slide.description.linktext}}">
-                        <img [src]="IMAGE_ENDPOINT + slide?.image" alt=""
+                        <img [src]="IMAGE_ENDPOINT + slide?.image" alt="Anonder Bazar Banner Image"
                              style="width: 100%; height: auto; text-align: center;"/>
                     </a>
                 </slide>
             </carousel>
         </div>
     </div>
-
 </section>

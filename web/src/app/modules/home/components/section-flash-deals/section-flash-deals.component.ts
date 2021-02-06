@@ -31,7 +31,6 @@ export class FlashDealsComponent implements OnInit {
 
     private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
-
     constructor(private cmsService: CmsService,private router: Router, private store: Store<fromStore.HomeState>,
       private favouriteProductService: FavouriteProductService,
       private authService: AuthService,

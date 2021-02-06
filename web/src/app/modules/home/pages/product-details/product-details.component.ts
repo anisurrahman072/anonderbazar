@@ -40,6 +40,8 @@ export interface Food {
     styleUrls: ["./product-details.component.scss"]
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
+    @ViewChild('scrollMe') private myScrollContainer: ElementRef;
+    couponProductModalRef: BsModalRef;
     similarProducts;
     objectKeys = Object.keys;
     selectedVariant = [];
@@ -153,13 +155,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     warehouseId: any;
     messageId: any;
     userdata: any;
-    @ViewChild('scrollMe') private myScrollContainer: ElementRef;
+
     fileToUpload: File[] = [];
     createdData: Object;
     recentlyViewedProducts: Observable<any>;
     primaryPicture: string;
     addToCartSuccessProduct: any;
     addToWhishlistSuccessProduct: any;
+
 
     constructor(
         private route: ActivatedRoute,
@@ -525,7 +528,18 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Method for direct buy
 
-    buyNow(product) {
+    buyNow(product, template: TemplateRef<any>) {
+        if (this.data.is_coupon_product) {
+            this.showCouponProductModal(template);
+        } else {
+            this.addProductToCart(product, () => {
+                this.router.navigate([`/checkout`]);
+            });
+        }
+
+    }
+
+    addCouponProductToCart(product) {
         this.addProductToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
@@ -785,6 +799,17 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         }
     }
 
+    showCouponProductModal(template: TemplateRef<any>) {
+        this.couponProductModalRef = this.modalService.show(template);
+    }
+
+    buyCouponProduct(product) {
+        this.addProductToCart(product, () => {
+            this.router.navigate([`/checkout`]);
+            this.couponProductModalRef.hide();
+        });
+    }
+
     private addPageTitleNMetaTag() {
         this.title.setTitle(this.data.name);
         this.meta.addTag({
@@ -819,7 +844,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             name: 'twitter:image',
             content: this.IMAGE_ENDPOINT + this.data.image
         });
-
 
     }
 }
