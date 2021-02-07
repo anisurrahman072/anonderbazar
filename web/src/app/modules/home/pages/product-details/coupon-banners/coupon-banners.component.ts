@@ -2,8 +2,6 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {AppSettings} from "../../../../../config/app.config";
 import {SwiperComponent, SwiperDirective} from "ngx-swiper-wrapper";
 
-
-
 @Component({
     selector: 'coupon-product-banners',
     templateUrl: './coupon-banners.component.html',
@@ -20,7 +18,7 @@ export class CouponBannersComponent implements OnInit {
     directiveRef: SwiperDirective;
 
     activeSlideIndex = 0;
-    myInterval = 5000;
+    myInterval = 1500;
     showNavigationArrows = false;
     showNavigationIndicators = false;
 

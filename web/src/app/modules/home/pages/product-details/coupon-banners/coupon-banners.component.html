@@ -3,7 +3,7 @@
         <carousel [interval]="myInterval" [(activeSlide)]="activeSlideIndex">
             <slide *ngFor="let slide of bannerImages; let index=index">
                 <img [src]="IMAGE_ENDPOINT + slide" alt="Anonder Bazar Banner Image"
-                     style="width: 100%; height: 400px; text-align: center;"/>
+                     style="width: 100%; height: auto; text-align: center;"/>
             </slide>
         </carousel>
     </div>

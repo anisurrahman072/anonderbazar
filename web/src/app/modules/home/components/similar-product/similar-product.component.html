@@ -1,6 +1,3 @@
-<section>
-
-    <app-product-list [dataProductList]="products" [dataTitle]="'Similar Product'">
-        
-    </app-product-list>
+<section *ngIf="products && products.length > 0">
+    <app-product-list [dataProductList]="products" [dataTitle]="'Similar Product'"></app-product-list>
 </section>

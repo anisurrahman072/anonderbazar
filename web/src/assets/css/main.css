@@ -3751,3 +3751,19 @@ del {
     width: 300px;
 }
 
+#coupon-product-banner-section {
+    background: #f6f6f6;
+    padding: 0;
+    width: 100%;
+    height: auto;
+}
+#coupon-product-banner-section .carousel .carousel-inner .item {
+    text-align: center;
+}
+.breadcrumb {
+    padding-bottom: 0;
+}
+/*
+.term-condition-modal.modal-lg {
+    max-width: 800px;
+}*/

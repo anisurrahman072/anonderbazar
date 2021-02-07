@@ -1,6 +1,5 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { OrderService } from '../../../../services/order.service';
-
 import { AuthService } from '../../../../services/auth.service';
 import { NzNotificationService } from "ng-zorro-antd";
 import { Subscription } from 'rxjs';
@@ -30,8 +29,8 @@ export class OrderComponent implements OnInit {
     statusOptions = ['Pending', 'Processing', 'Delivered', 'Canceled'];
     viewNotRendered: boolean = true;
     private currentWarehouseSubscriprtion: Subscription;
-    currentWarehouseId: any; 
-    isProductVisible = false;  
+    currentWarehouseId: any;
+    isProductVisible = false;
     validateProductForm: FormGroup;
     allOders: any = [];
     products = [];
@@ -48,7 +47,7 @@ export class OrderComponent implements OnInit {
         private exportService: ExportService,
         private authService: AuthService) {
             this.validateProductForm = this.fb.group({
-                productChecked: ['', []], 
+                productChecked: ['', []],
               });
     }
  // init the component
@@ -63,15 +62,15 @@ export class OrderComponent implements OnInit {
 
         this.currentUser = this.authService.getCurrentUser();
         this.getData();
-        
-        
+
+
     }
 
       //Method for status change
 
     changeStatusConfirm($event, id, oldStatus) {
         this.orderService.update(id, { status: $event,changed_by: this.currentUser.id }).subscribe((res) => {
-            console.log(res); 
+            console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             // this.data[index].status = $event;
             this.getData();
@@ -83,9 +82,9 @@ export class OrderComponent implements OnInit {
             .subscribe(arg => {
 
         });
-        
+
         this.statusChangeService.updateStatus({ order_id: id, order_status: $event, changed_by: this.currentUser.id  })
-            .subscribe(arg => this.statusData = arg); 
+            .subscribe(arg => this.statusData = arg);
 
     }
       //Method for csv download
@@ -98,7 +97,7 @@ export class OrderComponent implements OnInit {
                     let i=0, varients = "";
                     item.suborderItemVariants.forEach(element => {
                         varients += element.variant_id.name + ': '+ element.product_variant_id.name+ ' '
-                    }); 
+                    });
 
                     csvData.push({
                         'SL'                        : i++,
@@ -119,25 +118,25 @@ export class OrderComponent implements OnInit {
                         'Date'                      : (item.date) ? item.date: 'N/a'
                     });
                 });
-            }); 
+            });
         });
-        console.log(csvData); 
+        console.log(csvData);
 
         const header = [
             'SL',
             'Order Id',
             'SubOrder Id',
-            'Vandor Name', 
-            'Vandor Phone', 
-            'Customer Name', 
-            'Customer Phone', 
-            'Product Description', 
+            'Vandor Name',
+            'Vandor Phone',
+            'Customer Name',
+            'Customer Phone',
+            'Product Description',
             'Price',
             'Quantity',
             'Total',
             'Suborder Status',
             'Suborder Changed By',
-            'Order Status', 
+            'Order Status',
             'Order Status Changed By',
             'Date'
         ];
@@ -152,15 +151,15 @@ export class OrderComponent implements OnInit {
         .subscribe(result => {
             this.data = result;
             console.log(this.data);
-            
+
             this._isSpinning = false;
         });
     }
       //Event method for resetting all filters
-    resetAllFilter() { 
+    resetAllFilter() {
         this.dateSearchValue='';
         this.getData();
-        
+
     }
       //Method for set status
 
@@ -188,47 +187,47 @@ export class OrderComponent implements OnInit {
     }
     //Event called for daterange change
     daterangeChange() {
-        if (this.dateSearchValue.from && this.dateSearchValue.to) { 
+        if (this.dateSearchValue.from && this.dateSearchValue.to) {
             this.page = 1;
             this.getData()
         }
-        
+
     }
 
-    handleOk = e => { 
-        this.isProductVisible = false; 
+    handleOk = e => {
+        this.isProductVisible = false;
     };
-    
-    handleCancel = e => { 
-        this.isProductVisible = false; 
+
+    handleCancel = e => {
+        this.isProductVisible = false;
     };
     //Method for showing the modal
-    showProductModal = data => {  
-        this.allOders = data; 
+    showProductModal = data => {
+        this.allOders = data;
 
-        this.isProductVisible = true; 
+        this.isProductVisible = true;
     };
     //Event method for submitting the form
     submitForm = ($event, value) => {
-        let newlist = this.storeOrderIds; 
-    
-        this.isProductVisible = false;   
+        let newlist = this.storeOrderIds;
+
+        this.isProductVisible = false;
         this.dowonloadCSV(newlist);
         console.log(newlist);
-    
+
       }
         //Method for status checkbox
 
-    _refreshStatus($event, value) { 
+    _refreshStatus($event, value) {
         console.log($event);
         if ($event !== 'undefined') {
             if ($event) {
-                this.storeOrderIds.push(value); 
+                this.storeOrderIds.push(value);
             } else {
-                let findValue = this.storeOrderIds.indexOf(value); 
+                let findValue = this.storeOrderIds.indexOf(value);
                 this.storeOrderIds.splice(findValue, 1);
-            } 
+            }
         }
-         
+
     };
 }

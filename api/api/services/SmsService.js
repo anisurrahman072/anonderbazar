@@ -18,6 +18,37 @@ const axios = require('axios');
 
 module.exports = {
 
+  sendingOneSmsToOne: function (contacts, message) {
+    const contactTexts = contacts.map(function (contact) {
+      if (contact.charAt(0) === '+') {
+        return contact.substr(1)
+      } else if (contact.charAt(0) === '0') {
+        return '88' + contact
+      }
+      return contact
+    });
+
+    const {v4: uuidv4} = require('uuid');
+
+    const payload = {
+      "api_token": '1279-98d2bb25-3f7e-49bf-a1e2-5d1a6c6c588f',
+      "sid": 'ENGINEERING',
+      "msisdn": contactTexts[0],
+      "sms": message,
+      "csms_id": uuidv4()
+    };
+
+    axios.post('https://smsplus.sslwireless.com/api/v3/send-sms', payload, {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  },
   sendingOneMessageToMany: function (contacts, message) {
 
     const contactTexts = contacts.map(function (contact) {

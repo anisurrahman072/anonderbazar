@@ -800,7 +800,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     showCouponProductModal(template: TemplateRef<any>) {
-        this.couponProductModalRef = this.modalService.show(template);
+        this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
     }
 
     buyCouponProduct(product) {

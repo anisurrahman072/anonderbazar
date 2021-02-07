@@ -1,4 +1,11 @@
 
+@media screen and (min-width: 992px){
+  .term-condition-modal.modal-lg {
+    max-width: 900px !important;
+  }
+}
+
+
 @media screen and (max-width: 1546.99px){
   .container-fluid {
     padding-left: 130px !important;
@@ -643,7 +650,6 @@ nav ul a {
     height: 300px !important;
     width: 100% !important;
   }
-
 
 }
 

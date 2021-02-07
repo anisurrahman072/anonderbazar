@@ -7,8 +7,9 @@
   height: auto;
   width: auto;
   display: inline-block;
-  position:relative;
+  position: relative;
 }
+
 .productdetail-img .productdetail-inner-img .product-discount-badge {
   position: absolute;
   left: 0;
@@ -23,29 +24,35 @@
   padding-left: 2px;
   font-size: 12px;
 }
+
 .breadcrumbs a {
   color: #666;
 
   display: inline-block;
   padding: 8px 0;
 }
+
 .variant .mat-button-toggle-group {
   overflow: visible;
 }
-.productdetail-img .productdetail-inner-img img{
+
+.productdetail-img .productdetail-inner-img img {
   width: 640px;
   height: 640px;
 }
+
 .product-count-down {
   display: table-cell;
   vertical-align: top;
 }
+
 .product-count-down {
   //width: 130px;
   background-color: #ff6138;
   padding: 0 20px;
   padding-top: 15px;
 }
+
 .product-count-down ul li {
   border-bottom: 1px solid #eee;
   display: block;
@@ -71,6 +78,7 @@
   font-style: italic;
   margin-top: -10%;
 }
+
 .breadcrumbs a:after {
   content: "/";
   display: inline-block;
@@ -365,16 +373,19 @@ table.variations-table tbody {
 :host .mat-button-toggle-checked {
   background-color: #8bc34a !important;
 }
+
 .kt-thumbs img {
   height: 70px;
   width: 100px;
   text-align: center;
 }
+
 .qcshop {
   border: 1px solid;
   border-radius: 15px;
   margin: 0px;
 }
+
 .craftman {
   border: 1px solid;
   border-radius: 15px;
@@ -384,15 +395,18 @@ table.variations-table tbody {
 .pricepopup {
   span {
     display: block;
+
     h5,
     h6 {
       display: inline;
     }
   }
 }
+
 .rating {
   text-align: center;
 }
+
 .items {
   padding: 0;
 }
@@ -401,9 +415,11 @@ table.variations-table tbody {
   background: blueviolet;
   color: #d6d7d8;
 }
+
 .highlight {
   background-color: #2ba8ea;
 }
+
 .messagecard {
   box-shadow: -4px 3px 10px -2px #00A188;
   position: fixed;
@@ -414,17 +430,20 @@ table.variations-table tbody {
   height: auto;
   cursor: pointer;
 }
-.warehousetitle{
+
+.warehousetitle {
   background-color: #31a387;
   height: 37px;
   border-radius: 5px 5px 0 0;
 }
-.warehousetitle > p{
+
+.warehousetitle > p {
   font-size: 20px;
   padding-top: 5px;
   margin-left: 10px;
   color: white;
 }
+
 .message {
   position: fixed;
   bottom: 20px;
@@ -433,12 +452,14 @@ table.variations-table tbody {
 
   cursor: pointer;
 }
+
 .closeChat {
   position: fixed;
-    bottom: 400px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
+  bottom: 400px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+
   &::ng-deep .mat-button-wrapper {
     line-height: 14px;
     padding: 0;
@@ -447,43 +468,53 @@ table.variations-table tbody {
       font-size: 20px;
     }
   }
+
   z-index: 99;
   cursor: pointer;
 }
-.uploaded{
+
+.uploaded {
   height: auto;
   background-color: whitesmoke;
 }
+
 .sendButton mat-button {
   width: 30px !important;
   height: 30px;
 }
-.new{
+
+.new {
   font-size: 5px;
 }
-.chatform{
+
+.chatform {
   background-color: whitesmoke;
 }
+
 .messageBox {
   overflow-y: scroll;
-    width: 320px;
-    height: 333px;
-    background-color: whitesmoke;
+  width: 320px;
+  height: 333px;
+  background-color: whitesmoke;
 }
-.messagetextbox{
+
+.messagetextbox {
   width: 90%;
   height: 44px;
   padding: 0px 10px 0px 10px;
   background-color: whitesmoke;
 }
+
 .messagePosition {
   float: right;
 }
-.userInfo{
+
+.userInfo {
   margin: 20px 0px 0 2px;
   font-size: 11px;
   opacity: 0.7;
 }
+
 /* CSS talk bubble */
 .talk-bubble {
   margin: 0px 0px 0px 3px;
@@ -494,9 +525,11 @@ table.variations-table tbody {
   max-width: 230px;
   background-color: #cccccc;
 }
+
 .border {
   border: 8px solid #666;
 }
+
 .round {
   border-radius: 30px;
   -webkit-border-radius: 30px;
@@ -516,6 +549,7 @@ table.variations-table tbody {
   border: 32px solid;
   border-color: #666 transparent transparent transparent;
 }
+
 .tri-right.left-top:after {
   content: " ";
   position: absolute;
@@ -542,6 +576,7 @@ table.variations-table tbody {
   border: 20px solid;
   border-color: #666 #666 transparent transparent;
 }
+
 .tri-right.left-in:after {
   content: " ";
   position: absolute;
@@ -568,6 +603,7 @@ table.variations-table tbody {
   border: 32px solid;
   border-color: transparent transparent transparent #666;
 }
+
 .tri-right.btm-left:after {
   content: " ";
   position: absolute;
@@ -594,6 +630,7 @@ table.variations-table tbody {
   border: 20px solid;
   border-color: #666 transparent transparent #666;
 }
+
 .tri-right.btm-left-in:after {
   content: " ";
   position: absolute;
@@ -619,6 +656,7 @@ table.variations-table tbody {
   border: 20px solid;
   border-color: #666 #666 transparent transparent;
 }
+
 .tri-right.btm-right-in:after {
   content: " ";
   position: absolute;
@@ -630,6 +668,7 @@ table.variations-table tbody {
   border: 12px solid;
   border-color: lightyellow lightyellow transparent transparent;
 }
+
 .tri-right.border.btm-right:before {
   content: " ";
   position: absolute;
@@ -641,6 +680,7 @@ table.variations-table tbody {
   border: 20px solid;
   border-color: #666 #666 transparent transparent;
 }
+
 .tri-right.btm-right:after {
   content: " ";
   position: absolute;
@@ -666,6 +706,7 @@ table.variations-table tbody {
   border: 20px solid;
   border-color: #666 transparent transparent #666;
 }
+
 .tri-right.right-in:after {
   content: " ";
   position: absolute;
@@ -692,6 +733,7 @@ table.variations-table tbody {
   border: 32px solid;
   border-color: #666 transparent transparent transparent;
 }
+
 .tri-right.right-top:after {
   content: " ";
   position: absolute;
@@ -711,16 +753,16 @@ table.variations-table tbody {
   text-align: left;
   line-height: 1.5em;
 }
+
 .talktext p {
   /* remove webkit p margins */
   -webkit-margin-before: 0em;
   -webkit-margin-after: 0em;
   font-size: 14px;
 }
-#coupon-product-banner-section {
-  background: #f6f6f6;
-  padding: 0;
-  width: 100%;
-  height: 400px;
-  display: flex;
+
+.term-condition-coupon ul li {
+  display: inline-block;
+  list-style-type: none;
+  margin-bottom: 5px;
 }

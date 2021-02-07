@@ -82,6 +82,8 @@ module.exports = {
       let _sort = {};
       if (req.query.product_total_price) {
         _sort.product_total_price = req.query.product_total_price;
+      } else {
+        _sort.createdAt = 'DESC';
       }
       /*.....SORT END..............................*/
       let totalSubOrder = await Suborder.count().where(_where);

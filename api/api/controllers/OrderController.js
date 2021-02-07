@@ -374,24 +374,26 @@ module.exports = {
       let courierCharge = 0;
 
       /*.................Shipping Address....................*/
-      if (req.param("shipping_address") && (!req.param("shipping_address").id || req.param("shipping_address").id === "")) {
+      if (req.param("shipping_address")) {
         try {
-          let shippingAddres = await PaymentAddress.create({
-            user_id: req.param("user_id"),
-            // order_id: order.id,
-            first_name: req.param("shipping_address").firstName,
-            last_name: req.param("shipping_address").lastName,
-            address: req.param("shipping_address").address,
-            country: req.param("shipping_address").address,
-            phone: req.param("shipping_address").phone,
-            postal_code: req.param("shipping_address").postCode,
-            upazila_id: req.param("shipping_address").upazila_id,
-            zila_id: req.param("shipping_address").zila_id,
-            division_id: req.param("shipping_address").division_id,
-            status: 1
-          });
+          if (!req.param("shipping_address").id || req.param("shipping_address").id === "") {
+            let shippingAddres = await PaymentAddress.create({
+              user_id: req.param("user_id"),
+              // order_id: order.id,
+              first_name: req.param("shipping_address").firstName,
+              last_name: req.param("shipping_address").lastName,
+              address: req.param("shipping_address").address,
+              country: req.param("shipping_address").address,
+              phone: req.param("shipping_address").phone,
+              postal_code: req.param("shipping_address").postCode,
+              upazila_id: req.param("shipping_address").upazila_id,
+              zila_id: req.param("shipping_address").zila_id,
+              division_id: req.param("shipping_address").division_id,
+              status: 1
+            });
 
-          req.param("shipping_address").id = shippingAddres.id;
+            req.param("shipping_address").id = shippingAddres.id;
+          }
 
           if (!noShippingCharge) {
             let globalConfigs = await GlobalConfigs.findOne({
@@ -404,6 +406,8 @@ module.exports = {
           console.log('error', err);
         }
       }
+
+
       /*.................Billing Address....................*/
       if (req.param("billing_address") && (!req.param("billing_address").id || req.param("billing_address").id === "") && req.param("is_copy") === false) {
         try {
@@ -422,6 +426,8 @@ module.exports = {
             status: 1
           });
           req.param("billing_address").id = paymentAddress.id;
+
+
         } catch (err) {
 
         }
@@ -496,6 +502,7 @@ module.exports = {
         user_id: req.query.user_id,
         deletedAt: null
       }).populate("cart_items");
+
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
@@ -752,7 +759,7 @@ module.exports = {
       }
       /* WHERE condition..........END................*/
 
-      let orders = await Order.find({where: _where}).populateAll();
+      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}}).populateAll();
       await asyncForEach(orders, async element => {
 
         element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}}).populateAll();

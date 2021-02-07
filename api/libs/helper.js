@@ -1,4 +1,5 @@
 import {devEnv} from '../config/softbd';
+const uuid = require('uuid');
 
 export const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
@@ -101,4 +102,17 @@ export function getContentTypeByFile(fileName) {
   else if (fn.indexOf('.jpg') >= 0) rc = 'image/jpg';
 
   return rc;
+}
+export function generateUuid(count, k) {
+  const _sym = 'abcdefghijklmnopqrstuvwxyz1234567890';
+  let str = '';
+
+  for(let i = 0; i < count; i++) {
+    str += _sym[parseInt(Math.random() * (_sym.length))];
+  }
+  base.getID(str, function(err, res) {
+    if(!res.length) {
+      k(str)                   // use the continuation
+    } else generate(count, k)  // otherwise, recurse on generate
+  });
 }

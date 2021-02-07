@@ -442,11 +442,9 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button value="Cash"><i class="fa fa-money"></i> Cash On Delivery
-                                </mat-radio-button>
+                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash"><i class="fa fa-money"></i> Cash On Delivery </mat-radio-button>
                                 <br>
-                                <mat-radio-button value="SSLCommerce"><i class="fa fa-money"></i> Payment via SSLCommerz
-                                </mat-radio-button>
+                                <mat-radio-button value="SSLCommerce"><i class="fa fa-money"></i> Payment via SSLCommerz </mat-radio-button>
                             </div>
                         </mat-radio-group>
                     </div>
@@ -496,8 +494,6 @@
             </div>
         </div>
     </div>
-
-
 </form>
 
 
@@ -512,7 +508,6 @@
                 <a>View Invoice</a>
             </button>
             <button class="Summarybtn" routerLink="/"><a>Back to Home</a></button>
-
         </div>
     </div>
 </section>

@@ -1,5 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import { observable } from 'rxjs/symbol/observable';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 
 @Component({

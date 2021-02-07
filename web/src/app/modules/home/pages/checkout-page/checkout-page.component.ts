@@ -1,16 +1,16 @@
-import {PaymentAddressService} from './../../../../services/payment-address.service';
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import * as fromStore from "../../../../state-management";
-import {Store} from "@ngrx/store";
-import {Observable} from "rxjs/Observable";
-import {Cart, User} from "../../../../models";
-import {ActivatedRoute, Router} from "@angular/router";
-import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../../services";
-import {Subscription} from "rxjs/Subscription";
-import {AppSettings} from '../../../../config/app.config';
 import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
+import {Store} from "@ngrx/store";
+import {Observable} from "rxjs/Observable";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Subscription} from "rxjs/Subscription";
+import * as fromStore from "../../../../state-management";
+import {Cart, User} from "../../../../models";
+import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../../services";
+import {AppSettings} from '../../../../config/app.config';
+import {PaymentAddressService} from '../../../../services/payment-address.service';
 import {LoaderService} from "../../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 
@@ -64,6 +64,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     newBillingAddress: boolean = false;
     isCopy: boolean = true;
     showPayment: boolean = false;
+    hideCashonDelivery: boolean = false;
     successOrderId: any = false;
     showFormError: boolean = false;
     orderId;
@@ -144,7 +145,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.cartService.getByUserId(this.user_id).subscribe(cartData => {
             this.cartData = cartData;
 
-            this.updateGrandTotal()
+            this.updateGrandTotal();
             this.cartService.getCourierCharges().subscribe(globalConfig => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0]
@@ -159,9 +160,17 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     updateGrandTotal(shouldUpateShippingCharge: boolean = true, zilaId: number = 0) {
         this.grantTotal = 0;
+        let selectedZilaId = zilaId;
 
         if (typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined') {
             this.grantTotal = this.cartData.data.total_price;
+        }
+
+        if (selectedZilaId === 0) {
+            let formValue = this.checkoutForm.getRawValue();
+            if (formValue.shipping_zila_id) {
+                selectedZilaId = formValue.shipping_zila_id;
+            }
         }
 
         if (shouldUpateShippingCharge) {
@@ -172,11 +181,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                     return item.product_id && !!item.product_id.is_coupon_product;
                 });
                 noShippingCharge = foundCouponProduct && this.cartData.data.cart_items.length === 1;
+
+                this.hideCashonDelivery = foundCouponProduct;
             }
 
-            if (zilaId > 0 && !noShippingCharge) {
+            if (selectedZilaId > 0 && !noShippingCharge) {
                 if (this.courierCharges) {
-                    this.shippingCharge = zilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                    this.shippingCharge = selectedZilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
 
                 if (this.shippingCharge) {
@@ -195,7 +206,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     resetForm($event: MouseEvent) {
         $event.preventDefault();
         this.checkoutForm.reset();
-        this.updateGrandTotal()
+        this.updateGrandTotal();
         for (const key in this.checkoutForm.controls) {
             this.checkoutForm.controls[key].markAsPristine();
         }
@@ -275,7 +286,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     divisionChange($event, type) {
         var divisionId = $event.target.value;
         if (type == 'shipping') {
-            this.updateGrandTotal()
+            this.updateGrandTotal();
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
                 this.shippingZilaSearchOptions = result;
                 this.shippingUpazilaSearchOptions = [];
@@ -296,7 +307,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.shippingUpazilaSearchOptions = result;
             });
-            this.updateGrandTotal(true, zilaId)
+            this.updateGrandTotal(true, zilaId);
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
                 this.upazilaSearchOptions = result;
@@ -351,7 +362,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.cartItemService.delete(cartItemId).subscribe(res => {
             this.cartService.getByUserId(this.user_id).subscribe(cartData => {
                 this.cartData = cartData;
-                this.updateGrandTotal(false)
+                this.updateGrandTotal();
                 this._progress.complete("mainLoader");
                 this.toastr.info("Item removed from cart Successfully", 'Note');
             });
@@ -476,7 +487,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         if (this.isCopy) {
             this.copyAll();
         }
-        if (this.cartData && this.cartData.data.cart_items.length <= 0) {
+        if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!");
             return false;
         }
@@ -504,7 +515,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.cartService.getByUserId(this.user_id).subscribe(cartData => {
                 this.loaderService.hideLoader();
                 this.cartData = cartData;
-                this.updateGrandTotal(false)
+                this.updateGrandTotal();
                 this._progress.complete("mainLoader");
                 this.toastr.info("Cart Item updated Successfully", 'Note');
             })
