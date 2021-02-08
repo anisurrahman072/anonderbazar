@@ -1,3 +1,4 @@
 module.exports = {
-  devEnv: false
+  devEnv: false,
+  couponCodePadCount: 8
 }
