@@ -19,10 +19,12 @@
                     </li>
                     <li *ngFor="let category of categoryList" class="has-child c-2"
                         (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"
-                        (mouseenter)="categoryHover(category)" [ngClass]="category.id == selectedCategoryId? 'active':''">
+                        (mouseenter)="categoryHover(category)"
+                        [ngClass]="category.id == selectedCategoryId? 'active':''">
                         <a (click)="categoryClickEvent(category)"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
-                        <div class="dropdown-menu w-100" *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
+                        <div class="dropdown-menu w-100"
+                             *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="row">
@@ -80,10 +82,11 @@
             <input id="responsive-menu" type="checkbox">
             <label for="responsive-menu">
                 <a routerLink="/" href="">
-                    <img class="img-1" src="assets/images/logo-white.png" alt="">
-                    <img class="img-2" src="assets/images/logo.png" alt="">
+                    <img class="img-1" src="assets/images/logo-white.png" alt="Logo">
+                    <img class="img-2" src="assets/images/logo.png" alt="Logo">
                 </a>
-                <span id="menu-icon"></span></label>
+                <span id="menu-icon" (click)="showHideMobileMenu()"></span>
+            </label>
             <div class="widget-cart">
                 <a routerLink="/profile/favourites">
                     <img src="assets/images/heart-black.svg" alt="heart">
@@ -116,7 +119,6 @@
                     (mouseenter)="categoryHover(category)"
                     (click)="categoryClickEvent(category)">
                     <a href="#" [routerLink]="['/products/category/',category.id]">{{category.name}}</a>
-
                 </li>
             </ul>
         </div>

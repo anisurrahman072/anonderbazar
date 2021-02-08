@@ -15,8 +15,8 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import {MatAutocompleteSelectedEvent} from '@angular/material';
-import {CmsService} from '../../services/cms.service';
-import {FilterUiService} from './../../services/ui/filterUi.service';
+import {CmsService} from '../../services';
+import {FilterUiService} from '../../services/ui/filterUi.service';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {DOCUMENT} from "@angular/common";
 

@@ -18,7 +18,7 @@ export class CouponBannersComponent implements OnInit {
     directiveRef: SwiperDirective;
 
     activeSlideIndex = 0;
-    myInterval = 1500;
+    myInterval = 150000;
     showNavigationArrows = false;
     showNavigationIndicators = false;
 

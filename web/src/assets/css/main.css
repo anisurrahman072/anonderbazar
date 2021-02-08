@@ -3749,6 +3749,7 @@ del {
 .productimage-wrapper .product-image {
     height: 300px;
     width: 300px;
+    object-fit: contain;
 }
 
 #coupon-product-banner-section {
