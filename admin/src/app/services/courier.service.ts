@@ -9,8 +9,6 @@ import {environment} from "../../environments/environment";
 })
 export class CourierService {
 
-
-
   private EndPoint1 = `${environment.API_ENDPOINT}/courier`;
   private EndPoint2 = `${environment.API_ENDPOINT}/couriers`;
   private EndPoint3 = `${environment.API_ENDPOINT}/suborder`;

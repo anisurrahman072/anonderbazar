@@ -2,13 +2,14 @@ import {Injectable} from '@angular/core';
 import {Router, CanActivate} from '@angular/router';
 import {JwtHelperService} from '@auth0/angular-jwt';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AlreadyLoggedIn implements CanActivate {
-    jwtHelper: JwtHelperService = new JwtHelperService();
-    
-    constructor(private router: Router) {
+
+    constructor(private router: Router, public jwtHelper: JwtHelperService) {
     }
-    
+
     canActivate() {
         try {
             const token = localStorage.getItem('token');

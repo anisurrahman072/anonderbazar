@@ -3,14 +3,16 @@ import {Router, CanActivate, ActivatedRouteSnapshot, CanActivateChild} from '@an
 import {AccessControlPipe} from "../../../pipes/accessControl.pipe";
 
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AccessControl implements CanActivate, CanActivateChild {
-    
+
     constructor(private router: Router, private accessControlPipe: AccessControlPipe) {
     }
-    
+
     canActivate(route: ActivatedRouteSnapshot) {
-        
+
         let accessData = route.data["accessData"];
         try {
             if (this.accessControlPipe.transform(accessData, true)) {
@@ -24,7 +26,7 @@ export class AccessControl implements CanActivate, CanActivateChild {
             return false;
         }
     }
-    
+
     canActivateChild(route: ActivatedRouteSnapshot) {
         return this.canActivate(route);
     }

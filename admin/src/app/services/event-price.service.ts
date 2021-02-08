@@ -13,8 +13,7 @@ export class EventPriceService {
   private EndPoint = `${environment.API_ENDPOINT}/eventprice`;
   private EndPoint2 = `${environment.API_ENDPOINT}/eventprices`;
 
-  constructor(private http: HttpClient,
-    private authenticationService: AuthService) { }
+  constructor(private http: HttpClient, private authenticationService: AuthService) { }
     insert(data): Observable<any> {
       return this.http.post(this.EndPoint + '/create', data);
   }

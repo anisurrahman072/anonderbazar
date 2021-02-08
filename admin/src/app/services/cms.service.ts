@@ -5,7 +5,9 @@ import {AuthService} from './auth.service';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CmsService {
     private EndPoint = `${environment.API_ENDPOINT}/cms`;
 

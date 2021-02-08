@@ -4,12 +4,17 @@ import {AuthService} from './auth.service';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ProductService {
     private EndPoint = `${environment.API_ENDPOINT}/product`;
     private EndPoint2 = `${environment.API_ENDPOINT}/products`;
     private EndPoint3 = `${environment.API_ENDPOINT}/productImage`;
 
+    constructor(private http: HttpClient,
+                private authenticationService: AuthService) {
+    }
 
     getAllProducts(page: number,
                    limit: number,
@@ -52,9 +57,7 @@ export class ProductService {
         );
     }
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
-    }
+
 
     getAll(): Observable<any> {
         return this.http.get(this.EndPoint + `?where={"deletedAt":null}`);

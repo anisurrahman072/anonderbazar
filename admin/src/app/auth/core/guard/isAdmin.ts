@@ -3,17 +3,19 @@ import {Router, CanActivate} from '@angular/router';
 import {JwtHelperService} from '@auth0/angular-jwt';
 
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class IsAdmin implements CanActivate {
-    jwtHelper: JwtHelperService = new JwtHelperService();
-    
-    constructor(private router: Router) {
+
+
+    constructor(private router: Router, public jwtHelper: JwtHelperService) {
     }
-    
+
     canActivate() {
         const token = localStorage.getItem('token');
         const jwtPayload = this.jwtHelper.decodeToken(token);
-        
+
         try {
             if (jwtPayload.group_id === 'admin') {
                 return true;

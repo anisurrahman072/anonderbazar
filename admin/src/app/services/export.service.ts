@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -7,10 +8,7 @@ export class ExportService {
   constructor() { }
   downloadFile(data: any, header: any) {
 
-
     const csv = this.ConvertToCSV(data, header);
-
-    console.log(csv);
 
     const a = document.createElement('a');
     const blob = new Blob([csv], { type: 'text/csv' });

@@ -63,6 +63,7 @@ import {environment} from "../../environments/environment";
         BrowserModule.withServerTransition({appId: 'my-app'}),
         /*BrowserPrebootModule.replayEvents(),*/
         BrowserAnimationsModule,
+        HttpClientModule,
         MaterialModule,
         IonRangeSliderModule,
         AppRoutingModule,
@@ -71,7 +72,6 @@ import {environment} from "../../environments/environment";
         PrebootModule.withConfig({appRoot: "app-root"}),
         FormsModule,
         ReactiveFormsModule,
-        HttpClientModule,
         TabsModule.forRoot(),
         ToastrModule.forRoot({
             timeOut: 2000,
