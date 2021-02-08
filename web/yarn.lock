@@ -195,6 +195,13 @@
   dependencies:
     tslib "^1.7.1"
 
+"@angular/service-worker@5.2.11":
+  version "5.2.11"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-5.2.11.tgz#d04cae704011ff76be6c17d77cd317b56bb311b9"
+  integrity sha512-HWiqHdQ++flxeW8ppXqMgn85N+p8x/cRft2A8O3qZwUWyqoMVRD8tW3BCBCM/1Umb9CCmdYzr0RyIeaZ//FTCg==
+  dependencies:
+    tslib "^1.7.1"
+
 "@cloudinary/angular-5.x@~1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@cloudinary/angular-5.x/-/angular-5.x-1.1.0.tgz#cde25451d7815102121a3510adb9a239ff060fb0"
@@ -3034,7 +3041,7 @@ file-loader@^1.1.5:
     loader-utils "^1.0.2"
     schema-utils "^0.4.5"
 
-"file-saver@github:eligrey/FileSaver.js#1.3.8":
+file-saver@eligrey/FileSaver.js#1.3.8:
   version "1.3.8"
   resolved "https://codeload.github.com/eligrey/FileSaver.js/tar.gz/e865e37af9f9947ddcced76b549e27dc45c1cb2e"
 

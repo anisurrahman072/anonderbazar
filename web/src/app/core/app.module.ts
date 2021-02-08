@@ -1,6 +1,8 @@
 import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
+/*import { ServerPrebootModule } from 'preboot/server';
+import { BrowserPrebootModule } from 'preboot/browser';*/
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SwiperModule} from "ngx-swiper-wrapper";
@@ -16,6 +18,7 @@ import {effects, reducers} from "../state-management";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {NgProgressModule} from '@ngx-progressbar/core';
 import {SimpleNotificationsModule} from 'angular2-notifications';
+import { ServiceWorkerModule } from '@angular/service-worker';
 import {
     AreaService, AuthService, CartItemService, CartItemVariantService, CartService, CategoryProductService,
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
@@ -46,6 +49,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
+import {environment} from "../../environments/environment";
 
 @NgModule({
     declarations: [
@@ -57,10 +61,13 @@ import {FormValidatorService} from "../services/validator/form-validator.service
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'my-app'}),
+        /*BrowserPrebootModule.replayEvents(),*/
         BrowserAnimationsModule,
         MaterialModule,
         IonRangeSliderModule,
         AppRoutingModule,
+        /*ServerPrebootModule.recordEvents({ appRoot: 'app-root' }),*/
+        environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
         PrebootModule.withConfig({appRoot: "app-root"}),
         FormsModule,
         ReactiveFormsModule,

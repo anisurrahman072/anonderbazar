@@ -1,10 +1,10 @@
 {
-  "name": "bitcommerce-web",
-  "version": "0.0.0",
+  "name": "softbd-commerce-web",
+  "version": "0.0.1",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/universal-starter.git"
+    "url": "git@gitlab.com:softbdltd/anonderbazar.git"
   },
   "contributors": [
     "AngularClass <hello@angularclass.com>",
@@ -19,6 +19,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --named-chunks",
+    "pwa": "ng add @angular/pwa --project softbd-commerce-web",
     "build:prod": "ng build  --prod --aot",
     "build:prod-map": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng  build  --prod --aot --sourcemaps",
     "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
@@ -46,6 +47,7 @@
     "@angular/platform-browser-dynamic": "^5.2.5",
     "@angular/platform-server": "^5.2.5",
     "@angular/router": "^5.2.5",
+    "@angular/service-worker": "5.2.11",
     "@cloudinary/angular-5.x": "~1.1.0",
     "@jaspero/ng2-alerts": "0.0.7",
     "@ng-bootstrap/ng-bootstrap": "^4.0.0",

@@ -1,0 +1,14 @@
+{
+  "name": "Anonder Bazar multi vendor ecommerce platform",
+  "short_name": "anonderbazar",
+  "description": "A multi vendor ecommerce platform",
+  "icons": [{
+    "src": "/assets/images/favicon.ico",
+    "sizes": "48x48",
+    "type": "image/x-icon"
+  }],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF"
+}
