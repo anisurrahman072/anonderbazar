@@ -56,7 +56,7 @@
                             <div class="productdetail-inner-img">
                                 <span *ngIf="data.promotion"
                                       class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
-                                <img src="{{primaryPicture}}" alt="Product Image"/>
+                                <img style="object-fit: contain;" src="{{primaryPicture}}" alt="Product Image"/>
                             </div>
                         </div>
                     </div>

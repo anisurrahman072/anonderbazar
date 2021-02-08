@@ -510,10 +510,23 @@ module.exports = {
 
       let noShippingCharge = false;
       if (cartItems && cartItems.length > 0) {
+
         const couponProductFound = cartItems.find((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
         noShippingCharge = couponProductFound && cartItems.length === 1;
+        /*const {v4: uuidv4} = require('uuid');
+         const allCouponProducts = cartItems.filter((cartItem)=> {
+          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+        }).map((cartItem) => {
+          return {
+            quantity: cartItem.product_quantity,
+            product_id: cartItem.product_id.id,
+            user_id: req.query.user_id,
+            coupon_code: uuidv4()
+          }
+        })*/
+
       }
       let courierCharge = 0;
 
@@ -661,7 +674,6 @@ module.exports = {
             transection_key: req.body.tran_id,
             status: 1
           });
-
           paymentTemp.push(paymentType);
         }
       } catch (err) {

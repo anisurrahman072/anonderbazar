@@ -11,7 +11,7 @@
             <button class="flash d-none"><a href="#">Ends in:<span>12 : 06 : 32</span></a></button>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-12 mb-4" *ngFor="let product of (dataProductList|async)">
+            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of (dataProductList|async)">
                 <app-product-item-flash-deals [dataProduct]="product"></app-product-item-flash-deals>
             </div>
         </div>

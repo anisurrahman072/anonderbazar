@@ -189,7 +189,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private partService: PartService, // private localCartService: LocalCartService, // private localCartItemService: LocalCartItemService, // private localStorageMergeService: LocalStorageMergeService
         private router: Router,
         public loaderService: LoaderService,
-        private favouriteProductService: FavouriteProductService,
+        private favouriteProductService: FavouriteProductService
     ) {
         this.chatForm = this.fb.group({
             message: ["", Validators.required],
@@ -804,10 +804,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     buyCouponProduct(product) {
-        this.addProductToCart(product, () => {
-            this.router.navigate([`/checkout`]);
+        if (this.currentUserId) {
+            this.addProductToCart(product, () => {
+                this.router.navigate([`/checkout`]);
+                this.couponProductModalRef.hide();
+            });
+        } else {
             this.couponProductModalRef.hide();
-        });
+            this.loginModalService.showLoginModal(true);
+        }
     }
 
     private addPageTitleNMetaTag() {

@@ -1,8 +1,8 @@
-import {Component, HostListener, Inject, Input, OnInit} from "@angular/core";
+import {Component, Inject, Input, OnInit} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
-import {CategoryTypeService} from "../../services/category-type.service";
-import {CategoryProductService} from "../../services/category-product.service";
+import {AuthService} from "../../services";
+import {CategoryTypeService} from "../../services";
+import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../state-management";
@@ -32,6 +32,7 @@ export class MenuComponent implements OnInit {
     @Input()
     isCollapsed: boolean;
     isDisplay: boolean;
+    isMobileMenuOpen: boolean = false;
 
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -81,7 +82,9 @@ export class MenuComponent implements OnInit {
             }
         });
     }
-
+    showHideMobileMenu(){
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
     //Event method for category hover from menu
     categoryHover(category: any) {
         this.subCategoryList = category.subCategories;
@@ -99,7 +102,8 @@ export class MenuComponent implements OnInit {
     categoryClickEvent(category: any) {
         this.selectedCategoryId = category.id;
         this.subCategoryList = category.subCategories;
-        this.isDisplay = false
+        this.isDisplay = false;
+        this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
     }
 
