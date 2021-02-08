@@ -3735,10 +3735,12 @@ del {
 .offer-details .offer-img .offerimg2 {
     width: 130px;
     height: 130px;
+    object-fit: contain;
 }
 .offer-details .offer-img .offer-mainimg {
     width: 300px;
     height: 300px;
+    object-fit: contain;
 }
 
 .productimage-wrapper {
@@ -3763,6 +3765,9 @@ del {
 }
 .breadcrumb {
     padding-bottom: 0;
+}
+#toast-container > div {
+    opacity: 1;
 }
 /*
 .term-condition-modal.modal-lg {

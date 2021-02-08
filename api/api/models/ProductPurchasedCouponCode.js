@@ -1,5 +1,5 @@
 /**
- * ProductCouponBannerImage.js
+ * ProductPurchasedCouponCode.js
  *
  * @description ::  sldksl
  * @docs  :: http://sailsjs.org/documentation/concepts/models-and-orm/models
@@ -17,15 +17,19 @@ module.exports = {
       required: true
     },
     order_id: {
-      model: 'product',
+      model: 'order',
+      required: true
+    },
+    suborder_id: {
+      model: 'suborder',
+      required: true
+    },
+    suborder_item_id: {
+      model: 'suborderItem',
       required: true
     },
     user_id: {
       model: 'product',
-      required: true
-    },
-    coupon_code: {
-      type: 'string',
       required: true
     },
     createdAt: {

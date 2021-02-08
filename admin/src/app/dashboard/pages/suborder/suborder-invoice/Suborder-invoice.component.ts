@@ -8,13 +8,13 @@ import {SuborderService} from '../../../../services/suborder.service';
 import {NzNotificationService} from "ng-zorro-antd";
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs";
-
+import jsPDF from 'jspdf';
+import * as ___ from 'lodash';
 import {PaymentService} from "../../../../services/payment.service";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {OrderService} from "../../../../services/order.service";
 import {ShippingAddressService} from "../../../../services/shipping-address.service";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
-import jsPDF from 'jspdf';
 import {environment} from "../../../../../environments/environment";
 
 @Component({
@@ -34,7 +34,7 @@ export class SuborderInvoiceComponent implements OnInit {
     shippingAddress: any;
     suborderItems: any;
     @ViewChild('pdfTable') pdfTable: ElementRef;
-    
+
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private suborderService: SuborderService,
@@ -44,7 +44,7 @@ export class SuborderInvoiceComponent implements OnInit {
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService) {
     }
-    
+
     ngOnInit() {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -64,25 +64,29 @@ export class SuborderInvoiceComponent implements OnInit {
                         this.paymentAddressService.getById(order.shipping_address.id).subscribe(shippingAddress => {
                             this.shippingAddress = shippingAddress;
                         });
+
+                        console.log('suborder', this.data);
+                        console.log('suborderItems', this.suborderItems);
+                        console.log('order', this.order);
                     });
                 });
         });
     }
-    
+
     getPayment() {
-    
+
     }
-    
+
     getPaymentAddress() {
-    
+
     }
-    
+
     getShippingAddress() {
-    
+
     }
-    
+
     getPRINT() {
-        
+
         let printContents, popupWin;
         printContents = document.getElementById('print-section').innerHTML;
         popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
@@ -315,14 +319,14 @@ table.table1 a:link
       </html>`
         );
         popupWin.document.close();
-        
+
     }
-    
-    
+
+
     getPDF() {
         let printContents = document.getElementById('print-section').innerHTML;
         console.log(printContents);
-        
+
         let cop = `
       <html>
         <head>
@@ -423,7 +427,7 @@ table.table1 a:link
         </head>
     <body onload="window.print();window.close()">${printContents}</body>
       </html>`;
-        
+
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
                 return true;
@@ -438,18 +442,18 @@ table.table1 a:link
             'elementHandlers': specialElementHandlers
         })
         doc.save('Test.pdf');
-        
-        
+
+
     }
     public downloadAsPDF() {
         const doc = new jsPDF();
-    
+
         const specialElementHandlers = {
           '#editor': function (element, renderer) {
             return true;
           }
         };
-    
+
         const pdfTable = this.pdfTable.nativeElement;
         let cop = `
         <html>
@@ -465,12 +469,19 @@ table.table1 a:link
           width: 190,
           'elementHandlers': specialElementHandlers
         });
-    
+
         doc.save('tableToPdf.pdf');
     }
-    
+
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
+    }
+    couponCodeGenerator(couponProductCodes, suborderItemId) {
+        return couponProductCodes.filter(code => {
+            return code.suborder_item_id == suborderItemId;
+        }).map((code) => {
+            return '1' + ___.padStart(code.id, 6, '0')
+        }).join(',');
     }
 }

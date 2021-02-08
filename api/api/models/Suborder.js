@@ -37,6 +37,10 @@ module.exports = {
       collection: 'suborderItem',
       via: 'product_suborder_id'
     },
+    couponProductCodes: {
+      collection: 'productPurchasedCouponCode',
+      via: 'suborder_id'
+    },
     courier_status: {
       type: 'integer',
     },

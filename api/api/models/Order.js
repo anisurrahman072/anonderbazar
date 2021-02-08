@@ -32,6 +32,10 @@ module.exports = {
       collection: 'suborder',
       via: 'product_order_id'
     },
+    couponProductCodes: {
+      collection: 'productPurchasedCouponCode',
+      via: 'order_id'
+    },
     payment: {
         collection: 'payment',
         via: 'order_id'

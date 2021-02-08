@@ -288,11 +288,6 @@
                             </div>
                         </div>
                     </div>
-                    <!--            <div class="send-btn1">-->
-                    <!--              <button><a href="#">Save</a></button>-->
-                    <!--            </div>-->
-
-
                     <div class="pick-up" *ngIf='isPickup'>
                         <p>Who will pick up this order?</p>
                         <form>
@@ -424,10 +419,10 @@
                         </p>
                     </div>
                     <div class="send-btn1">
-                        <button (click)="processToPay()" class="Summarybtn"><a>Process to Pay</a>
+                        <button (click)="processToPay()" class="Summarybtn">
+                            <a>Process to Pay</a>
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -437,7 +432,6 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6 col-sm-6 col-12 mb-4">
-
                     <div class="payment-method-details1 mt-5">
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
@@ -448,13 +442,9 @@
                             </div>
                         </mat-radio-group>
                     </div>
-
                     <div class="send-btn1">
-                        <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)"><a>Process
-                            to
-                            Order</a></button>
+                        <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)"><a>Process to Order</a></button>
                     </div>
-
                 </div>
                 <div class="col-md-6 col-sm-6 col-12 mb-4">
                     <div class="payment-method-details2">
@@ -495,8 +485,6 @@
         </div>
     </div>
 </form>
-
-
 <section id="success-section" *ngIf="successOrderId">
     <div class="col-md-6 offset-md-3">
         <div class="success-details text-center">

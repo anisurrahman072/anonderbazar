@@ -5,9 +5,7 @@
             <span *ngIf="product.promotion"   class="product-discount-badge" >-{{discountPercentage.toFixed(2)}}%</span>
             <img class="product-image" src="{{IMAGE_LIST_ENDPOINT + product.image}}" alt="Product Image">
         </div>
-        <div class="productlist-icon" style="position: absolute;
-        top: 10%;
-        right: 8%;">
+        <div class="productlist-icon" style="position: absolute; top: 5%; right: 8%;">
             <ul class="button1">
                 <li class="btn3 mb-3">
                   <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">

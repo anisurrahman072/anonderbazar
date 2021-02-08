@@ -1,14 +1,14 @@
-import {Component, ElementRef, OnInit, ViewChild,} from '@angular/core';
-import {AppSettings} from "../../../../config/app.config";
-import {AreaService, OrderService, SuborderItemService, SuborderService} from "../../../../services/index";
-
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
+import * as ___ from 'lodash';
+import * as jspdf from 'jspdf';
+import * as html2canvas from "html2canvas";
+import {AppSettings} from "../../../../config/app.config";
+import {AreaService, OrderService, SuborderItemService, SuborderService} from "../../../../services";
 import {PaymentService} from "../../../../services/payment.service";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {ShippingAddressService} from "../../../../services/shipping-address.service";
-import * as jspdf from 'jspdf';
-import * as html2canvas from "html2canvas";
 
 @Component({
     selector: 'order-invoice',
@@ -29,6 +29,7 @@ export class OrderInvoiceComponent implements OnInit {
     // suborderItems: any;
     suborders: any[] = [];
     suborderItems: any[] = [];
+
     constructor(private route: ActivatedRoute,
                 private suborderService: SuborderService,
                 private orderService: OrderService,
@@ -38,7 +39,8 @@ export class OrderInvoiceComponent implements OnInit {
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService) {
     }
-      //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -46,7 +48,7 @@ export class OrderInvoiceComponent implements OnInit {
             this.orderService.getById(this.id)
                 .subscribe(order => {
                     this.data = order;
-                    this.payment= this.data.payment[0];
+                    this.payment = this.data.payment[0];
                     // this.suborders = order.suborders;
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
@@ -61,10 +63,14 @@ export class OrderInvoiceComponent implements OnInit {
                         console.log('this.shippingAddress', this.shippingAddress)
                         this.shippingAddress = shippingAddress;
                     });
+
+                    console.log('order', this.data);
+                    console.log('payment', this.payment);
                 });
         });
     }
-  //Method for save and download pdf
+
+    //Method for save and download pdf
 
     public SavePDF() {
         var data = document.getElementById('content');
@@ -84,6 +90,14 @@ export class OrderInvoiceComponent implements OnInit {
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
 
+    }
+
+    couponCodeGenerator(couponProductCodes, suborderItemId) {
+        return couponProductCodes.filter(code => {
+            return code.suborder_item_id == suborderItemId;
+        }).map((code) => {
+            return '1' + ___.padStart(code.id, 6, '0')
+        }).join(',');
     }
 }
 

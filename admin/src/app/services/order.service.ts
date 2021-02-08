@@ -27,19 +27,17 @@ export class OrderService {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`);
     }
 
-
     getById(id): Observable<any> {
         return this.http.get(this.EndPoint + '/' + id);
     }
 
-    customOrder(data): Observable<any>{
+    customOrder(data): Observable<any> {
         return this.http.post(this.EndPoint + '/customOrder', data);
     }
 
     insert(data): Observable<any> {
-        return this.http.post(this.EndPoint , data);
+        return this.http.post(this.EndPoint, data);
     }
-
 
     delete(id): Observable<any> {
         // get users from api

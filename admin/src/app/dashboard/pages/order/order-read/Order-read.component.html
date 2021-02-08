@@ -18,13 +18,14 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="header-logo">
-                        <img style="height:100px !important" src="assets/images/logo.png" class="img-responsive" alt="img">
+                        <img style="height:100px !important" src="assets/images/logo.png" class="img-responsive"
+                             alt="img">
                     </div>
                     <div class="invoice-inner-left"><br>
                         <br>
                         <p>Hi, {{data.user_id.first_name}} {{data.user_id.last_name}}. </p>
                         <p>Thank you for shopping from our store.</p>
-                        <p>Your order is <span style="color: #ed1c24">{{options[data.status-1].label}}</span>.</p>
+                        <p>Your order is <span style="color: #ed1c24">{{options[data.status - 1].label}}</span>.</p>
                         <br>
                         <br>
                     </div>
@@ -59,12 +60,16 @@
                     <td>{{suborderItem.product_id.name}}
                         <br>
                         <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
-                                    <span *ngFor="let variant of suborderItem.orderitemvariant">
-                                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
-                                    </span>
+                            <span *ngFor="let variant of suborderItem.orderitemvariant">
+                              {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="data && data.couponProductCodes.length > 0">
+                            <h6 style="margin-top: 15px;">Coupon Codes</h6>
+                            <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
                         </ng-container>
                     </td>
-                    <td>৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}</td>
+                    <td>৳. {{suborderItem.product_total_price / suborderItem.product_quantity}}</td>
                     <td>{{suborderItem.product_quantity}}</td>
                     <td>৳. {{suborderItem.product_total_price}}</td>
                 </tr>
@@ -103,16 +108,18 @@
                         <h5>BILLING INFORMATION</h5>
                         <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
                         <p>{{paymentAddress.address}}</p>
-                        <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}, {{paymentAddress.division_id.name}}</p>
+                        <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}
+                            , {{paymentAddress.division_id.name}}</p>
                         <p>T: {{paymentAddress.phone}}</p>
                     </div>
 
 
                     <div class="shopping-info-left" *ngIf="shippingAddress">
-                        <h5>SHIPPING/DELIVERY  INFORMATION</h5>
+                        <h5>SHIPPING/DELIVERY INFORMATION</h5>
                         <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
                         <p>{{shippingAddress.address}}</p>
-                        <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}, {{shippingAddress.division_id.name}}</p>
+                        <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
+                            , {{shippingAddress.division_id.name}}</p>
                         <p>T: {{shippingAddress.phone}}</p>
                     </div>
                 </div>

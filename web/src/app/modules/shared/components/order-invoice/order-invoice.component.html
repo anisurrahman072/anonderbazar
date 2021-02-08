@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-3">
-                <button class="btn btn-block text-center btn-profile" (click)="SavePDF()" >Download</button>
+                <button class="btn btn-block text-center btn-profile" (click)="SavePDF()">Download</button>
             </div>
             <div class="col-md-3">
                 <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders/">Dashboard</button>
@@ -47,18 +47,26 @@
                         </thead>
                         <tbody>
                         <tr *ngFor="let suborderItem of suborderItems; let i = index;">
-                            <td width="10%" >{{ i+1}}</td>
-                            <td width="45%" >{{suborderItem.product_id?.name}}
+                            <td style="width: 10%;">{{ i + 1}}</td>
+                            <td style="width: 45%;">{{suborderItem.product_id?.name}}
                                 <br>
-                                <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
+                                <ng-container
+                                        *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
                                     <span *ngFor="let variant of suborderItem.orderitemvariant">
                                       {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
                                     </span>
                                 </ng-container>
+                                <br>
+
+                                <ng-container *ngIf="data && data.couponProductCodes.length > 0">
+                                    <h6>Coupon Codes</h6>
+                                    <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
+                                </ng-container>
                             </td>
-                            <td width="15%" >৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}</td>
-                            <td width="15%" >{{suborderItem.product_quantity}}</td>
-                            <td width="15%" class="text-right" >৳. {{suborderItem.product_total_price}}</td>
+                            <td style="width: 15%;">
+                                ৳. {{suborderItem.product_total_price / suborderItem.product_quantity}}</td>
+                            <td style="width: 15%;">{{suborderItem.product_quantity}}</td>
+                            <td style="width: 15%;" class="text-right">৳. {{suborderItem.product_total_price}}</td>
                         </tr>
                         <tr>
                             <td colspan="4">
@@ -97,7 +105,8 @@
                                 <h5>BILLING INFORMATION: </h5>
                                 <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
                                 <p>{{paymentAddress.address}}</p>
-                                <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}, {{paymentAddress.division_id.name}}</p>
+                                <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}
+                                    , {{paymentAddress.division_id.name}}</p>
                                 <p>T: {{paymentAddress.phone}}</p>
                             </div>
 
@@ -106,7 +115,8 @@
                                 <h5>SHIPPING/DELIVERY INFORMATION: </h5>
                                 <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
                                 <p>{{shippingAddress.address}}</p>
-                                <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}, {{shippingAddress.division_id.name}}</p>
+                                <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
+                                    , {{shippingAddress.division_id.name}}</p>
                                 <p>T: {{shippingAddress.phone}}</p>
                             </div>
                         </div>

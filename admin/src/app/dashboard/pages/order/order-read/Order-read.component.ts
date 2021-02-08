@@ -2,13 +2,14 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute} from '@angular/router';
+import jsPDF from 'jspdf';
+import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
 import {PaymentService} from '../../../../services/payment.service';
 import {PaymentAddressService} from '../../../../services/payment-address.service';
 import {ShippingAddressService} from '../../../../services/shipping-address.service';
-import jsPDF from 'jspdf';
 
 @Component({
     selector: 'app-brand-read',
@@ -58,8 +59,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.orderService.getById(this.id)
                 .subscribe(order => {
-                    console.log('this.data', this.data)
+
                     this.data = order;
+                    console.log('this.data', this.data)
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
@@ -113,7 +115,12 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             'elementHandlers': specialElementHandlers
         })
         doc.save('Test.pdf');
-
-
+    }
+    couponCodeGenerator(couponProductCodes, suborderItemId) {
+        return couponProductCodes.filter(code => {
+            return code.suborder_item_id == suborderItemId;
+        }).map((code) => {
+            return '1' + ___.padStart(code.id, 6, '0')
+        }).join(',');
     }
 }

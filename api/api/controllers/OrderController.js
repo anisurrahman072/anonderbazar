@@ -124,10 +124,12 @@ module.exports = {
     } else if (req.param("is_copy") === true) {
       req.param("billing_address").id = req.param("shipping_address").id;
     }
+
     let cart = await Cart.findOne({
       user_id: req.param("user_id"),
       deletedAt: null
     }).populate("cart_items");
+
     let cartItems = await CartItem.find({
       cart_id: cart.id,
       deletedAt: null
@@ -147,10 +149,6 @@ module.exports = {
       let globalConfigs = await GlobalConfigs.findOne({
         deletedAt: null
       });
-      /*
-          const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
-          console.log('shippingAddress', shippingAddress[0])
-      */
       courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
     }
 
@@ -178,11 +176,10 @@ module.exports = {
 
     let subordersTemp = [];
 
-    /**.............................START..........................*/
-
     let i = 0; // i init for loop
 
-    let allOrderedProductsInventory = []
+    let allOrderedProductsInventory = [];
+    let allGeneratedCouponCodes = [];
     for (i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
@@ -229,7 +226,22 @@ module.exports = {
             8) *
           86400000
         ).getDate() + 1);
+
         let suborderItem = await SuborderItem.create(newSuborderItemPayload);
+
+        if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
+          for (let t = 0; t < thisCartItem.product_quantity; t++) {
+            allGeneratedCouponCodes.push({
+              quantity: thisCartItem.product_quantity,
+              product_id: thisCartItem.product_id.id,
+              user_id: req.param("user_id"),
+              order_id: order.id,
+              suborder_id: suborder.id,
+              suborder_item_id: suborderItem.id
+            });
+          }
+        }
+
         let suborderItemVariantsTemp = [];
 
         if (thisCartItem.cart_item_variants.length > 0) {
@@ -292,8 +304,14 @@ module.exports = {
 
         paymentTemp.push(paymentType);
       }
+      if (allGeneratedCouponCodes.length > 0) {
+        const couponCodeLen = allGeneratedCouponCodes.length;
+        for (let i = 0; i < couponCodeLen; i++) {
+          await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
+        }
+      }
     } catch (err) {
-
+      console.log(err);
     }
 
     let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
@@ -509,23 +527,14 @@ module.exports = {
       }).populate(["cart_item_variants", "product_id"]);
 
       let noShippingCharge = false;
+
       if (cartItems && cartItems.length > 0) {
 
         const couponProductFound = cartItems.find((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
+
         noShippingCharge = couponProductFound && cartItems.length === 1;
-        /*const {v4: uuidv4} = require('uuid');
-         const allCouponProducts = cartItems.filter((cartItem)=> {
-          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-        }).map((cartItem) => {
-          return {
-            quantity: cartItem.product_quantity,
-            product_id: cartItem.product_id.id,
-            user_id: req.query.user_id,
-            coupon_code: uuidv4()
-          }
-        })*/
 
       }
       let courierCharge = 0;
@@ -569,6 +578,7 @@ module.exports = {
       let i = 0; // i init for loop
       let allOrderedProductsInventory = []
 
+      let allGeneratedCouponCodes = [];
       for (i = 0; i < uniqueWarehouseIds.length; i++) {
         let thisWarehouseID = uniqueWarehouseIds[i];
 
@@ -600,7 +610,6 @@ module.exports = {
             status: 1
           };
 
-
           const orderedProductInventory = {
             product_id: thisCartItem.product_id.id,
             ordered_quantity: thisCartItem.product_quantity,
@@ -616,7 +625,22 @@ module.exports = {
               8) *
             86400000
           ).getDate() + 1);
+
           let suborderItem = await SuborderItem.create(newSuborderItemPayload);
+
+          if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
+            for (let t = 0; t < thisCartItem.product_quantity; t++) {
+              allGeneratedCouponCodes.push({
+                quantity: thisCartItem.product_quantity,
+                product_id: thisCartItem.product_id.id,
+                user_id: req.query.user_id,
+                order_id: order.id,
+                suborder_id: suborder.id,
+                suborder_item_id: suborderItem.id
+              });
+            }
+          }
+
           let suborderItemVariantsTemp = [];
           if (thisCartItem.cart_item_variants.length > 0) {
             for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
@@ -663,6 +687,7 @@ module.exports = {
       let paymentTemp = [];
 
       try {
+
         for (let i = 0; i < subordersTemp.length; i++) {
           let paymentType = await Payment.create({
             user_id: req.query.user_id,
@@ -676,10 +701,19 @@ module.exports = {
           });
           paymentTemp.push(paymentType);
         }
-      } catch (err) {
 
+        if (allGeneratedCouponCodes.length > 0) {
+          const couponCodeLen = allGeneratedCouponCodes.length;
+          for (let i = 0; i < couponCodeLen; i++) {
+            await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
+          }
+        }
+      } catch (err) {
+        console.log(err);
       }
+
       // Start/Delete Cart after submitting the order
+
       let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
       let allOrderedProducts = [];
       for (let i = 0; i < subordersTemp.length; i++) {
@@ -688,8 +722,8 @@ module.exports = {
           allOrderedProducts.push(items[index]);
         }
       }
-      orderForMail[0].orderItems = allOrderedProducts;
 
+      orderForMail[0].orderItems = allOrderedProducts;
 
       await Cart.update({id: cart.id}, {deletedAt: new Date()});
 
@@ -701,21 +735,21 @@ module.exports = {
             {deletedAt: new Date()}
           );
         }
-        console.log('allOrderedProductsInventory', allOrderedProductsInventory)
+
         for (let i = 0; i < allOrderedProductsInventory.length; i++) {
           const quantityToUpdate = parseFloat(allOrderedProductsInventory[i].existing_quantity) - parseFloat(allOrderedProductsInventory[i].ordered_quantity)
           await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate});
         }
-      } catch (err) {
 
+      } catch (err) {
+        console.log(err);
       }
       try {
 
         EmailService.orderSubmitMail(orderForMail);
 
         if (shippingAddress && shippingAddress.phone) {
-          const phone = shippingAddress.phone
-          SmsService.sendingOneMessageToMany([phone], 'Your Order has been successfully received by anonderbazar.com')
+          SmsService.sendingOneMessageToMany([shippingAddress.phone], 'Your Order has been successfully received by anonderbazar.com')
         }
 
       } catch (err) {

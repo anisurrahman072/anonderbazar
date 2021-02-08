@@ -182,7 +182,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 });
                 noShippingCharge = foundCouponProduct && this.cartData.data.cart_items.length === 1;
 
-                this.hideCashonDelivery = foundCouponProduct;
+                if(AppSettings.IS_PRODUCTION){
+                    this.hideCashonDelivery = foundCouponProduct;
+                }
             }
 
             if (selectedZilaId > 0 && !noShippingCharge) {
@@ -493,14 +495,16 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         }
         if (this.checkoutForm.invalid) {
             this.showFormError = true;
-            this.toastr.error("Both shipping and billing address is required!", "Sorry!");
+            this.toastr.error("Both shipping and billing address is required!", "Sorry!", {
+                positionClass: 'toast-bottom-right'
+            });
+            window.scroll(0, 0);
             return false;
         }
         this.showPayment = true
     }
 
     // Method for update cart
-
     updateCartItem(cartItem) {
         this._progress.start("mainLoader");
         let data = {

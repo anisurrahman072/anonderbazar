@@ -73,6 +73,11 @@ import {environment} from "../../environments/environment";
         ReactiveFormsModule,
         HttpClientModule,
         TabsModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 2000,
+            positionClass: 'toast-top-right',
+            preventDuplicates: true,
+        }),
         JasperoAlertsModule,
         NgProgressModule.forRoot(),
         SimpleNotificationsModule.forRoot(),
@@ -84,11 +89,7 @@ import {environment} from "../../environments/environment";
         EffectsModule.forFeature(effects),
 
         StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
-        ToastrModule.forRoot({
-            timeOut: 5000,
-            positionClass: 'toast-top-right',
-            preventDuplicates: true,
-        }),
+
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
         SharedModule,

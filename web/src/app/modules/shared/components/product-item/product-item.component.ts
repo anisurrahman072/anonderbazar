@@ -1,4 +1,4 @@
-import {Component, Directive, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";

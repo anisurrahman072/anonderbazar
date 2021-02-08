@@ -10,14 +10,14 @@ import {
   initLogPlaceholder,
   pagination
 } from "../../libs";
-import { ifError } from "assert";
+import {ifError} from "assert";
 import moment from "moment";
 
 module.exports = {
   // destroy a row
-  destroy: function(req, res) {
-    Suborder.update({ id: req.param("id") }, { deletedAt: new Date() }).exec(
-      function(err, suborder) {
+  destroy: function (req, res) {
+    Suborder.update({id: req.param("id")}, {deletedAt: new Date()}).exec(
+      function (err, suborder) {
         if (err) return res.json(err, 400);
         return res.json(suborder[0]);
       }
@@ -25,26 +25,26 @@ module.exports = {
   },
   //Method called for updaing product suborder by order id
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
-  updatebyorderid: async function(req, res) {
+  updatebyorderid: async function (req, res) {
 
-    var suborder = await Suborder.update({ product_order_id: req.param("id") }, req.body);
+    var suborder = await Suborder.update({product_order_id: req.param("id")}, req.body);
     if (req.body.status == '2' || req.body.status == '11' || req.body.status == '12') {
       if (req.body.status == '2') {
-        var list = await CourierListOrder.update({ order_id: req.param("id")}, {status: 3});
+        var list = await CourierListOrder.update({order_id: req.param("id")}, {status: 3});
         await asyncForEach(suborder, async element => {
-          let list = await CourierList.update({ suborder_id: element.id}, {status: 3});
+          let list = await CourierList.update({suborder_id: element.id}, {status: 3});
         });
-      }else{
-        var list = await CourierListOrder.update({ order_id: req.param("id")}, req.body);
+      } else {
+        var list = await CourierListOrder.update({order_id: req.param("id")}, req.body);
         await asyncForEach(suborder, async element => {
-          let list = await CourierList.update({ suborder_id: element.id}, req.body);
+          let list = await CourierList.update({suborder_id: element.id}, req.body);
         });
       }
     }
     if (suborder) {
       return res.json(200, suborder);
     } else {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({success: false});
     }
 
   },
@@ -135,7 +135,7 @@ module.exports = {
           item.product_order_id = await Order.find({
             deletedAt: null,
             id: item.product_order_id.id
-          }).populate("user_id", { deletedAt: null });
+          }).populate("user_id", {deletedAt: null});
           return item;
         })
       );
@@ -198,7 +198,7 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalSubOrder;
       let SubOrders = await Suborder.find({
         where: _where,
-        contains:req.query.date,
+        contains: req.query.date,
         sort: _sort
       }).populate("product_order_id", _suborder_where);
       let allSubOrders = await Promise.all(
@@ -206,7 +206,7 @@ module.exports = {
           item.product_order_id = await Order.find({
             deletedAt: null,
             id: item.product_order_id.id
-          }).populate("user_id", { deletedAt: null });
+          }).populate("user_id", {deletedAt: null});
 
           return item;
         })
@@ -228,30 +228,30 @@ module.exports = {
   },
   //Method called for getting all product suborder with relations
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js, models/Product.js
-  getWithFull: async function(req, res) {
+  getWithFull: async function (req, res) {
     let suborder = await Suborder.findOne({
       id: req.param("id"),
       deletedAt: null
-    }).populate(["suborderItems", "warehouse_id", "product_order_id"]);
+    }).populate(["suborderItems", "warehouse_id", "product_order_id", 'couponProductCodes']);
     let suborderItems = [];
     for (let i = 0; i < suborder.suborderItems.length; i++) {
       let suborderItem = await SuborderItem.findOne({
         id: suborder.suborderItems[i].id,
         deletedAt: null
       }).populate(["product_id"]);
-            let oiv = await SuborderItemVariant.find({
-                product_id: suborderItem.product_id.id,
-                product_suborder_item_id: suborder.suborderItems[i].id,
-                deletedAt: null
-            })
-            .populate("variant_id",{deletedAt:null})
-            .populate("warehouse_variant_id",{deletedAt:null})
-            .populate("product_variant_id",{deletedAt:null});
-        if(oiv.length>0) {
-            suborderItem.orderitemvariant = oiv;
-        }else{
-            suborderItem.orderitemvariant = {};
-        }
+      let oiv = await SuborderItemVariant.find({
+        product_id: suborderItem.product_id.id,
+        product_suborder_item_id: suborder.suborderItems[i].id,
+        deletedAt: null
+      })
+        .populate("variant_id", {deletedAt: null})
+        .populate("warehouse_variant_id", {deletedAt: null})
+        .populate("product_variant_id", {deletedAt: null});
+      if (oiv.length > 0) {
+        suborderItem.orderitemvariant = oiv;
+      } else {
+        suborderItem.orderitemvariant = {};
+      }
       suborderItems.push(suborderItem);
     }
     let d = Object.assign({}, suborder);

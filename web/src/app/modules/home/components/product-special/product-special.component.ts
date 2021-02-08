@@ -6,7 +6,10 @@ import { Store } from "@ngrx/store";
 import { Observable } from "rxjs/Observable";
 import { AlertsService } from "@jaspero/ng2-alerts";
 import { NgProgress } from "@ngx-progressbar/core";
+import { of } from "rxjs/observable/of";
 import { NotificationsService } from "angular2-notifications";
+import { MatButtonToggleChange } from "@angular/material";
+import {ToastrService} from "ngx-toastr";
 import { FavouriteProduct, Product } from "../../../../models";
 import {
   AuthService,
@@ -19,10 +22,8 @@ import {
   ProductVariantService
 } from "../../../../services";
 import * as fromStore from "../../../../state-management";
-import { of } from "rxjs/observable/of";
 import { LoginModalService } from "../../../../services/ui/loginModal.service";
-import { MatButtonToggleChange } from "@angular/material";
-import {ToastrService} from "ngx-toastr";
+
 
 @Component({
   selector: "home-product-special",

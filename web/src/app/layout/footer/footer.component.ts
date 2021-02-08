@@ -1,5 +1,5 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {CmsService} from '../../services/cms.service';
+import {CmsService} from '../../services';
 import {AppSettings} from '../../config/app.config';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import * as fromStore from "../../state-management";

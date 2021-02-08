@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-6 pl-0">
                         <div class="product-img">
-                            <img src="{{IMAGE_ENDPOINT + promoCategoey[0]?.data_value[0].category_id.image}}"
+                            <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[0]?.data_value[0].category_id.image}}"
                                  alt="{{promoCategoey[0]?.data_value[0].category_id.name}}">
                         </div>
                     </div>
@@ -33,15 +33,16 @@
                                     <h4 class="proh1first">{{promoCategoey[1]?.data_value[0].category_id.name}}</h4>
                                     <h4 class="proh12nd">{{(promoCategoey[1]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[1]?.data_value[0].lowerlimit}}
                                         - ৳ {{promoCategoey[1]?.data_value[0].upperlimit}}</h4>
-                                    <button><a
-                                            routerLink="/products/category/{{promoCategoey[1]?.data_value[0].category_id.id}}"
-                                            [queryParams]="{min: promoCategoey[1]?.data_value[0].lowerlimit, max:promoCategoey[1]?.data_value[0].upperlimit}">Shop
-                                        now<i class="fa fa-angle-right text-center"></i></a></button>
+                                    <button>
+                                        <a routerLink="/products/category/{{promoCategoey[1]?.data_value[0].category_id.id}}"
+                                            [queryParams]="{min: promoCategoey[1]?.data_value[0].lowerlimit, max:promoCategoey[1]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i>
+                                        </a>
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-md-6 col-6 pl-0">
                                 <div class="productsub-img">
-                                    <img src="{{IMAGE_ENDPOINT + promoCategoey[1]?.data_value[0].category_id.image}}"
+                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[1]?.data_value[0].category_id.image}}"
                                          alt="{{promoCategoey[1]?.data_value[0].category_id.name}}">
                                 </div>
                             </div>
@@ -54,15 +55,15 @@
                                     <h4 class="proh1first">{{promoCategoey[2]?.data_value[0].category_id.name}}</h4>
                                     <h4 class="proh12nd">{{(promoCategoey[2]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[2]?.data_value[0].lowerlimit}}
                                         - ৳ {{promoCategoey[2]?.data_value[0].upperlimit}}</h4>
-                                    <button><a
-                                            routerLink="/products/category/{{promoCategoey[2]?.data_value[0].category_id.id}}"
-                                            [queryParams]="{min: promoCategoey[2]?.data_value[0].lowerlimit, max:promoCategoey[2]?.data_value[0].upperlimit}">Shop
-                                        now<i class="fa fa-angle-right text-center"></i></a></button>
+                                    <button>
+                                        <a  routerLink="/products/category/{{promoCategoey[2]?.data_value[0].category_id.id}}"
+                                            [queryParams]="{min: promoCategoey[2]?.data_value[0].lowerlimit, max:promoCategoey[2]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i></a>
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-md-6 col-6 pl-0">
                                 <div class="productsub-img">
-                                    <img src="{{IMAGE_ENDPOINT + promoCategoey[2]?.data_value[0].category_id.image}}"
+                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[2]?.data_value[0].category_id.image}}"
                                          alt="{{promoCategoey[2]?.data_value[0].category_id.name}}">
                                 </div>
                             </div>
