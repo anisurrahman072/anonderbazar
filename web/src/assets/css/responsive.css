@@ -56,9 +56,8 @@
 
 @media screen and (max-width: 1308px) {
     .navbar-collapse ul li {
-        padding: 15px 5px;
+        padding: 5px 10px;
     }
-
 }
 
 @media screen and (max-width: 1298.99px) {
@@ -71,8 +70,8 @@
     }
 
     .header_chart .widget-cart button {
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .bagitem-1 .text p span {
