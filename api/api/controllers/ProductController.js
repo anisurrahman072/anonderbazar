@@ -269,9 +269,6 @@ module.exports = {
       return res.badRequest('No Associated Product to attach banners');
     }
 
-    console.log('req.body', req.body, req.file.images);
-
-
     try {
       let bannerImages = [];
 
@@ -360,14 +357,14 @@ module.exports = {
       let categories = await Category.find({
         where: {type_id: 1, deletedAt: null, parent_id: null},
         limit: 3,
-        sort: "updated_at DESC",
+        sort: "created_at DESC",
       });
 
       await asyncForEach(categories, async (_category) => {
         _category.products = await Product.find({
           where: {type_id: _category.id, deletedAt: null, approval_status: 2},
           limit: 5,
-          sort: "updated_at DESC",
+          sort: "created_at DESC",
         });
       });
 

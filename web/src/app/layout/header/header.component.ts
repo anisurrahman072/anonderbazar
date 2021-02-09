@@ -1,5 +1,5 @@
 import {Component, HostListener, Inject, OnInit} from '@angular/core';
-import {State, Store} from '@ngrx/store';
+import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs/Observable';
 import * as fromStore from '../../state-management';
 import {LoginModalService} from '../../services/ui/loginModal.service';
@@ -10,7 +10,7 @@ import {NotificationsService} from 'angular2-notifications';
 import {NgProgress} from '@ngx-progressbar/core';
 import {UIService} from '../../services/ui/ui.service';
 import {FormControl} from '@angular/forms';
-import {FavouriteProduct, Product, User} from '../../models';
+import {FavouriteProduct, Product} from '../../models';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';

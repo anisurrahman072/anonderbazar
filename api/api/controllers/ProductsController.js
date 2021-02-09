@@ -259,7 +259,7 @@ module.exports = {
       if (req.query.sortTitle) {
         _sort[req.query.sortTitle] = parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC';
       } else {
-        _sort['name'] = 'ASC';
+        _sort['createdAt'] = 'DESC';
       }
 
       let total = await Product.count(_where);

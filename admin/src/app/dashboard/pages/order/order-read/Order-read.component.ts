@@ -29,6 +29,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     suborderItems: any;
     suborders: any[] = [];
     options: any[];
+
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
@@ -38,21 +39,22 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService) {
     }
- // init the component
+
+    // init the component
     ngOnInit() {
         this.options = [
-            { value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading' },
-            { value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading' },
-            { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
-            { value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading' },
-            { value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading' },
-            { value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading' },
-            { value: 7, label: 'landed', icon: 'anticon-spin anticon-loading' },
-            { value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading' },
-            { value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass' },
-            { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
-            { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
-            { value: 12, label: 'Canceled', icon: 'anticon-close-circle' }
+            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
+            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
+            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
+            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
+            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
+            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
+            {value: 7, label: 'landed', icon: 'anticon-spin anticon-loading'},
+            {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
+            {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
+            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
+            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
+            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'}
         ];
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -61,21 +63,36 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                 .subscribe(order => {
 
                     this.data = order;
-                    console.log('this.data', this.data)
+
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                         });
                     }
+                    /*
                     this.paymentService.getByOrderId(order.id).subscribe(payment => {
                         this.payment = payment[0];
                     });
+
                     this.paymentAddressService.getById(this.data.billing_address.id).subscribe(paymentAddress => {
-                        this.paymentAddress = paymentAddress;
+                         this.paymentAddress = paymentAddress;
                     });
+
                     this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
                         this.shippingAddress = shippingAddress;
                     });
+                   */
+
+                    if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
+                        this.payment = order.payment[0];
+                    }
+                    if (order && typeof order.billing_address !== 'undefined') {
+                        this.paymentAddress = order.billing_address;
+                    }
+                    if (order && typeof order.shipping_address !== 'undefined') {
+                        this.shippingAddress = order.shipping_address;
+                    }
+                    console.log('this.data', this.data)
                 });
         });
     }
@@ -84,7 +101,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
 
     }
-  //Method for get PDF
+
+    //Method for get PDF
 
     getPDF() {
         let printContents = document.getElementById('print-section').innerHTML;
@@ -116,6 +134,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         })
         doc.save('Test.pdf');
     }
+
     couponCodeGenerator(couponProductCodes, suborderItemId) {
         return couponProductCodes.filter(code => {
             return code.suborder_item_id == suborderItemId;
