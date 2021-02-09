@@ -18,7 +18,7 @@ export class ProductService {
             status?: number;
         } = {}
     ): Observable<any> {
-        let status = option.status ? `status=${option.status}&approval_status=2` : `approval_status=2`;
+        let status = option.status ? `status=${option.status}&approval_status=2&sort=createdAt%20DESC` : `approval_status=2&sort=createdAt%20DESC`;
 
         return this.http.get(this.EndPoint2 + '?' + status);
     }
@@ -37,7 +37,7 @@ export class ProductService {
         const now = Date.now();
         const date = pipe.transform(now, 'yyyy-MM-dd');
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 ,"promotion":1,"end_date":{">=":"' + date + '"}}')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 ,"promotion":1,"end_date":{">=":"' + date + '"}}&sort=createdAt%20DESC')
             .map(response => response);
     }
 
@@ -68,67 +68,67 @@ export class ProductService {
 
     getAllByWarehouseId(id): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}, "approval_status": 2 }`)
+            .get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}, "approval_status": 2 }&sort=createdAt%20DESC`)
             .map(response => response);
     }
 
     getAllByCategoryId(id): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null,"category_id":${id}, "approval_status": 2 }`)
+            .get(`${this.EndPoint}?where={"deletedAt":null,"category_id":${id}, "approval_status": 2 }&sort=createdAt%20DESC`)
             .map(response => response);
     }
 
     getAllFeatureProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }')
+            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getFlashDealsProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4')
+            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getRewardProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getWholeSaleProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getFeedbackProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort="rating DESC"')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort=rating%20DESC')
             .map(response => response);
     }
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=4&sort="createdAt DESC"')
+            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getRecommendedProducts(limit, offset): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2 }&limit=${limit}&skip=${offset}`)
+            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2 }&limit=${limit}&skip=${offset}&sort=createdAt%20DESC`)
             .map(response => response);
     }
 
     getAllHotProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&sort=createdAt%20DESC')
             .map(response => response);
     }
 
     getByCategory(catId: number, productID: number): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"id":{"!":${productID}},"category_id":${catId}}`)
+            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"id":{"!":${productID}},"category_id":${catId}}&sort=createdAt%20DESC`)
             .map(response => response);
     }
 

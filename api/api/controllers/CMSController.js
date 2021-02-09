@@ -25,7 +25,7 @@ module.exports = {
           body.image = '/' + newPath;
           let data_value = [];
 
-          if (req.body.subsection == "OFFER") {
+          if (req.body.subsection === "OFFER") {
             data_value = [
               {
                 title: req.body.title,
@@ -460,7 +460,7 @@ module.exports = {
     try {
       console.log('customUpdate',  req.body)
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
-      if (req.body.hasImage == 'true') {
+      if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(),
           async function (err, uploaded) {
             if (err) {

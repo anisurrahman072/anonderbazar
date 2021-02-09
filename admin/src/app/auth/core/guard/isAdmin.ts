@@ -8,8 +8,8 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 })
 export class IsAdmin implements CanActivate {
 
-
-    constructor(private router: Router, public jwtHelper: JwtHelperService) {
+    jwtHelper: JwtHelperService = new JwtHelperService();
+    constructor(private router: Router) {
     }
 
     canActivate() {

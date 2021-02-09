@@ -10,7 +10,9 @@ export class GroupGuard implements CanActivate {
 
     groups = ['admin', 'owner', 'craftsman', 'supplier', 'sales'];
 
-    constructor(private router: Router, private route: ActivatedRoute, private warehouseService: WarehouseService, public jwtHelper: JwtHelperService) {
+    jwtHelper: JwtHelperService = new JwtHelperService();
+
+    constructor(private router: Router, private route: ActivatedRoute, private warehouseService: WarehouseService) {
     }
 
     canActivate() {

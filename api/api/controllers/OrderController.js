@@ -4,6 +4,8 @@
  * @description :: Server-side logic for managing orders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+import {adminPaymentAddressId, dhakaZilaId, sslCommerceSandbox} from "../../config/softbd";
+
 const _ = require("lodash");
 const SSLCommerz = require('sslcommerz-nodejs');
 const webURL = "https://anonderbazar.com";
@@ -44,7 +46,6 @@ module.exports = {
         type: 1
       });
 
-
       let suborder = await Suborder.create({
         product_order_id: order.id,
         warehouse_id: req.body.warehouse_id,
@@ -77,29 +78,60 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   customInsert: async function (req, res) {
     if (!req.param("user_id")) {
-      return res.error("ni");
+      return res.error("Invalid Request");
     }
-    /*.................Shipping Address....................*/
-    if (req.param("shipping_address") && (!req.param("shipping_address").id || req.param("shipping_address").id === "")) {
-      try {
-        let shippingAddres = await PaymentAddress.create({
-          user_id: req.param("user_id"),
-          first_name: req.param("shipping_address").firstName,
-          last_name: req.param("shipping_address").lastName,
-          address: req.param("shipping_address").address,
-          country: req.param("shipping_address").address,
-          phone: req.param("shipping_address").phone,
-          postal_code: req.param("shipping_address").postCode,
-          upazila_id: req.param("shipping_address").upazila_id,
-          zila_id: req.param("shipping_address").zila_id,
-          division_id: req.param("shipping_address").division_id,
-          status: 1
-        });
-        req.param("shipping_address").id = shippingAddres.id;
-      } catch (err) {
 
+    let globalConfigs = await GlobalConfigs.findOne({
+      deletedAt: null
+    });
+
+    let cart = await Cart.findOne({
+      user_id: req.param("user_id"),
+      deletedAt: null
+    }).populate("cart_items");
+
+    let cartItems = await CartItem.find({
+      cart_id: cart.id,
+      deletedAt: null
+    }).populate(["cart_item_variants", "product_id"]);
+
+
+    let onlyCouponProduct = false;
+    if (cartItems && cartItems.length > 0) {
+      const couponProductFound = cartItems.filter((cartItem) => {
+        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+      });
+      onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
+    }
+
+    if (onlyCouponProduct) {
+      return res.badRequest("Payment method is invalid for this particular order.");
+    }
+
+    /*.................Shipping Address....................*/
+    if (req.param("shipping_address")) {
+      if (!req.param("shipping_address").id || req.param("shipping_address").id === "") {
+        try {
+          let shippingAddres = await PaymentAddress.create({
+            user_id: req.param("user_id"),
+            first_name: req.param("shipping_address").firstName,
+            last_name: req.param("shipping_address").lastName,
+            address: req.param("shipping_address").address,
+            country: req.param("shipping_address").address,
+            phone: req.param("shipping_address").phone,
+            postal_code: req.param("shipping_address").postCode,
+            upazila_id: req.param("shipping_address").upazila_id,
+            zila_id: req.param("shipping_address").zila_id,
+            division_id: req.param("shipping_address").division_id,
+            status: 1
+          });
+          req.param("shipping_address").id = shippingAddres.id;
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
+
     /*.................Billing Address....................*/
     if (req.param("billing_address") && (!req.param("billing_address").id || req.param("billing_address").id === "") && req.param("is_copy") === false) {
       try {
@@ -119,38 +151,14 @@ module.exports = {
         });
         req.param("billing_address").id = paymentAddress.id;
       } catch (err) {
-
+        console.log(err);
       }
     } else if (req.param("is_copy") === true) {
       req.param("billing_address").id = req.param("shipping_address").id;
     }
 
-    let cart = await Cart.findOne({
-      user_id: req.param("user_id"),
-      deletedAt: null
-    }).populate("cart_items");
-
-    let cartItems = await CartItem.find({
-      cart_id: cart.id,
-      deletedAt: null
-    }).populate(["cart_item_variants", "product_id"]);
-
-    let noShippingCharge = false;
-    if (cartItems && cartItems.length > 0) {
-      const couponProductFound = cartItems.find((cartItem) => {
-        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-      });
-      noShippingCharge = couponProductFound && cartItems.length === 1;
-    }
-
     /** Create  order from cart........................START...........................*/
-    let courierCharge = 0;
-    if (!noShippingCharge) {
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
-      courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
-    }
+    let courierCharge = req.param("shipping_address").zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
 
     let order = await Order.create({
       user_id: req.param("user_id"),
@@ -179,7 +187,7 @@ module.exports = {
     let i = 0; // i init for loop
 
     let allOrderedProductsInventory = [];
-    let allGeneratedCouponCodes = [];
+    // let allGeneratedCouponCodes = [];
     for (i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
@@ -229,7 +237,7 @@ module.exports = {
 
         let suborderItem = await SuborderItem.create(newSuborderItemPayload);
 
-        if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
+/*        if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
           for (let t = 0; t < thisCartItem.product_quantity; t++) {
             allGeneratedCouponCodes.push({
               quantity: thisCartItem.product_quantity,
@@ -240,7 +248,7 @@ module.exports = {
               suborder_item_id: suborderItem.id
             });
           }
-        }
+        }*/
 
         let suborderItemVariantsTemp = [];
 
@@ -304,12 +312,12 @@ module.exports = {
 
         paymentTemp.push(paymentType);
       }
-      if (allGeneratedCouponCodes.length > 0) {
+/*      if (allGeneratedCouponCodes.length > 0) {
         const couponCodeLen = allGeneratedCouponCodes.length;
         for (let i = 0; i < couponCodeLen; i++) {
           await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
         }
-      }
+      }*/
     } catch (err) {
       console.log(err);
     }
@@ -322,8 +330,8 @@ module.exports = {
         allOrderedProducts.push(items[index]);
       }
     }
-    orderForMail[0].orderItems = allOrderedProducts;
 
+    orderForMail[0].orderItems = allOrderedProducts;
 
     // Start/Delete Cart after submitting the order
 
@@ -372,6 +380,10 @@ module.exports = {
 
     if (req.param("user_id") && user) {
 
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
       let cart = await Cart.findOne({
         user_id: user.id,
         deletedAt: null
@@ -384,15 +396,16 @@ module.exports = {
 
       let noShippingCharge = false;
       if (cartItems && cartItems.length > 0) {
-        const couponProductFound = cartItems.find((cartItem) => {
+        const couponProductFound = cartItems.filter((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
-        noShippingCharge = couponProductFound && cartItems.length === 1;
+        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
       }
       let courierCharge = 0;
+      let adminPaymentAddress = null;
 
-      /*.................Shipping Address....................*/
-      if (req.param("shipping_address")) {
+      /* .................Shipping Address.................... */
+      if (!noShippingCharge && req.param("shipping_address")) {
         try {
           if (!req.param("shipping_address").id || req.param("shipping_address").id === "") {
             let shippingAddres = await PaymentAddress.create({
@@ -413,81 +426,114 @@ module.exports = {
             req.param("shipping_address").id = shippingAddres.id;
           }
 
-          if (!noShippingCharge) {
-            let globalConfigs = await GlobalConfigs.findOne({
-              deletedAt: null
-            });
-            courierCharge = req.param("shipping_address").zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
-          }
+          courierCharge = req.param("shipping_address").zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
 
         } catch (err) {
           console.log('error', err);
         }
+      } else {
+        adminPaymentAddress = await PaymentAddress.findOne({
+          id: adminPaymentAddressId
+        });
       }
-
 
       /*.................Billing Address....................*/
-      if (req.param("billing_address") && (!req.param("billing_address").id || req.param("billing_address").id === "") && req.param("is_copy") === false) {
-        try {
-          let paymentAddress = await PaymentAddress.create({
-            user_id: req.param("user_id"),
-            // order_id: order.id,
-            first_name: req.param("billing_address").firstName,
-            last_name: req.param("billing_address").lastName,
-            address: req.param("billing_address").address,
-            country: req.param("billing_address").address,
-            phone: req.param("billing_address").phone,
-            postal_code: req.param("billing_address").postCode,
-            upazila_id: req.param("billing_address").upazila_id,
-            zila_id: req.param("billing_address").zila_id,
-            division_id: req.param("billing_address").division_id,
-            status: 1
-          });
-          req.param("billing_address").id = paymentAddress.id;
+      if (!noShippingCharge && req.param("billing_address")) {
+        if ((!req.param("billing_address").id || req.param("billing_address").id === "") && req.param("is_copy") === false) {
+          try {
+            let paymentAddress = await PaymentAddress.create({
+              user_id: req.param("user_id"),
+              // order_id: order.id,
+              first_name: req.param("billing_address").firstName,
+              last_name: req.param("billing_address").lastName,
+              address: req.param("billing_address").address,
+              country: req.param("billing_address").address,
+              phone: req.param("billing_address").phone,
+              postal_code: req.param("billing_address").postCode,
+              upazila_id: req.param("billing_address").upazila_id,
+              zila_id: req.param("billing_address").zila_id,
+              division_id: req.param("billing_address").division_id,
+              status: 1
+            });
+            req.param("billing_address").id = paymentAddress.id;
 
+          } catch (err) {
 
-        } catch (err) {
-
+          }
+        } else if (req.param("is_copy") === true && req.param("shipping_address")) {
+          req.param("billing_address").id = req.param("shipping_address").id;
         }
-      } else if (req.param("is_copy") === true) {
-        req.param("billing_address").id = req.param("shipping_address").id;
       }
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
 
       let settings = {
-        isSandboxMode: false, //false if live version
+        isSandboxMode: sslCommerceSandbox, //false if live version
         store_id: globalConfigs && globalConfigs.sslcommerce_user ? globalConfigs.sslcommerce_user : "anonderbazarlive@ssl",
         store_passwd: globalConfigs && globalConfigs.sslcommerce_pass ? globalConfigs.sslcommerce_pass : "i2EFz@ZNt57@t@r",
       };
+
+      if(sslCommerceSandbox) {
+        settings.store_id =  "bitsp5e4e5f62b4c34";
+        settings.store_passwd =  "bitsp5e4e5f62b4c34@ssl";
+      }
 
       let sslcommerz = new SSLCommerz(settings);
 
       let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
       let string_length = 16;
       let randomstring = '';
+
       for (let i = 0; i < string_length; i++) {
         let rnum = Math.floor(Math.random() * chars.length);
         randomstring += chars.substring(rnum, rnum + 1);
       }
 
+      let finalBillingAddressId = null;
+      let finalShippingAddressId = null;
+
+      if (req.param("billing_address") && req.param("billing_address").id) {
+        finalBillingAddressId = req.param("billing_address").id
+      } else if (adminPaymentAddress && adminPaymentAddress.id) {
+        finalBillingAddressId = adminPaymentAddress.id;
+      }
+
+      if (req.param("shipping_address") && req.param("shipping_address").id) {
+        finalShippingAddressId = req.param("shipping_address").id
+      } else if (adminPaymentAddress && adminPaymentAddress.id) {
+        finalShippingAddressId = adminPaymentAddress.id;
+      }
+
+      if (finalShippingAddressId === null || finalBillingAddressId === null) {
+        return res.badRequest('No Shipping or Billing Address found!');
+      }
+
+      let finalPostalCode = null;
+      let finalAddress = null;
+      if (req.param("shipping_address") && req.param("shipping_address").postal_code) {
+        finalPostalCode = req.param("shipping_address").postal_code;
+      } else if (adminPaymentAddress && adminPaymentAddress.postal_code) {
+        finalPostalCode = adminPaymentAddress.postal_code;
+      }
+      if (req.param("shipping_address") && req.param("shipping_address").address) {
+        finalAddress = req.param("shipping_address").address;
+      } else if (adminPaymentAddress && adminPaymentAddress.address) {
+        finalAddress = adminPaymentAddress.address;
+      }
 
       let post_body = {};
       post_body['total_amount'] = cart.total_price + courierCharge;
       post_body['currency'] = "BDT";
       post_body['tran_id'] = randomstring;
 
-      post_body['success_url'] = APIURL + "/order/sslcommerzsuccess/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
-      post_body['fail_url'] = APIURL + "/order/sslcommerzfail/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
-      post_body['cancel_url'] = APIURL + "/order/sslcommerzerror/?user_id=" + req.param("user_id") + "&billing_address=" + req.param("billing_address").id + "&shipping_address=" + req.param("shipping_address").id;
+      post_body['success_url'] = APIURL + "/order/sslcommerzsuccess/?user_id=" + req.param("user_id") + "&billing_address=" + finalBillingAddressId + "&shipping_address=" + finalShippingAddressId;
+      post_body['fail_url'] = APIURL + "/order/sslcommerzfail/?user_id=" + req.param("user_id") + "&billing_address=" + finalBillingAddressId + "&shipping_address=" + finalShippingAddressId;
+      post_body['cancel_url'] = APIURL + "/order/sslcommerzerror/?user_id=" + req.param("user_id") + "&billing_address=" + finalBillingAddressId + "&shipping_address=" + finalShippingAddressId;
 
       post_body['emi_option'] = 0;
       post_body['cus_name'] = user.first_name + " " + user.last_name;
       post_body['cus_email'] = user.email;
       post_body['cus_phone'] = user.phone;
-      post_body['cus_postcode'] = req.param("shipping_address").postal_code ? req.param("shipping_address").postal_code : '1205';
-      post_body['cus_add1'] = req.param("shipping_address").address;
+      post_body['cus_postcode'] = finalPostalCode ? finalPostalCode : '1212';
+      post_body['cus_add1'] = finalAddress ? finalAddress : 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1';
       post_body['cus_city'] = "Dhaka";
       post_body['cus_country'] = "Bangladesh";
       post_body['shipping_method'] = "NO";
@@ -516,6 +562,11 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   sslcommerzsuccess: async function (req, res) {
     if (req.body.tran_id) {
+
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
       let cart = await Cart.findOne({
         user_id: req.query.user_id,
         deletedAt: null
@@ -530,26 +581,18 @@ module.exports = {
 
       if (cartItems && cartItems.length > 0) {
 
-        const couponProductFound = cartItems.find((cartItem) => {
+        const couponProductFound = cartItems.filter((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
-
-        noShippingCharge = couponProductFound && cartItems.length === 1;
-
+        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
       }
       let courierCharge = 0;
-
       /*. Create  order from cart........................START...........................*/
 
       if (!noShippingCharge) {
-        let globalConfigs = await GlobalConfigs.findOne({
-          deletedAt: null
-        });
-
         const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
-
         if (Array.isArray(shippingAddress) && shippingAddress.length) {
-          courierCharge = shippingAddress[0].zila_id == 2942 ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+          courierCharge = shippingAddress[0].zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
         }
       }
 
@@ -561,6 +604,7 @@ module.exports = {
         billing_address: req.query.billing_address,
         shipping_address: req.query.shipping_address,
         courier_charge: courierCharge,
+        ssl_transaction_id: req.body.tran_id,
         status: 1
       });
 

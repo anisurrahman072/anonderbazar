@@ -12,7 +12,7 @@
                     <li class="has-child c-1">
                         <span class="mr-1 burger_menu"><i class="fa fa-bars"></i></span>
                         <ul class="dropdown-menu_burger_menu">
-                            <li *ngFor="let category of categoryList" (click)="categoryClickEvent(category)">
+                            <li *ngFor="let category of categoryList" (click)="categoryClickEvent(category)" style="text-transform: capitalize;">
                                 {{category.name}}
                             </li>
                         </ul>
@@ -21,7 +21,7 @@
                         (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"
                         (mouseenter)="categoryHover(category)"
                         [ngClass]="category.id == selectedCategoryId? 'active':''">
-                        <a (click)="categoryClickEvent(category)"
+                        <a (click)="categoryClickEvent(category)" style="text-transform: capitalize;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                         <div class="dropdown-menu w-100"
                              *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
@@ -31,34 +31,34 @@
                                         <div class="col-md-3 submenu" *ngFor='let sub of subCategoryList'>
                                             <ul class="mb-3" *ngIf='sub'>
                                                 <li class="text-th">
-                                                    <a (click)="navigateBySubCategory($event,category,sub)">{{sub.name}}</a>
+                                                    <a style="text-transform: capitalize;" (click)="navigateBySubCategory($event,category,sub)">{{sub.name}}</a>
                                                 </li>
                                                 <ng-container *ngFor='let subC of sub.subCategory'>
                                                     <li class="text-ot"
                                                         (click)="navigateBySubSubCategory($event,category,sub,subC)">
-                                                        <a>{{subC.name}}</a>
+                                                        <a style="text-transform: capitalize;">{{subC.name}}</a>
                                                     </li>
                                                 </ng-container>
                                             </ul>
                                         </div>
                                         <div class="col-md-3 submenu">
                                             <ul class="mb-3 text-th">
-                                                <li class="text-th">SHOP BY BRAND</li>
+                                                <li class="text-th" style="text-transform: capitalize;">Shop By Brand</li>
                                                 <li class="text-ot" *ngFor='let brand of brandList'>
-                                                    <a (click)="navigateByBrand($event, category, brand)">{{brand.name}}</a>
+                                                    <a style="text-transform: capitalize;" (click)="navigateByBrand($event, category, brand)">{{brand.name}}</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4" *ngIf="category.offer_id">
+                                <div class="col-md-4" *ngIf="category.offer_id" style="display: none;">
                                     <div class="row">
-                                        <!--                                        <a href="#" (click)="isDisplay=false" routerLink="/cms-details/{{category.offer_id.id}}">-->
+                                        <!-- <a href="#" (click)="isDisplay=false" routerLink="/cms-details/{{category.offer_id.id}}">-->
                                         <a href="#" (click)="navigateToCms($event,  category.offer_id.id)">
                                             <div class="col-md-12 mb-3">
                                                 <div class="dropdown-img text-center">
                                                     <img src="{{IMAGE_ENDPOINT + category.offer_id.data_value[0].image}}"
-                                                         alt="">
+                                                         alt="Offer">
                                                     <p>{{category.offer_id.data_value[0].title}}</p>
                                                 </div>
                                             </div>
@@ -111,14 +111,12 @@
             </div>
             <ul>
                 <li>
-                    <a href="#">
-                        HOME
-                    </a>
+                    <a href="#"> Home </a>
                 </li>
                 <li *ngFor="let category of categoryList"
                     (mouseenter)="categoryHover(category)"
                     (click)="categoryClickEvent(category)">
-                    <a href="#" [routerLink]="['/products/category/',category.id]">{{category.name}}</a>
+                    <a href="#" [routerLink]="['/products/category/',category.id]" style="text-transform: capitalize;">{{category.name}}</a>
                 </li>
             </ul>
         </div>

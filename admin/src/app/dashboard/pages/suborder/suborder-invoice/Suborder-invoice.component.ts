@@ -55,18 +55,32 @@ export class SuborderInvoiceComponent implements OnInit {
                     this.suborderItems = suborder.suborderItems;
                     this.orderService.getById(suborder.product_order_id.id).subscribe(order => {
                         this.order = order;
+
+                        /*
                         this.paymentService.getByOrderId(order.id).subscribe(payment => {
                             this.payment = payment[0];
+                             console.log('suborder', this.data);
+                            console.log('suborderItems', this.suborderItems);
+
+                            console.log('payment', this.payment);*!/
                         });
-                        this.paymentAddressService.getById(order.billing_address.id).subscribe(paymentAddress => {
+
+                         this.paymentAddressService.getById(order.billing_address.id).subscribe(paymentAddress => {
                             this.paymentAddress = paymentAddress;
                         });
                         this.paymentAddressService.getById(order.shipping_address.id).subscribe(shippingAddress => {
                             this.shippingAddress = shippingAddress;
                         });
-
-                        console.log('suborder', this.data);
-                        console.log('suborderItems', this.suborderItems);
+                        */
+                        if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
+                            this.payment = order.payment[0];
+                        }
+                        if (order && typeof order.billing_address !== 'undefined') {
+                            this.paymentAddress = order.billing_address;
+                        }
+                        if (order && typeof order.shipping_address !== 'undefined') {
+                            this.shippingAddress = order.shipping_address;
+                        }
                         console.log('order', this.order);
                     });
                 });
@@ -445,13 +459,14 @@ table.table1 a:link
 
 
     }
+
     public downloadAsPDF() {
         const doc = new jsPDF();
 
         const specialElementHandlers = {
-          '#editor': function (element, renderer) {
-            return true;
-          }
+            '#editor': function (element, renderer) {
+                return true;
+            }
         };
 
         const pdfTable = this.pdfTable.nativeElement;
@@ -466,8 +481,8 @@ table.table1 a:link
       <body>${pdfTable.innerHTML}</body>
         </html>`;
         doc.fromHTML(cop, 15, 15, {
-          width: 190,
-          'elementHandlers': specialElementHandlers
+            width: 190,
+            'elementHandlers': specialElementHandlers
         });
 
         doc.save('tableToPdf.pdf');
@@ -477,6 +492,7 @@ table.table1 a:link
         this.sub ? this.sub.unsubscribe() : '';
 
     }
+
     couponCodeGenerator(couponProductCodes, suborderItemId) {
         return couponProductCodes.filter(code => {
             return code.suborder_item_id == suborderItemId;

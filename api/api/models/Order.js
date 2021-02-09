@@ -51,6 +51,9 @@ module.exports = {
     type: {
       type: 'integer',
     },
+    ssl_transaction_id: {
+      type: 'string',
+    },
     changed_by: {
       model: 'user'
     },

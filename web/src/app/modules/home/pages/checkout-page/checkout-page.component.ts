@@ -14,6 +14,8 @@ import {PaymentAddressService} from '../../../../services/payment-address.servic
 import {LoaderService} from "../../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 
+const defaultAddress = {}
+
 @Component({
     selector: 'app-checkout-page',
     templateUrl: './checkout-page.component.html',
@@ -68,6 +70,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     successOrderId: any = false;
     showFormError: boolean = false;
     orderId;
+    noShippingCharge: boolean = false;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -87,8 +90,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     // init the component
     ngOnInit() {
-
-
         this.checkoutForm = this.fb.group({
             // billing
             billing_id: ['', []],
@@ -134,6 +135,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         });
 
         this.currentUserSub = this.currentUser$.subscribe((user) => {
+            console.log('this.currentUser', user);
             this.currentUser = user;
         });
 
@@ -175,21 +177,23 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         if (shouldUpateShippingCharge) {
             this.shippingCharge = 0;
-            let noShippingCharge = false;
+            this.noShippingCharge = false;
             if (typeof this.cartData.data !== 'undefined' && typeof this.cartData.data.cart_items !== 'undefined' && this.cartData.data.cart_items.length > 0) {
                 const foundCouponProduct = this.cartData.data.cart_items.find((item) => {
                     return item.product_id && !!item.product_id.is_coupon_product;
                 });
-                noShippingCharge = foundCouponProduct && this.cartData.data.cart_items.length === 1;
 
-                if(AppSettings.IS_PRODUCTION){
+                this.noShippingCharge = foundCouponProduct && this.cartData.data.cart_items.length === 1;
+
+                if (AppSettings.IS_PRODUCTION) {
                     this.hideCashonDelivery = foundCouponProduct;
                 }
             }
 
-            if (selectedZilaId > 0 && !noShippingCharge) {
+            if (selectedZilaId > 0 && !this.noShippingCharge) {
+
                 if (this.courierCharges) {
-                    this.shippingCharge = selectedZilaId == 2942 ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
 
                 if (this.shippingCharge) {
@@ -225,36 +229,40 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.toastr.error("You have no items in your cart!", "Empty cart!");
             return false;
         }
+        console.log('formCheckout', value)
         let requestPayload = {
             user_id: this.user_id,
 
             billing_address: {
                 id: this.newBillingAddress ? '' : value.billing_id,
-                firstName: value.firstName,
-                lastName: value.lastName,
-                address: value.address,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.firstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.lastName,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.address,
                 country: value.country,
-                phone: value.phone,
-                postCode: value.postCode,
-                upazila_id: value.upazila_id,
-                zila_id: value.zila_id,
-                division_id: value.division_id
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
+                postCode: this.noShippingCharge ? '1212' : value.postCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
+                zila_id: this.noShippingCharge ?  AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
                 id: this.newShippingAddress ? '' : value.shipping_id,
-                firstName: value.shippingFirstName,
-                lastName: value.shippingLastName,
-                address: value.shippingAddress,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.shippingFirstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.shippingAddress,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.shippingAddress,
                 country: value.shipping_country,
-                phone: value.shippingPhone,
-                postCode: value.shippingPostCode,
-                upazila_id: value.shipping_upazila_id,
-                zila_id: value.shipping_zila_id,
-                division_id: value.shipping_division_id
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
+                postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
+                zila_id: this.noShippingCharge ?  AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
             is_copy: this.isCopy,
         };
+
+        console.log('requestPayload', requestPayload);
+
         this._progress.start("mainLoader");
         if (value.paymentType == "SSLCommerce") {
             this.orderService.sslcommerzInsert(requestPayload).subscribe(result => {
@@ -486,14 +494,14 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     processToPay() {
         console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
-        if (this.isCopy) {
+        if (!this.noShippingCharge && this.isCopy) {
             this.copyAll();
         }
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!");
             return false;
         }
-        if (this.checkoutForm.invalid) {
+        if (this.checkoutForm.invalid && !this.noShippingCharge) {
             this.showFormError = true;
             this.toastr.error("Both shipping and billing address is required!", "Sorry!", {
                 positionClass: 'toast-bottom-right'

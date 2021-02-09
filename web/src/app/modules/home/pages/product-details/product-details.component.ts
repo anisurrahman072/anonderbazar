@@ -163,6 +163,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     addToCartSuccessProduct: any;
     addToWhishlistSuccessProduct: any;
 
+    currentUser$: Observable<any>;
 
     constructor(
         private route: ActivatedRoute,
@@ -201,17 +202,26 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     //Event method for getting all the data for the page
 
     ngOnInit() {
-
-
-        this.compare$ = this.store.select<any>(fromStore.getCompare);
-        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
         }
+        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
+        this.currentUser$.subscribe((currentUser) => {
+            if (currentUser && currentUser.id) {
+                this.currentUserId = currentUser.id;
+            }
+        }, (error) => {
+            console.log('currentUser$', error);
+        });
+
+        this.compare$ = this.store.select<any>(fromStore.getCompare);
+        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
+
         this.addTofavouriteLoading$ = this.store.select<any>(
             fromStore.getFavouriteProductLoading
         );
+
         this.partService.getAllParts().subscribe(result => {
             this.allTheParts = result.data;
         });
@@ -246,6 +256,18 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         });
 
         this.getRecentlyViewedProducts();
+    }
+
+    buyCouponProduct(product) {
+        if (this.currentUserId) {
+            this.addProductToCart(product, () => {
+                this.router.navigate([`/checkout`]);
+                this.couponProductModalRef.hide();
+            });
+        } else {
+            this.couponProductModalRef.hide();
+            this.loginModalService.showLoginModal(true);
+        }
     }
 
     defaultVariantSelection() {
@@ -801,18 +823,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     showCouponProductModal(template: TemplateRef<any>) {
         this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
-    }
-
-    buyCouponProduct(product) {
-        if (this.currentUserId) {
-            this.addProductToCart(product, () => {
-                this.router.navigate([`/checkout`]);
-                this.couponProductModalRef.hide();
-            });
-        } else {
-            this.couponProductModalRef.hide();
-            this.loginModalService.showLoginModal(true);
-        }
     }
 
     private addPageTitleNMetaTag() {
