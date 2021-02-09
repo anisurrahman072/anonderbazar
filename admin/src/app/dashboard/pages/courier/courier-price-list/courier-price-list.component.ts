@@ -19,7 +19,7 @@ export class CourierPriceListComponent implements OnInit {
   total: number;
   data: any = [];
   listOfCourier = [];
-  _isSpinning: boolean = false;
+  _isSpinning: boolean = true;
   isVisible = false;
   isEditVisible = false;
   isConfirmLoading = false;
@@ -63,6 +63,7 @@ export class CourierPriceListComponent implements OnInit {
 
   getCourierPriceData(): void {
     this.courierPriceService.getAllCourierPrices(this.page, this.limit).subscribe(result => {
+      this._isSpinning = false;
       this.data = result.data;
       this.total = result.total;
     });

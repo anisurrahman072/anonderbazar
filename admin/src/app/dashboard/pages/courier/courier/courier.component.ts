@@ -18,7 +18,7 @@ export class CourierComponent implements OnInit {
   page: number = 1;
   total: number;
   data: any = [];
-  _isSpinning: boolean = false;
+  _isSpinning: boolean = true;
   isVisible = false;
   isEditVisible = false;
   isConfirmLoading = false;
@@ -60,7 +60,7 @@ export class CourierComponent implements OnInit {
   //Event method for getting all the data for the page
   getPageData(){
     this.courierService.getAllCourier()
-    .subscribe(result => this.data = result);
+    .subscribe(result => {this.data = result; this._isSpinning = false;});
   }
   //Event method for deleting courier
   deleteConfirm(id) {
