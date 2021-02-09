@@ -11,8 +11,7 @@
     <div id="Checkout-Send" class="Checkout-Send" *ngIf="!showPayment && !successOrderId">
         <div class="container-fluid">
             <div class="row">
-
-                <div class="col-lg-6 col-md-12 mb-4">
+                <div class="col-lg-6 col-md-12 mb-4" *ngIf="!noShippingCharge">
                     <div class="sendgift-btn d-flex">
                         <button class="btn1" [ngClass]="{'active': isDelivery === true}">
                             <a type="button" [ngClass]="{'active': isDelivery === true}"
@@ -151,13 +150,11 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="checkbox">
                         <input type="checkbox" id="checkbox5" (change)="copyAll()" [(ngModel)]="isCopy"
                                [ngModelOptions]="{standalone: true}" checked>
                         <label for="checkbox5"><span>Copy billing details to shipping</span></label>
                     </div>
-
                     <div class="Checkout-from1" *ngIf='isDelivery' [hidden]="isCopy">
                         <p>Billing address</p>
 
@@ -294,11 +291,11 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="inputEmail4">Name</label>
-                                    <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                                    <input type="text" class="form-control" id="inputEmail4" placeholder="Input Name">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="inputEmail4">Name</label>
-                                    <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                                    <input type="text" class="form-control" id="inputEmail41" placeholder="Input Name">
                                 </div>
                             </div>
                         </form>
@@ -309,7 +306,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-12">
                                     <label for="inputEmail4">Name</label>
-                                    <input type="email" class="form-control" id="inputEmail4" placeholder="Input Name">
+                                    <input type="text" class="form-control" id="inputEmail42" placeholder="Input Name">
                                 </div>
                             </div>
                         </form>
@@ -352,14 +349,14 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-12">
+                <div [ngClass]="{'col-lg-12': noShippingCharge, 'col-lg-6': !noShippingCharge, 'col-md-12': true}">
                     <div class="bag-item">
                         <p>Your bag {{cartData?.data.total_quantity}} items</p>
                     </div>
 
                     <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
                         <div class="bagitem-1">
-                            <div class="productimage-wrapper" >
+                            <div class="productimage-wrapper">
                                 <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
                                      alt="product image">
                             </div>
@@ -392,9 +389,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tag3">
-                        <p>Order Summary</p>
-                        <table>
+                    <div class="tag3" >
+                        <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order Summary</h5>
+                        <table [ngStyle]="{'width': noShippingCharge ? '50%': '100%', 'margin': noShippingCharge ? 'auto': '0'}">
                             <tr>
                                 <td class="td1 pr-5">Subtotal</td>
                                 <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
@@ -403,7 +400,7 @@
                                 <td class="td1 pr-5">Discount</td>
                                 <td class="active ml-5">৳ 0.00</td>
                             </tr>
-                            <tr>
+                            <tr *ngIf="!noShippingCharge">
                                 <td class="td1 pr-5">Shipping</td>
                                 <td class="ml-5">৳ {{shippingCharge}}</td>
                             </tr>
@@ -412,14 +409,14 @@
                                 <td class="ml-5">৳ {{grantTotal}}</td>
                             </tr>
                         </table>
-                        <p class="alert alert-info text-info">
+                        <p class="alert alert-info text-info" *ngIf="!noShippingCharge">
                             Delivery Charge: <br>
                             Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is heavier)<br>
                             Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is heavier)
                         </p>
                     </div>
-                    <div class="send-btn1">
-                        <button (click)="processToPay()" class="Summarybtn">
+                    <div   [ngClass]="{'send-btn1': true, 'text-center': noShippingCharge}">
+                        <button (click)="processToPay()" class="Summarybtn " >
                             <a>Process to Pay</a>
                         </button>
                     </div>
@@ -436,28 +433,39 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash"><i class="fa fa-money"></i> Cash On Delivery </mat-radio-button>
+                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash"><i class="fa fa-money"></i>
+                                    Cash On Delivery
+                                </mat-radio-button>
                                 <br>
-                                <mat-radio-button value="SSLCommerce"><i class="fa fa-money"></i> Payment via SSLCommerz </mat-radio-button>
+                                <mat-radio-button value="SSLCommerce">
+                                    <div class="payment-icon-container">
+                                        <img src="./assets/images/sslcom.png" style="height: auto; width: 100%;"
+                                             alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
                             </div>
                         </mat-radio-group>
                     </div>
                     <div class="send-btn1">
-                        <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)"><a>Process to Order</a></button>
+                        <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)">
+                            <a>Process to Order</a>
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-6 col-12 mb-4">
                     <div class="payment-method-details2">
-                        <div class="tag1">
-                            <p>Shipping address<a (click)="showPayment=false" style="color: red">Edit</a></p>
-                            <small>Address</small>
-                            <p class="add">{{getAddress('shipping')}}</p>
-                        </div>
-                        <div class="tag2">
-                            <p>Billing address<a (click)="showPayment=false" style="color: red">Edit</a></p>
-                            <small>Address</small>
-                            <p class="add">{{getAddress('billing')}}</p>
-                        </div>
+                        <ng-container *ngIf="!noShippingCharge">
+                            <div class="tag1">
+                                <p>Shipping address<a (click)="showPayment=false" style="color: red">Edit</a></p>
+                                <small>Address</small>
+                                <p class="add">{{getAddress('shipping')}}</p>
+                            </div>
+                            <div class="tag2">
+                                <p>Billing address<a (click)="showPayment=false" style="color: red">Edit</a></p>
+                                <small>Address</small>
+                                <p class="add">{{getAddress('billing')}}</p>
+                            </div>
+                        </ng-container>
                         <div class="tag3">
                             <p>Order Summary</p>
                             <table>
@@ -469,7 +477,7 @@
                                     <td class="td1 pr-5">Discount</td>
                                     <td class="active">৳ 0.00</td>
                                 </tr>
-                                <tr>
+                                <tr *ngIf="!noShippingCharge">
                                     <td class="td1 pr-5">Shipping</td>
                                     <td class="ml-5">৳ {{shippingCharge}}</td>
                                 </tr>
