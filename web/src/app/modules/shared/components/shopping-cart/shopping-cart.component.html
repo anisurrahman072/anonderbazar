@@ -1,5 +1,7 @@
- <!-- Modal -->
- <div  *ngIf="isModalShown$|async"  [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<!-- Modal -->
+<div *ngIf="isModalShown$|async" [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal
+     #autoShownModal="bs-modal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header custom-header">
@@ -15,76 +17,89 @@
                 <div class=" container form-background" style="height: auto">
                     <!--Login Form-->
                     <ng-container>
-                      <section id="signup-section"  style="padding: 0px;">
-                          <div class="col-md-12 col-cart">
-                              <div class="table-responsive">
-                                <table class="table">
-                                    <thead class="text-dark">
-                                    <tr>
-                                        <th class="product" colspan="2">Product</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr *ngFor="let cartItem of (cart$|async)?.data.cart_items">
-                                        <td class="product"  *ngIf="cartItem">
-                                            <img height="100px" width="120px" src="{{IMAGE_ENDPOINT + cartItem.product_id.image}}" alt="">
-                                        </td>
-                                        <td>
-                                            <div class="product-info">
-                                                <h3 class="product-name">
-                                                    <a routerLink="/product-details/{{cartItem.product_id.id}}">
-                                                        {{cartItem.product_id.name}}
-                                                    </a><br>
-                                                    <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
-                                                        <span class="variant-key" *ngFor="let variant of cartItem.cartitemvariant">
-                                                          {{variant.variant_id.name}}:<small class="variant-value">{{variant.warehouse_variant_id.name}}</small>
+                        <section id="signup-section" style="padding: 0;">
+                            <div class="col-md-12 col-cart" *ngIf="cartData !== null">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead class="text-dark">
+                                        <tr>
+                                            <th class="product" colspan="2">Product</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <ng-container *ngIf="cartData.cart_items">
+                                            <tr *ngFor="let cartItem of cartData.cart_items">
+                                                <td class="product" *ngIf="cartItem">
+                                                    <img style="width: 150px; height: 150px; object-fit: contain;"
+                                                         src="{{IMAGE_LIST_ENDPOINT + cartItem.product_id.image}}"
+                                                         alt="Cart Item">
+                                                </td>
+                                                <td>
+                                                    <div class="product-info">
+                                                        <h3 class="product-name">
+                                                            <a routerLink="/product-details/{{cartItem.product_id.id}}">
+                                                                {{cartItem.product_id.name}}
+                                                            </a>
+                                                            <br>
+                                                            <ng-container
+                                                                    *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
+                                                        <span class="variant-key"
+                                                              *ngFor="let variant of cartItem.cartitemvariant">
+                                                          {{variant.variant_id.name}}:<small
+                                                                class="variant-value">{{variant.warehouse_variant_id.name}}</small>
                                                         </span>
-                                                    </ng-container>
-                                                </h3>
-                                            </div>
-                                        </td>
-                                        <td *ngIf="cartItem">
-                                            <div class="quantity text-dark" style="width: 65px">
+                                                            </ng-container>
+                                                        </h3>
+                                                    </div>
+                                                </td>
+                                                <td *ngIf="cartItem">
+                                                    <div class="quantity text-dark" style="width: 65px">
                                                 <span class="cursor-pointer ml-2"
                                                       (click)="changeCartItemQuantity(cartItem, 'decrease')">-</span>
-                                                {{cartItem.product_quantity}}
-                                                <span class="cursor-pointer mr-2"
-                                                      (click)="changeCartItemQuantity(cartItem, 'increase')">+</span>
-                                            </div>
+                                                        {{cartItem.product_quantity}}
+                                                        <span class="cursor-pointer mr-2" (click)="changeCartItemQuantity(cartItem, 'increase')">+</span>
+                                                    </div>
+                                                </td>
+                                                <td class="product-subtotal" *ngIf="cartItem">
+                                                    <div class="amount text-dark" style="width: 65px">
+                                                        ৳. {{cartItem.product_total_price}}
+                                                    </div>
+                                                </td>
+                                                <td class="product-remove text-center" *ngIf="cartItem">
+                                                    <ng-template #popTemplate>
+                                                        <button mat-raised-button color="warn"
+                                                                (click)="removeCartItem(cartItem.id)">Ok
+                                                        </button>
+                                                        <button mat-raised-button color="basic" (click)="pop.hide()">
+                                                            Cancel
+                                                        </button>
+                                                    </ng-template>
+                                                    <button mat-mini-fab color="basic" class="remove text-dark"
+                                                            type="button" #pop="bs-popover"
+                                                            [popover]="popTemplate" popoverTitle="Are you want to remove?"
+                                                            [outsideClick]="true">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
 
-
-                                        </td>
-                                        <td class="product-subtotal" *ngIf="cartItem">
-                                            <div class="amount text-dark" style="width: 65px">৳. {{cartItem.product_total_price}}</div>
-                                        </td>
-                                        <td class="product-remove text-center" *ngIf="cartItem">
-
-                                            <ng-template #popTemplate>
-                                                <button mat-raised-button color="warn" (click)="removeCartItem(cartItem.id)">Ok</button>
-                                                <button mat-raised-button color="basic" (click)="pop.hide()">Cancel</button>
-                                            </ng-template>
-                                            <button mat-mini-fab color="basic" class="remove text-dark" type="button" #pop="bs-popover"
-                                                    [popover]="popTemplate" popoverTitle="Are you want to remove?" popoverColor='#ffffff' [outsideClick]="true">
-                                                    <i class="fa fa-times"></i>
-                                            </button>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr class="text-dark">
-                                        <td colspan="2" ></td>
-                                        <td colspan="1" class="order-total"> Item: {{(cart$|async)?.data.total_quantity}} </td>
-                                        <td colspan="2" class="order-total">Total: ৳. {{(cart$|async)?.data.total_price}} taka</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                        <tr class="text-dark">
+                                            <td colspan="2"></td>
+                                            <td colspan="1" class="order-total">
+                                                Item: {{cartData.total_quantity}}
+                                            </td>
+                                            <td colspan="2" class="order-total">Total: ৳. {{cartData.total_price}} taka </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                          </div>
                         </section>
-                  </ng-container>
+                    </ng-container>
                 </div>
                 <div class="cart-btn">
                     <button class="btn1" (click)="hideModal()">Continue Shopping</button>

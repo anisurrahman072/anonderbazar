@@ -91,6 +91,12 @@ export class ProductItemComponent implements OnInit {
     clickToImage(event, productId) {
         this.router.navigate(['/product-details/', productId]);
     }
+    //Method for add to cart
+    addToCartClickHandler(event: any, product: any) {
+        event.stopPropagation();
+        console.log('addToCartClickHandler');
+        this.addToCart(product);
+    }
 
     addToCart(product: any, callback?) {
         if (this.product.product_variants) {

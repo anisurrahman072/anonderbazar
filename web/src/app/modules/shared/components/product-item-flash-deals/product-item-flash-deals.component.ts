@@ -12,7 +12,6 @@ import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 
-
 @Component({
     selector: 'app-product-item-flash-deals',
     templateUrl: './product-item-flash-deals.component.html',
@@ -73,10 +72,17 @@ export class ProductItemFlashDealComponent implements OnInit {
 
     //Method for add to cart
     clickToImage(event, productId) {
+        console.log('clicktoimage', event, productId);
         this.router.navigate(['/product-details/', productId]);
     }
 
     //Method for add to cart
+
+    addToCartClickHandler(event: any, product: any) {
+        event.stopPropagation();
+        console.log('addToCartClickHandler');
+        this.addToCart(product);
+    }
 
     addToCart(product: any, callback?) {
         if (this.product.product_variants.length > 0) {

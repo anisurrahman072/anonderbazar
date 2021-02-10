@@ -11,30 +11,31 @@ module.exports = {
   destroy: async function (req, res) {
     try {
       let cartItem = await CartItem.update({id: req.param('id')}, {deletedAt: new Date()});
-      Cart.find(cartItem[0].cart_id).exec(function (err, cart) {
-        if (err) return res.json(err, 400);
-        var requestPayload = [];
-        requestPayload.push({
-          "total_price": cart[0].total_price - cartItem[0].product_total_price,
-          "total_quantity": cart[0].total_quantity - cartItem[0].product_quantity,
-        });
+      let cart = await Cart.find(cartItem[0].cart_id);
 
-        Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec(function (err, cart) {
-          if (err) return res.json(err, 400);
-        });
-      });
+      if (!cart || cart.length === 0) {
+        return res.badRequest('Cart Not Found!');
+      }
+
+      let requestPayload = {
+        "total_price": cart[0].total_price - cartItem[0].product_total_price,
+        "total_quantity": cart[0].total_quantity - cartItem[0].product_quantity,
+      };
+
+      await Cart.update({id: cartItem[0].cart_id}, requestPayload);
+
       let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem[0].id});
-
 
       for (let i = 0; i < cartItemVariants.length; i++) {
         await CartItemVariant.update({id: cartItemVariants[i].id}, {deletedAt: new Date()});
       }
+
       return res.json(cartItem);
+
     } catch (err) {
+      console.log(err);
       return res.error(err);
-
     }
-
   },
   //Method called for deleting cart item data
   //Model models/CartItem.js
@@ -93,58 +94,67 @@ module.exports = {
   //Method called for creating cart item data
   //Model models/CartItem.js
   create: async function (req, res) {
-    var cartItem = await CartItem.find({cart_id: req.body.cart_id, product_id: req.body.product_id, deletedAt: null});
+    if (!req.body.cart_id || !req.body.product_id) {
+      return res.badRequest('Invalid data Provided');
+    }
 
-    if (cartItem && cartItem.length > 0) {
-      var cartItemID = 0;
-      var cartItemVariantsLength = 0;
-      for (var h = 0; h < cartItem.length; h++) {
-        if (req.body.cartItemVariants && req.body.cartItemVariants != "[]") {
-          var cartItemVariants = req.body.cartItemVariants;
+    let cartItems = await CartItem.find({cart_id: req.body.cart_id, product_id: req.body.product_id, deletedAt: null});
+    let cartItem = null;
+
+    if (cartItems && cartItems.length > 0) {
+      let selectedCartItem = null;
+      let cartItemVariantsLength = 0;
+
+      if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+        const cartItemLen = cartItems.length;
+        for (let h = 0; h < cartItemLen; h++) {
+          let cartItemVariants = req.body.cartItemVariants;
           cartItemVariantsLength = cartItemVariants.length;
-          for (var i = 0; i < cartItemVariants.length; i++) {
-            if (cartItemID > 0 && cartItemVariants.length == (i + 1) && cartItemVariantsLength < 1) {
-              continue;
-            } else {
-              var cartItemVar = cartItemVariants[i];
-              cartItemVar.cart_item_id = cartItem[h].id;
-              cartItemVar.product_id = cartItem[h].product_id;
-              var cartvariant = await CartItemVariant.find(cartItemVar);
+          for (let i = 0; i < cartItemVariants.length; i++) {
+            if (!(selectedCartItem !== null && cartItemVariants.length === (i + 1) && cartItemVariantsLength < 1)) {
+              let cartItemVar = cartItemVariants[i];
+              cartItemVar.cart_item_id = cartItems[h].id;
+              cartItemVar.product_id = cartItems[h].product_id;
+              let cartvariant = await CartItemVariant.find(cartItemVar);
 
-              if (cartvariant && cartvariant[0]) {
-                cartItemID = cartItem[h].id;
+              if (cartvariant && cartvariant.length > 0 && cartvariant[0]) {
+                selectedCartItem = cartItems[h];
                 cartItemVariantsLength -= 1;
               }
             }
           }
-        } else {
-          cartItemID = cartItem[h].id;
         }
-      }
-      if (cartItemID > 0 && cartItemVariantsLength == 0) {
-        var cartItemBody = {};
-
-        var cartItem = await CartItem.find({id: cartItemID});
-        await Cart.find(req.body.cart_id).exec(function (err, cart) {
-          if (err) return res.json(err, 400);
-          var requestPayload = [];
-          requestPayload.push({
-            "total_price": cart[0].total_price + req.body.product_total_price,
-            "total_quantity": cart[0].total_quantity + req.body.product_quantity,
-          });
-          Cart.update({id: req.body.cart_id}, requestPayload[0]).exec(function (err, cart) {
-            if (err) return res.json(err, 400);
-          });
-        });
-        cartItemBody.product_quantity = cartItem[0].product_quantity + req.body.product_quantity;
-        cartItemBody.product_total_price = cartItem[0].product_total_price + req.body.product_total_price;
-        cartItem = await CartItem.update({id: cartItemID}, cartItemBody);
       } else {
-        var cartItem = await CartItem.create(req.body);
-        if (req.body.cartItemVariants && req.body.cartItemVariants != "[]") {
-          var cartItemVariants = req.body.cartItemVariants;
-          for (var i = 0; i < cartItemVariants.length; i++) {
-            var cartItemVar = cartItemVariants[i];
+        selectedCartItem = cartItems[0];
+      }
+
+      if (selectedCartItem !== null && cartItemVariantsLength === 0) {
+
+        let cart = await Cart.findOne({
+          id: req.body.cart_id
+        });
+
+        let requestPayload = {
+          "total_price": cart.total_price + req.body.product_total_price,
+          "total_quantity": cart.total_quantity + req.body.product_quantity,
+        };
+
+        await Cart.update({id: req.body.cart_id}, requestPayload);
+
+        let cartItemBody = {};
+        cartItemBody.product_quantity = selectedCartItem.product_quantity + req.body.product_quantity;
+        cartItemBody.product_total_price = selectedCartItem.product_total_price + req.body.product_total_price;
+
+        cartItem = await CartItem.update({id: selectedCartItem.id}, cartItemBody);
+
+      } else {
+
+        cartItem = await CartItem.create(req.body);
+
+        if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+          let cartItemVariants = req.body.cartItemVariants;
+          for (let i = 0; i < cartItemVariants.length; i++) {
+            let cartItemVar = cartItemVariants[i];
             cartItemVar.cart_item_id = cartItem.id;
             cartItemVar.product_id = cartItem.product_id;
             await CartItemVariant.create(cartItemVar);
@@ -153,16 +163,18 @@ module.exports = {
       }
 
     } else {
-      var cartItem = await CartItem.create(req.body);
-      if (req.body.cartItemVariants && req.body.cartItemVariants != "[]") {
-        var cartItemVariants = req.body.cartItemVariants;
-        for (var i = 0; i < cartItemVariants.length; i++) {
-          var cartItemVar = cartItemVariants[i];
+
+      cartItem = await CartItem.create(req.body);
+      if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+        let cartItemVariants = req.body.cartItemVariants;
+        for (let i = 0; i < cartItemVariants.length; i++) {
+          let cartItemVar = cartItemVariants[i];
           cartItemVar.cart_item_id = cartItem.id;
           cartItemVar.product_id = cartItem.product_id;
           await CartItemVariant.create(cartItemVar);
         }
       }
+
     }
     return res.json(cartItem);
   },
@@ -170,22 +182,28 @@ module.exports = {
   //Model models/CartItem.js
   update: async function (req, res) {
     try {
-      let cartItem = await CartItem.find({id: req.param("id")});
-      let product_quantity = cartItem[0].product_quantity - req.body.product_quantity;
-      let product_total_price = cartItem[0].product_total_price - req.body.product_total_price;
+      let cartItem = await CartItem.findOne({id: req.param("id")});
+      if (!cartItem) {
+        return res.badRequest('No Cart Item found');
+      }
 
-      const cart = await Cart.find(cartItem[0].cart_id);
+      let product_quantity = cartItem.product_quantity - req.body.product_quantity;
+      let product_total_price = cartItem.product_total_price - req.body.product_total_price;
+
+      const cart = await Cart.findOne({
+        id: cartItem.cart_id
+      });
 
       if (!cart) {
         return res.badRequest('No Cart found');
       }
 
       let requestPayload = {
-        "total_price": cart[0].total_price - product_total_price,
-        "total_quantity": cart[0].total_quantity - product_quantity,
+        "total_price": cart.total_price - product_total_price,
+        "total_quantity": cart.total_quantity - product_quantity,
       };
 
-      await Cart.update({id: cartItem[0].cart_id}, requestPayload);
+      await Cart.update({id: cartItem.cart_id}, requestPayload);
 
       cartItem = await CartItem.update({id: req.param("id")}, req.body);
 

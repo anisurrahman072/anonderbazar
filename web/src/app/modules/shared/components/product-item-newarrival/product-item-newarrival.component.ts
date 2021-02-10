@@ -74,6 +74,13 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for add to cart
+    addToCartClickHandler(event: any, product: any) {
+        event.stopPropagation();
+        console.log('addToCartClickHandler');
+        this.addToCart(product);
+    }
+
+    //Method for add to cart
 
     addToCart(product: any, callback?) {
         if (product.product_variants.length > 0) {

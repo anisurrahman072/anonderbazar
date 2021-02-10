@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {NgProgress} from "@ngx-progressbar/core";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
@@ -82,7 +81,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 private store: Store<fromStore.HomeState>,
                 private cartItemService: CartItemService,
                 private cartService: CartService,
-                public _progress: NgProgress,
+                // public _progress: NgProgress,
                 private toastr: ToastrService,
                 public loaderService: LoaderService) {
 
@@ -90,6 +89,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     // init the component
     ngOnInit() {
+
         this.checkoutForm = this.fb.group({
             // billing
             billing_id: ['', []],
@@ -104,7 +104,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             division_id: ['', [Validators.required]],
 
             // shipping
-
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
             shippingLastName: ['', [Validators.required]],
@@ -117,7 +116,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             shipping_division_id: ['', [Validators.required]],
 
             //paymentType
-            paymentType: ['Cash', []]
+            paymentType: ['', []]
         });
 
         let queryParams = this.route.snapshot.queryParams;
@@ -128,36 +127,147 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
 
-        // this.cart$ = this.store.select<any>(fromStore.getCart);
-
-        this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
-        });
-
         this.currentUserSub = this.currentUser$.subscribe((user) => {
-            console.log('this.currentUser', user);
             this.currentUser = user;
+            if (this.currentUser) {
+                this.user_id = this.currentUser.id;
+            } else {
+                this.user_id = null;
+            }
+        }, () => {
+            this.user_id = null;
         });
 
-        this.user_id = this.authService.getCurrentUserId();
+        this.areaService.getAllDivision().subscribe((result) => {
+            this.divisionSearchOptions = result;
+            console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
+        }, (err) => {
+            console.log(err);
+        });
+
+
+        this.cart$ = this.store.select<any>(fromStore.getCart);
 
         this.loaderService.showLoader();
-
         this.grantTotal = 0;
-        this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-            this.cartData = cartData;
+        this.cartService.getCourierCharges().subscribe((globalConfig) => {
 
-            this.updateGrandTotal();
-            this.cartService.getCourierCharges().subscribe(globalConfig => {
-                if (Array.isArray(globalConfig) && globalConfig.length > 0) {
-                    this.courierCharges = globalConfig[0]
+            console.log('globalConfig', globalConfig);
+
+            if (Array.isArray(globalConfig) && globalConfig.length > 0) {
+                this.courierCharges = globalConfig[0]
+            }
+
+            this.cart$.subscribe((cartData) => {
+                console.log('cartData', cartData);
+                if (cartData) {
+                    this.cartData = cartData;
+                } else {
+                    this.cartData = null;
                 }
+                this.updateGrandTotal();
                 this.loaderService.hideLoader();
+            }, (err) => {
+                this.loaderService.hideLoader();
+                this.toastr.error('Unable to load cart data', 'Sorry!');
             });
+        }, (err) => {
+            this.cart$.subscribe((cartData) => {
+                console.log('err-cartData', cartData);
+                if (cartData) {
+                    this.cartData = cartData;
+                } else {
+                    this.cartData = null;
+                }
+                this.updateGrandTotal();
+                this.loaderService.hideLoader();
 
+            }, (err) => {
+                this.loaderService.hideLoader();
+                this.toastr.error('Unable to load cart data', 'Sorry!');
+            });
         });
 
         this.prevoius_address_change(this.user_id);
+
+        /*
+        this.loaderService.hideLoader();
+        this.cartService.getByUserId(this.user_id).subscribe(cartData => {
+            this.cartData = cartData;
+        });
+        */
+    }
+
+    // Method for update cart
+    updateCartItem(cartItem, action) {
+
+        this.loaderService.showLoader();
+
+        let updatedQty = cartItem.product_quantity;
+        let updatedTotalPrice = 0;
+        let maxProductQuantity = cartItem.product_id.quantity;
+
+        if (action == 'increase') {
+            if (updatedQty < maxProductQuantity) {
+                updatedQty += 1;
+                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
+            } else {
+                this.loaderService.hideLoader();
+                this.toastr.error('Unable to increase quantity!', 'Sorry!');
+                return false;
+            }
+        } else {
+            if (updatedQty > 1) {
+                updatedQty -= 1;
+                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
+            } else {
+                this.loaderService.hideLoader();
+                this.toastr.error('Unable to decrease quantity!', 'Sorry!');
+                return false;
+            }
+        }
+
+        let data = {
+            "cart_id": cartItem.cart_id,
+            "product_id": cartItem.product_id.id,
+            "product_quantity": updatedQty,
+            "product_total_price": updatedTotalPrice
+        };
+
+        this.loaderService.showLoader();
+        this.cartItemService.update(cartItem.id, data).subscribe(res => {
+            this.store.dispatch(new fromStore.LoadCart());
+            // this.updateGrandTotal();
+            this.loaderService.hideLoader();
+            this.toastr.info("Cart Item updated Successfully", 'Note');
+            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
+                            this.cartData = cartData;
+                        });*/
+        }, () => {
+            this.loaderService.hideLoader();
+            this.toastr.error("Cart Item has not been updated Successfully", 'Error');
+        });
+    }
+
+    //Event method for removing cart items
+    removeCartItem(cartItemId) {
+        // this._progress.start("mainLoader");
+        this.loaderService.showLoader();
+        this.cartItemService.delete(cartItemId).subscribe(res => {
+            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
+                            this.cartData = cartData;
+                            this.updateGrandTotal();
+                            // this._progress.complete("mainLoader");
+                            this.loaderService.hideLoader();
+                            this.toastr.info("Item removed from cart successfully", 'Note');
+                        });*/
+            this.store.dispatch(new fromStore.LoadCart());
+            this.toastr.info("Item removed from cart successfully", 'Note');
+            this.loaderService.hideLoader();
+        }, () => {
+            this.loaderService.hideLoader();
+            this.toastr.error("Cart Item has not been removed successfully", 'Error');
+        });
     }
 
     updateGrandTotal(shouldUpateShippingCharge: boolean = true, zilaId: number = 0) {
@@ -165,7 +275,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.grantTotal = 0;
         let selectedZilaId = zilaId;
 
-        if (typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined') {
+        if (this.cartData !== null && typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined') {
             this.grantTotal = this.cartData.data.total_price;
         }
 
@@ -179,7 +289,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         if (shouldUpateShippingCharge) {
             this.shippingCharge = 0;
             this.noShippingCharge = false;
-            if (typeof this.cartData.data !== 'undefined' && typeof this.cartData.data.cart_items !== 'undefined' && this.cartData.data.cart_items.length > 0) {
+            if (this.cartData !== null && typeof this.cartData !== 'undefined' && typeof this.cartData.data !== 'undefined' && typeof this.cartData.data.cart_items !== 'undefined' && this.cartData.data.cart_items.length > 0) {
                 const foundCouponProduct = this.cartData.data.cart_items.find((item) => {
                     return item.product_id && !!item.product_id.is_coupon_product;
                 });
@@ -227,10 +337,19 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     //Event method for submitting the form
     public formCheckout = ($event, value) => {
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
-            this.toastr.error("You have no items in your cart!", "Empty cart!");
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
             return false;
         }
         console.log('formCheckout', value)
+        if (!(value && value.paymentType)) {
+            this.toastr.error("Please a payment method in order to proceed", "Error", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
         let requestPayload = {
             user_id: this.user_id,
 
@@ -243,7 +362,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ?  AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -255,7 +374,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ?  AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
@@ -264,20 +383,49 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        this._progress.start("mainLoader");
+        // this._progress.start("mainLoader");
+        this.loaderService.showLoader();
         if (value.paymentType == "SSLCommerce") {
             this.orderService.sslcommerzInsert(requestPayload).subscribe(result => {
-                this._progress.complete("mainLoader");
+                // this._progress.complete("mainLoader");
+                this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
                 window.location.href = result.GatewayPageURL;
+            }, (error) => {
+                this.loaderService.hideLoader();
+                console.log('sslcommerzInsert', error);
+                if (error && error.error) {
+                    this.toastr.error(error.error, "Problem", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                } else {
+                    this.toastr.error("Problem in placing your order.", "Problem", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                }
             });
         } else {
             this.orderService.customInsert(requestPayload).subscribe(result => {
-                this._progress.complete("mainLoader");
+                // this._progress.complete("mainLoader");
+                this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
                 // this.router.navigate(['/profile/orders/invoice/', result.order.id]);
                 this.successOrderId = result.order.id;
-                this.toastr.success("Your order has been successfully placed.", "Note");
+                this.toastr.success("Your order has been successfully placed.", "Note", {
+                    positionClass: 'toast-bottom-right'
+                });
+            }, (error) => {
+                this.loaderService.hideLoader();
+                console.log('cash', error);
+                if (error && error.error) {
+                    this.toastr.error(error.error, "Problem", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                } else {
+                    this.toastr.error("Problem in placing your order.", "Problem", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                }
             });
         }
     }
@@ -365,20 +513,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 this.upazilaSearchOptions.push(upZila);
             }
         }
-    }
-
-    //Event method for removing cart items
-    removeCartItem(cartItemId) {
-        this._progress.start("mainLoader");
-        this.cartItemService.delete(cartItemId).subscribe(res => {
-            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                this.cartData = cartData;
-                this.updateGrandTotal();
-                this._progress.complete("mainLoader");
-                this.toastr.info("Item removed from cart Successfully", 'Note');
-            });
-            this.store.dispatch(new fromStore.LoadCart());
-        });
     }
 
     //Method for address change
@@ -499,7 +633,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.copyAll();
         }
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
-            this.toastr.error("You have no items in your cart!", "Empty cart!");
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
             return false;
         }
         if (this.checkoutForm.invalid && !this.noShippingCharge) {
@@ -513,48 +649,29 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.showPayment = true
     }
 
-    // Method for update cart
-    updateCartItem(cartItem) {
-        this._progress.start("mainLoader");
-        let data = {
-            "cart_id": cartItem.cart_id,
-            "product_id": cartItem.product_id.id,
-            "product_quantity": cartItem.product_quantity,
-            "product_total_price": cartItem.product_total_price
-        };
-
-        this.loaderService.showLoader();
-        this.cartItemService.update(cartItem.id, data).subscribe(res => {
-            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                this.loaderService.hideLoader();
-                this.cartData = cartData;
-                this.updateGrandTotal();
-                this._progress.complete("mainLoader");
-                this.toastr.info("Cart Item updated Successfully", 'Note');
-            })
-        });
-    }
-
     changeCartItemQuantity(cartItem, action) {
-        if (action == 'increase') {
-            let maxProductQuantity = cartItem.product_id.quantity;
-            if (cartItem.product_quantity < maxProductQuantity) {
-                cartItem.product_quantity += 1;
-                cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-            } else {
-                this.toastr.error('Unable to increase quantity!', 'Sorry!');
-                return false;
-            }
-        } else {
-            if (cartItem.product_quantity > 1) {
-                cartItem.product_quantity -= 1;
-                cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-            } else {
-                this.toastr.error('Unable to decrease quantity!', 'Sorry!');
-                return false;
-            }
-        }
-        this.updateCartItem(cartItem);
+
+        this.updateCartItem(cartItem, action);
+        /*        this.updateCartItem(cartItem, action, (action) => {
+                    if (action == 'increase') {
+                        let maxProductQuantity = cartItem.product_id.quantity;
+                        if (cartItem.product_quantity < maxProductQuantity) {
+                            cartItem.product_quantity += 1;
+                            cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
+                        } else {
+                            this.toastr.error('Unable to increase quantity!', 'Sorry!');
+                            return false;
+                        }
+                    } else {
+                        if (cartItem.product_quantity > 1) {
+                            cartItem.product_quantity -= 1;
+                            cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
+                        } else {
+                            this.toastr.error('Unable to decrease quantity!', 'Sorry!');
+                            return false;
+                        }
+                    }
+                });*/
     }
 
     checkAddressSegment(type, segment) {

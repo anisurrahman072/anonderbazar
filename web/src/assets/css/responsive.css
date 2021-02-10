@@ -153,11 +153,11 @@
     }
 
     .header-form form {
-        padding: 60px 0px 0px;
+        padding: 60px 0 0;
     }
 
     .modal-content {
-        margin-top: 310px !important;
+        margin-top: 250px !important;
     }
 
     .product-details .proh1first {
@@ -241,7 +241,7 @@
     }
 
     .modal-content {
-        margin-top: 280px !important;
+        margin-top: 250px !important;
     }
 
     .product-img img {
@@ -610,6 +610,9 @@
         padding: 40px 0px;
     }
 
+    #productdetail-section {
+        padding: 20px 0;
+    }
     .shipping-contact .conttag p a {
         margin-left: 495px !important;
     }
@@ -718,6 +721,9 @@
         display: block;
     }
 
+    #productdetail-section {
+        padding: 0;
+    }
     .header_chart .widgets-wrap {
         margin-top: 0px;
     }
@@ -749,7 +755,7 @@
     }
 
     .mobile-menu nav {
-        padding: 20px 0px 0px;
+        padding: 20px 0 0;
     }
 
     .mobile-menu .widget-cart button {
@@ -762,14 +768,16 @@
         padding: 4px !important;
         background-color: #ffffff !important;
     }
-
+    .login-modal .modal-content {
+        margin-top: 50px !important;
+    }
     .modal-content {
         margin-top: 265px !important;
     }
 
     .col-cart {
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .mat-mini-fab {
@@ -781,7 +789,7 @@
         position: absolute;
         top: 3px;
         left: 10px;
-        padding: 0px 0px !important;
+        padding: 0 0 !important;
     }
 
     .product-details .proh1first {
@@ -1103,7 +1111,7 @@
     }
 
     .modal-content {
-        padding: 0px 0px;
+        padding: 0 0;
     }
 
     .my-account-order {
@@ -1447,8 +1455,8 @@
     }
 
     .modal-content table td {
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .feedback-details .product-img {

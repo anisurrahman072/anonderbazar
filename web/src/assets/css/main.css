@@ -1023,8 +1023,6 @@ offer - end
 }
 
 
-
-
 /*====================================
 offer - end
 ====================================*/
@@ -3723,20 +3721,24 @@ del {
 .compare-img .btn1 button {
     padding: 10px 18px !important;
 }
+
 .mat-radio-label {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
 .mat-radio-label .mat-radio-label-content {
     white-space: normal;
     padding-right: 30px;
     line-break: anywhere;
 }
+
 .offer-details .offer-img .offerimg2 {
     width: 130px;
     height: 130px;
     object-fit: contain;
 }
+
 .offer-details .offer-img .offer-mainimg {
     width: 300px;
     height: 300px;
@@ -3748,6 +3750,7 @@ del {
     width: 300px;
     position: relative;
 }
+
 .productimage-wrapper .product-image {
     height: 300px;
     width: 300px;
@@ -3760,15 +3763,19 @@ del {
     width: 100%;
     height: auto;
 }
+
 #coupon-product-banner-section .carousel .carousel-inner .item {
     text-align: center;
 }
+
 .breadcrumb {
     padding-bottom: 0;
 }
+
 #toast-container > div {
     opacity: 1;
 }
+
 /*
 .term-condition-modal.modal-lg {
     max-width: 800px;

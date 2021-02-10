@@ -1,5 +1,5 @@
 <div *ngIf="isModalShown$|async" [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal"
-     class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+     class="modal login-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -34,11 +34,11 @@
                                                     <span>
                                                         <i class='fa fa-exclamation-circle'></i> Phone Number is required
                                                     </span>
-    
+
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="row">
                                         <div class="form-group w-100" [ngClass]="{'has-error': getFormControl('password').dirty&&getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
                                             <label for="password" class="col-lg-12 control-label">Password</label>
@@ -54,20 +54,20 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mb-2"> 
+                                    <div class="mb-2">
                                         <div class="col-md-12">
                                             <a type="button" (click)="showForgot()" style="color: #ED1C24;">Forgot your password?</a>
-                                        </div> 
-                                    </div> 
+                                        </div>
+                                    </div>
                                     <div class="form-group signupbtn col-md-12">
                                         <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
-                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForm.valid" data-loading-text="Please wait">Sign In</button> 
+                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForm.valid" data-loading-text="Please wait">Sign In</button>
                                         <p>
                                           Create an account?<a class="btn-link" style="color: red" (click)="showSignUp()">Sign Up</a>
                                         </p>
                                     </div>
                                   </div>
-                                </form> 
+                                </form>
                               </div>
                             </div>
                           </section>
@@ -171,7 +171,7 @@
                                                     <div class="validation-feedback">
                                                         <span>
                                                             <i class='fa fa-exclamation-circle'></i> Last name is required! </span>
-        
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -218,10 +218,10 @@
                                                         <div class="validation-feedback">
                                                             <span>
                                                                 <i class='fa fa-exclamation-circle mr-2'></i>Gender is required!</span>
-            
+
                                                         </div>
                                                     </div>
-                                                </div> 
+                                                </div>
                                             </div>
                                     </div>
                                         <div class="row">
@@ -236,7 +236,7 @@
                                                         <div class="validation-feedback">
                                                             <span>
                                                                 <i class='fa fa-exclamation-circle'></i> Password  is required!</span>
-            
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -253,15 +253,15 @@
                                                                 <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('confirmPassword').hasError('confirm')?'Incorrect Password':'Input password again'}}</span>
                                                         </div>
                                                     </div>
-                                                </div> 
+                                                </div>
                                             </div>
                                         </div>
-    
-                                        
+
+
                                         <div class="form-group col-md-12">
                                         <div class="row">
-                                            
-                                            <div class="col-md-12"> 
+
+                                            <div class="col-md-12">
                                                 <label for="inputBirthday">Birthday</label>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-4">
@@ -269,17 +269,17 @@
                                                             <option value="" [selected]="true">Select Year</option>
                                                                 <option *ngFor="let year of yearList(70); let i = index" value="{{currentYear-i}}">{{currentYear-i}}</option>
                                                         </select>
-    
+
                                                     </div>
-                                                    <div class="form-group col-md-4"> 
+                                                    <div class="form-group col-md-4">
                                                         <select id="inputState" formControlName="birthMonth" class="form-control">
                                                             <option value="" [selected]="true">Select Month</option>
                                                             <option *ngFor="let month of birthMonthOption" value="{{month.value}}">
                                                                 {{month.label}}
                                                             </option>
-                                                        
+
                                                         </select>
-    
+
                                                     </div>
                                                     <div class="form-group col-md-4">
                                                         <select id="inputState" formControlName="birthDay" class="form-control">
@@ -316,9 +316,9 @@
                                                             <option>30</option>
                                                             <option>31</option>
                                                             </select>
-        
+
                                                     </div>
-                                                </div> 
+                                                </div>
                                             </div>
                                         </div>
                                         </div>
@@ -327,8 +327,8 @@
                                         <button type="sign-up" class="btn btn-flat" data-loading-text="Please wait" [disabled]="validateSignUpForm.invalid">Sign Up</button>
                                         <p>Already have an account?<a (click)="register =false" style="color: red">Sign In</a></p>
                                         </div>
-                                    </form> 
-                                  </div> 
+                                    </form>
+                                  </div>
                               </div>
                         </section>
                         <!-- <form class="form-horizontal m-t-50" [formGroup]="validateSignUpForm" (ngSubmit)="submitSignupForm($event,validateSignUpForm.value)">
@@ -404,7 +404,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group" [ngClass]="{'has-error': validateSignUpForm.get('email').dirty && validateSignUpForm.get('email').errors, 'has-success':validateSignUpForm.get('email').dirty&&!validateSignUpForm.get('email').errors }">
                                 <label for="email" class="col-lg-3 control-label">ইমেইল লিখুন</label>
                                 <div class="col-lg-9">
@@ -487,11 +487,11 @@
                                                     <span>
                                                         <i class='fa fa-exclamation-circle'></i> Enter Your Email
                                                     </span>
-    
+
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="row">
                                         <div class="form-group w-100" [ngClass]="{'has-error': getForgotFormControl('phone').dirty&&getForgotFormControl('phone').hasError('required'), 'has-success':getForgotFormControl('phone').dirty&&!getForgotFormControl('phone').hasError('required') }">
                                             <label for="phone" class="col-lg-12 control-label">Phone</label>
@@ -506,44 +506,44 @@
 
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="form-group signupbtn col-md-12">
                                         <input id="form_botcheck" name="form_botcheck" class="form-control" type="hidden" value="">
-                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForgotForm.valid" data-loading-text="Please wait">Send</button> 
+                                        <button type="sign-up" class="btn btn-flat" [disabled]="!validateForgotForm.valid" data-loading-text="Please wait">Send</button>
                                         <p>
                                           Create an account?<a class="btn-link" style="color: red" (click)="showLogin()">Sign In</a>
                                         </p>
                                     </div>
                                   </div>
-                                </form> 
+                                </form>
                               </div>
                             </div>
-                          </section> 
+                          </section>
                     </ng-container>
                 </div>
                 <div class="col-md-12 col-xs-12">
-                    
+
                 </div>
                 <section style="padding: 0px;">
                     <div class="row" [ngClass]="" style="background-position: center; /* Center the image */background-repeat: no-repeat; /* Do not repeat the image */background-size: cover; ">
                         <!-- <div class="row" [ngClass]="register?'bg-theme':'bg-theme'" style="background-image: url(assets/images/fair-product-1.jpg); background-position: center; /* Center the image */background-repeat: no-repeat; /* Do not repeat the image */background-size: cover; "> -->
-    
+
                         <!-- <div class="col-md-4 col-xs-12">
                             <img style="width: 100%; height: auto; margin-left:2%" src="assets/images/fair-product-1.jpg" class="img-responsive" alt="শূন্য">
-    
+
                             <div class="pop-left">
                                 <img src="assets/images/logo-w.png" class="img-responsive" alt="img">
                                 <h2 *ngIf="register == false">লগইন ফর্ম</h2>
                                 <h2 *ngIf="register == true">নিবন্ধন ফর্ম</h2>
                             </div>
                         </div> -->
-    
-                        
+
+
                     </div>
                 </section>
             </div>
 
-            
+
         </div>
     </div>
 </div>

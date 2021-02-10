@@ -5,15 +5,14 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/operator/mergeMap";
 import {Observable} from "rxjs/Observable";
 import {Store} from "@ngrx/store";
-import {AuthService} from "../services/auth.service";
-import {CartService} from "../services/cart.service";
+import {AuthService} from "../services";
+import {CartService} from "../services";
 import {NgProgressRef} from "@ngx-progressbar/core";
 import {NgProgress} from "@ngx-progressbar/core";
-
 import * as  fromStore from '../state-management';
 import {Cart} from "../models";
 import {isPlatformBrowser} from "@angular/common";
-import {SyncStorage} from "../state-management/actions/sync.action";
+import {SyncStorage} from "../state-management";
 import {UIService} from "../services/ui/ui.service";
 import {CompareService} from "../services/compare.service";
 import {LoaderService} from "../services/ui/loader.service";

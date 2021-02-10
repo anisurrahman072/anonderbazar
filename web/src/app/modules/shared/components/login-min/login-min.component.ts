@@ -1,23 +1,17 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from "@angular/router";
-import {AuthService} from "../../../../services/auth.service";
-
+import {AuthService} from "../../../../services";
 import {Store} from "@ngrx/store";
-
-import {NgProgress} from "@ngx-progressbar/core";
 import * as fromStore from '../../../../state-management/index';
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {Observable} from "rxjs/Observable";
 import {ModalDirective} from "ngx-bootstrap";
 import {NotificationsService} from "angular2-notifications";
-//import { LocalStorageMergeService } from '../../../../services/local-storage-merge.service';
-
-import { UserService } from '../../../../services/user.service';
+import { UserService } from '../../../../services';
 import { Subscription } from 'rxjs/Subscription';
-import { CartService } from '../../../../services/cart.service';
+import { CartService } from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
-//import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -30,7 +24,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     private isUnique=true;
     currentYear: number;
     gender: any;
-    genderSearchOptions = [ 
+    genderSearchOptions = [
         {label: 'Male', value: 'male'},
         {label: 'Female', value: 'female'},
         {label: 'Other', value: 'third-gender'}
@@ -54,22 +48,22 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'November', value: '11'},
         {label: 'December', value: '12'},
     ];
-    ngOnDestroy(): void { 
+    ngOnDestroy(): void {
         this.d ? this.d.unsubscribe() : null;
     }
- 
+
     isModalShown$: Observable<boolean>;
- 
+
     @ViewChild('autoShownModal') autoShownModal: ModalDirective;
- 
+
     validateForm: FormGroup;
- 
+
     validateSignUpForm: FormGroup;
     validateForgotForm: FormGroup;
- 
+
     register: Boolean = false;
     isForgot: Boolean = false;
- 
+
     private d: Subscription;
     loginErrorMessage;
 
@@ -81,9 +75,9 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         private store: Store<fromStore.HomeState>,
         private _notify: NotificationsService,
         private loginModalService: LoginModalService,
-        private cartService: CartService, 
+        private cartService: CartService,
         private userService: UserService,
-       private formValidatorService: FormValidatorService 
+       private formValidatorService: FormValidatorService
     ) {
         this.validateForm = this.fb.group({
             username: ['', [Validators.required]],
@@ -93,17 +87,17 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
         this.validateForgotForm = this.fb.group({
             email: ['', [Validators.required]],
-            phone: ['', [Validators.required]], 
+            phone: ['', [Validators.required]],
         });
 
         this.validateSignUpForm = this.fb.group({
             first_name: ['', [Validators.required]],
             last_name: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [formValidatorService.phoneNumberUniqueValidator.bind(this)]],
-            gender: ['', [Validators.required]], 
+            gender: ['', [Validators.required]],
             birthYear: ['', []],
             birthMonth: ['', []],
-            birthDay: ['', []], 
+            birthDay: ['', []],
             password: ['', [Validators.required]],
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
         });
@@ -124,12 +118,12 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     }
     //Method to show forgot section in popup modal
     showForgot(){
-        this.isForgot = true; 
+        this.isForgot = true;
     }
     //Method to show login section in popup modal
     showLogin(){
         this.isForgot = false;
-        this.register = false; 
+        this.register = false;
     }
     //Method called for all controls validated
     confirmationValidator = (control: FormControl): { [s: string]: boolean } => {
@@ -155,14 +149,14 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     }
     //init the component
     ngOnInit(): void {
-        this.currentYear = new Date().getFullYear(); 
+        this.currentYear = new Date().getFullYear();
         this.getLoginModalInfo();
         this.store.select<any>(fromStore.getCart).subscribe(result => {
             this.currentCart = result;
         });
     }
     //Method called for login form submit
-    submitForm($event, value) { 
+    submitForm($event, value) {
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
@@ -170,7 +164,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.authService.login(value.username, value.password).subscribe(
             async result => {
                 if (result && result.token) {
-                    this.loginInfoService.showLoginModal(false); 
+                    this.loginInfoService.showLoginModal(false);
                     localStorage.setItem(
                         'currentUser',
                         JSON.stringify({
@@ -180,28 +174,28 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                     );
                     localStorage.setItem('token', result.token);
 
-                    this.setUpUserData(); 
+                    this.setUpUserData();
                     this.loginInfoService.userLoggedIn(true);
-                    this._notify.success("Login Successfull."); 
+                    this._notify.success("Login Successfull.");
                 } else {
                 }
             },
-            err => { 
+            err => {
                 this.loginErrorMessage = err.error.message;
             }
         );
     }
     //Method called for forgot form submit
-    submitForgotForm($event, value) { 
+    submitForgotForm($event, value) {
         for (const key in this.validateForgotForm.controls) {
             this.validateForgotForm.controls[key].markAsDirty();
-        } 
+        }
         if (value.email && value.phone) {
             var email = '';
             this.userService.checkEmailPhone(value.email, value.phone).subscribe(result => {
-                let user = result.data[0];  
+                let user = result.data[0];
                 if (user) {
-                    let resetpassword = this.generatePassword(); 
+                    let resetpassword = this.generatePassword();
                     this.userService.updatepassword(user.id, {password: resetpassword})
                         .subscribe(arg => {
                             if (arg) {
@@ -210,8 +204,8 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                             }
                         });
                 }
-            }); 
-        } 
+            });
+        }
     }
     //Method called for password generation
     generatePassword() {
@@ -224,11 +218,11 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         return retVal;
     }
     //Method called for sign up form submit
-    submitSignupForm($event, value) { 
- 
+    submitSignupForm($event, value) {
+
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
-        } 
+        }
 
         var FormData1={
             username: value.phone,
@@ -254,7 +248,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
                         //login
                         if (result && result.token) {
-                            this.loginInfoService.showLoginModal(false); 
+                            this.loginInfoService.showLoginModal(false);
                             localStorage.setItem(
                                 'currentUser',
                                 JSON.stringify({
@@ -264,10 +258,10 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                             );
                             localStorage.setItem('token', result.token);
 
-                            this.setUpUserData(); 
+                            this.setUpUserData();
 
                             this.loginInfoService.userLoggedIn(true);
-                            this._notify.success("Signup Successfull."); 
+                            this._notify.success("Signup Successfull.");
                         } else {
                         }
                         return result;
@@ -283,7 +277,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.store.dispatch(new fromStore.LoadCart());
         this.store.dispatch(new fromStore.LoadFavouriteProduct());
         this.store.dispatch(new fromStore.LoadCompare());
-    } 
+    }
     //Method called for hide modal
     hideModal(): void {
         this.autoShownModal.hide();
