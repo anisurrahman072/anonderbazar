@@ -16,6 +16,7 @@ import {UIService} from "../../../services/ui/ui.service";
     styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+    _isSpinning: boolean = false;
     loginServerError = {
         show: false,
         message: ''
@@ -35,6 +36,7 @@ export class LoginComponent implements OnInit {
     //Event method for submitting the form
 
     submitForm = ($event, value) => {
+        this._isSpinning = true;
         console.log('submitForm', value)
         $event.preventDefault();
         for (const key in this.validateForm.controls) {

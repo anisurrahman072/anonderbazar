@@ -20,46 +20,48 @@
               </div>
             </div>
             <div class="clr"></div>
-            <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
-              <thead nz-thead>
-                <tr>
-                  <th nz-th><span> Order number </span></th>
-                  <th nz-th><span> Buyer </span></th>
-                  <th nz-th><span> Amount </span></th>
-                  <th nz-th><span> Total Amount </span></th>
-                  <th nz-th><span> Status </span></th>
-                  <th nz-th></th>
-                </tr>
-              </thead>
-              <tbody nz-tbody>
-                <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data; let i = index">
-                  <td nz-td>
-                    <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
-                      {{ data.product_order_id[0].id }}
-                    </ng-container>
-                    <ng-template #elseTemplate>
-                      {{ data.product_order_id[0].id }} / {{ data.id }} 
-                    </ng-template>
-                  </td>
-                  <td nz-td>
-                    <nz-tag>{{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}</nz-tag>
-                  </td>
-                  <td nz-td>{{ data.total_quantity }}</td>
-                  <td nz-td>{{ data.total_price }}</td>
-                  <!-- trying -->
-                  <td nz-td>
-                    <span>{{ options[data.status - 1].label }}</span>
-                  </td>
-                  <!-- trying -->
-                  <td>
-                    <button [routerLink]="['/dashboard/suborder/invoice/', data.id]" nz-button [nzType]="'info'"
-                      [nzSize]="'default'">
-                      <i class="anticon anticon-file-text"> </i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </nz-table>
+            <nz-spin [nzSpinning]="_isSpinning">
+              <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
+                <thead nz-thead>
+                  <tr>
+                    <th nz-th><span> Order number </span></th>
+                    <th nz-th><span> Buyer </span></th>
+                    <th nz-th><span> Amount </span></th>
+                    <th nz-th><span> Total Amount </span></th>
+                    <th nz-th><span> Status </span></th>
+                    <th nz-th></th>
+                  </tr>
+                </thead>
+                <tbody nz-tbody>
+                    <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data; let i = index">
+                        <td nz-td>
+                          <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
+                            {{ data.product_order_id[0].id }}
+                          </ng-container>
+                          <ng-template #elseTemplate>
+                            {{ data.product_order_id[0].id }} / {{ data.id }} 
+                          </ng-template>
+                        </td>
+                        <td nz-td>
+                          <nz-tag>{{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}</nz-tag>
+                        </td>
+                        <td nz-td>{{ data.total_quantity }}</td>
+                        <td nz-td>{{ data.total_price }}</td>
+                        <!-- trying -->
+                        <td nz-td>
+                          <span>{{ options[data.status - 1].label }}</span>
+                        </td>
+                        <!-- trying -->
+                        <td>
+                          <button [routerLink]="['/dashboard/suborder/invoice/', data.id]" nz-button [nzType]="'info'"
+                            [nzSize]="'default'">
+                            <i class="anticon anticon-file-text"> </i>
+                          </button>
+                        </td>
+                    </tr>
+                </tbody>
+              </nz-table>
+            </nz-spin>
           </div>
         </div>
       </div>

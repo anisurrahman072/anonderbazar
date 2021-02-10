@@ -17,7 +17,7 @@ export class RunningOrderComponent implements OnInit {
     options: { value: number; label: string; icon: string }[];
     currentUser: any;
     data: any = [];
-    _isSpinning: boolean;
+    _isSpinning: boolean = true;
     view: any[] = [630, 350];
 
     // options
@@ -113,6 +113,7 @@ export class RunningOrderComponent implements OnInit {
                     deliveredCount,
                     canceledCount
                 );
+                this._isSpinning = false;
             });
     }
 
