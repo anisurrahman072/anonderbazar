@@ -161,6 +161,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     updateGrandTotal(shouldUpateShippingCharge: boolean = true, zilaId: number = 0) {
+
         this.grantTotal = 0;
         let selectedZilaId = zilaId;
 
