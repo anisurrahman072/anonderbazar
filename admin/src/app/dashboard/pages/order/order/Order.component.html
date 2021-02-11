@@ -1,12 +1,11 @@
 <section>
-
     <nz-card class="card-height">
         <ng-template #title>
             Order list
         </ng-template>
         <ng-template #extra>
             <button nz-button [nzType]="'primary'"
-                [nzSize]="'large'" (click)='showProductModal(data)'>
+                    [nzSize]="'large'" (click)='showProductModal(data)'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>
         </ng-template>
@@ -14,164 +13,169 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzIsPageIndexReset]="true" [nzPageSize]="10">
                     <thead nz-thead>
-                        <tr>
-                            <th nz-th>
-                                <span> Order number </span>
-                            </th>
-                            <th nz-th>
-                                <span> Date </span>
-                            </th>
-                            <th nz-th>
-                                <span> Customer </span>
-                            </th>
-                            <th nz-th>
-                                <span> Qunatity </span>
-                            </th>
-                            <th nz-th>
-                                <span> Total Amount </span>
-                            </th>
-                            <th nz-th>
-                                <span> Order Status </span>
-                            </th>
-                            <th nz-th>
-                                <span> Status changed by </span>
-                            </th>
-                            <th nz-th>
-
-                            </th>
-                        </tr>
+                    <tr>
+                        <th nz-th>
+                            <span> Order number </span>
+                        </th>
+                        <th nz-th>
+                            <span> Date </span>
+                        </th>
+                        <th nz-th>
+                            <span> Customer </span>
+                        </th>
+                        <th nz-th>
+                            <span> Qunatity </span>
+                        </th>
+                        <th nz-th>
+                            <span> Total Amount </span>
+                        </th>
+                        <th nz-th>
+                            <span> Order Status </span>
+                        </th>
+                        <th nz-th>
+                            <span> Status changed by </span>
+                        </th>
+                        <th nz-th></th>
+                    </tr>
                     </thead>
                     <thead nz-thead>
-                        <!--search bar.....................-->
-                        <tr>
-                            <th nz-th>
-
-                            </th>
-                            <th nz-th>
-<!--                                <input class="form-control" placeholder="Select Order Date" type="text"-->
-<!--                                mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
-<!--                                [altInput]="true" [convertModelValue]="true" mode="range">-->
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Customer Name Search'" [(ngModel)]="customerNameSearchValue"
-                                    (ngModelChange)="page=1;getData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th class="suborder-daterange">
-                            </th>
-
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                                <button nz-button (click)="resetAllFilter()">Clear filter</button>
-                            </th>
-                        </tr>
+                    <tr>
+                        <th nz-th></th>
+                        <th nz-th>
+<!--                               <input class="form-control" placeholder="Select Order Date" type="text"
+                                      [maxDate]="maxDate"
+                                  mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"
+                                  [altInput]="true" [convertModelValue]="true" [mode]="'range'" />-->
+                            <mat-form-field>
+                                <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                        </th>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Customer Name Search'" [(ngModel)]="customerNameSearchValue"
+                                      (ngModelChange)="page=1;getData()">
+                            </nz-input>
+                        </th>
+                        <th nz-th>
+                        </th>
+                        <th nz-th>
+                        </th>
+                        <th nz-th class="suborder-daterange">
+                        </th>
+                        <th nz-th>
+                        </th>
+                        <th nz-th>
+                            <button nz-button (click)="resetAllFilter()">Clear filter</button>
+                        </th>
+                    </tr>
                     </thead>
                     <tbody nz-tbody>
-                        <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>{{data.id}}</td>
-                            <td nz-td>{{data.createdAt|date}}</td>
-                            <td nz-td>
-                                <nz-tag>{{data.user_id.first_name}} {{data.user_id.last_name}}</nz-tag>
-                            </td>
-                            <td nz-td>{{data.total_quantity}}</td>
-                            <td nz-td>{{data.total_price}}</td>
-                            <!--trying-->
-                            <td nz-td>
-                                <span *ngIf="setStatus(i, data.status)"></span>
-                                <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'" (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
-                                    <nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value">
-                                        <ng-template #nzOptionTemplate>
-                                            <i class="anticon " [ngClass]="option.icon"></i>
-                                            {{option.label}}
-                                        </ng-template>
-                                    </nz-option>
-                                </nz-select>
-                            </td>
-                            <!--trying -->
-                            <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
-
-                            <td>
-                                <nz-button-group>
-
-                                    <button *ngIf="'order-read'|accessControl" [routerLink]="['/dashboard/order/details/', data.id]"
+                    <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
+                        <td nz-td>{{data.id}}</td>
+                        <td nz-td>{{data.createdAt|date}}</td>
+                        <td nz-td>
+                            <nz-tag>{{data.user_id.first_name}} {{data.user_id.last_name}}</nz-tag>
+                        </td>
+                        <td nz-td>{{data.total_quantity}}</td>
+                        <td nz-td>{{data.total_price}}</td>
+                        <td nz-td>
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
+                                       (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </td>
+                        <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
+                        <td>
+                            <nz-button-group>
+                                <button *ngIf="'order-read'|accessControl"
+                                        [routerLink]="['/dashboard/order/details/', data.id]"
                                         nz-button [nzType]="'info'" [nzSize]="'default'">
-                                        <i class="anticon anticon-info-circle"> </i>
-                                    </button>
-                                </nz-button-group>
-                            </td>
-                        </tr>
+                                    <i class="anticon anticon-info-circle"> </i>
+                                </button>
+                            </nz-button-group>
+                        </td>
+                    </tr>
                     </tbody>
                 </nz-table>
             </nz-spin>
-
         </ng-template>
     </nz-card>
 </section>
- <!--product modal-->
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" [nzTitle]="'Generate Document'" [nzContent]="modalProductContent"
-(nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
-<ng-template #modalProductContent>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm" (ngSubmit)="submitForm($event,validateProductForm.value)">
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
-        <thead nz-thead>
-            <tr>
-                <th nz-th>
-                </th>
-                <th nz-th>
-                    <span> Order number </span>
-                </th>
-                <th nz-th>
-                    <span> Date </span>
-                </th>
-                <th nz-th>
-                    <span> Customer </span>
-                </th>
-                <th nz-th>
-                    <span> Qunatity </span>
-                </th>
-                <th nz-th>
-                    <span> Total Amount </span>
-                </th>
-                <th nz-th>
-                    <span> Order Status </span>
-                </th>
-                <th nz-th>
-                    <span> Status changed by </span>
-                </th>
-            </tr>
-        </thead>
-        <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                <td nz-td [nzCheckbox]="true">
-                    <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked' (ngModelChange)="_refreshStatus($event, data)">
-                    </label>
-                </td>
-                <td nz-td>{{data.id}}</td>
-                <td nz-td>{{data.createdAt|date}}</td>
-                <td nz-td>
-                    <nz-tag>{{data.user_id.first_name}} {{data.user_id.last_name}}</nz-tag>
-                </td>
-                <td nz-td>{{data.total_quantity}}</td>
-                <td nz-td>{{data.total_price}}</td>
-                <td nz-td>{{statusOptions[data.status-1]}}</td>
-                <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
-
-            </tr>
-        </tbody>
-    </nz-table>
-        <div nz-form-item>
-
-            <div nz-form-control>
-                <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateProductForm.valid">
-                    Create CSV
-                </button>
+<!--product modal-->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isProductVisible"
+          [nzTitle]="'Generate Document'"
+          [nzContent]="modalProductContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalProductContent>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
+              (ngSubmit)="submitForm($event, validateProductForm.value)">
+            <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
+                <thead nz-thead>
+                <tr>
+                    <th nz-th>
+                    </th>
+                    <th nz-th>
+                        <span> Order number </span>
+                    </th>
+                    <th nz-th>
+                        <span> Date </span>
+                    </th>
+                    <th nz-th>
+                        <span> Customer </span>
+                    </th>
+                    <th nz-th>
+                        <span> Qunatity </span>
+                    </th>
+                    <th nz-th>
+                        <span> Total Amount </span>
+                    </th>
+                    <th nz-th>
+                        <span> Order Status </span>
+                    </th>
+                    <th nz-th>
+                        <span> Status Changed By </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody nz-tbody>
+                <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
+                    <td nz-td [nzCheckbox]="true">
+                        <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
+                               (ngModelChange)="_refreshStatus($event, data)">
+                        </label>
+                    </td>
+                    <td nz-td>{{data.id}}</td>
+                    <td nz-td>{{data.createdAt|date}}</td>
+                    <td nz-td>
+                        <nz-tag>{{data.user_id.first_name}} {{data.user_id.last_name}}</nz-tag>
+                    </td>
+                    <td nz-td>{{data.total_quantity}}</td>
+                    <td nz-td>{{data.total_price}}</td>
+                    <td nz-td>{{statusOptions[data.status - 1]}}</td>
+                    <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
+                </tr>
+                </tbody>
+            </nz-table>
+            <div nz-form-item>
+                <div nz-form-control>
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateProductForm.valid">
+                        Create CSV
+                    </button>
+                </div>
             </div>
-        </div>
-    </form>
-</ng-template>
+        </form>
+    </ng-template>
 </nz-modal>

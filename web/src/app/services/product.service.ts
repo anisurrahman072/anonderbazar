@@ -23,11 +23,13 @@ export class ProductService {
         return this.http.get(this.EndPoint2 + '?' + status);
     }
 
-    filter_result(searchTerm: String, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
+    filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
 
-        let url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTerm}", "approval_status": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
+        const searchTermEncoded = encodeURI(searchTerm);
+
+        let url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
         if (isFeatured !== null) {
-            url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTerm}", "approval_status": 2, "featured": ${isFeatured}, "typeList":[${categoryList}], "categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
+            url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "featured": ${isFeatured}, "typeList":[${categoryList}], "categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
         }
         return this.http.get(url);
     }

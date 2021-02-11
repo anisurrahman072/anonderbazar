@@ -9,7 +9,7 @@ import {AccessControlPipe} from "../../pipes/accessControl.pipe";
 import {FormsModule} from "@angular/forms";
 import {McBreadcrumbsModule} from "ngx-breadcrumbs";
 import {FlatpickrModule, FLATPICKR} from 'angularx-flatpickr';
-import * as flatpickr from 'flatpickr';
+import flatpickr from 'flatpickr';
 
 export function flatpickrFactory() {
     return flatpickr;

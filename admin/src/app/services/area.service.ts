@@ -11,8 +11,7 @@ export class AreaService {
 
     private EndPoint = `${environment.API_ENDPOINT}/area`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient, private authenticationService: AuthService) {
     }
 
     getAll(): Observable<any> {
@@ -20,7 +19,6 @@ export class AreaService {
     }
 
     getById(id): Observable<any> {
-
         return this.http.get(this.EndPoint + '/' + id);
     }
 
@@ -29,7 +27,6 @@ export class AreaService {
     }
 
     delete(id): Observable<any> {
-        // get users from api
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
 
@@ -92,6 +89,5 @@ export class AreaService {
     getAllUpazilaByZilaId(id): Observable<any> {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"parent_id":${id}}`);
     }
-
 
 }

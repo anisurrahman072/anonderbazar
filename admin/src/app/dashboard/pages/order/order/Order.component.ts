@@ -8,6 +8,8 @@ import { ExportService } from '../../../../services/export.service';
 import { StatusChangeService } from '../../../../services/statuschange.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SuborderService } from '../../../../services/suborder.service';
+// @ts-ignore
+import moment from "moment";
 
 @Component({
     selector: 'app-warehouse',
@@ -38,6 +40,7 @@ export class OrderComponent implements OnInit {
     currentProduct: any = {};
     storeOrderIds: any = [];
     orderStatus: any;
+    maxDate:any;
     constructor(private orderService: OrderService,
     private fb: FormBuilder,
     private _notification: NzNotificationService,
@@ -49,6 +52,7 @@ export class OrderComponent implements OnInit {
             this.validateProductForm = this.fb.group({
                 productChecked: ['', []],
               });
+            this.maxDate = moment().format('YYYY-MM-DD');
     }
  // init the component
     ngOnInit(): void {
@@ -120,7 +124,6 @@ export class OrderComponent implements OnInit {
                 });
             });
         });
-        console.log(csvData);
 
         const header = [
             'SL',
@@ -204,7 +207,6 @@ export class OrderComponent implements OnInit {
     //Method for showing the modal
     showProductModal = data => {
         this.allOders = data;
-
         this.isProductVisible = true;
     };
     //Event method for submitting the form

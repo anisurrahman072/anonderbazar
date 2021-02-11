@@ -150,3 +150,11 @@ h3.ant-card-head-title {
   height: auto;
   word-break: break-word;
 }
+.ant-layout-header {
+  z-index: 9991111 !important;
+}
+.mat-datepicker-content {
+  z-index: 911 !important;
+  background-color: lightgray;
+}
+

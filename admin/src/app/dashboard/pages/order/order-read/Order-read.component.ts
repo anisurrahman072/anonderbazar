@@ -64,6 +64,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     this.data = order;
 
+                    console.log('this.data', this.data);
+
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
@@ -85,6 +87,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                         this.payment = order.payment[0];
+                        if (this.payment.payment_type === 'SSLCommerce') {
+                            this.payment.details = JSON.parse(this.payment.details);
+                        }
                     }
                     if (order && typeof order.billing_address !== 'undefined') {
                         this.paymentAddress = order.billing_address;

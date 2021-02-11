@@ -74,6 +74,9 @@ export class SuborderInvoiceComponent implements OnInit {
                         */
                         if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                             this.payment = order.payment[0];
+                            if (this.payment.payment_type === 'SSLCommerce') {
+                                this.payment.details = JSON.parse(this.payment.details);
+                            }
                         }
                         if (order && typeof order.billing_address !== 'undefined') {
                             this.paymentAddress = order.billing_address;

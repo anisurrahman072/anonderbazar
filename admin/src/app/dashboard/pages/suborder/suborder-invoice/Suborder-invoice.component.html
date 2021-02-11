@@ -160,13 +160,15 @@
                     </div>
                     <div class="col-md-6">
                         <div class="bill-info-right" *ngIf="payment">
-                            <h5>PAYMENT METHOD</h5>
-                            {{payment.payment_type}}
+                            <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock">Payment Method: SSLCOMMERZ</h5>
+                            <ng-template #elseBlock>><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
+                            <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details" style="margin-top: 20px;">
+                                <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
+                            </p>
                         </div>
                         <div class="shopping-info-right" style="margin-top: 75px">
                             <h5>SHIPPING METHOD</h5>
                             <p>UPS: U.S. Shipping Services</p>
-
                         </div>
                     </div>
                 </div>

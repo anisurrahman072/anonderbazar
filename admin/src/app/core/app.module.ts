@@ -58,6 +58,7 @@ import {CourierService} from '../services/courier.service';
 import {CourierPriceService} from '../services/courier-price.service';
 import {ChatService} from '../services/chat.service';
 import {ExcelService} from "../services/excel.service";
+// import {FlatpickrModule} from "angularx-flatpickr";
 
 @NgModule({
     declarations: [AppComponent],
