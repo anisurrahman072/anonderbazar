@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
-
 @Injectable()
 export class LoginModalService{
 
@@ -11,12 +10,12 @@ export class LoginModalService{
 
     private loggedInUserInfo = new BehaviorSubject<boolean>(false);
     currentLoggedInUserInfo = this.loggedInUserInfo.asObservable();
- 
+
     constructor() { }
 
     showLoginModal(message: boolean) {
-        this.loginModalInfo.next(message)
-    }  
+        this.loginModalInfo.next(message);
+    }
     userLoggedIn(message: boolean) {
         this.loggedInUserInfo.next(message);
     }

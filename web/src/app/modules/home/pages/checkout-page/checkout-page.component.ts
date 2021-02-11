@@ -91,7 +91,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     ngOnInit() {
 
         this.checkoutForm = this.fb.group({
-            // billing
+            // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
             lastName: ['', [Validators.required]],
@@ -103,7 +103,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
 
-            // shipping
+            // Shipping
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
             shippingLastName: ['', [Validators.required]],
@@ -115,7 +115,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             shipping_zila_id: ['', [Validators.required]],
             shipping_division_id: ['', [Validators.required]],
 
-            //paymentType
+            //PaymentType
             paymentType: ['', []]
         });
 
