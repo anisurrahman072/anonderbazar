@@ -17,7 +17,7 @@
                         <th nz-th>
                             <span> Order number </span>
                         </th>
-                        <th nz-th>
+                        <th nz-th style="width: 160px">
                             <span> Date </span>
                         </th>
                         <th nz-th>
@@ -42,29 +42,21 @@
                     <tr>
                         <th nz-th></th>
                         <th nz-th>
-                            <!--
-                            <input class="form-control" placeholder="Select Order Date" type="text" [maxDate]="maxDate" mwlFlatpickr
-                            [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()" [altInput]="true" [convertModelValue]="true" [mode]="'range'" />
-                            -->
                             <mat-form-field>
-                                <input #startDate [min]="minSearchDate" [max]="maxSearchDate"  matInput [matDatepicker]="startDatePicker" placeholder="Start Date"
+                                <input #startDate [min]="minSearchDate" [max]="maxSearchDate"  matInput [matDatepicker]="startDatePicker" placeholder=""
                                           (dateChange)="searchDateChangeHandler('startDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #startDatePicker></mat-datepicker>
                             </mat-form-field>
                             <br>
                             <mat-form-field>
-                                <input #endDate [min]="minSearchDate" [max]="maxSearchDate" matInput [matDatepicker]="endDatePicker" placeholder="End Date"
+                                <input #endDate [min]="minSearchDate" [max]="maxSearchDate" matInput [matDatepicker]="endDatePicker" placeholder=""
                                          (dateChange)="searchDateChangeHandler('endDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #endDatePicker></mat-datepicker>
                             </mat-form-field>
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Name'" [(ngModel)]="customerNameSearchValue"
-                                      (ngModelChange)="page = 1; getData()">
-                            </nz-input>
-                        </th>
+                        <th nz-th></th>
                         <th nz-th></th>
                         <th nz-th></th>
                         <th nz-th class="suborder-daterange"></th>

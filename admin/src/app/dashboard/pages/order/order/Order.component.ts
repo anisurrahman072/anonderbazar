@@ -8,14 +8,38 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-// @ts-ignore
-import moment from "moment";
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import * as _moment from 'moment';
+import {default as _rollupMoment} from 'moment';
+
+const moment = _rollupMoment || _moment;
 import {MatDatepickerInputEvent} from "@angular/material/datepicker";
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
+
+export const MY_FORMATS = {
+    parse: {
+        dateInput: 'YYYY-MM-DD H:m:s',
+    },
+    display: {
+        dateInput: 'DD/MM/YYYY',
+        monthYearLabel: 'MMM YYYY',
+        dateA11yLabel: 'LL',
+        monthYearA11yLabel: 'MMMM YYYY',
+    },
+};
 
 @Component({
     selector: 'app-warehouse',
     templateUrl: './Order.component.html',
-    styleUrls: ['./Order.component.css']
+    styleUrls: ['./Order.component.css'],
+    providers: [
+        // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
+        // application's root module. We provide it at the component level here, due to limitations of
+        // our example generation script.
+        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+
+        {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+    ],
 })
 export class OrderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
@@ -78,13 +102,43 @@ export class OrderComponent implements OnInit {
         this.getData();
     }
 
-    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
-        if(type === 'startDate') {
-            this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD H:m:s');
-        } else if(type === 'endDate') {
-            this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD H:m:s');
+    //Event method for getting all the data for the page
+    getData() {
+
+        let dateSearchValue = {
+            from: null,
+            to: null,
+        };
+
+        if (this.searchStartDate) {
+            dateSearchValue.from = this.searchStartDate;
+        } else {
+            dateSearchValue.from = moment().subtract(50, 'years').format('YYYY-MM-DD') + ' 00:00:00';
         }
-        console.log('searchDateChangeHandler', event);
+        if (this.searchEndDate) {
+            dateSearchValue.to = this.searchEndDate;
+        } else {
+            dateSearchValue.to = moment().format('YYYY-MM-DD HH:mm:ss');
+        }
+        console.log('getData: ', dateSearchValue);
+
+        this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue)})
+            .subscribe(result => {
+                this.data = result;
+                this._isSpinning = false;
+            }, (err) => {
+                this._isSpinning = false;
+            });
+    }
+
+    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
+        console.log('searchDateChangeHandler: ', event.value.toString());
+        if (type === 'startDate') {
+            this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
+        } else if (type === 'endDate') {
+            this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
+        }
+        this.getData();
     }
 
     //Method for status change
@@ -164,19 +218,6 @@ export class OrderComponent implements OnInit {
         this.exportService.downloadFile(csvData, header);
     }
 
-    //Event method for getting all the data for the page
-    getData() {
-
-        this.orderService.getAllOrders({
-            date: this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : ''
-        })
-            .subscribe(result => {
-                this.data = result;
-                console.log(this.data);
-
-                this._isSpinning = false;
-            });
-    }
 
     //Event method for resetting all filters
     resetAllFilter() {
