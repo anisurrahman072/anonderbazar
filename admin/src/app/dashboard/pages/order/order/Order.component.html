@@ -15,6 +15,10 @@
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
+                            <input type="checkbox" id="order_check_all_order" (change)="selectAllOrder($event)"
+                                   [checked]="pageAllCheckedStatusOrder[pageOrder]">
+                        </th>
+                        <th nz-th>
                             <span> Order number </span>
                         </th>
                         <th nz-th>

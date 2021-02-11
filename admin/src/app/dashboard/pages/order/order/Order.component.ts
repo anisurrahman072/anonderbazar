@@ -41,6 +41,14 @@ export class OrderComponent implements OnInit {
     storeOrderIds: any = [];
     orderStatus: any;
     maxDate:any;
+
+    pageOrder: number = 1;
+    pageAllCheckedStatusOrder: any = {};
+    dataORDER = [];
+    storeOrderIdsORDER: any = [];
+    warehouse: any;
+    validateFormORDER: FormGroup;
+
     constructor(private orderService: OrderService,
     private fb: FormBuilder,
     private _notification: NzNotificationService,
@@ -69,6 +77,58 @@ export class OrderComponent implements OnInit {
 
 
     }
+
+    selectAllOrder($event) {
+        const isChecked = !!$event.target.checked;
+        this.pageAllCheckedStatusOrder[this.pageOrder] = isChecked;
+        const len = this.dataORDER.length;
+        for (let i = 0; i < len; i++) {
+            this.dataORDER[i].checked = isChecked;
+            this._refreshStatusORDER(isChecked, this.dataORDER[i])
+        }
+    }
+
+    _refreshStatusORDER($event, value) {
+
+        if ($event) {
+            this.storeOrderIdsORDER.push(value);
+        } else {
+            let findValue = this.storeOrderIdsORDER.indexOf(value);
+            if (findValue !== -1) {
+                this.storeOrderIdsORDER.splice(findValue, 1);
+                this.warehouse = value;
+                this.validateFormORDER.patchValue({
+                    seller_name: this.warehouse.name,
+                });
+            }
+        }
+
+        let itemCount = 0;
+        if (this.storeOrderIdsORDER.length > 0) {
+            this.storeOrderIdsORDER.forEach(element => {
+                itemCount += element.total_quantity;
+            });
+        }
+
+        if (this.storeOrderIdsORDER[0]) {
+            this.warehouse = this.storeOrderIdsORDER[0].warehouse_id;
+            this.validateFormORDER.patchValue({
+                total_order: itemCount,
+                seller_name: this.warehouse.name,
+                seller_phone: this.warehouse.phone,
+                seller_address: this.warehouse.address,
+                k_a_m: this.warehouse.name,
+            });
+        } else {
+            this.validateFormORDER.patchValue({
+                total_order: '',
+                seller_name: '',
+                seller_phone: '',
+                seller_address: '',
+                k_a_m: '',
+            });
+        }
+    };
 
       //Method for status change
 
