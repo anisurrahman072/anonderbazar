@@ -116,7 +116,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             shipping_division_id: ['', [Validators.required]],
 
             //PaymentType
-            paymentType: ['', []]
+            paymentType: ['SSLCommerce', []]
         });
 
         let queryParams = this.route.snapshot.queryParams;

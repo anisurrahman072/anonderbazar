@@ -57,7 +57,7 @@ module.exports = {
     },
     last_name: {
       type: 'string',
-      required: true
+      required: false
     },
     father_name: {
       type: 'string',
@@ -79,7 +79,7 @@ module.exports = {
     },
     gender: {
       type: 'string',
-      required: true
+      required: false
     },
     dob: {
       type: 'string'

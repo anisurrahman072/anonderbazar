@@ -8,9 +8,9 @@ import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {Observable} from "rxjs/Observable";
 import {ModalDirective} from "ngx-bootstrap";
 import {NotificationsService} from "angular2-notifications";
-import { UserService } from '../../../../services';
-import { Subscription } from 'rxjs/Subscription';
-import { CartService } from '../../../../services';
+import {UserService} from '../../../../services';
+import {Subscription} from 'rxjs/Subscription';
+import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 
 
@@ -21,7 +21,7 @@ import {FormValidatorService} from "../../../../services/validator/form-validato
 })
 export class LoginMinComponent implements OnInit, OnDestroy {
     private currentCart: any;
-    private isUnique=true;
+    private isUnique = true;
     currentYear: number;
     gender: any;
     genderSearchOptions = [
@@ -33,7 +33,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {value: 'steak-0', viewValue: 'Steak'},
         {value: 'pizza-1', viewValue: 'Pizza'},
         {value: 'tacos-2', viewValue: 'Tacos'}
-      ];
+    ];
     birthMonthOption = [
         {label: 'January', value: '01'},
         {label: 'February', value: '02'},
@@ -48,6 +48,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'November', value: '11'},
         {label: 'December', value: '12'},
     ];
+
     ngOnDestroy(): void {
         this.d ? this.d.unsubscribe() : null;
     }
@@ -77,7 +78,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         private loginModalService: LoginModalService,
         private cartService: CartService,
         private userService: UserService,
-       private formValidatorService: FormValidatorService
+        private formValidatorService: FormValidatorService
     ) {
         this.validateForm = this.fb.group({
             username: ['', [Validators.required]],
@@ -92,9 +93,9 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
         this.validateSignUpForm = this.fb.group({
             first_name: ['', [Validators.required]],
-            last_name: ['', [Validators.required]],
+            last_name: ['', []],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [formValidatorService.phoneNumberUniqueValidator.bind(this)]],
-            gender: ['', [Validators.required]],
+            gender: ['', []],
             birthYear: ['', []],
             birthMonth: ['', []],
             birthDay: ['', []],
@@ -102,6 +103,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
         });
     }
+
     //Method called for confirm update validator
     updateConfirmValidator(): void {
         /** wait for refresh value */
@@ -109,6 +111,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             this.validateSignUpForm.controls.confirmPassword.updateValueAndValidity()
         );
     }
+
     //Method called for confirm phone number exist validation
     updatePhoneValidator(): void {
         /** wait for refresh value */
@@ -116,37 +119,44 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             this.validateSignUpForm.controls.phone.updateValueAndValidity()
         );
     }
+
     //Method to show forgot section in popup modal
-    showForgot(){
+    showForgot() {
         this.isForgot = true;
     }
+
     //Method to show login section in popup modal
-    showLogin(){
+    showLogin() {
         this.isForgot = false;
         this.register = false;
     }
+
     //Method called for all controls validated
     confirmationValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
-            return { required: true };
+            return {required: true};
         } else if (
             control.value !== this.validateSignUpForm.controls.password.value
         ) {
-            return { confirm: true, error: true };
+            return {confirm: true, error: true};
         }
     };
+
     //Method for adding validation to controls to login section
     getFormControl(type) {
         return this.validateForm.controls[type];
     }
+
     //Method for adding validation to controls to forgot section
     getForgotFormControl(type) {
         return this.validateForgotForm.controls[type];
     }
+
     //Method for adding validation to controls to sign up section
     getSignUpFormControl(type) {
         return this.validateSignUpForm.controls[type];
     }
+
     //init the component
     ngOnInit(): void {
         this.currentYear = new Date().getFullYear();
@@ -155,6 +165,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             this.currentCart = result;
         });
     }
+
     //Method called for login form submit
     submitForm($event, value) {
         for (const key in this.validateForm.controls) {
@@ -185,6 +196,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             }
         );
     }
+
     //Method called for forgot form submit
     submitForgotForm($event, value) {
         for (const key in this.validateForgotForm.controls) {
@@ -207,6 +219,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             });
         }
     }
+
     //Method called for password generation
     generatePassword() {
         var length = 8,
@@ -217,36 +230,38 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         }
         return retVal;
     }
+
     //Method called for sign up form submit
     submitSignupForm($event, value) {
+
+        console.log('submitSignupForm', value);
 
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }
 
-        var FormData1={
-            username: value.phone,
-            password: value.password,
-            confirmPassword: value.password,
-            email: value.email,
-            first_name: value.first_name,
-            last_name: value.last_name,
-            phone: value.phone,
-            gender: value.gender,
+        let FormData1 = {
+            username: value.phone ? value.phone : '',
+            password: value.password ? value.password : '',
+            confirmPassword: value.password ? value.password : '',
+            email: value.email ? value.email : '',
+            first_name: value.first_name ? value.first_name : '',
+            last_name: value.last_name ? value.last_name : '',
+            phone: value.phone ? value.phone : '',
+            gender: value.gender ? value.gender : '',
             group_id: 2,
             address: "",
             permanent_address: "",
-            national_id:"",
-            father_name:"",
+            national_id: "",
+            father_name: "",
             mother_name: "",
-            dob: value.birthYear+"-"+value.birthMonth+"-"+value.birthDay,
+            dob: value.birthYear && value.birthMonth && value.birthDay ? value.birthYear + "-" + value.birthMonth + "-" + value.birthDay : '',
             active: 1
         };
         this.authService.signUp(FormData1)
-            .subscribe((result => {
+            .subscribe(result => {
+                    console.log('result', result);
                     if (result) {
-
-                        //login
                         if (result && result.token) {
                             this.loginInfoService.showLoginModal(false);
                             localStorage.setItem(
@@ -268,9 +283,13 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                     } else {
                         return ("Error happened")
                     }
-                }),
+                },
+                (err) => {
+                    console.log(err);
+                }
             );
     }
+
     //Method called for setting up user data
     setUpUserData() {
         this.store.dispatch(new fromStore.LoadCurrentUser());
@@ -278,6 +297,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.store.dispatch(new fromStore.LoadFavouriteProduct());
         this.store.dispatch(new fromStore.LoadCompare());
     }
+
     //Method called for hide modal
     hideModal(): void {
         this.autoShownModal.hide();
@@ -287,6 +307,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.register = false;
         this.isForgot = false;
     }
+
     //Method called for login modal info
     getLoginModalInfo(): void {
         this.isModalShown$ = this.loginInfoService.currentLoginModalinfo;
@@ -297,32 +318,35 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.loginInfoService.showLoginModal(false);
         this.loginErrorMessage = '';
     }
+
     //Method called for getting year list
     yearList(i: number) {
         return new Array(i);
     }
+
     //Method called for confirm username exist validation
-    usernameValidator= (control: FormControl): { [s: string]: boolean } => {
+    usernameValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
-            return { required: true };
+            return {required: true};
         } else {
-            var FormData1={
+            var FormData1 = {
                 username: control.value
             };
             this.authService.usernameUnique(FormData1)
                 .subscribe((result => {
-                    this.isUnique=result.isunique;
+                    this.isUnique = result.isunique;
                 }));
-            if(this.isUnique != true) {
+            if (this.isUnique != true) {
                 return {phoneNumberUnique: true, error: true};
-            }else{
-                this.isUnique=true;
+            } else {
+                this.isUnique = true;
             }
         }
     }
+
     //Method to show sign up section in popup modal
-    showSignUp(){
-        this.register =true;
+    showSignUp() {
+        this.register = true;
         this.loginErrorMessage = '';
         this.validateForm.reset();
         this.validateForgotForm.reset();
