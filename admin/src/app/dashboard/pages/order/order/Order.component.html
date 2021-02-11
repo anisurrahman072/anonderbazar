@@ -47,19 +47,21 @@
                             [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()" [altInput]="true" [convertModelValue]="true" [mode]="'range'" />
                             -->
                             <mat-form-field>
-                                <input #startDate matInput [matDatepicker]="startDatePicker" placeholder="Start Date"/>
+                                <input #startDate [min]="minSearchDate" [max]="maxSearchDate"  matInput [matDatepicker]="startDatePicker" placeholder="Start Date"
+                                          (dateChange)="searchDateChangeHandler('startDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #startDatePicker></mat-datepicker>
                             </mat-form-field>
                             <br>
                             <mat-form-field>
-                                <input #endDate matInput [matDatepicker]="endDatePicker" placeholder="End Date"/>
+                                <input #endDate [min]="minSearchDate" [max]="maxSearchDate" matInput [matDatepicker]="endDatePicker" placeholder="End Date"
+                                         (dateChange)="searchDateChangeHandler('endDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #endDatePicker></mat-datepicker>
                             </mat-form-field>
                         </th>
                         <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Customer Name Search'" [(ngModel)]="customerNameSearchValue"
+                            <nz-input [nzPlaceHolder]="'Name'" [(ngModel)]="customerNameSearchValue"
                                       (ngModelChange)="page = 1; getData()">
                             </nz-input>
                         </th>
