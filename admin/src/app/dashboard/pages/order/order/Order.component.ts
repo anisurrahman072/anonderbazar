@@ -366,11 +366,7 @@ export class OrderComponent implements OnInit {
     handleCancel = e => {
         this.isProductVisible = false;
     };
-    //Method for showing the modal
-    showProductModal = data => {
-        this.allOders = data;
-        this.isProductVisible = true;
-    };
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         let newlist = this.storeOrderIds;
@@ -378,20 +374,74 @@ export class OrderComponent implements OnInit {
         this.isProductVisible = false;
         this.dowonloadCSV(newlist);
         console.log(newlist);
+    }
 
+    // Method for showing the modal
+    showProductModal = data => {
+        console.log('showProductModal')
+        this.allOders = data.map((item)=> {
+            return {
+                ...item,
+                checked: false
+            }
+        });
+        this.isProductVisible = true;
+        this.storeOrderIds = [];
+    };
+
+    selectAllCsv($event) {
+
+        const isChecked = !!$event.target.checked;
+        if (!isChecked) {
+            this.storeOrderIds = [];
+        }
+
+        const len = this.allOders.length;
+        for (let i = 0; i < len; i++) {
+            this.allOders[i].checked = isChecked;
+            if (isChecked) {
+                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
+                    return storedOder.id == this.allOders[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.storeOrderIds.push(this.allOders[i]);
+                }
+            }
+        }
+
+    }
+
+    csvPageChangeHandler($event) {
+
+        const thisTotal = this.allOders.length;
+
+        if (this.storeOrderIds && this.storeOrderIds.length) {
+            for (let index = 0; index < thisTotal; index++) {
+                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
+                    return storedOder.id == this.allOders[index].id;
+                });
+                this.allOders[index].checked = foundIndex !== -1;
+            }
+        } else {
+            for (let index = 0; index < thisTotal; index++) {
+                this.allOders[index].checked = false;
+            }
+        }
     }
 
     //Method for status checkbox
 
     _refreshStatus($event, value) {
-        console.log($event);
-        if ($event !== 'undefined') {
-            if ($event) {
-                this.storeOrderIds.push(value);
-            } else {
-                let findValue = this.storeOrderIds.indexOf(value);
+        if ($event && $event.currentTarget.checked) {
+            this.storeOrderIds.push(value);
+        } else {
+            let findValue = this.storeOrderIds.findIndex((item) => {
+                return item.id == value.id
+            });
+            if (findValue !== -1) {
                 this.storeOrderIds.splice(findValue, 1);
             }
+
         }
 
     };
