@@ -11,11 +11,11 @@
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzDataSource]="data" [nzIsPageIndexReset]="true" [nzPageSize]="10">
+                <nz-table #nzTable [nzDataSource]="data" [nzIsPageIndexReset]="true" [nzPageSize]="20">
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
-                            <span> Order number </span>
+                            <span> Order Number </span>
                         </th>
                         <th nz-th style="width: 160px">
                             <span> Date </span>
@@ -24,7 +24,7 @@
                             <span> Customer </span>
                         </th>
                         <th nz-th>
-                            <span> Qunatity </span>
+                            <span> Quantity </span>
                         </th>
                         <th nz-th>
                             <span> Total Amount </span>
@@ -33,9 +33,9 @@
                             <span> Order Status </span>
                         </th>
                         <th nz-th>
-                            <span> Status changed by </span>
+                            <span> Status Changed By </span>
                         </th>
-                        <th nz-th></th>
+                        <th nz-th>Actions</th>
                     </tr>
                     </thead>
                     <thead nz-thead>
@@ -43,23 +43,38 @@
                         <th nz-th></th>
                         <th nz-th>
                             <mat-form-field>
-                                <input #startDate [min]="minSearchDate" [max]="maxSearchDate"  matInput [matDatepicker]="startDatePicker" placeholder=""
+                                <input [(ngModel)]="searchStartDate" [min]="minSearchDate" [max]="maxSearchDate"  matInput [matDatepicker]="startDatePicker" placeholder=""
                                           (dateChange)="searchDateChangeHandler('startDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #startDatePicker></mat-datepicker>
                             </mat-form-field>
                             <br>
                             <mat-form-field>
-                                <input #endDate [min]="minSearchDate" [max]="maxSearchDate" matInput [matDatepicker]="endDatePicker" placeholder=""
+                                <input [(ngModel)]="searchEndDate" [min]="minSearchDate" [max]="maxSearchDate" matInput [matDatepicker]="endDatePicker" placeholder=""
                                          (dateChange)="searchDateChangeHandler('endDate', $event)" />
                                 <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                                 <mat-datepicker #endDatePicker></mat-datepicker>
                             </mat-form-field>
                         </th>
+
                         <th nz-th></th>
                         <th nz-th></th>
                         <th nz-th></th>
-                        <th nz-th class="suborder-daterange"></th>
+                        <th nz-th >
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
+                                       nzAllowClear (ngModelChange)="getData()"
+                                       [nzPlaceHolder]="'Select Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </th>
                         <th nz-th></th>
                         <th nz-th>
                             <button nz-button (click)="resetAllFilter()">Clear filter</button>
@@ -89,7 +104,7 @@
                             </nz-select>
                         </td>
                         <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
-                        <td>
+                        <td nz-td>
                             <nz-button-group>
                                 <button *ngIf="'order-read'|accessControl"
                                         [routerLink]="['/dashboard/order/details/', data.id]"

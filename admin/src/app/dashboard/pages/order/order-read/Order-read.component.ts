@@ -44,6 +44,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.options = [
             {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
+            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
             {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
             {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
             {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},

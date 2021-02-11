@@ -853,11 +853,13 @@ module.exports = {
       /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
+      console.log('req.query.created_at', req.query.created_at);
+
       if (req.query.created_at) {
         let created_at = JSON.parse(req.query.created_at);
-        let from = moment((moment(created_at.from).format('YYYY-MM-DD'))).toISOString();
-        let to = moment((moment(created_at.to).format('YYYY-MM-DD'))).toISOString();
-        _where.created_at = {'>=': from, '<=': to};
+/*        let from = moment((moment().format('YYYY-MM-DD'))).toISOString();
+        let to = moment((moment(created_at.to).format('YYYY-MM-DD'))).toISOString();*/
+        _where.created_at = {'>=': created_at.from, '<=': created_at.to};
       }
       if (req.query.courier_status) {
         _where.courier_status = req.query.courier_status;
@@ -866,7 +868,10 @@ module.exports = {
       if (req.query.status) {
         _where.status = req.query.status;
       }
+
       /* WHERE condition..........END................*/
+
+      console.log('_where', _where);
 
       let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}}).populateAll();
       await asyncForEach(orders, async element => {

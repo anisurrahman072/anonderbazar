@@ -43,28 +43,30 @@ export const MY_FORMATS = {
 })
 export class OrderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
-
+    validateFormORDER: FormGroup;
+    validateProductForm: FormGroup;
+    private currentWarehouseSubscriprtion: Subscription;
+    viewNotRendered: boolean = true;
     maxSearchDate: string = '';
     minSearchDate: string = '';
-    searchStartDate: string;
-    searchEndDate: string;
+    searchStartDate: any;
+    searchEndDate: any;
 
     data = [];
     _isSpinning = true;
     currentUser: any;
     selectedOption: any[] = [];
     options: any[];
-    customerNameSearchValue: string = '';
+    statusSearchValue: string = '';
     dateSearchValue: any;
 
     page: any;
     statusData: any;
     statusOptions = ['Pending', 'Processing', 'Delivered', 'Canceled'];
-    viewNotRendered: boolean = true;
-    private currentWarehouseSubscriprtion: Subscription;
+
     currentWarehouseId: any;
     isProductVisible = false;
-    validateProductForm: FormGroup;
+
     allOders: any = [];
     products = [];
     addNew: boolean;
@@ -72,6 +74,13 @@ export class OrderComponent implements OnInit {
     storeOrderIds: any = [];
     orderStatus: any;
     maxDate: any;
+
+    pageOrder: number = 1;
+    pageAllCheckedStatusOrder: any = {};
+    dataORDER = [];
+    storeOrderIdsORDER: any = [];
+    warehouse: any;
+
 
     constructor(private orderService: OrderService,
                 private fb: FormBuilder,
@@ -86,18 +95,26 @@ export class OrderComponent implements OnInit {
         });
         this.maxSearchDate = moment().format('YYYY-MM-DD');
         this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');
+
+        this.options = [
+            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
+            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
+            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
+            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
+            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
+            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
+            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
+            {value: 7, label: 'Landed', icon: 'anticon-spin anticon-loading'},
+            {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
+            {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
+            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
+            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
+            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'},
+        ];
     }
 
     // init the component
     ngOnInit(): void {
-
-        this.options = [
-            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
-            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-hourglass'},
-            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
-            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'}
-        ];
-
         this.currentUser = this.authService.getCurrentUser();
         this.getData();
     }
@@ -110,19 +127,31 @@ export class OrderComponent implements OnInit {
             to: null,
         };
 
+
         if (this.searchStartDate) {
-            dateSearchValue.from = this.searchStartDate;
+            if (this.searchStartDate.constructor.name === 'Moment') {
+                dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.from = this.searchStartDate;
+            }
         } else {
-            dateSearchValue.from = moment().subtract(50, 'years').format('YYYY-MM-DD') + ' 00:00:00';
+            dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
+
         if (this.searchEndDate) {
-            dateSearchValue.to = this.searchEndDate;
+            if (this.searchEndDate.constructor.name === 'Moment') {
+                dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.to = this.searchEndDate;
+            }
         } else {
-            dateSearchValue.to = moment().format('YYYY-MM-DD HH:mm:ss');
+            dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
+
         console.log('getData: ', dateSearchValue);
 
-        this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue)})
+        this._isSpinning = true;
+        this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue), status: this.statusSearchValue})
             .subscribe(result => {
                 this.data = result;
                 this._isSpinning = false;
@@ -131,15 +160,79 @@ export class OrderComponent implements OnInit {
             });
     }
 
-    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
-        console.log('searchDateChangeHandler: ', event.value.toString());
-        if (type === 'startDate') {
-            this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-        } else if (type === 'endDate') {
-            this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-        }
+    //Event method for resetting all filters
+    resetAllFilter() {
+        this.searchStartDate = '';
+        this.searchEndDate = '';
+        this.statusSearchValue = '';
         this.getData();
     }
+
+    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
+
+        /*
+        console.log('searchDateChangeHandler: ', event.value.toString());
+           if (type === 'startDate') {
+               this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
+           } else if (type === 'endDate') {
+               this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
+           }
+        */
+        this.getData();
+    }
+
+    //Method for status change
+    selectAllOrder($event) {
+        const isChecked = !!$event.target.checked;
+        this.pageAllCheckedStatusOrder[this.pageOrder] = isChecked;
+        const len = this.dataORDER.length;
+        for (let i = 0; i < len; i++) {
+            this.dataORDER[i].checked = isChecked;
+            this._refreshStatusORDER(isChecked, this.dataORDER[i])
+        }
+    }
+
+    _refreshStatusORDER($event, value) {
+
+        if ($event) {
+            this.storeOrderIdsORDER.push(value);
+        } else {
+            let findValue = this.storeOrderIdsORDER.indexOf(value);
+            if (findValue !== -1) {
+                this.storeOrderIdsORDER.splice(findValue, 1);
+                this.warehouse = value;
+                this.validateFormORDER.patchValue({
+                    seller_name: this.warehouse.name,
+                });
+            }
+        }
+
+        let itemCount = 0;
+        if (this.storeOrderIdsORDER.length > 0) {
+            this.storeOrderIdsORDER.forEach(element => {
+                itemCount += element.total_quantity;
+            });
+        }
+
+        if (this.storeOrderIdsORDER[0]) {
+            this.warehouse = this.storeOrderIdsORDER[0].warehouse_id;
+            this.validateFormORDER.patchValue({
+                total_order: itemCount,
+                seller_name: this.warehouse.name,
+                seller_phone: this.warehouse.phone,
+                seller_address: this.warehouse.address,
+                k_a_m: this.warehouse.name,
+            });
+        } else {
+            this.validateFormORDER.patchValue({
+                total_order: '',
+                seller_name: '',
+                seller_phone: '',
+                seller_address: '',
+                k_a_m: '',
+            });
+        }
+    };
 
     //Method for status change
 
@@ -216,14 +309,6 @@ export class OrderComponent implements OnInit {
             'Date'
         ];
         this.exportService.downloadFile(csvData, header);
-    }
-
-
-    //Event method for resetting all filters
-    resetAllFilter() {
-        this.dateSearchValue = '';
-        this.getData();
-
     }
 
     //Method for set status

@@ -14,7 +14,7 @@ import {ShippingAddressService} from "../../../../services/shipping-address.serv
     styleUrls: ['./order.component.scss']
 })
 export class OrderComponent implements OnInit {
-    
+
     sub: Subscription;
     id: number;
     data: any;
@@ -25,8 +25,8 @@ export class OrderComponent implements OnInit {
     paymentAddress: any;
     shippingAddress: any;
     suborderItems: any;
-    
-    
+
+
     constructor(private route: ActivatedRoute,
                 private suborderService: SuborderService,
                 private orderService: OrderService,
@@ -35,7 +35,8 @@ export class OrderComponent implements OnInit {
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService) {
     }
-      //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -55,11 +56,10 @@ export class OrderComponent implements OnInit {
             });
         });
     }
-    
-    
+
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 }
 
