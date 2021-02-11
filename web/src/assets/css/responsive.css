@@ -1026,6 +1026,7 @@
 
     nav input:checked ~ ul {
         margin: 15px 0px !important;
+        overflow-y: scroll;
     }
 
     nav ul li {

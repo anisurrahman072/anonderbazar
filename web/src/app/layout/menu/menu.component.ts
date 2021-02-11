@@ -105,6 +105,8 @@ export class MenuComponent implements OnInit {
         this.isDisplay = false;
         this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
+        const ele = document.getElementById("responsive-menu") as HTMLInputElement;
+        ele.checked = false;
     }
 
     //Call if change in category
