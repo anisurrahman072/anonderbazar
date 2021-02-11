@@ -259,10 +259,21 @@ export class OrderComponent implements OnInit {
     //Method for csv download
 
     dowonloadCSV(data) {
+
         let csvData = [];
         data.forEach(element => {
+            let sslTransactionId = '';
+            if (element.payment && element.payment.length > 0) {
+                if (element.payment[0].payment_type === 'SSLCommerce') {
+                    try {
+                        let details = JSON.parse(element.payment[0].details);
+                        sslTransactionId = details.tran_id;
+                    } catch (ee) {
+                    }
+                }
+            }
             element.suborders.forEach(suborder => {
-                suborder.items.forEach(item => {
+                suborder.items.forEach((item, j) => {
                     let i = 0, varients = "";
                     item.suborderItemVariants.forEach(element => {
                         varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
@@ -284,7 +295,8 @@ export class OrderComponent implements OnInit {
                         'Suborder Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
                         'Order Status': this.statusOptions[element.status - 1],
                         'Order Status Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Date': (item.date) ? item.date : 'N/a'
+                        'Date': (item.createdAt) ? moment(item.createdAt).format('DD/MM/YYYY h:m a') : 'N/a',
+                        'SSLCommerce Transaction Id': sslTransactionId
                     });
                 });
             });
@@ -306,7 +318,8 @@ export class OrderComponent implements OnInit {
             'Suborder Changed By',
             'Order Status',
             'Order Status Changed By',
-            'Date'
+            'Date',
+            'SSLCommerce Transaction Id'
         ];
         this.exportService.downloadFile(csvData, header);
     }

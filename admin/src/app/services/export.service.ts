@@ -25,7 +25,6 @@ export class ExportService {
 
     let array =
         typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
-    console.log(array);
 
     let str = '';
     let row = 'S.No, ';
@@ -36,15 +35,10 @@ export class ExportService {
     str += row + '\r\n';
     for (let i = 0; i < array.length; i++) {
         let line = (i + 1) + '';
-        console.log('line'+ line);
 
         for (let index in headerList) {
             let head = headerList[index];
-            console.log('line'+ head);
-
             line += ',' + array[i][head];
-            console.log('line'+ line);
-
         }
         str += line + '\r\n';
     }
