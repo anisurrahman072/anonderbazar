@@ -90,7 +90,7 @@
                         <th nz-th>
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
-                                       nzAllowClear (ngModelChange)="page=1;getPageData()"
+                                       nzAllowClear (ngModelChange)="page=1; getPageData()"
                                        [nzPlaceHolder]="'Select Status'"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option *ngFor="let option of options" [nzLabel]="option.label"

@@ -19,6 +19,14 @@ export class OrderService {
         return this.http.get(`${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`);
     }
 
+    getAllOrdersForFilter(data): Observable<any> {
+        let url = `${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`;
+        if (data.status) {
+            url += `&status=${data.status}`
+        }
+        return this.http.get(url);
+    }
+
     getAll(): Observable<any> {
         return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
     }

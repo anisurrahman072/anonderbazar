@@ -44,6 +44,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.options = [
             {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
+            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
             {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
             {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
             {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
@@ -63,6 +64,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                 .subscribe(order => {
 
                     this.data = order;
+
+                    console.log('this.data', this.data);
 
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
@@ -85,6 +88,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                         this.payment = order.payment[0];
+                        if (this.payment.payment_type === 'SSLCommerce') {
+                            this.payment.details = JSON.parse(this.payment.details);
+                        }
                     }
                     if (order && typeof order.billing_address !== 'undefined') {
                         this.paymentAddress = order.billing_address;

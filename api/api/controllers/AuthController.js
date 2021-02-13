@@ -215,21 +215,37 @@ module.exports = {
   //Method called for customer signup for frontend
   //Model models/User.js
   signup: async (req, res) => {
-    let user = await User.create(req.body);
-    let cart = await Cart.create({
-      user_id: user.id,
-      ip_address: '',
-      total_quantity: 0,
-      total_price: 0,
-      status: 1
-    });
-    EmailService.sendWelcomeMailCustomer(user);
+    try {
+      if(req.body && req.body.dob === ''){
+        req.body.dob = null;
+      }
+      let user = await User.create(req.body);
+      let cart = await Cart.create({
+        user_id: user.id,
+        ip_address: '',
+        total_quantity: 0,
+        total_price: 0,
+        status: 1
+      });
 
-    let data = Object.assign({}, cart);
-    data.cart_items = [];
-    if (user) {
-      return res.json(200, {user: user, cart: data, token: jwToken.issue({id: user.id})});
+      EmailService.sendWelcomeMailCustomer(user);
+
+      let data = Object.assign({}, cart);
+      data.cart_items = [];
+      if (user) {
+        return res.json(200, {user: user, cart: data, token: jwToken.issue({id: user.id})});
+      }
+
+      return res.badRequest('User was not created successfully');
+
+    } catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'error in user registration',
+        error
+      });
     }
+
   },
   //Method called for user unique check for frontend
   //Model models/User.js

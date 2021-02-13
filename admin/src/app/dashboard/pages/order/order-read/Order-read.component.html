@@ -13,7 +13,6 @@
         </button>
     </ng-template>
     <ng-template #body>
-
         <div *ngIf="data && suborders" id="print-section">
             <div class="row">
                 <div class="col-md-6">
@@ -116,20 +115,23 @@
                         <h5>SHIPPING/DELIVERY INFORMATION</h5>
                         <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
                         <p>{{shippingAddress.address}}</p>
-                        <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
+                        <p>
+                            {{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
                             , {{shippingAddress.division_id.name}}</p>
                         <p>T: {{shippingAddress.phone}}</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="bill-info-right" *ngIf="payment">
-                        <h5>Payment Method</h5>
-                        {{payment.payment_type}}
+                        <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock">Payment Method: SSLCOMMERZ</h5>
+                        <ng-template #elseBlock>><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
+                        <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details" style="margin-top: 20px;">
+                            <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
+                        </p>
                     </div>
                 </div>
             </div>
             <span class="footer">Happy Shopping!</span>
-
         </div>
     </ng-template>
 </nz-card>

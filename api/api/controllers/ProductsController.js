@@ -289,6 +289,7 @@ module.exports = {
         page: _pagination.page
       });
     } catch (error) {
+      console.log('error', error);
       return res.status(400).json({
         success: false,
         message: 'error in search product',

@@ -67,6 +67,11 @@ export class ProductItemFeedbackComponent implements OnInit {
         this.router.navigate(['/product-details/', productId]);
     }
   //Method for add to cart
+    addToCartClickHandler(event: any, product: any) {
+        event.stopPropagation();
+        console.log('addToCartClickHandler');
+        this.addToCart(product);
+    }
 
     addToCart(product: any, callback?) {
         if (this.product.product_variants.length > 0) {

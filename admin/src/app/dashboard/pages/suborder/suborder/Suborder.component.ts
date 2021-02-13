@@ -86,7 +86,7 @@ export class SuborderComponent implements OnInit {
     dateSearchValue1: any;
     statusSearchValue: string = '';
     statusData: any;
-    statusOptions = ['Pending', 'Processing', 'Prepared', 'Departure', 'Pickup', 'In the Air', 'landed', 'Arrived At Warehouse', 'Shipped', 'Out For Delivery', 'Delivered', 'Canceled'];
+    statusOptions = ['Pending', 'Confirmed', 'Processing', 'Prepared', 'Departure', 'Pickup', 'In the Air', 'landed', 'Arrived At Warehouse', 'Shipped', 'Out For Delivery', 'Delivered', 'Canceled'];
     _dateRange: any;
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
@@ -114,6 +114,7 @@ export class SuborderComponent implements OnInit {
                 private statusChangeService: StatusChangeService,
                 private uiService: UIService,
                 private authService: AuthService) {
+
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
@@ -137,6 +138,7 @@ export class SuborderComponent implements OnInit {
 
         this.options = [
             {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
+            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
             {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
             {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
             {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
@@ -147,7 +149,8 @@ export class SuborderComponent implements OnInit {
             {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
             {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
             {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
-            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'}
+            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'},
+
         ];
         this.currentUser = this.authService.getCurrentUser();
 

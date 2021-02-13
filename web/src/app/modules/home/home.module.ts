@@ -48,6 +48,7 @@ import {RecentlyViewesComponent} from './components/recently-viewes/recently-vie
 import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
 import {CouponBannersComponent} from "./pages/product-details/coupon-banners/coupon-banners.component";
+import {AreaService} from "../../services";
 
 const routes: Routes = [
     // ovi

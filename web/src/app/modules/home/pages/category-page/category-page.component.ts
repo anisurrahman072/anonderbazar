@@ -1,4 +1,6 @@
-import {FilterUiService} from "./../../../../services/ui/filterUi.service";
+import {HttpClient} from "@angular/common/http";
+import {Options, LabelType} from "ng5-slider";
+import {ActivatedRoute} from '@angular/router';
 import {
     Component,
     Injector,
@@ -14,13 +16,12 @@ import {
     UserService, BrandService
 } from "../../../../services";
 import {Observable} from "rxjs/Observable";
-import {AppSettings} from "../../../../config/app.config";
-import {HttpClient} from "@angular/common/http";
-import {Meta, Title, TransferState} from "@angular/platform-browser";
-import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute} from '@angular/router';
 import {combineLatest} from 'rxjs/observable/combineLatest'
+import {Meta, Title, TransferState} from "@angular/platform-browser";
+import {FilterUiService} from "../../../../services/ui/filterUi.service";
+import {AppSettings} from "../../../../config/app.config";
 import {LoaderService} from "../../../../services/ui/loader.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
     selector: "app-category-page",
@@ -29,7 +30,9 @@ import {LoaderService} from "../../../../services/ui/loader.service";
 })
 
 export class CategoryPageComponent implements OnInit {
-
+    @Input() showAtert: boolean;
+    @Input() productname: any;
+    @Input() productprice: any;
     p;
     allProducts: any;
     allProductsByCategory: any;
@@ -42,7 +45,6 @@ export class CategoryPageComponent implements OnInit {
     paramsID: number;
 
     productStatus;
-
     priceFilter = false;
     isCollapsed_filter = true;
     isCollapsed_price = false;
@@ -62,9 +64,6 @@ export class CategoryPageComponent implements OnInit {
     allCraftsman: any[];
     min: number;
     max: number;
-    @Input() showAtert: boolean;
-    @Input() productname: any;
-    @Input() productprice: any;
 
     isCollapsed_category_sub = false;
     changeStatusP = false;
@@ -137,6 +136,7 @@ export class CategoryPageComponent implements OnInit {
         private injector: Injector,
         private title: Title,
         private meta: Meta,
+        private toastr: ToastrService,
         private productService: ProductService,
         private categoryProductService: CategoryProductService,
         private ProductVariantService: ProductVariantService,
@@ -548,6 +548,10 @@ export class CategoryPageComponent implements OnInit {
             )
             .subscribe(result => {
                 this.allProductsByCategory = result.data;
+                this.loaderService.hideLoader();
+            }, (err)=> {
+                console.log('filter_search_result', err);
+                this.toastr.error('Sorry! There was a problem!', 'Sorry!');
                 this.loaderService.hideLoader();
             });
     }

@@ -105,6 +105,22 @@ export class HeaderComponent implements OnInit {
         this.products = this.productService.getAll();
     }
 
+    // init the component
+    ngOnInit() {
+        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
+        if (this.authService.getCurrentUserId()) {
+            this.isUser = true;
+        }
+
+        this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
+        this.compare$ = this.store.select<any>(fromStore.getCompare);
+
+        this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe(result => {
+            this.cmsLogoData = result.data_value[0].image;
+        });
+    }
+
     @HostListener('window:scroll', ['$event'])
     onWindowScroll(e) {
         if (window.pageYOffset > 0) {
@@ -122,22 +138,6 @@ export class HeaderComponent implements OnInit {
                 return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
             })
         );
-    }
-
-    // init the component
-    ngOnInit() {
-        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
-        if (this.authService.getCurrentUserId()) {
-            this.isUser = true;
-        }
-
-        this.cart$ = this.store.select<any>(fromStore.getCart);
-        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
-        this.compare$ = this.store.select<any>(fromStore.getCompare);
-
-        this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe(result => {
-            this.cmsLogoData = result.data_value[0].image;
-        });
     }
 
     //Event method for logout
@@ -188,7 +188,7 @@ export class HeaderComponent implements OnInit {
 
     //Event method for search filter
     main_search(event: any) {
-        if(event.target.value && event.target.value.length > 0){
+        if (event.target.value && event.target.value.length > 0) {
             this.FilterUiService.changesearchterm(event.target.value);
             this.get_search_result(event.target.value)
         } else {

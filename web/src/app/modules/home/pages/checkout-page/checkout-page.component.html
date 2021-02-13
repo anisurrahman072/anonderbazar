@@ -433,11 +433,11 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash"><i class="fa fa-money"></i>
-                                    Cash On Delivery
+                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash">
+                                    <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
                                 <br>
-                                <mat-radio-button value="SSLCommerce">
+                                <mat-radio-button value="SSLCommerce"  [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
                                         <img src="./assets/images/sslcom.png" style="height: auto; width: 100%;"
                                              alt="SSLcommerce"/>
