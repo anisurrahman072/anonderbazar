@@ -50,7 +50,14 @@ module.exports={
       function(err) {console.log(err || "It worked!");}
     )
   },
-  orderSubmitMail : function(obj) {
+  orderSubmitMail : function(obj, emailTo = null) {
+    let receiverEmail = emailTo;
+    if(!receiverEmail && obj[0].user_id.email){
+      receiverEmail = obj[0].user_id.email;
+    }
+    if(!receiverEmail){
+      return;
+    }
     sails.hooks.email.send(
       "orderSubmitEmail",
       {
@@ -60,7 +67,7 @@ module.exports={
         commonUrl: commonUrl,
       },
       {
-        to: obj[0].user_id.email,
+        to: receiverEmail,
         subject: "Your Order has been Placed (#"+ obj[0].id +")"
       },
       function(err) {console.log(err || "It worked!");}

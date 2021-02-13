@@ -1,4 +1,5 @@
 import moment from "moment";
+import {bangladeshSMSConfig, sslCommerzSMSConfig} from "../../config/softbd";
 
 const axios = require('axios');
 /*
@@ -31,8 +32,7 @@ module.exports = {
     const {v4: uuidv4} = require('uuid');
 
     const payload = {
-      "api_token": '1279-98d2bb25-3f7e-49bf-a1e2-5d1a6c6c588f',
-      "sid": 'ENGINEERING',
+      ...sslCommerzSMSConfig,
       "msisdn": contactTexts[0],
       "sms": message,
       "csms_id": uuidv4()
@@ -57,18 +57,17 @@ module.exports = {
       } else if (contact.charAt(0) === '0') {
         return '88' + contact
       }
-      return contact
-    }).join('+')
+      return contact;
+    }).join('+');
 
-    const scheduledDateTime = moment().add(1, 'minute').format('YYYY-MM-DD HH:mm:ss')
+    const scheduledDateTime = moment().add(1, 'minute').format('YYYY-MM-DD HH:mm:ss');
     const payload = {
-      "api_key": "C20075355fdae5af5f8c82.48883475",
-      "senderid": "8809612446331",
+      ...bangladeshSMSConfig,
       "type": "text",
       "scheduledDateTime": scheduledDateTime,
       "msg": message,
       "contacts": contactTexts
-    }
+    };
 
     axios.post('http://bangladeshsms.com/smsapi', payload)
       .then(function (response) {

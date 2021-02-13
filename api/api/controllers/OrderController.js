@@ -4,16 +4,15 @@
  * @description :: Server-side logic for managing orders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-import {adminPaymentAddressId, dhakaZilaId, sslCommerceSandbox} from "../../config/softbd";
+import {adminPaymentAddressId, dhakaZilaId, sslCommerceSandbox, sslCommerzSandboxCred} from "../../config/softbd";
 
 const _ = require("lodash");
 const SSLCommerz = require('sslcommerz-nodejs');
 const webURL = "https://anonderbazar.com";
 const APIURL = "https://api.anonderbazar.com/api/v1";
-
 const {asyncForEach} = require("../../libs");
-import moment from "moment";
 import {calcCartTotal} from "../../libs/cartHelper";
+import SmsService from "../services/SmsService";
 
 module.exports = {
 
@@ -142,7 +141,7 @@ module.exports = {
       totalQty
     } = calcCartTotal(cart, cartItems);
 
-    grandOrderTotal+= courierCharge;
+    grandOrderTotal += courierCharge;
 
     /*.................Billing Address....................*/
     if (req.param("billing_address") && (!req.param("billing_address").id || req.param("billing_address").id === "") && req.param("is_copy") === false) {
@@ -371,7 +370,7 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   sslcommerz: async function (req, res) {
 
-    let user = await User.findOne({id: req.param("user_id")}, {deletedAt: null});
+    let user = await User.findOne({id: req.param("user_id"), deletedAt: null});
 
     if (req.param("user_id") && user) {
 
@@ -478,8 +477,10 @@ module.exports = {
       };
 
       if (sslCommerceSandbox) {
-        settings.store_id = "bitsp5e4e5f62b4c34";
-        settings.store_passwd = "bitsp5e4e5f62b4c34@ssl";
+        settings = {
+          isSandboxMode: true,
+          ...sslCommerzSandboxCred
+        };
       }
 
       let sslcommerz = new SSLCommerz(settings);
@@ -567,7 +568,13 @@ module.exports = {
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   sslcommerzsuccess: async function (req, res) {
-    if (req.body.tran_id) {
+    if (req.body.tran_id && req.query.user_id) {
+
+      let user = await User.findOne({id: req.query.user_id, deletedAt: null});
+
+      if (!user) {
+        return res.badRequest('User was not found!');
+      }
 
       let globalConfigs = await GlobalConfigs.findOne({
         deletedAt: null
@@ -599,11 +606,19 @@ module.exports = {
       }
 
       let courierCharge = 0;
+      let shippingAddress = await PaymentAddress.findOne({
+        id: req.query.shipping_address
+      });
+
+      if (!shippingAddress) {
+        return res.badRequest('Associated Shipping Address was not found!');
+      }
 
       if (!noShippingCharge) {
-        const shippingAddress = await ShippingAddress.find(req.query.shipping_address)
-        if (Array.isArray(shippingAddress) && shippingAddress.length) {
-          courierCharge = shippingAddress[0].zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge
+        if (shippingAddress && shippingAddress.id) {
+          courierCharge = shippingAddress.zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+        } else {
+          courierCharge = globalConfigs.outside_dhaka_charge;
         }
       }
 
@@ -630,8 +645,6 @@ module.exports = {
       /** Get unique warehouse Id for suborder..................END......................... */
 
       let subordersTemp = [];
-
-      /** .............................START.......................... */
 
       let i = 0; // i init for loop
       let allOrderedProductsInventory = []
@@ -746,6 +759,7 @@ module.exports = {
 
       let paymentTemp = [];
 
+      const allCouponCodes = [];
       try {
 
         for (let i = 0; i < subordersTemp.length; i++) {
@@ -766,7 +780,10 @@ module.exports = {
         if (allGeneratedCouponCodes.length > 0) {
           const couponCodeLen = allGeneratedCouponCodes.length;
           for (let i = 0; i < couponCodeLen; i++) {
-            await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
+            let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
+            if (couponObject && couponObject.id) {
+              allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'))
+            }
           }
         }
 
@@ -808,15 +825,34 @@ module.exports = {
       }
 
       try {
+        let smsPhone = user.phone;
 
-        EmailService.orderSubmitMail(orderForMail);
+        if (!noShippingCharge && shippingAddress.phone) {
+          smsPhone = shippingAddress.phone;
+        }
 
-        if (shippingAddress && shippingAddress.phone) {
-          SmsService.sendingOneMessageToMany([shippingAddress.phone], 'Your Order has been successfully received by anonderbazar.com')
+        if (smsPhone) {
+          let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
+          if (allCouponCodes && allCouponCodes.length > 0) {
+            if(allCouponCodes.length === 1){
+              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
+            } else {
+              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
+            }
+          }
+          SmsService.sendingOneMessageToMany([smsPhone], smsText);
         }
 
       } catch (err) {
-        console.log('Order Sending email failed')
+        console.log('order sms was not sent!');
+        console.log(err);
+      }
+
+      try {
+        EmailService.orderSubmitMail(orderForMail);
+      } catch (err) {
+        console.log('order email was not sent!');
+        console.log(err);
       }
 
       let d = Object.assign({}, order);
@@ -826,6 +862,7 @@ module.exports = {
       );
       res.end();
     } else {
+
       res.writeHead(301,
         {Location: webURL + '/checkout'}
       );
@@ -857,8 +894,8 @@ module.exports = {
 
       if (req.query.created_at) {
         let created_at = JSON.parse(req.query.created_at);
-/*        let from = moment((moment().format('YYYY-MM-DD'))).toISOString();
-        let to = moment((moment(created_at.to).format('YYYY-MM-DD'))).toISOString();*/
+        /*        let from = moment((moment().format('YYYY-MM-DD'))).toISOString();
+                let to = moment((moment(created_at.to).format('YYYY-MM-DD'))).toISOString();*/
         _where.created_at = {'>=': created_at.from, '<=': created_at.to};
       }
       if (req.query.courier_status) {

@@ -9,6 +9,7 @@ import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
 
@@ -263,6 +264,14 @@ export class OrderComponent implements OnInit {
         let csvData = [];
         data.forEach(element => {
             let sslTransactionId = '';
+            let allCouponCodes = '';
+
+            if (element.couponProductCodes && element.couponProductCodes.length > 0) {
+                allCouponCodes = element.couponProductCodes.map((coupon) => {
+                    return '1' + ___.padStart(coupon.id, 6, '0');
+                }).join('|');
+            }
+
             if (element.payment && element.payment.length > 0) {
                 if (element.payment[0].payment_type === 'SSLCommerce') {
                     try {
@@ -296,7 +305,8 @@ export class OrderComponent implements OnInit {
                         'Order Status': this.statusOptions[element.status - 1],
                         'Order Status Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
                         'Date': (item.createdAt) ? moment(item.createdAt).format('DD/MM/YYYY h:m a') : 'N/a',
-                        'SSLCommerce Transaction Id': sslTransactionId
+                        'SSLCommerce Transaction Id': sslTransactionId,
+                        'Coupon Product Code': allCouponCodes,
                     });
                 });
             });
@@ -319,7 +329,8 @@ export class OrderComponent implements OnInit {
             'Order Status',
             'Order Status Changed By',
             'Date',
-            'SSLCommerce Transaction Id'
+            'SSLCommerce Transaction Id',
+            'Coupon Product Code',
         ];
         this.exportService.downloadFile(csvData, header);
     }
@@ -379,7 +390,7 @@ export class OrderComponent implements OnInit {
     // Method for showing the modal
     showProductModal = data => {
         console.log('showProductModal')
-        this.allOders = data.map((item)=> {
+        this.allOders = data.map((item) => {
             return {
                 ...item,
                 checked: false
@@ -408,7 +419,6 @@ export class OrderComponent implements OnInit {
                 }
             }
         }
-
     }
 
     csvPageChangeHandler($event) {
@@ -441,8 +451,6 @@ export class OrderComponent implements OnInit {
             if (findValue !== -1) {
                 this.storeOrderIds.splice(findValue, 1);
             }
-
         }
-
     };
 }
