@@ -21,7 +21,6 @@
 
         </ng-template>
 
-
         <ng-template #body *ngIf="data && order">
             <div id="print-section">
                 <div class="row">
@@ -87,12 +86,11 @@
                                         {{suborderItem.product_id.name}}
                                         <br>
                                         <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
-                                                        <span *ngFor="let variant of suborderItem.orderitemvariant">
-                                                          {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
-                                                        </span>
+                                            <span *ngFor="let variant of suborderItem.orderitemvariant">
+                                              {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                            </span>
                                         </ng-container>
                                         <br>
-
                                         <ng-container *ngIf="data && data.couponProductCodes.length > 0">
                                             <h6>Coupon Codes</h6>
                                             <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
@@ -172,7 +170,7 @@
                         </div>
                     </div>
                 </div>
-                <span class="footer">Have a nice day.</span>
+                <span class="footer">Have a Nice Day.</span>
             </div>
         </ng-template>
     </nz-card>

@@ -174,7 +174,7 @@
                     </td>
                     <td nz-td>{{data.total_quantity}}</td>
                     <td nz-td>{{data.total_price}}</td>
-                    <td nz-td>{{statusOptions[data.status - 1]}}</td>
+                    <td nz-td>{{getStatusLabel(data.status)}}</td>
                     <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
                 </tr>
                 </tbody>

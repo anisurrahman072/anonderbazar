@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import {CourierService} from '../../../../services/courier.service';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -40,7 +41,7 @@ export class SuborderComponent implements OnInit {
     };
     inlineDatePicker: Date = new Date();
 
-    options: any[];
+
     data = [];
     dataPR = [];
     _isSpinning = true;
@@ -86,7 +87,8 @@ export class SuborderComponent implements OnInit {
     dateSearchValue1: any;
     statusSearchValue: string = '';
     statusData: any;
-    statusOptions = ['Pending', 'Confirmed', 'Processing', 'Prepared', 'Departure', 'Pickup', 'In the Air', 'landed', 'Arrived At Warehouse', 'Shipped', 'Out For Delivery', 'Delivered', 'Canceled'];
+    options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
+    statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
     _dateRange: any;
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
@@ -682,9 +684,9 @@ export class SuborderComponent implements OnInit {
                     'Price': item.product_id.price,
                     'Quantity': item.product_quantity,
                     'Total': item.product_total_price,
-                    'Suborder Status': this.statusOptions[suborder.status - 1],
+                    'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
                     'Suborder Changed By': ((suborder.changed_by) ? suborder.changed_by.first_name : '') + ' ' + ((suborder.changed_by) ? suborder.changed_by.last_name : ''),
-                    'Order Status': this.statusOptions[suborder.order.status - 1],
+                    'Order Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.order.status] : 'Unrecognized Status',
                     'Order Status Changed By': ((suborder.order.changed_by) ? suborder.order.changed_by.first_name : '') + ' ' + ((suborder.order.changed_by) ? suborder.order.changed_by.last_name : ''),
                     'Date': (item.date) ? item.date : 'N/a',
                     'Pending': (item.pending) ? moment(item.pending.date).format('YYYY-MM-DD') + '-' + item.pending.changed_by.first_name + ' ' + item.pending.changed_by.last_name : 'N/a',
@@ -734,6 +736,14 @@ export class SuborderComponent implements OnInit {
             'Canceled'
         ];
         this.exportService.downloadFile(csvData, header);
+    }
+
+    getStatusLabel(statusCode) {
+
+        if (typeof this.statusOptions[statusCode] !== 'undefined') {
+            return this.statusOptions[statusCode];
+        }
+        return 'Unrecognized Status';
     }
 
     //Event method for setting up form in validation

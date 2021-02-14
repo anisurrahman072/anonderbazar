@@ -134,7 +134,7 @@
                             </div>
 
                             <ng-template #loggedOut>
-                                {{statusOptions[data.status - 1]}}
+                                {{getStatusLabel(data.status)}}
                             </ng-template>
 
                         </td>
@@ -230,7 +230,7 @@
                         <td nz-td>{{data.name}}</td>
                         <td nz-td>{{data.total_quantity}}</td>
                         <td nz-td>{{data.total_price}}</td>
-                        <td nz-td>{{statusOptions[data.status - 1]}}</td>
+                        <td nz-td>{{getStatusLabel(data.status)}}</td>
                         <td nz-td>{{data.changedBy}}</td>
                     </tr>
                     </tbody>
@@ -469,7 +469,7 @@
                         <td nz-td>{{data1.total_quantity}}</td>
                         <td nz-td>{{data1.total_price}}</td>
                         <td nz-td>{{data1.delivery_date|date:'yyyy-MM-dd'}}</td>
-                        <td nz-td>{{statusOptions[data1.status - 1]}}</td>
+                        <td nz-td>{{getStatusLabel(data1.status)}}</td>
                         <td nz-td>{{data1.changedBy}}</td>
 
                     </tr>

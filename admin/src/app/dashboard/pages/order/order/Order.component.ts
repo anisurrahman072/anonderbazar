@@ -16,6 +16,7 @@ import {default as _rollupMoment} from 'moment';
 const moment = _rollupMoment || _moment;
 import {MatDatepickerInputEvent} from "@angular/material/datepicker";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 export const MY_FORMATS = {
     parse: {
@@ -57,13 +58,14 @@ export class OrderComponent implements OnInit {
     _isSpinning = true;
     currentUser: any;
     selectedOption: any[] = [];
-    options: any[];
+
     statusSearchValue: string = '';
     dateSearchValue: any;
 
     page: any;
     statusData: any;
-    statusOptions = ['Pending', 'Processing', 'Delivered', 'Canceled'];
+    options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
+    statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     currentWarehouseId: any;
     isProductVisible = false;
@@ -97,27 +99,21 @@ export class OrderComponent implements OnInit {
         this.maxSearchDate = moment().format('YYYY-MM-DD');
         this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');
 
-        this.options = [
-            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
-            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
-            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
-            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
-            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
-            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
-            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
-            {value: 7, label: 'Landed', icon: 'anticon-spin anticon-loading'},
-            {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
-            {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
-            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
-            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
-            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'},
-        ];
+
     }
 
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
         this.getData();
+    }
+
+    getStatusLabel(statusCode) {
+
+        if (typeof this.statusOptions[statusCode] !== 'undefined') {
+            return this.statusOptions[statusCode];
+        }
+        return 'Unrecognized Status';
     }
 
     //Event method for getting all the data for the page
@@ -261,8 +257,16 @@ export class OrderComponent implements OnInit {
 
     dowonloadCSV(data) {
 
+        console.log('dowonloadCSV-data', data);
+
+        if (!(Array.isArray(data) && data.length > 0)) {
+            return false;
+        }
+
         let csvData = [];
-        data.forEach(element => {
+        data.filter((element) => {
+            return (Array.isArray(element.suborders) && element.suborders.length > 0);
+        }).forEach(element => {
             let sslTransactionId = '';
             let allCouponCodes = '';
 
@@ -281,7 +285,11 @@ export class OrderComponent implements OnInit {
                     }
                 }
             }
-            element.suborders.forEach(suborder => {
+            console.log('element.suborders.', element.suborders);
+
+            element.suborders.filter(suborder => {
+                return (Array.isArray(suborder.items) && suborder.items.length > 0);
+            }).forEach(suborder => {
                 suborder.items.forEach((item, j) => {
                     let i = 0, varients = "";
                     item.suborderItemVariants.forEach(element => {
@@ -300,9 +308,9 @@ export class OrderComponent implements OnInit {
                         'Price': item.product_id.price,
                         'Quantity': item.product_quantity,
                         'Total': item.product_total_price,
-                        'Suborder Status': this.statusOptions[suborder.status - 1],
+                        'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
                         'Suborder Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Order Status': this.statusOptions[element.status - 1],
+                        'Order Status': typeof this.statusOptions[element.status] !== 'undefined' ? this.statusOptions[element.status] : 'Unrecognized Status',
                         'Order Status Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
                         'Date': (item.createdAt) ? moment(item.createdAt).format('DD/MM/YYYY h:m a') : 'N/a',
                         'SSLCommerce Transaction Id': sslTransactionId,
@@ -378,14 +386,6 @@ export class OrderComponent implements OnInit {
         this.isProductVisible = false;
     };
 
-    //Event method for submitting the form
-    submitForm = ($event, value) => {
-        let newlist = this.storeOrderIds;
-
-        this.isProductVisible = false;
-        this.dowonloadCSV(newlist);
-        console.log(newlist);
-    }
 
     // Method for showing the modal
     showProductModal = data => {
@@ -399,10 +399,19 @@ export class OrderComponent implements OnInit {
         this.isProductVisible = true;
         this.storeOrderIds = [];
     };
+    //Event method for submitting the form
+    submitForm = ($event, value) => {
+        let newlist = this.storeOrderIds;
+        console.log('newlist-before', newlist);
+        this.isProductVisible = false;
+        this.dowonloadCSV(newlist);
+        console.log('newlist-after', newlist);
+    }
 
     selectAllCsv($event) {
 
         const isChecked = !!$event.target.checked;
+        console.log('selectAllCsv', isChecked);
         if (!isChecked) {
             this.storeOrderIds = [];
         }
@@ -419,6 +428,7 @@ export class OrderComponent implements OnInit {
                 }
             }
         }
+        console.log('this.storeOrderIds', this.storeOrderIds);
     }
 
     csvPageChangeHandler($event) {

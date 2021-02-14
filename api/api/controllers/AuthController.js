@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing auths
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-// import {EmailService } from '../services/Email.service';
 
 import bcrypt from "bcryptjs";
 import {imageUploadConfig} from "../../libs/helper";
@@ -252,7 +251,7 @@ module.exports = {
   usernameUnique: async (req, res) => {
     try {
       let user = await User.find({username: req.body.username});
-      if (user[0].username == req.body.username) {
+      if (user[0].username === req.body.username) {
         return res.json(200, {isunique: false});
       } else {
         return res.json(200, {isunique: true});
