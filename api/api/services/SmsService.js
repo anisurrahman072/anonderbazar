@@ -31,11 +31,14 @@ module.exports = {
 
     const {v4: uuidv4} = require('uuid');
 
+    const csmsId = uuidv4();
+    console.log('csmsId', csmsId);
+
     const payload = {
       ...sslCommerzSMSConfig,
       "msisdn": contactTexts[0],
       "sms": message,
-      "csms_id": uuidv4()
+      "csms_id": csmsId
     };
 
     axios.post('https://smsplus.sslwireless.com/api/v3/send-sms', payload, {

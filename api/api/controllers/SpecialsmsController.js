@@ -141,5 +141,16 @@ module.exports = {
       return res.badRequest(err.message);
     }
 
+  },
+  testSMS: async (req, res) => {
+    try {
+      let smsText = 'Test SMS: আপনার স্বাধীনতার ৫০';
+      console.log(['+8801790635943'], 'Test SMS: আপনার স্বাধীনতার ৫০');
+      SmsService.sendingOneSmsToOne(['+8801790635943'], smsText);
+      return res.status(200).json('success');
+    } catch (ee) {
+      console.log(ee);
+      return res.badRequest(ee.data);
+    }
   }
 };

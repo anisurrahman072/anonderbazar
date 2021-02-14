@@ -348,9 +348,10 @@ module.exports = {
       }
 
       try {
-        const phone = user.phone;
+        const smsPhone = user.phone;
         let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
-        SmsService.sendingOneMessageToMany([phone], smsText)
+        // SmsService.sendingOneMessageToMany([smsPhone], smsText)
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
       } catch (err) {
         console.log('SMS sending error');
         console.log(err);
@@ -862,7 +863,8 @@ module.exports = {
               smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
             }
           }
-          SmsService.sendingOneMessageToMany([smsPhone], smsText);
+          // SmsService.sendingOneMessageToMany([smsPhone], smsText);
+          SmsService.sendingOneSmsToOne([smsPhone], smsText);
         }
 
       } catch (err) {
