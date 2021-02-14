@@ -8,7 +8,7 @@ export interface Product {
     quantity?: any;
     price?: number;
     is_coupon_product?: number;
-    coupon_banner_images?: any;
+    coupon_banner_image?: any;
     craftsman_price?: any;
     product_details?: any;
     rating?: any;

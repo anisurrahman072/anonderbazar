@@ -23,24 +23,37 @@ module.exports = {
 
   findOne: async (req, res) => {
     try {
-      res
+
+      let product = await Product.findOne(req.params.id)
+        .populate("product_images", {deletedAt: null})
+        .populate("product_variants", {deletedAt: null})
+        .populate("category_id", {deletedAt: null})
+        .populate("subcategory_id", {deletedAt: null})
+        .populate("type_id", {deletedAt: null})
+        .populate("warehouse_id", {deletedAt: null})
+        .populate("craftsman_id", {deletedAt: null})
+        .populate("brand_id", {deletedAt: null});
+
+      product = {...product};
+
+      if (product) {
+
+        product.coupon_banner_image = await ProductCouponBannerImage.findOne({
+          product_id: product.id,
+          deletedAt: null
+        });
+
+      }
+
+      return res
         .status(200)
-        .json(
-          await Product.findOne(req.params.id)
-            .populate("product_images", {deletedAt: null})
-            .populate("product_variants", {deletedAt: null})
-            .populate("category_id", {deletedAt: null})
-            .populate("subcategory_id", {deletedAt: null})
-            .populate("type_id", {deletedAt: null})
-            .populate("warehouse_id", {deletedAt: null})
-            .populate("craftsman_id", {deletedAt: null})
-            .populate("brand_id", {deletedAt: null})
-            .populate("coupon_banner_images", {deletedAt: null})
-        );
+        .json(product);
+
     } catch (error) {
-      let message = "Error in Geting the product";
-      res.status(400).json({
+      const message = "Error in Geting the product";
+      return res.status(400).json({
         success: false,
+        message
       });
     }
   },
@@ -222,8 +235,7 @@ module.exports = {
 
           const product = await ProductImage.create({
             product_id: req.body.product_id,
-            image_path: '/' + newPath,
-            created_at: new Date(),
+            image_path: '/' + newPath
           });
 
           return res.json(200, product);
@@ -242,8 +254,7 @@ module.exports = {
 
           const product = await ProductImage.create({
             product_id: null,
-            image_path: '/' + newPath,
-            created_at: new Date(),
+            image_path: '/' + newPath
           });
 
           return res.json(200, product);
@@ -291,6 +302,7 @@ module.exports = {
       });
 
       console.log('all bannerImages', bannerImages);
+
       if (productBanner && typeof productBanner.id !== 'undefined') {
         await ProductCouponBannerImage.update({id: productBanner.id}, {banner_images: bannerImages});
       } else {

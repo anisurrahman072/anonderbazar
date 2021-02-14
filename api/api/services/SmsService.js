@@ -46,10 +46,10 @@ module.exports = {
       'Accept': 'application/json'
     })
       .then(function (response) {
-        console.log(response);
+        console.log(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error.data);
       });
   },
   sendingOneMessageToMany: function (contacts, message) {
