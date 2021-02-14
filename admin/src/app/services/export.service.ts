@@ -11,7 +11,7 @@ export class ExportService {
     const csv = this.ConvertToCSV(data, header);
 
     const a = document.createElement('a');
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
 
     a.href = url;

@@ -37,46 +37,45 @@ export class LoginComponent implements OnInit {
 
     submitForm = ($event, value) => {
         this._isSpinning = true;
-        console.log('submitForm', value)
+
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
+
         this.authService.login(value.userName, value.password)
             .subscribe(result => {
-
                     if (result && result.token && result.user.group_id.name == "admin" && result.user.warehouse_id == undefined) {
                         this.uiService.loginInfoUpdate(true);
                         this.authService.loginSuccess(result);
                         this.router.navigate(['/dashboard']);
                     } else if (result && result.token) {
-                        if (result.user.warehouse_id.status==0) {
+                        if (result.user.warehouse_id.status == 0) {
                             this.loginServerError.show = true;
                             this.loginServerError.message = "Your shop is not approved";
-                        }else if (result.user.warehouse_id.status==1) {
+                        } else if (result.user.warehouse_id.status == 1) {
                             this.loginServerError.show = true;
                             this.loginServerError.message = "Your shop is not approved";
-                        }else if (result.user.warehouse_id.status==3) {
+                        } else if (result.user.warehouse_id.status == 3) {
                             this.loginServerError.show = true;
                             this.loginServerError.message = "Your shop has been inactivated";
-                        }else{
+                        } else {
                             this.uiService.loginInfoUpdate(true);
                             this.authService.loginSuccess(result);
                             this.router.navigate(['/dashboard']);
                         }
-
                     }
-
-
-
+                    this._isSpinning = false;
                 },
                 (err) => {
+                    this._isSpinning = false;
                     this.loginServerError.show = true;
                     this.loginServerError.message = err.error.message;
                 });
 
 
     }
+
 //Event method for resetting the form
 
     resetForm($event: MouseEvent) {
@@ -92,7 +91,8 @@ export class LoginComponent implements OnInit {
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-  //Event method for user search for validation of user existance
+
+    //Event method for user search for validation of user existance
 
     userNameServerValidator = (control: FormControl) => {
         return Observable.create(function (observer) {
@@ -106,6 +106,7 @@ export class LoginComponent implements OnInit {
             }, 1000);
         });
     }
+
     ngOnInit() {
     }
 }

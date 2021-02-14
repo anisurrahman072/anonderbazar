@@ -17,7 +17,7 @@ module.exports = {
     senderid: "8809612446331",
   },
   sslCommerzSMSConfig: {
-    "api_token": '1279-98d2bb25-3f7e-49bf-a1e2-5d1a6c6c588f',
-    "sid": 'ENGINEERING',
+    "api_token": 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
+    "sid": 'SOFTBDNONAPI',
   }
 }
