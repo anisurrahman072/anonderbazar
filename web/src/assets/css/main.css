@@ -3734,15 +3734,15 @@ del {
 }
 
 .offer-details .offer-img .offerimg2 {
-    width: 130px;
-    height: 130px;
-    object-fit: contain;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
 }
 
 .offer-details .offer-img .offer-mainimg {
     width: 300px;
     height: 300px;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .productimage-wrapper {
