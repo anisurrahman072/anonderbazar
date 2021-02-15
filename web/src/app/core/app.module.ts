@@ -50,7 +50,7 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
 import {environment} from "../../environments/environment";
-import {JasperoAlertsModule} from "@jaspero/ng2-alerts/index";
+import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 // import {UiModule} from "../ui/ui.module";
 
 let imports = [];

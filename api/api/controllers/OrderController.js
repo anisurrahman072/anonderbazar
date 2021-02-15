@@ -13,6 +13,7 @@ const APIURL = "https://api.anonderbazar.com/api/v1";
 const {asyncForEach} = require("../../libs");
 import {calcCartTotal} from "../../libs/cartHelper";
 import SmsService from "../services/SmsService";
+import EmailService from "../services/EmailService";
 
 module.exports = {
 
@@ -350,8 +351,7 @@ module.exports = {
       try {
         const smsPhone = user.phone;
         let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
-        SmsService.sendingOneMessageToMany([smsPhone], smsText)
-        /*// SmsService.sendingOneSmsToOne([smsPhone], smsText);*/
+        SmsService.sendingOneSmsToOne([smsPhone], smsText)
       } catch (err) {
         console.log('SMS sending error');
         console.log(err);
@@ -581,7 +581,7 @@ module.exports = {
       });
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.badRequest(finalError.message);
+      return res.badRequest('There was a problem in processing the order.');
     }
   },
   //Method called when sslcommerz success from frontend
@@ -863,8 +863,7 @@ module.exports = {
               smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
             }
           }
-          SmsService.sendingOneMessageToMany([smsPhone], smsText);
-          /*SmsService.sendingOneSmsToOne([smsPhone], smsText);*/
+          SmsService.sendingOneSmsToOne([smsPhone], smsText);
         }
 
       } catch (err) {
@@ -887,6 +886,7 @@ module.exports = {
       res.end();
     } catch (finalError) {
       console.log('finalError', finalError);
+      return res.badRequest('There was a problem in processing the order.');
     }
 
   },

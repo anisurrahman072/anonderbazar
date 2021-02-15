@@ -1,7 +1,26 @@
 const commonUrl = "https://web.bitspeek.com";
 const senderName = "Anonder Bazar";
-module.exports={
-  sendPasswordResetMail : function(obj, password) {
+module.exports = {
+  sendPasswordResetMailUpdated: function (obj, password) {
+    sails.hooks.email.send(
+      "restPasswordEmailUpdated",
+      {
+        recipientName: obj.first_name,
+        senderName: senderName,
+        user: obj,
+        password: password,
+        commonUrl: commonUrl,
+      },
+      {
+        to: obj.email,
+        subject: "Forget Password Request - Anonder Bazar"
+      },
+      function (err) {
+        console.log('Sending Password Reset Email: ', err || "It worked!");
+      }
+    )
+  },
+  sendPasswordResetMail: function (obj, password) {
     sails.hooks.email.send(
       "restPasswordEmail",
       {
@@ -15,10 +34,12 @@ module.exports={
         to: obj[0].email,
         subject: "Welcome to Anonder Bazar"
       },
-      function(err) {console.log( 'Sending Password Reset Email: ', err || "It worked!");}
+      function (err) {
+        console.log('Sending Password Reset Email: ', err || "It worked!");
+      }
     )
   },
-  sendWelcomeMailCustomer : function(obj) {
+  sendWelcomeMailCustomer: function (obj) {
     sails.hooks.email.send(
       "registrationEmail",
       {
@@ -31,10 +52,12 @@ module.exports={
         to: obj.email,
         subject: "Welcome to Anonder Bazar"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
-  sendWelcomeMailVendor : function(obj) {
+  sendWelcomeMailVendor: function (obj) {
     sails.hooks.email.send(
       "vendorRegistrationEmail",
       {
@@ -47,15 +70,17 @@ module.exports={
         to: obj[0].user_id.email,
         subject: "Welcome to Anonder Bazar"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
-  orderSubmitMail : function(obj, emailTo = null) {
+  orderSubmitMail: function (obj, emailTo = null) {
     let receiverEmail = emailTo;
-    if(!receiverEmail && obj[0].user_id.email){
+    if (!receiverEmail && obj[0].user_id.email) {
       receiverEmail = obj[0].user_id.email;
     }
-    if(!receiverEmail){
+    if (!receiverEmail) {
       return;
     }
     sails.hooks.email.send(
@@ -68,12 +93,14 @@ module.exports={
       },
       {
         to: receiverEmail,
-        subject: "Your Order has been Placed (#"+ obj[0].id +")"
+        subject: "Your Order has been Placed (#" + obj[0].id + ")"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
-  orderCompletedMail : function(obj) {
+  orderCompletedMail: function (obj) {
     sails.hooks.email.send(
       "orderCompleteEmail",
       {
@@ -84,12 +111,14 @@ module.exports={
       },
       {
         to: obj[0].user_id.email,
-        subject: "Your Order has been Delivered (#"+ obj[0].id +")"
+        subject: "Your Order has been Delivered (#" + obj[0].id + ")"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
-  orderStatusdMail : function(obj, status_text) {
+  orderStatusdMail: function (obj, status_text) {
     sails.hooks.email.send(
       "orderStatusEmail",
       {
@@ -101,12 +130,14 @@ module.exports={
       },
       {
         to: obj[0].user_id.email,
-        subject: "Your Order has been "+status_text+" (#"+ obj[0].id +")"
+        subject: "Your Order has been " + status_text + " (#" + obj[0].id + ")"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
-  orderStatusdMailVendor : function(obj, warehouse,status_text) {
+  orderStatusdMailVendor: function (obj, warehouse, status_text) {
     sails.hooks.email.send(
       "orderStatusEmail",
       {
@@ -118,9 +149,11 @@ module.exports={
       },
       {
         to: warehouse[0].email,
-        subject: "Your Order has been "+status_text+" (#"+ obj[0].id +")"
+        subject: "Your Order has been " + status_text + " (#" + obj[0].id + ")"
       },
-      function(err) {console.log(err || "It worked!");}
+      function (err) {
+        console.log(err || "It worked!");
+      }
     )
   },
 };

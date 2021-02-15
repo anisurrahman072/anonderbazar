@@ -190,11 +190,7 @@ export class CategoryPageComponent implements OnInit {
                 this.isCollapsed_subsubclass = false;
                 this.isCollapsed_warehouses = false;
 
-                if (this.route.snapshot.params['id'] && this.route.snapshot.params['warehouse'] === 'warehouse') {
-                    this.showWarehouse = false;
-                } else {
-                    this.showWarehouse = true;
-                }
+                this.showWarehouse = !(this.route.snapshot.params['id'] && this.route.snapshot.params['warehouse'] === 'warehouse');
 
                 if (this.route.snapshot.params['id'] && this.route.snapshot.params['craftsman'] === 'craftsman') {
                     this.showcraftsman = true;
@@ -549,7 +545,7 @@ export class CategoryPageComponent implements OnInit {
             .subscribe(result => {
                 this.allProductsByCategory = result.data;
                 this.loaderService.hideLoader();
-            }, (err)=> {
+            }, (err) => {
                 console.log('filter_search_result', err);
                 this.toastr.error('Sorry! There was a problem!', 'Sorry!');
                 this.loaderService.hideLoader();

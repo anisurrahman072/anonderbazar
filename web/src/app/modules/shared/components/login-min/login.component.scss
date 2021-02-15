@@ -240,7 +240,10 @@ input[type=email] {
         border: #00a388 2px solid;
     }
 }
-
+.signupbtn button[disabled].btn-flat {
+    background-color: #F1F1F1;
+    color: gray
+}
 .form-background {
     background: #ffffff;
 }

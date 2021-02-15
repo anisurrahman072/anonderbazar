@@ -20,7 +20,7 @@ const axios = require('axios');
 
 module.exports = {
 
-  sendingOneSmsToOne: function (contacts, message) {
+  sendingOneSmsToOne:  (contacts, message) => {
     const contactTexts = contacts.map(function (contact) {
       if (contact.charAt(0) === '+') {
         return contact.substr(1)
@@ -50,7 +50,10 @@ module.exports = {
         console.log(error.data);
       });
   },
-  sendingOneMessageToMany: function (contacts, message) {
+  sendingOneMessageToMany:  (contacts, message) => {
+    this.sendingOneSmsToOne(contacts, message);
+  },
+  sendingOneMessageToManyDeprecated: function (contacts, message) {
 
     const contactTexts = contacts.map(function (contact) {
       if (contact.charAt(0) === '+') {

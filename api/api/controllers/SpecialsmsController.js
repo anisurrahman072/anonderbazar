@@ -88,13 +88,13 @@ module.exports = {
           }
           console.log('couponCodes-userMobile', orders[i].id, userMobile, smsText);
           try {
+            SmsService.sendingOneSmsToOne([userMobile], smsText);
             smsDetails.push({
               orderId: orders[i].id,
               couponCodes: couponCodes,
               smsText: smsText,
               mobile: userMobile
-            })
-            // SmsService.sendingOneSmsToOne([userMobile], smsText);
+            });
           } catch (ee) {
             console.log(ee);
           }
