@@ -506,7 +506,7 @@ section {
 }
 
 .dropdown-menu ul li {
-    padding: 5px 10px;
+    padding: 0px 0px;
     color: #726E6E;
     font-weight: 500;
 }
