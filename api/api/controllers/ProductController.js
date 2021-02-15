@@ -37,12 +37,10 @@ module.exports = {
       product = {...product};
 
       if (product) {
-
         product.coupon_banner_image = await ProductCouponBannerImage.findOne({
           product_id: product.id,
           deletedAt: null
         });
-
       }
 
       return res
@@ -116,7 +114,7 @@ module.exports = {
 
       if (req.body.hasImageFront === 'true') {
         try {
-          const uploaded = await uploadImages(req.file("frontimage"));
+          const uploaded =  await uploadImages(req.file("frontimage"));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
@@ -197,6 +195,7 @@ module.exports = {
           let product = await Product.update({id: req.param("id")}, body);
           return res.json(200, product);
         });
+
       } else {
         let body = req.body;
         if (body.brand_id === '' || body.brand_id === 'undefined') {

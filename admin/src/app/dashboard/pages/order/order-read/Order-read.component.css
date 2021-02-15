@@ -1,0 +1,9 @@
+.order-items thead tr th {
+    text-align: center;
+}
+.order-items thead tr th.price-type {
+    text-align: right;
+}
+.order-items tbody tr td.price-type {
+    text-align: right;
+}

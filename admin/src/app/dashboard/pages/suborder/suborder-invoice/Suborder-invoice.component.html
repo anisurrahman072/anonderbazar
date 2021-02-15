@@ -1,177 +1,184 @@
 <section class="invoice">
-    <nz-card>
-        <ng-template #title>
-            INVOICE
-        </ng-template>
-        <ng-template #extra>
+    <nz-spin [nzSpinning]="_isSpinning">
+        <nz-card>
+            <ng-template #title>
+                INVOICE
+            </ng-template>
+            <ng-template #extra>
 
-            <button nz-button [nzType]="'primary'"
-                    [nzSize]="'large'" (click)="getPDF()">
-                <i class="anticon anticon-download"></i><span> Save  </span>
-            </button>
-            <button nz-button [nzType]="'primary'"
-                    [nzSize]="'large'" (click)="getPRINT()">
-                <i class="anticon anticon-printer"></i><span> Print  </span>
-            </button>
+                <button nz-button [nzType]="'primary'"
+                        [nzSize]="'large'" (click)="getPDF()">
+                    <i class="anticon anticon-download"></i><span> Save  </span>
+                </button>
+                <button nz-button [nzType]="'primary'"
+                        [nzSize]="'large'" (click)="getPRINT()">
+                    <i class="anticon anticon-printer"></i><span> Print  </span>
+                </button>
 
-            <button routerLink="/dashboard/suborder" nz-button [nzType]="'primary'"
-                    [nzSize]="'large'">
-                <i class="anticon anticon-file-text"></i><span> List </span>
-            </button>
+                <button routerLink="/dashboard/suborder" nz-button [nzType]="'primary'"
+                        [nzSize]="'large'">
+                    <i class="anticon anticon-file-text"></i><span> List </span>
+                </button>
 
-        </ng-template>
+            </ng-template>
 
-        <ng-template #body *ngIf="data && order">
-            <div id="print-section">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="header-logo">
-                            <img src="{{IMAGE_ENDPOINT+data.warehouse_id.logo}}" class="img-responsive" alt="img">
+            <ng-template #body *ngIf="data && order">
+                <div id="print-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="header-logo">
+                                <img src="{{IMAGE_ENDPOINT+data.warehouse_id.logo}}" class="img-responsive" alt="img">
+                            </div>
+                            <div class="invoice-inner-left">
+                                <p>Hello, {{order.user_id.first_name}} {{order.user_id.last_name}}. </p>
+                                <p>Thank you for shopping from our store </p>
+                                <p>and for your order.</p>
+                            </div>
                         </div>
-                        <div class="invoice-inner-left">
-                            <p>Hello, {{order.user_id.first_name}} {{order.user_id.last_name}}. </p>
-                            <p>Thank you for shopping from our store </p>
-                            <p>and for your order.</p>
+                        <div class="col-md-6 text-right">
+                            <div class="header-text">
+                                <h4>invoice</h4>
+                            </div>
+                            <div class="invoice-inner-right">
+                                <p>ORDER #{{order.id}}/{{data.id}}</p>
+                                <p>{{currentDate | date:'shortTime'}}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6 text-right">
-                        <div class="header-text">
-                            <h4>invoice</h4>
-                        </div>
-                        <div class="invoice-inner-right">
-                            <p>ORDER #{{order.id}}/{{data.id}}</p>
-                            <p>{{currentDate | date:'shortTime'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <table class="table table-striped table-hover ">
-                    <tbody>
-                    <tr>
-                    <tr class="hiddenMobile">
-                        <td height="60"></td>
-                    </tr>
-                    <tr class="visibleMobile">
-                        <td height="40"></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table style="width: 1100px; border: 0 none; text-align: center; " cellpadding="0" cellspacing="0"
-                                   align="center" class="fullPadding" *ngIf="suborderItems">
-                                <tbody>
-                                <tr>
-                                    <th>SL</th>
-                                    <th width="54%" align="left">
-                                        Item
-                                    </th>
-                                    <th align="left">
-                                        <small>Price</small>
-                                    </th>
-                                    <th align="center">
-                                        Quantity
-                                    </th>
-                                    <th align="right">
-                                        Subtotal
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td height="1" style="background: #bebebe;"
-                                        colspan="5"></td>
-                                </tr>
-                                <tr>
-                                    <td height="10" colspan="5"></td>
-                                </tr>
-                                <tr *ngFor="let suborderItem of suborderItems; let i = index;">
-                                    <td width="10%" >{{ i+1}}</td>
-                                    <td width="45%" >
-                                        {{suborderItem.product_id.name}}
-                                        <br>
-                                        <ng-container *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
+                    <table class="table table-striped table-hover ">
+                        <tbody>
+                        <tr>
+                        <tr class="hiddenMobile">
+                            <td height="60"></td>
+                        </tr>
+                        <tr class="visibleMobile">
+                            <td height="40"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table style="width: 100%; border: 0 none; text-align: center; padding: 0; margin: 0; "
+                                       class="fullPadding item-table" *ngIf="suborderItems">
+                                    <tbody>
+                                    <tr>
+                                        <th style=" width: 6%; text-align: center; ">SL</th>
+                                        <th style=" width: 54%; text-align: center; ">
+                                            Item Name
+                                        </th>
+                                        <th style="text-align: center; ">
+                                            SKU (Code)
+                                        </th>
+                                        <th class="price-type">
+                                            Price
+                                        </th>
+                                        <th class="price-type">
+                                            Quantity
+                                        </th>
+                                        <th class="price-type">
+                                            Subtotal
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style=" height: 20px;" colspan="6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" style="height: 20px;"></td>
+                                    </tr>
+                                    <tr *ngFor="let suborderItem of suborderItems; let i = index;">
+                                        <td>{{ i + 1}}</td>
+                                        <td>
+                                            {{suborderItem.product_id.name}}
+                                            <br>
+                                            <ng-container
+                                                    *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
                                             <span *ngFor="let variant of suborderItem.orderitemvariant">
-                                              {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                              {{variant.variant_id.name}}
+                                                :<small>{{variant.warehouse_variant_id.name}}</small>
                                             </span>
-                                        </ng-container>
-                                        <br>
-                                        <ng-container *ngIf="data && data.couponProductCodes.length > 0">
-                                            <h6>Coupon Codes</h6>
-                                            <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
-                                        </ng-container>
-                                    </td>
-                                    <td width="15%" >
-                                        ৳. {{suborderItem.product_total_price/suborderItem.product_quantity}}
-                                    </td>
-                                    <td width="15%" >{{suborderItem.product_quantity}}
-                                    </td>
-                                    <td width="15%">৳. {{suborderItem.product_total_price}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td height="1" colspan="5"
-                                        style="border-bottom:1px solid #e4e4e4"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="20"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-full">
+                                            </ng-container>
+                                            <br>
+                                            <ng-container *ngIf="data && data.couponProductCodes.length > 0">
+                                                <h6>Coupon Codes</h6>
+                                                <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
+                                            </ng-container>
+                                        </td>
+                                        <td>{{suborderItem.product_id.code}}</td>
+                                        <td class="price-type">
+                                            ৳. {{suborderItem.product_total_price / suborderItem.product_quantity}}
+                                        </td>
+                                        <td class="qty-type">{{suborderItem.product_quantity}}</td>
+                                        <td class="price-type">৳. {{suborderItem.product_total_price}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" style="border-bottom:1px solid #e4e4e4; height: 20px;"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 20px;"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-full">
 
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row" style="margin-bottom: 100px">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4">
-                        <div class="amount-text text-right">
-                            <h5>Grand Total</h5>
+                    <div class="row" style="margin-bottom: 100px">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            <div class="amount-text text-right">
+                                <h5>Grand Total</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="amount-text text-right">
+                                <h5>৳. {{data.total_price}}</h5>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="amount-text text-right">
-                            <h5>৳. {{data.total_price}}</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 100px; margin-left: 30px">
-                    <div class="col-md-6">
-                        <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
-                            <h5>BILLING INFORMATION</h5>
-                            <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
-                            <p>{{paymentAddress.address}}</p>
-                            <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}, {{paymentAddress.division_id.name}}</p>
-                            <p>T: {{paymentAddress.phone}}</p>
-                        </div>
+                    <div class="row" style="margin-bottom: 100px; margin-left: 30px">
+                        <div class="col-md-6">
+                            <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
+                                <h5>BILLING INFORMATION</h5>
+                                <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
+                                <p>{{paymentAddress.address}}</p>
+                                <p>{{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}
+                                    , {{paymentAddress.division_id.name}}</p>
+                                <p>T: {{paymentAddress.phone}}</p>
+                            </div>
 
 
-                        <div class="shopping-info-left" *ngIf="shippingAddress">
-                            <h5>SHIPPING/DELIVERY INFORMATION</h5>
-                            <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
-                            <p>{{shippingAddress.address}}</p>
-                            <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}, {{shippingAddress.division_id.name}}</p>
-                            <p>T: {{shippingAddress.phone}}</p>
+                            <div class="shopping-info-left" *ngIf="shippingAddress">
+                                <h5>SHIPPING/DELIVERY INFORMATION</h5>
+                                <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
+                                <p>{{shippingAddress.address}}</p>
+                                <p>{{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
+                                    , {{shippingAddress.division_id.name}}</p>
+                                <p>T: {{shippingAddress.phone}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bill-info-right" *ngIf="payment">
+                                <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock" >Payment Method: SSLCOMMERZ</h5>
+                                <ng-template #elseBlock><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
+                                <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details"
+                                   style="margin-top: 20px;">
+                                    <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
+                                </p>
+                            </div>
+                            <div class="shopping-info-right" style="margin-top: 75px">
+                                <h5>SHIPPING METHOD</h5>
+                                <p>UPS: U.S. Shipping Services</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="bill-info-right" *ngIf="payment">
-                            <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock">Payment Method: SSLCOMMERZ</h5>
-                            <ng-template #elseBlock>><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
-                            <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details" style="margin-top: 20px;">
-                                <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
-                            </p>
-                        </div>
-                        <div class="shopping-info-right" style="margin-top: 75px">
-                            <h5>SHIPPING METHOD</h5>
-                            <p>UPS: U.S. Shipping Services</p>
-                        </div>
-                    </div>
+                    <span class="footer">Have a Nice Day.</span>
                 </div>
-                <span class="footer">Have a Nice Day.</span>
-            </div>
-        </ng-template>
-    </nz-card>
+            </ng-template>
+        </nz-card>
+    </nz-spin>
 </section>

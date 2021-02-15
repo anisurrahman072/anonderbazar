@@ -29,6 +29,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     suborderItems: any;
     suborders: any[] = [];
     options: any[];
+    _isSpinning = true;
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -98,8 +99,15 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     if (order && typeof order.shipping_address !== 'undefined') {
                         this.shippingAddress = order.shipping_address;
                     }
-                    console.log('this.data', this.data)
+                    console.log('this.data', this.data);
+                    this._isSpinning = false;
+                }, (err) => {
+                    console.log('err', err);
+                    this._isSpinning = false;
                 });
+        }, (err) => {
+            console.log('err', err);
+            this._isSpinning = false;
         });
     }
 

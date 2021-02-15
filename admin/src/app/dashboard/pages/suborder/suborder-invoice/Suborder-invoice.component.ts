@@ -23,6 +23,7 @@ import {environment} from "../../../../../environments/environment";
     styleUrls: ['./Suborder-invoice.component.css'],
 })
 export class SuborderInvoiceComponent implements OnInit {
+    @ViewChild('pdfTable') pdfTable: ElementRef;
     sub: Subscription;
     id: number;
     data: any;
@@ -33,8 +34,8 @@ export class SuborderInvoiceComponent implements OnInit {
     paymentAddress: any;
     shippingAddress: any;
     suborderItems: any;
-    @ViewChild('pdfTable') pdfTable: ElementRef;
 
+    _isSpinning = true;
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private suborderService: SuborderService,
@@ -85,8 +86,15 @@ export class SuborderInvoiceComponent implements OnInit {
                             this.shippingAddress = order.shipping_address;
                         }
                         console.log('order', this.order);
+                        this._isSpinning = false;
                     });
+                }, (err)=> {
+                    console.log('err', err);
+                    this._isSpinning = false;
                 });
+        }, (err)=> {
+            console.log('err', err);
+            this._isSpinning = false;
         });
     }
 

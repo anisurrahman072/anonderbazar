@@ -1,5 +1,6 @@
 import moment from "moment";
 import {bangladeshSMSConfig, sslCommerzSMSConfig} from "../../config/softbd";
+import {makeUniqueId} from "../../libs/helper";
 
 const axios = require('axios');
 /*
@@ -29,10 +30,7 @@ module.exports = {
       return contact
     });
 
-    const {v4: uuidv4} = require('uuid');
-
-    const csmsId = uuidv4();
-    console.log('csmsId', csmsId);
+    const csmsId = makeUniqueId(18);
 
     const payload = {
       ...sslCommerzSMSConfig,
