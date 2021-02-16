@@ -529,9 +529,10 @@
     }
 
     nav ul li {
-        padding: 15px 0;
+        padding: 6px 0;
         border-bottom: 1px solid #efefef;
         background-color: #ffffff;
+        border-bottom: 1px solid #dfdfdf;
     }
 
     .mobile-menu label .img-2 {
@@ -1027,10 +1028,6 @@
     nav input:checked ~ ul {
         margin: 15px 0px !important;
         overflow-y: scroll;
-    }
-
-    nav ul li {
-        border-bottom: 1px solid #dfdfdf;
     }
 
     .header_chart {
