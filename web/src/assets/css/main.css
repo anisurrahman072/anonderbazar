@@ -3725,8 +3725,15 @@ del {
 #toast-container > div {
     opacity: 1;
 }
-.cdk-overlay-container {
+body.modal-open .cdk-overlay-container {
     z-index: 19999;
+}
+body.modal-open .mat-button,
+body.modal-open .mat-fab,
+body.modal-open .mat-icon-button,
+body.modal-open .mat-mini-fab,
+body.modal-open .mat-raised-button {
+    color: #161616;
 }
 /*
 .term-condition-modal.modal-lg {

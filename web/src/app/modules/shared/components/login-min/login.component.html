@@ -232,7 +232,8 @@
                                                         <i class='fa fa-exclamation-circle feedback-icon-error'></i>
                                                         <div class="validation-feedback">
                                                             <span>
-                                                                <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('confirmPassword').hasError('confirm') ? 'Incorrect Password' : 'Input password again'}}</span>
+                                                                <i class='fa fa-exclamation-circle'></i> {{validateSignUpForm.get('confirmPassword').hasError('confirm') ? 'Incorrect Password' : 'Input password again'}}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -242,81 +243,86 @@
                                             <div class=" col-md-12">
                                                 <div class="form-group">
                                                     <label for="full_birth_date" class="col-lg-12 control-label">Birthday</label>
-                                                    <input [matDatepicker]="fullBirthDatePicker" id="full_birth_date" placeholder="Choose a date">
-                                                    <mat-datepicker-toggle matSuffix [for]="fullBirthDatePicker"></mat-datepicker-toggle>
-                                                    <mat-datepicker #fullBirthDatePicker></mat-datepicker>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-md-12">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <label for="inputBirthday">Birthday</label>
-                                                        <div class="form-row">
-                                                            <div class="form-group col-md-4">
-                                                                <select formControlName="birthYear"
-                                                                        id="inputBirthday"
-                                                                        class="form-control">
-                                                                    <option value="" [selected]="true">Select Year
-                                                                    </option>
-                                                                    <option *ngFor="let year of yearList(70); let i = index"
-                                                                            value="{{currentYear-i}}">{{currentYear - i}}</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group col-md-4">
-                                                                <select id="birthMonth" formControlName="birthMonth"
-                                                                        class="form-control">
-                                                                    <option value="" [selected]="true">Select Month
-                                                                    </option>
-                                                                    <option *ngFor="let month of birthMonthOption"
-                                                                            value="{{month.value}}">
-                                                                        {{month.label}}
-                                                                    </option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group col-md-4">
-                                                                <select id="birthDay" formControlName="birthDay"
-                                                                        class="form-control">
-                                                                    <option value="">Select Day</option>
-                                                                    <option>1</option>
-                                                                    <option>2</option>
-                                                                    <option>3</option>
-                                                                    <option>4</option>
-                                                                    <option>5</option>
-                                                                    <option>6</option>
-                                                                    <option>7</option>
-                                                                    <option>8</option>
-                                                                    <option>9</option>
-                                                                    <option>10</option>
-                                                                    <option>11</option>
-                                                                    <option>12</option>
-                                                                    <option>13</option>
-                                                                    <option>14</option>
-                                                                    <option>15</option>
-                                                                    <option>16</option>
-                                                                    <option>17</option>
-                                                                    <option>18</option>
-                                                                    <option>19</option>
-                                                                    <option>20</option>
-                                                                    <option>21</option>
-                                                                    <option>22</option>
-                                                                    <option>23</option>
-                                                                    <option>24</option>
-                                                                    <option>25</option>
-                                                                    <option>26</option>
-                                                                    <option>27</option>
-                                                                    <option>28</option>
-                                                                    <option *ngIf=" birthMonth!=2 ">29</option>
-                                                                    <option>30</option>
-                                                                    <option>31</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
+                                                    <div class="col-lg-12">
+                                                        <input [matDatepicker]="fullBirthDatePicker" [min]="minBirthDate" [max]="maxBirthDate"
+                                                               formControlName="full_birth_date"
+
+                                                               id="full_birth_date" placeholder="Choose a date">
+                                                        <mat-datepicker-toggle matSuffix [for]="fullBirthDatePicker"></mat-datepicker-toggle>
+                                                        <mat-datepicker #fullBirthDatePicker></mat-datepicker>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- <div class="row">
+                                             <div class="form-group col-md-12">
+                                                 <div class="row">
+                                                     <div class="col-md-12">
+                                                         <label for="inputBirthday">Birthday</label>
+                                                         <div class="form-row">
+                                                             <div class="form-group col-md-4">
+                                                                 <select formControlName="birthYear"
+                                                                         id="inputBirthday"
+                                                                         class="form-control">
+                                                                     <option value="" [selected]="true">Select Year
+                                                                     </option>
+                                                                     <option *ngFor="let year of yearList(70); let i = index"
+                                                                             value="{{currentYear-i}}">{{currentYear - i}}</option>
+                                                                 </select>
+                                                             </div>
+                                                             <div class="form-group col-md-4">
+                                                                 <select id="birthMonth" formControlName="birthMonth"
+                                                                         class="form-control">
+                                                                     <option value="" [selected]="true">Select Month
+                                                                     </option>
+                                                                     <option *ngFor="let month of birthMonthOption"
+                                                                             value="{{month.value}}">
+                                                                         {{month.label}}
+                                                                     </option>
+                                                                 </select>
+                                                             </div>
+                                                             <div class="form-group col-md-4">
+                                                                 <select id="birthDay" formControlName="birthDay"
+                                                                         class="form-control">
+                                                                     <option value="">Select Day</option>
+                                                                     <option>1</option>
+                                                                     <option>2</option>
+                                                                     <option>3</option>
+                                                                     <option>4</option>
+                                                                     <option>5</option>
+                                                                     <option>6</option>
+                                                                     <option>7</option>
+                                                                     <option>8</option>
+                                                                     <option>9</option>
+                                                                     <option>10</option>
+                                                                     <option>11</option>
+                                                                     <option>12</option>
+                                                                     <option>13</option>
+                                                                     <option>14</option>
+                                                                     <option>15</option>
+                                                                     <option>16</option>
+                                                                     <option>17</option>
+                                                                     <option>18</option>
+                                                                     <option>19</option>
+                                                                     <option>20</option>
+                                                                     <option>21</option>
+                                                                     <option>22</option>
+                                                                     <option>23</option>
+                                                                     <option>24</option>
+                                                                     <option>25</option>
+                                                                     <option>26</option>
+                                                                     <option>27</option>
+                                                                     <option>28</option>
+                                                                     <option *ngIf=" birthMonth!=2 ">29</option>
+                                                                     <option>30</option>
+                                                                     <option>31</option>
+                                                                 </select>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>-->
                                         <div class="row">
                                             <div class="form-group signupbtn d-flex col-md-12">
                                                 <input id="form_botcheck-register" name="form_botcheck"

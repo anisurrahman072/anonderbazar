@@ -6,13 +6,13 @@
             </button>
             <mat-card-header class="center imageDiv">
                 <div mat-card-avatar class="example-header-image" *ngIf="imageShow" style="width: 200px;height: 200px;">
-                    <img class="img-circle avatar-img " src="{{ IMAGE_ENDPOINT + user.avatar }}"/>
+                    <img class="img-circle avatar-img " src="{{ IMAGE_ENDPOINT + user.avatar }}" />
                 </div>
                 <div *ngIf="imageUpload">
                     <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"
-                                  [beforeUpload]="onBeforeUpload" buttonCaption="Select Image"
-                                  dropBoxMessage="Drop picture here"
-                                  clearButtonCaption="Clear picture">
+                    [beforeUpload]="onBeforeUpload" buttonCaption="Select Image"
+                    dropBoxMessage="Drop picture here"
+                    clearButtonCaption="Clear picture">
                     </image-upload>
                 </div>
                 <button mat-mini-fab class="imageFab" color="primary" *ngIf="imageEdit" (click)="showImage()">
@@ -26,28 +26,24 @@
     </div>
     <div class="col-md-12">
         <mat-card>
-            <form [formGroup]="updateProfileForm" class="example-container" *ngIf="user"
-                  (ngSubmit)="formUpdateProfile($event, updateProfileForm.value)">
+            <form [formGroup]="updateProfileForm" class="example-container" *ngIf="user" (ngSubmit)="formUpdateProfile($event, updateProfileForm.value)">
                 <mat-card-content>
                     <div class="example-container">
                         <mat-form-field>
-                            <input matInput placeholder="First name" formControlName="first_name"
-                                   [(ngModel)]="user.first_name"
-                                   [readonly]="value ? 'readonly' : null"/>
+                            <input matInput placeholder="First name" formControlName="first_name" [(ngModel)]="user.first_name"
+                                [readonly]="value ? 'readonly' : null" />
                         </mat-form-field>
                         <mat-form-field>
-                            <input matInput placeholder="Last name" formControlName="last_name"
-                                   [(ngModel)]="user.last_name"
-                                   [readonly]="value ? 'readonly' : null"/>
+                            <input matInput placeholder="Last name" formControlName="last_name" [(ngModel)]="user.last_name"
+                                [readonly]="value ? 'readonly' : null" />
                         </mat-form-field>
                         <mat-form-field>
-                            <input matInput placeholder="Username" formControlName="username"
-                                   [(ngModel)]="user.username"
-                                   [readonly]="'readonly'"/>
+                            <input matInput placeholder="Username" formControlName="username" [(ngModel)]="user.username"
+                                   [readonly]="'readonly'" />
                         </mat-form-field>
                         <mat-form-field>
                             <input matInput placeholder="Email" formControlName="email" [(ngModel)]="user.email"
-                                   required [readonly]="value ? 'readonly' : null"/>
+                                required [readonly]="value ? 'readonly' : null" />
 
                         </mat-form-field>
                         <mat-form-field>
@@ -58,9 +54,8 @@
                         </mat-form-field>
                         <mat-form-field>
                             <span matPrefix>+880 &nbsp;</span>
-                            <input type="tel" matInput placeholder="Phone Number" formControlName="phone"
-                                   [(ngModel)]="user.phone"
-                                   [readonly]="value ? 'readonly' : null"/>
+                            <input type="tel" matInput placeholder="Phone Number" formControlName="phone" [(ngModel)]="user.phone"
+                                [readonly]="value ? 'readonly' : null" />
                             <mat-error>
                                 <span *ngIf="getUpdateProfileFormControl('phone').dirty&&getUpdateProfileFormControl('phone').hasError('required')"><i
                                         class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
@@ -68,19 +63,10 @@
                                         class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
                             </mat-error>
                         </mat-form-field>
-                        <div class="form-group">
-                            <label for="full_birth_date" class="col-lg-12 control-label">Birthday</label>
-                            <input [matDatepicker]="fullBirthDatePicker" id="full_birth_date"
-                                   placeholder="Choose a date">
-                            <mat-datepicker-toggle matSuffix [for]="fullBirthDatePicker"></mat-datepicker-toggle>
-                            <mat-datepicker #fullBirthDatePicker></mat-datepicker>
-                        </div>
                     </div>
                 </mat-card-content>
                 <div class="button-row {{ buttonShowHide }}">
-                    <button mat-button color="primary" type="submit" [hidden]="value"
-                            [disabled]="updateProfileForm.invalid">Update
-                    </button>
+                    <button mat-button color="primary" type="submit" [hidden]="value" [disabled]="updateProfileForm.invalid">Update</button>
                     <button mat-button color="warn" routerLink="/profile/orders">Cancel</button>
                 </div>
             </form>

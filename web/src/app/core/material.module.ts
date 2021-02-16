@@ -16,7 +16,7 @@ import {
     MatExpansionModule,
     MatGridListModule,
     MatInputModule,
-
+    MatFormFieldModule,
     MatListModule,
     MatNativeDateModule,
     MatPaginatorModule,
@@ -35,7 +35,7 @@ import {
     MatTooltipModule
 } from '@angular/material';
 import {BsDropdownModule, ModalModule, PopoverModule, RatingModule} from "ngx-bootstrap";
-import {MatFormFieldModule} from "@angular/material/form-field";
+import {MAT_DATE_LOCALE} from "@angular/material/core";
 
 
 @NgModule({
@@ -84,7 +84,10 @@ import {MatFormFieldModule} from "@angular/material/form-field";
         PopoverModule,
         ModalModule,
         BsDropdownModule
-    ]
+    ],
+    providers: [
+        {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    ],
 })
 export class MaterialModule {
 }

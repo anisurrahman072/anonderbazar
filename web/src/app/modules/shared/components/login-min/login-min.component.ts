@@ -13,7 +13,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 import {LoaderService} from "../../../../services/ui/loader.service";
-
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-front-login-min',
@@ -69,6 +69,9 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     loginSubmitting: boolean = false;
     signupSubmitting: boolean = false;
 
+    minBirthDate: string = '';
+    maxBirthDate: string = '';
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -82,6 +85,13 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private formValidatorService: FormValidatorService
     ) {
+        this.minBirthDate = moment().subtract(120, 'year').format('YYYY-MM-DD');
+        this.maxBirthDate = moment().subtract(5, 'year').format('YYYY-MM-DD');
+    }
+
+    //init the component
+    ngOnInit(): void {
+        this.currentYear = new Date().getFullYear();
         this.validateForm = this.fb.group({
             username: ['', [Validators.required]],
             password: ['', [Validators.required]],
@@ -96,13 +106,16 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.validateSignUpForm = this.fb.group({
             first_name: ['', [Validators.required]],
             last_name: ['', []],
-            phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [formValidatorService.phoneNumberUniqueValidator.bind(this)]],
+            phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [this.formValidatorService.phoneNumberUniqueValidator.bind(this)]],
             gender: ['', []],
-            birthYear: ['', []],
-            birthMonth: ['', []],
-            birthDay: ['', []],
+            full_birth_date: ['', []],
             password: ['', [Validators.required]],
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
+        });
+
+        this.getLoginModalInfo();
+        this.store.select<any>(fromStore.getCart).subscribe(result => {
+            this.currentCart = result;
         });
     }
 
@@ -167,14 +180,6 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         return this.validateSignUpForm.controls[type];
     }
 
-    //init the component
-    ngOnInit(): void {
-        this.currentYear = new Date().getFullYear();
-        this.getLoginModalInfo();
-        this.store.select<any>(fromStore.getCart).subscribe(result => {
-            this.currentCart = result;
-        });
-    }
 
     //Method called for login form submit
     submitForm($event, value) {
@@ -261,15 +266,22 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         return retVal;
     }
 
+    birthDateChangeHandler(event) {
+
+        console.log('birthDateChangeHandler', event.value);
+    }
+
     //Method called for sign up form submit
     submitSignupForm($event, value) {
-
-        console.log('submitSignupForm', value);
 
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }
 
+        let signupBirthDate = '';
+        if (value.full_birth_date) {
+            signupBirthDate = moment(value.full_birth_date).format('YYYY-MM-DD');
+        }
         let FormData1 = {
             username: value.phone ? value.phone : '',
             password: value.password ? value.password : '',
@@ -285,9 +297,11 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             national_id: "",
             father_name: "",
             mother_name: "",
-            dob: value.birthYear && value.birthMonth && value.birthDay ? value.birthYear + "-" + value.birthMonth + "-" + value.birthDay : '',
+            dob: signupBirthDate,
             active: 1
         };
+
+
         this.signupSubmitting = true;
         this.authService.signUp(FormData1)
             .subscribe(result => {
@@ -321,6 +335,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                 },
                 (err) => {
                     this.signupSubmitting = false;
+                    this._notify.error("Signup Failed.");
                     console.log(err);
                 }
             );
@@ -379,6 +394,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             }
         }
     }
+
 
     //Method to show sign up section in popup modal
 
