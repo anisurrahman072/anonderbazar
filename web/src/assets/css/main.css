@@ -495,7 +495,8 @@ section {
     background-clip: padding-box;
     border: 1px solid rgba(0, 0, 0, .15);
     border-radius: .25rem;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: 80vh;
 }
 
