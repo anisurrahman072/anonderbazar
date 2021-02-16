@@ -3775,7 +3775,9 @@ del {
 #toast-container > div {
     opacity: 1;
 }
-
+.cdk-overlay-container {
+    z-index: 19999;
+}
 /*
 .term-condition-modal.modal-lg {
     max-width: 800px;

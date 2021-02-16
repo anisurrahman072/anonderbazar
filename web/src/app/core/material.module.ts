@@ -4,17 +4,44 @@ import {
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule, MatSliderModule, MatAutocompleteModule, MatButtonToggleModule, MatCheckboxModule, MatChipsModule,
-    MatDatepickerModule, MatDividerModule, MatDialogModule, MatExpansionModule, MatGridListModule, MatInputModule,
-    MatListModule, MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
-    MatRadioModule, MatSlideToggleModule, MatSelectModule, MatRippleModule, MatSidenavModule, MatSnackBarModule,
-    MatSortModule, MatStepperModule, MatTableModule, MatTabsModule, MatTooltipModule
+    MatCardModule,
+    MatSliderModule,
+    MatAutocompleteModule,
+    MatButtonToggleModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatDividerModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatGridListModule,
+    MatInputModule,
+
+    MatListModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSlideToggleModule,
+    MatSelectModule,
+    MatRippleModule,
+    MatSidenavModule,
+    MatSnackBarModule,
+    MatSortModule,
+    MatStepperModule,
+    MatTableModule,
+    MatTabsModule,
+    MatTooltipModule
 } from '@angular/material';
 import {BsDropdownModule, ModalModule, PopoverModule, RatingModule} from "ngx-bootstrap";
+import {MatFormFieldModule} from "@angular/material/form-field";
+
 
 @NgModule({
-    imports: [RatingModule.forRoot(),PopoverModule.forRoot(),ModalModule.forRoot(),BsDropdownModule.forRoot()],
+    imports: [RatingModule.forRoot(), PopoverModule.forRoot(), ModalModule.forRoot(), BsDropdownModule.forRoot()],
     exports: [
+        MatFormFieldModule,
         MatButtonModule,
         MatMenuModule,
         MatToolbarModule,

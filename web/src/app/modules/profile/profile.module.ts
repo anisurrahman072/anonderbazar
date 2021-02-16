@@ -6,17 +6,17 @@ import {TabsModule} from "ngx-bootstrap";
 import {MaterialModule} from "../../core/material.module";
 import {FavouriteProductTabComponent} from "./components/favourite-product-tab/favourite-product-tab.component";
 import {OrderTabComponent} from "./components/order-tab/order-tab.component";
-import {OrderComponent} from "../shared/components/order/order.component";
-import {OrderInvoiceComponent} from "../shared/components/order-invoice/order-invoice.component";
-import {SuborderComponent} from "../shared/components/suborder/suborder.component";
-import {SuborderInvoiceComponent} from "../shared/components/suborder-invoice/suborder-invoice.component";
+import {OrderComponent} from "../shared/components";
+import {OrderInvoiceComponent} from "../shared/components";
+import {SuborderComponent} from "../shared/components";
+import {SuborderInvoiceComponent} from "../shared/components";
 import {ProfileComponent} from "./profile-core/profile.component";
-import {SharedModule} from "../shared/shared.module"; 
+import {SharedModule} from "../shared/shared.module";
 import {NgxChartsModule} from '@swimlane/ngx-charts';
-import { ProfileTabComponent } from './components/profile-tab/profile-tab.component';
-import { AddressTabComponent } from './components/address-tab/address-tab.component';
-import { MessagingTabComponent } from './components/messaging-tab/messaging-tab.component';
-import { ImageUploadModule } from "angular2-image-upload";
+import {ProfileTabComponent} from './components/profile-tab/profile-tab.component';
+import {AddressTabComponent} from './components/address-tab/address-tab.component';
+import {MessagingTabComponent} from './components/messaging-tab/messaging-tab.component';
+import {ImageUploadModule} from "angular2-image-upload";
 import {NgxPaginationModule} from "ngx-pagination";
 
 //init route path for profile module
@@ -24,14 +24,14 @@ const routes: Routes = [
     {
         path: '',
         component: ProfileComponent,
-        children: [ 
+        children: [
             {
                 path: 'orders', component: OrderTabComponent, data: {
-                    title: 'orders' 
+                    title: 'orders'
                 }
             },
-            
-            
+
+
             {
                 path: 'favourites', component: FavouriteProductTabComponent, data: {
                     title: 'favourites'
@@ -87,8 +87,11 @@ const routes: Routes = [
         ImageUploadModule.forRoot(),
         TabsModule.forRoot(), NgxChartsModule, NgxPaginationModule
     ],
-    declarations: [ProfileComponent, FavouriteProductTabComponent, OrderTabComponent, SuborderComponent, OrderComponent, ProfileTabComponent, AddressTabComponent, MessagingTabComponent],
-    
+    declarations: [
+        ProfileComponent, FavouriteProductTabComponent, OrderTabComponent, SuborderComponent, OrderComponent,
+        ProfileTabComponent, AddressTabComponent, MessagingTabComponent
+    ],
+
 })
 export class ProfileModule {
 }

@@ -282,3 +282,6 @@ input[type=email] {
         display: block;
     }
 }
+.mat-datepicker-content .mat-calendar {
+    z-index: 1299999999;
+}
