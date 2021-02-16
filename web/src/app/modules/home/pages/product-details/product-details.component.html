@@ -42,8 +42,8 @@
     </div>
 </div>
 <section id="coupon-product-banner-section" class="d-none d-sm-block"
-         *ngIf="data && data.is_coupon_product && data.coupon_banner_images.length > 0 && data.coupon_banner_images[0].banner_images.length > 0">
-    <coupon-product-banners [bannerImages]="data.coupon_banner_images[0].banner_images"
+         *ngIf="data && data.is_coupon_product && data.coupon_banner_image && data.coupon_banner_image.banner_images && data.coupon_banner_image.banner_images.length > 0">
+    <coupon-product-banners [bannerImages]="data.coupon_banner_image.banner_images"
                             style="width: 100%;"></coupon-product-banners>
 </section>
 <section id="productdetail-section" *ngIf="data" style="margin: 0;">

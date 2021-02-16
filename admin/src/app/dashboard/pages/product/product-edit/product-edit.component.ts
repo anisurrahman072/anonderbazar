@@ -47,7 +47,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     couponProductModalVisible: boolean = false;
     isSubmit: boolean = true;
 
-    /*  ckConfig = {
+    /*
+    ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
           { name: 'document', groups: ['mode', 'document', 'doctools'] },
@@ -214,15 +215,15 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                     }
                 }
 
-                if (this.data && this.data.coupon_banner_images) {
-                    for (let i = 0; i < this.data.coupon_banner_images.length; i++) {
-                        for (let j = 0; j < this.data.coupon_banner_images[i].banner_images.length; j++) {
+                if (this.data && this.data.coupon_banner_image) {
+                    if (this.data.coupon_banner_image.banner_images && Array.isArray(this.data.coupon_banner_image.banner_images) &&
+                        this.data.coupon_banner_image.banner_images.length > 0) {
+                        for (let j = 0; j < this.data.coupon_banner_image.banner_images.length; j++) {
                             this.ImageBannerFiles.push({
-                                name: this.IMAGE_ENDPOINT + this.data.coupon_banner_images[i].banner_images[j]
+                                name: this.IMAGE_ENDPOINT + this.data.coupon_banner_image.banner_images[j]
                             });
-                            this.ImageBannerFilesShow.push(this.IMAGE_ENDPOINT + this.data.coupon_banner_images[i].banner_images[j]);
+                            this.ImageBannerFilesShow.push(this.IMAGE_ENDPOINT + this.data.coupon_banner_image.banner_images[j]);
                         }
-
                     }
                 }
 

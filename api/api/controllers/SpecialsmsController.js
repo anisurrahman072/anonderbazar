@@ -1,4 +1,5 @@
 import SmsService from "../services/SmsService";
+import moment from "moment";
 
 const _ = require("lodash");
 /**
@@ -9,6 +10,103 @@ const _ = require("lodash");
  */
 
 module.exports = {
+  //Method called for getting all products
+  //Model models/Product.js
+  sendDelayedSMSTOOrders: async (req, res) => {
+    const orderIdsToExclude = [1, 2, 3, 4, 5, 7, 8, 9];
+    const orderCreatedAtDateMaxLimit = moment('2021-02-13 16:00:00');
+    try {
+      let orders = await Order.find({
+        where: {
+          status: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13],
+          deletedAt: null
+        },
+        sort: {
+          createdAt: 'ASC'
+        }
+      }).populate("couponProductCodes", {deletedAt: null})
+        .populate("suborders", {deletedAt: null})
+        .populate("user_id", {deletedAt: null})
+        .populate("payment", {deletedAt: null});
+
+      if (!(orders && Array.isArray(orders) && orders.length > 0)) {
+        return res.status(200).json([]);
+      }
+
+      orders = orders.filter(order => {
+        if (orderIdsToExclude.indexOf(order.id) !== -1) {
+          return false;
+        }
+        const createdAt = moment(order.createdAt);
+
+        if (createdAt.isAfter(orderCreatedAtDateMaxLimit)) {
+          return false;
+        }
+
+        if (!(order.couponProductCodes && order.couponProductCodes.length > 0)) {
+          return false;
+        }
+
+        if (order && order.payment &&
+          order.user_id && order.user_id.id &&
+          Array.isArray(order.payment) && order.payment.length > 0 && order.suborders &&
+          Array.isArray(order.suborders) && order.suborders.length > 0) {
+
+          const payment = order.payment[0];
+          if (payment.payment_type === 'SSLCommerce') {
+            const details = JSON.parse(order.payment[0].details);
+            if (details && details.tran_id) {
+              return true;
+            }
+          }
+
+        }
+        return false;
+      }).map(({suborders, user_id, payment, ...rest}) => {
+        return {
+          ...rest,
+          mobile: user_id.phone
+        };
+
+      });
+
+      let findOrderLen = orders.length;
+      let smsDetails = [];
+      for (let i = 0; i < findOrderLen; i++) {
+        const userMobile = orders[i].mobile;
+        const couponCodes = orders[i].couponProductCodes.map((couponObject) => {
+          return '1' + _.padStart(couponObject.id, 6, '0');
+        });
+
+        if (userMobile && couponCodes.length > 0) {
+          let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
+
+          if (couponCodes.length === 1) {
+            smsText += 'anonderbazar.com এ আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + couponCodes.join(',');
+          } else {
+            smsText += 'anonderbazar.com এ আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + couponCodes.join(',');
+          }
+          console.log('couponCodes-userMobile', orders[i].id, userMobile, smsText);
+          try {
+            SmsService.sendingOneSmsToOne([userMobile], smsText);
+            smsDetails.push({
+              orderId: orders[i].id,
+              couponCodes: couponCodes,
+              smsText: smsText,
+              mobile: userMobile
+            });
+          } catch (ee) {
+            console.log(ee);
+          }
+        }
+      }
+
+      return res.status(200).json(smsDetails);
+    } catch (err) {
+      console.log(err);
+      return res.badRequest(err.message);
+    }
+  },
   //Method called for getting all products
   //Model models/Product.js
   generateCouponCodes: async (req, res) => {
@@ -134,13 +232,11 @@ module.exports = {
           }
         }
       }
-
       return res.status(200).json(orders);
     } catch (err) {
       console.log(err);
       return res.badRequest(err.message);
     }
-
   },
   testSMS: async (req, res) => {
     try {

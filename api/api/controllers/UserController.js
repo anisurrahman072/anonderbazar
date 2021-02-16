@@ -7,7 +7,8 @@
 import {initLogPlaceholder, pagination} from "../../libs";
 import bcrypt from "bcryptjs";
 import {imageUploadConfig} from "../../libs/helper";
-
+import SmsService from "../services/SmsService";
+import EmailService from "../services/EmailService";
 
 module.exports = {
   //Method called for deleting a user data
@@ -23,7 +24,6 @@ module.exports = {
   //Method called for creating a user data
   //Model models/User.js
   create: function (req, res) {
-
 
     if (req.body.hasImage === "true") {
 
@@ -63,21 +63,47 @@ module.exports = {
   },
   //Method called for updating a user password data
   //Model models/User.js
-  updatepassword: function (req, res) {
-    bcrypt.hash(req.body.password, 10, function (err, hash) {
-      User.update({id: req.param("id")}, {password: hash}).exec(function (err, user) {
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-        if (user) {
-          EmailService.sendPasswordResetMail(user, req.body.password);
+  updatepassword: async (req, res) => {
 
-          res.json(200, {user: user, token: jwToken.issue({id: user.id})});
-        }
+    if (!req.param("id")) {
+      return res.badRequest('No file was uploaded');
+    }
+    try {
+      let hash = await bcrypt.hash(req.body.password, 10);
+      const user = await User.findOne({
+        id: req.param("id")
       });
-    });
 
+      console.log('hash-req.body.password', req.body.password, hash);
+      if (!user) {
+        return res.badRequest('User was not found!');
+      }
 
+      await User.update({id: user.id}, {password: hash});
+
+      if(user.phone){
+        try {
+          let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      if(user.email){
+        try {
+          EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
+
+    } catch (ee) {
+      console.log(ee);
+      return res.badRequest('There was a problem in processing the request.');
+    }
   },
   //Method called for updating a user data
   //Model models/User.js
@@ -148,18 +174,22 @@ module.exports = {
         _where.username = query.username;
       }
 
-      if (query.searchTermEmail) {
-        _where.email = {like: `%${query.searchTermEmail}%`};
+      if (query.searchTermPhone && query.searchTermEmail) {
+        _where.or = [
+          {phone: query.searchTermPhone},
+          {email: query.searchTermEmail},
+        ];
+      } else if (query.searchTermEmail) {
+        _where.email = query.searchTermEmail;
+      } else if (query.searchTermPhone) {
+        _where.phone = query.searchTermPhone;
       }
+
       if (query.searchTermName) {
         _where.or = [
           {first_name: {like: `%${query.searchTermName}%`}},
           {last_name: {like: `%${query.searchTermName}%`}}
         ];
-      }
-
-      if (query.searchTermPhone) {
-        _where.phone = {like: `%${query.searchTermPhone}%`};
       }
 
       if (query.gender) {

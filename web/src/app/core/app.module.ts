@@ -15,10 +15,10 @@ import {TabsModule} from 'ngx-bootstrap';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {effects, reducers} from "../state-management";
-import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
+/* import {JasperoAlertsModule} from "@jaspero/ng2-alerts";*/
 import {NgProgressModule} from '@ngx-progressbar/core';
 import {SimpleNotificationsModule} from 'angular2-notifications';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import {ServiceWorkerModule} from '@angular/service-worker';
 import {
     AreaService, AuthService, CartItemService, CartItemVariantService, CartService, CategoryProductService,
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
@@ -50,6 +50,19 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
 import {environment} from "../../environments/environment";
+import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
+// import {UiModule} from "../ui/ui.module";
+
+let imports = [];
+if (environment.production) {
+    imports = [
+        ServiceWorkerModule.register('ngsw-worker.js'),
+        /*BrowserPrebootModule.replayEvents(),*/
+        /*ServerPrebootModule.recordEvents({ appRoot: 'app-root' }),*/
+    ];
+} else {
+    imports = [];
+}
 
 @NgModule({
     declarations: [
@@ -61,15 +74,13 @@ import {environment} from "../../environments/environment";
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'my-app'}),
-        /*BrowserPrebootModule.replayEvents(),*/
         BrowserAnimationsModule,
+        PrebootModule.withConfig({appRoot: "app-root"}),
+        ...imports,
         HttpClientModule,
         MaterialModule,
         IonRangeSliderModule,
         AppRoutingModule,
-        /*ServerPrebootModule.recordEvents({ appRoot: 'app-root' }),*/
-        environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
-        PrebootModule.withConfig({appRoot: "app-root"}),
         FormsModule,
         ReactiveFormsModule,
         TabsModule.forRoot(),
@@ -78,10 +89,8 @@ import {environment} from "../../environments/environment";
             positionClass: 'toast-top-right',
             preventDuplicates: true,
         }),
-        JasperoAlertsModule,
         NgProgressModule.forRoot(),
         SimpleNotificationsModule.forRoot(),
-
         StoreModule.forRoot({}, {metaReducers}),
         EffectsModule.forRoot(effects),
 
@@ -89,11 +98,11 @@ import {environment} from "../../environments/environment";
         EffectsModule.forFeature(effects),
 
         StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
-
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
         SharedModule,
         SwiperModule,
+        JasperoAlertsModule,
     ],
     providers: [{
         provide: ErrorHandler,

@@ -1,5 +1,6 @@
 import moment from "moment";
 import {bangladeshSMSConfig, sslCommerzSMSConfig} from "../../config/softbd";
+import {makeUniqueId} from "../../libs/helper";
 
 const axios = require('axios');
 /*
@@ -19,7 +20,7 @@ const axios = require('axios');
 
 module.exports = {
 
-  sendingOneSmsToOne: function (contacts, message) {
+  sendingOneSmsToOne:  (contacts, message) => {
     const contactTexts = contacts.map(function (contact) {
       if (contact.charAt(0) === '+') {
         return contact.substr(1)
@@ -29,10 +30,7 @@ module.exports = {
       return contact
     });
 
-    const {v4: uuidv4} = require('uuid');
-
-    const csmsId = uuidv4();
-    console.log('csmsId', csmsId);
+    const csmsId = makeUniqueId(18);
 
     const payload = {
       ...sslCommerzSMSConfig,
@@ -46,13 +44,16 @@ module.exports = {
       'Accept': 'application/json'
     })
       .then(function (response) {
-        console.log(response);
+        console.log(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error.data);
       });
   },
-  sendingOneMessageToMany: function (contacts, message) {
+  sendingOneMessageToMany:  (contacts, message) => {
+    this.sendingOneSmsToOne(contacts, message);
+  },
+  sendingOneMessageToManyDeprecated: function (contacts, message) {
 
     const contactTexts = contacts.map(function (contact) {
       if (contact.charAt(0) === '+') {

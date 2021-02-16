@@ -16,6 +16,7 @@ import {UIService} from "../../../services/ui/ui.service";
     styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
     _isSpinning: boolean = false;
     loginServerError = {
         show: false,
@@ -33,8 +34,8 @@ export class LoginComponent implements OnInit {
     }
 
     validateForm: FormGroup;
-    //Event method for submitting the form
 
+    //Event method for submitting the form
     submitForm = ($event, value) => {
         this._isSpinning = true;
 
@@ -76,8 +77,7 @@ export class LoginComponent implements OnInit {
 
     }
 
-//Event method for resetting the form
-
+    //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
         this.validateForm.reset();
@@ -86,14 +86,12 @@ export class LoginComponent implements OnInit {
         }
     }
 
-//Event method for setting up form in validation
-
+    //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
 
     //Event method for user search for validation of user existance
-
     userNameServerValidator = (control: FormControl) => {
         return Observable.create(function (observer) {
             setTimeout(() => {

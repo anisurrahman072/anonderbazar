@@ -89,3 +89,11 @@
     text-transform: capitalize;
     margin-left: 35px;
 }
+.item-table tbody tr td {
+    text-align: center;
+}
+.item-table tbody tr th.price-type,
+.item-table tbody tr td.qty-type,
+.item-table tbody tr td.price-type {
+    text-align: right;
+}

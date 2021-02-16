@@ -85,7 +85,7 @@ module.exports = {
       via: 'product_id'
     },
     coupon_banner_images: {
-      collection: 'productCouponBannerImage',
+      collection: 'ProductCouponBannerImage',
       via: 'product_id'
     },
     product_details: {

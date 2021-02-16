@@ -12,6 +12,7 @@ import {UserService} from '../../../../services';
 import {Subscription} from 'rxjs/Subscription';
 import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
+import {LoaderService} from "../../../../services/ui/loader.service";
 
 
 @Component({
@@ -20,6 +21,7 @@ import {FormValidatorService} from "../../../../services/validator/form-validato
     styleUrls: ['./login.component.scss']
 })
 export class LoginMinComponent implements OnInit, OnDestroy {
+    @ViewChild('autoShownModal') autoShownModal: ModalDirective;
     private currentCart: any;
     private isUnique = true;
     currentYear: number;
@@ -48,14 +50,9 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'November', value: '11'},
         {label: 'December', value: '12'},
     ];
-
-    ngOnDestroy(): void {
-        this.d ? this.d.unsubscribe() : null;
-    }
+    birthMonth: number;
 
     isModalShown$: Observable<boolean>;
-
-    @ViewChild('autoShownModal') autoShownModal: ModalDirective;
 
     validateForm: FormGroup;
 
@@ -68,9 +65,14 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     private d: Subscription;
     loginErrorMessage;
 
+    forgetPaswordSubmitting: boolean = false;
+    loginSubmitting: boolean = false;
+    signupSubmitting: boolean = false;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        public loaderService: LoaderService,
         private loginInfoService: LoginModalService,
         private authService: AuthService,
         private store: Store<fromStore.HomeState>,
@@ -87,7 +89,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         });
 
         this.validateForgotForm = this.fb.group({
-            email: ['', [Validators.required]],
+            email: ['', []],
             phone: ['', [Validators.required]],
         });
 
@@ -102,6 +104,14 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             password: ['', [Validators.required]],
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
         });
+    }
+
+    ngOnDestroy(): void {
+        this.d ? this.d.unsubscribe() : null;
+    }
+
+    TestForm(event: any) {
+        console.log('this.validateForgotForm', this.validateForgotForm);
     }
 
     //Method called for confirm update validator
@@ -172,6 +182,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             this.validateForm.controls[key].markAsDirty();
         }
 
+        this.loginSubmitting = true;
         this.authService.login(value.username, value.password).subscribe(
             async result => {
                 if (result && result.token) {
@@ -187,35 +198,54 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
                     this.setUpUserData();
                     this.loginInfoService.userLoggedIn(true);
-                    this._notify.success("Login Successfull.");
+                    this._notify.success("Login Successful.");
+                    this.loginSubmitting = false;
                 } else {
+                    this._notify.error("Login Failed.");
                 }
             },
             err => {
+                this.loginSubmitting = false;
                 this.loginErrorMessage = err.error.message;
             }
         );
     }
 
     //Method called for forgot form submit
-    submitForgotForm($event, value) {
+    submitForgotPasswordForm($event, value) {
+
         for (const key in this.validateForgotForm.controls) {
             this.validateForgotForm.controls[key].markAsDirty();
         }
-        if (value.email && value.phone) {
-            var email = '';
+        if (value.email || value.phone) {
+            this.forgetPaswordSubmitting = true;
             this.userService.checkEmailPhone(value.email, value.phone).subscribe(result => {
                 let user = result.data[0];
+                console.log('submitForgotPasswordForm-user', user);
                 if (user) {
                     let resetpassword = this.generatePassword();
                     this.userService.updatepassword(user.id, {password: resetpassword})
                         .subscribe(arg => {
+                            console.log('submitForgotPasswordForm-user-arg', arg);
+                            this.forgetPaswordSubmitting = false;
+                            this._notify.success('Success', 'Your password has been updated. Please check your email or sms.');
+                            this.validateForgotForm.reset();
+
                             if (arg) {
                                 this.showLogin();
-
                             }
+                        }, (err) => {
+                            this.forgetPaswordSubmitting = false;
+                            console.log('submitForgotPasswordForm', err);
                         });
+                } else {
+                    this.forgetPaswordSubmitting = false;
+                    this._notify.error('User was not found!', 'User with your provided information was not found!');
                 }
+            }, (err) => {
+                this.forgetPaswordSubmitting = false;
+                console.log('submitForgotPasswordForm', err);
+
             });
         }
     }
@@ -258,6 +288,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             dob: value.birthYear && value.birthMonth && value.birthDay ? value.birthYear + "-" + value.birthMonth + "-" + value.birthDay : '',
             active: 1
         };
+        this.signupSubmitting = true;
         this.authService.signUp(FormData1)
             .subscribe(result => {
                     console.log('result', result);
@@ -276,15 +307,20 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                             this.setUpUserData();
 
                             this.loginInfoService.userLoggedIn(true);
-                            this._notify.success("Signup Successfull.");
+                            this._notify.success("Signup Successful.");
                         } else {
+                            this._notify.error("Login Failed.");
                         }
+                        this.signupSubmitting = false;
                         return result;
                     } else {
+                        this.signupSubmitting = false;
+                        this._notify.error("Signup Failed.");
                         return ("Error happened")
                     }
                 },
                 (err) => {
+                    this.signupSubmitting = false;
                     console.log(err);
                 }
             );
@@ -345,6 +381,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     }
 
     //Method to show sign up section in popup modal
+
     showSignUp() {
         this.register = true;
         this.loginErrorMessage = '';

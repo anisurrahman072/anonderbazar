@@ -28,11 +28,11 @@
                                           (ngSubmit)="submitForm($event,validateForm.value)">
                                         <div class="row">
                                             <div class="form-group w-100"
-                                                 [ngClass]="{'has-error': getFormControl('username').dirty&&getFormControl('username').hasError('required'), 'has-success':getFormControl('username').dirty&&!getFormControl('username').hasError('required') }">
-                                                <label for="first_name" class="col-lg-12 control-label">Phone
+                                                 [ngClass]="{'has-error': getFormControl('username').dirty && getFormControl('username').hasError('required'), 'has-success':getFormControl('username').dirty&&!getFormControl('username').hasError('required') }">
+                                                <label for="username" class="col-lg-12 control-label">Phone
                                                     Number</label>
                                                 <div class="col-lg-12">
-                                                    <input placeholder="Phone Number" class="form-control"
+                                                    <input placeholder="Phone Number" class="form-control" id="username"
                                                            formControlName="username" [autofocus]="true" required>
                                                     <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                     <i class='fa fa-exclamation-circle feedback-icon-error'></i>
@@ -47,10 +47,10 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group w-100"
-                                                 [ngClass]="{'has-error': getFormControl('password').dirty&&getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
-                                                <label for="password" class="col-lg-12 control-label">Password</label>
+                                                 [ngClass]="{'has-error': getFormControl('password').dirty && getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
+                                                <label for="password_login" class="col-lg-12 control-label">Password</label>
                                                 <div class="col-lg-12">
-                                                    <input placeholder="Password" class="form-control"
+                                                    <input placeholder="Password" class="form-control" id="password_login"
                                                            formControlName="password" type="password" required>
                                                     <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                     <i class='fa fa-exclamation-circle feedback-icon-error'></i>
@@ -71,10 +71,16 @@
                                             <div class="form-group signupbtn col-md-12">
                                                 <input id="form_botcheck-login" name="form_botcheck"
                                                        class="form-control" type="hidden" value="">
-                                                <button type="sign-up" class="btn btn-flat"
+                                                <button type="submit" class="btn btn-flat" *ngIf="!loginSubmitting; else loadingContentLogin"
                                                         [disabled]="!validateForm.valid"
                                                         data-loading-text="Please wait">Sign In
                                                 </button>
+                                                <ng-template #loadingContentLogin>
+                                                    <button disabled type="button"
+                                                            style="color: #333333; font-weight: bold;" class="btn btn-flat">
+                                                        lease wait
+                                                    </button>
+                                                </ng-template>
                                                 <p>
                                                     Create an account?<a class="btn-link" style="color: red"
                                                                          (click)="showSignUp()">Sign Up</a>
@@ -105,6 +111,7 @@
                                                         Name</label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your first name" class="form-control"
+                                                               id="first_name"
                                                                formControlName="first_name" [autofocus]="true" required>
                                                         <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                         <i class='fa fa-exclamation-circle feedback-icon-error'></i>
@@ -121,6 +128,7 @@
                                                         Name</label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your last name" class="form-control"
+                                                               id="last_name"
                                                                formControlName="last_name" [autofocus]="true">
                                                         <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                         <i class='fa fa-exclamation-circle feedback-icon-error'></i>
@@ -140,7 +148,7 @@
                                                     <label for="phone" class="col-lg-12 control-label">Phone
                                                         Number</label>
                                                     <div class="col-lg-12">
-                                                        <input placeholder="Enter your phone number"
+                                                        <input placeholder="Enter your phone number" id="phone"
                                                                class="form-control" formControlName="phone"
                                                                [autofocus]="true" required ngModel
                                                                (ngModelChange)="updatePhoneValidator()">
@@ -168,9 +176,10 @@
                                                     <label for="gender" class="col-lg-12 control-label">Gender</label>
                                                     <div class="col-lg-12">
                                                         <div class="gender">
-                                                            <select name="gender" class="form-control"
+                                                            <select name="gender" class="form-control" id="gender"
                                                                     formControlName="gender">
-                                                                <option value="" [selected]="true">Select Gender</option>
+                                                                <option value="" [selected]="true">Select Gender
+                                                                </option>
                                                                 <option *ngFor="let option of genderSearchOptions"
                                                                         [ngValue]="option.value">
                                                                     {{option.label}}
@@ -195,6 +204,7 @@
                                                            class="col-lg-12 control-label">Password</label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your password" class="form-control"
+                                                               id="password"
                                                                formControlName="password" type="password" required
                                                                ngModel
                                                                (ngModelChange)="updateConfirmValidator()">
@@ -215,6 +225,7 @@
                                                         Password</label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your password again"
+                                                               id="confirmPassword"
                                                                class="form-control" formControlName="confirmPassword"
                                                                type="password" required>
                                                         <i class='fa fa-check-circle-o feedback-icon-success'></i>
@@ -236,7 +247,8 @@
                                                     <label for="inputBirthday">Birthday</label>
                                                     <div class="form-row">
                                                         <div class="form-group col-md-4">
-                                                            <select id="birthYear" formControlName="birthYear"
+                                                            <select formControlName="birthYear"
+                                                                    id="inputBirthday"
                                                                     class="form-control">
                                                                 <option value="" [selected]="true">Select Year</option>
                                                                 <option *ngFor="let year of yearList(70); let i = index"
@@ -298,10 +310,18 @@
                                         <div class="form-group signupbtn d-flex col-md-12">
                                             <input id="form_botcheck-register" name="form_botcheck" class="form-control"
                                                    type="hidden" value="">
-                                            <button type="sign-up" class="btn btn-flat" data-loading-text="Please wait"
+                                            <button type="submit" class="btn btn-flat" data-loading-text="Please wait"
+                                                    *ngIf="!signupSubmitting; else loadingContentSignup"
                                                     [disabled]="validateSignUpForm.invalid">Sign Up
                                             </button>
-                                            <p>Already have an account?<a (click)="register =false" style="color: red">Sign In</a></p>
+                                            <ng-template #loadingContentSignup>
+                                                <button disabled type="button"
+                                                        style="color: #333333; font-weight: bold;" class="btn btn-flat">
+                                                    lease wait
+                                                </button>
+                                            </ng-template>
+                                            <p>Already have an account?<a (click)="register =false" style="color: red">Sign
+                                                In</a></p>
                                         </div>
                                     </form>
                                 </div>
@@ -310,7 +330,7 @@
 
                     </ng-container>
                     <ng-container *ngIf="isForgot">
-                        <section id="signup-section" style="padding: 0px;">
+                        <section id="signup-section" style="padding: 0;">
                             <div class="col-md-12">
                                 <div class="mb-3 mx-lg-auto w-25">
                                     <img src="assets/images/logo.png" alt="">
@@ -320,34 +340,35 @@
                                      role="alert">
                                     {{loginErrorMessage}}
                                 </div>
-
                                 <div class="signup-form">
                                     <form class="form-horizontal m-t-50" [formGroup]="validateForgotForm"
-                                          (ngSubmit)="submitForgotForm($event,validateForgotForm.value)">
+                                          (ngSubmit)="submitForgotPasswordForm($event,validateForgotForm.value)">
                                         <div class="row">
                                             <div class="form-group w-100"
-                                                 [ngClass]="{'has-error': getForgotFormControl('email').dirty&&getForgotFormControl('email').hasError('required'), 'has-success':getForgotFormControl('email').dirty&&!getForgotFormControl('email').hasError('required') }">
-                                                <label for="first_name" class="col-lg-12 control-label">Email</label>
+                                                 [ngClass]="{'has-success':getForgotFormControl('email').dirty }">
+                                                <label for="email" class="col-lg-12 control-label">Email</label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Enter Your Email" class="form-control"
-                                                           formControlName="email" [autofocus]="true" required>
+                                                           id="email"
+                                                           formControlName="email" [autofocus]="true">
                                                     <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                     <i class='fa fa-exclamation-circle feedback-icon-error'></i>
-                                                    <div class="validation-feedback">
-                                                    <span>
-                                                        <i class='fa fa-exclamation-circle'></i> Enter Your Email
-                                                    </span>
-
-                                                    </div>
+                                                    <!--                                                    <div class="validation-feedback">
+                                                                                                        <span>
+                                                                                                            <i class='fa fa-exclamation-circle'></i> Enter Your Email
+                                                                                                        </span>
+                                                                                                        </div>-->
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group w-100"
-                                                 [ngClass]="{'has-error': getForgotFormControl('phone').dirty&&getForgotFormControl('phone').hasError('required'), 'has-success':getForgotFormControl('phone').dirty&&!getForgotFormControl('phone').hasError('required') }">
-                                                <label for="phone" class="col-lg-12 control-label">Phone</label>
+                                                 [ngClass]="{'has-error': getForgotFormControl('phone').dirty && getForgotFormControl('phone').hasError('required'), 'has-success':getForgotFormControl('phone').dirty&&!getForgotFormControl('phone').hasError('required') }">
+                                                <label for="phone-forget-password"
+                                                       class="col-lg-12 control-label">Phone</label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Enter Phone Number" class="form-control"
+                                                           id="phone-forget-password"
                                                            formControlName="phone" required>
                                                     <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                     <i class='fa fa-exclamation-circle feedback-icon-error'></i>
@@ -355,20 +376,26 @@
                                                 <span>
                                                     <i class='fa fa-exclamation-circle'></i> Enter Phone Number
                                                 </span>
-
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group signupbtn col-md-12">
                                                 <input id="form_botcheck" name="form_botcheck" class="form-control"
                                                        type="hidden" value="">
-                                                <button type="sign-up" class="btn btn-flat"
+                                                <button *ngIf="!forgetPaswordSubmitting; else loadingContentForgetPass"
+                                                        type="submit" class="btn btn-flat"
                                                         [disabled]="!validateForgotForm.valid"
                                                         data-loading-text="Please wait">Send
                                                 </button>
+                                                <ng-template #loadingContentForgetPass>
+                                                    <button disabled type="button"
+                                                            style="color: #333333; font-weight: bold;" class="btn btn-flat">
+                                                        lease wait
+                                                    </button>
+                                                </ng-template>
                                                 <p>
-                                                    Create an account?<a class="btn-link" style="color: red"
-                                                                         (click)="showLogin()">Sign In</a>
+                                                    Create an account? <a class="btn-link" style="color: red"
+                                                                          (click)="showLogin()">Sign In</a>
                                                 </p>
                                             </div>
                                         </div>

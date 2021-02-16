@@ -257,8 +257,6 @@ export class OrderComponent implements OnInit {
 
     dowonloadCSV(data) {
 
-        console.log('dowonloadCSV-data', data);
-
         if (!(Array.isArray(data) && data.length > 0)) {
             return false;
         }
@@ -285,7 +283,6 @@ export class OrderComponent implements OnInit {
                     }
                 }
             }
-            console.log('element.suborders.', element.suborders);
 
             element.suborders.filter(suborder => {
                 return (Array.isArray(suborder.items) && suborder.items.length > 0);
@@ -304,7 +301,7 @@ export class OrderComponent implements OnInit {
                         'Vandor Phone': (item.warehouse_id) ? item.warehouse_id.phone : 'N/a',
                         'Customer Name': element.user_id.first_name + ' ' + element.user_id.last_name,
                         'Customer Phone': (element.user_id) ? element.user_id.phone : 'N/a',
-                        'Product Description': item.product_id.name + ' | ' + varients,
+                        'Product Description': '(' + item.product_id.code + ') | ' + item.product_id.name + ' | ' + varients,
                         'Price': item.product_id.price,
                         'Quantity': item.product_quantity,
                         'Total': item.product_total_price,
@@ -402,10 +399,8 @@ export class OrderComponent implements OnInit {
     //Event method for submitting the form
     submitForm = ($event, value) => {
         let newlist = this.storeOrderIds;
-        console.log('newlist-before', newlist);
         this.isProductVisible = false;
         this.dowonloadCSV(newlist);
-        console.log('newlist-after', newlist);
     }
 
     selectAllCsv($event) {

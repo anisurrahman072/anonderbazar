@@ -65,8 +65,8 @@ export class HeaderComponent implements OnInit {
     filteredProducts: Observable<Product[]>;
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    ADMIN_ENDPOINT = AppSettings.API_ENDPOINT;
-    ADMIN_ENDPOINT1 = AppSettings.API_ENDPOINT;
+    ADMIN_ENDPOINT = AppSettings.ADMIN_ENDPOINT;
+    ADMIN_ENDPOINT1 = AppSettings.ADMIN_ENDPOINT;
     user_id: any;
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
