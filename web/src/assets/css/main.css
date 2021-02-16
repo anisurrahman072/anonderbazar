@@ -495,6 +495,8 @@ section {
     background-clip: padding-box;
     border: 1px solid rgba(0, 0, 0, .15);
     border-radius: .25rem;
+    overflow-y: scroll;
+    height: 80vh;
 }
 
 .navbar {
@@ -505,8 +507,12 @@ section {
     display: block !important;
 }
 
+.text-th {
+    padding-bottom: 10px !important;
+}
+
 .dropdown-menu ul li {
-    padding: 5px 10px;
+    padding: 0px 0px;
     color: #726E6E;
     font-weight: 500;
 }
@@ -515,58 +521,17 @@ section {
     color: #000000;
     font-weight: 600;
     font-size: 16px;
+
 }
 
 .dropdown-img p {
     margin-top: 16px;
     font-weight: 500;
 }
-
-
-/*.navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item:before{
-  display: none;
-}
-.navbar-expand-lg .navbar-nav .dropdown-menu a{
-  transition: all 0.5s ease-in-out;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  color: #000000 !important;
-}
-.navbar-expand-lg .navbar-nav .dropdown-menu{
-  left: 0px;
-  top: 54px;
-  border-radius: 0px;
-}
-.dropdown-menu{
-  transition: all 0.5s ease-in-out;
-}
-.dropdown-menu .dropdown-item{
-  font-size: 14px;
-}*/
-
 .modal-dialog {
     max-width: 650px !important;
     margin: 11.75rem auto;
 }
-
-/*chart start*/
-/*.cart-overlay{
-  background-color: #000000;
-}
-.cart-details{
-  width: 650px;
-  height: 852px;
-  position: absolute;
-  background-color: #ffffff;
-  top: 180px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  padding: 20px;
-}*/
-
 
 .header_chart .widget-cart button {
     background: transparent;
@@ -677,15 +642,6 @@ section {
     font-size: 24px;
 }
 
-/*chart end*/
-
-/*====================================
- header - end
-====================================*/
-
-/*====================================
-banner - start
-====================================*/
 #banner-section {
     padding: 30px 0px;
 }
@@ -805,12 +761,6 @@ banner - start
 .carousel.slide {
     height: 100% !important;
 }
-
-/* .left,
-.right{
-  display: none !important;
-} */
-
 .banner-serv a {
     text-decoration: underline;
     color: #ED1C24;
