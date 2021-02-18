@@ -107,6 +107,16 @@
                               *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
                     </a>
                 </button>
+                    <span *ngIf="(currentUser$|async); else log_in">
+                        <a routerLink="/profile/orders">
+                        My Account
+                        </a>
+                    </span>
+                    <ng-template #log_in>
+                            <a type="button" (click)="showLoginModal()">
+                            <i class="fa fa-user-circle" id="user-icon"></i>
+                            </a>
+                    </ng-template>
             </div>
             <ul>
                 <li>

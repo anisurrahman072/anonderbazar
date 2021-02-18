@@ -135,6 +135,10 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.brandService.getAll().subscribe((result: any) => {
             this.brandSearchOptions = result;
         });
+
+        this.categoryProductService.getAll().subscribe((result: any) => {
+            this.categorySearchOptions = result;
+        })
     }
 
     // Method for close modals
