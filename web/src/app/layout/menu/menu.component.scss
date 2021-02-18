@@ -284,3 +284,9 @@ button {
 .responsive-menu li:hover .dropdown-menu_burger_menu {
     display: block;
 }
+/*for mobile menu*/
+#user-icon {
+    font-size: 18px;
+    display: inline-block;
+    transform: translateY(4px);
+}

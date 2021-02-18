@@ -178,6 +178,7 @@ export class CourierOrderListComponent implements OnInit {
         this.isVisible = false;
         this.getCourierSettingsData();
         this.resetAllFilter();
+        this._isSpinning = false;
       },
       error => {
         this._isSpinning = false;

@@ -12,6 +12,8 @@ import {FilterUiService} from "../../services/ui/filterUi.service";
 import {BrandService} from "../../services";
 import {FavouriteProduct} from '../../models';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
+import {LoginModalService} from '../../services/ui/loginModal.service';
+
 
 @Component({
     selector: "app-menu",
@@ -51,6 +53,7 @@ export class MenuComponent implements OnInit {
         private filterUIService: FilterUiService,
         private brandService: BrandService,
         private shoppingModalService: ShoppingModalService,
+        private loginModalService: LoginModalService,
     ) {
         this.isDisplay = false;
     }
@@ -160,6 +163,11 @@ export class MenuComponent implements OnInit {
                 brand: brand.id
             }
         });
+    }
+
+    //Event method for showing login modal
+    showLoginModal() {
+        this.loginModalService.showLoginModal(true);
     }
 
     //Event method for showing shopping cart

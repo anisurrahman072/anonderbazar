@@ -482,7 +482,7 @@ section {
     top: 100%;
     left: 0;
     z-index: 1000;
-    display: none;
+    display: block;
     float: left;
     min-width: 10rem;
     padding: 30px;
@@ -495,7 +495,8 @@ section {
     background-clip: padding-box;
     border: 1px solid rgba(0, 0, 0, .15);
     border-radius: .25rem;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: 80vh;
 }
 
