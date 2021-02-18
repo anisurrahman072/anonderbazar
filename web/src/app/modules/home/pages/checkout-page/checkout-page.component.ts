@@ -81,7 +81,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 private store: Store<fromStore.HomeState>,
                 private cartItemService: CartItemService,
                 private cartService: CartService,
-                // public _progress: NgProgress,
                 private toastr: ToastrService,
                 public loaderService: LoaderService) {
 
@@ -636,6 +635,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
             });
+            window.scroll(0, 0);
             return false;
         }
         if (this.checkoutForm.invalid && !this.noShippingCharge) {
@@ -646,6 +646,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             window.scroll(0, 0);
             return false;
         }
+        window.scroll(0, 0);
         this.showPayment = true
     }
 

@@ -8,23 +8,24 @@ import {UIService} from "../../../../services/ui/ui.service";
 import {ProductService} from "../../../../services/product.service";
 
 class ProductBulk {
+    category: string = "";
+    warehouse_id: string = "";
     name: string = "";
     code: string = "";
+    product_details: string = "";
+    brand_id: string = "";
     price: number = 0;
+    promo_price: number = 0;
     vendor_price: number = 0;
     quantity: number = 0;
-    min_unit: number = 0;
-    alert_quantity: number = 0;
     weight: number = 0;
-    type_id: string = "0";
-    category_id: string = "0";
-    subcategory_id: string = "0";
-    brand_id: string = "0";
-    image: string = "";
     tag: string = "";
-    product_details: string = "";
-    approval_status: string = "2";
-    warehouse_id: string = "0";
+    image: string = "";
+    image1: string = "";
+    image2: string = "";
+    image3: string = "";
+    image4: string = "";
+    image5: string = "";
     status: string = "0";
     created_by: string = "0";
 }
@@ -55,6 +56,7 @@ export class BulkUploadComponent implements OnInit {
 
     isLoading: boolean = false;
 
+    isAdminUser: boolean = false;
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -74,7 +76,10 @@ export class BulkUploadComponent implements OnInit {
         });
 
         this.currentUser = this.authService.getCurrentUser();
-        console.log('this.currentUser', this.currentUser)
+
+        if (this.currentUser.group_id === 'admin') {
+            this.isAdminUser = true;
+        }
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
@@ -93,27 +98,33 @@ export class BulkUploadComponent implements OnInit {
             const bstr: string = e.target.result;
             const data = <any[]>this.excelSrv.importFromFile(bstr);
 
-            const header: string[] = Object.getOwnPropertyNames(new ProductBulk());
+            const productOb = new ProductBulk();
+
+            if (this.currentUser.group_id === 'owner') {
+                delete productOb.warehouse_id;
+            }
+            const header: string[] = Object.getOwnPropertyNames(productOb);
+            console.log('header', header);
+
             const importedData = data.slice(1);
             this.importProducts = importedData.map(arr => {
                 const obj = {};
                 for (let i = 0; i < header.length; i++) {
                     const k = header[i];
-                    if (k === 'approval_status') {
-                        obj[k] = "2";
-                    } else if (k === 'warehouse_id') {
-                        obj[k] = this.currentUser.warehouse.id;
-                    } else if (k === 'status') {
+                    if (k === 'status') {
                         obj[k] = this.status;
                     } else if (k === 'created_by') {
                         obj[k] = this.currentUser.id;
                     } else {
                         obj[k] = arr[i];
                     }
-
+                }
+                if (this.currentUser.group_id === 'owner') {
+                    obj['warehouse_id'] = this.currentUser.warehouse.id;
                 }
                 return <ProductBulk>obj;
-            })
+            });
+
             console.log('this.importProducts', this.importProducts)
             this.total = this.importProducts.length;
         };
@@ -126,7 +137,7 @@ export class BulkUploadComponent implements OnInit {
         this._isSpinning = true;
         console.log('this.importProducts', this.importProducts)
         this.fileInputVariable.nativeElement.value = "";
-        return this.productService.submitDataForBulkUpload(this.importProducts, isApproved).subscribe((result: any) => {
+        return this.productService.submitDataForBulkUpload(this.importProducts, this.currentUser.id, isApproved).subscribe((result: any) => {
             console.log('result', result)
             this._isSpinning = false;
             if (result.success) {
@@ -144,7 +155,7 @@ export class BulkUploadComponent implements OnInit {
 
     downloadExcel() {
         this.isLoading = true;
-        return this.productService.getGeneratedExcelFile().subscribe((result: any) => {
+        return this.productService.getGeneratedExcelFile(this.currentUser.id).subscribe((result: any) => {
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
             const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});

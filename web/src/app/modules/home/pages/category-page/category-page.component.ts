@@ -543,6 +543,7 @@ export class CategoryPageComponent implements OnInit {
                 0
             )
             .subscribe(result => {
+                console.log('filter_search_result-result', result);
                 this.allProductsByCategory = result.data;
                 this.loaderService.hideLoader();
             }, (err) => {
