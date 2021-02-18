@@ -116,6 +116,7 @@ export class CourierPriceListComponent implements OnInit {
         }
         this.isVisible = false;
         this.getCourierPriceData();
+        this._isSpinning = false;
       },
       error => {
         this._isSpinning = false;
@@ -166,6 +167,7 @@ export class CourierPriceListComponent implements OnInit {
         }
         this.isEditVisible = false;
         this.getCourierPriceData();
+        this._isSpinning = false;
       },
       error => {
         this._isSpinning = false;
