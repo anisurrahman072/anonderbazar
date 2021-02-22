@@ -1,3 +1,8 @@
+.empty{
+  filter: grayscale(100%);
+  cursor: not-allowed;
+}
+
 .main-container {
   padding: 25px 0 90px 0;
   overflow: hidden;
