@@ -183,7 +183,7 @@ button {
 }
 
 section {
-    padding: 60px 0px;
+    padding: 0px 0px;
 }
 
 /*====================================
@@ -2562,7 +2562,6 @@ footer - start
 
 .bagitem-1 {
     display: flex;
-    padding-bottom: 20px;
     margin-bottom: 20px;
     border-bottom: 1px solid #D4D4D4;
 }

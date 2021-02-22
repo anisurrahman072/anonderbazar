@@ -766,3 +766,16 @@ table.variations-table tbody {
   list-style-type: none;
   margin-bottom: 5px;
 }
+
+#universal {
+  margin-top: 150px;
+}
+
+@media screen and (max-width: 768px) {
+  #universal {
+    margin-top: 0;
+  }
+  #add-cartbtn {
+    margin-left: 20px;
+  }
+}

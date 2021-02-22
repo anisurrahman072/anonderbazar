@@ -743,7 +743,7 @@
 
     .mobile-menu .widget-cart {
         display: inline-block;
-        margin-left: 20%;
+        margin-left: 2%;
         margin-bottom: 20px;
     }
 
@@ -1276,7 +1276,7 @@
     }
 
     .mobile-menu .widget-cart {
-        margin-left: 15%;
+        margin-left: 1%;
     }
 
     nav label {
@@ -1406,7 +1406,7 @@
     }
 
     .mobile-menu .widget-cart {
-        margin-left: 10%;
+        margin-left: 1%;
     }
 
     .widget-cart a img {
@@ -1499,7 +1499,7 @@
     }
 
     .mobile-menu .widget-cart {
-        margin-left: 5%;
+        margin-left: 1%;
     }
 
     .productimage-wrapper {
