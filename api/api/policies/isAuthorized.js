@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
 
   if (req.headers && req.headers.authorization) {
     var parts = req.headers.authorization.split(' ');
-    if (parts.length == 2) {
+    if (parts.length === 2) {
       var scheme = parts[0],
         credentials = parts[1];
 

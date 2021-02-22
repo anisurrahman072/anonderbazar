@@ -1,8 +1,8 @@
 module.exports = function(req, res, next) {
-    if (req.method == 'GET') {
+    if (req.method === 'GET') {
         req.params.deletedAt = null;
         if (req.query.where != null) {
-            var array = JSON.parse(req.query.where);
+            const array = JSON.parse(req.query.where);
             array['deletedAt'] = null;
             req.query.where = JSON.stringify(array)
         }

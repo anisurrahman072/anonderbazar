@@ -19,5 +19,18 @@ module.exports = {
   sslCommerzSMSConfig: {
     "api_token": 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
     "sid": 'SOFTBDNONAPI',
+  },
+  bKashCredentails: {
+    isSandBoxMode: true,
+    sandbox: {
+      "body": {
+        "app_key": "5tunt4masn6pv2hnvte1sb5n3j",
+        "app_secret": "1vggbqd4hqk9g96o9rrrp2jftvek578v7d2bnerim12a87dbrrka"
+      },
+      "headers": {
+        "username": "sandboxTestUser",
+        "password": "hWD@8vtzw0"
+      }
+    }
   }
 }

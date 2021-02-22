@@ -7,7 +7,6 @@ export const asyncForEach = async (array, callback) => {
   }
 };
 
-
 export const initLogPlaceholder = (req, funcName) => {
   sails.log(`call from ${funcName}`);
   sails.log('query ========>', req.query);
@@ -23,7 +22,6 @@ export const uploadImgAsync = (param, option = {}) => {
     });
   });
 };
-
 
 export const deleteImages = async (imageList, path) => {
   asyncForEach(imageList, (item) => {

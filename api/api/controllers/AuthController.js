@@ -12,8 +12,8 @@ module.exports = {
 
   // Entry of Auth/0
   index: function (req, res) {
-    var username = req.param('username');
-    var password = req.param('password');
+    const username = req.param('username');
+    let password = req.param('password');
 
 
     bcrypt.genSalt(10, function (err, salt) {
@@ -30,8 +30,8 @@ module.exports = {
   //Method called for customer login for frontend
   //Model models/User.js
   login: async (req, res) => {
-    var username = req.param('username');
-    var password = req.param('password');
+    let username = req.param('username');
+    let password = req.param('password');
 
     if (!username || !password) {
       return res.json(401, {model: 'userName', message: 'username and password required'});
@@ -118,12 +118,8 @@ module.exports = {
           }),
           accessControlList: jwToken.issue(accessList)
         });
-
-
       }
     }
-
-
   },
 
   // Entry of Auth/login
@@ -167,9 +163,7 @@ module.exports = {
         });
       })
     }
-  }
-
-  ,
+  },
 
   // Entry of Auth/signup
   //Method called for vendor signup for backend
@@ -203,6 +197,7 @@ module.exports = {
         if (err) {
           return res.json(err.status, {err: err});
         }
+
         if (user) {
           res.json(200, {user: user, token: jwToken.issue({id: user.id})});
         }

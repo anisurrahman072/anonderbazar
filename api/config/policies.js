@@ -46,29 +46,7 @@ module.exports.policies = {
   // }
   //
   '*': ['addReqQuery'], // Everything resctricted here
-  // AuthController: {
-  //   '*': true // We dont need authorization here, allowing public access
-  // },
-  // AreaController: {
-  //   '*': true // We dont need authorization here, allowing public access
-  // },
   // UserController: {
-  //   '*': true // We dont need authorization here, allowing public access
-  // },
-  // //   'UserController': {
-  // //     'create': true // We dont need authorization here, allowing public access
-  // //   },
-  // //
-  // CmsController: {
-  //   '*': true // We dont need authorization here, allowing public access
+  //   '*': ['isAuthorized'],
   // }
-  //   'ProductController': {
-  //     '*': true, // We dont need authorization here, allowing public access
-  //     'create': false,
-  //   },
-  //   'ProductsController': {
-  //     'create': isOwner,
-  //     'update': isOwner,
-  //     // 'getType': ['isAuthorized']
-  //   },
 };

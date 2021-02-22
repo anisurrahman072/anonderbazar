@@ -10,14 +10,7 @@ export class OrderService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/order`;
 
-    private CustomEndPoint = `${AppSettings.API_ENDPOINT}/order`;
-
     constructor(private http: HttpClient) {
-    }
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
-            .map((response) => response);
     }
 
     getById(id): Observable<any> {

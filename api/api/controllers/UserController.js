@@ -11,6 +11,21 @@ import SmsService from "../services/SmsService";
 import EmailService from "../services/EmailService";
 
 module.exports = {
+  getAuthUser: async (req, res) => {
+
+    try {
+      const user = User.findOne({
+        id: req.token.userInfo.id
+      }).populateAll();
+
+      return res.status(200).json(user);
+
+    } catch (err){
+      console.log(err);
+      return res.badRequest('There was a problem in processing the request.');
+    }
+
+  },
   //Method called for deleting a user data
   //Model models/User.js
   destroy: function (req, res) {
@@ -21,6 +36,7 @@ module.exports = {
       }
     );
   },
+
   //Method called for creating a user data
   //Model models/User.js
   create: function (req, res) {
@@ -81,7 +97,7 @@ module.exports = {
 
       await User.update({id: user.id}, {password: hash});
 
-      if(user.phone){
+      if (user.phone) {
         try {
           let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
           SmsService.sendingOneSmsToOne([user.phone], smsText);
@@ -90,7 +106,7 @@ module.exports = {
         }
       }
 
-      if(user.email){
+      if (user.email) {
         try {
           EmailService.sendPasswordResetMailUpdated(user, req.body.password);
         } catch (err) {
@@ -149,11 +165,6 @@ module.exports = {
   //Model models/User.js
   find: async (req, res) => {
     try {
-
-      console.log('user-find', req.query)
-
-      initLogPlaceholder(req, "users");
-
       let _pagination = pagination(req.query);
       let query = req.query;
 
@@ -220,7 +231,7 @@ module.exports = {
         sort: _sort
       }).populateAll();
 
-      console.log('Users-Users', Users)
+      // console.log('Users-Users', Users)
 
       res.status(200).json({
         success: true,

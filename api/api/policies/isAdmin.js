@@ -9,11 +9,9 @@ module.exports = (req, res, next) => {
     return res.status(401).json({err: 'No Authorization header was found'});
   }
   try {
-
-    (req.token.userInfo.group_id.name != 'admin') ?
+    (req.token.userInfo.group_id.name !== 'admin') ?
       res.status(401).json({err: 'No Authorization header was found'}) : next();
   } catch (err) {
-
     return res.status(400).json({err: 'server error'});
   }
 

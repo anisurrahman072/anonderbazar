@@ -1,4 +1,4 @@
-# bitcommerce-api
+# softbdcommerce-api
 
 a [Sails](http://sailsjs.org) application
 

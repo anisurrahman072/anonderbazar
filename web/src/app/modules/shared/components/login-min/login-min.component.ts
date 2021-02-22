@@ -199,6 +199,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                             token: result.token
                         })
                     );
+
                     localStorage.setItem('token', result.token);
 
                     this.setUpUserData();

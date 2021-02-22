@@ -7,6 +7,7 @@ export interface User {
     first_name?: any;
     last_name?: any;
     phone?: any;
-    avater?: any;
-    
+    avatar?: any;
+    gender?: string;
+    username?: string;
 }
