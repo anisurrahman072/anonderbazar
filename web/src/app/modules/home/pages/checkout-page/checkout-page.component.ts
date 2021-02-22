@@ -37,6 +37,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     isPickup = false;
     cart$: Observable<Cart>;
     cartData: any;
+    message: any;
     user_id: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
