@@ -4,8 +4,6 @@
 
         <img src="assets/images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg"
              data-src-retina="images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg" alt="" class="lazy">
-
-
         <div class="bg-caption pull-bottom">
             <h2 class="">
                 Pages make it easy to enjoy what matters the most in the life</h2>
@@ -15,11 +13,10 @@
                 © 2020 Anonderbazar.com
             </p>
         </div>
-
     </div>
 
     <div class="login-container bg-white">
-        
+
         <div class="form-inner">
             <nz-spin [nzSpinning]="_isSpinning">
 
@@ -42,11 +39,11 @@
                         </nz-input>
 
                         <div nz-form-explain
-                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').hasError('required') ">
+                             *ngIf="getFormControl('userName').dirty && getFormControl('userName').hasError('required') ">
                             required!
                         </div>
                         <div nz-form-explain
-                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').hasError('duplicated')">
+                             *ngIf="getFormControl('userName').dirty && getFormControl('userName').hasError('duplicated')">
                             The
                             username is redundant!
                         </div>
@@ -77,11 +74,11 @@
                 </div>
                 <div nz-form-item nz-row>
                     <div nz-col [nzSpan]="7" nz-form-label>
-                    </div> 
+                    </div>
                     <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                         <a routerLink="/auth/forgot-password">Forgot your password?</a>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
                 <div nz-form-item nz-row>
                     <div style="text-align: center" nz-form-control nzValidateStatus="error" *ngIf="loginServerError.show">
                         <div nz-form-explain>
@@ -105,10 +102,10 @@
                         </a>
                     </div>
                 </div>
-                
+
             </form>
-            
-            
+
+
             <div class="pull-bottom ">
                 <div class="m-b-30 p-r-80 sm-m-t-20 sm-p-r-15 sm-p-b-20 clearfix">
                     <div class="col-sm-3 col-md-2 page-img">
@@ -119,21 +116,21 @@
 
                     </div>
                     <div class="col-sm-9 no-padding m-t-10">
-                        <p class="create-page-bottom"> 
+                        <p class="create-page-bottom">
                         </p>
                     </div>
                 </div>
-                    
+
             </div>
             </nz-spin>
         </div>
-        
+
     </div>
     <!-- END Login Right Container-->
 
-    
-    
-    
+
+
+
 </div>
 
 
