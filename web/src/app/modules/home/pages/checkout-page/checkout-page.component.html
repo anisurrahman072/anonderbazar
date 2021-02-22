@@ -351,75 +351,79 @@
 
                 <div [ngClass]="{'col-lg-12': noShippingCharge, 'col-lg-6': !noShippingCharge, 'col-md-12': true}">
                     <div class="bag-item">
-                        <p>Your bag {{cartData?.data.total_quantity}} items</p>
+                        <p>Your Cart {{cartData?.data.total_quantity}} items</p>
                     </div>
-
-                    <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
-                        <div class="bagitem-1">
-                            <div class="productimage-wrapper">
-                                <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
-                                     alt="product image">
-                            </div>
-                            <div style="width:95%" class="text">
-                                <div class="sub-text" style="width:70%">
-                                    <a routerLink="/product-details/{{cartItem.product_id.id}}">
-                                        <p>{{cartItem.product_id.name}}</p>
-                                    </a>
-                                    <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
-                                    <span *ngFor="let variant of cartItem.cartitemvariant">
-                                      {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
-                                    </span>
-                                    </ng-container>
+                    <div *ngIf="cartData?.data.total_quantity > 0; else message">
+                        <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
+                            <div class="bagitem-1">
+                                <div class="productimage-wrapper">
+                                    <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
+                                         alt="product image">
                                 </div>
-                                <ul style="width:15%">
-                                    <li class="cursor-pointer" (click)="changeCartItemQuantity(cartItem, 'decrease')">
-                                        -
-                                    </li>
-                                    <li>{{cartItem.product_quantity}}</li>
-                                    <li class="mr-0 cursor-pointer"
-                                        (click)="changeCartItemQuantity(cartItem, 'increase')">+
-                                    </li>
-                                </ul>
-                                <p style="width:15%">৳. {{cartItem.product_total_price}}
-                                    <button (click)="removeCartItem(cartItem.id)"
-                                            type="button" class="close" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </p>
+                                <div style="width:95%" class="text">
+                                    <div class="sub-text" style="width:70%">
+                                        <a routerLink="/product-details/{{cartItem.product_id.id}}">
+                                            <p>{{cartItem.product_id.name}}</p>
+                                        </a>
+                                        <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
+                                        <span *ngFor="let variant of cartItem.cartitemvariant">
+                                          {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                        </span>
+                                        </ng-container>
+                                    </div>
+                                    <ul style="width:15%">
+                                        <li class="cursor-pointer" (click)="changeCartItemQuantity(cartItem, 'decrease')">
+                                            -
+                                        </li>
+                                        <li>{{cartItem.product_quantity}}</li>
+                                        <li class="mr-0 cursor-pointer"
+                                            (click)="changeCartItemQuantity(cartItem, 'increase')">+
+                                        </li>
+                                    </ul>
+                                    <p style="width:15%">৳. {{cartItem.product_total_price}}
+                                        <button (click)="removeCartItem(cartItem.id)"
+                                                type="button" class="close" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                        <div class="tag3" >
+                            <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order Summary</h5>
+                            <table [ngStyle]="{'width': noShippingCharge ? '50%': '100%', 'margin': noShippingCharge ? 'auto': '0'}">
+                                <tr>
+                                    <td class="td1 pr-5">Subtotal</td>
+                                    <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td1 pr-5">Discount</td>
+                                    <td class="active ml-5">৳ 0.00</td>
+                                </tr>
+                                <tr *ngIf="!noShippingCharge">
+                                    <td class="td1 pr-5">Shipping</td>
+                                    <td class="ml-5">৳ {{shippingCharge}}</td>
+                                </tr>
+                                <tr class="border-bottom-0">
+                                    <td class="td1 pr-5">Total</td>
+                                    <td class="ml-5">৳ {{grantTotal}}</td>
+                                </tr>
+                            </table>
+                            <p class="alert alert-info text-info" *ngIf="!noShippingCharge">
+                                Delivery Charge: <br>
+                                Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is heavier)<br>
+                                Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is heavier)
+                            </p>
+                        </div>
+                        <div   [ngClass]="{'send-btn1': true, 'text-center': noShippingCharge}">
+                            <button (click)="processToPay()" class="Summarybtn " >
+                                <a>Process to Pay</a>
+                            </button>
+                        </div>
                     </div>
-                    <div class="tag3" >
-                        <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order Summary</h5>
-                        <table [ngStyle]="{'width': noShippingCharge ? '50%': '100%', 'margin': noShippingCharge ? 'auto': '0'}">
-                            <tr>
-                                <td class="td1 pr-5">Subtotal</td>
-                                <td class="ml-5">৳ {{cartData?.data.total_price}}</td>
-                            </tr>
-                            <tr>
-                                <td class="td1 pr-5">Discount</td>
-                                <td class="active ml-5">৳ 0.00</td>
-                            </tr>
-                            <tr *ngIf="!noShippingCharge">
-                                <td class="td1 pr-5">Shipping</td>
-                                <td class="ml-5">৳ {{shippingCharge}}</td>
-                            </tr>
-                            <tr class="border-bottom-0">
-                                <td class="td1 pr-5">Total</td>
-                                <td class="ml-5">৳ {{grantTotal}}</td>
-                            </tr>
-                        </table>
-                        <p class="alert alert-info text-info" *ngIf="!noShippingCharge">
-                            Delivery Charge: <br>
-                            Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is heavier)<br>
-                            Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is heavier)
-                        </p>
-                    </div>
-                    <div   [ngClass]="{'send-btn1': true, 'text-center': noShippingCharge}">
-                        <button (click)="processToPay()" class="Summarybtn " >
-                            <a>Proceed to Pay</a>
-                        </button>
-                    </div>
+                    <ng-template #message>
+                        <div><p>No item in your cart.</p></div>
+                    </ng-template>
                 </div>
             </div>
         </div>

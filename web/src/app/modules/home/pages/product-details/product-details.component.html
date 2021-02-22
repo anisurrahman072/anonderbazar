@@ -41,11 +41,12 @@
         </div>
     </div>
 </div>
-<section id="coupon-product-banner-section" class="d-none d-sm-block"
+<!--<section id="coupon-product-banner-section" class="d-none d-sm-block"
          *ngIf="data && data.is_coupon_product && data.coupon_banner_image && data.coupon_banner_image.banner_images && data.coupon_banner_image.banner_images.length > 0">
     <coupon-product-banners [bannerImages]="data.coupon_banner_image.banner_images"
-                            style="width: 100%;"></coupon-product-banners>
-</section>
+                            style="width: 100%;">
+    </coupon-product-banners>
+</section>-->
 <section id="productdetail-section" *ngIf="data" style="margin: 0;">
     <div class="container-fluid">
         <div class="row">
@@ -56,23 +57,13 @@
                             <div class="productdetail-inner-img">
                                 <span *ngIf="data.promotion"
                                       class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
-                                <img style="object-fit: contain;" src="{{primaryPicture}}" alt="Product Image"/>
+                                <img style="object-fit: contain; height: auto; width: auto" src="{{primaryPicture}}" alt="Product Image"/>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-12">
-                        <div class="productdetailsub-img">
-                            <ng-container *ngFor="let image of data?.product_images; let i = index">
-                                <img style="cursor: pointer; height: 70px; width: 70px;"
-                                     src="{{RESIZED_IMAGE_ENDPOINT + image.image_path}}"
-                                     (click)="primaryPicture = RESIZED_IMAGE_ENDPOINT + image.image_path"
-                                     alt="Product Image">
-                            </ng-container>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-12">
+            <div class="col-lg-6 col-md-12" id="universal">
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 mb-4">
                         <div class="productdetail">
@@ -148,9 +139,8 @@
                                     <i class="fa fa-heart-o"></i>Wishlisted</a>
                             </div>
                         </div>
-                        <div class="add-cartbtn">
-                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false"
-                               [class.empty] = "data.quantity <= 0">
+                        <div class="add-cartbtn" id="add-cartbtn">
+                            <a class="addto1" (click)="data.quantity > 0 ? addProductToCart(data): false">
                                 Add to cart
                             </a>
                             <a class="addto2"
