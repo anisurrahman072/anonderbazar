@@ -1,7 +1,5 @@
 <div class="login-wrapper bd-css">
-
     <div class="bg-pic">
-
         <img src="assets/images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg"
              data-src-retina="images/new-york-city-buildings-sunrise-morning-hd-wallpaper.jpg" alt="" class="lazy">
         <div class="bg-caption pull-bottom">
@@ -16,15 +14,11 @@
     </div>
 
     <div class="login-container bg-white">
-
         <div class="form-inner">
             <nz-spin [nzSpinning]="_isSpinning">
-
             <img src="assets/images/logo.png" alt="logo" data-src="assets/imgages/logo.png"
                  data-src-retina="assets/assets/img/logo_white.png" height="100">
-
             <p style="text-align: center">
-                <!--Sign into your pages account-->
                 Sign in to your account
             </p>
 
@@ -48,12 +42,11 @@
                             username is redundant!
                         </div>
                         <div nz-form-explain
-                             *ngIf="getFormControl('userName').dirty&&getFormControl('userName').pending">
+                             *ngIf="getFormControl('userName').dirty && getFormControl('userName').pending">
                             Validating...
                         </div>
                     </div>
                 </div>
-
 
                 <div nz-form-item nz-row>
                     <div nz-col [nzSpan]="7" nz-form-label>
@@ -66,7 +59,7 @@
                             >
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('password').dirty&&getFormControl('password').hasError('required')">
+                                 *ngIf="getFormControl('password').dirty && getFormControl('password').hasError('required')">
                                 required!
                             </div>
                         </div>
@@ -84,7 +77,6 @@
                         <div nz-form-explain>
                             {{loginServerError.message}}
                         </div>
-
                     </div>
                 </div>
 
@@ -102,17 +94,14 @@
                         </a>
                     </div>
                 </div>
-
             </form>
-
-
             <div class="pull-bottom ">
                 <div class="m-b-30 p-r-80 sm-m-t-20 sm-p-r-15 sm-p-b-20 clearfix">
                     <div class="col-sm-3 col-md-2 page-img">
                         <img alt="" class="m-t-5" data-src="assets/images/pages_icon.png"
                              data-src-retina="assets/images/pages_icon_2x.png" height="60"
                              src="assets/images/pages_icon.png"
-                             width="60">
+                             width="60" />
 
                     </div>
                     <div class="col-sm-9 no-padding m-t-10">
@@ -120,17 +109,10 @@
                         </p>
                     </div>
                 </div>
-
             </div>
             </nz-spin>
         </div>
-
     </div>
-    <!-- END Login Right Container-->
-
-
-
-
 </div>
 
 

@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {ImageUploadModule} from 'angular2-image-upload';
 import {CKEditorModule} from "ng2-ckeditor";
@@ -14,7 +13,6 @@ import flatpickr from 'flatpickr';
 export function flatpickrFactory() {
     return flatpickr;
 }
-
 
 @NgModule({
     imports: [
