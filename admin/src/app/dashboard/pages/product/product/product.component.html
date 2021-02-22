@@ -10,7 +10,7 @@
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
-            <button *ngIf="'product-bulk-upload'|accessControl" routerLink="/dashboard/product/bulk-upload"
+            <button routerLink="/dashboard/product/bulk-upload"
                     [queryParams]="{status: status}" nz-button [nzType]="'primary'" style="margin-left: 10px;"
                     [nzSize]="'large'">
                 <i class="anticon anticon-upload"></i>

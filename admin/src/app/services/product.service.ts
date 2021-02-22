@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from "../../environments/environment";
+
 
 @Injectable({
     providedIn: 'root'
@@ -56,7 +57,6 @@ export class ProductService {
             `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortCode=${sortCode}&sortName=${sortName}&sortPrice=${sortPrice}&sortQuantity=${sortQuantity}&sortUpdatedAt=${sortUpdatedAt}&approval_status=${approvalStatus}`
         );
     }
-
 
 
     getAll(): Observable<any> {
@@ -116,19 +116,27 @@ export class ProductService {
     upload(data): Observable<any> {
         return this.http.post(this.EndPoint + '/upload', data);
     }
+
     uploadCouponBanners(data): Observable<any> {
         let headers = new HttpHeaders();
         //this is the important step. You need to set content type as null
         headers.set('Content-Type', null);
         headers.set('Accept', "multipart/form-data");
         let params = new HttpParams();
-        return this.http.post(this.EndPoint + '/uploadCouponBanners', data,  { params, headers });
-    }
-    getGeneratedExcelFile(): Observable<any> {
-        return this.http.get(this.EndPoint2 + '/generate-excel', { responseType: 'blob' });
+        return this.http.post(this.EndPoint + '/uploadCouponBanners', data, {params, headers});
     }
 
-    submitDataForBulkUpload(data, isApproved = 1): Observable<any> {
-        return this.http.post(this.EndPoint2 + '/bulk-upload?isApproved='+isApproved, data);
+    getGeneratedExcelFile(userId = null): Observable<any> {
+        if (!userId) {
+            return of();
+        }
+        return this.http.get(this.EndPoint2 + '/generate-excel?user_id=' + userId, {responseType: 'blob'});
+    }
+
+    submitDataForBulkUpload(data, userId = null, isApproved = 1): Observable<any> {
+        if (!userId) {
+            return of();
+        }
+        return this.http.post(this.EndPoint2 + '/bulk-upload?user_id='+userId+'&isApproved=' + isApproved, data);
     }
 }

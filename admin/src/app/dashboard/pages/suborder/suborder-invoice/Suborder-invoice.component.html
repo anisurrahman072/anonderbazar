@@ -152,7 +152,7 @@
                             </div>
 
 
-                            <div class="shopping-info-left" *ngIf="shippingAddress">
+                            <div class="shopping-info-left" *ngIf="shippingAddress; else alternateShipping">
                                 <h5>SHIPPING/DELIVERY INFORMATION</h5>
                                 <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
                                 <p>{{shippingAddress.address}}</p>
@@ -160,6 +160,12 @@
                                     , {{shippingAddress.division_id.name}}</p>
                                 <p>T: {{shippingAddress.phone}}</p>
                             </div>
+                            <ng-template #alternateShipping>
+                                <div *ngIf="userPhone" class="shopping-info-left">
+                                    <h5>SHIPPING/DELIVERY INFORMATION</h5>
+                                    <p style="margin-top: 20px;">Cell Phone: {{userPhone}}</p>
+                                </div>
+                            </ng-template>
                         </div>
                         <div class="col-md-6">
                             <div class="bill-info-right" *ngIf="payment">
@@ -176,7 +182,7 @@
                             </div>
                         </div>
                     </div>
-                    <span class="footer">Have a Nice Day.</span>
+                    <span class="footer" style="margin-top: 50px; display: inline-block;">Have a Nice Day.</span>
                 </div>
             </ng-template>
         </nz-card>

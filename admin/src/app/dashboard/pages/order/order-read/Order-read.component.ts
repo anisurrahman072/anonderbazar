@@ -7,9 +7,7 @@ import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {PaymentService} from '../../../../services/payment.service';
-import {PaymentAddressService} from '../../../../services/payment-address.service';
-import {ShippingAddressService} from '../../../../services/shipping-address.service';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-brand-read',
@@ -31,33 +29,17 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     options: any[];
     _isSpinning = true;
 
+    userPhone: string = "";
+
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
-                private suborderService: SuborderService,
-                private suborderItemService: SuborderService,
-                private paymentService: PaymentService,
-                private paymentAddressService: PaymentAddressService,
-                private shippingAddressService: ShippingAddressService) {
+                private suborderService: SuborderService) {
     }
 
     // init the component
     ngOnInit() {
-        this.options = [
-            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
-            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
-            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
-            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
-            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
-            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
-            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
-            {value: 7, label: 'landed', icon: 'anticon-spin anticon-loading'},
-            {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
-            {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
-            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
-            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
-            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'}
-        ];
+        this.options = GLOBAL_CONFIGS.ORDER_STATUSES;
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
@@ -66,26 +48,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     this.data = order;
 
-                    console.log('this.data', this.data);
-
+                    if (this.data.user_id && this.data.user_id) {
+                        this.userPhone = this.data.user_id.phone;
+                    }
                     for (let i = 0; i < order.suborders.length; i++) {
                         this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                         });
                     }
-                    /*
-                    this.paymentService.getByOrderId(order.id).subscribe(payment => {
-                        this.payment = payment[0];
-                    });
-
-                    this.paymentAddressService.getById(this.data.billing_address.id).subscribe(paymentAddress => {
-                         this.paymentAddress = paymentAddress;
-                    });
-
-                    this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
-                        this.shippingAddress = shippingAddress;
-                    });
-                   */
 
                     if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                         this.payment = order.payment[0];
@@ -93,13 +63,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                             this.payment.details = JSON.parse(this.payment.details);
                         }
                     }
-                    if (order && typeof order.billing_address !== 'undefined') {
+                    if (order && typeof order.billing_address !== 'undefined' && order.billing_address.id !== 75) {
                         this.paymentAddress = order.billing_address;
                     }
-                    if (order && typeof order.shipping_address !== 'undefined') {
+                    if (order && typeof order.shipping_address !== 'undefined' && order.shipping_address.id !== 75) {
                         this.shippingAddress = order.shipping_address;
                     }
-                    console.log('this.data', this.data);
+
+                    console.log('this.data', this.data, this.suborders);
                     this._isSpinning = false;
                 }, (err) => {
                     console.log('err', err);

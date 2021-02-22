@@ -10,7 +10,7 @@ const _ = require("lodash");
  */
 
 module.exports = {
-  //Method called for getting all products
+/*  //Method called for getting all products
   //Model models/Product.js
   sendDelayedSMSTOOrders: async (req, res) => {
     const orderIdsToExclude = [1, 2, 3, 4, 5, 7, 8, 9];
@@ -248,5 +248,5 @@ module.exports = {
       console.log(ee);
       return res.badRequest(ee.data);
     }
-  }
+  }*/
 };

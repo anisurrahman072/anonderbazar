@@ -16,7 +16,7 @@
                 </div>
                 <div nz-form-item nz-row>
                     <div style="display: flex; justify-content: center; ">
-                        <button style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)">
+                        <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)">
                             Save & Approve
                         </button>
                         <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(0)">

@@ -10,11 +10,7 @@ import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs";
 import jsPDF from 'jspdf';
 import * as ___ from 'lodash';
-import {PaymentService} from "../../../../services/payment.service";
-import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {OrderService} from "../../../../services/order.service";
-import {ShippingAddressService} from "../../../../services/shipping-address.service";
-import {SuborderItemService} from "../../../../services/suborder-item.service";
 import {environment} from "../../../../../environments/environment";
 
 @Component({
@@ -34,16 +30,13 @@ export class SuborderInvoiceComponent implements OnInit {
     paymentAddress: any;
     shippingAddress: any;
     suborderItems: any;
-
+    userPhone: string = "";
     _isSpinning = true;
+
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private suborderService: SuborderService,
-                private orderService: OrderService,
-                private suborderItemService: SuborderItemService,
-                private paymentService: PaymentService,
-                private paymentAddressService: PaymentAddressService,
-                private shippingAddressService: ShippingAddressService) {
+                private orderService: OrderService) {
     }
 
     ngOnInit() {
@@ -56,43 +49,29 @@ export class SuborderInvoiceComponent implements OnInit {
                     this.suborderItems = suborder.suborderItems;
                     this.orderService.getById(suborder.product_order_id.id).subscribe(order => {
                         this.order = order;
-
-                        /*
-                        this.paymentService.getByOrderId(order.id).subscribe(payment => {
-                            this.payment = payment[0];
-                             console.log('suborder', this.data);
-                            console.log('suborderItems', this.suborderItems);
-
-                            console.log('payment', this.payment);*!/
-                        });
-
-                         this.paymentAddressService.getById(order.billing_address.id).subscribe(paymentAddress => {
-                            this.paymentAddress = paymentAddress;
-                        });
-                        this.paymentAddressService.getById(order.shipping_address.id).subscribe(shippingAddress => {
-                            this.shippingAddress = shippingAddress;
-                        });
-                        */
+                        if (this.order.user_id && this.order.user_id.phone) {
+                            this.userPhone = this.order.user_id.phone;
+                        }
                         if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                             this.payment = order.payment[0];
                             if (this.payment.payment_type === 'SSLCommerce') {
                                 this.payment.details = JSON.parse(this.payment.details);
                             }
                         }
-                        if (order && typeof order.billing_address !== 'undefined') {
+                        if (order && typeof order.billing_address !== 'undefined' && order.billing_address.id !== 75) {
                             this.paymentAddress = order.billing_address;
                         }
-                        if (order && typeof order.shipping_address !== 'undefined') {
+                        if (order && typeof order.shipping_address !== 'undefined' && order.shipping_address.id !== 75) {
                             this.shippingAddress = order.shipping_address;
                         }
                         console.log('order', this.order);
                         this._isSpinning = false;
                     });
-                }, (err)=> {
+                }, (err) => {
                     console.log('err', err);
                     this._isSpinning = false;
                 });
-        }, (err)=> {
+        }, (err) => {
             console.log('err', err);
             this._isSpinning = false;
         });

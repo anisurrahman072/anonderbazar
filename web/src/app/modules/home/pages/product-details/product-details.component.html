@@ -144,7 +144,8 @@
                                 Add to cart
                             </a>
                             <a class="addto2"
-                               (click)="data.quantity > 0 ? buyNow(data, couponProductModalTemplate): false">
+                               (click)="data.quantity > 0 ? buyNow(data, couponProductModalTemplate): false"
+                               [class.empty] = "data.quantity <= 0">
                                 <span *ngIf="!data.is_coupon_product">Buy Now</span>
                                 <span *ngIf="data.is_coupon_product">Buy Coupon</span>
                             </a>
