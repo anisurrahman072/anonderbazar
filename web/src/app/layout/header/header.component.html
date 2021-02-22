@@ -64,9 +64,11 @@
                                     <a class="cart">
                                         <img src="assets/images/cart-black.svg" alt="cart">
                                         <span class='badge badge-warning countLabel'
-                                              *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}} </span>
+                                              *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}}
+                                        </span>
                                         <span class='badge badge-warning countLabel'
-                                              *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
+                                              *ngIf="!(cart$|async)?.data.total_quantity"> 0
+                                        </span>
                                     </a>
                                 </button>
                             </div>
