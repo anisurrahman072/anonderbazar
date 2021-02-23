@@ -69,9 +69,9 @@ module.exports.models = {
    ***************************************************************************/
 
   attributes: {
-    createdAt: {type: 'string', columnName: 'created_at', columnType: 'datetime', autoCreatedAt: true,},
-    updatedAt: {type: 'string',  columnName: 'updated_at', columnType: 'datetime', autoUpdatedAt: true,},
-    deletedAt: {type: 'string',  columnName: 'deleted_at', columnType: 'datetime'},
+    createdAt: { type: 'ref', columnName: 'created_at', columnType: 'datetime', autoCreatedAt: true,},
+    updatedAt: { type: 'ref',  columnName: 'updated_at', columnType: 'datetime', autoUpdatedAt: true,},
+    deletedAt: { type: 'ref',  columnName: 'deleted_at', columnType: 'datetime'},
     id: {
       type: 'number',
       columnType: 'integer',

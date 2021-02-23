@@ -45,6 +45,7 @@ module.exports = {
     },
     image: {
       type: 'string',
+      allowNull: true
     },
     rating: {
       type: 'number',
@@ -76,7 +77,7 @@ module.exports = {
     },
     warehouse_id: {
       model: 'warehouse',
-      required: true,
+      required: true
     },
     product_variants: {
       collection: 'productVariant',
@@ -115,33 +116,41 @@ module.exports = {
       type: 'string', columnType: 'datetime',
     },
     sale_unit: {
-      type: 'integer',
+      type: 'number',
+      allowNull: true
     },
     ///end promotion
     tag: {
-      type: 'text',
+      type: 'string',
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
     approval_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
     approval_status_updated_by: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      allowNull: true
     },
     featured: {
-      type: 'text',
+      type: 'number',
+      columnType: 'integer',
     },
     weight: {
       type: 'float',
     },
     produce_time: {
-      type: 'integer',
-      // required: true,
+      type: 'number',
+      columnType: 'integer',
+      allowNull: true
     },
     last_order_completed_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
       columnName: 'last_order_completed_date',
     },
     updated_by: {
