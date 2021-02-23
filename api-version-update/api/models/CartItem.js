@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     cart_id: {
       model: 'cart'
     },
@@ -33,7 +33,7 @@ module.exports = {
       collection: 'cartItemVariant',
       via: 'cart_item_id'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -51,7 +51,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    }
+    }*/
   },
   tableName: 'cart_items',
 /*  autoCreatedAt: true,

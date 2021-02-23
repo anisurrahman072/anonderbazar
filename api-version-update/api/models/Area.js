@@ -7,22 +7,25 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     type_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: true,
     },
     parent_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: true,
     },
     region_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: true,
     },
     name: {
@@ -45,7 +48,7 @@ module.exports = {
       type: 'text',
       required: true,
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -63,7 +66,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: 'areas',
 /*  autoCreatedAt: true,

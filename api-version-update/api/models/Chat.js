@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     chat_user_id: {
       model: 'chatuser',
     },
@@ -21,12 +21,14 @@ module.exports = {
       type: 'string',
     },
     person_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
     notification_view_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -44,7 +46,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: 'chat',
 /*  autoCreatedAt: true,

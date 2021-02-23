@@ -12,12 +12,12 @@ var index = client.initIndex('bitspeck.bitcommerce');
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     product_id: {
       model: 'product',
       required: true,
@@ -35,7 +35,7 @@ module.exports = {
     quantity: {
       type: 'integer',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -53,7 +53,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: 'product_variants',
 /*  autoCreatedAt: true,

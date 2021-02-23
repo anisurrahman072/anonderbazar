@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     user_id: {
       model: 'user'
     },
@@ -21,7 +21,8 @@ module.exports = {
       type: 'text'
     },
     total_quantity: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       defaultsTo: 0
     },
     total_price: {
@@ -29,13 +30,14 @@ module.exports = {
       defaultsTo: 0
     },
     status: {
-      type: 'integer'
+      type: 'number',
+      columnType: 'integer',
     },
     cart_items: {
       collection: 'cartItem',
       via: 'cart_id'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -53,12 +55,13 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
-    toJSON: function () {
-      return this.toObject();
-    }
+    },*/
+
   },
   tableName: 'carts',
+  customToJSON: function () {
+    return this.toObject();
+  }
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/

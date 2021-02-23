@@ -7,12 +7,12 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     event_type: {
       type: 'integer',
     },
@@ -38,24 +38,24 @@ module.exports = {
       type: 'string'
     },
     event_startdate: {
-      type: 'date'
+      type: 'string', columnType: 'date',
     },
     event_enddate: {
-      type: 'date'
+      type: 'string', columnType: 'date',
     },
     event_starttime: {
-      type: 'datetime'
+      type: 'string', columnType: 'datetime',
     },
     event_endtime: {
-      type: 'datetime'
+      type: 'string', columnType: 'datetime',
     },
     registration_lastdate: {
-      type: 'date'
+      type: 'string', columnType: 'date',
     },
     event_price_ids: {
       type: 'json'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -73,7 +73,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "events",
 /*  autoCreatedAt: true,

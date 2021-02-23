@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     order_id: {
       model: 'order',
       required: true
@@ -31,17 +31,18 @@ module.exports = {
       required: true,
     },
     shipping_date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
       required: true,
     },
     arrival_date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
       required: true,
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -59,7 +60,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "courier_order_list",
 /*  autoCreatedAt: true,

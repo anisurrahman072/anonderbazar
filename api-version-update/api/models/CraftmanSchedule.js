@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     craftman_id: {
       type: 'integer',
     },
@@ -34,14 +34,14 @@ module.exports = {
       required: true
     },
     start_time: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
       required: true
     },
     end_time: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
       required: true
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -59,7 +59,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: 'craftman_schedules',
 /*  autoCreatedAt: true,

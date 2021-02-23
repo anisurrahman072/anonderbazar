@@ -9,11 +9,11 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
-    },
+    },*/
     type_id: {
       model: 'category',
       required: true
@@ -59,7 +59,7 @@ module.exports = {
     comment: {
       type: 'string'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -77,7 +77,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "product_designs",
 /*  autoCreatedAt: true,

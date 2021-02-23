@@ -7,12 +7,12 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     variant_id: {
       model: 'variant',
       required: true
@@ -43,9 +43,7 @@ module.exports = {
       required: false
     },
     brand_id: {
-      model: 'brand',
-      required: false,
-      defaultsTo: 0
+      model: 'brand'
     },
     rack: {
       type: 'string',

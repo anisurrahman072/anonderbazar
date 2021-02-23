@@ -7,12 +7,12 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     page: {
       type: 'string',
       required: true
@@ -29,10 +29,9 @@ module.exports = {
       required: true
     },
     user_id: {
-      type: 'integer',
       model: 'user'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function() {
@@ -50,7 +49,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    }
+    }*/
   },
   tableName: 'cms',
 /*  autoCreatedAt: true,

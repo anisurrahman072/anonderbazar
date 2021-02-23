@@ -9,12 +9,12 @@ let bcrypt = require('bcryptjs');
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     last_ip_address: {
       type: 'text'
     },
@@ -124,7 +124,7 @@ module.exports = {
       defaultsTo: 0
     },
 
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -142,20 +142,20 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
-    toJSON: function () {
-      var obj = this.toObject();
-      delete obj['password'];
-      delete obj['forgotten_password_code'];
-      delete obj['forgotten_password_time'];
-      return obj;
-    }
+    },*/
+
   },
   tableName: "users",
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/
-
+  customToJSON: function () {
+    var obj = this.toObject();
+    delete obj['password'];
+    delete obj['forgotten_password_code'];
+    delete obj['forgotten_password_time'];
+    return obj;
+  },
   // Encrypt password before creating a User
   beforeCreate: function (values, next) {
     bcrypt.genSalt(10, function (err, salt) {

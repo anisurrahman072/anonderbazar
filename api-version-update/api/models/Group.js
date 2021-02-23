@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     name: {
       type: 'string',
       required: true,
@@ -25,7 +25,7 @@ module.exports = {
     accessList: {
       type: 'json',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -43,13 +43,14 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
-    toJSON: function () {
+    },*/
 
-      return this.toObject();
-    }
   },
   tableName: "groups",
+  customToJSON: function () {
+
+    return this.toObject();
+  }
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

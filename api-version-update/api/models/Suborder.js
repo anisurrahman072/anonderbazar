@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     product_order_id: {
       model: 'order',
       required: true
@@ -31,7 +31,7 @@ module.exports = {
       defaultsTo: 0
     },
     delivery_date: {
-      type: 'date',
+      type: 'string', columnType: 'date',
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -54,9 +54,9 @@ module.exports = {
       model: 'user'
     },
     date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -74,12 +74,13 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
-    toJSON: function () {
-      return this.toObject();
-    }
+    },*/
+
   },
   tableName: "product_suborders",
+  customToJSON: function () {
+    return this.toObject();
+  }
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/

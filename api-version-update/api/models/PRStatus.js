@@ -7,12 +7,12 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     warehouse_id:{
       model:'warehouse'
     },
@@ -32,12 +32,9 @@ module.exports = {
       model: 'user'
     },
     date: {
-      type: 'datetime',
-      defaultsTo: function () {
-        return new Date();
-      }
+      type: 'string', columnType: 'datetime'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -55,7 +52,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "pr_status",
 /*  autoCreatedAt: true,

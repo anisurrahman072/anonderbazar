@@ -9,11 +9,11 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
-    },
+    },*/
     craftman_id: {
       model: 'user',
       required: true
@@ -57,12 +57,13 @@ module.exports = {
       type: 'float'
     },
     time: {
-      type: 'integer'
+      type: 'number',
+      columnType: 'integer',
     },
     comment: {
       type: 'string'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -80,7 +81,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "craftman_price",
 /*  autoCreatedAt: true,

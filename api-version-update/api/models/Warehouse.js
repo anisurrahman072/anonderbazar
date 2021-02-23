@@ -7,12 +7,12 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     buffer_time: {
       type: 'integer',
     },
@@ -90,7 +90,7 @@ module.exports = {
       collection: 'User',
       via: 'warehouse_id'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -108,7 +108,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    }
+    }*/
   },
   tableName: 'warehouses',
 /*  autoCreatedAt: true,

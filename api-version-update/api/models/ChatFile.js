@@ -7,14 +7,15 @@
 
 module.exports = {
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     chat_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
     },
     file_name: {
       type: 'string',
@@ -22,7 +23,7 @@ module.exports = {
     file_location: {
       type: 'json',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -40,7 +41,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "chat_files",
 /*  autoCreatedAt: true,

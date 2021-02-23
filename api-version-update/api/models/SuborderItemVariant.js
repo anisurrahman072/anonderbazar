@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     product_suborder_item_id: {
       model: 'suborderItem'
     },
@@ -29,7 +29,7 @@ module.exports = {
     product_variant_id: {
       model: 'ProductVariant'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -47,7 +47,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    }
+    }*/
   },
   tableName: 'product_suborder_item_variants',
 /*  autoCreatedAt: true,

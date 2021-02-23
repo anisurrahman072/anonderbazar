@@ -4,16 +4,15 @@
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
-var variant;
-var photo;
+
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
-    },
+    },*/
     code: {
       type: 'string',
       required: false,
@@ -23,30 +22,33 @@ module.exports = {
       required: true,
     },
     cost: {
-      type: 'float',
+      type: 'number',
+      columnType: 'float',
     },
     price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'float',
       required: true,
     },
     vendor_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'float',
       required: false,
     },
     min_unit: {
-      type: 'integer',
-      required: true,
-      defaultsTo: 0
+      type: 'number',
+      required: true
     },
     alert_quantity: {
-      type: 'integer',
+      type: 'number',
       defaultsTo: 0
     },
     image: {
       type: 'string',
     },
     rating: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
     },
     brand_id: {
       model: 'brand',
@@ -89,7 +91,8 @@ module.exports = {
       via: 'product_id'
     },
     product_details: {
-      type: 'text',
+      type: 'string',
+      columnType: 'text',
       required: true,
     },
     craftsman_id: {
@@ -106,10 +109,10 @@ module.exports = {
       type: 'float',
     },
     start_date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
     },
     end_date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
     },
     sale_unit: {
       type: 'integer',
@@ -138,7 +141,7 @@ module.exports = {
       // required: true,
     },
     last_order_completed_date: {
-      type: 'datetime',
+      type: 'string', columnType: 'datetime',
       columnName: 'last_order_completed_date',
     },
     updated_by: {
@@ -147,7 +150,7 @@ module.exports = {
     created_by: {
       model: 'user'
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -165,7 +168,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "products",
 /*  autoCreatedAt: true,

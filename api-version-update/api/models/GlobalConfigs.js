@@ -8,12 +8,12 @@
 module.exports = {
 
   attributes: {
-    id: {
+/*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
       autoIncrement: true
-    },
+    },*/
     dhaka_charge: {
       type: 'float',
       defaultsTo: 50
@@ -43,7 +43,7 @@ module.exports = {
     default_image_height_ratio: {
       type: 'integer',
     },
-    createdAt: {
+/*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -61,7 +61,7 @@ module.exports = {
       type: 'datetime',
       columnName: 'deleted_at',
       defaultsTo: null
-    },
+    },*/
   },
   tableName: "global_configs",
 /*  autoCreatedAt: true,
