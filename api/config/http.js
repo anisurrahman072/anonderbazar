@@ -30,25 +30,25 @@ module.exports.http = {
      *                                                                          *
      ***************************************************************************/
 
-    // order: [
-    //   'startRequestTimer',
+     order: [
+       'startRequestTimer',
     //   'cookieParser',
     //   'session',
     //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
+       'bodyParser',
+      'handleBodyParserError',
+       'compress',
     //   'methodOverride',
     //   'poweredBy',
     //   '$custom',
-    //   'router',
+      'router',
     //   'www',
     //   'favicon',
     //   '404',
     //   '500',
     // isAthenticated
 
-    // ],
+   ],
 
     /****************************************************************************
      *                                                                           *
@@ -56,10 +56,10 @@ module.exports.http = {
      *                                                                           *
      ****************************************************************************/
 
-    // myRequestLogger: function (req, res, next) {
-    //     console.log("Requested :: ", req.method, req.url);
-    //     return next();
-    // }
+    myRequestLogger: function (req, res, next) {
+        console.log("Requested :: ", req.method, req.url);
+        return next();
+    },
 
 
     /***************************************************************************
@@ -75,9 +75,9 @@ module.exports.http = {
      *                                                                          *
      ***************************************************************************/
 
-    // bodyParser: require('skipper')({
-    //   maxWaitTimeBeforePassingControlToApp: 1000
-    // })
+    bodyParser: require('skipper')({
+      maxWaitTimeBeforePassingControlToApp: 1000
+    })
 
 
   },

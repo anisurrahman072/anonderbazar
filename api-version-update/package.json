@@ -1,0 +1,61 @@
+{
+  "name": "softbd-ecommerce-api",
+  "private": true,
+  "version": "0.0.1",
+  "description": "An e-commerce api",
+  "keywords": [],
+  "dependencies": {
+    "@sailshq/connect-redis": "^3.2.1",
+    "@sailshq/lodash": "^3.10.3",
+    "@sailshq/socket.io-redis": "^5.2.0",
+    "algoliasearch": "^4.8.5",
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "bluebird": "^3.7.2",
+    "excel4node": "^1.7.2",
+    "flaverr": "^1.10.0",
+    "formidable": "^1.2.2",
+    "grunt": "1.0.4",
+    "i": "^0.3.6",
+    "include-all": "^4.0.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "multer": "^1.4.2",
+    "os": "^0.1.1",
+    "rc": "^1.2.8",
+    "sails": "^1.4.0",
+    "sails-hook-grunt": "^4.0.0",
+    "sails-hook-orm": "^3.0.1",
+    "sails-hook-sockets": "^2.0.0",
+    "sails-mysql": "1.0.1",
+    "save": "^2.4.0",
+    "skipper": "^0.8.7",
+    "skipper-s3": "^0.6.0",
+    "sslcommerz-nodejs": "^1.0.8",
+    "ts-node": "^9.1.1",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "5.16.0",
+    "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "start": "NODE_ENV=development node  --trace-warnings app.js",
+    "start:prod": "NODE_ENV=production node app.js",
+    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+    "custom-tests": "echo \"(No other custom tests yet.)\" && echo"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anonymous node/sails user/api-version-update.git"
+  },
+  "author": "Softbd LTD",
+  "license": "Propitory",
+  "engines": {
+    "node": "^12.18"
+  }
+}
