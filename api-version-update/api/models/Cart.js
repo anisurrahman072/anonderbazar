@@ -33,7 +33,7 @@ module.exports = {
       defaultsTo: 1
     },
     cart_items: {
-      collection: 'cartItem',
+      collection: 'cartItem', /*one to many: a cart can have multiple Cart_items*/
       via: 'cart_id'
     },
   },
