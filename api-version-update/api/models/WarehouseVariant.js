@@ -7,12 +7,6 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     variant_id: {
       model: 'variant',
       required: true
@@ -23,30 +17,38 @@ module.exports = {
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     quantity: {
-      type: 'float',
-      required: false
+      type: 'number',
+      columnType: 'float',
+      required: false,
+      defaultsTo: 0
     },
     unit_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'float',
       required: false,
       defaultsTo: 0
     },
     unit_name: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     image: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     brand_id: {
-      model: 'brand'
+      model: 'brand',
+      required: true
     },
     rack: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
 
