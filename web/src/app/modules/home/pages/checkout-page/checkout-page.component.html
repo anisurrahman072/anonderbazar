@@ -354,8 +354,8 @@
                         <p>Your Cart {{cartData?.data.total_quantity}} items</p>
                     </div>
                     <div *ngIf="cartData?.data.total_quantity > 0; else message">
-                        <div [ngClass]="{'float:right d-flex col-md-12 col-sm-12 col-lg-6 row': noShippingCharge}">
-                            <div class="bag-item" *ngFor="let cartItem of cartData?.data.cart_items">
+                        <div [ngClass]="{'float:right d-flex col-md-12 col-sm-12 col-lg-12 ml-0 row': noShippingCharge}">
+                            <div class="bag-item col-lg-6" *ngFor="let cartItem of cartData?.data.cart_items">
                                 <div class="bagitem-1">
                                     <div class="productimage-wrapper">
                                         <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
@@ -390,7 +390,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div [ngClass]="{'p-2 col-lg-12': noShippingCharge, 'col-lg-12': !noShippingCharge, 'col-md-12': true}">
+                            <div [ngClass]="{'p-2 col-lg-6': noShippingCharge, 'col-lg-12': !noShippingCharge, 'col-md-12': true}">
                                 <div class="tag3" >
                                     <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order Summary</h5>
                                     <table [ngStyle]="{'width': noShippingCharge ? '100%': '100%', 'margin': noShippingCharge ? 'auto': '0', 'max-width': noShippingCharge ? '500px': '600px'}">
