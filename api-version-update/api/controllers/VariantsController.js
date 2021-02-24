@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {initLogPlaceholder, pagination} = require("../../libs");
+const {initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all variant data
@@ -22,7 +22,7 @@ module.exports = {
 
 
       if (req.query.searchTermName) {
-        _where.name = {'like': `%${req.query.searchTermName}%`}
+        _where.name = {'like': `%${req.query.searchTermName}%`};
       }
 
 
@@ -32,7 +32,7 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -58,15 +58,15 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All variant with pagination',
         data: variants
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All Variant with pagination';
 
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 

@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -30,7 +30,7 @@ module.exports = {
       type: 'json',
     },
 
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -50,8 +50,8 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "design_images",
-/*  autoCreatedAt: true,
+  tableName: 'design_images',
+  /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/
 

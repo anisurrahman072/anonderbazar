@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
@@ -21,7 +21,7 @@ module.exports = {
       columnType: 'text',
       required: true
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -41,8 +41,8 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "product_coupon_banner_images",
+  tableName: 'product_coupon_banner_images',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/
-}
+};

@@ -6,13 +6,13 @@
  */
 
 module.exports = {
-    // destroy a row
-    destroy: function (req, res) {
-        PaymentAddress.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec(function (err, paymentAddress) {
-                if (err) return res.json(err, 400);
-                return res.json(paymentAddress[0]);
+  // destroy a row
+  destroy: function (req, res) {
+    PaymentAddress.update({id: req.param('id')}, {deletedAt: new Date()})
+            .exec((err, paymentAddress) => {
+              if (err) {return res.json(err, 400);}
+              return res.json(paymentAddress[0]);
             });
-    },
+  },
 };
 

@@ -42,9 +42,9 @@ module.exports = {
       }
       let chats = await ChatUser.find({
         where: _where
-      }).populate("product_id", { deletedAt: null })
-      .populate("user_id", { deletedAt: null })
-      .populate("warehouse_id", { deletedAt: null });
+      }).populate('product_id', { deletedAt: null })
+      .populate('user_id', { deletedAt: null })
+      .populate('warehouse_id', { deletedAt: null });
 
 
 
@@ -67,7 +67,7 @@ module.exports = {
         data: allChats,
       });
     } catch (error) {
-      let message = "Error in Get All Chats";
+      let message = 'Error in Get All Chats';
       res.status(400).json({
         success: false,
         message

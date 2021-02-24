@@ -6,12 +6,12 @@
  */
 
 module.exports = {
-    destroy: function (req, res) {
-        UserLogin.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec(function (err, user) {
-                if (err) return res.json(err, 400);
-                return res.json(user[0]);
+  destroy: function (req, res) {
+    UserLogin.update({id: req.param('id')}, {deletedAt: new Date()})
+            .exec((err, user) => {
+              if (err) {return res.json(err, 400);}
+              return res.json(user[0]);
             });
-    }
+  }
 };
 

@@ -26,7 +26,7 @@ module.exports = function forbidden (data, options) {
   if (data !== undefined) {
     sails.log.verbose('Sending 403 ("Forbidden") response: \n',data);
   }
-  else sails.log.verbose('Sending 403 ("Forbidden") response');
+  else {sails.log.verbose('Sending 403 ("Forbidden") response');}
 
   // Only include errors in response if application environment
   // is not set to 'production'.  In production, we shouldn't
@@ -47,7 +47,7 @@ module.exports = function forbidden (data, options) {
 
   // Attempt to prettify data for views, if it's a non-error object
   var viewData = data;
-  if (!(viewData instanceof Error) && 'object' == typeof viewData) {
+  if (!(viewData instanceof Error) && 'object' === typeof viewData) {
     try {
       viewData = require('util').inspect(data, {depth: null});
     }
@@ -65,7 +65,7 @@ module.exports = function forbidden (data, options) {
 
   // If no second argument provided, try to serve the default view,
   // but fall back to sending JSON(P) if any errors occur.
-  else return res.view('403', { data: viewData, title: 'Forbidden' }, function (err, html) {
+  else {return res.view('403', { data: viewData, title: 'Forbidden' }, (err, html) => {
 
     // If a view error occured, fall back to JSON(P).
     if (err) {
@@ -83,7 +83,7 @@ module.exports = function forbidden (data, options) {
     }
 
     return res.send(html);
-  });
+  });}
 
 };
 

@@ -5,10 +5,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {asyncForEach, initLogPlaceholder, pagination} = require("../../libs");
+const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
-    //Method called for getting all product part data
+  //Method called for getting all product part data
   //Model models/Part.js
   getAll: async (req, res) => {
     try {
@@ -22,23 +22,23 @@ module.exports = {
 
 
       if (req.query.category_id) {
-        _where.category_id = req.query.category_id
+        _where.category_id = req.query.category_id;
       }
       if (req.query.subcategory_id) {
-        _where.subcategory_id = req.query.subcategory_id
+        _where.subcategory_id = req.query.subcategory_id;
       }
 
       if (req.query.search_term) {
         _where.or = [
           {name: {'like': `%${req.query.search_term}%`}},
-        ]
+        ];
       }
       /* WHERE condition..........END................*/
 
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
       /*.....SORT END..............................*/
 
@@ -62,14 +62,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All products with pagination',
         data: parts
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 };

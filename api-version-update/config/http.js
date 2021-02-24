@@ -34,7 +34,7 @@ module.exports.http = {
     //   'session',
       'bodyParser',
       'compress',
-    //   'poweredBy',
+      //   'poweredBy',
       'router',
     //   'www',
     //   'favicon',

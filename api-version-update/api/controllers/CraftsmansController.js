@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require("../../libs");
+const {initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all craftsman list data
@@ -22,27 +22,27 @@ module.exports = {
 
 
       if (req.query.warehouse_id) {
-        _where.warehouse_id = req.query.warehouse_id
+        _where.warehouse_id = req.query.warehouse_id;
       }
 
       if (req.query.searchTermEmail) {
-        _where.email = {'like': `%${req.query.searchTermEmail}%`}
+        _where.email = {'like': `%${req.query.searchTermEmail}%`};
       }
 
       if (req.query.searchTermName) {
         _where.or = [
           {first_name: {'like': `%${req.query.searchTermName}%`}},
           {last_name: {'like': `%${req.query.searchTermName}%`}},
-        ]
+        ];
       }
 
 
       if (req.query.searchTermPhone) {
-        _where.phone = {'like': `%${req.query.searchTermPhone}%`}
+        _where.phone = {'like': `%${req.query.searchTermPhone}%`};
       }
 
       if (req.query.gender) {
-        _where.gender = req.query.gender
+        _where.gender = req.query.gender;
       }
 
 
@@ -51,7 +51,7 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -77,14 +77,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All craftsmans with pagination',
         data: craftsmans
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All craftsmans with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 

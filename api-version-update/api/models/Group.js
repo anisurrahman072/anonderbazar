@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -25,7 +25,7 @@ module.exports = {
     accessList: {
       type: 'json',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -46,7 +46,7 @@ module.exports = {
     },*/
 
   },
-  tableName: "groups",
+  tableName: 'groups',
   customToJSON: function () {
 
     return this.toObject();

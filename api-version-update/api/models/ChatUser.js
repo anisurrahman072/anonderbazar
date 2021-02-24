@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -25,7 +25,7 @@ module.exports = {
     person_status: {
       type: 'integer',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -45,7 +45,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "chat_user",
+  tableName: 'chat_user',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

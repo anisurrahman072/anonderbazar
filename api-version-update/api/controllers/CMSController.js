@@ -1,11 +1,11 @@
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   // destroy a row
   destroy: (req, res) => {
     CMS.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, cms) {
-        if (err) return res.json(err, 400);
+      (err, cms) => {
+        if (err) {return res.json(err, 400);}
         return res.json(cms[0]);
       }
     );
@@ -17,15 +17,15 @@ module.exports = {
 
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload(imageUploadConfig(), async function (err, files) {
+        req.file('image').upload(imageUploadConfig(), async (err, files) => {
           // maxBytes: 10000000;
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
           body = req.body;
           body.image = '/' + newPath;
           let data_value = [];
 
-          if (req.body.subsection === "OFFER") {
+          if (req.body.subsection === 'OFFER') {
             data_value = [
               {
                 title: req.body.title,
@@ -55,7 +55,7 @@ module.exports = {
             data_value: data_value
           };
 
-          if (req.body.user_id) _payload.user_id = req.body.user_id;
+          if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
           let data = await CMS.create(_payload);
           return res.json({
@@ -84,7 +84,7 @@ module.exports = {
           data_value: data_value
         };
 
-        if (req.body.user_id) _payload.user_id = req.body.user_id;
+        if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
         let data = await CMS.create(_payload);
         return res.json({
@@ -106,7 +106,7 @@ module.exports = {
   //Model models/CMS.js
   offerProductUpdate: async (req, res) => {
     try {
-      if (req.body.user_id) _payload.user_id = req.body.user_id;
+      if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
       let data = await CMS.update({id: req.body.id}, req.body);
       return res.json({
@@ -129,15 +129,15 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         let body;
-        req.file('image').upload(imageUploadConfig(), async function (err, files) {
+        req.file('image').upload(imageUploadConfig(), async (err, files) => {
           // maxBytes: 10000000;
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
           body = req.body;
           body.image = '/' + newPath;
           let data_value = [];
 
-          if (req.body.subsection === "OFFER") {
+          if (req.body.subsection === 'OFFER') {
             data_value = [
               {
                 title: req.body.title,
@@ -166,7 +166,7 @@ module.exports = {
             data_value: data_value
           };
 
-          if (req.body.user_id) _payload.user_id = req.body.user_id;
+          if (req.body.user_id) {_payload.user_id = req.body.user_id;}
           let data = await CMS.update({id: req.body.id}, _payload);
           return res.json({
             success: true,
@@ -177,7 +177,7 @@ module.exports = {
 
       } else {
         let data_value = [];
-        if (req.body.subsection === "OFFER") {
+        if (req.body.subsection === 'OFFER') {
           data_value = [
             {
               title: req.body.title,
@@ -205,7 +205,7 @@ module.exports = {
           data_value: data_value
         };
 
-        if (req.body.user_id) _payload.user_id = req.body.user_id;
+        if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
         let data = await CMS.update({id: req.body.id}, _payload);
         return res.json({
@@ -230,13 +230,13 @@ module.exports = {
       if (req.body.hasImage == 'true') {
         req.file('image').upload(imageUploadConfig(),
 
-          async function (err, uploaded) {
+          async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
 
             const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) return res.serverError(err);
+            if (err) {return res.serverError(err);}
 
             let data_value = [
               {
@@ -254,7 +254,7 @@ module.exports = {
               data_value: data_value
             };
 
-            if (req.body.user_id) _payload.user_id = req.body.user_id;
+            if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
             let data = await CMS.create(_payload);
             if (data) {
@@ -286,7 +286,7 @@ module.exports = {
           data_value: data_value
         };
 
-        if (req.body.user_id) _payload.user_id = req.body.user_id;
+        if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
         let data = await CMS.create(_payload);
         return res.json({
@@ -310,15 +310,15 @@ module.exports = {
   customPostUpdate: async (req, res) => {
     try {
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
-      console.log('customPostUpdate', req.body)
+      console.log('customPostUpdate', req.body);
       if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(),
 
-          async function (err, uploaded) {
+          async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
-            if (err) return res.serverError(err);
+            if (err) {return res.serverError(err);}
 
             const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
@@ -337,7 +337,7 @@ module.exports = {
             cms.sub_section = req.body.sub_section;
             cms.data_value = data_value;
 
-            if (req.body.user_id) cms.user_id = req.body.user_id;
+            if (req.body.user_id) {cms.user_id = req.body.user_id;}
             let data = await CMS.update({id: cms.id}, cms);
 
             if (data) {
@@ -369,7 +369,7 @@ module.exports = {
         cms.section = req.body.section;
         cms.sub_section = req.body.sub_section;
         cms.data_value = data_value;
-        if (req.body.user_id) cms.user_id = req.body.user_id;
+        if (req.body.user_id) {cms.user_id = req.body.user_id;}
 
         let data = await CMS.update({id: cms.id}, cms);
         return res.json({
@@ -397,12 +397,12 @@ module.exports = {
       if (req.body.hasImage == 'true') {
         req.file('image').upload(imageUploadConfig(),
 
-          async function (err, uploaded) {
+          async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
             var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) return res.serverError(err);
+            if (err) {return res.serverError(err);}
 
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,
@@ -458,16 +458,16 @@ module.exports = {
   //Model models/CMS.js
   customUpdate: async (req, res) => {
     try {
-      console.log('customUpdate',  req.body)
+      console.log('customUpdate',  req.body);
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
       if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(),
-          async function (err, uploaded) {
+          async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
             var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) return res.serverError(err);
+            if (err) {return res.serverError(err);}
 
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,

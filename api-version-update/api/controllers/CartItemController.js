@@ -18,8 +18,8 @@ module.exports = {
       }
 
       let requestPayload = {
-        "total_price": cart[0].total_price - cartItem[0].product_total_price,
-        "total_quantity": cart[0].total_quantity - cartItem[0].product_quantity,
+        'total_price': cart[0].total_price - cartItem[0].product_total_price,
+        'total_quantity': cart[0].total_quantity - cartItem[0].product_quantity,
       };
 
       await Cart.update({id: cartItem[0].cart_id}, requestPayload);
@@ -44,16 +44,16 @@ module.exports = {
     try {
       let cartItem = await CartItem.update({id: req}, {deletedAt: new Date()});
 
-      Cart.find(cartItem[0].cart_Id).exec(function (err, cart) {
-        if (err) return err;
+      Cart.find(cartItem[0].cart_Id).exec((err, cart) => {
+        if (err) {return err;}
         var requestPayload = [];
         requestPayload.push({
-          "total_price": cart[0].total_price - cartItem[0].product_total_price,
-          "total_quantity": cart[0].total_quantity - cartItem[0].product_quantity,
+          'total_price': cart[0].total_price - cartItem[0].product_total_price,
+          'total_quantity': cart[0].total_quantity - cartItem[0].product_quantity,
         });
 
-        Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec(function (err, cart) {
-          if (err) return err;
+        Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec((err, cart) => {
+          if (err) {return err;}
         });
       });
       let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem[0].id});
@@ -74,17 +74,17 @@ module.exports = {
       .populate('product_id')
       .populate('cart_id')
       .populate('cart_item_variants')
-      .then(function (cartItem) {
+      .then((cartItem) => {
         var cartItemVariantData = CartItemVariant.find({cart_item_id: cartItem.id})
           .populate('warehouse_variant_id')
           .populate('product_variant_id')
           .populate('variant_id')
-          .then(function (cartItemVariant) {
+          .then((cartItemVariant) => {
             return cartItemVariant;
           });
         return [cartItem, cartItemVariantData];
       })
-      .spread(function (cartItem, cartItemVariants) {
+      .spread((cartItem, cartItemVariants) => {
         var newJson = {};
         newJson.cartItem = cartItem;
         newJson.cartItem.cart_item_variants = cartItemVariants;
@@ -105,7 +105,7 @@ module.exports = {
       let selectedCartItem = null;
       let cartItemVariantsLength = 0;
 
-      if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+      if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
         const cartItemLen = cartItems.length;
         for (let h = 0; h < cartItemLen; h++) {
           let cartItemVariants = req.body.cartItemVariants;
@@ -135,8 +135,8 @@ module.exports = {
         });
 
         let requestPayload = {
-          "total_price": cart.total_price + req.body.product_total_price,
-          "total_quantity": cart.total_quantity + req.body.product_quantity,
+          'total_price': cart.total_price + req.body.product_total_price,
+          'total_quantity': cart.total_quantity + req.body.product_quantity,
         };
 
         await Cart.update({id: req.body.cart_id}, requestPayload);
@@ -151,7 +151,7 @@ module.exports = {
 
         cartItem = await CartItem.create(req.body);
 
-        if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+        if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
           let cartItemVariants = req.body.cartItemVariants;
           for (let i = 0; i < cartItemVariants.length; i++) {
             let cartItemVar = cartItemVariants[i];
@@ -165,7 +165,7 @@ module.exports = {
     } else {
 
       cartItem = await CartItem.create(req.body);
-      if (req.body.cartItemVariants && req.body.cartItemVariants !== "[]") {
+      if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
         let cartItemVariants = req.body.cartItemVariants;
         for (let i = 0; i < cartItemVariants.length; i++) {
           let cartItemVar = cartItemVariants[i];
@@ -182,7 +182,7 @@ module.exports = {
   //Model models/CartItem.js
   update: async function (req, res) {
     try {
-      let cartItem = await CartItem.findOne({id: req.param("id")});
+      let cartItem = await CartItem.findOne({id: req.param('id')});
       if (!cartItem) {
         return res.badRequest('No Cart Item found');
       }
@@ -199,13 +199,13 @@ module.exports = {
       }
 
       let requestPayload = {
-        "total_price": cart.total_price - product_total_price,
-        "total_quantity": cart.total_quantity - product_quantity,
+        'total_price': cart.total_price - product_total_price,
+        'total_quantity': cart.total_quantity - product_quantity,
       };
 
       await Cart.update({id: cartItem.cart_id}, requestPayload);
 
-      cartItem = await CartItem.update({id: req.param("id")}, req.body);
+      cartItem = await CartItem.update({id: req.param('id')}, req.body);
 
       return res.json(cartItem);
 

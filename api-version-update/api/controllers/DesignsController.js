@@ -1,4 +1,4 @@
-const {initLogPlaceholder, pagination} = require("../../libs");
+const {initLogPlaceholder, pagination} = require('../../libs');
 
 /**
  * DesignsCategoryController
@@ -17,7 +17,7 @@ module.exports = {
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
-                   let _where = {};
+      let _where = {};
 
 
 
@@ -26,7 +26,7 @@ module.exports = {
 
 
       if (req.query.searchTermName) {
-        _where.name = {'like': `%${req.query.searchTermName}%`}
+        _where.name = {'like': `%${req.query.searchTermName}%`};
       }
 
       if (req.query.warehouse_id) {
@@ -40,7 +40,7 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -66,14 +66,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All design with pagination',
         data: designs
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All design with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 };

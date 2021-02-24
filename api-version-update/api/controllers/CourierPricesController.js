@@ -26,7 +26,7 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierPrice.find({
         where: _where,
-      }).populate("courier_id", { deletedAt: null });
+      }).populate('courier_id', { deletedAt: null });
 
       res.status(200).json({
         success: true,
@@ -53,7 +53,7 @@ module.exports = {
         await CourierPrice.findOne(req.params.id)
       );
     } catch (error) {
-      let message = "Error in Geting the product";
+      let message = 'Error in Geting the product';
       res.status(400).json({
         success: false
       });

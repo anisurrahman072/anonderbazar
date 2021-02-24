@@ -44,9 +44,9 @@ module.exports = {
       let craftmanPrice = await CraftmanPrice.update({id: req.param('id')}, req.body);
       if (craftmanPrice) {
 
-        let newCraftmanPrice = []
+        let newCraftmanPrice = [];
         await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
-          let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,}).populateAll()
+          let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,}).populateAll();
           newCraftmanPrice.push(tmp);
 
         });
@@ -122,8 +122,8 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     CraftmanPrice.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec(function (err, craftmanPrice) {
-        if (err) return res.json(err, 400);
+      .exec((err, craftmanPrice) => {
+        if (err) {return res.json(err, 400);}
         return res.json(craftmanPrice[0]);
       });
   },

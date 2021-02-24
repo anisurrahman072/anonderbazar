@@ -5,7 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const { initLogPlaceholder, pagination, uploadImgAsync } = require('../../libs');
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 module.exports = {
   //Method called for getting a event data
   //Model models/EventManagement.js
@@ -15,7 +15,7 @@ module.exports = {
         await EventManagement.findOne(req.params.id)
       );
     } catch (error) {
-      let message = "Error in Geting the product";
+      let message = 'Error in Geting the product';
       res.status(400).json({
         success: false
       });
@@ -57,22 +57,22 @@ module.exports = {
   //Method called for updating a event data
   //Model models/EventManagement.js
   update: function (req, res) {
-    if (req.body.hasImage === "true") {
+    if (req.body.hasImage === 'true') {
 
-      req.file("image").upload( imageUploadConfig(),
-        function(err, uploaded) {
+      req.file('image').upload( imageUploadConfig(),
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
-          req.body.image = "/" + newPath;
+          if (err) {return res.serverError(err);}
+          req.body.image = '/' + newPath;
 
 
-          EventManagement.update({ id: req.param("id") }, req.body).exec(function(
+          EventManagement.update({ id: req.param('id') }, req.body).exec((
             err,
             eventManagement
-          ) {
+          ) => {
             if (err) {
               return res.json(err.status, { err: err });
             }
@@ -86,7 +86,7 @@ module.exports = {
         }
       );
     } else {
-      EventManagement.update({ id: req.param("id") }, req.body).exec(function(err, eventManagement) {
+      EventManagement.update({ id: req.param('id') }, req.body).exec((err, eventManagement) => {
         if (err) {
           return res.json(err.status, { err: err });
         }
@@ -100,8 +100,8 @@ module.exports = {
   //Model models/EventManagement.js
   destroy: function(req, res) {
     EventManagement.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, EventManagement) {
-        if (err) return res.json(err, 400);
+      (err, EventManagement) => {
+        if (err) {return res.json(err, 400);}
         return res.json(EventManagement[0]);
       }
     );

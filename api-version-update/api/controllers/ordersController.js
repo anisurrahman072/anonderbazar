@@ -2,13 +2,13 @@ const { Helper } = require('../../libs');
 
 let _model='order';
 
-  //Method called for getting all order products data
-  //Model models/Product.js
+//Method called for getting all order products data
+//Model models/Product.js
 exports.index = async (req, res) => {
   try {
     initLogPlaceholder(req, `${_model}List`);
 
-    console.log('--- lsdjflsjdfj -------------------- ----')
+    console.log('--- lsdjflsjdfj -------------------- ----');
 
     const _pagination = Helper.pagination(req.query);
 

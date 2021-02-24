@@ -11,7 +11,7 @@ module.exports = {
   getUsers: function (req, res) {
     Chat.find()
       .where({ warehouse_id: req.query.warehouse_id, deletedAt: null })
-      .then(function (chatUsers) {
+      .then((chatUsers) => {
         res.json(200, chatUsers);
       });
   },

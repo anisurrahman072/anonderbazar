@@ -12,7 +12,7 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     Brand.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, user) {
+      (err, user) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -28,8 +28,8 @@ module.exports = {
       if (req.body.hasImage === 'true') {
         let imageCounter = 1;
         let i;
-        let body, body1;
-        req.file('image').upload(imageUploadConfig(), function (err, files) {
+        let body; let body1;
+        req.file('image').upload(imageUploadConfig(), (err, files) => {
           // maxBytes: 10000000;
           if (err) {
             return res.serverError(err);
@@ -37,7 +37,7 @@ module.exports = {
           var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
           body = req.body;
           body.image = '/' + newPath;
-          Brand.create(body).exec(function (err, returnBrand) {
+          Brand.create(body).exec((err, returnBrand) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
@@ -48,7 +48,7 @@ module.exports = {
         });
 
       } else {
-        Brand.create(req.body).exec(function (err, returnBrand) {
+        Brand.create(req.body).exec((err, returnBrand) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -71,7 +71,7 @@ module.exports = {
     if (req.body.hasImage == 'true') {
 
       req.file('image').upload(imageUploadConfig(),
-        function (err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -80,10 +80,10 @@ module.exports = {
             return res.serverError(err);
           }
           req.body.image = '/' + newPath;
-          Brand.update({id: req.param('id')}, req.body).exec(function (
+          Brand.update({id: req.param('id')}, req.body).exec((
             err,
             brand
-          ) {
+          ) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
@@ -97,10 +97,10 @@ module.exports = {
         }
       );
     } else {
-      Brand.update({id: req.param('id')}, req.body).exec(function (
+      Brand.update({id: req.param('id')}, req.body).exec((
         err,
         brand
-      ) {
+      ) => {
         if (err) {
           return res.json(err, 400);
         }

@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -41,7 +41,7 @@ module.exports = {
       collection: 'suborderItemVariant',
       via: 'product_suborder_item_id'
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -61,7 +61,7 @@ module.exports = {
       defaultsTo: null
     }*/
   },
-  tableName: "product_suborder_items",
+  tableName: 'product_suborder_items',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/

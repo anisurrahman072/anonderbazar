@@ -17,7 +17,7 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     Suborder.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, suborder) {
+      (err, suborder) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -90,10 +90,10 @@ module.exports = {
       /*.....SORT END..............................*/
       let totalSubOrder = await Suborder.count().where(_where);
 
-      let totalPendingOrder = 0,
-        totalProcessingOrder = 0,
-        totalDeliveredOrder = 0,
-        totalCancelOrder = 0;
+      let totalPendingOrder = 0;
+      let totalProcessingOrder = 0;
+      let totalDeliveredOrder = 0;
+      let totalCancelOrder = 0;
 
       if (req.query.warehouse_id) {
         totalPendingOrder = await Suborder.count().where({

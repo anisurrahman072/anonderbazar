@@ -1,4 +1,4 @@
-const {initLogPlaceholder, pagination} = require("../../libs");
+const {initLogPlaceholder, pagination} = require('../../libs');
 
 /**
  * PaymentsController
@@ -30,35 +30,35 @@ module.exports = {
         ];
       }
       if (req.query.orderNumberSearchValue) {
-        _where.order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
+        _where.order_id = {'like': `%${req.query.orderNumberSearchValue}%`};
       }
       if (req.query.suborderNumberSearchValue) {
-        _where.suborder_id = {'like': `%${req.query.suborderNumberSearchValue}%`}
+        _where.suborder_id = {'like': `%${req.query.suborderNumberSearchValue}%`};
       }
       if (req.query.userIdSearchValue) {
-        _where.user_id = {'like': `%${req.query.userIdSearchValue}%`}
+        _where.user_id = {'like': `%${req.query.userIdSearchValue}%`};
       }
       if (req.query.transactionSearchValue) {
-        _where.transection_key = {'like': `%${req.query.transactionSearchValue}%`}
+        _where.transection_key = {'like': `%${req.query.transactionSearchValue}%`};
       }
       if (req.query.paymentTypeSearchValue) {
-        _where.payment_type = {'like': `%${req.query.paymentTypeSearchValue}%`}
+        _where.payment_type = {'like': `%${req.query.paymentTypeSearchValue}%`};
       }
       if (req.query.paymentAmountSearchValue) {
-        _where.payment_amount = {'like': `%${req.query.paymentAmountSearchValue}%`}
+        _where.payment_amount = {'like': `%${req.query.paymentAmountSearchValue}%`};
       }
       if (req.query.dateSearchValue) {
-        _where.payment_date = {'like': `%${req.query.dateSearchValue}%`}
+        _where.payment_date = {'like': `%${req.query.dateSearchValue}%`};
       }
       if (req.query.statusSearchValue) {
-        _where.status = {'like': `%${req.query.statusSearchValue}%`}
+        _where.status = {'like': `%${req.query.statusSearchValue}%`};
       }
       /* WHERE condition..........END................*/
 
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -74,10 +74,10 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populate("user_id", {  where: _where2, })
-        .populate("order_id", { deletedAt: null })
-        .populate("suborder_id", { deletedAt: null })
-        .populate("receiver_id", { deletedAt: null });
+        .populate('user_id', {  where: _where2, })
+        .populate('order_id', { deletedAt: null })
+        .populate('suborder_id', { deletedAt: null })
+        .populate('receiver_id', { deletedAt: null });
 
       res.status(200).json({
         success: true,
@@ -87,14 +87,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All Payment with pagination',
         data: payments
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All Payment with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 };

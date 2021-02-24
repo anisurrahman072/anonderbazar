@@ -9,7 +9,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
@@ -59,7 +59,7 @@ module.exports = {
     comment: {
       type: 'string'
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -79,8 +79,8 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "product_designs",
-/*  autoCreatedAt: true,
+  tableName: 'product_designs',
+  /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/
 

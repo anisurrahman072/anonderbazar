@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -37,8 +37,8 @@ module.exports = {
       via: 'order_id'
     },
     payment: {
-        collection: 'payment',
-        via: 'order_id'
+      collection: 'payment',
+      via: 'order_id'
     },
     total_quantity: {
       type: 'integer',
@@ -69,7 +69,7 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -90,7 +90,7 @@ module.exports = {
     },*/
 
   },
-  tableName: "product_orders",
+  tableName: 'product_orders',
   customToJSON: function () {
     return this.toObject();
   }

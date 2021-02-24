@@ -34,11 +34,11 @@ module.exports = {
   //Method called for updating courier data
   //Model models/Courier.js
   update: function(req, res) {
-    Courier.update(req.param('id'), req.body).exec(function(
+    Courier.update(req.param('id'), req.body).exec((
       err,
       courier
-    ) {
-      if (err) return res.json(err, 400);
+    ) => {
+      if (err) {return res.json(err, 400);}
       return res.json(200, courier);
     });
   },
@@ -47,8 +47,8 @@ module.exports = {
   //Model models/Courier.js
   destroy: function(req, res) {
     Courier.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, user) {
-        if (err) return res.json(err, 400);
+      (err, user) => {
+        if (err) {return res.json(err, 400);}
         return res.json(user[0]);
       }
     );

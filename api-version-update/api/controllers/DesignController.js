@@ -13,7 +13,7 @@ module.exports = {
   create: function (req, res) {
     function create(body) {
 
-      Design.create(body).exec(function (err, design) {
+      Design.create(body).exec((err, design) => {
 
         if (err) {
           return res.json(err.status, {err: err});
@@ -29,7 +29,7 @@ module.exports = {
       req.file('image').upload({
         ...uploadConfig,
         saveAs: Date.now() + '_design.jpg'
-      }, function (err, uploaded) {
+      }, (err, uploaded) => {
 
         if (err) {
           return res.json(err.status, {err: err});
@@ -55,7 +55,7 @@ module.exports = {
       req.file('image').upload({
         ...uploadConfig,
         saveAs: Date.now() + '_design.jpg'
-      }, function (err, uploaded) {
+      }, (err, uploaded) => {
 
         if (err) {
           return res.json(err.status, {err: err});
@@ -66,7 +66,7 @@ module.exports = {
         }
         req.body.image = '/' + newPath;
         Design.update({id: req.param('id')}, req.body)
-          .exec(function (err, design) {
+          .exec((err, design) => {
             if (err) {
               return res.json(err, 400);
             }
@@ -75,7 +75,7 @@ module.exports = {
       });
     } else {
       Design.update({id: req.param('id')}, req.body)
-        .exec(function (err, design) {
+        .exec((err, design) => {
           if (err) {
             return res.json(err, 400);
           }
@@ -87,7 +87,7 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     Design.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec(function (err, user) {
+      .exec((err, user) => {
         if (err) {
           return res.json(err, 400);
         }

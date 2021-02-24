@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -23,7 +23,7 @@ module.exports = {
     file_location: {
       type: 'json',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -43,7 +43,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "chat_files",
+  tableName: 'chat_files',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

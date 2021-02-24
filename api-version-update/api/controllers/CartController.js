@@ -12,8 +12,8 @@ module.exports = {
   //Model models/Cart.js
   destroy: (req, res) => {
     Cart.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, cart) {
-        if (err) return res.json(err, 400);
+      (err, cart) => {
+        if (err) {return res.json(err, 400);}
         return res.json(cart[0]);
       });
   },
@@ -41,9 +41,9 @@ module.exports = {
 
         await asyncForEach(cartItems, async _cartItem => {
           let dd = await Product.findOne({id: _cartItem.product_id})
-            .populate("product_images", {deletedAt: null})
-            .populate("warehouse_id", {deletedAt: null})
-            .populate("type_id", {deletedAt: null});
+            .populate('product_images', {deletedAt: null})
+            .populate('warehouse_id', {deletedAt: null})
+            .populate('type_id', {deletedAt: null});
 
           _cartItem.product_id = dd.toJSON();
           let civ = await CartItemVariant.find({
@@ -51,9 +51,9 @@ module.exports = {
             cart_item_id: _cartItem.id,
             deletedAt: null
           })
-            .populate("variant_id", {deletedAt: null})
-            .populate("warehouse_variant_id", {deletedAt: null})
-            .populate("product_variant_id", {deletedAt: null});
+            .populate('variant_id', {deletedAt: null})
+            .populate('warehouse_variant_id', {deletedAt: null})
+            .populate('product_variant_id', {deletedAt: null});
 
           if (civ.length > 0) {
             _cartItem.cartitemvariant = civ;

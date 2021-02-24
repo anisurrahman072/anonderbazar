@@ -8,14 +8,9 @@
 module.exports = {
 
   attributes: {
-/*    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },*/
     code: {
       type: 'string',
-      required: false,
+      required: true,
     },
     name: {
       type: 'string',
@@ -24,6 +19,7 @@ module.exports = {
     cost: {
       type: 'number',
       columnType: 'float',
+      allowNull: true
     },
     price: {
       type: 'number',
@@ -34,22 +30,29 @@ module.exports = {
       type: 'number',
       columnType: 'float',
       required: false,
+      defaultsTo: 0
     },
     min_unit: {
       type: 'number',
-      required: true
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 1
     },
     alert_quantity: {
       type: 'number',
-      defaultsTo: 0
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 1
     },
     image: {
       type: 'string',
+      columnType: 'text',
       allowNull: true
     },
     rating: {
       type: 'number',
       columnType: 'float',
+      allowNull: true
     },
     brand_id: {
       model: 'brand',
@@ -67,11 +70,13 @@ module.exports = {
       model: 'category',
     },
     quantity: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'float',
       required: true,
     },
     is_coupon_product: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: false,
       defaultsTo: 0
     },
@@ -102,7 +107,6 @@ module.exports = {
     craftsman_price: {
       type: 'float',
     },
-    ///start promotion
     promotion: {
       type: 'boolean',
     },
@@ -159,7 +163,7 @@ module.exports = {
     created_by: {
       model: 'user'
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -179,7 +183,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "products",
+  tableName: 'products',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

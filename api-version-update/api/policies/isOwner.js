@@ -17,4 +17,4 @@ module.exports = (req, res, next) => {
     return res.status(400).json({err: 'server error'});
   }
 
-}
+};

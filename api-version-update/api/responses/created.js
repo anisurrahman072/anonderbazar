@@ -35,7 +35,7 @@ module.exports = function created (data, options) {
 
   // Attempt to prettify data for views, if it's a non-error object
   var viewData = data;
-  if (!(viewData instanceof Error) && 'object' == typeof viewData) {
+  if (!(viewData instanceof Error) && 'object' === typeof viewData) {
     try {
       viewData = require('util').inspect(data, {depth: null});
     }
@@ -53,8 +53,8 @@ module.exports = function created (data, options) {
 
   // If no second argument provided, try to serve the implied view,
   // but fall back to sending JSON(P) if no view can be inferred.
-  else return res.guessView({ data: viewData, title: 'Created' }, function couldNotGuessView () {
+  else {return res.guessView({ data: viewData, title: 'Created' }, function couldNotGuessView () {
     return res.jsonx(data);
-  });
+  });}
 
 };

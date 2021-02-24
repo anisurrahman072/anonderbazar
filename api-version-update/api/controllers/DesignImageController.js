@@ -156,7 +156,7 @@ module.exports = {
 
       let result = _.chain(productDesignData)
         .groupBy('part_id.id')
-        .map(function (v, i) {
+        .map((v, i) => {
           return {
             part: _.get(_.find(v, 'part_id'), 'part_id'),
             designs: _.map(v, 'design_id')

@@ -20,7 +20,7 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     Order.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, order) {
+      (err, order) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -953,7 +953,7 @@ module.exports = {
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   }
 };

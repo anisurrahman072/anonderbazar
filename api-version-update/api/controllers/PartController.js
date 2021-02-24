@@ -1,5 +1,5 @@
 const { uploadImgAsync } = require('../../libs');
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 
 /**
  * DesignCategoryController
@@ -14,7 +14,7 @@ module.exports = {
   //Model models/Part.js
   create: function(req, res) {
     function create(body) {
-      Part.create(body).exec(function(err, design) {
+      Part.create(body).exec((err, design) => {
         if (err) {
           return res.json(err.status, { err: err });
         }
@@ -28,15 +28,15 @@ module.exports = {
       const uploadConfig = imageUploadConfig();
       req.file('image').upload(
         {
-         ...uploadConfig,
+          ...uploadConfig,
           saveAs: Date.now() + '_part.jpg'
         },
-        function(err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           req.body.image = '/' + newPath;
           create(req.body);
         }
@@ -50,18 +50,18 @@ module.exports = {
   update: async (req, res) => {
     if (req.body.hasImage == 'true') {
 
-      req.file("image").upload(imageUploadConfig(),
-        function(err, uploaded) {
+      req.file('image').upload(imageUploadConfig(),
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
-          req.body.image = "/" + newPath;
-          Part.update({ id: req.param("id") }, req.body).exec(function(
+          if (err) {return res.serverError(err);}
+          req.body.image = '/' + newPath;
+          Part.update({ id: req.param('id') }, req.body).exec((
             err,
             part
-          ) {
+          ) => {
             if (err) {
               return res.json(err.status, { err: err });
             }
@@ -83,8 +83,8 @@ module.exports = {
   // destroy a row
   destroy: function(req, res) {
     Part.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, part) {
-        if (err) return res.json(err, 400);
+      (err, part) => {
+        if (err) {return res.json(err, 400);}
         return res.json(part[0]);
       }
     );

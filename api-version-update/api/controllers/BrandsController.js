@@ -18,7 +18,7 @@ module.exports = {
     let products = await Product.find(
       { where: _where },
       { select: ['brand_id'] }
-      );
+    );
 
     let notDistinctBrand = [];
     let distinctBrand = [];

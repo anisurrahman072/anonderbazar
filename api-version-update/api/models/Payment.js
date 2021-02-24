@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -50,7 +50,7 @@ module.exports = {
       type: 'integer',
       required: true
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -71,7 +71,7 @@ module.exports = {
     }*/
   },
   tableName: 'payments',
-/*
+  /*
   autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,

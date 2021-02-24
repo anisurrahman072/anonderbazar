@@ -48,7 +48,7 @@ module.exports = {
         data: Warehouses
       });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All Warehouses with pagination';
 
       res.status(400).json({
@@ -61,9 +61,9 @@ module.exports = {
   //Model models/Warehouse.js
   destroy: function (req, res) {
     Warehouse.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec(function (err, warehouse) {
+      .exec((err, warehouse) => {
         User.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-          function (err, user) {
+          (err, user) => {
             if (err) {
               return res.json(err, 400);
             }
@@ -71,7 +71,7 @@ module.exports = {
           }
         );
         Product.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-          function (err, product) {
+          (err, product) => {
             if (err) {
               return res.json(err, 400);
             }
@@ -89,7 +89,7 @@ module.exports = {
   create: function (req, res) {
 
     if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig(), function (err, uploaded) {
+      req.file('logo').upload(imageUploadConfig(), (err, uploaded) => {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -98,7 +98,7 @@ module.exports = {
           return res.serverError(err);
         }
         req.body.logo = '/' + newPath;
-        Warehouse.create(req.body).exec(function (err, Warehouse) {
+        Warehouse.create(req.body).exec((err, Warehouse) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -108,7 +108,7 @@ module.exports = {
         });
       });
     } else {
-      Warehouse.create(req.body).exec(function (err, Warehouse) {
+      Warehouse.create(req.body).exec((err, Warehouse) => {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -122,7 +122,7 @@ module.exports = {
   //Model models/Warehouse.js
   update: function (req, res) {
     if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig(), function (err, uploaded) {
+      req.file('logo').upload(imageUploadConfig(), (err, uploaded) => {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -133,7 +133,7 @@ module.exports = {
         }
         req.body.logo = '/' + newPath;
         Warehouse.update({id: req.param('id')}, req.body)
-          .exec(function (err, warehouse) {
+          .exec((err, warehouse) => {
             if (err) {
               return res.json(err, 400);
             }
@@ -142,7 +142,7 @@ module.exports = {
       });
     } else {
       Warehouse.update({id: req.param('id')}, req.body)
-        .exec(function (err, warehouse) {
+        .exec((err, warehouse) => {
           if (err) {
             return res.json(err, 400);
           }

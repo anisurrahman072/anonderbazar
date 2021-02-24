@@ -5,16 +5,16 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const { initLogPlaceholder } = require('../../libs');
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 
 let asyncForEach = require('../../libs').asyncForEach;
 
 module.exports = {
-    //Method called for creating category design list data
+  //Method called for creating category design list data
   //Model models/DesignCategory.js
   create: function(req, res) {
     function create(body) {
-      DesignCategory.create(body).exec(function(err, returnCategory) {
+      DesignCategory.create(body).exec((err, returnCategory) => {
         if (err) {
           return res.json(err.status, { err: err });
         }
@@ -25,18 +25,18 @@ module.exports = {
     }
 
     if (req.body.hasImage === 'true') {
-      const uploadConfig = imageUploadConfig()
+      const uploadConfig = imageUploadConfig();
       req.file('image').upload(
         {
           ...uploadConfig,
           saveAs: Date.now() + '_designCategory.jpg'
         },
-        function(err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
           var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           req.body.image = '/' + newPath;
           create(req.body);
         }
@@ -87,27 +87,27 @@ module.exports = {
           ...uploadConfig,
           saveAs: Date.now() + '_designcategory.jpg'
         },
-        function(err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           req.body.image = '/' + newPath;
           DesignCategory.update({ id: req.param('id') }, req.body).exec(
-            function(err, designCategory) {
-              if (err) return res.json(err, 400);
+            (err, designCategory) => {
+              if (err) {return res.json(err, 400);}
               return res.json(200, designCategory);
             }
           );
         }
       );
     } else {
-      DesignCategory.update({ id: req.param('id') }, req.body).exec(function(
+      DesignCategory.update({ id: req.param('id') }, req.body).exec((
         err,
         designCategory
-      ) {
-        if (err) return res.json(err, 400);
+      ) => {
+        if (err) {return res.json(err, 400);}
         return res.json(200, designCategory);
       });
     }

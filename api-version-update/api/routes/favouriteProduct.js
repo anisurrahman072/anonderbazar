@@ -1,3 +1,3 @@
 exports.favouriteproductRoute = {
-    'POST /api/v1/favouriteproduct/byuser': 'FavouriteProductController.deleteAll',
+  'POST /api/v1/favouriteproduct/byuser': 'FavouriteProductController.deleteAll',
 };

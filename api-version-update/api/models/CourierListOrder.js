@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -42,7 +42,7 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -62,7 +62,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "courier_order_list",
+  tableName: 'courier_order_list',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

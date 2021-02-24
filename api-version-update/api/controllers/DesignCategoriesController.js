@@ -1,4 +1,4 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require("../../libs");
+const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
 /**
  * DesignCategoriesController
@@ -23,7 +23,7 @@ module.exports = {
 
 
       if (req.query.searchTermName) {
-        _where.name = {'like': `%${req.query.searchTermName}%`}
+        _where.name = {'like': `%${req.query.searchTermName}%`};
       }
 
 
@@ -33,7 +33,7 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -59,14 +59,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All designCategories with pagination',
         data: designCategories
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All designCategories with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
   //Method called for getting all category design list with sub categories
@@ -85,13 +85,13 @@ module.exports = {
       /*sort.....................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
       if (req.query.searchTermName) {
         _where.or = [
           {name: {'like': `%${req.query.searchTermName}%`}}
-        ]
+        ];
       }
 
       let totalCategory = await DesignCategory.count().where(_where);
@@ -104,7 +104,7 @@ module.exports = {
 
 
       await asyncForEach(categories, async (_category) => {
-        _category.subCategories = await DesignCategory.find({parent_id: _category.id, deletedAt: null})
+        _category.subCategories = await DesignCategory.find({parent_id: _category.id, deletedAt: null});
       });
 
       res.status(200).json({
@@ -113,17 +113,17 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: "product category  withsubcategory",
+        message: 'product category  withsubcategory',
         data: categories
 
-      })
+      });
     } catch (error) {
 
       res.status(400).json({
         success: false,
-        message: "",
+        message: '',
         error
-      })
+      });
     }
 
   }

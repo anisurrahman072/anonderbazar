@@ -9,7 +9,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -27,7 +27,7 @@ module.exports = {
       type: 'float',
       defaultsTo: 0
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -48,7 +48,7 @@ module.exports = {
     }*/
   },
   tableName: 'product_ratings',
-/*  autoCreatedAt: true,
+  /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/
 

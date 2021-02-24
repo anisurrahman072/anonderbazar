@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       autoIncrement: true
@@ -32,7 +32,7 @@ module.exports = {
       model: 'product',
       required: true
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -52,8 +52,8 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "product_purchased_coupon_codes",
+  tableName: 'product_purchased_coupon_codes',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true*/
-}
+};

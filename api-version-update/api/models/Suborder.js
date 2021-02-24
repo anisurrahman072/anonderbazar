@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -56,7 +56,7 @@ module.exports = {
     date: {
       type: 'string', columnType: 'datetime',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -77,7 +77,7 @@ module.exports = {
     },*/
 
   },
-  tableName: "product_suborders",
+  tableName: 'product_suborders',
   customToJSON: function () {
     return this.toObject();
   }

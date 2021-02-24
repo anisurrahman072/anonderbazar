@@ -81,10 +81,10 @@ module.exports = {
   //Method called for updating courier list status
   //Model models/CourierList.js
   update: function (req, res) {
-    CourierList.update({id: req.param('id')}, {status: req.body.status}).exec(function (
+    CourierList.update({id: req.param('id')}, {status: req.body.status}).exec((
       err,
       courierlist
-    ) {
+    ) => {
       if (err) {
         return res.json(err, 400);
       }
@@ -94,10 +94,10 @@ module.exports = {
   //Method called for creating courier order data
   //Model models/CourierList.js
   updatecourierlistorder: function (req, res) {
-    CourierListOrder.update({id: req.param('id')}, {status: req.body.status}).exec(function (
+    CourierListOrder.update({id: req.param('id')}, {status: req.body.status}).exec((
       err,
       courierlist
-    ) {
+    ) => {
       if (err) {
         return res.json(err, 400);
       }
@@ -107,10 +107,10 @@ module.exports = {
   //Method called for updating courier list data
   //Model models/CourierList.js
   updateCourier: function (req, res) {
-    CourierList.update({id: req.param('id')}, req.body).exec(function (
+    CourierList.update({id: req.param('id')}, req.body).exec((
       err,
       courierlist
-    ) {
+    ) => {
       if (err) {
         return res.json(err, 400);
       }
@@ -121,7 +121,7 @@ module.exports = {
   //Model models/CourierList.js
   destroy: function (req, res) {
     CourierList.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, user) {
+      (err, user) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -133,7 +133,7 @@ module.exports = {
   //Model models/CourierList.js
   destroyOrder: function (req, res) {
     CourierListOrder.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, user) {
+      (err, user) => {
         if (err) {
           return res.json(err, 400);
         }

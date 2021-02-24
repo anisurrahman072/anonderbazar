@@ -4,20 +4,9 @@ const {
 } = require('../../libs');
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 
-/*
-
-const fs = require('fs');
-const AWS = require('aws-sdk');
-
-AWS.config.update({
-  accessKeyId: 'AKIATYQRUSGN2DDD424I',
-  secretAccessKey: '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',
-  region: 'ap-southeast-1'
-});
-
-*/
 
 module.exports = {
+
   //Method called for getting a product data
   //Model models/Product.js
 
@@ -59,7 +48,7 @@ module.exports = {
   //Model models/Product.js
   destroy: function (req, res) {
     Product.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, user) {
+      (err, user) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -70,10 +59,10 @@ module.exports = {
   //Method called for finding product max price data
   //Model models/Product.js
   maxPrice: function (req, res) {
-    Product.query(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`, function (
+    Product.query(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`, (
       err,
       rawResult
-    ) {
+    ) => {
       if (err) {
         return res.serverError(err);
       }
@@ -83,10 +72,10 @@ module.exports = {
   //Method called for finding product min price data
   //Model models/Product.js
   minPrice: function (req, res) {
-    Product.query(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`, function (
+    Product.query(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`, (
       err,
       rawResult
-    ) {
+    ) => {
       if (err) {
         return res.serverError(err);
       }
@@ -176,7 +165,7 @@ module.exports = {
 
       let i = 0;
       if (req.body.hasImageFront === 'true') {
-        req.file('frontimage').upload(imageUploadConfig(), async function (err, uploaded) {
+        req.file('frontimage').upload(imageUploadConfig(), async (err, uploaded) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -222,7 +211,7 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true' && req.body.product_id) {
 
-        req.file('image').upload(imageUploadConfig(), async function (err, uploaded) {
+        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);
@@ -243,7 +232,7 @@ module.exports = {
         });
       } else if (req.body.hasImage === 'true') {
 
-        req.file('image').upload(imageUploadConfig(), async function (err, uploaded) {
+        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);
@@ -263,7 +252,7 @@ module.exports = {
         });
 
       } else if (req.body.id) {
-        ProductImage.update({id: req.body.id}, {deletedAt: new Date()}).exec(function (err, product) {
+        ProductImage.update({id: req.body.id}, {deletedAt: new Date()}).exec((err, product) => {
           if (err) {
             return res.json(err, 400);
           }
@@ -403,7 +392,7 @@ module.exports = {
     try {
       await SuborderItem.query(
         `SELECT * FROM warehouses WHERE warehouses.id IN (select warehouses.id from warehouses left join product_suborders on warehouses.id=product_suborders.warehouse_id WHERE product_suborders.deleted_at is null and warehouses.deleted_at is null and warehouses.status ='2' GROUP by id ORDER by COUNT(warehouses.id) DESC) LIMIT 3`, //);
-        function (err, rawResult) {
+        (err, rawResult) => {
           if (err) {
             res.status(400).json({
               success: false,
@@ -433,7 +422,7 @@ module.exports = {
     try {
       await SuborderItem.query(
         `SELECT * FROM products WHERE products.id IN (select products.id from products left join product_suborder_items on products.id=product_suborder_items.product_id WHERE product_suborder_items.deleted_at is null and products.deleted_at is null GROUP by id ORDER by COUNT(products.id) DESC) LIMIT 3`, //);
-        function (err, rawResult) {
+        (err, rawResult) => {
           if (err) {
             res.status(400).json({
               success: false,
@@ -452,7 +441,7 @@ module.exports = {
 
       res.status(400).json({
         success: false,
-        message: "",
+        message: '',
         error,
       });
     }

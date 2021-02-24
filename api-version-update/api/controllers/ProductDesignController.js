@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach} = require("../../libs");
+const {asyncForEach} = require('../../libs');
 
 module.exports = {
 
@@ -44,9 +44,9 @@ module.exports = {
       let productDesign = await ProductDesign.update({id: req.param('id')}, req.body);
       if (productDesign) {
 
-        let newProductDesign = []
+        let newProductDesign = [];
         await asyncForEach(productDesign, async (_productDesign) => {
-          let tmp = await ProductDesign.findOne({id: _productDesign.id,}).populateAll()
+          let tmp = await ProductDesign.findOne({id: _productDesign.id,}).populateAll();
           newProductDesign.push(tmp);
 
         });
@@ -72,13 +72,13 @@ module.exports = {
   // destroy a row
   destroy: function (req, res) {
     ProductDesign.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec(function (err, productDesign) {
-        if (err) return res.json(err, 400);
+      .exec((err, productDesign) => {
+        if (err) {return res.json(err, 400);}
         return res.json(productDesign[0]);
       });
   }
 
   ,
-}
-;
+};
+
 

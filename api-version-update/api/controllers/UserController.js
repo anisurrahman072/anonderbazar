@@ -15,7 +15,7 @@ module.exports = {
   //Model models/User.js
   destroy: function (req, res) {
     User.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      function (err, user) {
+      (err, user) => {
         if (err) {
           return res.json(err, 400);
         }
@@ -30,7 +30,7 @@ module.exports = {
     if (req.body.hasImage === 'true') {
 
       req.file('avatar').upload(imageUploadConfig(),
-        function (err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -41,7 +41,7 @@ module.exports = {
           req.body.avatar = '/' + newPath;
 
 
-          User.create(req.body).exec(function (err, user) {
+          User.create(req.body).exec((err, user) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
@@ -55,7 +55,7 @@ module.exports = {
         }
       );
     } else {
-      User.create(req.body).exec(function (err, user) {
+      User.create(req.body).exec((err, user) => {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -114,7 +114,7 @@ module.exports = {
   update: function (req, res) {
     if (req.body.hasImage === 'true') {
       req.file('avatar').upload(imageUploadConfig(),
-        function (err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, {err: err});
           }
@@ -124,10 +124,10 @@ module.exports = {
             return res.serverError(err);
           }
           req.body.avatar = '/' + newPath;
-          User.update({id: req.param('id')}, req.body).exec(function (
+          User.update({id: req.param('id')}, req.body).exec((
             err,
             user
-          ) {
+          ) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
@@ -141,7 +141,7 @@ module.exports = {
         }
       );
     } else {
-      User.update({id: req.param('id')}, req.body).exec(function (err, user) {
+      User.update({id: req.param('id')}, req.body).exec((err, user) => {
         if (err) {
           return res.json(err.status, {err: err});
         }
@@ -273,10 +273,10 @@ module.exports = {
       /*.....SORT END..............................*/
       let totalOrder = await Order.count().where(_suborder_where);
       let totalWishlistItem = await FavouriteProduct.count().where(_suborder_where);
-      let totalPendingOrder = 0,
-        totalProcessingOrder = 0,
-        totalDeliveredOrder = 0,
-        totalCancelOrder = 0;
+      let totalPendingOrder = 0;
+      let totalProcessingOrder = 0;
+      let totalDeliveredOrder = 0;
+      let totalCancelOrder = 0;
 
 
       _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;

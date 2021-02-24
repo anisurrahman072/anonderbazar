@@ -6,13 +6,13 @@
  */
 
 module.exports = {
-    // destroy a row
-    destroy: function (req, res) {
-        CraftmanSchedule.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec(function (err, craftmanSchedule) {
-                if (err) return res.json(err, 400);
-                return res.json(craftmanSchedule[0]);
+  // destroy a row
+  destroy: function (req, res) {
+    CraftmanSchedule.update({id: req.param('id')}, {deletedAt: new Date()})
+            .exec((err, craftmanSchedule) => {
+              if (err) {return res.json(err, 400);}
+              return res.json(craftmanSchedule[0]);
             });
-    },
+  },
 };
 

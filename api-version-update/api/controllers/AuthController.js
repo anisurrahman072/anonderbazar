@@ -5,8 +5,8 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-const bcrypt = require("bcryptjs");
-const {imageUploadConfig} = require("../../libs/helper");
+const bcrypt = require('bcryptjs');
+const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
@@ -16,13 +16,13 @@ module.exports = {
     var password = req.param('password');
 
 
-    bcrypt.genSalt(10, function (err, salt) {
-      if (err) return next(err);
-      bcrypt.hash(password, 10, function (err, hash) {
-        if (err) return next(err);
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) {return next(err);}
+      bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {return next(err);}
         password = hash;
-      })
-    })
+      });
+    });
 
   },
 
@@ -37,11 +37,11 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec(function (err, user) {
+      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
         if (!user) {
           return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
         }
-        User.comparePassword(password, user.password, function (err, valid) {
+        User.comparePassword(password, user.password, (err, valid) => {
           if (err) {
             return res.json(401, {model: 'userName', message: 'forbidden.'});
           }
@@ -62,7 +62,7 @@ module.exports = {
             });
           }
         });
-      })
+      });
     }
   },
 
@@ -76,7 +76,7 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      let user = await User.findOne({username: username}).populate(['group_id', 'warehouse_id'])
+      let user = await User.findOne({username: username}).populate(['group_id', 'warehouse_id']);
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number or username is invalid'});
       }
@@ -91,10 +91,10 @@ module.exports = {
         if (!user.active) {
           return res.json(401, {model: 'userName', message: 'Not an active user'});
         }
-        let isWarehouseActivated, accessList, group;
+        let isWarehouseActivated; let accessList; let group;
         if (user.group_id.name === 'owner') {
           if (user.warehouse_id != null)
-            isWarehouseActivated = (user.warehouse_id.status === 2);
+          {isWarehouseActivated = (user.warehouse_id.status === 2);}
           accessList = {};
           accessList.list = (await Group.findOne({name: 'owner'})).accessList;
         } else if (user.group_id.name === 'admin') {
@@ -137,11 +137,11 @@ module.exports = {
       return res.json(401, {err: 'username and password required'});
     } else {
 
-      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec(function (err, user) {
+      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
         if (!user) {
           return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
         }
-        User.comparePassword(password, user.password, function (err, valid) {
+        User.comparePassword(password, user.password, (err, valid) => {
           if (err) {
             return res.json(403, {err: 'forbidden'});
           }
@@ -165,11 +165,10 @@ module.exports = {
             });
           }
         });
-      })
+      });
     }
-  }
+  },
 
-  ,
 
   // Entry of Auth/signup
   //Method called for vendor signup for backend
@@ -177,7 +176,7 @@ module.exports = {
   warehouseSignup: function (req, res) {
 
     if (req.body.hasImage === 'true') {
-      req.file('avatar').upload(imageUploadConfig(), function (err, uploaded) {
+      req.file('avatar').upload(imageUploadConfig(), (err, uploaded) => {
 
         if (err) {
           return res.json(err.status, {err: err});
@@ -185,7 +184,7 @@ module.exports = {
 
         req.body.avatar =  uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-        User.create(req.body).exec(function (err, user) {
+        User.create(req.body).exec((err, user) => {
 
           if (err) {
             return res.json(err.status, {err: err});
@@ -198,7 +197,7 @@ module.exports = {
         });
       });
     } else {
-      User.create(req.body).exec(function (err, user) {
+      User.create(req.body).exec((err, user) => {
 
         if (err) {
           return res.json(err.status, {err: err});

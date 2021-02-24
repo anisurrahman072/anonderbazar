@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -34,7 +34,7 @@ module.exports = {
     exhibition_products: {
       type: 'string',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -54,7 +54,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "event_registration",
+  tableName: 'event_registration',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

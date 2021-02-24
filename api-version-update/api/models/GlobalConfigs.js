@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -43,7 +43,7 @@ module.exports = {
     default_image_height_ratio: {
       type: 'integer',
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -63,7 +63,7 @@ module.exports = {
       defaultsTo: null
     },*/
   },
-  tableName: "global_configs",
+  tableName: 'global_configs',
 /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/

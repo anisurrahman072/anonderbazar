@@ -1,5 +1,5 @@
 const { uploadImgAsync } = require('../../libs');
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for deleting a warehouse variant data
@@ -8,8 +8,8 @@ module.exports = {
     WarehouseVariant.update(
       { id: req.param('id') },
       { deletedAt: new Date() }
-    ).exec(function(err, user) {
-      if (err) return res.json(err, 400);
+    ).exec((err, user) => {
+      if (err) {return res.json(err, 400);}
       return res.json(user[0]);
     });
   },
@@ -43,28 +43,28 @@ module.exports = {
   update: function(req, res) {
     if (req.body.hasImage === 'true') {
       req.file('image').upload(imageUploadConfig(),
-        function(err, uploaded) {
+        (err, uploaded) => {
           if (err) {
             return res.json(err.status, { err: err });
           }
 
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) return res.serverError(err);
+          if (err) {return res.serverError(err);}
           req.body.image = '/' + newPath;
           WarehouseVariant.update({ id: req.param('id') }, req.body).exec(
-            function(err, warehouseVariant) {
-              if (err) return res.json(err, 400);
+            (err, warehouseVariant) => {
+              if (err) {return res.json(err, 400);}
               return res.json(200, warehouseVariant);
             }
           );
         }
       );
     } else {
-      WarehouseVariant.update({ id: req.param('id') }, req.body).exec(function(
+      WarehouseVariant.update({ id: req.param('id') }, req.body).exec((
         err,
         warehouseVariant
-      ) {
-        if (err) return res.json(err, 400);
+      ) => {
+        if (err) {return res.json(err, 400);}
         return res.json(200, warehouseVariant);
       });
     }

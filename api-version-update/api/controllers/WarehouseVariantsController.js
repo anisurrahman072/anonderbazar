@@ -1,4 +1,4 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require("../../libs");
+const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
 /**
  * WarehouseVariantsController
@@ -8,7 +8,7 @@ const {asyncForEach, initLogPlaceholder, pagination} = require("../../libs");
  */
 
 module.exports = {
-    //Method called for getting all warehouse variant data
+  //Method called for getting all warehouse variant data
   //Model models/WarehouseVariant.js
   getAll: async (req, res) => {
     try {
@@ -23,7 +23,7 @@ module.exports = {
 
 
       if (req.query.searchTermName) {
-        _where.name = {'like': `%${req.query.searchTermName}%`}
+        _where.name = {'like': `%${req.query.searchTermName}%`};
       }
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
@@ -36,7 +36,7 @@ module.exports = {
       /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -62,15 +62,15 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All WarehouseVariant with pagination',
         data: warehouseVariants
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
 
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
 };

@@ -21,7 +21,7 @@ const axios = require('axios');
 module.exports = {
 
   sendingOneSmsToOne: (contacts, message) => {
-    const contactTexts = contacts.map(function (contact) {
+    const contactTexts = contacts.map((contact) => {
       if (contact.charAt(0) === '+') {
         return contact.substr(1);
       } else if (contact.charAt(0) === '0') {
@@ -43,10 +43,10 @@ module.exports = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     })
-      .then(function (response) {
+      .then((response) => {
         console.log(response.data);
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error.data);
       });
   },
@@ -55,7 +55,7 @@ module.exports = {
   },
   sendingOneMessageToManyDeprecated: function (contacts, message) {
 
-    const contactTexts = contacts.map(function (contact) {
+    const contactTexts = contacts.map((contact) => {
       if (contact.charAt(0) === '+') {
         return contact.substr(1);
       } else if (contact.charAt(0) === '0') {
@@ -74,10 +74,10 @@ module.exports = {
     };
 
     axios.post('http://bangladeshsms.com/smsapi', payload)
-      .then(function (response) {
+      .then((response) => {
         console.log(response);
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
       });
   }

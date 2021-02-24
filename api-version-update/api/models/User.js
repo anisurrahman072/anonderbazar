@@ -9,7 +9,7 @@ let bcrypt = require('bcryptjs');
 
 module.exports = {
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -124,7 +124,7 @@ module.exports = {
       defaultsTo: 0
     },
 
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -145,8 +145,8 @@ module.exports = {
     },*/
 
   },
-  tableName: "users",
-/*  autoCreatedAt: true,
+  tableName: 'users',
+  /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/
   customToJSON: function () {
@@ -158,25 +158,25 @@ module.exports = {
   },
   // Encrypt password before creating a User
   beforeCreate: function (values, next) {
-    bcrypt.genSalt(10, function (err, salt) {
-      if (err) return next(err);
-      bcrypt.hash(values.password, 10, function (err, hash) {
-        if (err) return next(err);
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) {return next(err);}
+      bcrypt.hash(values.password, 10, (err, hash) => {
+        if (err) {return next(err);}
         values.password = hash;
         next();
-      })
-    })
+      });
+    });
   },
 
   // Comparing passwords
   comparePassword: function (password, userPassword, cb) {
-    bcrypt.compare(password, userPassword, function (err, match) {
-      if (err) cb(err);
+    bcrypt.compare(password, userPassword, (err, match) => {
+      if (err) {cb(err);}
       if (match) {
         cb(null, true);
       } else {
         cb(err);
       }
-    })
+    });
   }
 };

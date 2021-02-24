@@ -8,7 +8,7 @@
 module.exports = {
 
   attributes: {
-/*    id: {
+    /*    id: {
       type: 'integer',
       primaryKey: true,
       unique: true,
@@ -33,7 +33,7 @@ module.exports = {
       collection: 'cartItemVariant',
       via: 'cart_item_id'
     },
-/*    createdAt: {
+    /*    createdAt: {
       type: 'datetime',
       columnName: 'created_at',
       defaultsTo: function () {
@@ -54,7 +54,7 @@ module.exports = {
     }*/
   },
   tableName: 'cart_items',
-/*  autoCreatedAt: true,
+  /*  autoCreatedAt: true,
   autoUpdatedAt: true,
   autoDeletedAt: true,*/
 
@@ -68,7 +68,7 @@ module.exports = {
   // // generating slug from name before creating a row
   afterCreate: function (req, next) {
 
-    Cart.find(req.cart_id).exec(function (err, cart) {
+    Cart.find(req.cart_id).exec((err, cart) => {
       if (err) {
         return next(err);
       }
@@ -78,7 +78,7 @@ module.exports = {
         'total_quantity': cart[0].total_quantity + req.product_quantity,
       });
 
-      Cart.update({id: req.cart_id}, requestPayload[0]).exec(function (err, cart) {
+      Cart.update({id: req.cart_id}, requestPayload[0]).exec((err, cart) => {
         if (err) {
           return next(err);
         }

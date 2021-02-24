@@ -14,7 +14,7 @@ module.exports = {
         await EventPrice.findOne(req.params.id)
       );
     } catch (error) {
-      let message = "Error in Geting the product";
+      let message = 'Error in Geting the product';
       res.status(400).json({
         success: false
       });
@@ -24,8 +24,8 @@ module.exports = {
   //Model models/EventPrice.js
   destroy: function(req, res) {
     EventPrice.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, EventManagement) {
-        if (err) return res.json(err, 400);
+      (err, EventManagement) => {
+        if (err) {return res.json(err, 400);}
         return res.json(EventManagement[0]);
       }
     );

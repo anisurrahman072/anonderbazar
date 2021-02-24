@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing suborders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination, asyncForEach} = require("../../libs");
-const moment = require("moment");
+const {initLogPlaceholder, pagination, asyncForEach} = require('../../libs');
+const moment = require('moment');
 const Promise = require('bluebird');
 
 module.exports = {
@@ -21,13 +21,13 @@ module.exports = {
 
       const SuborderQuery = Promise.promisify(Suborder.query);
 
-      let rawSelect = "SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,";
-      rawSelect += " suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ";
-      rawSelect += " suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ";
-      rawSelect += " warehouses.name,  CONCAT(users.first_name, ' ',users.first_name) as changedBy  ";
+      let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
+      rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ';
+      rawSelect += ' suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ';
+      rawSelect += ' warehouses.name,  CONCAT(users.first_name, \' \',users.first_name) as changedBy  ';
 
-      let fromSQL = " FROM product_suborders as suborder LEFT JOIN warehouses ON warehouses.id = suborder.warehouse_id  ";
-      fromSQL += "  LEFT JOIN users ON users.id = suborder.changed_by  ";
+      let fromSQL = ' FROM product_suborders as suborder LEFT JOIN warehouses ON warehouses.id = suborder.warehouse_id  ';
+      fromSQL += '  LEFT JOIN users ON users.id = suborder.changed_by  ';
 
       let _where = ' WHERE suborder.deleted_at IS NULL ';
 
@@ -82,9 +82,9 @@ module.exports = {
       let _sort = {};
       if (req.query.sortName) {
         // _sort.name = req.query.sortName
-        _where += ' ORDER BY suborder.created_at DESC '
+        _where += ' ORDER BY suborder.created_at DESC ';
       } else {
-        _where += ' ORDER BY suborder.created_at DESC '
+        _where += ' ORDER BY suborder.created_at DESC ';
       }
 
 
@@ -111,13 +111,13 @@ module.exports = {
 
       _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
 
-      let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `
+      let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
       const suborders = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
 
-      console.log('totalCount', totalSuborderRaw, totalSuborder)
+      console.log('totalCount', totalSuborderRaw, totalSuborder);
 
       await asyncForEach(suborders, async suborder => {
-        console.log('suborder', suborder)
+        console.log('suborder', suborder);
         suborder.order = await Order.findOne({where: {id: suborder.product_order_id}}).populateAll();
         suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
         await asyncForEach(suborder.items, async item => {
@@ -211,14 +211,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All Suborder with pagination',
         data: suborders
-      })
+      });
     } catch (error) {
-      console.log('error', error)
+      console.log('error', error);
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   },
   //Method called for getting all product suborder with PR
@@ -241,23 +241,23 @@ module.exports = {
       }
 
       if (req.query.suborderNumberSearchValue) {
-        _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`}
+        _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`};
       }
 
       if (req.query.orderNumberSearchValue) {
-        _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
+        _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`};
       }
 
       if (req.query.suborderIdValue) {
-        _where.warehouse_id = {'like': `%${req.query.suborderIdValue}%`}
+        _where.warehouse_id = {'like': `%${req.query.suborderIdValue}%`};
       }
 
       if (req.query.quantitySearchValue) {
-        _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`}
+        _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`};
       }
 
       if (req.query.totalPriceSearchValue) {
-        _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`}
+        _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`};
       }
 
       if (req.query.dateSearchValue) {
@@ -268,7 +268,7 @@ module.exports = {
       }
 
       if (req.query.statusSearchValue) {
-        _where.status = req.query.statusSearchValue
+        _where.status = req.query.statusSearchValue;
       }
 
       /* WHERE condition..........END................*/
@@ -276,7 +276,7 @@ module.exports = {
       /* sort................*/
       let _sort = {};
       if (req.query.sortName) {
-        _sort.name = req.query.sortName
+        _sort.name = req.query.sortName;
       }
 
 
@@ -299,7 +299,7 @@ module.exports = {
 
         let totalPrice = 0;
         await asyncForEach(suborder.items, async item => {
-          totalPrice += (item.product_id.vendor_price * item.product_quantity)
+          totalPrice += (item.product_id.vendor_price * item.product_quantity);
           let varientitems = [];
           item.pending = await StatusChange.findOne({
             where: {
@@ -380,7 +380,7 @@ module.exports = {
 
           item.suborderItemVariants = varientitems;
         });
-        suborder.total_price = totalPrice
+        suborder.total_price = totalPrice;
       });
       res.status(200).json({
         success: true,
@@ -390,14 +390,14 @@ module.exports = {
         page: _pagination.page,
         message: 'Get All Suborder with pagination',
         data: suborders
-      })
+      });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
         message
-      })
+      });
     }
   }
 };

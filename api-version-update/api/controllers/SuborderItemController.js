@@ -9,17 +9,17 @@ const {
   asyncForEach,
   initLogPlaceholder,
   pagination
-} = require("../../libs");
+} = require('../../libs');
 
 
 module.exports = {
   // destroy a row
   destroy: function(req, res) {
     SuborderItem.update(
-      { id: req.param("id") },
+      { id: req.param('id') },
       { deletedAt: new Date() }
-    ).exec(function(err, user) {
-      if (err) return res.json(err, 400);
+    ).exec((err, user) => {
+      if (err) {return res.json(err, 400);}
       return res.json(user[0]);
     });
   },
@@ -27,7 +27,7 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborderItems: async (req, res) => {
     try {
-      initLogPlaceholder(req, "SubOrderItemList");
+      initLogPlaceholder(req, 'SubOrderItemList');
 
       let _pagination = pagination(req.query);
 
@@ -69,7 +69,7 @@ module.exports = {
       let suborderItems = await SuborderItem.find({
         where: _where,
         sort: _sort
-      }).populate("product_id", { deletedAt: null });
+      }).populate('product_id', { deletedAt: null });
       let allsuborderItems = await Promise.all(
         suborderItems.map(async item => {
           if (req.query.status) {
@@ -92,22 +92,22 @@ module.exports = {
 
           item.product_order_id = await Order.find({
             deletedAt: null,
-          }).populate("user_id", { deletedAt: null });
+          }).populate('user_id', { deletedAt: null });
 
           if(item.product_suborder_id.length!=0)
-            return item;
+          {return item;}
         })
       );
-      var filteredallsuborderItems = allsuborderItems.filter(function(el) { return el; });
+      var filteredallsuborderItems = allsuborderItems.filter((el) => { return el; });
 
       res.status(200).json({
         success: true,
         total: filteredallsuborderItems.length,
-        message: "Get All SubOrderItemLists with pagination",
+        message: 'Get All SubOrderItemLists with pagination',
         data: filteredallsuborderItems
       });
     } catch (error) {
-      let message = "Error in Get All SubOrderItemList with pagination";
+      let message = 'Error in Get All SubOrderItemList with pagination';
       res.status(400).json({
         success: false,
         message

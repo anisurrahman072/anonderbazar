@@ -1,5 +1,5 @@
 const { asyncForEach, initLogPlaceholder } = require('../../libs');
-const {imageUploadConfig} = require("../../libs/helper");
+const {imageUploadConfig} = require('../../libs/helper');
 /**
  * CategoryController
  *
@@ -10,40 +10,40 @@ module.exports = {
   //Method called for creating category data
   //Model models/Category.js
   create: function(req, res) {
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 1;
-              let i;
-              let body, body1;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  Category.create(body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 1;
+        let i;
+        let body; let body1;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          Category.create(body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              Category.create(req.body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        Category.create(req.body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
 
   // Destroy function to soft delete a row based on id
@@ -51,8 +51,8 @@ module.exports = {
   //Model models/Category.js
   destroyType: function(req, res) {
     Category.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, user) {
-        if (err) return res.json(err, 400);
+      (err, user) => {
+        if (err) {return res.json(err, 400);}
         return res.json(user[0]);
       }
     );
@@ -61,8 +61,8 @@ module.exports = {
   //Model models/Category.js
   destroyProduct: function(req, res) {
     Category.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      function(err, user) {
-        if (err) return res.json(err, 400);
+      (err, user) => {
+        if (err) {return res.json(err, 400);}
         return res.json(user[0]);
       }
     );
@@ -92,7 +92,7 @@ module.exports = {
   getProduct: function(req, res) {
     Category.find()
       .where({ type_id: 2, deletedAt: null })
-      .then(function(categoryProducts) {
+      .then((categoryProducts) => {
         res.json(200, categoryProducts);
       });
   },
@@ -102,7 +102,7 @@ module.exports = {
   getSingleType: function(req, res) {
     Category.findOne()
       .where({ id: req.param('id'), type_id: 1 })
-      .then(function(categoryType) {
+      .then((categoryType) => {
         res.json(200, categoryType);
       });
   },
@@ -111,233 +111,233 @@ module.exports = {
   getSingleProduct: function(req, res) {
     Category.findOne()
       .where({ id: req.param('id'), type_id: 2 })
-      .then(function(categoryProduct) {
+      .then((categoryProduct) => {
         res.json(200, categoryProduct);
       });
   },
   // Creating new row in category table
   createType: function(req, res) {
 
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 1;
-              let i;
-              let body;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  body.type_id = 1;
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 1;
+        let i;
+        let body;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          body.type_id = 1;
 
-                  Category.create(body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+          Category.create(body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              let body=req.body;
-              body.type_id = 1;
-              Category.create(body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        let body=req.body;
+        body.type_id = 1;
+        Category.create(body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
   // Creating new row in product category table
   createProduct: function(req, res) {
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 2;
-              let i;
-              let body;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  body.type_id = 1;
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 2;
+        let i;
+        let body;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          body.type_id = 1;
 
-                  Category.create(body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+          Category.create(body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              let body=req.body;
-              body.type_id = 2;
-              Category.create(body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        let body=req.body;
+        body.type_id = 2;
+        Category.create(body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
   //Method called for updating category
   //Model models/Category.js
   update: function(req, res) {
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 1;
-              let i;
-              let body;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 1;
+        let i;
+        let body;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              let body=req.body;
-              Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        let body=req.body;
+        Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
   //Method called for updating category type
   //Model models/Category.js
   updateType: function(req, res) {
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 1;
-              let i;
-              let body;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  body.type_id = 1;
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 1;
+        let i;
+        let body;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          body.type_id = 1;
 
-                  Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+          Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              let body=req.body;
-              body.type_id = 1;
-              Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        let body=req.body;
+        body.type_id = 1;
+        Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
   //Method called for updating category product
   //Model models/Category.js
   updateProduct: function(req, res) {
-      try{
-          if (req.body.hasImage === 'true') {
-              let imageCounter = 1;
-              let i;
-              let body;
-              req.file('image0').upload(imageUploadConfig(), function (err, files) {
-                  // maxBytes: 10000000;
-                  if (err) return res.serverError(err);
-                  const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-                  body=req.body;
-                  body.image= '/' + newPath;
-                  body.type_id = 2;
+    try{
+      if (req.body.hasImage === 'true') {
+        let imageCounter = 1;
+        let i;
+        let body;
+        req.file('image0').upload(imageUploadConfig(), (err, files) => {
+          // maxBytes: 10000000;
+          if (err) {return res.serverError(err);}
+          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body=req.body;
+          body.image= '/' + newPath;
+          body.type_id = 2;
 
-                  Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                      if (err) {
-                          return res.json(err.status, { err: err });
-                      }
-                      if (returnCategory) {
-                          res.json(200, returnCategory);
-                      }
-                  });
-              });
+          Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+            if (err) {
+              return res.json(err.status, { err: err });
+            }
+            if (returnCategory) {
+              res.json(200, returnCategory);
+            }
+          });
+        });
 
-          } else {
-              let body=req.body;
-              body.type_id = 2;
-              Category.update({ id: req.param('id') }, body).exec(function(err, returnCategory) {
-                  if (err) {
-                      return res.json(err.status, { err: err });
-                  }
-                  if (returnCategory) {
-                      res.json(200, returnCategory);
-                  }
-              });
+      } else {
+        let body=req.body;
+        body.type_id = 2;
+        Category.update({ id: req.param('id') }, body).exec((err, returnCategory) => {
+          if (err) {
+            return res.json(err.status, { err: err });
           }
-      } catch (err) {
-          res.json(400, { message: "wrong" });
+          if (returnCategory) {
+            res.json(200, returnCategory);
+          }
+        });
       }
+    } catch (err) {
+      res.json(400, { message: 'wrong' });
+    }
   },
   //Method called for getting a category with subcategories data
   //Model models/Category.js
   withSubcategories: async (req, res) => {
-      try {
-          let categories = await Category.find({deletedAt: null,parent_id: 0,type_id:2})
-              .populate("offer_id",{deletedAt:null});
+    try {
+      let categories = await Category.find({deletedAt: null,parent_id: 0,type_id:2})
+              .populate('offer_id',{deletedAt:null});
 
-          let allCategories = await Promise.all(categories.map(async (item) => {
-              item.subCategories = await Category.find({deletedAt: null,parent_id: item.id});
-          return item;
+      let allCategories = await Promise.all(categories.map(async (item) => {
+        item.subCategories = await Category.find({deletedAt: null,parent_id: item.id});
+        return item;
       }));
 
-          res.json(allCategories);
+      res.json(allCategories);
 
-      } catch (error) {
-          return res.json(error);
-      }
+    } catch (error) {
+      return res.json(error);
+    }
 
 
   },
