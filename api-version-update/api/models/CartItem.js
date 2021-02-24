@@ -9,23 +9,32 @@ module.exports = {
 
   attributes: {
     cart_id: {
-      model: 'cart'
+      model: 'cart',
+      required: true,
     },
     product_id: {
-      model: 'product'
+      model: 'product',
+      required: false,
+      allowNull: true
     },
     product_unit_price: {
       type: 'float'
     },
     product_quantity: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      required: true
     },
     product_total_price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      required: true,
     },
     cart_item_variants: {
       collection: 'cartItemVariant',
-      via: 'cart_item_id'
+      via: 'cart_item_id',
+      required: false,
+      allowNull: true
     },
   },
   tableName: 'cart_items',
