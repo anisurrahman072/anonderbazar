@@ -7,49 +7,32 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     page: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     section: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     sub_section: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true,
     },
     data_value: {
       type: 'json',
-      required: true
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     user_id: {
-      model: 'user'
+      model: 'user',
+      required: false
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function() {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function() {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    }*/
   },
   tableName: 'cms',
 /*  autoCreatedAt: true,
