@@ -22,6 +22,7 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: false,
+      allowNull: true
     },
     name: {
       type: 'string',
@@ -37,16 +38,19 @@ module.exports = {
       type: 'string',
       columnType: 'varchar',
       required: false,
+      allowNull: true
     },
     map_lon: {
       type: 'string',
       columnType: 'varchar',
       required: false,
+      allowNull: true
     },
     map_path: {
       type: 'string',
       columnType: 'varchar',
       required: false,
+      allowNull: true,
     },
   },
   tableName: 'areas',
