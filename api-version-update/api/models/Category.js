@@ -8,12 +8,6 @@ var photo;
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     type_id: {
       type: 'number',
       columnType: 'integer',
@@ -22,42 +16,36 @@ module.exports = {
     parent_id: {
       type: 'number',
       columnType: 'integer',
+      required: false,
+      allowNull: true,
     },
     offer_id: {
       model: 'CMS',
+      required: false,
+      allowNull: true,
     },
     code: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true,
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     image: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     slug: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'categories',
   /*  autoCreatedAt: true,

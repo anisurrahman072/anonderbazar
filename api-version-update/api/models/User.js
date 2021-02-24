@@ -9,83 +9,125 @@ let bcrypt = require('bcryptjs');
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     last_ip_address: {
-      type: 'text'
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
     },
     ip_address: {
-      type: 'text',
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
     },
     username: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
       unique: true
     },
     password: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     email: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     activation_code: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     forgotten_password_code: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     forgotten_password_time: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     remember_code: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     last_login: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     active: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false
     },
     first_name: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false
     },
     last_name: {
       type: 'string',
-      required: false
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     father_name: {
       type: 'string',
-      required: false
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     mother_name: {
       type: 'string',
-      required: false
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     designation: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     national_id: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     phone: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     gender: {
       type: 'string',
-      required: false
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     dob: {
-      type: 'string'
+      type: 'ref',
+      columnType: 'date',
+      required: false,
+      allowNull: true
     },
     avatar: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     group_id: {
       model: 'group',
@@ -93,62 +135,52 @@ module.exports = {
     },
     warehouse_id: {
       model: 'warehouse',
+      required: true
     },
     address: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     upazila_id: {
       model: 'area',
+      required: true
     },
     zila_id: {
       model: 'area',
+      required: true
     },
     division_id: {
       model: 'area',
+      required: true
     },
     permanent_address: {
       type: 'string',
-      required: false
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     permanent_upazila_id: {
       model: 'area',
+      required: true
     },
     permanent_zila_id: {
       model: 'area',
+      required: true
     },
     permanent_division_id: {
       model: 'area',
+      required: true
     },
     award_points: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
       defaultsTo: 0
     },
-
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
-
   },
   tableName: 'users',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
   customToJSON: function () {
     var obj = this.toObject();
     delete obj['password'];

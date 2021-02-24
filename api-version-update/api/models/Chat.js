@@ -6,47 +6,26 @@
  */
 
 module.exports = {
-
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     chat_user_id: {
       model: 'chatuser',
+      required: true,
     },
     message: {
       type: 'string',
+      columnType: 'text',
+      required: false,
     },
     person_status: {
       type: 'number',
       columnType: 'integer',
+      required: true,
     },
     notification_view_status: {
       type: 'number',
       columnType: 'integer',
+      required: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'chat',
 /*  autoCreatedAt: true,

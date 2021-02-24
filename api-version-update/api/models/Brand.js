@@ -11,6 +11,7 @@ module.exports = {
     warehouse_id: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       allowNull: true,
     },
     code: {
@@ -26,12 +27,13 @@ module.exports = {
     image: {
       type: 'string',
       columnType: 'text',
+      required: false,
       allowNull: true,
     },
     slug: {
       type: 'string',
       columnType: 'varchar',
-      allowNull: true,
+      required: true,
     },
   },
   tableName: 'brands',

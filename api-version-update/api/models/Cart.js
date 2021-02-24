@@ -15,21 +15,25 @@ module.exports = {
     ip_address: {
       type: 'string',
       columnType: 'varchar',
+      required: false,
       allowNull: true,
     },
     total_quantity: {
       type: 'number',
       columnType: 'integer',
+      required: true,
       defaultsTo: 0
     },
     total_price: {
       type: 'number',
       columnType: 'float',
+      required: true,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       defaultsTo: 1
     },
     cart_items: {
