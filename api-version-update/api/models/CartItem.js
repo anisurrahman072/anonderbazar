@@ -8,50 +8,34 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     cart_id: {
-      model: 'cart'
+      model: 'cart',
+      required: true,
     },
     product_id: {
-      model: 'product'
+      model: 'product',
+      required: false,
+      allowNull: true
     },
     product_unit_price: {
       type: 'float'
     },
     product_quantity: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      required: true
     },
     product_total_price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      required: true,
     },
     cart_item_variants: {
       collection: 'cartItemVariant',
-      via: 'cart_item_id'
+      via: 'cart_item_id',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    }*/
   },
   tableName: 'cart_items',
   /*  autoCreatedAt: true,

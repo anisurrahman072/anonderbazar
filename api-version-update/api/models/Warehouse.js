@@ -15,7 +15,8 @@ module.exports = {
     code: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     name: {
       type: 'string',
@@ -25,7 +26,7 @@ module.exports = {
     employee_count: {
       type: 'number',
       columnType: 'integer',
-      required: false
+      allowNull: true
     },
     license_no: {
       type: 'string',
@@ -104,10 +105,7 @@ module.exports = {
     user: {
       collection: 'User',
       via: 'warehouse_id'
-    }
+    },
   },
   tableName: 'warehouses',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 };
