@@ -7,12 +7,6 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     type_id: {
       type: 'number',
       columnType: 'integer',
@@ -30,47 +24,33 @@ module.exports = {
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     eng_name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     map_lat: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     map_lon: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     map_path: {
-      type: 'text',
+      type: 'string',
+      columnType: 'varchar',
       required: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'areas',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+  /*  autoCreatedAt: true,
+    autoUpdatedAt: true,
+    autoDeletedAt: true,*/
 };
 

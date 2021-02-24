@@ -8,53 +8,33 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     warehouse_id: {
       type: 'number',
       columnType: 'integer',
+      allowNull: true,
     },
     code: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true,
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     image: {
       type: 'string',
+      columnType: 'text',
+      allowNull: true,
     },
     slug: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'brands',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 
   // generating slug from name before creating a row
   beforeCreate: function (req, next) {
