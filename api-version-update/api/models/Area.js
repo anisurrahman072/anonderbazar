@@ -36,22 +36,19 @@ module.exports = {
     map_lat: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
     },
     map_lon: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
     },
     map_path: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
     },
   },
   tableName: 'areas',
-  /*  autoCreatedAt: true,
-    autoUpdatedAt: true,
-    autoDeletedAt: true,*/
 };
 
