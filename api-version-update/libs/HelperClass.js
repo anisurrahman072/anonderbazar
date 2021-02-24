@@ -21,9 +21,9 @@ exports.Helper = {
   },
   pagination: async (reqBody) => {
     /* ............PAGINATION........................START............. */
-    let limit,
-      skip,
-      page;
+    let limit;
+    let skip;
+    let page;
     if (reqBody.limit === 'all') {
       limit = null;
       skip = 0;

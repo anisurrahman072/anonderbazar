@@ -28,9 +28,6 @@ module.exports = {
       required: false
     },
   },
-  tableName: 'cart_items_variants',
-  /*  autoCreatedAt: true,
-    autoUpdatedAt: true,
-    autoDeletedAt: true*/
+  tableName: 'cart_items_variants'
 };
 

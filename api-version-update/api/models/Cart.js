@@ -21,13 +21,11 @@ module.exports = {
     total_quantity: {
       type: 'number',
       columnType: 'integer',
-      required: true,
       defaultsTo: 0
     },
     total_price: {
       type: 'number',
       columnType: 'float',
-      required: true,
       defaultsTo: 0
     },
     status: {

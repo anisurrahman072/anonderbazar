@@ -15,14 +15,14 @@ exports.initLogPlaceholder = (req, funcName) => {
 };
 
 exports.uploadImgAsync = (param, option = {}) => {
-  return new Promise(function (resolve, reject) {
-    param.upload(option, function (err, data) {
+  return new Promise(((resolve, reject) => {
+    param.upload(option, (err, data) => {
       if (err !== null) {
         return reject(err);
       }
       resolve(data);
     });
-  });
+  }));
 };
 
 
@@ -118,7 +118,7 @@ exports.generateUuid = function (count, k) {
   for (let i = 0; i < count; i++) {
     str += _sym[parseInt(Math.random() * (_sym.length))];
   }
-  base.getID(str, function (err, res) {
+  base.getID(str, (err, res) => {
     if (!res.length) {
       k(str);                   // use the continuation
     } else {
@@ -134,4 +134,4 @@ exports.makeUniqueId = function (length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-}
+};
