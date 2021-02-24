@@ -19,7 +19,7 @@ module.exports = {
     ip_address: {
       type: 'String',
       columnType: 'text',
-      allowNull: true
+      allowNull: true,
     },
     username: {
       type: 'string',
