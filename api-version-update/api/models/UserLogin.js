@@ -32,6 +32,5 @@ module.exports = {
     },
   },
   tableName: 'user_logins',
-
 };
 
