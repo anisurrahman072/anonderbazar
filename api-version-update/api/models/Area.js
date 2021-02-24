@@ -15,12 +15,13 @@ module.exports = {
     parent_id: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      required: false,
+      defaultsTo: 0
     },
     region_id: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      required: false,
     },
     name: {
       type: 'string',

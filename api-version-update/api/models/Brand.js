@@ -16,7 +16,7 @@ module.exports = {
     code: {
       type: 'string',
       columnType: 'varchar',
-      allowNull: true,
+      required: true,
     },
     name: {
       type: 'string',

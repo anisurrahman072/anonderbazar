@@ -25,13 +25,12 @@ module.exports = {
     total_price: {
       type: 'number',
       columnType: 'float',
-      required: true,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      allowNull: true,
+      defaultsTo: 1
     },
     cart_items: {
       collection: 'cartItem',
