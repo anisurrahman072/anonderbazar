@@ -7,42 +7,45 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     buffer_time: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      allowNull: true
     },
     code: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     employee_count: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: false
     },
     license_no: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     tin_no: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     vat_no: {
       type: 'string',
+      columnType: 'varchar',
       required: false
     },
     address: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false
     },
     upazila_id: {
       model: 'area',
@@ -58,33 +61,45 @@ module.exports = {
     },
     postal_code: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false
     },
     country: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false
     },
     phone: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     email: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     invoice_footer: {
-      type: 'text'
+      type: 'string',
+      columnType: 'text',
+      allowNull: true
     },
     logo: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
     },
     award_points: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      allowNull: true,
       defaultsTo: 0
     },
     status: {
-      type: 'integer',
-      defaultsTo: 0
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: true
     },
     user: {
       collection: 'User',
