@@ -17,9 +17,8 @@ module.exports = {
       required: true,
     },
     ip_address: {
-      type: 'String',
-      columnType: 'text',
-      allowNull: true,
+      type: 'string',
+      allowNull: true
     },
     username: {
       type: 'string',
@@ -29,13 +28,10 @@ module.exports = {
     time: {
       type: 'string',
       columnType: 'datetime',
-      required: false,
       allowNull: true
     },
   },
   tableName: 'user_logins',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+
 };
 
