@@ -78,7 +78,7 @@ export class HeaderComponent implements OnInit {
     private products: Observable<Product[]>;
     private cmsLogoData: any;
     serach_result: any;
-    isUser: boolean = false;z
+    isUser: boolean = false;
 
     /*
     * constructor for header component
