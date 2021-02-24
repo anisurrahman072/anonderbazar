@@ -8,39 +8,16 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     name: {
       type: 'string',
-      required: true,
+      columnType: 'varchar',
+      required: true
     },
     type: {
-      type: 'integer',
-      required: true,
-    },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
+      type: 'number',
+      columnType: 'integer',
+      required: true
+    }
   },
   tableName: 'variants',
 /*  autoCreatedAt: true,

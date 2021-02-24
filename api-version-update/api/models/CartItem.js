@@ -14,11 +14,12 @@ module.exports = {
     },
     product_id: {
       model: 'product',
-      required: false,
-      allowNull: true
+      required: true
     },
     product_unit_price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      allowNull: true
     },
     product_quantity: {
       type: 'number',
@@ -32,15 +33,10 @@ module.exports = {
     },
     cart_item_variants: {
       collection: 'cartItemVariant',
-      via: 'cart_item_id',
-      required: false,
-      allowNull: true
+      via: 'cart_item_id'
     },
   },
   tableName: 'cart_items',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 
   // generating slug from name before creating a row
   beforeCreate: function (req, next) {

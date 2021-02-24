@@ -35,12 +35,14 @@ module.exports = {
     unit_name: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     image: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true,
     },
     brand_id: {
       model: 'brand',
@@ -49,7 +51,8 @@ module.exports = {
     rack: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
 
   },
