@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-
   attributes: {
     cart_id: {
       model: 'cart',
@@ -19,6 +18,7 @@ module.exports = {
     product_unit_price: {
       type: 'number',
       columnType: 'float',
+      required: false,
       allowNull: true
     },
     product_quantity: {

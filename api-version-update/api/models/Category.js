@@ -22,6 +22,7 @@ module.exports = {
     offer_id: {
       model: 'CMS',
       required: false,
+      allowNull: true,
     },
     code: {
       type: 'string',
@@ -38,11 +39,12 @@ module.exports = {
       type: 'string',
       columnType: 'text',
       required: false,
+      allowNull: true,
     },
     slug: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
     },
   },
   tableName: 'categories',

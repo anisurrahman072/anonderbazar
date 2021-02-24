@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-
   attributes: {
     cart_item_id: {
       model: 'cartItem',

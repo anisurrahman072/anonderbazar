@@ -32,7 +32,7 @@ module.exports = {
     eng_name: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
     },
     map_lat: {
       type: 'string',
@@ -48,7 +48,7 @@ module.exports = {
     },
     map_path: {
       type: 'string',
-      columnType: 'varchar',
+      columnType: 'text',
       required: false,
       allowNull: true,
     },
