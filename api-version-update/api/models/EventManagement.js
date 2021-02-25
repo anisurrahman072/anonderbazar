@@ -14,70 +14,85 @@ module.exports = {
       autoIncrement: true
     },*/
     event_type: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: true,
     },
     name: {
       type: 'string',
+      columnType: 'text',
       required: true,
     },
     admin_email: {
       type: 'string',
-      required: true,
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     admin_phone: {
       type: 'string',
-      required: true,
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     image: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     description: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     event_place: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     event_startdate: {
-      type: 'string', columnType: 'date',
+      type: 'string',
+      columnType: 'date',
+      required: false,
+      allowNull: true,
     },
     event_enddate: {
-      type: 'string', columnType: 'date',
+      type: 'string',
+      columnType: 'date',
+      required: false,
+      allowNull: true,
     },
     event_starttime: {
-      type: 'string', columnType: 'datetime',
+      type: 'string',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true,
     },
     event_endtime: {
-      type: 'string', columnType: 'datetime',
+      type: 'string',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true,
     },
     registration_lastdate: {
-      type: 'string', columnType: 'date',
+      type: 'string',
+      columnType: 'date',
+      required: false,
+      allowNull: true,
     },
     event_price_ids: {
-      type: 'json'
+      type: 'json',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'events',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+  /*  autoCreatedAt: true,
+    autoUpdatedAt: true,
+    autoDeletedAt: true,*/
 };
 
