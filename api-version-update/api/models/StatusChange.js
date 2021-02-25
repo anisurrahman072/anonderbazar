@@ -20,7 +20,10 @@ module.exports = {
       model:'suborder'
     },
     order_status: {
-      type: 'integer'
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     status: {
       type: 'integer'

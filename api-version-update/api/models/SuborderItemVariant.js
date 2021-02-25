@@ -9,16 +9,20 @@ module.exports = {
 
   attributes: {
     product_suborder_item_id: {
-      model: 'suborderItem'
+      model: 'suborderItem',
+      required: true
     },
     product_id: {
-      model: 'product'
+      model: 'product',
+      required: true
     },
     variant_id: {
-      model: 'variant'
+      model: 'variant',
+      required: true
     },
     warehouse_variant_id: {
-      model: 'warehouseVariant'
+      model: 'warehouseVariant',
+      required: true
     },
     product_variant_id: {
       model: 'ProductVariant'

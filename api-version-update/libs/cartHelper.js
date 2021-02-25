@@ -11,4 +11,4 @@ exports.calcCartTotal = function (cart, cartItems) {
     grandOrderTotal,
     totalQty
   };
-}
+};
