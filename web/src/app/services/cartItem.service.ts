@@ -12,22 +12,6 @@ export class CartItemService {
     constructor(private http: HttpClient) {
     }
 
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
-            .map((response) => response);
-    }
-
-    getById(id): Observable<any> {
-
-        return this.http.get(this.EndPoint + '/' + id)
-            .map((response) => response);
-    }
-
-    bycartid(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/bycartid/${id}`)
-            .map((response) => response);
-    }
-
     insert(data): Observable<any> {
         return this.http.post(this.EndPoint, data)
             .map((response) => response);
@@ -40,16 +24,6 @@ export class CartItemService {
 
     update(id: number, data: any) {
         return this.http.put(this.EndPoint + '/' + id, data)
-            .map((response) => response);
-    }
-
-    getAllByWarehouseId(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`)
-            .map((response) => response);
-    }
-
-    getAllByCartId(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"cart_id":${id}}`)
             .map((response) => response);
     }
 }

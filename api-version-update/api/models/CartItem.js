@@ -45,27 +45,5 @@ module.exports = {
     next();
   },
 
-  // // generating slug from name before creating a row
-  afterCreate: function (req, next) {
-
-    Cart.find(req.cart_id).exec((err, cart) => {
-      if (err) {
-        return next(err);
-      }
-      var requestPayload = [];
-      requestPayload.push({
-        'total_price': cart[0].total_price + req.product_total_price,
-        'total_quantity': cart[0].total_quantity + req.product_quantity,
-      });
-
-      Cart.update({id: req.cart_id}, requestPayload[0]).exec((err, cart) => {
-        if (err) {
-          return next(err);
-        }
-        return next();
-      });
-    });
-
-  },
 };
 
