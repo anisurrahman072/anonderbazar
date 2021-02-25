@@ -16,7 +16,13 @@ const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 
 module.exports = {
-
+  index: (req, res) => {
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
+  },
   // destroy a row
   destroy: function (req, res) {
     Order.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
@@ -38,33 +44,36 @@ module.exports = {
         user_id: req.body.user_id,
         deletedAt: null
       });
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          let order = await Order.create({
+            user_id: req.body.user_id,
+            cart_id: cart.id,
+            total_price: req.body.price,
+            billing_address: req.body.payment_address_id,
+            total_quantity: req.body.quantity,
+            status: 1,
+            type: 1
+          }).usingConnection(db);
 
-      let order = await Order.create({
-        user_id: req.body.user_id,
-        cart_id: cart.id,
-        total_price: req.body.price,
-        billing_address: req.body.payment_address_id,
-        total_quantity: req.body.quantity,
-        status: 1,
-        type: 1
-      });
+          let suborder = await Suborder.create({
+            product_order_id: order.id,
+            warehouse_id: req.body.warehouse_id,
+            total_price: req.body.price,
+            total_quantity: req.body.quantity,
+            delivery_date: req.body.current_date,
+            status: 1
+          }).usingConnection(db);
 
-      let suborder = await Suborder.create({
-        product_order_id: order.id,
-        warehouse_id: req.body.warehouse_id,
-        total_price: req.body.price,
-        total_quantity: req.body.quantity,
-        delivery_date: req.body.current_date,
-        status: 1
-      });
+          let suborderitem = await SuborderItem.create({
+            product_suborder_id: suborder.id,
+            product_id: req.body.product_id,
+            warehouse_id: req.body.warehouse_id,
+            product_quantity: req.body.quantity,
+            product_total_price: req.body.price
+          }).usingConnection(db);
+        });
 
-      let suborderitem = await SuborderItem.create({
-        product_suborder_id: suborder.id,
-        product_id: req.body.product_id,
-        warehouse_id: req.body.warehouse_id,
-        product_quantity: req.body.quantity,
-        product_total_price: req.body.price
-      });
 
       if (suborderitem) {
         return res.json(200, suborderitem);
@@ -72,6 +81,7 @@ module.exports = {
         return res.status(400).json({success: false});
       }
     } catch (error) {
+      console.log('error', error);
       return res.status(400).json({success: false});
     }
 

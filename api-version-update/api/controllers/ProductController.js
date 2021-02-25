@@ -37,24 +37,26 @@ module.exports = {
         .json(product);
 
     } catch (error) {
-      const message = 'Error in Geting the product';
+
       return res.status(400).json({
         success: false,
-        message
+        error
       });
     }
   },
   //Method called for deleting a product data
   //Model models/Product.js
-  destroy: function (req, res) {
-    Product.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const product = await Product.update({
+        id: req.param('id')
+      }).set({
+        deletedAt: new Date()
+      });
+      return res.json(product);
+    } catch (error) {
+      return res.json(error, 400);
+    }
   },
   //Method called for finding product max price data
   //Model models/Product.js
@@ -87,10 +89,17 @@ module.exports = {
   create: async function (req, res) {
     try {
       req.body.price = parseFloat(req.body.price);
-      //parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
-      let imageCounter = parseInt(req.body.imageCounter);
+
       let body = req.body;
       console.log('request body', body);
+
+      const existingProduct = await Product.findOne({
+        code: body.code
+      });
+
+      if(existingProduct){
+        return res.badRequest('Product already existed with this product code');
+      }
 
       if (body.brand_id === '' || body.brand_id === 'undefined') {
         body.brand_id = null;
@@ -119,35 +128,32 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          const product = await Product.create(body).usingConnection(db);
 
-
-      const product = await Product.create(body);
-
-      if (body.ImageBlukArray) {
-        let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
-        for (let i = 0; i < imagearraybulk.length; i++) {
-          await ProductImage.update(imagearraybulk[i], {product_id: product.id});
-        }
-        return res.json(200, product);
-      } else {
-        return res.json(200, product);
-      }
-
-      /*
-       if (req.body.ImageBlukArray) {
-          var imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
-          for (i = 0; i < imagearraybulk.length; i++) {
-            if (i === 0) {
-              var productimage = ProductImage.findOne(product.id);
-              await product.update(product.id, {image: productimage.image_path});
+          if (body.ImageBlukArray) {
+            let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
+            for (let i = 0; i < imagearraybulk.length; i++) {
+              await ProductImage.update(imagearraybulk[i], {product_id: product.id});
             }
-            await ProductImage.update(imagearraybulk[i], {product_id: product.id});
           }
-       }
-      */
+
+        });
+
+      return res.json({
+        success: true,
+        message: 'Product successfully created',
+        data: null
+      });
+
     } catch (error) {
-      console.log('error', error);
-      res.json(400, {message: 'wrong'});
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create product',
+        error
+      });
     }
   },
   //Method called for updating a product data
@@ -160,44 +166,29 @@ module.exports = {
       if (req.body.promo_price) {
         req.body.promo_price = parseFloat(req.body.promo_price);
       }
-
-      let imageCounter = parseInt(req.body.imageCounter);
-
-      let i = 0;
+      let body = req.body;
+      if (body.brand_id === '' || body.brand_id === 'undefined') {
+        body.brand_id = null;
+      }
+      if (body.tag === '' || body.tag === 'undefined') {
+        body.tag = null;
+      }
       if (req.body.hasImageFront === 'true') {
-        req.file('frontimage').upload(imageUploadConfig(), async (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
+        try {
+          const uploaded = await uploadImages(req.file('frontimage'));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
-
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          let body = req.body;
-          if (body.brand_id === '' || body.brand_id === 'undefined') {
-            body.brand_id = null;
-          }
-          if (body.tag === '' || body.tag === 'undefined') {
-            body.tag = null;
-          }
           body.image = '/' + newPath;
-          let product = await Product.update({id: req.param('id')}, body);
-          return res.json(200, product);
-        });
-
-      } else {
-        let body = req.body;
-        if (body.brand_id === '' || body.brand_id === 'undefined') {
-          body.brand_id = null;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
         }
-        if (body.tag === '' || body.tag === 'undefined') {
-          body.tag = null;
-        }
-        let product = await Product.update({id: req.param('id')}, body);
-        return res.json(200, product);
       }
+      let product = await Product.update({id: req.param('id')}, body);
+      return res.json(200, product);
     } catch (err) {
       console.log(err);
       res.json(400, {message: 'Something went wrong!'});
@@ -262,6 +253,7 @@ module.exports = {
         res.json(400, {message: 'wrong'});
       }
     } catch (err) {
+      console.log(err);
       res.json(400, {message: 'wrong'});
     }
   },
