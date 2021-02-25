@@ -8,12 +8,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     user_id: {
       model: 'user',
       required: true
@@ -28,47 +22,41 @@ module.exports = {
     },
     receiver_id: {
       model: 'user',
+      required: false
     },
     transection_key: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     details: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     payment_type: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     payment_amount: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
       required: true
     },
     payment_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    }*/
   },
   tableName: 'payments',
   /*
