@@ -7,18 +7,16 @@
 
 
 module.exports = {
-
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },*/
     code: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     name: {
       type: 'string',
+      columnType: 'char',
       required: true,
     },
     warehouse_id: {
@@ -27,42 +25,38 @@ module.exports = {
     },
     image: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     rating: {
-      type: 'float'
+      type: 'number',
+      columnType: 'double',
+      required: false,
+      allowNull: true
     },
     design_category_id: {
       type: 'json',
+      columnType: 'text',
+      required: true
     },
     design_subcategory_id: {
       type: 'json',
-
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     genre_id: {
       type: 'json',
+      columnType: 'text',
+      required: true,
     },
     details: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'designs',
   /*  autoCreatedAt: true,

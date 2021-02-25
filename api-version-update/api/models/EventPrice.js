@@ -7,45 +7,25 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     name: {
       type: 'string',
+      columnType: 'text',
       required: true,
     },
-    price:{
-      type:'float'
+    price: {
+      type: 'number',
+      columnType: 'double',
+      required: true,
     },
     remarks: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'event_price',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+  /*  autoCreatedAt: true,
+    autoUpdatedAt: true,
+    autoDeletedAt: true,*/
 };
 

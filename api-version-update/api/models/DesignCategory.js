@@ -8,48 +8,35 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     parent_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     code: {
       type: 'string',
-
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     image: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     slug: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'design_categories',
   /*  autoCreatedAt: true,
