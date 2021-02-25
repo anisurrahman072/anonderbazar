@@ -10,8 +10,8 @@ module.exports = {
     order_id: {
       model: 'order',
     },
-    suborder_id: {
-      model: 'suborder'
+    suborder_id:{
+      model:'suborder'
     },
     order_status: {
       type: 'number',

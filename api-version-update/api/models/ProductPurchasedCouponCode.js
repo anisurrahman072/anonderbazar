@@ -7,53 +7,21 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },*/
     product_id: {
-      model: 'product',
-      required: true
+      model: 'product'
     },
     order_id: {
-      model: 'order',
-      required: true
+      model: 'order'
     },
     suborder_id: {
-      model: 'suborder',
-      required: true
+      model: 'suborder'
     },
     suborder_item_id: {
-      model: 'suborderItem',
-      required: true
+      model: 'suborderItem'
     },
     user_id: {
-      model: 'product',
-      required: true
+      model: 'product'
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'product_purchased_coupon_codes',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 };

@@ -10,15 +10,18 @@ module.exports = {
   attributes: {
     code: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     cost: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
+      required: false,
       allowNull: true
     },
     price: {
@@ -28,7 +31,7 @@ module.exports = {
     },
     vendor_price: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },
@@ -105,27 +108,34 @@ module.exports = {
       model: 'user',
     },
     craftsman_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal'
     },
     promotion: {
       type: 'boolean',
+      columnType: 'integer'
     },
     promo_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal'
     },
     start_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
     },
     end_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
     },
     sale_unit: {
       type: 'number',
+      columnType: 'integer',
       allowNull: true
     },
     ///end promotion
     tag: {
       type: 'string',
+      columnType: 'text'
     },
     status: {
       type: 'number',
@@ -145,7 +155,8 @@ module.exports = {
       columnType: 'integer',
     },
     weight: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
     },
     produce_time: {
       type: 'number',
@@ -163,28 +174,6 @@ module.exports = {
     created_by: {
       model: 'user'
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'products',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
