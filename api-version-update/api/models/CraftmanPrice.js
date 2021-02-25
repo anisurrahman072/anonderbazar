@@ -9,11 +9,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },*/
     craftman_id: {
       model: 'user',
       required: true
@@ -28,7 +23,7 @@ module.exports = {
     },
     subcategory_id: {
       model: 'category',
-      required: true
+      required: false
     },
     part_id: {
       model: 'part',
@@ -40,6 +35,7 @@ module.exports = {
     },
     design_subcategory_id: {
       model: 'designCategory',
+      required: false
     },
     design_id: {
       model: 'design',
@@ -54,34 +50,21 @@ module.exports = {
       required: true
     },
     price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'decimal',
+      required: true
     },
     time: {
       type: 'number',
       columnType: 'integer',
+      required: true,
     },
     comment: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'craftman_price',
   /*  autoCreatedAt: true,

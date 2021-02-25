@@ -6,50 +6,31 @@
  */
 
 module.exports = {
-
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     courier_id: {
-      model: 'courier'
+      model: 'courier',
+      required: true
     },
     weight: {
       type: 'string',
+      columnType: 'text',
       required: true,
     },
     price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'float',
+      required: true
     },
     remarks: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'courier_price',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+  /*  autoCreatedAt: true,
+    autoUpdatedAt: true,
+    autoDeletedAt: true,*/
 };
 

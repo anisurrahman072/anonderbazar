@@ -7,30 +7,30 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     user_id: {
       model: 'user',
       required: true
     },
     order_id: {
-      model: 'order'
+      model: 'order',
+      required: false
     },
     first_name: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     last_name: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     phone: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     postal_code: {
       type: 'string',
@@ -38,6 +38,7 @@ module.exports = {
     },
     address: {
       type: 'string',
+      columnType: 'varchar',
       required: true
     },
     upazila_id: {
@@ -47,33 +48,19 @@ module.exports = {
     zila_id: {
       model: 'area',
       required: true,
+      defaultTo: 1
     },
     division_id: {
       model: 'area',
       required: true,
+      defaultTo: 1
     },
     status: {
-      type: 'integer'
+      type: 'number',
+      columnType: 'integer',
+      required: true,
+      defaultTo: 1
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    }*/
   },
   tableName: 'payment_addresses',
 /*  autoCreatedAt: true,
