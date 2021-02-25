@@ -30,8 +30,7 @@ module.exports = {
     time: {
       type: 'ref',
       columnType: 'datetime',
-      required: false,
-      allowNull: true
+      required: false
     },
   },
   tableName: 'user_logins',
