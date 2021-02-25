@@ -6,6 +6,22 @@
  */
 
 module.exports = {
+  //Method called for getting all cart items
+  //Model models/Cart.js
+  index: (req, res) => {
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
+  },
+  findOne: (req,res)=> {
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
+  },
   //Method called for deleting cart item data
   //Model models/CartItem.js
   destroy: async function (req, res) {

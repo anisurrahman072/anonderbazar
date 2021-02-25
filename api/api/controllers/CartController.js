@@ -8,6 +8,15 @@
 import {asyncForEach} from '../../libs';
 
 module.exports = {
+  //Method called for gettting all carts
+  //Model models/Cart.js
+  index: (req, res) => {
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
+  },
   //Method called for deleting cart data
   //Model models/Cart.js
   destroy: (req, res) => {
@@ -96,11 +105,4 @@ module.exports = {
     }
   },
 
-  index: (req, res) => {
-    try {
-      return res.json({message: 'Not Authorized'});
-    } catch (error) {
-      return res.json({error: error});
-    }
-  },
 };

@@ -6,6 +6,13 @@
  */
 
 module.exports = {
+  index: (req, res) => {
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
+  },
   //Method called for deleting cart item data
   //Model models/CartItem.js
   destroy: async function (req, res) {
@@ -45,7 +52,9 @@ module.exports = {
       let cartItem = await CartItem.update({id: req}, {deletedAt: new Date()});
 
       Cart.find(cartItem[0].cart_Id).exec((err, cart) => {
-        if (err) {return err;}
+        if (err) {
+          return err;
+        }
         var requestPayload = [];
         requestPayload.push({
           'total_price': cart[0].total_price - cartItem[0].product_total_price,
@@ -53,7 +62,9 @@ module.exports = {
         });
 
         Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec((err, cart) => {
-          if (err) {return err;}
+          if (err) {
+            return err;
+          }
         });
       });
       let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem[0].id});
@@ -176,36 +187,86 @@ module.exports = {
       }
 
     }
+    /*
+        Cart.find(req.cart_id).exec((err, cart) => {
+      if (err) {
+        return next(err);
+      }
+
+      var requestPayload = [];
+
+      requestPayload.push({
+        'total_price': cart[0].total_price + req.product_total_price,
+        'total_quantity': cart[0].total_quantity + req.product_quantity,
+      });
+
+      Cart.update({id: req.cart_id}, requestPayload[0]).exec((err, cart) => {
+        if (err) {
+          return next(err);
+        }
+        return next();
+      });
+    });
+     */
     return res.json(cartItem);
   },
   //Method called for updating cart item data
   //Model models/CartItem.js
   update: async function (req, res) {
+
+    if (!req.body.action_name) {
+      return res.badRequest('Invalid Request!');
+    }
+    if (!req.token || !req.token.userInfo) {
+      return res.error('error');
+    }
     try {
+
       let cartItem = await CartItem.findOne({id: req.param('id')});
+
       if (!cartItem) {
         return res.badRequest('No Cart Item found');
       }
-
-      let product_quantity = cartItem.product_quantity - req.body.product_quantity;
-      let product_total_price = cartItem.product_total_price - req.body.product_total_price;
 
       const cart = await Cart.findOne({
         id: cartItem.cart_id
       });
 
       if (!cart) {
-        return res.badRequest('No Cart found');
+        return res.badRequest('No cart found');
       }
+
+      if ( req.token.userInfo.id !== cart.user_id) {
+        return res.status(401).json({err: 'You are not authorized to do it.'});
+      }
+
+      let product_quantity = cartItem.product_quantity - req.body.product_quantity;
+      let product_total_price = cartItem.product_total_price - req.body.product_total_price;
+
 
       let requestPayload = {
         'total_price': cart.total_price - product_total_price,
         'total_quantity': cart.total_quantity - product_quantity,
       };
 
-      await Cart.update({id: cartItem.cart_id}, requestPayload);
+      await sails.getDatastore()
+        .transaction(async (db) => {
 
-      cartItem = await CartItem.update({id: req.param('id')}, req.body);
+          let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
+
+          let itemCurrentQuantity = cartItem.product_quantity;
+
+          if (req.body.action_name === 'increment') {
+            itemCurrentQuantity = itemCurrentQuantity +quantityToChange;
+          } else if (req.body.action_name === 'decrement') {
+            itemCurrentQuantity = itemCurrentQuantity - quantityToChange >= 0 ? itemCurrentQuantity - quantityToChange: 0;
+          }
+
+          await Cart.update({id: cartItem.cart_id}, requestPayload);
+
+          cartItem = await CartItem.update({id: req.param('id')}, req.body);
+        });
+
 
       return res.json(cartItem);
 

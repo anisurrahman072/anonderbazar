@@ -12,11 +12,6 @@ export class CartItemService {
     constructor(private http: HttpClient) {
     }
 
-    getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id)
-            .map((response) => response);
-    }
-
     insert(data): Observable<any> {
         return this.http.post(this.EndPoint, data)
             .map((response) => response);
@@ -31,10 +26,4 @@ export class CartItemService {
         return this.http.put(this.EndPoint + '/' + id, data)
             .map((response) => response);
     }
-
-    getAllByWarehouseId(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`)
-            .map((response) => response);
-    }
- 
 }
