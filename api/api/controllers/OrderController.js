@@ -934,20 +934,27 @@ module.exports = {
       let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}}).populateAll();
       await asyncForEach(orders, async element => {
 
-        element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}}).populateAll();
-        await asyncForEach(element.suborders[0].items, async item => {
-          let varientitems = [];
+        if (typeof element.suborders !== 'undefined' && Array.isArray(element.suborders) && element.suborders.length > 0) {
+          element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}}).populateAll();
+          if (element.suborders[0].items  && Array.isArray(element.suborders[0].items) && element.suborders[0].items.length > 0) {
+            await asyncForEach(element.suborders[0].items, async item => {
+              let varientitems = [];
 
-          await asyncForEach(item.suborderItemVariants, async varientitem => {
-            varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
-          });
-          item.suborderItemVariants = varientitems;
-        });
+              await asyncForEach(item.suborderItemVariants, async varientitem => {
+                varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
+              });
+              item.suborderItemVariants = varientitems;
+            });
+          }
+        }
+
       });
-      res.json(orders);
+
+      return res.json(orders);
 
     } catch (error) {
-      let message = 'Error in Get All Suborder with pagination';
+      console.log('getAllOrder-error', error);
+      let message = 'Error in Get Order with pagination';
       res.status(400).json({
         success: false,
         message

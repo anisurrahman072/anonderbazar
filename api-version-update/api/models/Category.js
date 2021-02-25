@@ -4,7 +4,7 @@
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
-var photo;
+
 module.exports = {
 
   attributes: {
@@ -44,13 +44,10 @@ module.exports = {
     slug: {
       type: 'string',
       columnType: 'varchar',
-      required: false,
+      allowNull: true,
     },
   },
   tableName: 'categories',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 
   // generating slug from name before creating a row
   beforeCreate: function (req, next) {

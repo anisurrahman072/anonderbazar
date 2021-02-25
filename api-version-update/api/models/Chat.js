@@ -14,7 +14,7 @@ module.exports = {
     message: {
       type: 'string',
       columnType: 'text',
-      required: false,
+      allowNull: true,
     },
     person_status: {
       type: 'number',

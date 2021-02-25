@@ -13,8 +13,7 @@ module.exports = {
       required: true
     },
     order_id: {
-      model: 'order',
-      required: true
+      model: 'order'
     },
     first_name: {
       type: 'string',
@@ -29,7 +28,8 @@ module.exports = {
     phone: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true,
     },
     postal_code: {
       type: 'string',
@@ -39,7 +39,8 @@ module.exports = {
     address: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true,
     },
     upazila_id: {
       model: 'area',

@@ -33,6 +33,7 @@ module.exports = {
       type: 'string',
       columnType: 'varchar',
       required: false,
+      allowNull: true
     },
     map_lat: {
       type: 'string',

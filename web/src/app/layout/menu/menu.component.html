@@ -45,7 +45,7 @@
                                             <ul class="mb-3">
                                                 <li class="text-th" style="text-transform: capitalize;">Shop By Brand</li>
                                                 <li class="text-ot" *ngFor='let brand of brandList'>
-                                                    <a style="text-transform: capitalize;" (click)="navigateByBrand($event, category, brand)">{{brand.name}}</a>
+                                                    <a *ngIf="brand" style="text-transform: capitalize;" (click)="navigateByBrand($event, category, brand)">{{brand.name}}</a>
                                                 </li>
                                             </ul>
                                         </div>
