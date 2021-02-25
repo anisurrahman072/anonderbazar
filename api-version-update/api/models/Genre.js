@@ -7,54 +7,34 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
-
     code: {
       type: 'string',
-      required: false
+      columnType: 'varchar',
+      required: false,
+      allowNull: true,
     },
     name: {
       type: 'string',
-      required: true
+      columnType: 'varchar',
+      required: true,
     },
     details: {
-      type: 'string'
+      type: 'string',
+      required: false,
+      allowNull: true,
     },
     image: {
-      type: 'string'
+      type: 'string',
+      required: false,
+      allowNull: true,
     },
     slug: {
-      type: 'string'
+      type: 'string',
+      required: false,
+      allowNull: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function() {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function() {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    }*/
   },
   tableName: 'genres',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 
   // generating slug from name before creating a row
   beforeCreate: function(req, next) {
