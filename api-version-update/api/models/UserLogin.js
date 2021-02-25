@@ -18,6 +18,8 @@ module.exports = {
     },
     ip_address: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
       allowNull: true
     },
     username: {
@@ -26,8 +28,9 @@ module.exports = {
       required: true,
     },
     time: {
-      type: 'string',
+      type: 'ref',
       columnType: 'datetime',
+      required: false,
       allowNull: true
     },
   },
