@@ -8,12 +8,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     product_id: {
       model: 'product',
       required: true,
@@ -22,29 +16,7 @@ module.exports = {
       type: 'text',
       required: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'product_photos',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
 
