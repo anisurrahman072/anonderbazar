@@ -6,31 +6,21 @@ const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 
 
 module.exports = {
-
-  //Method called for getting a product data
+  //Method called for getting
   //Model models/Product.js
-
   findOne: async (req, res) => {
     try {
 
       let product = await Product.findOne(req.params.id)
         .populate('product_images', {deletedAt: null})
         .populate('product_variants', {deletedAt: null})
-        .populate('category_id', {deletedAt: null})
-        .populate('subcategory_id', {deletedAt: null})
-        .populate('type_id', {deletedAt: null})
-        .populate('warehouse_id', {deletedAt: null})
-        .populate('craftsman_id', {deletedAt: null})
-        .populate('brand_id', {deletedAt: null});
-
-      product = {...product};
-
-      if (product) {
-        product.coupon_banner_image = await ProductCouponBannerImage.findOne({
-          product_id: product.id,
-          deletedAt: null
-        });
-      }
+        .populate('coupon_banner_images', {deletedAt: null})
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('type_id')
+        .populate('warehouse_id')
+        .populate('craftsman_id')
+        .populate('brand_id');
 
       return res
         .status(200)

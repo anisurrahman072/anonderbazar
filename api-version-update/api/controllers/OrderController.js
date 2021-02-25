@@ -44,7 +44,7 @@ module.exports = {
         user_id: req.body.user_id,
         deletedAt: null
       });
-      await sails.getDatastore()
+      let suborderitem = await sails.getDatastore()
         .transaction(async (db) => {
           let order = await Order.create({
             user_id: req.body.user_id,
@@ -72,6 +72,7 @@ module.exports = {
             product_quantity: req.body.quantity,
             product_total_price: req.body.price
           }).usingConnection(db);
+          return suborderitem;
         });
 
 
@@ -101,15 +102,15 @@ module.exports = {
       return res.badRequest('User was not found!');
     }
 
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    if (!globalConfigs) {
-      return res.badRequest('Global config was not found!');
-    }
-
     try {
+
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
+      if (!globalConfigs) {
+        return res.badRequest('Global config was not found!');
+      }
 
       let cart = await Cart.findOne({
         user_id: req.param('user_id'),
@@ -120,7 +121,6 @@ module.exports = {
         cart_id: cart.id,
         deletedAt: null
       }).populate(['cart_item_variants', 'product_id']);
-
 
       let onlyCouponProduct = false;
       if (cartItems && cartItems.length > 0) {
@@ -341,8 +341,6 @@ module.exports = {
       }
 
       orderForMail[0].orderItems = allOrderedProducts;
-
-      // Start/Delete Cart after submitting the order
 
       await Cart.update({id: cart.id}, {deletedAt: new Date()});
 

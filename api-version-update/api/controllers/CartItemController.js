@@ -287,9 +287,9 @@ module.exports = {
     if (!req.body.action_name) {
       return res.badRequest('Invalid Request!');
     }
-    if (!req.token || !req.token.userInfo) {
-      return res.error('error');
-    }
+    /*    if (!req.token || !req.token.userInfo) {
+      return res.badRequest('Invalid Request!');
+    }*/
     try {
 
       let cartItem = await CartItem.findOne({id: req.param('id')});
@@ -306,11 +306,11 @@ module.exports = {
         return res.badRequest('No cart found');
       }
 
-      if (req.token.userInfo.id !== cart.user_id) {
+      /*      if (req.token.userInfo.id !== cart.user_id) {
         return res.status(401).json({err: 'You are not authorized to do it.'});
-      }
+      }*/
 
-      await sails.getDatastore()
+      const response = await sails.getDatastore()
         .transaction(async (db) => {
 
           let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
@@ -349,12 +349,14 @@ module.exports = {
 
           await Cart.update({id: cartItem.cart_id}).set(requestPayload)
             .usingConnection(db);
+
+          return 'success';
         });
 
       return res.json({
         success: true,
         message: 'cart successfully updated',
-        data: null
+        data: response
       });
 
     } catch (error) {

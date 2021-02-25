@@ -29,16 +29,16 @@ module.exports.http = {
     *                                                                          *
     ***************************************************************************/
 
-    order: [
+    // order: [
     //   'cookieParser',
     //   'session',
-      'bodyParser',
-      'compress',
-      //   'poweredBy',
-      'router',
+    //   'bodyParser',
+    // 'compress',
+    //   'poweredBy',
+    // 'router',
     //   'www',
     //   'favicon',
-    ],
+    // ],
 
 
     /***************************************************************************
@@ -51,7 +51,7 @@ module.exports.http = {
 
     bodyParser: (function _configureBodyParser(){
       const skipper = require('skipper');
-      return skipper({ strict: true });
+      return skipper({ strict: false });
     })(),
 
   },

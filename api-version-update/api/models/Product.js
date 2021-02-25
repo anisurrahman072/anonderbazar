@@ -63,11 +63,9 @@ module.exports = {
     },
     type_id: {
       model: 'category',
-      required: true,
     },
     category_id: {
       model: 'category',
-      required: true,
     },
     subcategory_id: {
       model: 'category',
