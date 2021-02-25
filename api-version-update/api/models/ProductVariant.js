@@ -30,7 +30,7 @@ module.exports = {
     },
     quantity: {
       type: 'number',
-      columnType: 'integer',
+      columnType: 'decimal',
       required: false,
       allowNull: true
     },

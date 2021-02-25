@@ -30,6 +30,7 @@ module.exports = {
       type: 'ref',
       columnType: 'date',
       required: false,
+      allowNull: true
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -65,6 +66,7 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
+      allowNull: true
     },
   },
   tableName: 'product_suborders',

@@ -20,7 +20,7 @@ module.exports = {
     rating: {
       type: 'number',
       columnType: 'decimal',
-      defaultsTo: 0
+      required: true
     },
   },
   tableName: 'product_ratings',

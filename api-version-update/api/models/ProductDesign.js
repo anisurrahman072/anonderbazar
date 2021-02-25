@@ -18,8 +18,7 @@ module.exports = {
       required: true
     },
     subcategory_id: {
-      model: 'category',
-      required: false
+      model: 'category'
     },
     product_id: {
       model: 'product',

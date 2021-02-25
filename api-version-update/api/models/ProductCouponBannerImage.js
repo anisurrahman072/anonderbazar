@@ -8,8 +8,7 @@
 module.exports = {
   attributes: {
     product_id: {
-      model: 'product',
-      required: true
+      model: 'product'
     },
     banner_images: {
       type: 'json',
