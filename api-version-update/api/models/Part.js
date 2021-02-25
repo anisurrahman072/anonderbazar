@@ -11,22 +11,33 @@ module.exports = {
   attributes: {
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     type_id: {
       model: 'Category',
+      required: false,
+      allowNull: true
     },
     category_id: {
       model: 'Category',
+      required: false,
+      allowNull: true
     },
     subcategory_id: {
       model: 'Category',
+      required: false,
+      allowNull: true
     },
     image: {
-      type: 'string'
+      type: 'string',
+      required: false,
+      allowNull: true
     },
     details: {
-      type: 'string'
+      type: 'string',
+      required: false,
+      allowNull: true
     },
   },
   tableName: 'parts',
