@@ -16,38 +16,78 @@ module.exports = {
   //Method called for deleting cart item data
   //Model models/CartItem.js
   destroy: async function (req, res) {
+    if (!req.param('id')) {
+      return res.badRequest('Invalid data Provided');
+    }
+    let cartItem = await CartItem.findOne({id: req.param('id')});
+    if (!cartItem) {
+      return res.badRequest('Item does not exist in the cart');
+    }
+
+    let cart = await Cart.findOne({
+      id: cartItem.cart_id
+    });
+
+    if (!cart) {
+      return res.badRequest('Invalid data Provided');
+    }
+
     try {
-      let cartItem = await CartItem.update({id: req.param('id')}, {deletedAt: new Date()});
-      let cart = await Cart.find(cartItem[0].cart_id);
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          let cartItem = await CartItem.update({id: req.param('id')}).set({deletedAt: new Date()}).usingConnection(db);
 
-      if (!cart || cart.length === 0) {
-        return res.badRequest('Cart Not Found!');
-      }
+          let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem.id}).usingConnection(db);
 
-      let requestPayload = {
-        'total_price': cart[0].total_price - cartItem[0].product_total_price,
-        'total_quantity': cart[0].total_quantity - cartItem[0].product_quantity,
-      };
+          for (let i = 0; i < cartItemVariants.length; i++) {
+            await CartItemVariant.update({id: cartItemVariants[i].id}).set({deletedAt: new Date()}).usingConnection(db);
+          }
 
-      await Cart.update({id: cartItem[0].cart_id}, requestPayload);
+          let allCartItems = await CartItem.find({cart_id: cart.id, deletedAt: null}).usingConnection(db);
+          let totalPrice = 0;
+          let totalQty = 0;
 
-      let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem[0].id});
+          if (allCartItems && allCartItems.length > 0) {
+            const cartItemLen = allCartItems.length;
 
-      for (let i = 0; i < cartItemVariants.length; i++) {
-        await CartItemVariant.update({id: cartItemVariants[i].id}, {deletedAt: new Date()});
-      }
+            for (let i = 0; i < cartItemLen; i++) {
+              totalPrice += allCartItems[i].product_total_price;
+              totalQty += allCartItems[i].product_quantity;
+            }
+          }
 
-      return res.json(cartItem);
+          let cartPayload = {
+            'total_price': totalPrice,
+            'total_quantity': totalQty,
+          };
 
-    } catch (err) {
-      console.log(err);
-      return res.error(err);
+          await Cart.update({id: cartItem.cart_id}).set(cartPayload)
+            .usingConnection(db);
+        });
+
+      return res.json({
+        success: true,
+        message: 'cart item successfully removed',
+        data: null
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to remove item from cart',
+        error
+      });
     }
   },
   //Method called for deleting cart item data
   //Model models/CartItem.js
   destroyFromController: async function (req) {
-
+    try {
+      return res.json({message: 'Not Authorized'});
+    } catch (error) {
+      return res.json({error: error});
+    }
     try {
       let cartItem = await CartItem.update({id: req}, {deletedAt: new Date()});
 
@@ -108,107 +148,137 @@ module.exports = {
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
+    try {
+      let cart = await Cart.findOne({
+        id: req.body.cart_id
+      });
 
-    let cartItems = await CartItem.find({cart_id: req.body.cart_id, product_id: req.body.product_id, deletedAt: null});
-    let cartItem = null;
+      if (!cart) {
+        return res.badRequest('Invalid data Provided');
+      }
 
-    if (cartItems && cartItems.length > 0) {
+      let product = await Product.findOne({
+        id: req.body.product_id
+      });
+
+      if (!product) {
+        return res.badRequest('Invalid data Provided');
+      }
+      const quantityPassed = parseFloat(req.body.product_quantity);
+
+      if (product.quantity < quantityPassed) {
+        return res.badRequest('Product stock is not sufficient enough.');
+      }
+
+      let productUnitPrice = product.price;
+      if (product.promotion) {
+        productUnitPrice = product.promo_price;
+      }
+
+      let cartItems = await CartItem.find({
+        cart_id: req.body.cart_id,
+        product_id: req.body.product_id,
+        deletedAt: null
+      });
+
+      let cartItem = null;
       let selectedCartItem = null;
       let cartItemVariantsLength = 0;
+      if (cartItems && cartItems.length > 0) {
 
-      if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
-        const cartItemLen = cartItems.length;
-        for (let h = 0; h < cartItemLen; h++) {
-          let cartItemVariants = req.body.cartItemVariants;
-          cartItemVariantsLength = cartItemVariants.length;
-          for (let i = 0; i < cartItemVariants.length; i++) {
-            if (!(selectedCartItem !== null && cartItemVariants.length === (i + 1) && cartItemVariantsLength < 1)) {
-              let cartItemVar = cartItemVariants[i];
-              cartItemVar.cart_item_id = cartItems[h].id;
-              cartItemVar.product_id = cartItems[h].product_id;
-              let cartvariant = await CartItemVariant.find(cartItemVar);
+        if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
+          const cartItemLen = cartItems.length;
+          for (let h = 0; h < cartItemLen; h++) {
+            let cartItemVariants = req.body.cartItemVariants;
+            cartItemVariantsLength = cartItemVariants.length;
+            for (let i = 0; i < cartItemVariants.length; i++) {
+              if (!(selectedCartItem !== null && cartItemVariants.length === (i + 1) && cartItemVariantsLength < 1)) {
+                let cartItemVar = cartItemVariants[i];
+                cartItemVar.cart_item_id = cartItems[h].id;
+                cartItemVar.product_id = cartItems[h].product_id;
+                let cartvariant = await CartItemVariant.find(cartItemVar);
 
-              if (cartvariant && cartvariant.length > 0 && cartvariant[0]) {
-                selectedCartItem = cartItems[h];
-                cartItemVariantsLength -= 1;
+                if (cartvariant && cartvariant.length > 0 && cartvariant[0]) {
+                  selectedCartItem = cartItems[h];
+                  cartItemVariantsLength -= 1;
+                }
               }
             }
           }
+        } else {
+          selectedCartItem = cartItems[0];
         }
-      } else {
-        selectedCartItem = cartItems[0];
       }
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          if (selectedCartItem !== null && cartItemVariantsLength === 0) {
+            const finalQuantity = quantityPassed + selectedCartItem.product_quantity;
+            let cartItemBody = {
+              product_quantity: finalQuantity,
+              product_total_price: productUnitPrice * finalQuantity
+            };
 
-      if (selectedCartItem !== null && cartItemVariantsLength === 0) {
+            await CartItem.update({id: selectedCartItem.id}).set(cartItemBody)
+              .usingConnection(db);
 
-        let cart = await Cart.findOne({
-          id: req.body.cart_id
+          } else {
+            let cartItemBody = {
+              cart_id: req.body.cart_id,
+              product_id: req.body.product_id,
+              product_quantity: quantityPassed,
+              product_total_price: quantityPassed * productUnitPrice,
+              product_unit_price: productUnitPrice
+            };
+
+            cartItem = await CartItem.create(cartItemBody).usingConnection(db);
+
+            if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
+
+              let cartItemVariants = req.body.cartItemVariants;
+              for (let i = 0; i < cartItemVariants.length; i++) {
+                let cartItemVar = cartItemVariants[i];
+                cartItemVar.cart_item_id = cartItem.id;
+                cartItemVar.product_id = cartItem.product_id;
+
+                await CartItemVariant.create(cartItemVar).usingConnection(db);
+              }
+            }
+          }
+          let allCartItems = await CartItem.find({cart_id: cart.id, deletedAt: null}).usingConnection(db);
+          let totalPrice = 0;
+          let totalQty = 0;
+
+          if (allCartItems && allCartItems.length > 0) {
+            const cartItemLen = allCartItems.length;
+
+            for (let i = 0; i < cartItemLen; i++) {
+              totalPrice += allCartItems[i].product_total_price;
+              totalQty += allCartItems[i].product_quantity;
+            }
+          }
+          let cartPayload = {
+            'total_price': totalPrice,
+            'total_quantity': totalQty,
+          };
+
+          await Cart.update({id: cartItem.cart_id}).set(cartPayload)
+            .usingConnection(db);
         });
 
-        let requestPayload = {
-          'total_price': cart.total_price + req.body.product_total_price,
-          'total_quantity': cart.total_quantity + req.body.product_quantity,
-        };
-
-        await Cart.update({id: req.body.cart_id}, requestPayload);
-
-        let cartItemBody = {};
-        cartItemBody.product_quantity = selectedCartItem.product_quantity + req.body.product_quantity;
-        cartItemBody.product_total_price = selectedCartItem.product_total_price + req.body.product_total_price;
-
-        cartItem = await CartItem.update({id: selectedCartItem.id}, cartItemBody);
-
-      } else {
-
-        cartItem = await CartItem.create(req.body);
-
-        if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
-          let cartItemVariants = req.body.cartItemVariants;
-          for (let i = 0; i < cartItemVariants.length; i++) {
-            let cartItemVar = cartItemVariants[i];
-            cartItemVar.cart_item_id = cartItem.id;
-            cartItemVar.product_id = cartItem.product_id;
-            await CartItemVariant.create(cartItemVar);
-          }
-        }
-      }
-
-    } else {
-
-      cartItem = await CartItem.create(req.body);
-      if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
-        let cartItemVariants = req.body.cartItemVariants;
-        for (let i = 0; i < cartItemVariants.length; i++) {
-          let cartItemVar = cartItemVariants[i];
-          cartItemVar.cart_item_id = cartItem.id;
-          cartItemVar.product_id = cartItem.product_id;
-          await CartItemVariant.create(cartItemVar);
-        }
-      }
-
+      return res.json({
+        success: true,
+        message: 'cart successfully inserted',
+        data: null
+      });
+    } catch (error){
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to insert item into cart',
+        error
+      });
     }
-    /*
-        Cart.find(req.cart_id).exec((err, cart) => {
-      if (err) {
-        return next(err);
-      }
 
-      var requestPayload = [];
-
-      requestPayload.push({
-        'total_price': cart[0].total_price + req.product_total_price,
-        'total_quantity': cart[0].total_quantity + req.product_quantity,
-      });
-
-      Cart.update({id: req.cart_id}, requestPayload[0]).exec((err, cart) => {
-        if (err) {
-          return next(err);
-        }
-        return next();
-      });
-    });
-     */
-    return res.json(cartItem);
   },
   //Method called for updating cart item data
   //Model models/CartItem.js
@@ -261,7 +331,7 @@ module.exports = {
           await CartItem.update({id: cartItem.id}).set(requestPayload)
             .usingConnection(db);
 
-          let cartItems = await CartItem.find({cart_id: cartItem.cart_id, deletedAt: null});
+          let cartItems = await CartItem.find({cart_id: cartItem.cart_id, deletedAt: null}).usingConnection(db);
           let totalPrice = 0;
           let totalQty = 0;
           if (cartItems && cartItems.length > 0) {

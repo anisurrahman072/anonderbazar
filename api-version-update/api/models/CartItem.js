@@ -38,12 +38,5 @@ module.exports = {
   },
   tableName: 'cart_items',
 
-  // generating slug from name before creating a row
-  beforeCreate: function (req, next) {
-    let unit_price = req.product_total_price / req.product_quantity;
-    req.product_unit_price = unit_price;
-    next();
-  },
-
 };
 
