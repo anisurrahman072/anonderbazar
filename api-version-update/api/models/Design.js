@@ -44,7 +44,6 @@ module.exports = {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true
     },
     genre_id: {
       type: 'json',

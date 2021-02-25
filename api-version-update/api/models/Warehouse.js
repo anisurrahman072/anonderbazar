@@ -99,7 +99,6 @@ module.exports = {
     status: {
       type: 'number',
       columnType: 'integer',
-      defaultsTo: 0,
       required: true
     },
     user: {

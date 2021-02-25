@@ -32,7 +32,6 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'orders_status',

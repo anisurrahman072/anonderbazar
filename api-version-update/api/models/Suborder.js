@@ -20,19 +20,16 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: true,
-      defaultsTo: 0
     },
     total_price: {
       type: 'number',
       columnType: 'decimal',
       required: true,
-      defaultsTo: 0
     },
     delivery_date: {
       type: 'ref',
       columnType: 'date',
       required: false,
-      allowNull: true
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -68,7 +65,6 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'product_suborders',

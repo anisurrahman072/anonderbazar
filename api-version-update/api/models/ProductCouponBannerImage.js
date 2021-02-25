@@ -15,7 +15,6 @@ module.exports = {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'product_coupon_banner_images',
