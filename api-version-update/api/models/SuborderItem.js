@@ -26,12 +26,12 @@ module.exports = {
       required: true
     },
     product_total_price: {
-      type: 'float',
+      type: 'number',
       columnType: 'decimal',
       required: true
     },
     date: {
-      type: 'string',
+      type: 'ref',
       columnType: 'datetime',
       required: false,
       allowNull: true
