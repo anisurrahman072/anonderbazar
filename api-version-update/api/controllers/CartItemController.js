@@ -236,18 +236,9 @@ module.exports = {
         return res.badRequest('No cart found');
       }
 
-      if ( req.token.userInfo.id !== cart.user_id) {
+      if (req.token.userInfo.id !== cart.user_id) {
         return res.status(401).json({err: 'You are not authorized to do it.'});
       }
-
-      let product_quantity = cartItem.product_quantity - req.body.product_quantity;
-      let product_total_price = cartItem.product_total_price - req.body.product_total_price;
-
-
-      let requestPayload = {
-        'total_price': cart.total_price - product_total_price,
-        'total_quantity': cart.total_quantity - product_quantity,
-      };
 
       await sails.getDatastore()
         .transaction(async (db) => {
@@ -256,23 +247,53 @@ module.exports = {
 
           let itemCurrentQuantity = cartItem.product_quantity;
 
-          if (req.body.action_name === 'increment') {
-            itemCurrentQuantity = itemCurrentQuantity +quantityToChange;
-          } else if (req.body.action_name === 'decrement') {
-            itemCurrentQuantity = itemCurrentQuantity - quantityToChange >= 0 ? itemCurrentQuantity - quantityToChange: 0;
+          if (req.body.action_name === 'increase') {
+            itemCurrentQuantity = itemCurrentQuantity + quantityToChange;
+          } else if (req.body.action_name === 'decrease') {
+            itemCurrentQuantity = itemCurrentQuantity - quantityToChange >= 0 ? itemCurrentQuantity - quantityToChange : 0;
           }
 
-          await Cart.update({id: cartItem.cart_id}, requestPayload);
+          let requestPayload = {
+            'product_total_price': cartItem.product_unit_price * itemCurrentQuantity,
+            'product_quantity': itemCurrentQuantity,
+          };
 
-          cartItem = await CartItem.update({id: req.param('id')}, req.body);
+          await CartItem.update({id: cartItem.id}).set(requestPayload)
+            .usingConnection(db);
+
+          let cartItems = await CartItem.find({cart_id: cartItem.cart_id, deletedAt: null});
+          let totalPrice = 0;
+          let totalQty = 0;
+          if (cartItems && cartItems.length > 0) {
+            const cartItemLen = cartItems.length;
+
+            for (let i = 0; i < cartItemLen; i++) {
+              totalPrice += cartItems[i].product_total_price;
+              totalQty += cartItems[i].product_quantity;
+            }
+          }
+          requestPayload = {
+            'total_price': totalPrice,
+            'total_quantity': totalQty,
+          };
+
+          await Cart.update({id: cartItem.cart_id}).set(requestPayload)
+            .usingConnection(db);
         });
 
+      return res.json({
+        success: true,
+        message: 'cart successfully updated',
+        data: null
+      });
 
-      return res.json(cartItem);
-
-    } catch (err) {
-      return res.error(err);
-
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update cart',
+        error
+      });
     }
   }
 };

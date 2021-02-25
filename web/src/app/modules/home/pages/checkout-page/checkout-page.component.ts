@@ -203,24 +203,18 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         this.loaderService.showLoader();
 
-        let updatedQty = cartItem.product_quantity;
-        let updatedTotalPrice = 0;
+        let currentQty = cartItem.product_quantity;
+
         let maxProductQuantity = cartItem.product_id.quantity;
 
         if (action == 'increase') {
-            if (updatedQty < maxProductQuantity) {
-                updatedQty += 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty >= maxProductQuantity) {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to increase quantity!', 'Sorry!');
                 return false;
             }
         } else {
-            if (updatedQty > 1) {
-                updatedQty -= 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty <= 1) {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to decrease quantity!', 'Sorry!');
                 return false;
@@ -230,19 +224,15 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         let data = {
             "cart_id": cartItem.cart_id,
             "product_id": cartItem.product_id.id,
-            "product_quantity": updatedQty,
-            "product_total_price": updatedTotalPrice
+            "action_name": action,
+            "quantity": 1
         };
 
         this.loaderService.showLoader();
         this.cartItemService.update(cartItem.id, data).subscribe(res => {
             this.store.dispatch(new fromStore.LoadCart());
-            // this.updateGrandTotal();
             this.loaderService.hideLoader();
             this.toastr.info("Cart Item updated Successfully", 'Note');
-            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                            this.cartData = cartData;
-                        });*/
         }, () => {
             this.loaderService.hideLoader();
             this.toastr.error("Cart Item has not been updated Successfully", 'Error');
