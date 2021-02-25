@@ -23,12 +23,16 @@ module.exports = {
       defaultsTo: 0
     },
     total_price: {
-      type: 'float',
-
+      type: 'number',
+      columnType: 'decimal',
+      required: true,
       defaultsTo: 0
     },
     delivery_date: {
-      type: 'string', columnType: 'date',
+      type: 'ref',
+      columnType: 'date',
+      required: false,
+      allowNull: true
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -39,19 +43,32 @@ module.exports = {
       via: 'suborder_id'
     },
     courier_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: true
     },
     PR_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true,
+      defaultsTo: 0
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true,
+      defaultsTo: 1
     },
     changed_by: {
       model: 'user'
     },
     date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
   },
   tableName: 'product_suborders',

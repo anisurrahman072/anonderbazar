@@ -8,64 +8,61 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     dhaka_charge: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: true,
       defaultsTo: 50
     },
     outside_dhaka_charge: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: true,
       defaultsTo: 80
     },
     sslcommerce_user: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true,
     },
     sslcommerce_pass: {
-      type: 'string'
+      type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true,
     },
     delivery_charge_text_en: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     delivery_charge_text_bn: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'int',
+      required: false,
+      defaultsTo: 1,
     },
     default_image_width_ratio: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'int',
+      required: true,
+      defaultsTo: 9,
     },
     default_image_height_ratio: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'int',
+      required: true,
+      defaultsTo: 6,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'global_configs',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
 
