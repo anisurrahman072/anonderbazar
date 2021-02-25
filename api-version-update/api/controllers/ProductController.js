@@ -6,7 +6,7 @@ const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 
 
 module.exports = {
-  //Method called for getting
+/*  //Method called for getting
   //Model models/Product.js
   findOne: async (req, res) => {
     try {
@@ -33,7 +33,7 @@ module.exports = {
         error
       });
     }
-  },
+  },*/
   //Method called for deleting a product data
   //Model models/Product.js
   destroy: async (req, res) => {
