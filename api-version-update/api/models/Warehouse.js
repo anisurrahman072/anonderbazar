@@ -10,6 +10,7 @@ module.exports = {
     buffer_time: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       allowNull: true
     },
     code: {
@@ -26,27 +27,32 @@ module.exports = {
     employee_count: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       allowNull: true
     },
     license_no: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     tin_no: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     vat_no: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     address: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     upazila_id: {
       model: 'area',
@@ -63,12 +69,14 @@ module.exports = {
     postal_code: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     country: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     phone: {
       type: 'string',
@@ -83,23 +91,24 @@ module.exports = {
     invoice_footer: {
       type: 'string',
       columnType: 'text',
+      required: false,
       allowNull: true
     },
     logo: {
       type: 'string',
       columnType: 'varchar',
+      required: false,
       allowNull: true
     },
     award_points: {
       type: 'number',
       columnType: 'integer',
-      allowNull: true,
+      required: false,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      defaultsTo: 0,
       required: true
     },
     user: {

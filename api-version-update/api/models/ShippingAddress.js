@@ -18,12 +18,14 @@ module.exports = {
     first_name: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     last_name: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     phone: {
       type: 'string',

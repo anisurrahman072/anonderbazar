@@ -9,11 +9,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },*/
     type_id: {
       model: 'category',
       required: true
@@ -23,8 +18,7 @@ module.exports = {
       required: true
     },
     subcategory_id: {
-      model: 'category',
-      required: true
+      model: 'category'
     },
     product_id: {
       model: 'product',
@@ -54,34 +48,16 @@ module.exports = {
       required: true
     },
     price: {
-      type: 'float'
+      type: 'number',
+      columnType: 'decimal',
+      required: true
     },
     comment: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'product_designs',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
-
 };

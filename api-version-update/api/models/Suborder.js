@@ -19,14 +19,12 @@ module.exports = {
     total_quantity: {
       type: 'number',
       columnType: 'integer',
-      required: true,
-      defaultsTo: 0
+      required: true
     },
     total_price: {
       type: 'number',
       columnType: 'decimal',
-      required: true,
-      defaultsTo: 0
+      required: true
     },
     delivery_date: {
       type: 'ref',
@@ -51,14 +49,12 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: false,
-      allowNull: true,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
       required: false,
-      allowNull: true,
       defaultsTo: 1
     },
     changed_by: {
