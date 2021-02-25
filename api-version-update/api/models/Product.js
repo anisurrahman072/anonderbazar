@@ -10,25 +10,28 @@ module.exports = {
   attributes: {
     code: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     cost: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
+      required: false,
       allowNull: true
     },
     price: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
       required: true,
     },
     vendor_price: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },
@@ -41,22 +44,22 @@ module.exports = {
     alert_quantity: {
       type: 'number',
       columnType: 'integer',
-      required: false,
-      defaultsTo: 1
+      required: true
     },
     image: {
       type: 'string',
       columnType: 'text',
+      required: false,
       allowNull: true
     },
     rating: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'double',
+      required: false,
       allowNull: true
     },
     brand_id: {
-      model: 'brand',
-      required: false,
+      model: 'brand'
     },
     type_id: {
       model: 'category',
@@ -71,8 +74,9 @@ module.exports = {
     },
     quantity: {
       type: 'number',
-      columnType: 'float',
-      required: true,
+      columnType: 'decimal',
+      required: false,
+      defaultsTo: 0
     },
     is_coupon_product: {
       type: 'number',
@@ -81,8 +85,7 @@ module.exports = {
       defaultsTo: 0
     },
     warehouse_id: {
-      model: 'warehouse',
-      required: true
+      model: 'warehouse'
     },
     product_variants: {
       collection: 'productVariant',
@@ -99,63 +102,95 @@ module.exports = {
     product_details: {
       type: 'string',
       columnType: 'text',
-      required: true,
+      required: false,
+      allowNull: true
     },
     craftsman_id: {
       model: 'user',
     },
     craftsman_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: false,
+      allowNull: true
     },
     promotion: {
       type: 'boolean',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 0
     },
     promo_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: false,
+      allowNull: true
     },
     start_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
     end_date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
     sale_unit: {
       type: 'number',
+      columnType: 'integer',
+      required: false,
       allowNull: true
     },
     ///end promotion
     tag: {
       type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     status: {
       type: 'number',
       columnType: 'integer',
+      required: true
     },
     approval_status: {
       type: 'number',
       columnType: 'integer',
+      required: true,
     },
     approval_status_updated_by: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       allowNull: true
     },
     featured: {
       type: 'number',
       columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     weight: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: false,
+      allowNull: true
     },
     produce_time: {
       type: 'number',
       columnType: 'integer',
+      required: false,
       allowNull: true
     },
     last_order_completed_date: {
       type: 'ref',
       columnType: 'datetime',
       columnName: 'last_order_completed_date',
+      required: false,
+      allowNull: true
     },
     updated_by: {
       model: 'user'
@@ -163,28 +198,6 @@ module.exports = {
     created_by: {
       model: 'user'
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'products',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };

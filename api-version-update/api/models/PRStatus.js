@@ -7,56 +7,43 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     warehouse_id:{
       model:'warehouse'
     },
     total_quantity:{
-      type:'integer'
+      type:'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     total_amount:{
-      type:'float'
+      type:'number',
+      columnType: 'double',
+      required: false,
+      allowNull: true
     },
     info:{
-      type: 'text'
+      type:'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     items:{
-      type: 'text'
+      type:'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     created_by: {
       model: 'user'
     },
     date: {
-      type: 'string', columnType: 'datetime'
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'pr_status',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
 

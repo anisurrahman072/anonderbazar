@@ -10,8 +10,8 @@ module.exports = {
     order_id: {
       model: 'order',
     },
-    suborder_id: {
-      model: 'suborder'
+    suborder_id:{
+      model:'suborder'
     },
     order_status: {
       type: 'number',
@@ -20,14 +20,19 @@ module.exports = {
       allowNull: true
     },
     status: {
-      type: 'integer'
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true
     },
     changed_by: {
       model: 'user'
     },
     date: {
-      type: 'string',
-      columnType: 'datetime'
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
   },
   tableName: 'orders_status',
