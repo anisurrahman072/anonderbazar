@@ -7,52 +7,36 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     user_id: {
       model: 'user',
+      required: true,
     },
     event_id: {
       model: 'eventmanagement',
+      required: true,
     },
     person_or_stallamount: {
       type: 'string',
+      required: false,
+      allowNull: true,
     },
     total: {
       type: 'integer',
+      required: false,
+      allowNull: true,
     },
     reg_fee: {
       type: 'float',
+      required: true,
     },
     entry_number: {
       type: 'integer',
+      required: true,
     },
     exhibition_products: {
       type: 'string',
+      required: true,
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'event_registration',
 /*  autoCreatedAt: true,

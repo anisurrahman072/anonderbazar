@@ -6,16 +6,11 @@
  */
 
 module.exports = {
-
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     craftman_id: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: true,
     },
     warehouse_id: {
       model: 'warehouse',
@@ -30,40 +25,24 @@ module.exports = {
       required: true
     },
     product_quantity: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
       required: true
     },
     start_time: {
-      type: 'string', columnType: 'datetime',
+      type: 'string',
+      columnType: 'datetime',
       required: true
     },
     end_time: {
-      type: 'string', columnType: 'datetime',
+      type: 'string',
+      columnType: 'datetime',
       required: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'craftman_schedules',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+  /*  autoCreatedAt: true,
+    autoUpdatedAt: true,
+    autoDeletedAt: true,*/
 };
 

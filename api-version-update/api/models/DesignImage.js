@@ -6,20 +6,15 @@
  */
 
 module.exports = {
-
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     product_id: {
       model: 'product',
       required: true
     },
     combination: {
       type: 'json',
+      columnType: 'text',
+      required: false,
       defaultsTo: []
     },
     warehouse_id: {
@@ -28,27 +23,10 @@ module.exports = {
     },
     images: {
       type: 'json',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
-
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
   },
   tableName: 'design_images',
   /*  autoCreatedAt: true,

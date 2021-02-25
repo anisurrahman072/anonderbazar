@@ -8,12 +8,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     product_order_id: {
       model: 'order',
       required: true
@@ -23,15 +17,22 @@ module.exports = {
       required: true
     },
     total_quantity: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: true,
       defaultsTo: 0
     },
     total_price: {
-      type: 'float',
+      type: 'number',
+      columnType: 'decimal',
+      required: true,
       defaultsTo: 0
     },
     delivery_date: {
-      type: 'string', columnType: 'date',
+      type: 'ref',
+      columnType: 'date',
+      required: false,
+      allowNull: true
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -42,47 +43,37 @@ module.exports = {
       via: 'suborder_id'
     },
     courier_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: true
     },
     PR_status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true,
+      defaultsTo: 0
     },
     status: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      allowNull: true,
+      defaultsTo: 1
     },
     changed_by: {
       model: 'user'
     },
     date: {
-      type: 'string', columnType: 'datetime',
+      type: 'ref',
+      columnType: 'datetime',
+      required: false,
+      allowNull: true
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
-
   },
   tableName: 'product_suborders',
   customToJSON: function () {
     return this.toObject();
   }
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 };
 

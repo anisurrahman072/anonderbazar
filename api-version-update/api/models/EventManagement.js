@@ -7,12 +7,6 @@
 
 module.exports = {
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     event_type: {
       type: 'number',
       columnType: 'integer',
@@ -66,13 +60,13 @@ module.exports = {
       allowNull: true,
     },
     event_starttime: {
-      type: 'string',
+      type: 'ref',
       columnType: 'datetime',
       required: false,
       allowNull: true,
     },
     event_endtime: {
-      type: 'string',
+      type: 'ref',
       columnType: 'datetime',
       required: false,
       allowNull: true,
@@ -91,8 +85,5 @@ module.exports = {
     },
   },
   tableName: 'events',
-  /*  autoCreatedAt: true,
-    autoUpdatedAt: true,
-    autoDeletedAt: true,*/
 };
 
