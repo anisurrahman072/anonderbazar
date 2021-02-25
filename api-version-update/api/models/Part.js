@@ -17,25 +17,24 @@ module.exports = {
     type_id: {
       model: 'Category',
       required: false,
-      allowNull: true
     },
     category_id: {
       model: 'Category',
       required: false,
-      allowNull: true
     },
     subcategory_id: {
       model: 'Category',
       required: false,
-      allowNull: true
     },
     image: {
       type: 'string',
+      columnType: 'text',
       required: false,
       allowNull: true
     },
     details: {
       type: 'string',
+      columnType: 'text',
       required: false,
       allowNull: true
     },

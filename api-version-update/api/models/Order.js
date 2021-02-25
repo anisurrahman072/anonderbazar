@@ -17,10 +17,12 @@ module.exports = {
       required: true
     },
     billing_address: {
-      model: 'paymentaddress'
+      model: 'paymentaddress',
+      required: false
     },
     shipping_address: {
-      model: 'paymentaddress'
+      model: 'paymentaddress',
+      required: false
     },
     suborders: {
       collection: 'suborder',
@@ -38,19 +40,16 @@ module.exports = {
       type: 'number',
       columnType: 'int',
       required: true,
-      defaultsTo: 0
     },
     total_price: {
       type: 'number',
       required: true,
       columnType: 'decimal',
-      defaultsTo: 0
     },
     type: {
       type: 'number',
       required: true,
       columnType: 'int',
-      defaultsTo: 0
     },
     ssl_transaction_id: {
       type: 'string',
@@ -60,9 +59,7 @@ module.exports = {
     },
     changed_by: {
       model: 'user',
-      columnType: 'int',
       required: false,
-      allowNull: true,
     },
     status: {
       type: 'number',
@@ -73,8 +70,7 @@ module.exports = {
     courier_status: {
       type: 'number',
       columnType: 'int',
-      require: true,
-      defaultsTo: 0,
+      required: true,
     },
     courier_charge: {
       type: 'number',

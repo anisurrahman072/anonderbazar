@@ -125,7 +125,6 @@ module.exports = {
       type: 'ref',
       columnType: 'date',
       required: false,
-      allowNull: true
     },
     avatar: {
       type: 'string',

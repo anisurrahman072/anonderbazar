@@ -22,7 +22,6 @@ module.exports = {
     offer_id: {
       model: 'CMS',
       required: false,
-      allowNull: true,
     },
     code: {
       type: 'string',

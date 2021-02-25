@@ -118,7 +118,7 @@ module.exports = {
       type: 'boolean',
       columnType: 'integer',
       required: false,
-      defaultsTo: 0
+      defaultsTo: false
     },
     promo_price: {
       type: 'number',
@@ -130,13 +130,11 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
     end_date: {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
     sale_unit: {
       type: 'number',
@@ -190,13 +188,14 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'last_order_completed_date',
       required: false,
-      allowNull: true
     },
     updated_by: {
-      model: 'user'
+      model: 'user',
+      required: false
     },
     created_by: {
-      model: 'user'
+      model: 'user',
+      required: false
     },
   },
   tableName: 'products',

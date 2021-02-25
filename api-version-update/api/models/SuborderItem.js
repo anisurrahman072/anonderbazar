@@ -34,7 +34,6 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
     suborderItemVariants: {
       collection: 'suborderItemVariant',
