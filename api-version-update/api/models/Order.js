@@ -8,12 +8,6 @@
 module.exports = {
 
   attributes: {
-    /*    id: {
-      type: 'integer',
-      primaryKey: true,
-      unique: true,
-      autoIncrement: true
-    },*/
     user_id: {
       model: 'user',
       required: true
@@ -41,61 +35,57 @@ module.exports = {
       via: 'order_id'
     },
     total_quantity: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'int',
+      required: true,
       defaultsTo: 0
     },
     total_price: {
-      type: 'float',
+      type: 'number',
+      required: true,
+      columnType: 'decimal',
       defaultsTo: 0
     },
     type: {
-      type: 'integer',
+      type: 'number',
+      required: true,
+      columnType: 'int',
+      defaultsTo: 0
     },
     ssl_transaction_id: {
       type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
     },
     changed_by: {
-      model: 'user'
+      model: 'user',
+      columnType: 'int',
+      required: false,
+      allowNull: true,
     },
     status: {
-      type: 'integer',
-      required: true
+      type: 'number',
+      columnType: 'tinyint',
+      required: false,
+      defaultsTo: 1,
     },
     courier_status: {
-      type: 'integer',
-      defaultsTo: 0
+      type: 'number',
+      columnType: 'int',
+      require: true,
+      defaultsTo: 0,
     },
     courier_charge: {
-      type: 'float',
+      type: 'number',
+      columnType: 'int',
+      required: false,
       defaultsTo: 0
     },
-    /*    createdAt: {
-      type: 'datetime',
-      columnName: 'created_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    updatedAt: {
-      type: 'datetime',
-      columnName: 'updated_at',
-      defaultsTo: function () {
-        return new Date();
-      }
-    },
-    deletedAt: {
-      type: 'datetime',
-      columnName: 'deleted_at',
-      defaultsTo: null
-    },*/
-
   },
   tableName: 'product_orders',
   customToJSON: function () {
     return this.toObject();
   }
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 };
 
