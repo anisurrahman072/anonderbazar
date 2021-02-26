@@ -12,12 +12,11 @@ module.exports = {
   shopbybrand: async (req, res) => {
     let _where = {};
 
-    if (req.body.category_id) {
+    if (req.body && req.body.category_id) {
       _where.type_id = req.body.category_id;
     }
     let products = await Product.find(
-      { where: _where },
-      { select: ['brand_id'] }
+      { where: _where }
     );
 
     let notDistinctBrand = [];
