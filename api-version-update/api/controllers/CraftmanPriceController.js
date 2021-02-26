@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const { asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
+const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
 
 module.exports = {
@@ -16,7 +16,17 @@ module.exports = {
       let craftmanPrice = await CraftmanPrice.create(req.body);
       if (craftmanPrice) {
 
-        let newCraftmanPrice = await CraftmanPrice.findOne({id: craftmanPrice.id,}).populateAll();
+        let newCraftmanPrice = await CraftmanPrice.findOne({id: craftmanPrice.id,})
+          .populate('craftman_id', {deletedAt: null})
+          .populate('type_id', {deletedAt: null})
+          .populate('category_id', {deletedAt: null})
+          .populate('subcategory_id', {deletedAt: null})
+          .populate('part_id', {deletedAt: null})
+          .populate('design_category_id', {deletedAt: null})
+          .populate('design_subcategory_id', {deletedAt: null})
+          .populate('design_id', {deletedAt: null})
+          .populate('genre_id', {deletedAt: null})
+          .populate('warehouse_id', {deletedAt: null});
 
         return res.status(200).json({
           status: true,
@@ -46,7 +56,17 @@ module.exports = {
 
         let newCraftmanPrice = [];
         await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
-          let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,}).populateAll();
+          let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
+            .populate('craftman_id', {deletedAt: null})
+            .populate('type_id', {deletedAt: null})
+            .populate('category_id', {deletedAt: null})
+            .populate('subcategory_id', {deletedAt: null})
+            .populate('part_id', {deletedAt: null})
+            .populate('design_category_id', {deletedAt: null})
+            .populate('design_subcategory_id', {deletedAt: null})
+            .populate('design_id', {deletedAt: null})
+            .populate('genre_id', {deletedAt: null})
+            .populate('warehouse_id', {deletedAt: null});
           newCraftmanPrice.push(tmp);
 
         });
@@ -70,7 +90,7 @@ module.exports = {
   },
   //Method called for getting craftsman price design data
   //Model models/CraftmanPrice.js
-  getCraftsmanPriceDesign: async (req, res)=>{
+  getCraftsmanPriceDesign: async (req, res) => {
     initLogPlaceholder(req, 'CraftmanPrice ');
 
 
@@ -92,12 +112,22 @@ module.exports = {
 
       let craftmanPrices = await CraftmanPrice.find({
         where: _where,
-      }).populateAll();
+      })
+        .populate('craftman_id', {deletedAt: null})
+        .populate('type_id', {deletedAt: null})
+        .populate('category_id', {deletedAt: null})
+        .populate('subcategory_id', {deletedAt: null})
+        .populate('part_id', {deletedAt: null})
+        .populate('design_category_id', {deletedAt: null})
+        .populate('design_subcategory_id', {deletedAt: null})
+        .populate('design_id', {deletedAt: null})
+        .populate('genre_id', {deletedAt: null})
+        .populate('warehouse_id', {deletedAt: null});
       let allPrice = await Promise.all(
         craftmanPrices.map(async item => {
           item.material_price = await ProductDesign.find({
             deletedAt: null,
-            product_id:req.query.product_id,
+            product_id: req.query.product_id,
             design_id: req.query.design_id,
             part_id: req.query.part_id,
           });
@@ -123,7 +153,9 @@ module.exports = {
   destroy: function (req, res) {
     CraftmanPrice.update({id: req.param('id')}, {deletedAt: new Date()})
       .exec((err, craftmanPrice) => {
-        if (err) {return res.json(err, 400);}
+        if (err) {
+          return res.json(err, 400);
+        }
         return res.json(craftmanPrice[0]);
       });
   },

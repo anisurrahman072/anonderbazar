@@ -66,7 +66,9 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        }).populateAll();
+        })
+        .populate('group_id', {deletedAt: null})
+        .populate(['group_id','warehouse_id', 'upazila_id', 'zila_id', 'division_id', 'permanent_upazila_id', 'permanent_zila_id', 'permanent_division_id']);
 
 
       res.status(200).json({
