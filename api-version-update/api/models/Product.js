@@ -197,4 +197,7 @@ module.exports = {
     },
   },
   tableName: 'products',
+  customToJSON: function () {
+    return this;
+  }
 };

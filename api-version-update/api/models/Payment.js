@@ -58,11 +58,9 @@ module.exports = {
     },
   },
   tableName: 'payments',
-  /*
-  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,
-*/
+  customToJSON: function () {
+    return this.toObject();
+  },
 
   // generating transection key before creating a row
   beforeCreate: function (req, next) {

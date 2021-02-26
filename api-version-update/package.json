@@ -25,6 +25,7 @@
     "os": "^0.1.1",
     "rc": "^1.2.8",
     "sails": "^1.4.0",
+    "sails-hook-autoreload": "^1.1.0",
     "sails-hook-grunt": "^4.0.0",
     "sails-hook-orm": "^3.0.1",
     "sails-hook-sockets": "^2.0.0",
@@ -42,7 +43,7 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start": "node  --trace-warnings app.js",
+    "start": "node --trace-warnings app.js",
     "start:prod": "NODE_ENV=production node app.js",
     "test": "npm run lint && npm run custom-tests && echo 'Done.'",
     "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",

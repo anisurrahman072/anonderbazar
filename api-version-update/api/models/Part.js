@@ -40,4 +40,7 @@ module.exports = {
     },
   },
   tableName: 'parts',
+  customToJSON: function () {
+    return this.toObject();
+  }
 };
