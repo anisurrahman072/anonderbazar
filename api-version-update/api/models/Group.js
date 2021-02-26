@@ -27,7 +27,7 @@ module.exports = {
   tableName: 'groups',
   customToJSON: function () {
 
-    return this.toObject();
+    return this;
   }
 };
 

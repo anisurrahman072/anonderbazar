@@ -178,7 +178,7 @@ module.exports = {
   },
   tableName: 'users',
   customToJSON: function () {
-    var obj = this.toObject();
+    var obj = {...this};
     delete obj['password'];
     delete obj['forgotten_password_code'];
     delete obj['forgotten_password_time'];

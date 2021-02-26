@@ -59,7 +59,7 @@ module.exports = {
   },
   tableName: 'payments',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   },
 
   // generating transection key before creating a row

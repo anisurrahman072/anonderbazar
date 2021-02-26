@@ -69,7 +69,7 @@ module.exports = {
   },
   tableName: 'product_suborders',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   }
 };
 

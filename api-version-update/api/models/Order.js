@@ -81,7 +81,7 @@ module.exports = {
   },
   tableName: 'product_orders',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   }
 };
 

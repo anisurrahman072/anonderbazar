@@ -11,6 +11,31 @@ const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 
 module.exports = {
+  findOne: async (req, res) => {
+    User.findOne({
+      id: req.param('id')
+    })
+      .populate('group_id')
+      .populate('warehouse_id')
+      .populate('warehouse_id')
+      .populate('upazila_id')
+      .populate('zila_id')
+      .populate('division_id')
+      .then(function (user) {
+        if (!user) {
+          return res.notFound();
+        }
+        return res.json(user);
+      })
+      // If there was some kind of usage / validation error
+      .catch({name: 'UsageError'}, function (err) {
+        return res.badRequest(err);
+      })
+      // If something completely unexpected happened.
+      .catch(function (err) {
+        return res.serverError(err);
+      });
+  },
   //Method called for deleting a user data
   //Model models/User.js
   destroy: function (req, res) {
@@ -224,9 +249,11 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort
-      }).populateAll();
-
-      console.log('Users-Users', Users);
+      }).populate('group_id')
+        .populate('warehouse_id')
+        .populate('zila_id')
+        .populate('division_id')
+        .populate('upazila_id');
 
       res.status(200).json({
         success: true,
