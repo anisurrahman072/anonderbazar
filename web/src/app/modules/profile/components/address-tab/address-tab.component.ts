@@ -36,12 +36,12 @@ export class AddressTabComponent implements OnInit {
     private paymentAddressService: PaymentAddressService,
     private route: Router,
     private authService: AuthService
-    ) { 
+    ) {
 
     //adding form validation
     this.addAddressForm = this.fb.group({
       first_name: ['', Validators.required],
-      last_name: ['', Validators.required], 
+      last_name: ['', Validators.required],
       address: ['', Validators.required],
       postal_code: ['', Validators.required],
       phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -53,7 +53,7 @@ export class AddressTabComponent implements OnInit {
     //adding edit form validation
     this.editAddressForm = this.fb.group({
       first_name: ['', Validators.required],
-      last_name: ['', Validators.required], 
+      last_name: ['', Validators.required],
       address: ['', Validators.required],
       postal_code: ['', Validators.required],
       phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -86,6 +86,8 @@ export class AddressTabComponent implements OnInit {
 
   //Event method for deleting address
   deleteAddress(id){
+    console.log('id', id);
+
     this.paymentAddressService.delete(id).subscribe(result =>{
       this.getAddressList();
       this._notify.success('Address delete successful');
@@ -154,7 +156,7 @@ export class AddressTabComponent implements OnInit {
           division_id: address.division_id.id,
           zila_id: ''+address.zila_id.id,
           upazila_id: ''+address.upazila_id.id,
-        }); 
+        });
         this.editAddressId = address.id;
         this.showEdit = true;
       });

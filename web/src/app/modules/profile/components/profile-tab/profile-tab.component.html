@@ -6,7 +6,7 @@
             </button>
             <mat-card-header class="center imageDiv">
                 <div mat-card-avatar class="example-header-image" *ngIf="imageShow" style="width: 200px;height: 200px;">
-                    <img class="img-circle avatar-img " src="{{ IMAGE_ENDPOINT + user.avatar }}" />
+                    <img class="img-circle avatar-img " alt="Avatar Image" src="{{ IMAGE_ENDPOINT + user.avatar }}" />
                 </div>
                 <div *ngIf="imageUpload">
                     <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"

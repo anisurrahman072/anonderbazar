@@ -12,11 +12,10 @@ import {AppSettings} from "../../../../config/app.config";
     styleUrls: ['./order-tab.component.scss']
 })
 export class OrderTabComponent implements OnInit {
+    @ViewChild(MatPaginator) paginator: MatPaginator;
     IMAGE_ENDPOINT: string = AppSettings.IMAGE_ENDPOINT;
-
     orderList: any = [];
 
-    @ViewChild(MatPaginator) paginator: MatPaginator;
     currentUser: any;
     orders: Observable<any>;
     currentPage: number = 1;
@@ -43,6 +42,8 @@ export class OrderTabComponent implements OnInit {
 
         this.userService.getByIdForDashBoard(this.authService.getCurrentUserId()).subscribe(result => {
             this.dashboardData = result;
+        }, (error) => {
+            console.log(error);
         })
     }
 

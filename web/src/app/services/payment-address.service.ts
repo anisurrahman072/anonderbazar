@@ -15,11 +15,6 @@ export class PaymentAddressService {
                 private authenticationService: AuthService) {
     }
 
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
-            .map((response) => response);
-    }
-
     getAllByWarehouseId(id): Observable<any> {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`)
             .map((response) => response);
@@ -50,7 +45,6 @@ export class PaymentAddressService {
         return this.http.post(this.EndPoint, data)
             .map((response) => response);
     }
-
 
     delete(id): Observable<any> {
         // get users from api

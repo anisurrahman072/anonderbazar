@@ -18,6 +18,32 @@ module.exports = {
         return res.json(favouriteProduct[0]);
       });
   },
+  byAuthUser: async (req, res) => {
+    if (!req.token) {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+    if (req.token.userInfo.group_id.name !== 'customer') {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+
+    const authUser = req.token.userInfo;
+
+    try {
+      let data = await FavouriteProduct.find({user_id: authUser.id, deletedAt: null})
+        .populate('product_id');
+
+      res.json({
+        success: true,
+        message: 'Wishlist found',
+        data
+      });
+    } catch (error){
+      res.status(400).json({
+        success: false,
+        error
+      });
+    }
+  },
   //Method called for getting all favourite product data by user
   //Model models/FavouriteProduct.js
   byUser: async (req, res) => {
@@ -27,9 +53,9 @@ module.exports = {
     }
 
     let data = await FavouriteProduct.find({user_id: req.param('user_id'), deletedAt: null})
-      .populate('product_id', {deletedAt: null});
+      .populate('product_id');
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: 'Wishlist found',
       data

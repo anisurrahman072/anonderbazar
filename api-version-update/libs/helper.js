@@ -58,22 +58,12 @@ exports.baseFilter = (reqBody, Model, localWhere) => {
   return where;
 };
 
-exports.uploadImages = (imageFile) => {
-  return new Promise((resolve, reject) => {
-    imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        resolve(uploaded);
-      }
-    });
-  });
-};
+
 exports.escapeExcel = function (str) {
   return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
 };
-exports.imageUploadConfig = function () {
+
+const imageUploadConfig = function () {
 
   if (devEnv) {
     return {
@@ -89,6 +79,20 @@ exports.imageUploadConfig = function () {
     maxBytes: 10000000
   };
 
+};
+exports.imageUploadConfig = imageUploadConfig;
+
+exports.uploadImages = (imageFile) => {
+  return new Promise((resolve, reject) => {
+    imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(uploaded);
+      }
+    });
+  });
 };
 
 exports.getContentTypeByFile = function (fileName) {
