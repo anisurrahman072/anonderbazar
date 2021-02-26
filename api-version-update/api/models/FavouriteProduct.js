@@ -18,9 +18,6 @@ module.exports = {
     },
   },
   tableName: 'favourite_products',
-  /*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 
 };
 

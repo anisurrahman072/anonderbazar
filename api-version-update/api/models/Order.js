@@ -36,7 +36,7 @@ module.exports = {
     },
     total_quantity: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: true,
       defaultsTo: 0
     },
@@ -49,7 +49,7 @@ module.exports = {
     type: {
       type: 'number',
       required: true,
-      columnType: 'int',
+      columnType: 'integer',
       defaultsTo: 0
     },
     ssl_transaction_id: {
@@ -60,25 +60,24 @@ module.exports = {
     },
     changed_by: {
       model: 'user',
-      columnType: 'int',
-      required: false,
-      allowNull: true,
+      columnType: 'integer',
+      required: false
     },
     status: {
       type: 'number',
-      columnType: 'tinyint',
+      columnType: 'integer',
       required: false,
       defaultsTo: 1,
     },
     courier_status: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       require: true,
       defaultsTo: 0,
     },
     courier_charge: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: false,
       defaultsTo: 0
     },

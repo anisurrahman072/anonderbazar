@@ -26,8 +26,7 @@ module.exports = {
     data_value: {
       type: 'json',
       columnType: 'text',
-      required: false,
-      allowNull: true
+      required: false
     },
     user_id: {
       model: 'user',

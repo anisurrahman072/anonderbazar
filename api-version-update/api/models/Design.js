@@ -37,14 +37,12 @@ module.exports = {
     },
     design_category_id: {
       type: 'json',
-      columnType: 'text',
-      required: true
+      columnType: 'text'
     },
     design_subcategory_id: {
       type: 'json',
       columnType: 'text',
-      required: false,
-      allowNull: true
+      required: false
     },
     genre_id: {
       type: 'json',

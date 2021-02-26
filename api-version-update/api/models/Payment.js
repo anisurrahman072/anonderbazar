@@ -49,8 +49,7 @@ module.exports = {
     payment_date: {
       type: 'ref',
       columnType: 'datetime',
-      required: false,
-      allowNull: true
+      required: false
     },
     status: {
       type: 'number',
@@ -59,11 +58,6 @@ module.exports = {
     },
   },
   tableName: 'payments',
-  /*
-  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,
-*/
 
   // generating transection key before creating a row
   beforeCreate: function (req, next) {

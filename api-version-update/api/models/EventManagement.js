@@ -48,40 +48,34 @@ module.exports = {
       allowNull: true,
     },
     event_startdate: {
-      type: 'string',
+      type: 'ref',
       columnType: 'date',
-      required: false,
-      allowNull: true,
+      required: false
     },
     event_enddate: {
-      type: 'string',
+      type: 'ref',
       columnType: 'date',
-      required: false,
-      allowNull: true,
+      required: false
     },
     event_starttime: {
       type: 'ref',
       columnType: 'datetime',
-      required: false,
-      allowNull: true,
+      required: false
     },
     event_endtime: {
       type: 'ref',
       columnType: 'datetime',
-      required: false,
-      allowNull: true,
+      required: false
     },
     registration_lastdate: {
-      type: 'string',
+      type: 'ref',
       columnType: 'date',
-      required: false,
-      allowNull: true,
+      required: false
     },
     event_price_ids: {
       type: 'json',
       columnType: 'text',
-      required: false,
-      allowNull: true,
+      required: false
     },
   },
   tableName: 'events',

@@ -39,8 +39,5 @@ module.exports = {
     },
   },
   tableName: 'event_registration',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
 
