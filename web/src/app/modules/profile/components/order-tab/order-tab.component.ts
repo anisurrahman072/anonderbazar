@@ -13,7 +13,7 @@ import {AppSettings} from "../../../../config/app.config";
 })
 export class OrderTabComponent implements OnInit {
     IMAGE_ENDPOINT: string = AppSettings.IMAGE_ENDPOINT;
-    displayedColumns = ['id', 'invoice', 'total_quantity', 'total_price', 'status', 'suborders'];
+
     orderList: any = [];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;

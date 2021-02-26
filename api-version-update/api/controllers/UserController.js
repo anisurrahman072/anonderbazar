@@ -9,14 +9,48 @@ const bcrypt = require('bcryptjs');
 const {imageUploadConfig} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {ORDER_STATUSES} = require('../../libs/orders');
 
 module.exports = {
+
+  authUser: async (req, res) => {
+    if (!req.token) {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+    if (req.token.userInfo.group_id.name !== 'customer') {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+
+    const authUser = req.token.userInfo;
+
+    User.findOne({
+      id: authUser.id
+    })
+      .populate('group_id')
+      .populate('warehouse_id')
+      .populate('upazila_id')
+      .populate('zila_id')
+      .populate('division_id')
+      .then(function (user) {
+        if (!user) {
+          return res.notFound();
+        }
+        return res.json(user);
+      })
+      // If there was some kind of usage / validation error
+      .catch({name: 'UsageError'}, function (err) {
+        return res.badRequest(err);
+      })
+      // If something completely unexpected happened.
+      .catch(function (err) {
+        return res.serverError(err);
+      });
+  },
   findOne: async (req, res) => {
     User.findOne({
       id: req.param('id')
     })
       .populate('group_id')
-      .populate('warehouse_id')
       .populate('warehouse_id')
       .populate('upazila_id')
       .populate('zila_id')
@@ -274,13 +308,110 @@ module.exports = {
   },
   //Method called for getting user dashboard data
   //Model models/User.js, models/Order.js
+  getAuthCustomerData: async (req, res) => {
+    if (!req.token) {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+    if (req.token.userInfo.group_id.name !== 'customer') {
+      return res.status(401).json({err: 'No Authorization header was found'});
+    }
+
+    const authUser = req.token.userInfo;
+    try {
+      let _pagination = pagination(req.query);
+
+      let _suborder_where = {
+        deletedAt: null,
+        user_id: authUser.id
+      };
+
+      /*.....SORT END..............................*/
+      let totalOrder = await Order.count().where(_suborder_where);
+      let totalWishlistItem = await FavouriteProduct.count().where(_suborder_where);
+      let totalPendingOrder = 0;
+      let totalProcessingOrder = 0;
+      let totalDeliveredOrder = 0;
+      let totalCancelOrder = 0;
+      let totalConfirmedOrder = 0;
+
+      _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;
+
+      let aUser = await User.findOne({
+        id: authUser.id
+      }).populate('group_id')
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id');
+
+      let orders = await Order.find({
+        where: {
+          user_id: authUser.id,
+          deletedAt: null
+        }
+      });
+
+      const orderLen = orders.length;
+      for (let index = 0; index < orderLen; index++) {
+        let pendingOrder = await Order.count().where({
+          status: ORDER_STATUSES.pending,
+          id: orders[index].id,
+          deletedAt: null
+        });
+        let confirmedOrder = await Order.count().where({
+          status: ORDER_STATUSES.confirmed,
+          id: orders[index].id,
+          deletedAt: null
+        });
+        let processingOrder = await Order.count().where({
+          status: ORDER_STATUSES.processing,
+          id: orders[index].id,
+          deletedAt: null
+        });
+        let deliveredOrder = await Order.count().where({
+          status: ORDER_STATUSES.delivered,
+          id: orders[index].id,
+          deletedAt: null
+        });
+        let canceledOrder = await Order.count().where({
+          status: ORDER_STATUSES.confirmed,
+          id: orders[index].id,
+          deletedAt: null
+        });
+        totalPendingOrder += pendingOrder;
+        totalConfirmedOrder += confirmedOrder;
+        totalProcessingOrder += processingOrder;
+        totalDeliveredOrder += deliveredOrder;
+        totalCancelOrder += canceledOrder;
+      }
+      res.status(200).json({
+        success: true,
+        totalOrder: totalOrder,
+        totalWishlistItem: totalWishlistItem,
+        pendingOrder: totalPendingOrder,
+        processingOrder: totalProcessingOrder,
+        deliveredOrder: totalDeliveredOrder,
+        canceledOrder: totalCancelOrder,
+        confirmedOrder: totalConfirmedOrder,
+        message: 'Get All UserDashboard with pagination',
+        data: aUser
+      });
+    } catch (error) {
+      let message = 'Error in Get All UserDashboard with pagination';
+
+      res.status(400).json({
+        success: false,
+        message
+      });
+    }
+  },
+  //Method called for getting user dashboard data
+  //Model models/User.js, models/Order.js
   getUserWithDashboardData: async (req, res) => {
     try {
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
-      let _whereOrder = {};
+
       let _suborder_where = {};
       _where.deletedAt = null;
       _suborder_where.deletedAt = null;
@@ -303,39 +434,52 @@ module.exports = {
       let totalProcessingOrder = 0;
       let totalDeliveredOrder = 0;
       let totalCancelOrder = 0;
-
+      let totalConfirmedOrder = 0;
 
       _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;
       let aUser = await User.find({
         where: _where
-      }).populateAll();
+      }).populate('group_id')
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id');
+
       let orders = await Order.find({
-        where: {user_id: req.params.id}
+        where: {
+          user_id: req.params.id,
+          deletedAt: null
+        }
       });
 
-      for (let index = 0; index < orders.length; index++) {
+      const orderLen = orders.length;
+      for (let index = 0; index < orderLen; index++) {
         let pendingOrder = await Order.count().where({
-          status: '1',
+          status: ORDER_STATUSES.pending,
           id: orders[index].id,
           deletedAt: null
         });
-
+        let confirmedOrder = await Order.count().where({
+          status: ORDER_STATUSES.confirmed,
+          id: orders[index].id,
+          deletedAt: null
+        });
         let processingOrder = await Order.count().where({
-          status: '2',
+          status: ORDER_STATUSES.processing,
           id: orders[index].id,
           deletedAt: null
         });
         let deliveredOrder = await Order.count().where({
-          status: '11',
+          status: ORDER_STATUSES.delivered,
           id: orders[index].id,
           deletedAt: null
         });
         let canceledOrder = await Order.count().where({
-          status: '12',
+          status: ORDER_STATUSES.confirmed,
           id: orders[index].id,
           deletedAt: null
         });
         totalPendingOrder += pendingOrder;
+        totalConfirmedOrder += confirmedOrder;
         totalProcessingOrder += processingOrder;
         totalDeliveredOrder += deliveredOrder;
         totalCancelOrder += canceledOrder;
@@ -348,6 +492,7 @@ module.exports = {
         processingOrder: totalProcessingOrder,
         deliveredOrder: totalDeliveredOrder,
         canceledOrder: totalCancelOrder,
+        confirmedOrder: totalConfirmedOrder,
         message: 'Get All UserDashboard with pagination',
         data: aUser
       });
