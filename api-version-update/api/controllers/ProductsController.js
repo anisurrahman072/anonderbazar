@@ -87,12 +87,7 @@ module.exports = {
         sort: _sort
       }).populate('product_images', {deletedAt: null})
         .populate('product_variants', {deletedAt: null})
-        .populate('category_id', {deletedAt: null})
-        .populate('subcategory_id', {deletedAt: null})
-        .populate('type_id', {deletedAt: null})
-        .populate('warehouse_id', {deletedAt: null})
-        .populate('craftsman_id', {deletedAt: null})
-        .populate('brand_id', {deletedAt: null});
+        .populate(['category_id', 'subcategory_id', 'type_id', 'warehouse_id', 'craftsman_id', 'brand_id']);
 
       res.status(200).json({
         success: true,
@@ -105,6 +100,7 @@ module.exports = {
       });
     } catch (error) {
       let message = 'Error in Get All products with pagination';
+      // console.log(error);
       res.status(400).json({
         success: false,
         message
