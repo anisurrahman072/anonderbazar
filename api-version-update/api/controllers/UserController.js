@@ -9,6 +9,7 @@ const bcrypt = require('bcryptjs');
 const {imageUploadConfig} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');
 
 module.exports = {
@@ -170,45 +171,39 @@ module.exports = {
   },
   //Method called for updating a user data
   //Model models/User.js
-  update: function (req, res) {
-    if (req.body.hasImage === 'true') {
-      req.file('avatar').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
+  update: async (req, res) => {
+    try {
+      const user = User.findOne({
+        id: req.param('id')
+      });
+      if (!user) {
+        return res.badRequest('User not found');
+      }
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImages(req.file('avatar'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.avatar = '/' + newPath;
+      }
 
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {
-            return res.serverError(err);
-          }
-          req.body.avatar = '/' + newPath;
-          User.update({id: req.param('id')}, req.body).exec((
-            err,
-            user
-          ) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (user) {
-              res.json(200, {
-                user: user,
-                token: jwToken.issue({id: user.id})
-              });
-            }
-          });
-        }
-      );
-    } else {
-      User.update({id: req.param('id')}, req.body).exec((err, user) => {
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-        if (user) {
-          res.json(200, {user: user, token: jwToken.issue({id: user.id})});
-        }
+      await User.update({id: user.id}).set(req.body);
+
+      return res.json(200, {
+        user: user,
+        token: jwToken.issue({id: user.id})
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update user',
+        error
       });
     }
+
   },
   //Method called for getting all user data
   //Model models/User.js
@@ -352,36 +347,31 @@ module.exports = {
 
       const orderLen = orders.length;
       for (let index = 0; index < orderLen; index++) {
-        let pendingOrder = await Order.count().where({
-          status: ORDER_STATUSES.pending,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let confirmedOrder = await Order.count().where({
-          status: ORDER_STATUSES.confirmed,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let processingOrder = await Order.count().where({
-          status: ORDER_STATUSES.processing,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let deliveredOrder = await Order.count().where({
-          status: ORDER_STATUSES.delivered,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let canceledOrder = await Order.count().where({
-          status: ORDER_STATUSES.confirmed,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        totalPendingOrder += pendingOrder;
-        totalConfirmedOrder += confirmedOrder;
-        totalProcessingOrder += processingOrder;
-        totalDeliveredOrder += deliveredOrder;
-        totalCancelOrder += canceledOrder;
+        switch (orders[index].status) {
+          case ORDER_STATUSES.pending: {
+            totalPendingOrder++;
+            break;
+          }
+          case ORDER_STATUSES.confirmed: {
+            totalConfirmedOrder++;
+            break;
+          }
+          case ORDER_STATUSES.processing: {
+            totalProcessingOrder++;
+            break;
+          }
+          case ORDER_STATUSES.delivered: {
+            totalDeliveredOrder++;
+            break;
+          }
+          case ORDER_STATUSES.canceled: {
+            totalCancelOrder++;
+            break;
+          }
+          default: {
+            break;
+          }
+        }
       }
       res.status(200).json({
         success: true,
@@ -407,6 +397,8 @@ module.exports = {
   //Method called for getting user dashboard data
   //Model models/User.js, models/Order.js
   getUserWithDashboardData: async (req, res) => {
+    console.log('getUserWithDashboardData', req);
+
     try {
       let _pagination = pagination(req.query);
 
@@ -414,7 +406,6 @@ module.exports = {
 
       let _suborder_where = {};
       _where.deletedAt = null;
-      _suborder_where.deletedAt = null;
       _suborder_where.deletedAt = null;
 
       if (req.params.id) {
@@ -453,38 +444,34 @@ module.exports = {
 
       const orderLen = orders.length;
       for (let index = 0; index < orderLen; index++) {
-        let pendingOrder = await Order.count().where({
-          status: ORDER_STATUSES.pending,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let confirmedOrder = await Order.count().where({
-          status: ORDER_STATUSES.confirmed,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let processingOrder = await Order.count().where({
-          status: ORDER_STATUSES.processing,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let deliveredOrder = await Order.count().where({
-          status: ORDER_STATUSES.delivered,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        let canceledOrder = await Order.count().where({
-          status: ORDER_STATUSES.confirmed,
-          id: orders[index].id,
-          deletedAt: null
-        });
-        totalPendingOrder += pendingOrder;
-        totalConfirmedOrder += confirmedOrder;
-        totalProcessingOrder += processingOrder;
-        totalDeliveredOrder += deliveredOrder;
-        totalCancelOrder += canceledOrder;
+        switch (orders[index].status) {
+          case ORDER_STATUSES.pending: {
+            totalPendingOrder++;
+            break;
+          }
+          case ORDER_STATUSES.confirmed: {
+            totalConfirmedOrder++;
+            break;
+          }
+          case ORDER_STATUSES.processing: {
+            totalProcessingOrder++;
+            break;
+          }
+          case ORDER_STATUSES.delivered: {
+            totalDeliveredOrder++;
+            break;
+          }
+          case ORDER_STATUSES.canceled: {
+            totalCancelOrder++;
+            break;
+          }
+          default: {
+            break;
+          }
+        }
       }
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         totalOrder: totalOrder,
         totalWishlistItem: totalWishlistItem,

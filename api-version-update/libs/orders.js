@@ -10,7 +10,7 @@ exports.ORDER_STATUSES =  {
   shipped: 9,
   out_for_delivery: 10,
   delivered: 11,
-  conceled: 12,
+  canceled: 12,
   confirmed: 13
 };
 exports.ORDER_STATUSES_INDEX = {

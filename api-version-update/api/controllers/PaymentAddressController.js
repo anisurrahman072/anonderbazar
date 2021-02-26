@@ -7,12 +7,17 @@
 
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    PaymentAddress.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, paymentAddress) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(paymentAddress[0]);
-            });
+  destroy: async (req, res) => {
+    console.log('Payment Address destroy');
+
+    try {
+      const paymentAddress = await PaymentAddress.update({id: req.param('id')})
+        .set({deletedAt: new Date()});
+      return res.status(202).json(paymentAddress);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
   },
 };
 
