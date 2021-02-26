@@ -276,7 +276,6 @@ module.exports = {
   //Model models/User.js, models/Order.js
   getUserWithDashboardData: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'UserDashboard');
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
