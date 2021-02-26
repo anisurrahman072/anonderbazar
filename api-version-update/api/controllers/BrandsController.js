@@ -96,7 +96,7 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort
-      }).populateAll();
+      });
 
       res.status(200).json({
         success: true,
