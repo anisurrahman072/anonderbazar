@@ -619,14 +619,19 @@ module.exports = {
 
       console.log('validationResponse', validationResponse);
 
-      if(validationResponse && validationResponse.status !== 'VALID'){
+      if ( !(validationResponse && validationResponse.status === 'VALID') ) {
         return res.badRequest('Invalid order request');
       }
-      await Order.count().where({
 
+      const numberOfOrderFound =  await Order.count().where({
+        ssl_transaction_id: req.body.tran_id
       });
 
-      const paidAmount = validationResponse.amount;
+      if(numberOfOrderFound > 0){
+        return res.badRequest('Invalid request');
+      }
+
+      const paidAmount = parseFloat(validationResponse.amount);
 
       let user = await User.findOne({id: req.query.user_id, deletedAt: null});
 
@@ -687,6 +692,10 @@ module.exports = {
       }
 
       grandOrderTotal += courierCharge;
+
+      if(paidAmount !== grandOrderTotal){
+        return res.badRequest('Paid amount and order amount are different.');
+      }
 
       const {
         orderForMail,
