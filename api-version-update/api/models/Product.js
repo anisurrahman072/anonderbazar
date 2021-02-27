@@ -38,13 +38,12 @@ module.exports = {
     min_unit: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       defaultsTo: 1
     },
     alert_quantity: {
       type: 'number',
       columnType: 'integer',
-      required: true
+      defaultsTo: 1
     },
     image: {
       type: 'string',
@@ -79,7 +78,6 @@ module.exports = {
     is_coupon_product: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       defaultsTo: 0
     },
     warehouse_id: {
@@ -115,7 +113,6 @@ module.exports = {
     promotion: {
       type: 'boolean',
       columnType: 'integer',
-      required: false,
       defaultsTo: false
     },
     promo_price: {
@@ -155,7 +152,7 @@ module.exports = {
     approval_status: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      defaultsTo: 1
     },
     approval_status_updated_by: {
       type: 'number',
