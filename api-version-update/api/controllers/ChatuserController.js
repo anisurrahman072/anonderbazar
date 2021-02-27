@@ -42,9 +42,7 @@ module.exports = {
       }
       let chats = await ChatUser.find({
         where: _where
-      }).populate('product_id', { deletedAt: null })
-      .populate('user_id', { deletedAt: null })
-      .populate('warehouse_id', { deletedAt: null });
+      }).populate(['product_id', 'user_id', 'warehouse_id']);
 
 
 

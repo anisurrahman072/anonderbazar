@@ -26,7 +26,7 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierPrice.find({
         where: _where,
-      }).populate('courier_id', { deletedAt: null });
+      }).populate('courier_id');
 
       res.status(200).json({
         success: true,

@@ -58,7 +58,7 @@ module.exports = {
       /*.....SORT END..............................*/
 
 
-      let totalCraftsman = await  User.count().where(_where);
+      let totalCraftsman = await User.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCraftsman;
       let craftsmans = await User.find(
         {
@@ -67,8 +67,7 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populate('group_id', {deletedAt: null})
-        .populate(['group_id','warehouse_id', 'upazila_id', 'zila_id', 'division_id', 'permanent_upazila_id', 'permanent_zila_id', 'permanent_division_id']);
+        .populate(['group_id', 'warehouse_id', 'upazila_id', 'zila_id', 'division_id', 'permanent_upazila_id', 'permanent_zila_id', 'permanent_division_id']);
 
 
       res.status(200).json({
