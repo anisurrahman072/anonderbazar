@@ -16,7 +16,17 @@ module.exports = {
       let productDesign = await ProductDesign.create(req.body);
       if (productDesign) {
 
-        let newProductDesign = await ProductDesign.findOne({id: productDesign.id,}).populateAll();
+        let newProductDesign = await ProductDesign.findOne({id: productDesign.id,})
+          .populate('type_id')
+          .populate('category_id')
+          .populate('subcategory_id')
+          .populate('product_id')
+          .populate('part_id')
+          .populate('design_category_id')
+          .populate('design_subcategory_id')
+          .populate('design_id')
+          .populate('genre_id')
+          .populate('warehouse_id');
 
         return res.status(200).json({
           status: true,
@@ -46,7 +56,17 @@ module.exports = {
 
         let newProductDesign = [];
         await asyncForEach(productDesign, async (_productDesign) => {
-          let tmp = await ProductDesign.findOne({id: _productDesign.id,}).populateAll();
+          let tmp = await ProductDesign.findOne({id: _productDesign.id,})
+            .populate('type_id')
+            .populate('category_id')
+            .populate('subcategory_id')
+            .populate('product_id')
+            .populate('part_id')
+            .populate('design_category_id')
+            .populate('design_subcategory_id')
+            .populate('design_id')
+            .populate('genre_id')
+            .populate('warehouse_id');
           newProductDesign.push(tmp);
 
         });
