@@ -86,7 +86,7 @@ module.exports = {
         data: craftsmans
       });
     } catch
-      (error) {
+    (error) {
       let message = 'Error in Get All craftsmans with pagination';
       res.status(400).json({
         success: false,
