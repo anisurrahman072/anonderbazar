@@ -42,19 +42,17 @@ module.exports = {
     courier_status: {
       type: 'number',
       columnType: 'integer',
-      required: true
+      defaultsTo: 0
     },
     PR_status: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       allowNull: true,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       allowNull: true,
       defaultsTo: 1
     },
