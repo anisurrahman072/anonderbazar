@@ -431,7 +431,7 @@ module.exports = {
       let cart = await Cart.findOne({
         user_id: user.id,
         deletedAt: null
-      }).populate('cart_items');
+      });
 
       let cartItems = await CartItem.find({
         cart_id: cart.id,
@@ -472,10 +472,11 @@ module.exports = {
               zila_id: req.param('shipping_address').zila_id,
               division_id: req.param('shipping_address').division_id,
               status: 1
-            });
+            }).fetch();
 
             req.param('shipping_address').id = shippingAddres.id;
           }
+          // eslint-disable-next-line eqeqeq
           courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
         } else {
           courierCharge = globalConfigs.outside_dhaka_charge;
@@ -506,7 +507,7 @@ module.exports = {
             zila_id: req.param('billing_address').zila_id,
             division_id: req.param('billing_address').division_id,
             status: 1
-          });
+          }).fetch();
           req.param('billing_address').id = paymentAddress.id;
 
 
@@ -616,11 +617,7 @@ module.exports = {
   sslcommerzsuccess: async function (req, res) {
 
     if (!(req.body.tran_id && req.query.user_id)) {
-      res.writeHead(301,
-        {Location: webURL + '/checkout'}
-      );
-      res.end();
-      return false;
+      return res.badRequest('Invalid order request');
     }
 
     let user = await User.findOne({id: req.query.user_id, deletedAt: null});
@@ -642,12 +639,13 @@ module.exports = {
       let cart = await Cart.findOne({
         user_id: req.query.user_id,
         deletedAt: null
-      }).populate('cart_items');
+      });
 
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
-      }).populate(['cart_item_variants', 'product_id']);
+      }).populate('cart_item_variants')
+        .populate('product_id');
 
       let {
         grandOrderTotal,
@@ -675,6 +673,7 @@ module.exports = {
 
       if (!noShippingCharge) {
         if (shippingAddress && shippingAddress.id) {
+          // eslint-disable-next-line eqeqeq
           courierCharge = shippingAddress.zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
         } else {
           courierCharge = globalConfigs.outside_dhaka_charge;
@@ -683,195 +682,212 @@ module.exports = {
 
       grandOrderTotal += courierCharge;
 
-      let order = await Order.create({
-        user_id: req.query.user_id,
-        cart_id: cart.id,
-        total_price: grandOrderTotal,
-        total_quantity: totalQty,
-        billing_address: req.query.billing_address,
-        shipping_address: req.query.shipping_address,
-        courier_charge: courierCharge,
-        ssl_transaction_id: req.body.tran_id,
-        status: 1
-      });
-
-      /** Get unique warehouse Id for suborder................START......................... */
-
-      let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
-
-      let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
-
-      /** Get unique warehouse Id for suborder..................END......................... */
-
-      let subordersTemp = [];
-
-      let i = 0; // i init for loop
-      let allOrderedProductsInventory = [];
-
-      let allGeneratedCouponCodes = [];
-      for (i = 0; i < uniqueWarehouseIds.length; i++) {
-        let thisWarehouseID = uniqueWarehouseIds[i];
-
-        let cartItemsTemp = cartItems.filter(
-          asset => asset.product_id.warehouse_id === thisWarehouseID
-        );
-
-        let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
-        let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
-
-        let suborder = await Suborder.create({
-          product_order_id: order.id,
-          warehouse_id: uniqueWarehouseIds[i],
-          total_price: suborderTotalPrice,
-          total_quantity: suborderTotalQuantity,
-          status: 1
-        });
-
-        let suborderItemsTemp = [];
-        for (let k = 0; k < cartItemsTemp.length; k++) {
-          let thisCartItem = cartItemsTemp[k];
-
-          let newSuborderItemPayload = {
-            product_suborder_id: suborder.id,
-            product_id: thisCartItem.product_id,
-            warehouse_id: thisCartItem.product_id.warehouse_id,
-            product_quantity: thisCartItem.product_quantity,
-            product_total_price: thisCartItem.product_total_price,
+      const {
+        orderForMail,
+        allCouponCodes,
+        order,
+        subordersTemp
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          let order = await Order.create({
+            user_id: req.query.user_id,
+            cart_id: cart.id,
+            total_price: grandOrderTotal,
+            total_quantity: totalQty,
+            billing_address: req.query.billing_address,
+            shipping_address: req.query.shipping_address,
+            courier_charge: courierCharge,
+            ssl_transaction_id: req.body.tran_id,
             status: 1
-          };
+          }).fetch().usingConnection(db);
 
-          const orderedProductInventory = {
-            product_id: thisCartItem.product_id.id,
-            ordered_quantity: thisCartItem.product_quantity,
-            existing_quantity: thisCartItem.product_id.quantity
-          };
+          /** Get unique warehouse Id for suborder................START......................... */
 
-          let newEndDate = new Date();
-          newEndDate.setDate(new Date(
-            new Date(order.createdAt).getTime() +
-            ((thisCartItem.product_id.produce_time *
-              thisCartItem.product_quantity) /
-              60 /
-              8) *
-            86400000
-          ).getDate() + 1);
+          let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
 
-          let suborderItem = await SuborderItem.create(newSuborderItemPayload);
+          let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
 
-          if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
-            for (let t = 0; t < thisCartItem.product_quantity; t++) {
-              allGeneratedCouponCodes.push({
-                quantity: thisCartItem.product_quantity,
-                product_id: thisCartItem.product_id.id,
-                user_id: req.query.user_id,
-                order_id: order.id,
-                suborder_id: suborder.id,
-                suborder_item_id: suborderItem.id
-              });
-            }
-          }
+          /** Get unique warehouse Id for suborder..................END......................... */
 
-          let suborderItemVariantsTemp = [];
-          if (thisCartItem.cart_item_variants.length > 0) {
-            for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
-              let thisCartItemVariant = thisCartItem.cart_item_variants[j];
-              let newSuborderItemVariantPayload = {
-                product_suborder_item_id: suborderItem.id,
-                product_id: thisCartItemVariant.product_id,
-                variant_id: thisCartItemVariant.variant_id,
-                warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-                product_variant_id: thisCartItemVariant.product_variant_id
+          let subordersTemp = [];
+
+          let i = 0; // i init for loop
+          let allOrderedProductsInventory = [];
+
+          let allGeneratedCouponCodes = [];
+          for (i = 0; i < uniqueWarehouseIds.length; i++) {
+            let thisWarehouseID = uniqueWarehouseIds[i];
+
+            let cartItemsTemp = cartItems.filter(
+              asset => asset.product_id.warehouse_id === thisWarehouseID
+            );
+
+            let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
+            let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
+
+            let suborder = await Suborder.create({
+              product_order_id: order.id,
+              warehouse_id: uniqueWarehouseIds[i],
+              total_price: suborderTotalPrice,
+              total_quantity: suborderTotalQuantity,
+              status: 1
+            }).fetch().usingConnection(db);
+
+            let suborderItemsTemp = [];
+            for (let k = 0; k < cartItemsTemp.length; k++) {
+              let thisCartItem = cartItemsTemp[k];
+
+              let newSuborderItemPayload = {
+                product_suborder_id: suborder.id,
+                product_id: thisCartItem.product_id,
+                warehouse_id: thisCartItem.product_id.warehouse_id,
+                product_quantity: thisCartItem.product_quantity,
+                product_total_price: thisCartItem.product_total_price,
+                status: 1
               };
 
-              if (typeof orderedProductInventory.variantPayload === 'undefined') {
-                orderedProductInventory.variantPayload = [];
+              const orderedProductInventory = {
+                product_id: thisCartItem.product_id.id,
+                ordered_quantity: thisCartItem.product_quantity,
+                existing_quantity: thisCartItem.product_id.quantity
+              };
 
+              let newEndDate = new Date();
+              newEndDate.setDate(new Date(
+                new Date(order.createdAt).getTime() +
+                ((thisCartItem.product_id.produce_time *
+                  thisCartItem.product_quantity) /
+                  60 /
+                  8) *
+                86400000
+              ).getDate() + 1);
+
+              let suborderItem = await SuborderItem.create(newSuborderItemPayload).fetch().usingConnection(db);
+
+              if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
+                for (let t = 0; t < thisCartItem.product_quantity; t++) {
+                  allGeneratedCouponCodes.push({
+                    quantity: thisCartItem.product_quantity,
+                    product_id: thisCartItem.product_id.id,
+                    user_id: req.query.user_id,
+                    order_id: order.id,
+                    suborder_id: suborder.id,
+                    suborder_item_id: suborderItem.id
+                  });
+                }
               }
 
-              orderedProductInventory.variantPayload.push({
-                product_id: thisCartItemVariant.product_id,
-                variant_id: thisCartItemVariant.variant_id,
-                warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-              });
+              let suborderItemVariantsTemp = [];
+              if (thisCartItem.cart_item_variants.length > 0) {
+                for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
+                  let thisCartItemVariant = thisCartItem.cart_item_variants[j];
+                  let newSuborderItemVariantPayload = {
+                    product_suborder_item_id: suborderItem.id,
+                    product_id: thisCartItemVariant.product_id,
+                    variant_id: thisCartItemVariant.variant_id,
+                    warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+                    product_variant_id: thisCartItemVariant.product_variant_id
+                  };
 
-              let suborderItemVariant = await SuborderItemVariant.create(
-                newSuborderItemVariantPayload
-              );
+                  if (typeof orderedProductInventory.variantPayload === 'undefined') {
+                    orderedProductInventory.variantPayload = [];
 
-              suborderItemVariantsTemp.push(suborderItemVariant);
+                  }
+
+                  orderedProductInventory.variantPayload.push({
+                    product_id: thisCartItemVariant.product_id,
+                    variant_id: thisCartItemVariant.variant_id,
+                    warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+                  });
+
+                  let suborderItemVariant = await SuborderItemVariant.create(
+                    newSuborderItemVariantPayload
+                  ).fetch().usingConnection(db);
+
+                  suborderItemVariantsTemp.push(suborderItemVariant);
+                }
+              }
+
+              let d = Object.assign({}, suborderItem);
+              d.suborderItemVariants = suborderItemVariantsTemp;
+              suborderItemsTemp.push(d);
+
+              allOrderedProductsInventory.push(orderedProductInventory);
+            }
+
+            let d = Object.assign({}, suborder);
+            d.suborderItems = suborderItemsTemp;
+            subordersTemp.push(d);
+          }
+
+          /** .............Payment Section ........... */
+
+          let paymentTemp = [];
+
+          const allCouponCodes = [];
+
+          for (let i = 0; i < subordersTemp.length; i++) {
+            let paymentType = await Payment.create({
+              user_id: req.query.user_id,
+              order_id: order.id,
+              suborder_id: subordersTemp[i].id,
+              payment_type: 'SSLCommerce',
+              payment_amount: subordersTemp[i].total_price,
+              details: JSON.stringify(req.body),
+              transection_key: req.body.tran_id,
+              status: 1
+            }).fetch().usingConnection(db);
+
+            paymentTemp.push(paymentType);
+          }
+
+          if (allGeneratedCouponCodes.length > 0) {
+            const couponCodeLen = allGeneratedCouponCodes.length;
+            for (let i = 0; i < couponCodeLen; i++) {
+              let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
+              if (couponObject && couponObject.id) {
+                allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
+              }
             }
           }
 
-          let d = Object.assign({}, suborderItem);
-          d.suborderItemVariants = suborderItemVariantsTemp;
-          suborderItemsTemp.push(d);
+          // Start/Delete Cart after submitting the order
 
-          allOrderedProductsInventory.push(orderedProductInventory);
-        }
+          let orderForMail = await Order.findOne({id: order.id}).populate('user_id')
+            .populate('shipping_address').usingConnection(db);
+          let allOrderedProducts = [];
+          for (let i = 0; i < subordersTemp.length; i++) {
+            let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populate('product_id').usingConnection(db);
+            for (let index = 0; index < items.length; index++) {
+              allOrderedProducts.push(items[index]);
+            }
+          }
 
-        let d = Object.assign({}, suborder);
-        d.suborderItems = suborderItemsTemp;
-        subordersTemp.push(d);
-      }
+          orderForMail.orderItems = allOrderedProducts;
 
-      /** .............Payment Section ........... */
+          await Cart.update({id: cart.id}, {deletedAt: new Date()}).usingConnection(db);
 
-      let paymentTemp = [];
+          for (let i = 0; i < cartItems.length; i++) {
+            await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
+            await CartItemVariant.update(
+              {cart_item_id: cartItems[i].id},
+              {deletedAt: new Date()}
+            ).usingConnection(db);
+          }
 
-      const allCouponCodes = [];
+          for (let i = 0; i < allOrderedProductsInventory.length; i++) {
+            const quantityToUpdate = parseFloat(allOrderedProductsInventory[i].existing_quantity) - parseFloat(allOrderedProductsInventory[i].ordered_quantity);
+            await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate}).usingConnection(db);
+          }
 
-      for (let i = 0; i < subordersTemp.length; i++) {
-        let paymentType = await Payment.create({
-          user_id: req.query.user_id,
-          order_id: order.id,
-          suborder_id: subordersTemp[i].id,
-          payment_type: 'SSLCommerce',
-          payment_amount: subordersTemp[i].total_price,
-          details: JSON.stringify(req.body),
-          transection_key: req.body.tran_id,
-          status: 1
+          return {
+            orderForMail,
+            allCouponCodes,
+            order,
+            subordersTemp
+          };
         });
 
-        paymentTemp.push(paymentType);
-      }
-
-      if (allGeneratedCouponCodes.length > 0) {
-        const couponCodeLen = allGeneratedCouponCodes.length;
-        for (let i = 0; i < couponCodeLen; i++) {
-          let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]);
-          if (couponObject && couponObject.id) {
-            allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
-          }
-        }
-      }
-
-      // Start/Delete Cart after submitting the order
-
-      let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
-      let allOrderedProducts = [];
-      for (let i = 0; i < subordersTemp.length; i++) {
-        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populateAll();
-        for (let index = 0; index < items.length; index++) {
-          allOrderedProducts.push(items[index]);
-        }
-      }
-
-      orderForMail[0].orderItems = allOrderedProducts;
-
-      await Cart.update({id: cart.id}, {deletedAt: new Date()});
-
-      for (let i = 0; i < cartItems.length; i++) {
-        await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()});
-        await CartItemVariant.update(
-          {cart_item_id: cartItems[i].id},
-          {deletedAt: new Date()}
-        );
-      }
-
-      for (let i = 0; i < allOrderedProductsInventory.length; i++) {
-        const quantityToUpdate = parseFloat(allOrderedProductsInventory[i].existing_quantity) - parseFloat(allOrderedProductsInventory[i].ordered_quantity);
-        await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate});
-      }
 
       try {
         let smsPhone = user.phone;
@@ -957,26 +973,50 @@ module.exports = {
 
       console.log('_where', _where);
 
-      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}}).populateAll();
+      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}})
+        .populate('billing_address')
+        .populate('shipping_address')
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('payment')
+        .populate('suborders');
+
       await asyncForEach(orders, async element => {
 
-        element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}}).populateAll();
-        await asyncForEach(element.suborders[0].items, async item => {
-          let varientitems = [];
+        if (typeof element.suborders !== 'undefined' && Array.isArray(element.suborders) && element.suborders.length > 0) {
+          element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}})
+            .populate('product_id')
+            .populate('warehouse_id')
+            .populate('suborderItemVariants', {deletedAt: null})
+            .populate('product_suborder_id');
 
-          await asyncForEach(item.suborderItemVariants, async varientitem => {
-            varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
-          });
-          item.suborderItemVariants = varientitems;
-        });
+          if (element.suborders[0].items && Array.isArray(element.suborders[0].items) && element.suborders[0].items.length > 0) {
+
+            await asyncForEach(element.suborders[0].items, async item => {
+              let varientitems = [];
+
+              await asyncForEach(item.suborderItemVariants, async varientitem => {
+                varientitems.push(await SuborderItemVariant.findOne({product_suborder_item_id: item.id})
+                  .populate('product_id')
+                  .populate('variant_id')
+                  .populate('product_suborder_item_id')
+                  .populate('warehouse_variant_id')
+                  .populate('product_variant_id')
+                );
+              });
+              item.suborderItemVariants = varientitems;
+            });
+          }
+        }
       });
-      res.json(orders);
+
+      return res.status(200).json(orders);
 
     } catch (error) {
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }
