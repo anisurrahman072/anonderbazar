@@ -52,8 +52,26 @@ module.exports.policies = {
     'find': ['isAuthorized', 'isOwnerOrAdmin'],
     'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
-    'update': ['isAuthorized', 'isOwnerOrAdmin'],
-    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isResourceOwner'],
+    'destroy': ['isAuthorized', 'isResourceOwner'],
   },
-  Variant
+  VariantController: {
+    '*': false,
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isResourceOwner'],
+    'update': ['isAuthorized', 'isResourceOwner'],
+    'destroy': ['isAuthorized', 'isResourceOwner'],
+  },
+  VariantsController: {
+    '*': false,
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isResourceOwner'],
+    'update': ['isAuthorized', 'isResourceOwner'],
+    'destroy': ['isAuthorized', 'isResourceOwner'],
+  },
+  UserController: {
+
+  }
 };
