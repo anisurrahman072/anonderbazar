@@ -4,6 +4,7 @@
  * @description :: Server-side logic for managing warehouses
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {uploadImages} = require('../../libs/helper');
 const {
   initLogPlaceholder,
   pagination
@@ -120,35 +121,35 @@ module.exports = {
   },
   //Method called for updating a warehouse data
   //Model models/Warehouse.js
-  update: function (req, res) {
-    if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig(), (err, uploaded) => {
-        if (err) {
+  update: async (req, res) => {
+    try {
+      if (req.body.haslogo === 'true') {
+        try {
+          const uploaded = await uploadImages(req.file('logo'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          req.body.logo = '/' + newPath;
+
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      }
+      const warehouse = await Warehouse.updateOne({id: req.param('id')}).set(req.body);
 
-        if (err) {
-          return res.serverError(err);
-        }
-        req.body.logo = '/' + newPath;
-        Warehouse.update({id: req.param('id')}, req.body)
-          .exec((err, warehouse) => {
-            if (err) {
-              return res.json(err, 400);
-            }
-            return res.json(200, warehouse);
-          });
+      return res.json(200, warehouse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update warehouse',
+        error
       });
-    } else {
-      Warehouse.update({id: req.param('id')}, req.body)
-        .exec((err, warehouse) => {
-          if (err) {
-            return res.json(err, 400);
-          }
-          return res.json(200, warehouse);
-        });
     }
+
   }
 };
 
