@@ -37,6 +37,15 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'create': true,
+    'update': true,
     'destroy': ['isAuthorized', 'isAdmin']
-  }
+  },
+  AuthController: {
+    '*': false,
+    'login': true,
+    'index': true,
+    'dashboardLogin': true,
+  },
+
 };
