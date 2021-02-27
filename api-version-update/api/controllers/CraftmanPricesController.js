@@ -86,7 +86,16 @@ module.exports = {
         skip: _pagination.skip,
         sort: _sort
       })
-        .populate(['craftman_id', 'type_id', 'category_id', 'subcategory_id', 'part_id', 'design_category_id', 'design_subcategory_id', 'design_id', 'genre_id', 'warehouse_id']);
+        .populate('craftman_id')
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('part_id')
+        .populate('design_category_id')
+        .populate('design_subcategory_id')
+        .populate('design_id')
+        .populate('genre_id')
+        .populate('warehouse_id');
 
       res.status(200).json({
         success: true,
