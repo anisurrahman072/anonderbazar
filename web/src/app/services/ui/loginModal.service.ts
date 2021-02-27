@@ -3,19 +3,21 @@ import 'rxjs/add/operator/map';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Injectable()
-export class LoginModalService{
+export class LoginModalService {
 
-    private loginModalInfo= new BehaviorSubject<boolean>(false);
+    private loginModalInfo = new BehaviorSubject<boolean>(false);
     currentLoginModalinfo = this.loginModalInfo.asObservable();
 
     private loggedInUserInfo = new BehaviorSubject<boolean>(false);
     currentLoggedInUserInfo = this.loggedInUserInfo.asObservable();
 
-    constructor() { }
+    constructor() {
+    }
 
     showLoginModal(message: boolean) {
         this.loginModalInfo.next(message);
     }
+
     userLoggedIn(message: boolean) {
         this.loggedInUserInfo.next(message);
     }

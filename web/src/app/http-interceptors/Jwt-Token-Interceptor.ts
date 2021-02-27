@@ -1,29 +1,24 @@
-import {Injectable} from '@angular/core';
-import 'rxjs/add/operator/catch';
-
-import {
-    HttpRequest,
-    HttpHandler,
-    HttpEvent,
-    HttpInterceptor, HttpErrorResponse
-} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {AuthService} from '../../../services/auth.service';
-
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {Observable} from "rxjs/Rx";
+import {AuthService} from "../services";
+import {LoginModalService} from "../services/ui/loginModal.service";
 
 @Injectable()
-export class TokenInterceptor implements HttpInterceptor {
-    constructor(public authService: AuthService) {
+export class JwtTokenInterceptor implements HttpInterceptor {
+    constructor(private authService: AuthService, private loginModalService: LoginModalService) {
     }
 
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+    intercept(
+        req: HttpRequest<any>,
+        next: HttpHandler
+    ): Observable<HttpEvent<any>> {
         console.log('intercepted request ... ');
-        let authReq = request;
+        let authReq = req;
         // Clone the request to add the new header.
         if (!this.authService.isTokenExpired()) {
             const token = this.authService.getToken();
-            authReq = request.clone({
+            authReq = req.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
                 },
@@ -36,7 +31,7 @@ export class TokenInterceptor implements HttpInterceptor {
         return next.handle(authReq).catch((error, caught) => {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
-                    // TODO: logout and Redirect to Login Page
+                    this.loginModalService.showLoginModal(true);
                 }
             }
             //intercept the respons error and displace it to the console
