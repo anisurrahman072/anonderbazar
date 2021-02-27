@@ -60,9 +60,6 @@ module.exports = {
       let _where = {
         deletedAt: null
       };
-      let _suborder_where = {
-        deletedAt: null
-      };
 
       if (req.query.product_suborder_id) {
         _where.product_suborder_id = req.query.product_suborder_id;
@@ -81,11 +78,11 @@ module.exports = {
         _where.status = req.query.status;
       }
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.product_total_price) {
-        _sort.product_total_price = req.query.product_total_price;
+        _sort.push({product_total_price: req.query.product_total_price});
       } else {
-        _sort.createdAt = 'DESC';
+        _sort.push({createdAt: 'DESC'});
       }
       /*.....SORT END..............................*/
       let totalSubOrder = await Suborder.count().where(_where);
@@ -192,9 +189,11 @@ module.exports = {
         _where.status = req.query.status;
       }
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.product_total_price) {
-        _sort.product_total_price = req.query.product_total_price;
+        _sort.push({product_total_price: req.query.product_total_price});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
       /*.....SORT END..............................*/
       let totalSubOrder = await Suborder.count().where(_where);

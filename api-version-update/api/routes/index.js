@@ -1,3 +1,4 @@
+const {eventsRoutes} = require('./events');
 const {warehousevariantRoute} = require('./warehousevariant');
 const {designcategoriesRoute} = require('./designcategories');
 const {productCategoryRoute} = require('./productCategory');
@@ -31,5 +32,6 @@ exports.allRouter = {
   ...PaymentsRoute,
   ...designImageRoute,
   ...favouriteproductRoute,
-  ...userRoutes
+  ...userRoutes,
+  ...eventsRoutes
 };

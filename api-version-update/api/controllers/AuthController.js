@@ -11,26 +11,6 @@ const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
-  // Entry of Auth/0
-  index: function (req, res) {
-    // const username = req.param('username');
-    let password = req.param('password');
-
-
-    bcrypt.genSalt(10, (err, salt) => {
-      if (err) {
-        return next(err);
-      }
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          return next(err);
-        }
-        password = hash;
-      });
-    });
-
-  },
-
   // Entry of Auth/login
   //Method called for customer login for frontend
   //Model models/User.js
@@ -145,6 +125,10 @@ module.exports = {
     } else {
 
       User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
+
+        if (err) {
+          return res.serverError(err);
+        }
         if (!user) {
           return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
         }
