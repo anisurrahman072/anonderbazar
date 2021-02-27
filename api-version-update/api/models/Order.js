@@ -38,7 +38,7 @@ module.exports = {
     },
     total_quantity: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: true,
     },
     total_price: {
@@ -48,8 +48,8 @@ module.exports = {
     },
     type: {
       type: 'number',
-      required: true,
-      columnType: 'int',
+      defaultsTo: 0,
+      columnType: 'integer',
     },
     ssl_transaction_id: {
       type: 'string',
@@ -63,18 +63,18 @@ module.exports = {
     },
     status: {
       type: 'number',
-      columnType: 'tinyint',
+      columnType: 'integer',
       required: false,
       defaultsTo: 1,
     },
     courier_status: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: true,
     },
     courier_charge: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: false,
       defaultsTo: 0
     },

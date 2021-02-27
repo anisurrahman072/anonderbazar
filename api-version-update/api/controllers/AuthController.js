@@ -6,14 +6,15 @@
  */
 
 const bcrypt = require('bcryptjs');
+const jwToken = require('../services/jwToken');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
   // Entry of Auth/0
   index: function (req, res) {
-    var username = req.param('username');
-    var password = req.param('password');
+    // const username = req.param('username');
+    let password = req.param('password');
 
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -41,35 +42,35 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      User.findOne({username: username})
-        .populate('group_id')
-        .populate('warehouse_id')
-        .exec((err, user) => {
-          if (!user) {
-            return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
+      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
+        if (err) {
+          return res.json(401, {model: 'userName', message: 'forbidden.'});
+        }
+        if (!user) {
+          return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
+        }
+        User.comparePassword(password, user.password, (err1, valid) => {
+          if (err1) {
+            return res.json(401, {model: 'userName', message: 'forbidden.'});
           }
-          User.comparePassword(password, user.password, (err, valid) => {
-            if (err) {
-              return res.json(401, {model: 'userName', message: 'forbidden.'});
-            }
-            if (!valid) {
-              return res.json(401, {model: 'password', message: 'Password is invalid'});
-            } else {
+          if (!valid) {
+            return res.json(401, {model: 'password', message: 'Password is invalid'});
+          } else {
 
-              if (!user.active) {
-                return res.json(401, {model: 'userName', message: 'Not an active user'});
-              }
-              res.json({
-                user: user.toJSON(),
-                token: jwToken.issue({
-                  id: user.id,
-                  group_id: user.group_id.name,
-                  warehouse: user.warehouse_id
-                })
-              });
+            if (!user.active) {
+              return res.json(401, {model: 'userName', message: 'Not an active user'});
             }
-          });
+            res.json({
+              user: user.toJSON(),
+              token: jwToken.issue({
+                id: user.id,
+                group_id: user.group_id.name,
+                warehouse: user.warehouse_id
+              })
+            });
+          }
         });
+      });
     }
   },
 
@@ -102,7 +103,7 @@ module.exports = {
         let accessList;
         let group;
         if (user.group_id.name === 'owner') {
-          if (user.warehouse_id != null) {
+          if (user.warehouse_id !== null) {
             isWarehouseActivated = (user.warehouse_id.status === 2);
           }
           accessList = {};
@@ -128,12 +129,8 @@ module.exports = {
           }),
           accessControlList: jwToken.issue(accessList)
         });
-
-
       }
     }
-
-
   },
 
   // Entry of Auth/login
@@ -169,7 +166,7 @@ module.exports = {
               token: jwToken.issue({
                 id: user.id,
                 group_id: user.group_id.name,
-                info: user,
+                userInfo: user,
                 warehouse: user.warehouse_id
               })
             });
@@ -266,6 +263,7 @@ module.exports = {
         return res.json(200, {isunique: true});
       }
     } catch (error) {
+      console.log(error);
       return res.json(200, {isunique: true});
     }
   },

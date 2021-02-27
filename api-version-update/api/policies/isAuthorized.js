@@ -5,14 +5,15 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Policies
  */
 
-module.exports = function (req, res, next) {
-  var token;
+const jwToken = require('../services/jwToken');
+module.exports = async (req, res, next) => {
+  let token;
 
   if (req.headers && req.headers.authorization) {
-    var parts = req.headers.authorization.split(' ');
+    const parts = req.headers.authorization.split(' ');
     if (parts.length === 2) {
-      var scheme = parts[0];
-      var credentials = parts[1];
+      const scheme = parts[0];
+      const credentials = parts[1];
 
       if (/^Bearer$/i.test(scheme)) {
         token = credentials;
@@ -28,10 +29,12 @@ module.exports = function (req, res, next) {
     return res.json(401, {err: 'No Authorization header was found'});
   }
 
-  jwToken.verify(token, (err, token) => {
-    if (err) {return res.json(401, {err: 'Invalid Token!'});}
-    req.token = token; // This is the decrypted token or the payload you provided
+  try {
+    req.token = await jwToken.verify(token);
+    return next();
+  } catch (error) {
+    console.log(error);
+    return res.json(401, {err: 'Token verification failed'});
+  }
 
-    next();
-  });
 };

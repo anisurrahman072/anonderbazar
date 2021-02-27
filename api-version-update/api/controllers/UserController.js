@@ -32,18 +32,18 @@ module.exports = {
       .populate('upazila_id')
       .populate('zila_id')
       .populate('division_id')
-      .then(function (user) {
+      .then((user) => {
         if (!user) {
           return res.notFound();
         }
         return res.json(user);
       })
       // If there was some kind of usage / validation error
-      .catch({name: 'UsageError'}, function (err) {
+      .catch({name: 'UsageError'}, (err) => {
         return res.badRequest(err);
       })
       // If something completely unexpected happened.
-      .catch(function (err) {
+      .catch((err) => {
         return res.serverError(err);
       });
   },
@@ -56,18 +56,18 @@ module.exports = {
       .populate('upazila_id')
       .populate('zila_id')
       .populate('division_id')
-      .then(function (user) {
+      .then((user) => {
         if (!user) {
           return res.notFound();
         }
         return res.json(user);
       })
       // If there was some kind of usage / validation error
-      .catch({name: 'UsageError'}, function (err) {
+      .catch({name: 'UsageError'}, (err) => {
         return res.badRequest(err);
       })
       // If something completely unexpected happened.
-      .catch(function (err) {
+      .catch((err) => {
         return res.serverError(err);
       });
   },
@@ -297,7 +297,8 @@ module.exports = {
       let message = 'Error in Get All customer with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -390,7 +391,8 @@ module.exports = {
 
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -488,7 +490,8 @@ module.exports = {
 
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

@@ -2,11 +2,16 @@ import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest}
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Rx";
 import {AuthService} from "../services";
-import {LoginModalService} from "../services/ui/loginModal.service";
+import {Store} from "@ngrx/store";
+import * as fromStore from "../state-management";
+import {NotificationsService} from "angular2-notifications";
 
 @Injectable()
 export class JwtTokenInterceptor implements HttpInterceptor {
-    constructor(private authService: AuthService, private loginModalService: LoginModalService) {
+    constructor(
+        private store: Store<fromStore.HomeState>,
+        private authService: AuthService,
+        private _notify: NotificationsService) {
     }
 
     intercept(
@@ -31,7 +36,11 @@ export class JwtTokenInterceptor implements HttpInterceptor {
         return next.handle(authReq).catch((error, caught) => {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
-                    this.loginModalService.showLoginModal(true);
+                    this.authService.logout();
+                    this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
+                    this.store.dispatch(new fromStore.LoadCartSuccess(null));
+                    this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
+                    this._notify.error("Session Expired. Please login again.");
                 }
             }
             //intercept the respons error and displace it to the console

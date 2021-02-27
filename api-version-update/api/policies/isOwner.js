@@ -1,5 +1,5 @@
 /**
- * isAuthorized
+ * isOwner
  *
  * @description :: Policy to check if user is authorized with JSON web token
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Policies
@@ -9,11 +9,12 @@ module.exports = (req, res, next) => {
     return res.status(401).json({err: 'No Authorization header was found'});
   }
   try {
-
-    (req.token.userInfo.group_id.name !== 'owner') ?
-      res.status(401).json({err: 'No Authorization header was found'}) : next();
+    if (!(req.token.userInfo && req.token.userInfo.group_id.name === 'owner')) {
+      return res.status(401).json({err: 'You\'re not allowed to access this route'});
+    }
+    return next();
   } catch (err) {
-
+    console.log(err);
     return res.status(400).json({err: 'server error'});
   }
 
