@@ -31,23 +31,6 @@ export class BrandService {
       .map((response) => response);
   }
 
-  insert(data): Observable<any> {
-    return this.http.post(this.EndPoint, data)
-      .map((response) => response);
-  }
-
-
-  delete(id): Observable<any> {
-    // get users from api
-    return this.http.delete(`${this.EndPoint}/${id}`)
-      .map((response) => response);
-  }
-
-  update(id: number, data: any) {
-    return this.http.put(`${this.EndPoint}/${id}`, data)
-      .map((response) => response);
-  }
-
   shopByBrand(categoryId){
     let data = {
       category_id: categoryId

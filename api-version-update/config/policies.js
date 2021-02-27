@@ -24,5 +24,13 @@ module.exports.policies = {
   OrderController: {
     '*': ['isAuthorized', 'isCustomer'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
+  },
+  BranController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
   }
 };

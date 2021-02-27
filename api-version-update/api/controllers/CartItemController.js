@@ -35,7 +35,7 @@ module.exports = {
     try {
       await sails.getDatastore()
         .transaction(async (db) => {
-          let cartItem = await CartItem.update({id: req.param('id')}).set({deletedAt: new Date()}).usingConnection(db);
+          let cartItem = await CartItem.update({id: req.param('id')}).set({deletedAt: new Date()}).fetch().usingConnection(db);
 
           let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem.id}).usingConnection(db);
 
@@ -227,7 +227,7 @@ module.exports = {
               product_unit_price: productUnitPrice
             };
 
-            cartItem = await CartItem.create(cartItemBody).usingConnection(db);
+            cartItem = await CartItem.create(cartItemBody).fetch().usingConnection(db);
 
             if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
 
