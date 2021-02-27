@@ -4,6 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
   //Method called for getting all event list data
@@ -12,7 +13,8 @@ module.exports = {
 
     try {
 
-      let _pagination = pagination(req.query);
+      let _pagination;
+      _pagination = pagination(req.query);
 
       let _where = {};
       _where.deletedAt = null;
@@ -42,11 +44,12 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'Get All products with pagination',
+        message: 'Get All Events with pagination',
         data: allevents
       });
     } catch (error) {
-      let message = 'Error in Get All products with pagination';
+      console.log(error);
+      let message = 'Error in Get All Events with pagination';
       res.status(400).json({
         success: false,
         message,
