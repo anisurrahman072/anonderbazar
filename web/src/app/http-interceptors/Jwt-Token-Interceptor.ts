@@ -31,6 +31,8 @@ export class JwtTokenInterceptor implements HttpInterceptor {
         return next.handle(authReq).catch((error, caught) => {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
+                    this.authService.logout();
+                    this.loginModalService.userLoggedIn(false);
                     this.loginModalService.showLoginModal(true);
                 }
             }

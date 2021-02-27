@@ -92,15 +92,8 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   customInsert: async function (req, res) {
 
-    if (!req.param('user_id')) {
-      return res.badRequest('Invalid request!');
-    }
 
-    let user = await User.findOne({id: req.param('user_id'), deletedAt: null});
-
-    if (!user) {
-      return res.badRequest('User was not found!');
-    }
+    const authUser = req.token.userInfo;
 
     try {
 
@@ -113,9 +106,13 @@ module.exports = {
       }
 
       let cart = await Cart.findOne({
-        user_id: req.param('user_id'),
+        user_id: authUser.id,
         deletedAt: null
-      }).populate('cart_items');
+      });
+
+      if (!cart) {
+        return res.badRequest('No Cart Found!');
+      }
 
       let cartItems = await CartItem.find({
         cart_id: cart.id,
@@ -134,229 +131,244 @@ module.exports = {
         return res.badRequest('Payment method is invalid for this particular order.');
       }
 
-      let courierCharge = 0;
-      /*.................Shipping Address....................*/
-      if (req.param('shipping_address')) {
-        if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
+      const {
+        order,
+        orderForMail,
+        subordersTemp
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          let courierCharge = 0;
+          /*.................Shipping Address....................*/
+          if (req.param('shipping_address')) {
+            if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
 
-          let shippingAddres = await PaymentAddress.create({
+              let shippingAddres = await PaymentAddress.create({
+                user_id: req.param('user_id'),
+                first_name: req.param('shipping_address').firstName,
+                last_name: req.param('shipping_address').lastName,
+                address: req.param('shipping_address').address,
+                country: req.param('shipping_address').address,
+                phone: req.param('shipping_address').phone,
+                postal_code: req.param('shipping_address').postCode,
+                upazila_id: req.param('shipping_address').upazila_id,
+                zila_id: req.param('shipping_address').zila_id,
+                division_id: req.param('shipping_address').division_id,
+                status: 1
+              }).fetch().usingConnection(db);
+              req.param('shipping_address').id = shippingAddres.id;
+
+            }
+            // eslint-disable-next-line eqeqeq
+            courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+          } else {
+            courierCharge = globalConfigs.outside_dhaka_charge;
+          }
+
+          let {
+            grandOrderTotal,
+            totalQty
+          } = calcCartTotal(cart, cartItems);
+
+          grandOrderTotal += courierCharge;
+
+          /*.................Billing Address....................*/
+          if (req.param('billing_address') && (!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
+            let paymentAddress = await PaymentAddress.create({
+              user_id: req.param('user_id'),
+              first_name: req.param('billing_address').firstName,
+              last_name: req.param('billing_address').lastName,
+              address: req.param('billing_address').address,
+              country: req.param('billing_address').address,
+              phone: req.param('billing_address').phone,
+              postal_code: req.param('billing_address').postCode,
+              upazila_id: req.param('billing_address').upazila_id,
+              zila_id: req.param('billing_address').zila_id,
+              division_id: req.param('billing_address').division_id,
+              status: 1
+            }).fetch().usingConnection(db);
+            req.param('billing_address').id = paymentAddress.id;
+
+          } else if (req.param('is_copy') === true) {
+            req.param('billing_address').id = req.param('shipping_address').id;
+          }
+
+          /** Create  order from cart........................START...........................*/
+
+
+          let order = await Order.create({
             user_id: req.param('user_id'),
-            first_name: req.param('shipping_address').firstName,
-            last_name: req.param('shipping_address').lastName,
-            address: req.param('shipping_address').address,
-            country: req.param('shipping_address').address,
-            phone: req.param('shipping_address').phone,
-            postal_code: req.param('shipping_address').postCode,
-            upazila_id: req.param('shipping_address').upazila_id,
-            zila_id: req.param('shipping_address').zila_id,
-            division_id: req.param('shipping_address').division_id,
-            status: 1
-          });
-          req.param('shipping_address').id = shippingAddres.id;
+            cart_id: cart.id,
+            total_price: grandOrderTotal,
+            total_quantity: totalQty,
+            billing_address: req.param('billing_address').id,
+            shipping_address: req.param('shipping_address').id,
+            status: 1,
+            courier_charge: courierCharge,
+            courier_status: 1,
+          }).fetch().usingConnection(db);
 
-        }
-        courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
-      } else {
-        courierCharge = globalConfigs.outside_dhaka_charge;
-      }
+          console.log('created order', order);
 
-      let {
-        grandOrderTotal,
-        totalQty
-      } = calcCartTotal(cart, cartItems);
+          /** Get unique warehouse Id for suborder................START.........................*/
 
-      grandOrderTotal += courierCharge;
+          let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
 
-      /*.................Billing Address....................*/
-      if (req.param('billing_address') && (!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
-        let paymentAddress = await PaymentAddress.create({
-          user_id: req.param('user_id'),
-          first_name: req.param('billing_address').firstName,
-          last_name: req.param('billing_address').lastName,
-          address: req.param('billing_address').address,
-          country: req.param('billing_address').address,
-          phone: req.param('billing_address').phone,
-          postal_code: req.param('billing_address').postCode,
-          upazila_id: req.param('billing_address').upazila_id,
-          zila_id: req.param('billing_address').zila_id,
-          division_id: req.param('billing_address').division_id,
-          status: 1
-        });
-        req.param('billing_address').id = paymentAddress.id;
+          let uniqueWarehouseIds = uniqueTempWarehouses.map(
+            o => o.product_id.warehouse_id
+          );
 
-      } else if (req.param('is_copy') === true) {
-        req.param('billing_address').id = req.param('shipping_address').id;
-      }
+          /** get unique warehouse Id for suborder..................END.........................*/
 
-      /** Create  order from cart........................START...........................*/
+          let subordersTemp = [];
 
+          let i = 0; // i init for loop
 
-      let order = await Order.create({
-        user_id: req.param('user_id'),
-        cart_id: cart.id,
-        total_price: grandOrderTotal,
-        total_quantity: totalQty,
-        billing_address: req.param('billing_address').id,
-        shipping_address: req.param('shipping_address').id,
-        status: 1,
-        courier_charge: courierCharge,
-        courier_status: 1,
-      });
+          let allOrderedProductsInventory = [];
 
-      /** Get unique warehouse Id for suborder................START.........................*/
+          for (i = 0; i < uniqueWarehouseIds.length; i++) {
+            let thisWarehouseID = uniqueWarehouseIds[i];
 
-      let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
+            let cartItemsTemp = cartItems.filter(
+              asset => asset.product_id.warehouse_id === thisWarehouseID
+            );
 
-      let uniqueWarehouseIds = uniqueTempWarehouses.map(
-        o => o.product_id.warehouse_id
-      );
+            let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
+            let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
 
-      /** get unique warehouse Id for suborder..................END.........................*/
+            let suborder = await Suborder.create({
+              product_order_id: order.id,
+              warehouse_id: uniqueWarehouseIds[i],
+              total_price: suborderTotalPrice,
+              total_quantity: suborderTotalQuantity,
+              status: 1
+            }).fetch().usingConnection(db);
 
-      let subordersTemp = [];
+            let suborderItemsTemp = [];
+            for (let k = 0; k < cartItemsTemp.length; k++) {
+              let thisCartItem = cartItemsTemp[k];
 
-      let i = 0; // i init for loop
-
-      let allOrderedProductsInventory = [];
-
-      for (i = 0; i < uniqueWarehouseIds.length; i++) {
-        let thisWarehouseID = uniqueWarehouseIds[i];
-
-        let cartItemsTemp = cartItems.filter(
-          asset => asset.product_id.warehouse_id === thisWarehouseID
-        );
-
-        let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
-        let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
-
-        let suborder = await Suborder.create({
-          product_order_id: order.id,
-          warehouse_id: uniqueWarehouseIds[i],
-          total_price: suborderTotalPrice,
-          total_quantity: suborderTotalQuantity,
-          status: 1
-        });
-
-        let suborderItemsTemp = [];
-        for (let k = 0; k < cartItemsTemp.length; k++) {
-          let thisCartItem = cartItemsTemp[k];
-
-          let newSuborderItemPayload = {
-            product_suborder_id: suborder.id,
-            product_id: thisCartItem.product_id,
-            warehouse_id: thisCartItem.product_id.warehouse_id,
-            product_quantity: thisCartItem.product_quantity,
-            product_total_price: thisCartItem.product_total_price,
-            status: 1
-          };
-
-          const orderedProductInventory = {
-            product_id: thisCartItem.product_id.id,
-            ordered_quantity: thisCartItem.product_quantity,
-            existing_quantity: thisCartItem.product_id.quantity
-          };
-
-          let newEndDate = new Date();
-          newEndDate.setDate(new Date(
-            new Date(order.createdAt).getTime() +
-            ((thisCartItem.product_id.produce_time *
-              thisCartItem.product_quantity) /
-              60 /
-              8) *
-            86400000
-          ).getDate() + 1);
-
-          let suborderItem = await SuborderItem.create(newSuborderItemPayload);
-
-          let suborderItemVariantsTemp = [];
-
-          if (thisCartItem.cart_item_variants.length > 0) {
-
-            for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
-
-              let thisCartItemVariant = thisCartItem.cart_item_variants[j];
-
-              let newSuborderItemVariantPayload = {
-                product_suborder_item_id: suborderItem.id,
-                product_id: thisCartItemVariant.product_id,
-                variant_id: thisCartItemVariant.variant_id,
-                warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-                product_variant_id: thisCartItemVariant.product_variant_id
+              let newSuborderItemPayload = {
+                product_suborder_id: suborder.id,
+                product_id: thisCartItem.product_id,
+                warehouse_id: thisCartItem.product_id.warehouse_id,
+                product_quantity: thisCartItem.product_quantity,
+                product_total_price: thisCartItem.product_total_price,
+                status: 1
               };
 
-              if (typeof orderedProductInventory.variantPayload === 'undefined') {
-                orderedProductInventory.variantPayload = [];
+              const orderedProductInventory = {
+                product_id: thisCartItem.product_id.id,
+                ordered_quantity: thisCartItem.product_quantity,
+                existing_quantity: thisCartItem.product_id.quantity
+              };
+
+              let newEndDate = new Date();
+              newEndDate.setDate(new Date(
+                new Date(order.createdAt).getTime() +
+                ((thisCartItem.product_id.produce_time *
+                  thisCartItem.product_quantity) /
+                  60 /
+                  8) *
+                86400000
+              ).getDate() + 1);
+
+              let suborderItem = await SuborderItem.create(newSuborderItemPayload).fetch().usingConnection(db);
+
+              let suborderItemVariantsTemp = [];
+
+              if (thisCartItem.cart_item_variants.length > 0) {
+
+                for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
+
+                  let thisCartItemVariant = thisCartItem.cart_item_variants[j];
+
+                  let newSuborderItemVariantPayload = {
+                    product_suborder_item_id: suborderItem.id,
+                    product_id: thisCartItemVariant.product_id,
+                    variant_id: thisCartItemVariant.variant_id,
+                    warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+                    product_variant_id: thisCartItemVariant.product_variant_id
+                  };
+
+                  if (typeof orderedProductInventory.variantPayload === 'undefined') {
+                    orderedProductInventory.variantPayload = [];
+                  }
+
+                  orderedProductInventory.variantPayload.push({
+                    product_id: thisCartItemVariant.product_id,
+                    variant_id: thisCartItemVariant.variant_id,
+                    warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
+                  });
+
+                  let suborderItemVariant = await SuborderItemVariant.create(
+                    newSuborderItemVariantPayload
+                  ).fetch().usingConnection(db);
+                  suborderItemVariantsTemp.push(suborderItemVariant);
+                }
               }
 
-              orderedProductInventory.variantPayload.push({
-                product_id: thisCartItemVariant.product_id,
-                variant_id: thisCartItemVariant.variant_id,
-                warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-              });
+              let d = Object.assign({}, suborderItem);
+              d.suborderItemVariants = suborderItemVariantsTemp;
+              suborderItemsTemp.push(d);
 
-              let suborderItemVariant = await SuborderItemVariant.create(
-                newSuborderItemVariantPayload
-              );
-              suborderItemVariantsTemp.push(suborderItemVariant);
+              allOrderedProductsInventory.push(orderedProductInventory);
+            }
+
+            let d = Object.assign({}, suborder);
+            d.suborderItems = suborderItemsTemp;
+            subordersTemp.push(d);
+          }
+
+          /** .............Payment Section ........... */
+
+          let paymentTemp = [];
+
+
+          for (let i = 0; i < subordersTemp.length; i++) {
+            let paymentType = await Payment.create({
+              user_id: req.param('user_id'),
+              order_id: order.id,
+              suborder_id: subordersTemp[i].id,
+              payment_type: req.param('paymentType'),
+              payment_amount: subordersTemp[i].total_price,
+              status: 1
+            }).fetch().usingConnection(db);
+
+            paymentTemp.push(paymentType);
+          }
+
+          let orderForMail = await Order.find({where: {id: order.id}}).usingConnection(db);
+          let allOrderedProducts = [];
+          for (let i = 0; i < subordersTemp.length; i++) {
+            let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).usingConnection(db);
+            for (let index = 0; index < items.length; index++) {
+              allOrderedProducts.push(items[index]);
             }
           }
 
-          let d = Object.assign({}, suborderItem);
-          d.suborderItemVariants = suborderItemVariantsTemp;
-          suborderItemsTemp.push(d);
+          orderForMail[0].orderItems = allOrderedProducts;
 
-          allOrderedProductsInventory.push(orderedProductInventory);
-        }
+          await Cart.update({id: cart.id}, {deletedAt: new Date()}).usingConnection(db);
 
-        let d = Object.assign({}, suborder);
-        d.suborderItems = suborderItemsTemp;
-        subordersTemp.push(d);
-      }
+          for (let i = 0; i < cartItems.length; i++) {
+            await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
+            await CartItemVariant.update(
+              {cart_item_id: cartItems[i].id},
+              {deletedAt: new Date()}
+            ).usingConnection(db);
+          }
 
-      /** .............Payment Section ........... */
-
-      let paymentTemp = [];
-
-
-      for (let i = 0; i < subordersTemp.length; i++) {
-        let paymentType = await Payment.create({
-          user_id: req.param('user_id'),
-          order_id: order.id,
-          suborder_id: subordersTemp[i].id,
-          payment_type: req.param('paymentType'),
-          payment_amount: subordersTemp[i].total_price,
-          status: 1
+          for (let i = 0; i < allOrderedProductsInventory.length; i++) {
+            const thisInventoryProd = allOrderedProductsInventory[i];
+            const quantityToUpdate = parseFloat(thisInventoryProd.existing_quantity) - parseFloat(thisInventoryProd.ordered_quantity);
+            await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate}).usingConnection(db);
+          }
+          return {
+            order,
+            orderForMail,
+            subordersTemp
+          };
         });
-
-        paymentTemp.push(paymentType);
-      }
-
-      let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
-      let allOrderedProducts = [];
-      for (let i = 0; i < subordersTemp.length; i++) {
-        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populateAll();
-        for (let index = 0; index < items.length; index++) {
-          allOrderedProducts.push(items[index]);
-        }
-      }
-
-      orderForMail[0].orderItems = allOrderedProducts;
-
-      await Cart.update({id: cart.id}, {deletedAt: new Date()});
-
-      for (let i = 0; i < cartItems.length; i++) {
-        await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()});
-        await CartItemVariant.update(
-          {cart_item_id: cartItems[i].id},
-          {deletedAt: new Date()}
-        );
-      }
-
-      for (let i = 0; i < allOrderedProductsInventory.length; i++) {
-        const thisInventoryProd = allOrderedProductsInventory[i];
-        const quantityToUpdate = parseFloat(thisInventoryProd.existing_quantity) - parseFloat(thisInventoryProd.ordered_quantity);
-        await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate});
-      }
 
       try {
         const smsPhone = user.phone;

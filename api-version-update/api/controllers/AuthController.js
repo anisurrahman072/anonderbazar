@@ -6,20 +6,25 @@
  */
 
 const bcrypt = require('bcryptjs');
+const jwToken = require('../services/jwToken');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
   // Entry of Auth/0
   index: function (req, res) {
-    var username = req.param('username');
-    var password = req.param('password');
+    // const username = req.param('username');
+    let password = req.param('password');
 
 
     bcrypt.genSalt(10, (err, salt) => {
-      if (err) {return next(err);}
+      if (err) {
+        return next(err);
+      }
       bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {return next(err);}
+        if (err) {
+          return next(err);
+        }
         password = hash;
       });
     });
@@ -38,11 +43,14 @@ module.exports = {
     } else {
 
       User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
+        if (err) {
+          return res.json(401, {model: 'userName', message: 'forbidden.'});
+        }
         if (!user) {
           return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
         }
-        User.comparePassword(password, user.password, (err, valid) => {
-          if (err) {
+        User.comparePassword(password, user.password, (err1, valid) => {
+          if (err1) {
             return res.json(401, {model: 'userName', message: 'forbidden.'});
           }
           if (!valid) {
@@ -91,10 +99,13 @@ module.exports = {
         if (!user.active) {
           return res.json(401, {model: 'userName', message: 'Not an active user'});
         }
-        let isWarehouseActivated; let accessList; let group;
+        let isWarehouseActivated;
+        let accessList;
+        let group;
         if (user.group_id.name === 'owner') {
-          if (user.warehouse_id != null)
-          {isWarehouseActivated = (user.warehouse_id.status === 2);}
+          if (user.warehouse_id !== null) {
+            isWarehouseActivated = (user.warehouse_id.status === 2);
+          }
           accessList = {};
           accessList.list = (await Group.findOne({name: 'owner'})).accessList;
         } else if (user.group_id.name === 'admin') {
@@ -118,12 +129,8 @@ module.exports = {
           }),
           accessControlList: jwToken.issue(accessList)
         });
-
-
       }
     }
-
-
   },
 
   // Entry of Auth/login
@@ -182,7 +189,7 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
 
-        req.body.avatar =  uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.avatar = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
         User.create(req.body).exec((err, user) => {
 
@@ -214,7 +221,7 @@ module.exports = {
   //Model models/User.js
   signup: async (req, res) => {
     try {
-      if(req.body && req.body.dob === ''){
+      if (req.body && req.body.dob === '') {
         req.body.dob = null;
       }
       let user = await User.create(req.body);
@@ -236,7 +243,7 @@ module.exports = {
 
       return res.badRequest('User was not created successfully');
 
-    } catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'error in user registration',
@@ -256,6 +263,7 @@ module.exports = {
         return res.json(200, {isunique: true});
       }
     } catch (error) {
+      console.log(error);
       return res.json(200, {isunique: true});
     }
   },
