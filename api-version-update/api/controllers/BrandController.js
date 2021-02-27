@@ -68,7 +68,7 @@ module.exports = {
   update: function (req, res) {
 
 
-    if (req.body.hasImage == 'true') {
+    if (req.body.hasImage === 'true') {
 
       req.file('image').upload(imageUploadConfig(),
         (err, uploaded) => {
