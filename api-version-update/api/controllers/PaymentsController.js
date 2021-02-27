@@ -75,9 +75,7 @@ module.exports = {
           sort: _sort,
         })
         .populate('user_id', {  where: _where2, })
-        .populate('order_id', { deletedAt: null })
-        .populate('suborder_id', { deletedAt: null })
-        .populate('receiver_id', { deletedAt: null });
+        .populate(['order_id', 'suborder_id', 'receiver_id']);
 
       res.status(200).json({
         success: true,

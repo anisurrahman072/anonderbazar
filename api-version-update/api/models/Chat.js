@@ -24,7 +24,7 @@ module.exports = {
     notification_view_status: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      defaultTo: 1
     },
   },
   tableName: 'chat',

@@ -78,8 +78,8 @@ module.exports = {
       await asyncForEach(cartItems, async _cartItem => {
         let associatedProduct = await Product.findOne({id: _cartItem.product_id})
           .populate('product_images', {deletedAt: null})
-          .populate('warehouse_id', {deletedAt: null})
-          .populate('type_id', {deletedAt: null});
+          .populate('warehouse_id')
+          .populate('type_id');
 
         _cartItem.product_id = associatedProduct.toJSON();
 
@@ -88,9 +88,9 @@ module.exports = {
           cart_item_id: _cartItem.id,
           deletedAt: null
         })
-          .populate('variant_id', {deletedAt: null})
-          .populate('warehouse_variant_id', {deletedAt: null})
-          .populate('product_variant_id', {deletedAt: null});
+          .populate('variant_id')
+          .populate('warehouse_variant_id')
+          .populate('product_variant_id');
 
         if (civ.length > 0) {
           _cartItem.cartitemvariant = civ;

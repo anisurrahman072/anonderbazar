@@ -50,16 +50,16 @@ module.exports = {
     },
     zila_id: {
       model: 'area',
-      required: true,
+      defaultsTo: 1
     },
     division_id: {
       model: 'area',
-      required: true,
+      defaultsTo: 1
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      required: true
+      defaultsTo: 1
     },
   },
   tableName: 'shipping_addresses',
