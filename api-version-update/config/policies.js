@@ -32,5 +32,11 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  AreaController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isAdmin']
   }
 };

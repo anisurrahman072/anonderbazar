@@ -54,15 +54,15 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborder: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'SubOrderList');
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
-      let _where = {};
-      let _suborder_where = {};
-      _where.deletedAt = null;
-      _suborder_where.deletedAt = null;
+      let _where = {
+        deletedAt: null
+      };
+      let _suborder_where = {
+        deletedAt: null
+      };
 
       if (req.query.product_suborder_id) {
         _where.product_suborder_id = req.query.product_suborder_id;
@@ -224,31 +224,37 @@ module.exports = {
       let message = 'Error in Get All SubOrderListWithDate with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
   //Method called for getting all product suborder with relations
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js, models/Product.js
   getWithFull: async function (req, res) {
+
     let suborder = await Suborder.findOne({
       id: req.param('id'),
       deletedAt: null
     }).populate(['suborderItems', 'warehouse_id', 'product_order_id', 'couponProductCodes']);
+
     let suborderItems = [];
     for (let i = 0; i < suborder.suborderItems.length; i++) {
       let suborderItem = await SuborderItem.findOne({
         id: suborder.suborderItems[i].id,
         deletedAt: null
-      }).populate(['product_id']);
+      })
+        .populate('product_id');
+
       let oiv = await SuborderItemVariant.find({
         product_id: suborderItem.product_id.id,
         product_suborder_item_id: suborder.suborderItems[i].id,
         deletedAt: null
       })
-        .populate('variant_id', {deletedAt: null})
-        .populate('warehouse_variant_id', {deletedAt: null})
-        .populate('product_variant_id', {deletedAt: null});
+        .populate('variant_id')
+        .populate('warehouse_variant_id')
+        .populate('product_variant_id');
+
       if (oiv.length > 0) {
         suborderItem.orderitemvariant = oiv;
       } else {
