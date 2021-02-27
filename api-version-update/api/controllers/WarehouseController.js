@@ -9,7 +9,6 @@ const {
   initLogPlaceholder,
   pagination
 } = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for getting all warehouse data
@@ -54,68 +53,60 @@ module.exports = {
 
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
   //Method called for deleting a warehouse data
   //Model models/Warehouse.js
-  destroy: function (req, res) {
-    Warehouse.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec((err, warehouse) => {
-        User.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-          (err, user) => {
-            if (err) {
-              return res.json(err, 400);
-            }
-            return res.json(user[0]);
-          }
-        );
-        Product.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-          (err, product) => {
-            if (err) {
-              return res.json(err, 400);
-            }
-            return res.json(product[0]);
-          }
-        );
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(warehouse[0]);
+  destroy: async (req, res) => {
+    try {
+      await Warehouse.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+
+      await User.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
+
+      await Product.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
+
+      return res.json({
+        success: false,
+        message: 'Warehouse successfully deleted',
       });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to delete warehouse',
+        error
+      });
+    }
   },
   //Method called for creating a warehouse data
   //Model models/Warehouse.js
-  create: function (req, res) {
+  create: async (req, res) => {
 
-    if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig(), (err, uploaded) => {
-        if (err) {
+    try {
+      if (req.body.haslogo === 'true') {
+        try {
+          const uploaded = await uploadImages(req.file('logo'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          req.body.logo = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        if (err) {
-          return res.serverError(err);
-        }
-        req.body.logo = '/' + newPath;
-        Warehouse.create(req.body).exec((err, Warehouse) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (Warehouse) {
-            res.json(200, Warehouse);
-          }
-        });
-      });
-    } else {
-      Warehouse.create(req.body).exec((err, Warehouse) => {
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-        if (Warehouse) {
-          res.json(200, Warehouse);
-        }
+      }
+      const warehouse = await Warehouse.create(req.body).fetch();
+      return res.json(200, warehouse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create an warehouse',
+        error
       });
     }
   },
