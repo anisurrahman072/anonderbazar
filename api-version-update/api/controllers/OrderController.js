@@ -323,7 +323,6 @@ module.exports = {
 
           let paymentTemp = [];
 
-
           for (let i = 0; i < subordersTemp.length; i++) {
             let paymentType = await Payment.create({
               user_id: req.param('user_id'),
@@ -337,10 +336,15 @@ module.exports = {
             paymentTemp.push(paymentType);
           }
 
-          let orderForMail = await Order.find({where: {id: order.id}}).usingConnection(db);
+          let orderForMail = await Order.findOne({id: order.id})
+            .populate(['user_id', 'shipping_address'])
+            .usingConnection(db);
           let allOrderedProducts = [];
           for (let i = 0; i < subordersTemp.length; i++) {
-            let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).usingConnection(db);
+            let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
+              .populate(['product_id'])
+              .usingConnection(db);
+
             for (let index = 0; index < items.length; index++) {
               allOrderedProducts.push(items[index]);
             }

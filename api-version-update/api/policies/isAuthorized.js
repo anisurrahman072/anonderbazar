@@ -31,7 +31,6 @@ module.exports = async (req, res, next) => {
 
   try {
     req.token = await jwToken.verify(token);
-    console.log('token varification', req.token);
     return next();
   } catch (error) {
     console.log(error);

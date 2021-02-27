@@ -166,7 +166,7 @@ module.exports = {
               token: jwToken.issue({
                 id: user.id,
                 group_id: user.group_id.name,
-                info: user,
+                userInfo: user,
                 warehouse: user.warehouse_id
               })
             });

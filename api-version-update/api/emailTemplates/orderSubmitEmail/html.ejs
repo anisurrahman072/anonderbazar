@@ -13,11 +13,11 @@
 
                   <div style="color:#0f146d;text-align:center;font-weight:bold">Your order is placed!</div>
                   <div>
-                    <h2>Hi <%= orderDetail[0].user_id.first_name %>,</h2>
+                    <h2>Hi <%= recipientName %>,</h2>
                     <div></div>
                     <p>Thank you for ordering from Anonder Bazar!</p>
                     <p>
-                      We're excited for you to receive your order #<%= orderDetail[0].id %> and will notify you once it's on its
+                      We're excited for you to receive your order #<%= orderDetail.id %> and will notify you once it's on its
                       way. If you have ordered from multiple sellers, your items will be delivered in separate packages.
                       We hope you had a great shopping experience! You can check your order status here.
                     </p>
@@ -57,7 +57,7 @@
                           Name:
                         </td>
                         <td>
-                          <%= orderDetail[0].user_id.first_name %>
+                          <%= recipientName %>
                         </td>
                       </tr>
                       <tr>
@@ -65,7 +65,7 @@
                           Address:
                         </td>
                         <td>
-                          <%= orderDetail[0].shipping_address.address %>
+                          <%= orderDetail.shipping_address.address %>
                         </td>
                       </tr>
                       <tr>
@@ -73,7 +73,7 @@
                           Phone:
                         </td>
                         <td>
-                          <%= orderDetail[0].shipping_address.phone %>
+                          <%= orderDetail.shipping_address.phone %>
                         </td>
                       </tr>
                       <tr>
@@ -81,7 +81,7 @@
                           Email:
                         </td>
                         <td>
-                          <a href="mailto:<%= orderDetail[0].user_id.email %>" target="_blank"><%= orderDetail[0].user_id.email %></a>
+                          <a href="mailto:<%= orderDetail.user_id.email %>" target="_blank"><%= orderDetail.user_id.email %></a>
                         </td>
                       </tr>
                     </tbody>
@@ -93,7 +93,7 @@
                   <p style="color:#0f146d;font-weight:bold;font-size:15px">
                     ORDER DETAIL
                   </p>
-                    <% orderDetail[0].orderItems.forEach(function(item, index){ %>
+                    <% orderDetail.orderItems.forEach(function(item, index){ %>
                       <div style="padding-bottom:10px;margin-top:10px">
                         <p style="margin:0px;color:#717171">Item <%= ++index %></p>
                       </div>
@@ -131,7 +131,7 @@
                     <tbody>
                       <tr>
                         <td style="color:#535353">Price</td>
-                        <td align="right">BDT <%= orderDetail[0].total_price %></td>
+                        <td align="right">BDT <%= orderDetail.total_price %></td>
                       </tr>
                       <tr>
                         <td style="color:#535353">Discount</td>
@@ -143,7 +143,7 @@
                       </tr>
                       <tr>
                         <td style="color:#535353">Total</td>
-                        <td align="right" style="color:#f36d2e;font-weight:bold">BDT <%= orderDetail[0].total_price %></td>
+                        <td align="right" style="color:#f36d2e;font-weight:bold">BDT <%= orderDetail.total_price %></td>
                       </tr>
                     </tbody>
                   </table>
@@ -202,10 +202,6 @@
                     style="margin:0px;padding: 10px;background:#ffffff;font-size:14px;font-weight:normal;font-family:Helvetica,Arial,sans-serif!important">
 
                     <div style="max-width:730px" align="left">
-
-
-
-
                       <p style="color:#0f146d;font-weight:bold;font-size:15px">
                         NOTES
                       </p>
@@ -224,17 +220,13 @@
                         send them money and report the matter to us.
                         <p></p>
                       </div>
-
-
-
-
                       <div style="font-size:10px;line-height:20px;height:15px">&nbsp;</div>
                       <table cellpadding="0" cellspacing="0"
                         style="border:0px;padding:0px;margin:0px;display:none;float:left">
                         <tbody>
                           <tr>
                             <td height="1" style="font-size:1px;line-height:1px;padding:0px">
-                              <br><img src="" class="CToWUd">
+                              <br>
                             </td>
                           </tr>
                         </tbody>
