@@ -55,11 +55,17 @@ exports.index = async (req, res) => {
       skip: _pagination.skip,
       sort: _sort
     })
-      .populate(['brand_id', 'type_id', 'category_id', 'subcategory_id', 'warehouse_id', 'craftsman_id', 'updated_by', 'created_by'])
+      .populate('brand_id')
+      .populate('type_id')
+      .populate('category_id')
+      .populate('subcategory_id')
+      .populate('warehouse_id')
+      .populate('craftsman_id')
+      .populate('updated_by')
+      .populate('created_by')
       .populate('product_variants', {deletedAt: null})
       .populate('product_images', {deletedAt: null})
       .populate('coupon_banner_images', {deletedAt: null});
-
     res.status(200).json({
       success: true,
       total: totalProduct,
@@ -127,7 +133,14 @@ exports.create = async (req, res) => {
       skip: _pagination.skip,
       sort: _sort
     })
-      .populate(['brand_id', 'type_id', 'category_id', 'subcategory_id', 'warehouse_id', 'craftsman_id', 'updated_by', 'created_by'])
+      .populate('brand_id')
+      .populate('type_id')
+      .populate('category_id')
+      .populate('subcategory_id')
+      .populate('warehouse_id')
+      .populate('craftsman_id')
+      .populate('updated_by')
+      .populate('created_by')
       .populate('product_variants', {deletedAt: null})
       .populate('product_images', {deletedAt: null})
       .populate('coupon_banner_images', {deletedAt: null});

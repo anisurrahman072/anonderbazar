@@ -52,8 +52,9 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populate(['type_id', 'category_id', 'subcategory_id']);
-
+        .populate('type_id')
+        .populate( 'category_id')
+        .populate( 'subcategory_id');
 
       res.status(200).json({
         success: true,

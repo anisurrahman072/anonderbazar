@@ -117,7 +117,9 @@ module.exports = {
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
-      }).populate(['cart_item_variants', 'product_id']);
+      })
+        .populate('cart_item_variants')
+        .populate('product_id');
 
       let onlyCouponProduct = false;
       if (cartItems && cartItems.length > 0) {
@@ -337,12 +339,13 @@ module.exports = {
           }
 
           let orderForMail = await Order.findOne({id: order.id})
-            .populate(['user_id', 'shipping_address'])
+            .populate('user_id')
+            .populate('shipping_address')
             .usingConnection(db);
           let allOrderedProducts = [];
           for (let i = 0; i < subordersTemp.length; i++) {
             let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
-              .populate(['product_id'])
+              .populate('product_id')
               .usingConnection(db);
 
             for (let index = 0; index < items.length; index++) {
@@ -428,7 +431,9 @@ module.exports = {
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
-      }).populate(['cart_item_variants', 'product_id']);
+      })
+        .populate('cart_item_variants')
+        .populate('product_id');
 
       let {
         grandOrderTotal,
@@ -619,15 +624,15 @@ module.exports = {
 
       console.log('validationResponse', validationResponse);
 
-      if ( !(validationResponse && validationResponse.status === 'VALID') ) {
+      if (!(validationResponse && validationResponse.status === 'VALID')) {
         return res.badRequest('Invalid order request');
       }
 
-      const numberOfOrderFound =  await Order.count().where({
+      const numberOfOrderFound = await Order.count().where({
         ssl_transaction_id: req.body.tran_id
       });
 
-      if(numberOfOrderFound > 0){
+      if (numberOfOrderFound > 0) {
         return res.badRequest('Invalid request');
       }
 
@@ -693,7 +698,7 @@ module.exports = {
 
       grandOrderTotal += courierCharge;
 
-      if(paidAmount !== grandOrderTotal){
+      if (paidAmount !== grandOrderTotal) {
         return res.badRequest('Paid amount and order amount are different.');
       }
 
