@@ -63,7 +63,7 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort
-      }).populateAll();
+      }).populate(['product_id', 'warehouse_id']);
 
       res.status(200).json({
         success: true,
@@ -152,7 +152,7 @@ module.exports = {
           product_id: req.params._id,
           deletedAt: null
         }
-      }).populateAll();
+      }).populate(['product_id', 'warehouse_id']);
 
       let result = _.chain(productDesignData)
         .groupBy('part_id.id')

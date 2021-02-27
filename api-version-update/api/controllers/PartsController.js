@@ -51,7 +51,8 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        }).populateAll();
+        })
+        .populate(['type_id', 'category_id', 'subcategory_id']);
 
 
       res.status(200).json({

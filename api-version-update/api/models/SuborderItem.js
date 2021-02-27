@@ -30,6 +30,11 @@ module.exports = {
       columnType: 'decimal',
       required: true
     },
+    status: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 1
+    },
     date: {
       type: 'ref',
       columnType: 'datetime',

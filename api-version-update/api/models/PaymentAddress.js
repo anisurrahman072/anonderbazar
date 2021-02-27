@@ -46,21 +46,17 @@ module.exports = {
       required: true,
     },
     zila_id: {
-      model: 'area',
-      required: true,
+      model: 'area'
     },
     division_id: {
-      model: 'area',
-      required: true,
+      model: 'area'
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      defaultsTo: 1
     },
   },
   tableName: 'payment_addresses',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
+
 };

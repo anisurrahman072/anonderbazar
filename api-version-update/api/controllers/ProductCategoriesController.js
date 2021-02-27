@@ -49,7 +49,8 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort,
-      }).populateAll();
+      })
+        .populate('offer_id');
 
       res.status(200).json({
         success: true,
