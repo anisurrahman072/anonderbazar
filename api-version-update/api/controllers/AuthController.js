@@ -17,9 +17,13 @@ module.exports = {
 
 
     bcrypt.genSalt(10, (err, salt) => {
-      if (err) {return next(err);}
+      if (err) {
+        return next(err);
+      }
       bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {return next(err);}
+        if (err) {
+          return next(err);
+        }
         password = hash;
       });
     });
@@ -37,32 +41,35 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
-        if (!user) {
-          return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
-        }
-        User.comparePassword(password, user.password, (err, valid) => {
-          if (err) {
-            return res.json(401, {model: 'userName', message: 'forbidden.'});
+      User.findOne({username: username})
+        .populate('group_id')
+        .populate('warehouse_id')
+        .exec((err, user) => {
+          if (!user) {
+            return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
           }
-          if (!valid) {
-            return res.json(401, {model: 'password', message: 'Password is invalid'});
-          } else {
-
-            if (!user.active) {
-              return res.json(401, {model: 'userName', message: 'Not an active user'});
+          User.comparePassword(password, user.password, (err, valid) => {
+            if (err) {
+              return res.json(401, {model: 'userName', message: 'forbidden.'});
             }
-            res.json({
-              user: user.toJSON(),
-              token: jwToken.issue({
-                id: user.id,
-                group_id: user.group_id.name,
-                warehouse: user.warehouse_id
-              })
-            });
-          }
+            if (!valid) {
+              return res.json(401, {model: 'password', message: 'Password is invalid'});
+            } else {
+
+              if (!user.active) {
+                return res.json(401, {model: 'userName', message: 'Not an active user'});
+              }
+              res.json({
+                user: user.toJSON(),
+                token: jwToken.issue({
+                  id: user.id,
+                  group_id: user.group_id.name,
+                  warehouse: user.warehouse_id
+                })
+              });
+            }
+          });
         });
-      });
     }
   },
 
@@ -91,10 +98,13 @@ module.exports = {
         if (!user.active) {
           return res.json(401, {model: 'userName', message: 'Not an active user'});
         }
-        let isWarehouseActivated; let accessList; let group;
+        let isWarehouseActivated;
+        let accessList;
+        let group;
         if (user.group_id.name === 'owner') {
-          if (user.warehouse_id != null)
-          {isWarehouseActivated = (user.warehouse_id.status === 2);}
+          if (user.warehouse_id != null) {
+            isWarehouseActivated = (user.warehouse_id.status === 2);
+          }
           accessList = {};
           accessList.list = (await Group.findOne({name: 'owner'})).accessList;
         } else if (user.group_id.name === 'admin') {
@@ -182,7 +192,7 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
 
-        req.body.avatar =  uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.avatar = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
         User.create(req.body).exec((err, user) => {
 
@@ -214,7 +224,7 @@ module.exports = {
   //Model models/User.js
   signup: async (req, res) => {
     try {
-      if(req.body && req.body.dob === ''){
+      if (req.body && req.body.dob === '') {
         req.body.dob = null;
       }
       let user = await User.create(req.body);
@@ -236,7 +246,7 @@ module.exports = {
 
       return res.badRequest('User was not created successfully');
 
-    } catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'error in user registration',

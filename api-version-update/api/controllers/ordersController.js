@@ -54,7 +54,11 @@ exports.index = async (req, res) => {
       limit: _pagination.limit,
       skip: _pagination.skip,
       sort: _sort
-    }).populateAll();
+    })
+      .populate(['brand_id', 'type_id', 'category_id', 'subcategory_id', 'warehouse_id', 'craftsman_id', 'updated_by', 'created_by'])
+      .populate('product_variants', {deletedAt: null})
+      .populate('product_images', {deletedAt: null})
+      .populate('coupon_banner_images', {deletedAt: null});
 
     res.status(200).json({
       success: true,
@@ -122,7 +126,11 @@ exports.create = async (req, res) => {
       limit: _pagination.limit,
       skip: _pagination.skip,
       sort: _sort
-    }).populateAll();
+    })
+      .populate(['brand_id', 'type_id', 'category_id', 'subcategory_id', 'warehouse_id', 'craftsman_id', 'updated_by', 'created_by'])
+      .populate('product_variants', {deletedAt: null})
+      .populate('product_images', {deletedAt: null})
+      .populate('coupon_banner_images', {deletedAt: null});
 
     res.status(200).json({
       success: true,

@@ -331,10 +331,16 @@ module.exports = {
         paymentTemp.push(paymentType);
       }
 
-      let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
+      let orderForMail = await Order.find({where: {id: order.id}})
+        .populate(['user_id', 'cart_id', 'billing_address', 'paymentaddress', 'changed_by'])
+        .populate('suborders', {deletedAt: null})
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('payment', {deletedAt: null});
       let allOrderedProducts = [];
       for (let i = 0; i < subordersTemp.length; i++) {
-        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populateAll();
+        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
+          .populate(['product_suborder_id', 'product_id', 'warehouse_id'])
+          .populate('suborderItemVariants', {deletedAt: null});
         for (let index = 0; index < items.length; index++) {
           allOrderedProducts.push(items[index]);
         }
@@ -831,10 +837,16 @@ module.exports = {
 
       // Start/Delete Cart after submitting the order
 
-      let orderForMail = await Order.find({where: {id: order.id}}).populateAll();
+      let orderForMail = await Order.find({where: {id: order.id}})
+        .populate(['user_id', 'cart_id', 'billing_address', 'paymentaddress', 'changed_by'])
+        .populate('suborders', {deletedAt: null})
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('payment', {deletedAt: null});
       let allOrderedProducts = [];
       for (let i = 0; i < subordersTemp.length; i++) {
-        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populateAll();
+        let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
+          .populate(['product_suborder_id', 'product_id', 'warehouse_id'])
+          .populate('suborderItemVariants', {deletedAt: null});
         for (let index = 0; index < items.length; index++) {
           allOrderedProducts.push(items[index]);
         }
@@ -941,15 +953,22 @@ module.exports = {
 
       console.log('_where', _where);
 
-      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}}).populateAll();
+      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}})
+        .populate(['user_id', 'cart_id', 'billing_address', 'paymentaddress', 'changed_by'])
+        .populate('suborders', {deletedAt: null})
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('payment', {deletedAt: null});
       await asyncForEach(orders, async element => {
 
-        element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}}).populateAll();
+        element.suborders[0].items = await SuborderItem.find({where: {product_suborder_id: element.suborders[0].id}})
+          .populate(['product_suborder_id', 'product_id', 'warehouse_id'])
+          .populate('suborderItemVariants', {deletedAt: null});
         await asyncForEach(element.suborders[0].items, async item => {
           let varientitems = [];
 
           await asyncForEach(item.suborderItemVariants, async varientitem => {
-            varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
+            varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}})
+              .populate(['product_suborder_item_id', 'product_id', 'variant_id', 'warehouse_variant_id', 'product_variant_id']));
           });
           item.suborderItemVariants = varientitems;
         });
