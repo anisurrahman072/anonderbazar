@@ -14,7 +14,7 @@ module.exports = {
       required: true,
     },
     description: {
-      type: 'number',
+      type: 'string',
       columnType: 'varchar',
       required: true,
     },

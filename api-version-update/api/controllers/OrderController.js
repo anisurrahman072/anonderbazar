@@ -249,7 +249,7 @@ module.exports = {
 
               let newSuborderItemPayload = {
                 product_suborder_id: suborder.id,
-                product_id: thisCartItem.product_id,
+                product_id: thisCartItem.product_id.id,
                 warehouse_id: thisCartItem.product_id.warehouse_id,
                 product_quantity: thisCartItem.product_quantity,
                 product_total_price: thisCartItem.product_total_price,
@@ -350,7 +350,7 @@ module.exports = {
             }
           }
 
-          orderForMail[0].orderItems = allOrderedProducts;
+          orderForMail.orderItems = allOrderedProducts;
 
           await Cart.update({id: cart.id}, {deletedAt: new Date()}).usingConnection(db);
 
