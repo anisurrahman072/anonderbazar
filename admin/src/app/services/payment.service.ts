@@ -35,6 +35,7 @@ export class PaymentService {
                   receiver_id: number,
                   sortName: string,
                   sortPrice: String): Observable<any> {
+
         return this.http.get(`${this.EndPoint2}?page=${page
             }&limit=${limit
             }&search_term=${searchTerm
@@ -49,8 +50,7 @@ export class PaymentService {
             }&receiver_id=${receiver_id
             }&sortName=${sortName
             }&sortPrice=${sortPrice}`
-        )
-            ;
+        );
     }
 
 

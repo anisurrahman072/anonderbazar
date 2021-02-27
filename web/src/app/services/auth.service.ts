@@ -47,19 +47,26 @@ export class AuthService {
     }
 
 
+    isTokenExpired(){
+        const token = this.getToken();
+        if (token) {
+            return this.jwtHelper.isTokenExpired(token);
+        } else {
+            return true;
+        }
+    }
     getCurrentUserId() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return jwtPayload.id;
         } else {
             return false;
         }
-
     }
 
     getCurrentUser(): Observable<any> {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
 

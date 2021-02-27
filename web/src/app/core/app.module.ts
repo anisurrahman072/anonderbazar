@@ -7,7 +7,7 @@ import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SwiperModule} from "ngx-swiper-wrapper";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HeaderComponent} from "../layout/header/header.component";
 import {FooterComponent} from "../layout/footer/footer.component";
 import {MenuComponent} from "../layout/menu/menu.component";
@@ -51,6 +51,7 @@ import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
 import {environment} from "../../environments/environment";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
+import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
 // import {UiModule} from "../ui/ui.module";
 
 let imports = [];
@@ -104,10 +105,16 @@ if (environment.production) {
         SwiperModule,
         JasperoAlertsModule,
     ],
-    providers: [{
-        provide: ErrorHandler,
-        useClass: GlobalErrorHandler
-    },
+    providers: [
+        {
+            provide: ErrorHandler,
+            useClass: GlobalErrorHandler
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: JwtTokenInterceptor,
+            multi: true
+        },
         IsLoggedIn,
         UIService,
         LoginModalService,
