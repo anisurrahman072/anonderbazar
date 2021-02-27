@@ -24,12 +24,10 @@ module.exports = {
     notification_view_status: {
       type: 'number',
       columnType: 'integer',
-      defaultTo: 1
+      defaultsTo: 1
     },
   },
   tableName: 'chat',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
+
 };
 

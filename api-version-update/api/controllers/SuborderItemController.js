@@ -5,8 +5,6 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {
-  Helper,
-  asyncForEach,
   initLogPlaceholder,
   pagination
 } = require('../../libs');
@@ -14,12 +12,14 @@ const {
 
 module.exports = {
   // destroy a row
-  destroy: function(req, res) {
+  destroy: function (req, res) {
     SuborderItem.update(
-      { id: req.param('id') },
-      { deletedAt: new Date() }
+      {id: req.param('id')},
+      {deletedAt: new Date()}
     ).exec((err, user) => {
-      if (err) {return res.json(err, 400);}
+      if (err) {
+        return res.json(err, 400);
+      }
       return res.json(user[0]);
     });
   },
@@ -27,8 +27,6 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborderItems: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'SubOrderItemList');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -66,10 +64,12 @@ module.exports = {
       _pagination.limit = _pagination.limit
         ? _pagination.limit
         : totalSuborderItem;
+
       let suborderItems = await SuborderItem.find({
         where: _where,
         sort: _sort
-      }).populate('product_id', { deletedAt: null });
+      }).populate('product_id');
+
       let allsuborderItems = await Promise.all(
         suborderItems.map(async item => {
           if (req.query.status) {
@@ -92,13 +92,17 @@ module.exports = {
 
           item.product_order_id = await Order.find({
             deletedAt: null,
-          }).populate('user_id', { deletedAt: null });
+          }).populate('user_id');
 
-          if(item.product_suborder_id.length!=0)
-          {return item;}
+          if (item.product_suborder_id.length !== 0) {
+            return item;
+          }
         })
       );
-      var filteredallsuborderItems = allsuborderItems.filter((el) => { return el; });
+
+      const filteredallsuborderItems = allsuborderItems.filter((el) => {
+        return el;
+      });
 
       res.status(200).json({
         success: true,
@@ -110,7 +114,8 @@ module.exports = {
       let message = 'Error in Get All SubOrderItemList with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

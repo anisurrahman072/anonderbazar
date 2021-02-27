@@ -4,24 +4,18 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
 
 module.exports = {
   //Method called for getting all event list data
   //Model models/EventManagement.js
   index: async (req, res) => {
 
-
     try {
-      initLogPlaceholder(req, 'EventList');
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
-
-      /*.....SORT END..............................*/
 
       let totalEvents = await EventManagement.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalEvents;
@@ -35,13 +29,14 @@ module.exports = {
         events.map(async item => {
           item.registered_event = await EventRegistration.find({
             deletedAt: null,
-            user_id:req.query.userId,
+            user_id: req.query.userId,
             event_id: item.id
           });
           return item;
         })
       );
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         total: totalEvents,
         limit: _pagination.limit,
@@ -54,7 +49,8 @@ module.exports = {
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
