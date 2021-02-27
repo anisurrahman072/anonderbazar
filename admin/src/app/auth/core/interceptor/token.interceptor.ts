@@ -9,7 +9,7 @@ import {
 } from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {AuthService} from '../../../services/auth.service';
-
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -43,7 +43,7 @@ export class TokenInterceptor implements HttpInterceptor {
             console.log('Error Occurred');
             console.log(error);
             //return the error to the method that called it
-            return Observable.throw(error);
+            return throwError(error);
         }) as any;
     }
 }

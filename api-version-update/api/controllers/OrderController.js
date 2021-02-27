@@ -408,15 +408,7 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   sslcommerz: async function (req, res) {
 
-    if (!req.param('user_id')) {
-      return res.json(req.body, 400);
-    }
-
-    let user = await User.findOne({id: req.param('user_id'), deletedAt: null});
-
-    if (!user) {
-      return res.badRequest('User was not found!');
-    }
+    const authUser = req.token.userInfo;
 
     let globalConfigs = await GlobalConfigs.findOne({
       deletedAt: null
@@ -460,8 +452,7 @@ module.exports = {
         if (req.param('shipping_address')) {
           if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
             let shippingAddres = await PaymentAddress.create({
-              user_id: req.param('user_id'),
-              // order_id: order.id,
+              user_id: authUser.id,
               first_name: req.param('shipping_address').firstName,
               last_name: req.param('shipping_address').lastName,
               address: req.param('shipping_address').address,
@@ -495,7 +486,7 @@ module.exports = {
         if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
 
           let paymentAddress = await PaymentAddress.create({
-            user_id: req.param('user_id'),
+            user_id: authUser.id,
             // order_id: order.id,
             first_name: req.param('billing_address').firstName,
             last_name: req.param('billing_address').lastName,
@@ -577,14 +568,14 @@ module.exports = {
       post_body['currency'] = 'BDT';
       post_body['tran_id'] = randomstring;
 
-      post_body['success_url'] = APIURL + '/order/sslcommerzsuccess/?user_id=' + req.param('user_id') + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-      post_body['fail_url'] = APIURL + '/order/sslcommerzfail/?user_id=' + req.param('user_id') + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-      post_body['cancel_url'] = APIURL + '/order/sslcommerzerror/?user_id=' + req.param('user_id') + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['success_url'] = APIURL + '/order/sslcommerzsuccess/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['fail_url'] = APIURL + '/order/sslcommerzfail/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['cancel_url'] = APIURL + '/order/sslcommerzerror/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
 
       post_body['emi_option'] = 0;
-      post_body['cus_name'] = user.first_name + ' ' + user.last_name;
-      post_body['cus_email'] = user.email;
-      post_body['cus_phone'] = user.phone;
+      post_body['cus_name'] = authUser.first_name + ' ' + authUser.last_name;
+      post_body['cus_email'] = authUser.email;
+      post_body['cus_phone'] = authUser.phone;
       post_body['cus_postcode'] = finalPostalCode ? finalPostalCode : '1212';
       post_body['cus_add1'] = finalAddress ? finalAddress : 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1';
       post_body['cus_city'] = 'Dhaka';
@@ -616,25 +607,40 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   sslcommerzsuccess: async function (req, res) {
 
-    if (!(req.body.tran_id && req.query.user_id)) {
+    console.log('sslcommerzsuccess', req.body);
+
+    if (!(req.body.tran_id && req.query.user_id && req.body.val_id)) {
       return res.badRequest('Invalid order request');
     }
 
-    let user = await User.findOne({id: req.query.user_id, deletedAt: null});
-
-    if (!user) {
-      return res.badRequest('User was not found!');
-    }
-
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    if (!globalConfigs) {
-      return res.badRequest('Global config was not found!');
-    }
-
     try {
+
+      const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
+
+      console.log('validationResponse', validationResponse);
+
+      if(validationResponse && validationResponse.status !== 'VALID'){
+        return res.badRequest('Invalid order request');
+      }
+      await Order.count().where({
+
+      });
+
+      const paidAmount = validationResponse.amount;
+
+      let user = await User.findOne({id: req.query.user_id, deletedAt: null});
+
+      if (!user) {
+        return res.badRequest('User was not found!');
+      }
+
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
+      if (!globalConfigs) {
+        return res.badRequest('Global config was not found!');
+      }
 
       let cart = await Cart.findOne({
         user_id: req.query.user_id,
