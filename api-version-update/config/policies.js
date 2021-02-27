@@ -46,6 +46,26 @@ module.exports.policies = {
     'login': true,
     'index': true,
     'dashboardLogin': true,
+    'CustomerLogin': true,
+    'warehouseSignup': true,
+    'signup': true,
+    'usernameUnique': true
   },
-
+  CategoryController: {
+    '*': false,
+    'find': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'getType': true,
+    'getProduct': true,
+    'getSingleType': true,
+    'getSingleProduct': true,
+    'createType': ['isAuthorized', 'isAdmin'],
+    'createProduct': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'updateType': ['isAuthorized', 'isAdmin'],
+    'updateProduct': ['isAuthorized', 'isAdmin'],
+    'withSubcategories': true,
+    'withProductSubcategory': true
+  }
 };
