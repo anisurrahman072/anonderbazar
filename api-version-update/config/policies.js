@@ -38,5 +38,22 @@ module.exports.policies = {
     'find': true,
     'findOne': true,
     'destroy': ['isAuthorized', 'isAdmin']
-  }
+  },
+  WarehouseVariantController: {
+    '*': false,
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  WarehouseController: {
+    '*': false,
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  Variant
 };
