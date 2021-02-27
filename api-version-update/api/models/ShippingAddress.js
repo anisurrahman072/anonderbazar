@@ -49,12 +49,10 @@ module.exports = {
       required: true,
     },
     zila_id: {
-      model: 'area',
-      defaultsTo: 1
+      model: 'area'
     },
     division_id: {
-      model: 'area',
-      defaultsTo: 1
+      model: 'area'
     },
     status: {
       type: 'number',
