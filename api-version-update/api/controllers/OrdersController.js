@@ -1,12 +1,17 @@
+/**
+ * OrdersController
+ *
+ * @description :: Server-side actions for handling incoming requests.
+ * @help        :: See https://sailsjs.com/docs/concepts/actions
+ */
 const { Helper } = require('../../libs');
 
-let _model='order';
 
 //Method called for getting all order products data
 //Model models/Product.js
 exports.index = async (req, res) => {
   try {
-    initLogPlaceholder(req, `${_model}List`);
+    // initLogPlaceholder(req, `${_model}List`);
 
     console.log('--- lsdjflsjdfj -------------------- ----');
 
@@ -54,8 +59,18 @@ exports.index = async (req, res) => {
       limit: _pagination.limit,
       skip: _pagination.skip,
       sort: _sort
-    }).populateAll();
-
+    })
+      .populate('brand_id')
+      .populate('type_id')
+      .populate('category_id')
+      .populate('subcategory_id')
+      .populate('warehouse_id')
+      .populate('craftsman_id')
+      .populate('updated_by')
+      .populate('created_by')
+      .populate('product_variants', {deletedAt: null})
+      .populate('product_images', {deletedAt: null})
+      .populate('coupon_banner_images', {deletedAt: null});
     res.status(200).json({
       success: true,
       total: totalProduct,
@@ -122,7 +137,18 @@ exports.create = async (req, res) => {
       limit: _pagination.limit,
       skip: _pagination.skip,
       sort: _sort
-    }).populateAll();
+    })
+      .populate('brand_id')
+      .populate('type_id')
+      .populate('category_id')
+      .populate('subcategory_id')
+      .populate('warehouse_id')
+      .populate('craftsman_id')
+      .populate('updated_by')
+      .populate('created_by')
+      .populate('product_variants', {deletedAt: null})
+      .populate('product_images', {deletedAt: null})
+      .populate('coupon_banner_images', {deletedAt: null});
 
     res.status(200).json({
       success: true,

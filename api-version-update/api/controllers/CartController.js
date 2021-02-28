@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {isResourceOwner} = require('../../libs/check-permissions');
 const {asyncForEach} = require('../../libs');
 
 module.exports = {
@@ -24,14 +25,22 @@ module.exports = {
   },
   //Method called for deleting cart data
   //Model models/Cart.js
-  destroy: (req, res) => {
-    Cart.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, cart) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(cart[0]);
+  destroy: async (req, res) => {
+    try {
+      const foundCart = await Cart.findOne({
+        id: req.param('id')
       });
+
+      if(!isResourceOwner(req.token.userInfo, foundCart )){
+        return res.forbidden();
+      }
+
+      const cart = await Cart.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(cart);
+    } catch (error){
+      return res.json({error: error});
+    }
+
   },
   //Method called for getting authenticated customer cart
   //Model models/Cart.js
@@ -55,7 +64,7 @@ module.exports = {
           total_quantity: 0,
           total_price: 0,
           status: 1
-        });
+        }).fetch();
 
         let data = Object.assign({}, cart);
         data.cart_items = [];
@@ -78,8 +87,8 @@ module.exports = {
       await asyncForEach(cartItems, async _cartItem => {
         let associatedProduct = await Product.findOne({id: _cartItem.product_id})
           .populate('product_images', {deletedAt: null})
-          .populate('warehouse_id', {deletedAt: null})
-          .populate('type_id', {deletedAt: null});
+          .populate('warehouse_id')
+          .populate('type_id');
 
         _cartItem.product_id = associatedProduct.toJSON();
 
@@ -88,9 +97,9 @@ module.exports = {
           cart_item_id: _cartItem.id,
           deletedAt: null
         })
-          .populate('variant_id', {deletedAt: null})
-          .populate('warehouse_variant_id', {deletedAt: null})
-          .populate('product_variant_id', {deletedAt: null});
+          .populate('variant_id')
+          .populate('warehouse_variant_id')
+          .populate('product_variant_id');
 
         if (civ.length > 0) {
           _cartItem.cartitemvariant = civ;
@@ -135,7 +144,7 @@ module.exports = {
           total_quantity: 0,
           total_price: 0,
           status: 1
-        });
+        }).fetch();
 
         let data = Object.assign({}, cart);
         data.cart_items = [];
@@ -158,7 +167,8 @@ module.exports = {
       await asyncForEach(cartItems, async _cartItem => {
         let dd = await Product.findOne({id: _cartItem.product_id})
           .populate('product_images', {deletedAt: null})
-          .populate(['warehouse_id', 'type_id']);
+          .populate('warehouse_id')
+          .populate('type_id');
 
         if (dd) {
           _cartItem.product_id = dd.toJSON();
@@ -169,7 +179,8 @@ module.exports = {
             deletedAt: null
           })
             .populate('variant_id')
-            .populate(['warehouse_variant_id', 'product_variant_id']);
+            .populate('warehouse_variant_id')
+            .populate('product_variant_id');
 
           if (civ.length > 0) {
             _cartItem.cartitemvariant = civ;

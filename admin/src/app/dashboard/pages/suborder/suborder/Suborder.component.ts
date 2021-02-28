@@ -432,14 +432,16 @@ export class SuborderComponent implements OnInit {
     changeStatusConfirm($event, id, oldStatus) {
 
         this.suborderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
-            this._notification.create('success', 'Successful Message', 'suborder has been removed successfully');
+            this._notification.create('success', 'Successful Message', 'suborder has been updated successfully');
+/*
             this.courierService.updateSuborder($event, id)
                 .subscribe(arg => {
                 });
+*/
 
             this.getPageData();
         }, (err) => {
-            this._notification.create('error', 'Error', 'Something is missing');
+            this._notification.create('error', 'Error', 'suborder has not been updated successfully');
             $event = oldStatus;
         })
 

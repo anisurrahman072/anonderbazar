@@ -1,9 +1,8 @@
 /**
  * Order.js
- *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
- */
+ **/
 
 module.exports = {
 
@@ -48,8 +47,8 @@ module.exports = {
     },
     type: {
       type: 'number',
-      defaultsTo: 0,
       columnType: 'integer',
+      defaultsTo: 0,
     },
     ssl_transaction_id: {
       type: 'string',
@@ -70,11 +69,11 @@ module.exports = {
     courier_status: {
       type: 'number',
       columnType: 'integer',
-      required: true,
+      defaultsTo: 0
     },
     courier_charge: {
       type: 'number',
-      columnType: 'integer',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },

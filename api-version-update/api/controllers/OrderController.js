@@ -54,7 +54,7 @@ module.exports = {
             total_quantity: req.body.quantity,
             status: 1,
             type: 1
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
 
           let suborder = await Suborder.create({
             product_order_id: order.id,
@@ -63,18 +63,18 @@ module.exports = {
             total_quantity: req.body.quantity,
             delivery_date: req.body.current_date,
             status: 1
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
 
-          let suborderitem = await SuborderItem.create({
+          let suborderitem = SuborderItem.create({
             product_suborder_id: suborder.id,
             product_id: req.body.product_id,
             warehouse_id: req.body.warehouse_id,
             product_quantity: req.body.quantity,
             product_total_price: req.body.price
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
+
           return suborderitem;
         });
-
 
       if (suborderitem) {
         return res.json(200, suborderitem);
@@ -117,7 +117,9 @@ module.exports = {
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
-      }).populate(['cart_item_variants', 'product_id']);
+      })
+        .populate('cart_item_variants')
+        .populate('product_id');
 
       let onlyCouponProduct = false;
       if (cartItems && cartItems.length > 0) {
@@ -194,7 +196,6 @@ module.exports = {
 
           /** Create  order from cart........................START...........................*/
 
-
           let order = await Order.create({
             user_id: req.param('user_id'),
             cart_id: cart.id,
@@ -206,8 +207,6 @@ module.exports = {
             courier_charge: courierCharge,
             courier_status: 1,
           }).fetch().usingConnection(db);
-
-          console.log('created order', order);
 
           /** Get unique warehouse Id for suborder................START.........................*/
 
@@ -337,12 +336,13 @@ module.exports = {
           }
 
           let orderForMail = await Order.findOne({id: order.id})
-            .populate(['user_id', 'shipping_address'])
+            .populate('user_id')
+            .populate('shipping_address')
             .usingConnection(db);
           let allOrderedProducts = [];
           for (let i = 0; i < subordersTemp.length; i++) {
             let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
-              .populate(['product_id'])
+              .populate('product_id')
               .usingConnection(db);
 
             for (let index = 0; index < items.length; index++) {
@@ -428,7 +428,9 @@ module.exports = {
       let cartItems = await CartItem.find({
         cart_id: cart.id,
         deletedAt: null
-      }).populate(['cart_item_variants', 'product_id']);
+      })
+        .populate('cart_item_variants')
+        .populate('product_id');
 
       let {
         grandOrderTotal,
@@ -619,14 +621,19 @@ module.exports = {
 
       console.log('validationResponse', validationResponse);
 
-      if(validationResponse && validationResponse.status !== 'VALID'){
+      if (!(validationResponse && validationResponse.status === 'VALID')) {
         return res.badRequest('Invalid order request');
       }
-      await Order.count().where({
 
+      const numberOfOrderFound = await Order.count().where({
+        ssl_transaction_id: req.body.tran_id
       });
 
-      const paidAmount = validationResponse.amount;
+      if (numberOfOrderFound > 0) {
+        return res.badRequest('Invalid request');
+      }
+
+      const paidAmount = parseFloat(validationResponse.amount);
 
       let user = await User.findOne({id: req.query.user_id, deletedAt: null});
 
@@ -687,6 +694,10 @@ module.exports = {
       }
 
       grandOrderTotal += courierCharge;
+
+      if (paidAmount !== grandOrderTotal) {
+        return res.badRequest('Paid amount and order amount are different.');
+      }
 
       const {
         orderForMail,

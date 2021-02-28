@@ -5,14 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {isResourceOwner} = require('../../libs/check-permissions');
 module.exports = {
-  index: (req, res) => {
-    try {
-      return res.json({message: 'Not Authorized'});
-    } catch (error) {
-      return res.json({error: error});
-    }
-  },
+
   //Method called for deleting cart item data
   //Model models/CartItem.js
   destroy: async function (req, res) {
@@ -22,6 +17,10 @@ module.exports = {
     let cartItem = await CartItem.findOne({id: req.param('id')});
     if (!cartItem) {
       return res.badRequest('Item does not exist in the cart');
+    }
+
+    if (!isResourceOwner(req.token.userInfo, cartItem)) {
+      return res.forbidden();
     }
 
     let cart = await Cart.findOne({
@@ -35,7 +34,7 @@ module.exports = {
     try {
       await sails.getDatastore()
         .transaction(async (db) => {
-          let cartItem = await CartItem.update({id: req.param('id')}).set({deletedAt: new Date()}).fetch().usingConnection(db);
+          let cartItem = await CartItem.updateOne({id: req.param('id')}).set({deletedAt: new Date()}).usingConnection(db);
 
           let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem.id}).usingConnection(db);
 
@@ -89,24 +88,25 @@ module.exports = {
       return res.json({error: error});
     }
     try {
-      let cartItem = await CartItem.update({id: req}, {deletedAt: new Date()});
+      let cartItem = await CartItem.update({id: req}, {deletedAt: new Date()}).fetch();
 
       Cart.find(cartItem[0].cart_Id).exec((err, cart) => {
         if (err) {
           return err;
         }
-        var requestPayload = [];
+        let requestPayload = [];
         requestPayload.push({
           'total_price': cart[0].total_price - cartItem[0].product_total_price,
           'total_quantity': cart[0].total_quantity - cartItem[0].product_quantity,
         });
 
-        Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec((err, cart) => {
+        Cart.update({id: cartItem[0].cart_id}, requestPayload[0]).exec((err) => {
           if (err) {
             return err;
           }
         });
       });
+
       let cartItemVariants = await CartItemVariant.find({cart_item_id: cartItem[0].id});
 
       for (let i = 0; i < cartItemVariants.length; i++) {
@@ -122,11 +122,14 @@ module.exports = {
   //Model models/CartItem.js
   bycartid: function (req, res) {
     CartItem.findOne({id: req.param('id')})
-      .populate(['product_id', 'cart_id'])
+      .populate('product_id')
+      .populate('cart_id')
       .populate('cart_item_variants', {deletedAt: null})
       .then((cartItem) => {
         let cartItemVariantData = CartItemVariant.find({cart_item_id: cartItem.id})
-          .populate(['warehouse_variant_id', 'product_variant_id', 'variant_id'])
+          .populate('warehouse_variant_id')
+          .populate('product_variant_id')
+          .populate('variant_id')
           .then((cartItemVariant) => {
             return cartItemVariant;
           });
@@ -267,7 +270,7 @@ module.exports = {
         message: 'cart successfully inserted',
         data: null
       });
-    } catch (error){
+    } catch (error) {
       console.log(error);
       res.status(400).json({
         success: false,

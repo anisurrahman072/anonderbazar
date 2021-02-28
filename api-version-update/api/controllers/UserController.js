@@ -399,7 +399,6 @@ module.exports = {
   //Method called for getting user dashboard data
   //Model models/User.js, models/Order.js
   getUserWithDashboardData: async (req, res) => {
-    console.log('getUserWithDashboardData', req);
 
     try {
       let _pagination = pagination(req.query);

@@ -1,3 +1,9 @@
+/**
+ * ProductsController
+ *
+ * @description :: Server-side actions for handling incoming requests.
+ * @help        :: See https://sailsjs.com/docs/concepts/actions
+ */
 const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 const {escapeExcel} = require('../../libs/helper');
 const xl = require('excel4node');
@@ -87,8 +93,12 @@ module.exports = {
         sort: _sort
       }).populate('product_images', {deletedAt: null})
         .populate('product_variants', {deletedAt: null})
-        .populate(['category_id', 'subcategory_id', 'type_id', 'warehouse_id', 'craftsman_id', 'brand_id']);
-
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('type_id')
+        .populate('warehouse_id')
+        .populate('craftsman_id')
+        .populate('brand_id');
       res.status(200).json({
         success: true,
         total: totalProduct,
@@ -147,7 +157,17 @@ module.exports = {
 
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
-      }).populateAll();
+      })
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('product_id')
+        .populate('part_id')
+        .populate('design_category_id')
+        .populate('design_subcategory_id')
+        .populate('design_id')
+        .populate('genre_id')
+        .populate('warehouse_id');
 
       let data = [];
       await asyncForEach(productDesignData, async _productDesign => {
@@ -264,17 +284,15 @@ module.exports = {
         limit: _pagination.limit,
         sort: _sort,
         skip: _pagination.skip
-      }).populate([
-        'category_id',
-        'subcategory_id',
-        'type_id',
-        'craftsman_id',
-        'product_variants',
-        'product_images',
-        'brand_id',
-        'warehouse_id'
-      ]);
-
+      })
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('type_id')
+        .populate('craftsman_id')
+        .populate('product_variants')
+        .populate('product_images')
+        .populate('brand_id')
+        .populate('warehouse_id');
       return res.status(200).json({
         success: true,
         message: 'get product in search',

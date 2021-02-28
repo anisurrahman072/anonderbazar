@@ -51,8 +51,10 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        }).populateAll();
-
+        })
+        .populate('type_id')
+        .populate( 'category_id')
+        .populate( 'subcategory_id');
 
       res.status(200).json({
         success: true,

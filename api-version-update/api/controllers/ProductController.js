@@ -6,34 +6,7 @@ const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 
 
 module.exports = {
-/*  //Method called for getting
-  //Model models/Product.js
-  findOne: async (req, res) => {
-    try {
 
-      let product = await Product.findOne(req.params.id)
-        .populate('product_images', {deletedAt: null})
-        .populate('product_variants', {deletedAt: null})
-        .populate('coupon_banner_images', {deletedAt: null})
-        .populate('category_id')
-        .populate('subcategory_id')
-        .populate('type_id')
-        .populate('warehouse_id')
-        .populate('craftsman_id')
-        .populate('brand_id');
-
-      return res
-        .status(200)
-        .json(product);
-
-    } catch (error) {
-
-      return res.status(400).json({
-        success: false,
-        error
-      });
-    }
-  },*/
   //Method called for deleting a product data
   //Model models/Product.js
   destroy: async (req, res) => {
@@ -87,7 +60,7 @@ module.exports = {
         code: body.code
       });
 
-      if(existingProduct){
+      if (existingProduct) {
         return res.badRequest('Product already existed with this product code');
       }
 
@@ -120,7 +93,7 @@ module.exports = {
       }
       await sails.getDatastore()
         .transaction(async (db) => {
-          const product = await Product.create(body).usingConnection(db);
+          const product = await Product.create(body).fetch().usingConnection(db);
 
           if (body.ImageBlukArray) {
             let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
@@ -177,7 +150,7 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
-      let product = await Product.update({id: req.param('id')}, body);
+      let product = await Product.update({id: req.param('id')}, body).fetch();
       return res.json(200, product);
     } catch (err) {
       console.log(err);
@@ -204,12 +177,12 @@ module.exports = {
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath);
 
-          const product = await ProductImage.create({
+          const productImage = await ProductImage.create({
             product_id: req.body.product_id,
             image_path: '/' + newPath
-          });
+          }).fetch();
 
-          return res.json(200, product);
+          return res.json(200, productImage);
         });
       } else if (req.body.hasImage === 'true') {
 
@@ -223,12 +196,12 @@ module.exports = {
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath);
 
-          const product = await ProductImage.create({
+          const productImage = await ProductImage.create({
             product_id: null,
             image_path: '/' + newPath
-          });
+          }).fetch();
 
-          return res.json(200, product);
+          return res.json(200, productImage);
 
         });
 
@@ -278,13 +251,13 @@ module.exports = {
       console.log('all bannerImages', bannerImages);
 
       if (productBanner && typeof productBanner.id !== 'undefined') {
-        await ProductCouponBannerImage.update({id: productBanner.id}, {banner_images: bannerImages});
+        await ProductCouponBannerImage.updateOne({id: productBanner.id}).set({banner_images: bannerImages});
       } else {
         productBanner = await ProductCouponBannerImage.create({
           product_id: req.body.product_id,
           banner_images: bannerImages,
           created_at: new Date(),
-        });
+        }).fetch();
       }
 
       return res.json(200, productBanner);
@@ -299,11 +272,11 @@ module.exports = {
   getAvailableDate: async function (req, res) {
     initLogPlaceholder(req, 'getAvailableDate');
     try {
-      function randomDate(start, end) {
+      /*      function randomDate(start, end) {
         return new Date(
           start.getTime() + Math.random() * (end.getTime() - start.getTime())
         );
-      }
+      }*/
 
       let product = req.param('product');
       let productQuantity = req.param('quantity');
@@ -314,22 +287,22 @@ module.exports = {
         craftman_id: craftsmanId,
         deletedAt: null,
       });
-      if (craftmanSchedule && craftmanSchedule.end_time != null) {
-        let existingCraftsTime =
+      if (craftmanSchedule && craftmanSchedule.end_time !== null) {
+        /*        let existingCraftsTime =
           craftmanSchedule.end_time.getTime() -
-          craftmanSchedule.start_time.getTime();
-        var _time_milli =
+          craftmanSchedule.start_time.getTime();*/
+        let _time_milli =
           ((produceTimeMin * productQuantity) / 60 / 8) * 84300000;
-        var newDateObj = new Date(craftmanSchedule.end_time).setMilliseconds(
+        let newDateObj = new Date(craftmanSchedule.end_time).setMilliseconds(
           ((produceTimeMin * productQuantity) / 60 / 8) * 86400000
         );
         return res.json({date: newDateObj, miliseconds: _time_milli});
       } else {
-        var _time = new Date();
-        var _time_milli =
+        let _time = new Date();
+        let _time_milli =
           ((produceTimeMin * productQuantity) / 60 / 8) * 84300000;
-        var total_time = _time.getTime() + _time_milli + 84300000;
-        var newDateObj = new Date(total_time);
+        let total_time = _time.getTime() + _time_milli + 84300000;
+        let newDateObj = new Date(total_time);
         return res.json({date: newDateObj, miliseconds: _time_milli});
       }
     } catch (err) {

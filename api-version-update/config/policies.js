@@ -16,16 +16,13 @@ module.exports.policies = {
    * (`true` allows public access)                                            *
    *                                                                          *
    ***************************************************************************/
-
-  // '*': true,
-  UserController: {
-    '*': true
+  AreaController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isAdmin']
   },
-  OrderController: {
-    '*': ['isAuthorized', 'isCustomer'],
-    'getAllOrder': ['isAuthorized', 'isAdmin'],
-  },
-  BranController: {
+  BrandController: {
     '*': false,
     'find': true,
     'findOne': true,
@@ -33,45 +30,73 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
-  AreaController: {
-    '*': false,
-    'find': true,
-    'findOne': true,
-    'destroy': ['isAuthorized', 'isAdmin']
+  // '*': true,
+  UserController: {
+    '*': true
   },
-  WarehouseVariantController: {
-    '*': false,
-    'find': ['isAuthorized', 'isOwnerOrAdmin'],
-    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
+  ProductController: {
+    '*': true,
+    'add': false,
+    'remove': false,
+    'replace': false,
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
-  WarehouseController: {
-    '*': false,
-    'find': ['isAuthorized', 'isOwnerOrAdmin'],
-    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
-    'create': ['isAuthorized', 'isOwnerOrAdmin'],
-    'update': ['isAuthorized', 'isResourceOwner'],
-    'destroy': ['isAuthorized', 'isResourceOwner'],
+  OrderController: {
+    '*': ['isAuthorized'],
+    'create': false,
+    'add': false,
+    'remove': false,
+    'replace': false,
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'populate': ['isAuthorized', 'isAdmin'],
+    'getAllOrder': ['isAuthorized', 'isAdmin'],
   },
-  VariantController: {
+  PaymentAddressController: {
     '*': false,
-    'find': ['isAuthorized', 'isOwnerOrAdmin'],
-    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
-    'create': ['isAuthorized', 'isResourceOwner'],
-    'update': ['isAuthorized', 'isResourceOwner'],
-    'destroy': ['isAuthorized', 'isResourceOwner'],
+    'find': ['isAuthorized'],
+    'findOne': ['isAuthorized'],
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'destroy': ['isAuthorized'],
   },
-  VariantsController: {
+  CartController: {
     '*': false,
-    'find': ['isAuthorized', 'isOwnerOrAdmin'],
-    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
-    'create': ['isAuthorized', 'isResourceOwner'],
-    'update': ['isAuthorized', 'isResourceOwner'],
-    'destroy': ['isAuthorized', 'isResourceOwner'],
+    'find': ['isAuthorized', 'isCustomer'],
+    'findOne': ['isAuthorized', 'isCustomer'],
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'authUserCart': ['isAuthorized', 'isCustomer'],
+    'findwithcartItems': ['isAuthorized', 'isCustomer'],
   },
-  UserController: {
-
+  CartItemController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'bycartid': ['isAuthorized', 'isCustomer'],
+    'create': ['isAuthorized', 'isCustomer'],
+    'update': ['isAuthorized', 'isCustomer'],
+  },
+  CartItemVariantController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isCustomer'],
+  },
+  CategoryController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'destroyType': ['isAuthorized', 'isAdmin'],
+    'destroyProduct': ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isAdmin'],
+    'createType': ['isAuthorized', 'isAdmin'],
+    'createProduct': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'updateType': ['isAuthorized', 'isAdmin'],
+    'updateProduct': ['isAuthorized', 'isAdmin'],
+    'getType': true,
+    'getProduct': true,
+    'getSingleType': true,
+    'getSingleProduct': true,
+    'withSubcategories': true,
+    'withProductSubcategory': true,
   }
 };

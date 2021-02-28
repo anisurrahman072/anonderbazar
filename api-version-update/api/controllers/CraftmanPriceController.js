@@ -17,7 +17,16 @@ module.exports = {
       if (craftmanPrice) {
 
         let newCraftmanPrice = await CraftmanPrice.findOne({id: craftmanPrice.id,})
-          .populate(['craftman_id', 'type_id', 'category_id', 'subcategory_id', 'part_id', 'design_category_id', 'design_subcategory_id', 'design_id', 'genre_id', 'warehouse_id']);
+          .populate('craftman_id')
+          .populate('type_id')
+          .populate('category_id')
+          .populate('subcategory_id')
+          .populate('part_id')
+          .populate('design_category_id')
+          .populate('design_subcategory_id')
+          .populate('design_id')
+          .populate('genre_id')
+          .populate('warehouse_id');
 
         return res.status(200).json({
           status: true,
@@ -48,7 +57,16 @@ module.exports = {
         let newCraftmanPrice = [];
         await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
           let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
-            .populate(['craftman_id', 'type_id', 'category_id', 'subcategory_id', 'part_id', 'design_category_id', 'design_subcategory_id', 'design_id', 'genre_id', 'warehouse_id']);
+            .populate('craftman_id')
+            .populate('type_id')
+            .populate('category_id')
+            .populate('subcategory_id')
+            .populate('part_id')
+            .populate('design_category_id')
+            .populate('design_subcategory_id')
+            .populate('design_id')
+            .populate('genre_id')
+            .populate('warehouse_id');
           newCraftmanPrice.push(tmp);
 
         });
@@ -95,7 +113,16 @@ module.exports = {
       let craftmanPrices = await CraftmanPrice.find({
         where: _where,
       })
-        .populate(['craftman_id', 'type_id', 'category_id', 'subcategory_id', 'part_id', 'design_category_id', 'design_subcategory_id', 'design_id', 'genre_id', 'warehouse_id']);
+        .populate('craftman_id')
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('part_id')
+        .populate('design_category_id')
+        .populate('design_subcategory_id')
+        .populate('design_id')
+        .populate('genre_id')
+        .populate('warehouse_id');
       let allPrice = await Promise.all(
         craftmanPrices.map(async item => {
           item.material_price = await ProductDesign.find({

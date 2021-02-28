@@ -1,66 +1,54 @@
-const {asyncForEach, initLogPlaceholder} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
 /**
  * CategoryController
  *
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {uploadImages} = require('../../libs/helper');
+const {asyncForEach} = require('../../libs');
+const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   //Method called for creating category data
   //Model models/Category.js
-  create: function (req, res) {
+  create: async (req, res) => {
     try {
-      if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body;
-        let body1;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
+      let body = req.body;
+      if (body.hasImage === 'true') {
+        try {
+          const uploaded = await uploadImages(req.file('image0'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No image was uploaded');
           }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          Category.create(body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-      } else {
-        Category.create(req.body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
+          body.image = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
       }
+
+      const returnCategory = await Category.create(body).fetch();
+      return res.json(200, returnCategory);
     } catch (err) {
-      res.json(400, {message: 'wrong'});
+      res.json(400, {message: 'wrong', err});
     }
   },
 
   // Destroy function to soft delete a row based on id
   //Method called for deleting category data
   //Model models/Category.js
-  destroyType: function (req, res) {
-    Category.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroyType: async (req, res) => {
+
+    try {
+      const user = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+
+      return res.json(user);
+    } catch (error) {
+      res.json(400, {message: 'wrong', error});
+    }
+
   },
   //Method called for deleting category data
   //Model models/Category.js
@@ -299,8 +287,6 @@ module.exports = {
   updateProduct: function (req, res) {
     try {
       if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
         let body;
         req.file('image0').upload(imageUploadConfig(), (err, files) => {
           // maxBytes: 10000000;
@@ -335,7 +321,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      res.json(400, {message: 'wrong'});
+      res.json(400, {message: 'wrong', err});
     }
   },
   //Method called for getting a category with subcategories data
