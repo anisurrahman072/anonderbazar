@@ -1,5 +1,3 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
-
 /**
  * WarehouseVariantsController
  *
@@ -7,20 +5,18 @@ const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {pagination} = require('../../libs');
+
 module.exports = {
   //Method called for getting all warehouse variant data
   //Model models/WarehouseVariant.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'warehouseVariants');
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
-
-
 
       if (req.query.searchTermName) {
         _where.name = {'like': `%${req.query.searchTermName}%`};
@@ -29,21 +25,12 @@ module.exports = {
         _where.warehouse_id = req.query.warehouse_id;
       }
 
-
-
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
         _sort.name = req.query.sortName;
       }
 
-
-      /*.....SORT END..............................*/
-
-
-      let totalWarehouseVariant = await  WarehouseVariant.count().where(_where);
+      let totalWarehouseVariant = await WarehouseVariant.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouseVariant;
       let warehouseVariants = await WarehouseVariant.find(
         {
@@ -66,13 +53,13 @@ module.exports = {
         message: 'Get All WarehouseVariant with pagination',
         data: warehouseVariants
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
 
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
