@@ -49,6 +49,14 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
+  PaymentAddressController: {
+    '*': false,
+    'find': ['isAuthorized'],
+    'findOne': ['isAuthorized'],
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'destroy': ['isAuthorized'],
+  },
   AreaController: {
     '*': false,
     'find': true,

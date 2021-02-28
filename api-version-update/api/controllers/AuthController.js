@@ -15,46 +15,44 @@ module.exports = {
   //Method called for customer login for frontend
   //Model models/User.js
   login: async (req, res) => {
-    var username = req.param('username');
-    var password = req.param('password');
+    let username = req.param('username');
+    let password = req.param('password');
 
     if (!username || !password) {
       return res.json(401, {model: 'userName', message: 'username and password required'});
-    } else {
-
-      User.findOne({username: username, deletedAt: null})
-        .populate('group_id')
-        .populate('warehouse_id')
-        .exec((err, user) => {
-          if (err) {
-            return res.json(401, {model: 'userName', message: 'forbidden.'});
-          }
-          if (!user) {
-            return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
-          }
-          User.comparePassword(password, user.password, (err1, valid) => {
-            if (err1) {
-              return res.json(401, {model: 'userName', message: 'forbidden.'});
-            }
-            if (!valid) {
-              return res.json(401, {model: 'password', message: 'Password is invalid'});
-            } else {
-
-              if (!user.active) {
-                return res.json(401, {model: 'userName', message: 'Not an active user'});
-              }
-              res.json({
-                user: user.toJSON(),
-                token: jwToken.issue({
-                  id: user.id,
-                  group_id: user.group_id.name,
-                  warehouse: user.warehouse_id
-                })
-              });
-            }
-          });
-        });
     }
+
+    const user = await User.findOne({username: username, deletedAt: null})
+      .populate('group_id')
+      .populate('warehouse_id');
+
+    if (!user) {
+      return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
+    }
+
+    User.comparePassword(password, user.password, (err1, valid) => {
+      if (err1) {
+        return res.json(401, {model: 'userName', message: 'forbidden.'});
+      }
+      if (!valid) {
+        return res.json(401, {model: 'password', message: 'Password is invalid'});
+      } else {
+
+        if (!user.active) {
+          return res.json(401, {model: 'userName', message: 'Not an active user'});
+        }
+        res.json({
+          user: user.toJSON(),
+          token: jwToken.issue({
+            id: user.id,
+            group_id: user.group_id.name,
+            warehouse: user.warehouse_id
+          })
+        });
+      }
+    });
+
+
   },
 
   // Entry of Auth/login
