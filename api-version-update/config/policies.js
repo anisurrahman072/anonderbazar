@@ -76,5 +76,27 @@ module.exports.policies = {
     'bycartid': ['isAuthorized', 'isCustomer'],
     'create': ['isAuthorized', 'isCustomer'],
     'update': ['isAuthorized', 'isCustomer'],
+  },
+  CartItemVariantController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isCustomer'],
+  },
+  CategoryController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'destroyType': ['isAuthorized', 'isAdmin'],
+    'destroyProduct': ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isAdmin'],
+    'createType': ['isAuthorized', 'isAdmin'],
+    'createProduct': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'updateType': ['isAuthorized', 'isAdmin'],
+    'updateProduct': ['isAuthorized', 'isAdmin'],
+    'getType': true,
+    'getProduct': true,
+    'getSingleType': true,
+    'getSingleProduct': true,
+    'withSubcategories': true,
+    'withProductSubcategory': true,
   }
 };

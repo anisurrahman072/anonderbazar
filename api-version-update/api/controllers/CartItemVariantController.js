@@ -8,12 +8,16 @@
 module.exports = {
   //Method called for deleting cart item variant data
   //Model models/CartItemVariant.js
-  destroy: function (req, res) {
-    CartItemVariant.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, cartItemVariant) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(cartItemVariant[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const cartItemVariant = await CartItemVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(cartItemVariant);
+    } catch (error) {
+      return res.json(400, {
+        success: false,
+        error
+      });
+    }
   },
 };
 
