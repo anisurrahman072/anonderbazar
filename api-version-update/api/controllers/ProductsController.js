@@ -71,13 +71,13 @@ module.exports = {
         _sort.push({name: req.query.sortName});
       }
       if (req.query.sortPrice) {
-        __sort.push({price : req.query.sortPrice});
+        __sort.push({price: req.query.sortPrice});
       }
       if (req.query.sortQuantity) {
-        _sort.push({quantity : req.query.sortQuantity});
+        _sort.push({quantity: req.query.sortQuantity});
       }
       if (req.query.sortUpdatedAt) {
-        _sort.push({updatedAt : req.query.sortUpdatedAt});
+        _sort.push({updatedAt: req.query.sortUpdatedAt});
       }
 
       let totalProduct = await Product.count().where(_where);
@@ -114,17 +114,11 @@ module.exports = {
       });
     }
   },
-  //Method called for creating a product
-  //Model models/Product.js
-  create: async (req, res) => {
-    return res.forbidden();
-  },
+
   //Method called for getting a product
   //Model models/Product.js
   findOne: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'readSingleProduct');
-
       let product = await Product.findOne({
         where: {
           id: req.params._idwms
@@ -150,8 +144,6 @@ module.exports = {
   designCombination: async (req, res) => {
     try {
       initLogPlaceholder(req, 'designCombination');
-
-      let productId = req.params._id;
 
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
@@ -201,7 +193,8 @@ module.exports = {
     } catch (error) {
       res.status(400).json({
         success: false,
-        message: 'error from designCombination'
+        message: 'error from designCombination',
+        error
       });
     }
   },
@@ -266,14 +259,15 @@ module.exports = {
         }
       }
 
-      console.log('search-_where', _where);
 
       /* Sort................ */
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortTitle) {
-        _sort[req.query.sortTitle] = parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC';
+        _sort.push({[req.query.sortTitle]: parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC'});
       } else {
-        _sort['createdAt'] = 'DESC';
+        _sort.push({
+          createdAt: 'DESC'
+        });
       }
 
       let total = await Product.count(_where);
@@ -338,17 +332,17 @@ module.exports = {
         p.type = 'product';
         return p;
       });
-      let categoryTotal = await Category.count(_where);
+      // let categoryTotal = await Category.count(_where);
       let categories = await Category.find(
         {
           where: Object.assign({}, _where, {
             type_id: 2
           })
-        },
-        {select: ['id', 'name', 'parent_id']}
+        }
       ).paginate({page: _pagination._page, limit: _pagination._limit});
 
       let _categories = categories.map(p => {
+        // eslint-disable-next-line eqeqeq
         p.type = p.parent_id == 0 ? 'category' : 'subcategory';
         return p;
       });
@@ -711,7 +705,7 @@ module.exports = {
               delete item.additional_images;
             }
 
-            const createdProduct = await Product.create(item);
+            const createdProduct = await Product.create(item).fetch();
 
             if (createdProduct && additionalImages.length > 0) {
 

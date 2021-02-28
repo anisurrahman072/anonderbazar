@@ -127,6 +127,15 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  ProductsController: {
+    'index': true,
+    'findOne': true,
+    'designCombination': true,
+    'search': true,
+    'getBySearchTerm': true,
+    'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
+    'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
   OrderController: {
     '*': ['isAuthorized'],
     'create': false,
@@ -165,6 +174,35 @@ module.exports.policies = {
     'destroy': ['isAuthorized'],
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
+  },
+  StatusChangeController: {
+    'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
+    'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SuborderController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'getSuborder': true,
+    'getSuborderWithDate': true,
+    'getWithFull': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'updatebyorderid': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SubordersController: {
+    'getAll': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getsuborderwithpr': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SubOrderItemController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'getSuborderItems': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   UserController: {
     '*': true
