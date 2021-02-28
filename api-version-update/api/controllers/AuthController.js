@@ -11,26 +11,6 @@ const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
-  // Entry of Auth/0
-  index: function (req, res) {
-    // const username = req.param('username');
-    let password = req.param('password');
-
-
-    bcrypt.genSalt(10, (err, salt) => {
-      if (err) {
-        return next(err);
-      }
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          return next(err);
-        }
-        password = hash;
-      });
-    });
-
-  },
-
   // Entry of Auth/login
   //Method called for customer login for frontend
   //Model models/User.js
@@ -42,35 +22,38 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
-        if (err) {
-          return res.json(401, {model: 'userName', message: 'forbidden.'});
-        }
-        if (!user) {
-          return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
-        }
-        User.comparePassword(password, user.password, (err1, valid) => {
-          if (err1) {
+      User.findOne({username: username})
+        .populate('group_id')
+        .populate('warehouse_id')
+        .exec((err, user) => {
+          if (err) {
             return res.json(401, {model: 'userName', message: 'forbidden.'});
           }
-          if (!valid) {
-            return res.json(401, {model: 'password', message: 'Password is invalid'});
-          } else {
-
-            if (!user.active) {
-              return res.json(401, {model: 'userName', message: 'Not an active user'});
-            }
-            res.json({
-              user: user.toJSON(),
-              token: jwToken.issue({
-                id: user.id,
-                group_id: user.group_id.name,
-                warehouse: user.warehouse_id
-              })
-            });
+          if (!user) {
+            return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
           }
+          User.comparePassword(password, user.password, (err1, valid) => {
+            if (err1) {
+              return res.json(401, {model: 'userName', message: 'forbidden.'});
+            }
+            if (!valid) {
+              return res.json(401, {model: 'password', message: 'Password is invalid'});
+            } else {
+
+              if (!user.active) {
+                return res.json(401, {model: 'userName', message: 'Not an active user'});
+              }
+              res.json({
+                user: user.toJSON(),
+                token: jwToken.issue({
+                  id: user.id,
+                  group_id: user.group_id.name,
+                  warehouse: user.warehouse_id
+                })
+              });
+            }
+          });
         });
-      });
     }
   },
 
@@ -84,7 +67,9 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      let user = await User.findOne({username: username}).populate(['group_id', 'warehouse_id']);
+      let user = await User.findOne({username: username})
+        .populate('group_id')
+        .populate('warehouse_id');
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number or username is invalid'});
       }
@@ -144,35 +129,42 @@ module.exports = {
       return res.json(401, {err: 'username and password required'});
     } else {
 
-      User.findOne({username: username}).populate(['group_id', 'warehouse_id']).exec((err, user) => {
-        if (!user) {
-          return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
-        }
-        User.comparePassword(password, user.password, (err, valid) => {
+      User.findOne({username: username})
+        .populate('group_id')
+        .populate('warehouse_id')
+        .exec((err, user) => {
+
           if (err) {
-            return res.json(403, {err: 'forbidden'});
+            return res.serverError(err);
           }
-          if (!valid) {
-            return res.json(401, {model: 'password', message: 'Password is invalid'});
-          } else {
-            if (user.group_id.id !== 2) {
-              return res.json(403, {err: 'forbidden....'});
-            }
-            if (!user.active) {
-              return res.json(401, {err: 'Not an active user'});
-            }
-            res.json({
-              user: user.toJSON(),
-              token: jwToken.issue({
-                id: user.id,
-                group_id: user.group_id.name,
-                userInfo: user,
-                warehouse: user.warehouse_id
-              })
-            });
+          if (!user) {
+            return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
           }
+          User.comparePassword(password, user.password, (err, valid) => {
+            if (err) {
+              return res.json(403, {err: 'forbidden'});
+            }
+            if (!valid) {
+              return res.json(401, {model: 'password', message: 'Password is invalid'});
+            } else {
+              if (user.group_id.id !== 2) {
+                return res.json(403, {err: 'forbidden....'});
+              }
+              if (!user.active) {
+                return res.json(401, {err: 'Not an active user'});
+              }
+              res.json({
+                user: user.toJSON(),
+                token: jwToken.issue({
+                  id: user.id,
+                  group_id: user.group_id.name,
+                  userInfo: user,
+                  warehouse: user.warehouse_id
+                })
+              });
+            }
+          });
         });
-      });
     }
   },
 

@@ -122,11 +122,14 @@ module.exports = {
   //Model models/CartItem.js
   bycartid: function (req, res) {
     CartItem.findOne({id: req.param('id')})
-      .populate(['product_id', 'cart_id'])
+      .populate('product_id')
+      .populate('cart_id')
       .populate('cart_item_variants', {deletedAt: null})
       .then((cartItem) => {
         let cartItemVariantData = CartItemVariant.find({cart_item_id: cartItem.id})
-          .populate(['warehouse_variant_id', 'product_variant_id', 'variant_id'])
+          .populate('warehouse_variant_id')
+          .populate('product_variant_id')
+          .populate('variant_id')
           .then((cartItemVariant) => {
             return cartItemVariant;
           });

@@ -55,7 +55,9 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        }).populate(['product_id', 'warehouse_id']);
+        })
+        .populate('product_id')
+        .populate('warehouse_id');
 
 
       res.status(200).json({

@@ -31,7 +31,10 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierList.find({
         where: _where,
-      }).populate(['suborder_id', 'courier_id', 'courier_price_id']);
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,
@@ -58,7 +61,10 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      }).populate(['suborder_id', 'courier_id', 'courier_price_id']);
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,
@@ -92,7 +98,10 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierListOrder.find({
         where: _where,
-      }).populate(['suborder_id', 'courier_id', 'courier_price_id']);
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,

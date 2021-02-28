@@ -4,6 +4,7 @@
  * @description :: Server-side logic for managing warehouses
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {uploadImages} = require('../../libs/helper');
 const {
   initLogPlaceholder,
   pagination
@@ -14,7 +15,6 @@ module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
   getAll: async (req, res) => {
-    console.log('rouzexgggggggggggggggggggggggggggggggggggggggggggggg');
     try {
       initLogPlaceholder(req, 'craftsman');
       let _pagination = pagination(req.query);
@@ -54,7 +54,8 @@ module.exports = {
 
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -62,47 +63,52 @@ module.exports = {
   //Model models/Warehouse.js
   destroy: async (req, res) => {
     try {
-      const updatedWarehouse = await Warehouse.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
-      const updatedUser = await User.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).fetch();
-      return res.json(200, updatedUser[0]);
-      const updatedProduct = await Product.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).fetch();
-      return res.json(200, updatedProduct[0]);
-      return res.json(200, updatedWarehouse[0]);
-    }
-    catch (error){
-      return res.json(error.status, {message: '', error, success: false});
-    }
+      await Warehouse.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
+      await User.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
+
+      await Product.update({warehouse_id: req.param('id')}).set({deletedAt: new Date()});
+
+      return res.json({
+        success: false,
+        message: 'Warehouse successfully deleted',
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to delete warehouse',
+        error
+      });
+    }
   },
-
-
-  // destroy: function (req, res) {
-  //   Warehouse.update({id: req.param('id')}, {deletedAt: new Date()})
-  //     .exec((err, warehouse) => {
-  //       User.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-  //         (err, user) => {
-  //           if (err) {
-  //             return res.json(err, 400);
-  //           }
-  //           return res.json(user[0]);
-  //         }
-  //       );
-  //       Product.update({warehouse_id: req.param('id')}, {deletedAt: new Date()}).exec(
-  //         (err, product) => {
-  //           if (err) {
-  //             return res.json(err, 400);
-  //           }
-  //           return res.json(product[0]);
-  //         }
-  //       );
-  //       if (err) {
-  //         return res.json(err, 400);
-  //       }
-  //       return res.json(warehouse[0]);
-  //     });
-  // },
   //Method called for creating a warehouse data
   //Model models/Warehouse.js
+  create: async (req, res) => {
+
+    try {
+      if (req.body.haslogo === 'true') {
+        try {
+          const uploaded = await uploadImages(req.file('logo'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          req.body.logo = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
+      }
+      const warehouse = await Warehouse.create(req.body).fetch();
+      return res.json(200, warehouse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create an warehouse',
+        error
+      });
   create: async (req, res) => {
     try {
       if (req.body.haslogo === 'true') {
@@ -123,35 +129,35 @@ module.exports = {
 
   //Method called for updating a warehouse data
   //Model models/Warehouse.js
-  update: function (req, res) {
-    if (req.body.haslogo === 'true') {
-      req.file('logo').upload(imageUploadConfig(), (err, uploaded) => {
-        if (err) {
+  update: async (req, res) => {
+    try {
+      if (req.body.haslogo === 'true') {
+        try {
+          const uploaded = await uploadImages(req.file('logo'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          req.body.logo = '/' + newPath;
+
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      }
+      const warehouse = await Warehouse.updateOne({id: req.param('id')}).set(req.body);
 
-        if (err) {
-          return res.serverError(err);
-        }
-        req.body.logo = '/' + newPath;
-        Warehouse.update({id: req.param('id')}, req.body)
-          .exec((err, warehouse) => {
-            if (err) {
-              return res.json(err, 400);
-            }
-            return res.json(200, warehouse);
-          });
+      return res.json(200, warehouse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update warehouse',
+        error
       });
-    } else {
-      Warehouse.update({id: req.param('id')}, req.body)
-        .exec((err, warehouse) => {
-          if (err) {
-            return res.json(err, 400);
-          }
-          return res.json(200, warehouse);
-        });
     }
+
   }
 };
 
