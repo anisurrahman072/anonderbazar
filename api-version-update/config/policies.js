@@ -16,7 +16,20 @@ module.exports.policies = {
    * (`true` allows public access)                                            *
    *                                                                          *
    ***************************************************************************/
-
+  AreaController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isAdmin']
+  },
+  BrandController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
   // '*': true,
   UserController: {
     '*': true
@@ -41,14 +54,6 @@ module.exports.policies = {
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
   },
-  BrandController: {
-    '*': false,
-    'find': true,
-    'findOne': true,
-    'create': ['isAuthorized', 'isAdmin'],
-    'update': ['isAuthorized', 'isAdmin'],
-    'destroy': ['isAuthorized', 'isAdmin'],
-  },
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
@@ -57,10 +62,19 @@ module.exports.policies = {
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized'],
   },
-  AreaController: {
+  CartController: {
     '*': false,
-    'find': true,
-    'findOne': true,
-    'destroy': ['isAuthorized', 'isAdmin']
+    'find': ['isAuthorized', 'isCustomer'],
+    'findOne': ['isAuthorized', 'isCustomer'],
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'authUserCart': ['isAuthorized', 'isCustomer'],
+    'findwithcartItems': ['isAuthorized', 'isCustomer'],
+  },
+  CartItemController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'bycartid': ['isAuthorized', 'isCustomer'],
+    'create': ['isAuthorized', 'isCustomer'],
+    'update': ['isAuthorized', 'isCustomer'],
   }
 };

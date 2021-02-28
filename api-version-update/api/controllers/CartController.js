@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {isResourceOwner} = require('../../libs/check-permissions');
 const {asyncForEach} = require('../../libs');
 
 module.exports = {
@@ -24,14 +25,22 @@ module.exports = {
   },
   //Method called for deleting cart data
   //Model models/Cart.js
-  destroy: (req, res) => {
-    Cart.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, cart) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(cart[0]);
+  destroy: async (req, res) => {
+    try {
+      const foundCart = await Cart.findOne({
+        id: req.param('id')
       });
+
+      if(!isResourceOwner(req.token.userInfo, foundCart )){
+        return res.forbidden();
+      }
+
+      const cart = await Cart.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(cart);
+    } catch (error){
+      return res.json({error: error});
+    }
+
   },
   //Method called for getting authenticated customer cart
   //Model models/Cart.js
@@ -55,7 +64,7 @@ module.exports = {
           total_quantity: 0,
           total_price: 0,
           status: 1
-        });
+        }).fetch();
 
         let data = Object.assign({}, cart);
         data.cart_items = [];
@@ -135,7 +144,7 @@ module.exports = {
           total_quantity: 0,
           total_price: 0,
           status: 1
-        });
+        }).fetch();
 
         let data = Object.assign({}, cart);
         data.cart_items = [];
