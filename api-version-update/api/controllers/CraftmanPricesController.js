@@ -1,4 +1,10 @@
-const {pagination} = require('../../libs');
+/**
+ * CraftmanPricesController
+ *
+ * @description :: Server-side logic for managing categories
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
+const {  pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all craftsman price list data
@@ -66,11 +72,15 @@ module.exports = {
         _where.subcategory_id = {like: `%${req.query.subcategory_id}%`};
       }
 
-      /* Sort................*/
+      /* WHERE condition..........END................*/
+
+      /*sort................*/
       let _sort = [];
       if (req.query.sortName) {
         _sort.push({name: req.query.sortName});
       }
+
+      /*.....SORT END..............................*/
 
       let totalCraftmanPrice = await CraftmanPrice.count().where(_where);
       _pagination.limit = _pagination.limit || totalCraftmanPrice;

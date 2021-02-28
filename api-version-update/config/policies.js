@@ -67,6 +67,9 @@ module.exports.policies = {
     'withSubcategories': true,
     'withProductSubcategory': true,
   },
+  CraftmanPricesController: {
+    'getAll': true
+  },
   CMSController: {
     '*': false,
     'destroy': ['isAuthorized', 'isAdmin'],
