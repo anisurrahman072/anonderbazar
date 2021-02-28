@@ -97,7 +97,23 @@ exports.uploadImages = (imageFile) => {
     });
   });
 };
-
+exports.uploadImagesWithConfig = (imageFile, customConfig) => {
+  let config = imageUploadConfig();
+  config = {
+    ...config,
+    ...customConfig
+  };
+  return new Promise((resolve, reject) => {
+    imageFile.upload(config, async (err, uploaded) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(uploaded);
+      }
+    });
+  });
+};
 exports.getContentTypeByFile = function (fileName) {
   var rc = 'application/octet-stream';
   var fn = fileName.toLowerCase();
