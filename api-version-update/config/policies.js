@@ -98,5 +98,17 @@ module.exports.policies = {
     'getSingleProduct': true,
     'withSubcategories': true,
     'withProductSubcategory': true,
+  },
+  CMSController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'offerInsert': ['isAuthorized', 'isAdmin'],
+    'offerProductUpdate': ['isAuthorized', 'isAdmin'],
+    'updateOffer': ['isAuthorized', 'isAdmin'],
+    'customPostInsert': ['isAuthorized', 'isAdmin'],
+    'customPostUpdate': ['isAuthorized', 'isAdmin'],
+    'customInsert': ['isAuthorized', 'isAdmin'],
+    'customUpdate': ['isAuthorized', 'isAdmin'],
+    'customDelete': ['isAuthorized', 'isAdmin'],
   }
 };

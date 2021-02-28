@@ -154,7 +154,7 @@ module.exports = {
       return res.json(200, product);
     } catch (err) {
       console.log(err);
-      res.json(400, {message: 'Something went wrong!'});
+      res.json(400, {message: 'Something went wrong!', err});
     }
   },
 
