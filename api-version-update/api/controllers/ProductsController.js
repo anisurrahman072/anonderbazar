@@ -62,27 +62,23 @@ module.exports = {
           {code: {like: `%${req.query.search_code}%`}}
         ];
       }
-      /* WHERE condition..........END................*/
 
-      /* sort................ */
-      console.log('req.query', req.query);
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortCode) {
-        _sort.code = req.query.sortCode;
+        _sort.push({code: req.query.sortCode});
       }
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
       if (req.query.sortPrice) {
-        _sort.price = req.query.sortPrice;
+        __sort.push({price : req.query.sortPrice});
       }
       if (req.query.sortQuantity) {
-        _sort.quantity = req.query.sortQuantity;
+        _sort.push({quantity : req.query.sortQuantity});
       }
       if (req.query.sortUpdatedAt) {
-        _sort.updatedAt = req.query.sortUpdatedAt;
+        _sort.push({updatedAt : req.query.sortUpdatedAt});
       }
-      /*.....SORT END..............................*/
 
       let totalProduct = await Product.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
@@ -110,17 +106,18 @@ module.exports = {
       });
     } catch (error) {
       let message = 'Error in Get All products with pagination';
-      // console.log(error);
+
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
   //Method called for creating a product
   //Model models/Product.js
   create: async (req, res) => {
-    return res.ok('from create');
+    return res.forbidden();
   },
   //Method called for getting a product
   //Model models/Product.js
@@ -143,7 +140,8 @@ module.exports = {
       let message = 'error in read single farmer';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
