@@ -22,7 +22,7 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      User.findOne({username: username})
+      User.findOne({username: username, deletedAt: null})
         .populate('group_id')
         .populate('warehouse_id')
         .exec((err, user) => {
@@ -67,9 +67,10 @@ module.exports = {
       return res.json(401, {model: 'userName', message: 'username and password required'});
     } else {
 
-      let user = await User.findOne({username: username})
+      let user = await User.findOne({username: username, deletedAt: null})
         .populate('group_id')
         .populate('warehouse_id');
+
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number or username is invalid'});
       }
@@ -78,7 +79,7 @@ module.exports = {
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
       } else {
-        if (user.group_id.id === 2) {
+        if (user.group_id.name === 'customer') {
           return res.json(401, {model: 'userName', message: 'Customer is restricted here.'});
         }
         if (!user.active) {
@@ -129,7 +130,7 @@ module.exports = {
       return res.json(401, {err: 'username and password required'});
     } else {
 
-      User.findOne({username: username})
+      User.findOne({username: username, deletedAt: null})
         .populate('group_id')
         .populate('warehouse_id')
         .exec((err, user) => {
@@ -147,12 +148,15 @@ module.exports = {
             if (!valid) {
               return res.json(401, {model: 'password', message: 'Password is invalid'});
             } else {
-              if (user.group_id.id !== 2) {
+
+              if (user.group_id.name !== 'customer') {
                 return res.json(403, {err: 'forbidden....'});
               }
+
               if (!user.active) {
                 return res.json(401, {err: 'Not an active user'});
               }
+
               res.json({
                 user: user.toJSON(),
                 token: jwToken.issue({
@@ -167,7 +171,6 @@ module.exports = {
         });
     }
   },
-
 
   // Entry of Auth/signup
   //Method called for vendor signup for backend

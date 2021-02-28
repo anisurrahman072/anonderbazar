@@ -21,8 +21,24 @@ module.exports.policies = {
   UserController: {
     '*': true
   },
+  ProductController: {
+    '*': true,
+    'add': false,
+    'remove': false,
+    'replace': false,
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
   OrderController: {
-    '*': ['isAuthorized', 'isCustomer'],
+    '*': ['isAuthorized'],
+    'create': false,
+    'add': false,
+    'remove': false,
+    'replace': false,
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
   },
   BrandController: {

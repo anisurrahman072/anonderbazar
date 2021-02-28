@@ -18,7 +18,6 @@ export class JwtTokenInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
-        console.log('intercepted request ... ');
         let authReq = req;
         // Clone the request to add the new header.
         if (!this.authService.isTokenExpired()) {
@@ -29,8 +28,6 @@ export class JwtTokenInterceptor implements HttpInterceptor {
                 },
             });
         }
-
-        console.log('Sending request with new header now ...');
 
         //send the newly created request
         return next.handle(authReq).catch((error, caught) => {

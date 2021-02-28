@@ -1,12 +1,17 @@
+/**
+ * OrdersController
+ *
+ * @description :: Server-side actions for handling incoming requests.
+ * @help        :: See https://sailsjs.com/docs/concepts/actions
+ */
 const { Helper } = require('../../libs');
 
-let _model='order';
 
 //Method called for getting all order products data
 //Model models/Product.js
 exports.index = async (req, res) => {
   try {
-    initLogPlaceholder(req, `${_model}List`);
+    // initLogPlaceholder(req, `${_model}List`);
 
     console.log('--- lsdjflsjdfj -------------------- ----');
 

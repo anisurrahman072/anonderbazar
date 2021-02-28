@@ -1,3 +1,9 @@
+/**
+ * ProductsController
+ *
+ * @description :: Server-side actions for handling incoming requests.
+ * @help        :: See https://sailsjs.com/docs/concepts/actions
+ */
 const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 const {escapeExcel} = require('../../libs/helper');
 const xl = require('excel4node');
