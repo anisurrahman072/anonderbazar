@@ -124,5 +124,14 @@ module.exports.policies = {
     'withDesignSubcategory': true,
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  DesignController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'withDesignSubcategory': true,
+    'create' : ['isAuthorized', 'isAdmin'],
+    'update' : ['isAuthorized', 'isAdmin'],
+    'destroy' : ['isAuthorized', 'isAdmin'],
   }
 };
