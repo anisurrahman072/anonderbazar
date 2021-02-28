@@ -69,9 +69,9 @@ module.exports = {
       /* WHERE condition..........END................*/
 
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
 
       /*.....SORT END..............................*/
@@ -108,7 +108,8 @@ module.exports = {
       let message = 'Error in Get All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }
