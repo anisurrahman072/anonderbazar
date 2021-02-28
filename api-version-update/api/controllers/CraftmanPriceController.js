@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
+const {asyncForEach} = require('../../libs');
 
 module.exports = {
 
@@ -13,10 +13,62 @@ module.exports = {
   //Model models/CraftmanPrice.js
   create: async (req, res) => {
     try {
-      let craftmanPrice = await CraftmanPrice.create(req.body).fetch();
-      if (craftmanPrice) {
 
-        let newCraftmanPrice = await CraftmanPrice.findOne({id: craftmanPrice.id,})
+      let craftmanPrice = await CraftmanPrice.create(req.body).fetch();
+
+      if (!craftmanPrice) {
+        return res.status(400).json({
+          success: false,
+          message: 'Problem in creating craftman price',
+        });
+      }
+
+      let newCraftmanPrice = await CraftmanPrice.findOne({
+        id: craftmanPrice.id
+      })
+        .populate('craftman_id')
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('part_id')
+        .populate('design_category_id')
+        .populate('design_subcategory_id')
+        .populate('design_id')
+        .populate('genre_id')
+        .populate('warehouse_id');
+
+      return res.status(200).json({
+        status: true,
+        message: 'create craftman price',
+        data: newCraftmanPrice
+      });
+
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error
+      });
+    }
+  },
+
+  //Method called for updating craftsman price data
+  //Model models/CraftmanPrice.js
+  update: async (req, res) => {
+    try {
+      let craftmanPrice = await CraftmanPrice.updateOne({id: req.param('id')})
+        .set(req.body)
+        .fetch();
+
+      if (!craftmanPrice) {
+        return res.status(400).json({
+          success: false,
+          message: 'Problem in creating craftman price',
+        });
+      }
+
+      let newCraftmanPrice = [];
+      await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
+        let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
           .populate('craftman_id')
           .populate('type_id')
           .populate('category_id')
@@ -28,74 +80,30 @@ module.exports = {
           .populate('genre_id')
           .populate('warehouse_id');
 
-        return res.status(200).json({
-          status: true,
-          message: 'create craftman price',
-          data: newCraftmanPrice
-        });
+        newCraftmanPrice.push(tmp);
 
-      }
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'error in CraftmanPrice/create ',
-        error
       });
 
+      return res.status(200).json({
+        status: true,
+        message: 'update Craftman Price',
+        data: newCraftmanPrice
+      });
 
-    }
-
-  },
-
-  //Method called for updating craftsman price data
-  //Model models/CraftmanPrice.js
-  update: async (req, res) => {
-    try {
-      let craftmanPrice = await CraftmanPrice.update({id: req.param('id')}, req.body).fetch();
-
-      if (craftmanPrice) {
-        let newCraftmanPrice = [];
-        await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
-          let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
-            .populate('craftman_id')
-            .populate('type_id')
-            .populate('category_id')
-            .populate('subcategory_id')
-            .populate('part_id')
-            .populate('design_category_id')
-            .populate('design_subcategory_id')
-            .populate('design_id')
-            .populate('genre_id')
-            .populate('warehouse_id');
-          newCraftmanPrice.push(tmp);
-
-        });
-        return res.status(200).json({
-          status: true,
-          message: 'update Craftman Price',
-          data: newCraftmanPrice
-        });
-
-      }
     } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'error in CraftmanPrice/update',
         error
       });
-
-
     }
-
   },
   //Method called for getting craftsman price design data
   //Model models/CraftmanPrice.js
   getCraftsmanPriceDesign: async (req, res) => {
-    initLogPlaceholder(req, 'CraftmanPrice ');
-
 
     try {
-      /* WHERE condition for .......START.....................*/
+
       let _where = {};
       _where.deletedAt = null;
 
@@ -108,7 +116,6 @@ module.exports = {
       if (req.query.part_id) {
         _where.part_id = req.query.part_id;
       }
-
 
       let craftmanPrices = await CraftmanPrice.find({
         where: _where,
@@ -123,6 +130,7 @@ module.exports = {
         .populate('design_id')
         .populate('genre_id')
         .populate('warehouse_id');
+
       let allPrice = await Promise.all(
         craftmanPrices.map(async item => {
           item.material_price = await ProductDesign.find({
@@ -143,7 +151,8 @@ module.exports = {
       let message = 'Error in Get All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
 
@@ -151,10 +160,10 @@ module.exports = {
 
   // destroy a row
   destroy: async (req, res) => {
-    try{
+    try {
       const craftmanPrice = await CraftmanPrice.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(200, craftmanPrice);
-    }catch (error){
+    } catch (error) {
       console.log(error);
       res.json(400, {success: false, message: 'Something went wrong!', error});
     }

@@ -1,12 +1,10 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+const {  pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all craftsman price list data
   //Model models/CraftmanPrice.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'CraftmanPrice ');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
