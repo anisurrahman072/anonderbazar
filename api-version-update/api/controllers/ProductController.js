@@ -147,7 +147,7 @@ module.exports = {
           body.image = '/' + newPath;
         } catch (err) {
           console.log('err', err);
-          return res.json(err.status, {err: err});
+          return res.status(400).json(err.status, {err: err});
         }
       }
       let product = await Product.update({id: req.param('id')}, body).fetch();

@@ -110,5 +110,19 @@ module.exports.policies = {
     'customInsert': ['isAuthorized', 'isAdmin'],
     'customUpdate': ['isAuthorized', 'isAdmin'],
     'customDelete': ['isAuthorized', 'isAdmin'],
+  },
+  DesignCategoriesController: {
+    '*': false,
+    'getAll': true,
+    'withDesignSubcategory': true
+  },
+  DesignCategoryController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'withDesignSubcategory': true,
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
   }
 };
