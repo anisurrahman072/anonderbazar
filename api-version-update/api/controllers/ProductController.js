@@ -11,7 +11,7 @@ module.exports = {
   //Model models/Product.js
   destroy: async (req, res) => {
     try {
-      const product = await Product.update({
+      const product = await Product.updateOne({
         id: req.param('id')
       }).set({
         deletedAt: new Date()
@@ -270,7 +270,7 @@ module.exports = {
   //Method called for getting a product available date
   //Model models/Product.js
   getAvailableDate: async function (req, res) {
-    initLogPlaceholder(req, 'getAvailableDate');
+
     try {
       /*      function randomDate(start, end) {
         return new Date(

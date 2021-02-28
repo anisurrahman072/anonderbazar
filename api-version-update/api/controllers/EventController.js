@@ -4,15 +4,15 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
+const {uploadImages} = require('../../libs/helper');
 const {uploadImagesWithConfig} = require('../../libs/helper');
-const {initLogPlaceholder, uploadImgAsync} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   //Method called for getting a event data
   //Model models/EventManagement.js
   findOne: async (req, res) => {
     try {
-      const event = await await EventManagement.findOne(req.params.id);
+      const event = await EventManagement.findOne(req.params.id);
       res.status(200).json(event);
     } catch (error) {
       let message = 'Error in Getting the events';
@@ -58,59 +58,50 @@ module.exports = {
   },
   //Method called for updating a event data
   //Model models/EventManagement.js
-  update: function (req, res) {
-    if (req.body.hasImage === 'true') {
+  update: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
 
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
+        try {
+          let uploaded = await uploadImages(req.file('image'));
+
+          if (uploaded.length === 0) {
+            return res.badRequest('No image was uploaded');
           }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {
-            return res.serverError(err);
-          }
+          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           req.body.image = '/' + newPath;
-
-
-          EventManagement.update({id: req.param('id')}, req.body).exec((
-            err,
-            eventManagement
-          ) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (eventManagement) {
-              res.json(200, {
-                eventManagement: eventManagement,
-                token: jwToken.issue({id: eventManagement.id})
-              });
-            }
-          });
-        }
-      );
-    } else {
-      EventManagement.update({id: req.param('id')}, req.body).exec((err, eventManagement) => {
-        if (err) {
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        if (eventManagement) {
-          res.json(200, {eventManagement: eventManagement, token: jwToken.issue({id: eventManagement.id})});
-        }
+      }
+
+      const eventManagement = await EventManagement.updateOne({id: req.param('id')}).set(req.body);
+
+      return res.json(200, {eventManagement: eventManagement, token: jwToken.issue({id: eventManagement.id})});
+
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: '',
+        error
       });
     }
   },
   //Method called for deleting a event data
   //Model models/EventManagement.js
-  destroy: function (req, res) {
-    EventManagement.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, EventManagement) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(EventManagement[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const eventManagement = await EventManagement.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(eventManagement);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: '',
+        error
+      });
+    }
+
   }
 };
 
