@@ -7,6 +7,7 @@
 
 const jwToken = require('../services/jwToken');
 module.exports = async (req, res, next) => {
+
   let token;
 
   if (req.headers && req.headers.authorization) {

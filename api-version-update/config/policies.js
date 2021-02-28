@@ -25,7 +25,7 @@ module.exports.policies = {
     '*': ['isAuthorized', 'isCustomer'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
   },
-  BranController: {
+  BrandController: {
     '*': false,
     'find': true,
     'findOne': true,

@@ -1,27 +1,26 @@
-const {asyncForEach, initLogPlaceholder} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
 /**
  * CategoryController
  *
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {asyncForEach} = require('../../libs');
+const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   //Method called for creating category data
   //Model models/Category.js
   create: function (req, res) {
     try {
       if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
         let body;
-        let body1;
+
         req.file('image0').upload(imageUploadConfig(), (err, files) => {
           // maxBytes: 10000000;
           if (err) {
             return res.serverError(err);
           }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          let newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
           body = req.body;
           body.image = '/' + newPath;
           Category.create(body).exec((err, returnCategory) => {
