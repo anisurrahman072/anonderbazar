@@ -13,7 +13,7 @@ module.exports = {
   //Model models/CraftmanPrice.js
   create: async (req, res) => {
     try {
-      let craftmanPrice = await CraftmanPrice.create(req.body);
+      let craftmanPrice = await CraftmanPrice.create(req.body).fetch();
       if (craftmanPrice) {
 
         let newCraftmanPrice = await CraftmanPrice.findOne({id: craftmanPrice.id,})
@@ -51,9 +51,9 @@ module.exports = {
   //Model models/CraftmanPrice.js
   update: async (req, res) => {
     try {
-      let craftmanPrice = await CraftmanPrice.update({id: req.param('id')}, req.body);
-      if (craftmanPrice) {
+      let craftmanPrice = await CraftmanPrice.update({id: req.param('id')}, req.body).fetch();
 
+      if (craftmanPrice) {
         let newCraftmanPrice = [];
         await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
           let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
@@ -150,14 +150,14 @@ module.exports = {
   },
 
   // destroy a row
-  destroy: function (req, res) {
-    CraftmanPrice.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec((err, craftmanPrice) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(craftmanPrice[0]);
-      });
+  destroy: async (req, res) => {
+    try{
+      const craftmanPrice = await CraftmanPrice.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, craftmanPrice);
+    }catch (error){
+      console.log(error);
+      res.json(400, {success: false, message: 'Something went wrong!', error});
+    }
   },
 };
 
