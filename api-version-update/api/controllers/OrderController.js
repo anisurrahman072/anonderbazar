@@ -24,15 +24,14 @@ module.exports = {
     }
   },
   // destroy a row
-  destroy: function (req, res) {
-    Order.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, order) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(order[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const order = await Order.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, order);
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
   },
 
   //Method called for creating a custom order data
