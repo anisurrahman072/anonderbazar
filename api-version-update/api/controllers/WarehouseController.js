@@ -36,7 +36,7 @@ module.exports = {
           where: _where,
           limit: _pagination.limit,
           skip: _pagination.skip
-        }).populateAll();
+        }).populate('upazila_id').populate('zila_id').populate('division_id').populate('user', {deletedAt: null});
 
 
       res.status(200).json({

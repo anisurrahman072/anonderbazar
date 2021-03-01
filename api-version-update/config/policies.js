@@ -221,7 +221,14 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   UserController: {
-    '*': true
+    '*': false,
+    'findOne': ['isAuthorized'],
+    'find':  ['isAuthorized', 'isOwnerOrAdmin'],
+    'create':  ['isAuthorized'],
+    'update':  ['isAuthorized'],
+    'getAuthCustomerData':  ['isAuthorized'],
+    'authUser': ['isAuthorized', 'isCustomer'],
+    'getUserWithDashboardData': ['isAuthorized']
   },
   WarehouseController: {
     '*': false,
