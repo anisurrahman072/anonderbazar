@@ -50,9 +50,6 @@ export class ProfileComponent implements OnInit {
     style: any = {
         top: "10px"
     };
-    showLabels = true;
-    explodeSlices = false;
-    doughnut = false;
     single: any = [];
     customColors: any = [];
     isMessage: boolean;
@@ -139,8 +136,8 @@ export class ProfileComponent implements OnInit {
         this.loaderService.showLoader();
         this.userService.getByIdForDashBoard(this.authService.getCurrentUserId()).subscribe(result => {
             this.dashboardData = result;
-            this.user = result.data[0];
-            console.log(' this.user', this.user);
+            console.log(' this.user', result, this.user);
+            this.user = result.data;
             this.loaderService.hideLoader();
             this.pendingCount = this.dashboardData.pendingOrder;
             this.processingCount = this.dashboardData.processingOrder;
@@ -155,6 +152,13 @@ export class ProfileComponent implements OnInit {
         this.paymentAddressService.getPaymentaddressWithoutOrderid(this.authService.getCurrentUserId()).subscribe(result => {
             this.addresses = result;
         });
+
+        this.currentUser$.subscribe((res)=> {
+            console.log(' this.currentUser$.subscribe', res);
+            this.user = res;
+        }, (error)=>{
+            console.log(' this.currentUser$.subscribe', error);
+        })
     }
 
     // Event for showing the profile image

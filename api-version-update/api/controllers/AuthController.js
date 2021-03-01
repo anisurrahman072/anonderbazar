@@ -8,6 +8,7 @@
 const bcrypt = require('bcryptjs');
 const jwToken = require('../services/jwToken');
 const EmailService = require('../services/EmailService');
+const {comparePasswords} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
         return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
       }
 
-      const valid = await User.comparePassword(password, user.password);
+      const valid = await comparePasswords(password, user.password);
 
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
@@ -130,7 +131,7 @@ module.exports = {
   // Entry of Auth/login
   //Method called for customer login for frontend
   //Model models/User.js
-  CustomerLogin: async (req, res) => {
+  customerLogin: async (req, res) => {
     let username = req.param('username');
     let password = req.param('password');
 
@@ -146,7 +147,7 @@ module.exports = {
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
       }
-      const valid = await User.comparePassword(password, user.password);
+      const valid = await comparePasswords(password, user.password);
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
       }
@@ -191,7 +192,8 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
-      const user = await User.create(req.body).fetch();
+      let user = await User.create(req.body).fetch();
+      user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
 
       return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
@@ -219,9 +221,10 @@ module.exports = {
         status: 1
       }).fetch();
 
+      user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
       try {
         EmailService.sendWelcomeMailCustomer(user);
-      } catch (er){
+      } catch (er) {
         console.log(er);
       }
 
@@ -254,4 +257,44 @@ module.exports = {
       return res.json(200, {isunique: true});
     }
   },
+
+  //Method called for updating a user password
+  //Model models/User.js
+  userPasswordUpdate: async (req, res) => {
+
+    const authUser = req.token.userInfo;
+
+    let oldPassword = req.body.oldPassword;
+    let newPassword = req.body.newPassword;
+
+    if (!oldPassword || !newPassword) {
+      return res.json(400, {message: 'old password and new password are required'});
+    }
+    try {
+
+      let valid = await comparePasswords(oldPassword, authUser.password);
+      if (!valid) {
+        return res.json(401, {message: 'Wrong Password'});
+      }
+
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const validUpdate = await User.updateOne({id: authUser.id}, {password: newHashedPassword});
+      if (!validUpdate) {
+        return res.json(500, 'There was a problem in processing the request.');
+      }
+
+      return res.json(200, {
+        user: authUser, token: jwToken.issue({id: authUser.id})
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update Password',
+        error
+      });
+    }
+  }
 };
