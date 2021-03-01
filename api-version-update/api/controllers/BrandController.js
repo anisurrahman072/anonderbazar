@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {uploadImages} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {

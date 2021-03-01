@@ -155,6 +155,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       let body = req.body;
+      console.log('body', body);
       if (body.hasImage === 'true') {
         const uploaded = await imageUploadConfig.upload(req.file('image0'));
         if (uploaded.length === 0) {
@@ -166,10 +167,10 @@ module.exports = {
       } else {
         body.type_id = 2;
       }
-      const created = await Category.create(body).fetch();
-      return res.json(200, created);
+      const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
+      return res.status(200).json(updateCategory);
     } catch (error) {
-      return res.json(error.status, {message: '', error, success: false});
+      return res.status(error.status).json({message: '', error, success: false});
     }
   },
   //Method called for updating category type
@@ -186,10 +187,13 @@ module.exports = {
         body.image = '/' + newPath;
         body.type_id = 1;
       }
-      const created = await Category.create(body).fetch();
-      return res.json(200, created);
+      const udpated = await Category.updateOne({
+        id: req.param('id')
+      }).set(body);
+
+      return res.status(200).json(udpated);
     } catch (error) {
-      return res.json(error.status, {message: '', error, success: false});
+      return res.status(error.status).json({message: '', error, success: false});
     }
   },
   //Method called for updating category product
@@ -206,10 +210,13 @@ module.exports = {
         body.image = '/' + newPath;
         body.type_id = 2;
       }
-      const created = await Category.create(body).fetch();
-      return res.json(200, created);
+      const udpated = await Category.updateOne({
+        id: req.param('id')
+      }).set(body);
+
+      return res.status(200).json(udpated);
     } catch (error) {
-      return res.json(error.status, {message: '', error, success: false});
+      return res.status(error.status).json({message: '', error, success: false});
     }
   },
   //Method called for getting a category with subcategories data
@@ -226,7 +233,7 @@ module.exports = {
 
       return res.json(allCategories);
     } catch (error) {
-      return res.json(400, {success: false, message: 'There was a problem!', error});
+      return res.status(error.status).json({message: '', error, success: false});
     }
   },
   //Method called for getting a product category with subcategories data
