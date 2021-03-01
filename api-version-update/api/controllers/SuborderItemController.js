@@ -11,15 +11,16 @@ const {
 
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    SuborderItem.updateOne(
-      {id: req.param('id')},
-    ).set({deletedAt: new Date()}).exec((err, user) => {
-      if (err) {
-        return res.json(err, 400);
-      }
+  destroy: async (req, res) => {
+    try {
+      const user = await SuborderItem.updateOne(
+        {id: req.param('id')},
+      ).set({deletedAt: new Date()});
       return res.json(user[0]);
-    });
+    }
+    catch (error){
+      return res.json(error.status, {message: '', error, success: false});
+    }
   },
   //Method called for getting all product sub order item
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
