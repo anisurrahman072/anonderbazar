@@ -54,7 +54,7 @@ module.exports = {
             total_quantity: req.body.quantity,
             status: 1,
             type: 1
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
 
           let suborder = await Suborder.create({
             product_order_id: order.id,
@@ -63,18 +63,18 @@ module.exports = {
             total_quantity: req.body.quantity,
             delivery_date: req.body.current_date,
             status: 1
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
 
-          let suborderitem = await SuborderItem.create({
+          let suborderitem = SuborderItem.create({
             product_suborder_id: suborder.id,
             product_id: req.body.product_id,
             warehouse_id: req.body.warehouse_id,
             product_quantity: req.body.quantity,
             product_total_price: req.body.price
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
+
           return suborderitem;
         });
-
 
       if (suborderitem) {
         return res.json(200, suborderitem);
@@ -196,7 +196,6 @@ module.exports = {
 
           /** Create  order from cart........................START...........................*/
 
-
           let order = await Order.create({
             user_id: req.param('user_id'),
             cart_id: cart.id,
@@ -208,8 +207,6 @@ module.exports = {
             courier_charge: courierCharge,
             courier_status: 1,
           }).fetch().usingConnection(db);
-
-          console.log('created order', order);
 
           /** Get unique warehouse Id for suborder................START.........................*/
 

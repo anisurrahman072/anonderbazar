@@ -20,34 +20,39 @@ module.exports = {
       return res.json(suborder);
 
     } catch (err) {
-      return res.json(err, 400);
+      return res.json(400, err);
     }
   },
   //Method called for updaing product suborder by order id
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   updatebyorderid: async function (req, res) {
 
-    var suborder = await Suborder.update({product_order_id: req.param('id')}, req.body);
-    // eslint-disable-next-line eqeqeq
-    if (req.body.status == '2' || req.body.status == '11' || req.body.status == '12') {
+    try {
+      const suborder = await Suborder.update({product_order_id: req.param('id')}, req.body);
       // eslint-disable-next-line eqeqeq
-      if (req.body.status == '2') {
-        await CourierListOrder.update({order_id: req.param('id')}, {status: 3});
-        await asyncForEach(suborder, async element => {
-          await CourierList.update({suborder_id: element.id}, {status: 3});
-        });
-      } else {
-        await CourierListOrder.update({order_id: req.param('id')}, req.body);
-        await asyncForEach(suborder, async element => {
-          await CourierList.update({suborder_id: element.id}, req.body);
-        });
+      if (req.body.status == SUB_ORDER_STATUSES.processing || req.body.status == SUB_ORDER_STATUSES.delivered || req.body.status == SUB_ORDER_STATUSES.canceled) {
+        // eslint-disable-next-line eqeqeq
+        if (req.body.status == SUB_ORDER_STATUSES.processing) {
+          await CourierListOrder.update({order_id: req.param('id')}, {status: SUB_ORDER_STATUSES.prepared});
+          await asyncForEach(suborder, async element => {
+            await CourierList.update({suborder_id: element.id}, {status: SUB_ORDER_STATUSES.prepared});
+          });
+        } else {
+          await CourierListOrder.update({order_id: req.param('id')}, req.body);
+          await asyncForEach(suborder, async element => {
+            await CourierList.update({suborder_id: element.id}, req.body);
+          });
+        }
       }
+      if (suborder) {
+        return res.json(200, suborder);
+      } else {
+        return res.status(400).json({success: false});
+      }
+    } catch (error){
+      return res.json(400, error);
     }
-    if (suborder) {
-      return res.json(200, suborder);
-    } else {
-      return res.status(400).json({success: false});
-    }
+
 
   },
   //Method called for getting all product suborder

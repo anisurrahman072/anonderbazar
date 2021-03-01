@@ -1,98 +1,81 @@
 /**
  * DesignController
- *
- * @description :: Server-side logic for managing categories
+ * @description :: Server-side logic for managing designcontroller
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {imageUploadConfig} = require('../../libs/helper');
-let asyncForEach = require('../../libs').asyncForEach;
+const {uploadImagesWithConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for creating design data
   //Model models/Design.js
-  create: function (req, res) {
-    function create(body) {
+  create: async (req, res) => {
 
-      Design.create(body).exec((err, design) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        try {
+          const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_design.jpg'});
+          if (uploaded.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          req.body.image = '/' + newPath;
 
-        if (err) {
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        if (design) {
-          res.json(200, design);
-        }
+      }
+      const design = await Design.create(req.body).fetch();
+      return res.json(200, design);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: '',
+        error
       });
-    }
-
-    if (req.body.hasImage === 'true') {
-      const uploadConfig = imageUploadConfig();
-      req.file('image').upload({
-        ...uploadConfig,
-        saveAs: Date.now() + '_design.jpg'
-      }, (err, uploaded) => {
-
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-        if (err) {
-          return res.serverError(err);
-        }
-        req.body.image = '/' + newPath;
-        create(req.body);
-      });
-    } else {
-      create(req.body);
     }
   },
   //Method called for updating design data
   //Model models/Design.js
-  update: function (req, res) {
-    if (req.body.hasImage == 'true') {
-      const uploadConfig = imageUploadConfig();
-      req.file('image').upload({
-        ...uploadConfig,
-        saveAs: Date.now() + '_design.jpg'
-      }, (err, uploaded) => {
+  update: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        try {
+          const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_design.jpg'});
+          if (uploaded.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          req.body.image = '/' + newPath;
 
-        if (err) {
+        } catch (err) {
+          console.log('err', err);
           return res.json(err.status, {err: err});
         }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        if (err) {
-          return res.serverError(err);
-        }
-        req.body.image = '/' + newPath;
-        Design.update({id: req.param('id')}, req.body)
-          .exec((err, design) => {
-            if (err) {
-              return res.json(err, 400);
-            }
-            return res.json(200, design);
-          });
+      }
+      const design = await Design.updateOne({id: req.param('id')}).set(req.body);
+      return res.json(200, design);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: '',
+        error
       });
-    } else {
-      Design.update({id: req.param('id')}, req.body)
-        .exec((err, design) => {
-          if (err) {
-            return res.json(err, 400);
-          }
-          return res.json(200, design);
-        });
     }
   },
 
   // destroy a row
-  destroy: function (req, res) {
-    Design.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec((err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
+  destroy: async (req, res) => {
+    try {
+      const design = await Design.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(design);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: '',
+        error
       });
+    }
   },
 };
 

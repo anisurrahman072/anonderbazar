@@ -1,33 +1,28 @@
-const {
-  initLogPlaceholder,
-  uploadImgAsync
-} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
+const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
   update: async (req, res) => {
-    initLogPlaceholder(req, 'update user account');
-
     try {
-      let user = await User.update({id: req.param('_id')}, req.body);
-      return res.status(200).json(user[0]);
+      let user = await User.updateOne({id: req.param('_id')}).set(req.body);
+      return res.status(200).json(user);
     } catch (error) {
       return res.status(400).json({error});
     }
   },
   updateImage: async (req, res) => {
-    initLogPlaceholder(req, 'update user avatar');
-
     try {
-      let tempImg = await uploadImgAsync(req.file('image'), imageUploadConfig());
-      req.body.avatar = tempImg;
 
-      let user = await User.update({id: req.params._id}, req.body);
-      return res.status(200).json(user[0]);
+      let body = {...req.body};
+      const uploaded = await uploadImages(req.file('image'));
+      if (uploaded.length === 0) {
+        return res.badRequest('No file was uploaded');
+      }
+      const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      body.avatar = '/' + newPath;
 
-      return res.status(200).json({
-        success: true
-      });
+      let user = await User.updateOne({id: req.params._id}).set(body);
+      return res.status(200).json(user);
+
     } catch (error) {
       return res.status(400).json({error});
     }

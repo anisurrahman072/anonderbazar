@@ -1,11 +1,14 @@
 const {devEnv} = require('../config/softbd');
 
 exports.asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
+  if(array && Array.isArray(array) && array.length > 0){
+    for (let index = 0; index < array.length; index++) {
+      // eslint-disable-next-line callback-return
+      await callback(array[index], index, array);
+    }
   }
-};
 
+};
 
 exports.initLogPlaceholder = (req, funcName) => {
   sails.log(`call from ${funcName}`);
@@ -25,7 +28,6 @@ exports.uploadImgAsync = (param, option = {}) => {
   }));
 };
 
-
 exports.deleteImages = async (imageList, path) => {
   asyncForEach(imageList, (item) => {
     console.log(item);
@@ -38,6 +40,7 @@ exports.deleteImages = async (imageList, path) => {
       console.log('successfully deleted' + item);
     } catch (err) {
 
+      console.log(err);
       console.log('error to delete' + item);
       // handle the error
     }
@@ -94,7 +97,23 @@ exports.uploadImages = (imageFile) => {
     });
   });
 };
-
+exports.uploadImagesWithConfig = (imageFile, customConfig) => {
+  let config = imageUploadConfig();
+  config = {
+    ...config,
+    ...customConfig
+  };
+  return new Promise((resolve, reject) => {
+    imageFile.upload(config, async (err, uploaded) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(uploaded);
+      }
+    });
+  });
+};
 exports.getContentTypeByFile = function (fileName) {
   var rc = 'application/octet-stream';
   var fn = fileName.toLowerCase();

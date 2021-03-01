@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
+const { initLogPlaceholder } = require('../../libs');
 
 module.exports = {
 
@@ -23,7 +23,7 @@ module.exports = {
           return res.status(400).json({ success: false });
         }
       } catch (error) {
-        return res.status(400).json({ success: false });
+        return res.status(400).json({ success: false, error });
       }
     }
     if (req.body) {

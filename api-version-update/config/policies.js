@@ -16,16 +16,13 @@ module.exports.policies = {
    * (`true` allows public access)                                            *
    *                                                                          *
    ***************************************************************************/
-
-  // '*': true,
-  UserController: {
-    '*': true
+  AreaController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isAdmin']
   },
-  OrderController: {
-    '*': ['isAuthorized', 'isCustomer'],
-    'getAllOrder': ['isAuthorized', 'isAdmin'],
-  },
-  BranController: {
+  BrandController: {
     '*': false,
     'find': true,
     'findOne': true,
@@ -33,39 +30,184 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
-  AreaController: {
+  CartController: {
     '*': false,
-    'find': true,
-    'findOne': true,
-    'create': true,
-    'update': true,
-    'destroy': ['isAuthorized', 'isAdmin']
+    'find': ['isAuthorized', 'isCustomer'],
+    'findOne': ['isAuthorized', 'isCustomer'],
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'authUserCart': ['isAuthorized', 'isCustomer'],
+    'findwithcartItems': ['isAuthorized', 'isCustomer'],
   },
-  AuthController: {
+  CartItemController: {
     '*': false,
-    'login': true,
-    'index': true,
-    'dashboardLogin': true,
-    'CustomerLogin': true,
-    'warehouseSignup': true,
-    'signup': true,
-    'usernameUnique': true
+    'destroy': ['isAuthorized', 'isCustomer'],
+    'bycartid': ['isAuthorized', 'isCustomer'],
+    'create': ['isAuthorized', 'isCustomer'],
+    'update': ['isAuthorized', 'isCustomer'],
+  },
+  CartItemVariantController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isCustomer'],
   },
   CategoryController: {
     '*': false,
-    'find': true,
-    'create': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'getType': true,
-    'getProduct': true,
-    'getSingleType': true,
-    'getSingleProduct': true,
+    'destroyType': ['isAuthorized', 'isAdmin'],
+    'destroyProduct': ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isAdmin'],
     'createType': ['isAuthorized', 'isAdmin'],
     'createProduct': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'updateType': ['isAuthorized', 'isAdmin'],
     'updateProduct': ['isAuthorized', 'isAdmin'],
+    'getType': true,
+    'getProduct': true,
+    'getSingleType': true,
+    'getSingleProduct': true,
     'withSubcategories': true,
-    'withProductSubcategory': true
-  }
+    'withProductSubcategory': true,
+  },
+  CraftmanPricesController: {
+    'getAll': true
+  },
+  CMSController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'offerInsert': ['isAuthorized', 'isAdmin'],
+    'offerProductUpdate': ['isAuthorized', 'isAdmin'],
+    'updateOffer': ['isAuthorized', 'isAdmin'],
+    'customPostInsert': ['isAuthorized', 'isAdmin'],
+    'customPostUpdate': ['isAuthorized', 'isAdmin'],
+    'customInsert': ['isAuthorized', 'isAdmin'],
+    'customUpdate': ['isAuthorized', 'isAdmin'],
+    'customDelete': ['isAuthorized', 'isAdmin'],
+  },
+  DesignCategoriesController: {
+    '*': false,
+    'getAll': true,
+    'withDesignSubcategory': true
+  },
+  DesignCategoryController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'withDesignSubcategory': true,
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  DesignController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'withDesignSubcategory': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  EventController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  PaymentAddressController: {
+    '*': false,
+    'find': ['isAuthorized'],
+    'findOne': ['isAuthorized'],
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'destroy': ['isAuthorized'],
+  },
+  ProductController: {
+    '*': true,
+    'add': false,
+    'remove': false,
+    'replace': false,
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  ProductsController: {
+    'index': true,
+    'findOne': true,
+    'designCombination': true,
+    'search': true,
+    'getBySearchTerm': true,
+    'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
+    'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  OrderController: {
+    '*': ['isAuthorized'],
+    'create': false,
+    'add': false,
+    'remove': false,
+    'replace': false,
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'populate': ['isAuthorized', 'isAdmin'],
+    'getAllOrder': ['isAuthorized', 'isAdmin'],
+  },
+  PaymentController: {
+    '*': false,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'find': true,
+    'findOne': true,
+    'create': true,
+    'update': ['isAuthorized', 'isAdmin'],
+  },
+  PaymentsController: {
+    '*': false,
+    'getAll': ['isAuthorized']
+  },
+  PRStatusController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+  },
+  ShippingAddressController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized'],
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+  },
+  StatusChangeController: {
+    'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
+    'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SuborderController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'getSuborder': true,
+    'getSuborderWithDate': true,
+    'getWithFull': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'updatebyorderid': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SubordersController: {
+    'getAll': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getsuborderwithpr': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  SubOrderItemController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'getSuborderItems': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  UserController: {
+    '*': true
+  },
 };

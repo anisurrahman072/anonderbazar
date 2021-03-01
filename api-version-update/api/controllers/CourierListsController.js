@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+const {initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
 
@@ -49,7 +49,8 @@ module.exports = {
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -75,8 +76,8 @@ module.exports = {
       let message = 'error in read single courier';
       res.status(400).json({
         success: false,
-        message
-        // error:error.toJSON()
+        message,
+        error
       });
     }
   },
@@ -116,7 +117,8 @@ module.exports = {
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

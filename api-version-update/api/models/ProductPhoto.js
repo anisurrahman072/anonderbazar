@@ -13,7 +13,8 @@ module.exports = {
       required: true,
     },
     photo: {
-      type: 'text',
+      type: 'string',
+      columnType: 'text',
       required: true,
     },
   },
