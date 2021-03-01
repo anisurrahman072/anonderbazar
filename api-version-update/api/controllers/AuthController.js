@@ -13,7 +13,6 @@ const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
 
-  // Entry of Auth/login
   //Method called for customer login for frontend
   //Model models/User.js
   login: async (req, res) => {
@@ -48,6 +47,7 @@ module.exports = {
         user: user,
         token: jwToken.issue({
           id: user.id,
+          userInfo: user,
           group_id: user.group_id.name,
           warehouse: user.warehouse_id
         })
@@ -77,6 +77,7 @@ module.exports = {
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number or username is invalid'});
       }
+
       let valid = await bcrypt.compare(password, user.password);
 
       if (!valid) {
@@ -285,7 +286,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
-      return res.json(200, {isunique: true});
+      return res.json(400, {isunique: true});
     }
   },
 
