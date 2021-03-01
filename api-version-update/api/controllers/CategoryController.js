@@ -39,8 +39,8 @@ module.exports = {
   //Model models/Category.js
   destroyType: async (req, res) => {
     try {
-      const user = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.json(user);
+      const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(category);
     } catch (error) {
       res.json(400, {message: 'wrong', error});
     }
@@ -50,8 +50,8 @@ module.exports = {
   //Model models/Category.js
   destroyProduct: async (req, res) => {
     try {
-      const user = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.json(user);
+      const category = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(category);
     } catch (error) {
       res.json(400, {message: 'wrong', error});
     }
@@ -61,12 +61,12 @@ module.exports = {
   //Model models/Category.js
   getType: async (req, res) => {
     try {
-      let category = await Category.find({
+      let categories = await Category.find({
         where: {type_id: 1, deletedAt: null}
       });
 
-      if (category) {
-        res.status(200).json(category);
+      if (categories) {
+        res.status(200).json(categories);
       } else {
         res.status(400).json({
           success: false
@@ -80,9 +80,9 @@ module.exports = {
   //Model models/Category.js
   getProduct: async (req, res) => {
     try {
-      const categorys = await Category.find()
+      const categories = await Category.find()
         .where({type_id: 2, deletedAt: null});
-      return res.json(200, categorys);
+      return res.json(200, categories);
     } catch (error) {
       res.status(400).json(error);
     }
@@ -92,8 +92,7 @@ module.exports = {
   //Model models/Category.js
   getSingleType: async (req, res) => {
     try {
-      const category = await Category.findOne()
-        .where({id: req.param('id'), type_id: 1});
+      const category = await Category.findOne({id: req.param('id'), type_id: 1});
       return res.json(200, category);
     } catch (error) {
       res.status(400).json(error);
@@ -103,8 +102,7 @@ module.exports = {
   //Model models/Category.js
   getSingleProduct: async (req, res) => {
     try {
-      const category = await Category.findOne()
-        .where({id: req.param('id'), type_id: 2});
+      const category = await Category.findOne({id: req.param('id'), type_id: 2});
       return res.json(200, category);
     } catch (error) {
       res.status(400).json(error);
@@ -116,13 +114,13 @@ module.exports = {
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await imageUploadConfig(req.file('image0'));
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        body.image = '/' + newPath;
-        body.type_id = 2;
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
       }
+
       body.type_id = 2;
       const CategoryUpload = await Category.create(body).fetch();
       return res.json(200, CategoryUpload);
@@ -159,7 +157,7 @@ module.exports = {
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await imageUploadConfig.upload(req.file('image0'));
-        if(uploaded.length === 0) {
+        if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
@@ -170,7 +168,7 @@ module.exports = {
       }
       const created = await Category.create(body).fetch();
       return res.json(200, created);
-    }  catch (error) {
+    } catch (error) {
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -190,7 +188,7 @@ module.exports = {
       }
       const created = await Category.create(body).fetch();
       return res.json(200, created);
-    }   catch (error) {
+    } catch (error) {
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -201,7 +199,7 @@ module.exports = {
       let body = req.body;
       if (body.hasImage === 'true') {
         const uploaded = await imageUploadConfig.upload(req.file('image0'));
-        if(uploaded.length === 0) {
+        if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
@@ -210,7 +208,7 @@ module.exports = {
       }
       const created = await Category.create(body).fetch();
       return res.json(200, created);
-    }  catch (error) {
+    } catch (error) {
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -220,13 +218,15 @@ module.exports = {
     try {
       let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2})
         .populate('offer_id');
+
       let allCategories = await Promise.all(categories.map(async (item) => {
         item.subCategories = await Category.find({deletedAt: null, parent_id: item.id});
         return item;
       }));
-      res.json(allCategories);
+
+      return res.json(allCategories);
     } catch (error) {
-      res.json(400, {success: false, message: 'There was a problem!', error});
+      return res.json(400, {success: false, message: 'There was a problem!', error});
     }
   },
   //Method called for getting a product category with subcategories data
@@ -245,13 +245,14 @@ module.exports = {
           deletedAt: null
         });
       });
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
-        message: 'product category  withsubcategory',
+        message: 'product category with subcategory',
         data: categories
       });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: '',
         error
