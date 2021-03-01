@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {uploadImagesWithConfig} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
 
 
 module.exports = {
@@ -14,8 +14,7 @@ module.exports = {
   create: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        const uploadConfig = imageUploadConfig();
-        const uploaded = await req.file('image').upload({...uploadConfig, saveAs: Date.now() + '_part.jpg'});
+        const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_part.jpg'});
         if (uploaded.length === 0) {
           return res.badRequest('No files was uploaded');
         }
