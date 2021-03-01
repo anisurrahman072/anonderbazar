@@ -187,6 +187,16 @@ module.exports.policies = {
     'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
     'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  ProductCategoriesController: {
+    'getAll': true,
+    'withProductSubcategory': true
+  },
+  ProductVariantController: {
+    '*': false,
+    'byvariant': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin']
+  },
   OrderController: {
     '*': ['isAuthorized'],
     'create': false,
