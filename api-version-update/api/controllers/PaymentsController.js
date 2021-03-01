@@ -1,22 +1,17 @@
-const {initLogPlaceholder, pagination} = require('../../libs');
-
 /**
  * PaymentsController
  *
  * @description :: Server-side logic for managing payments
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const {pagination} = require('../../libs');
 module.exports = {
   //Method called for getting all payment data
   //Model models/Payment.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'Payments');
-
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       let _where2 = {};
       _where.deletedAt = null;
@@ -25,8 +20,8 @@ module.exports = {
       //userName
       if (req.query.search_term) {
         _where2.or = [
-          { first_name: { like: `%${req.query.searchTermName}%` } },
-          { last_name: { like: `%${req.query.searchTermName}%` } }
+          {first_name: {like: `%${req.query.searchTermName}%`}},
+          {last_name: {like: `%${req.query.searchTermName}%`}}
         ];
       }
       if (req.query.orderNumberSearchValue) {
@@ -53,19 +48,15 @@ module.exports = {
       if (req.query.statusSearchValue) {
         _where.status = {'like': `%${req.query.statusSearchValue}%`};
       }
-      /* WHERE condition..........END................*/
 
-      /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
 
-
-      /*.....SORT END..............................*/
-
-
-      let totalPayment = await  Payment.count().where(_where);
+      let totalPayment = await Payment.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalPayment;
       let payments = await Payment.find(
         {
@@ -74,10 +65,10 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populate('user_id', {  where: _where2, })
-        .populate('order_id', { deletedAt: null })
-        .populate('suborder_id', { deletedAt: null })
-        .populate('receiver_id', { deletedAt: null });
+        .populate('user_id', {where: _where2,})
+        .populate('order_id')
+        .populate('suborder_id')
+        .populate('receiver_id');
 
       res.status(200).json({
         success: true,
@@ -88,12 +79,12 @@ module.exports = {
         message: 'Get All Payment with pagination',
         data: payments
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Payment with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

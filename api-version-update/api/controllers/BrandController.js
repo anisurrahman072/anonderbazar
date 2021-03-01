@@ -1,13 +1,11 @@
-const {initLogPlaceholder, pagination, uploadImgAsync} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
-
 /**
  * BrandController
  *
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const {uploadImages} = require('../../libs/helper');
+const {imageUploadConfig} = require('../../libs/helper');
 module.exports = {
   // destroy a row
   destroy: function (req, res) {
@@ -23,89 +21,64 @@ module.exports = {
   // create a row
   //Method called for creating product brand
   //Model models/Brand.js
-  create: function (req, res) {
+  create: async (req, res) => {
     try {
+      let body = req.body;
       if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body; let body1;
-        req.file('image').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          Brand.create(body).exec((err, returnBrand) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnBrand) {
-              res.json(200, returnBrand);
-            }
-          });
-        });
 
-      } else {
-        Brand.create(req.body).exec((err, returnBrand) => {
-          if (err) {
-            return res.json(err.status, {err: err});
+        try {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
-          if (returnBrand) {
-            res.json(200, returnBrand);
-          }
-        });
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          body.image = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
+
       }
+      const returnBrand = await Brand.create(body).fetch();
+
+      return res.json(200, returnBrand);
+
     } catch (err) {
-      res.json(400, {message: 'wrong'});
+      res.json(400, {message: 'wrong', err});
     }
   },
 
   // update a row
   //Method called for updating product brand
   //Model models/Brand.js
-  update: function (req, res) {
+  update: async (req, res) => {
 
+    try {
+      let body = req.body;
+      if (req.body.hasImage === 'true') {
 
-    if (req.body.hasImage == 'true') {
-
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
+        try {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {
-            return res.serverError(err);
-          }
-          req.body.image = '/' + newPath;
-          Brand.update({id: req.param('id')}, req.body).exec((
-            err,
-            brand
-          ) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (brand) {
-              res.json(200, {
-                brand: brand,
-                token: jwToken.issue({id: brand.id})
-              });
-            }
-          });
+
+          body.image = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
         }
-      );
-    } else {
-      Brand.update({id: req.param('id')}, req.body).exec((
-        err,
-        brand
-      ) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(200, brand);
-      });
+      }
+
+      const brand = await Brand.updateOne({id: req.param('id')}).set(req.body);
+
+      return res.json(200, brand);
+
+    } catch (err) {
+      return res.json(400, {message: 'Something Went Wrong', err});
     }
+
   },
 };

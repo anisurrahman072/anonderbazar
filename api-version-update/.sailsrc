@@ -8,6 +8,7 @@
   },
     "hooks": {
       "views": false,
-      "grunt":false
+      "grunt":false,
+      "autoreload": false
   }
 }

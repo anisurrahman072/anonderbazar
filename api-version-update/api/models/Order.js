@@ -1,9 +1,8 @@
 /**
  * Order.js
- *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
- */
+ **/
 
 module.exports = {
 
@@ -17,10 +16,12 @@ module.exports = {
       required: true
     },
     billing_address: {
-      model: 'paymentaddress'
+      model: 'paymentaddress',
+      required: false
     },
     shipping_address: {
-      model: 'paymentaddress'
+      model: 'paymentaddress',
+      required: false
     },
     suborders: {
       collection: 'suborder',
@@ -36,21 +37,18 @@ module.exports = {
     },
     total_quantity: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'integer',
       required: true,
-      defaultsTo: 0
     },
     total_price: {
       type: 'number',
       required: true,
       columnType: 'decimal',
-      defaultsTo: 0
     },
     type: {
       type: 'number',
-      required: true,
-      columnType: 'int',
-      defaultsTo: 0
+      columnType: 'integer',
+      defaultsTo: 0,
     },
     ssl_transaction_id: {
       type: 'string',
@@ -60,32 +58,29 @@ module.exports = {
     },
     changed_by: {
       model: 'user',
-      columnType: 'int',
       required: false,
-      allowNull: true,
     },
     status: {
       type: 'number',
-      columnType: 'tinyint',
+      columnType: 'integer',
       required: false,
       defaultsTo: 1,
     },
     courier_status: {
       type: 'number',
-      columnType: 'int',
-      require: true,
-      defaultsTo: 0,
+      columnType: 'integer',
+      defaultsTo: 0
     },
     courier_charge: {
       type: 'number',
-      columnType: 'int',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },
   },
   tableName: 'product_orders',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   }
 };
 

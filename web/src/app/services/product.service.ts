@@ -13,16 +13,6 @@ export class ProductService {
     constructor(private http: HttpClient) {
     }
 
-    getAll(
-        option: {
-            status?: number;
-        } = {}
-    ): Observable<any> {
-        let status = option.status ? `status=${option.status}&approval_status=2&sort=createdAt%20DESC` : `approval_status=2&sort=createdAt%20DESC`;
-
-        return this.http.get(this.EndPoint2 + '?' + status);
-    }
-
     filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
 
         const searchTermEncoded = encodeURI(searchTerm);
@@ -39,18 +29,12 @@ export class ProductService {
         const now = Date.now();
         const date = pipe.transform(now, 'yyyy-MM-dd');
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 ,"promotion":1,"end_date":{">=":"' + date + '"}}&sort=createdAt%20DESC')
-            .map(response => response);
-    }
-
-    getAllRatingProduct(): Observable<any> {
-        return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=3&sort="rating%20DESC"')
+            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 ,"promotion":1,"end_date":{">=":"' + date + '"}}&sort=createdAt%20DESC&populate=false')
             .map(response => response);
     }
 
     getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id).map(response => response);
+        return this.http.get(this.EndPoint + '/' + id + '?populate=false').map(response => response);
     }
 
     insert(data): Observable<any> {
@@ -71,12 +55,6 @@ export class ProductService {
     getAllByWarehouseId(id): Observable<any> {
         return this.http
             .get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}, "approval_status": 2 }&sort=createdAt%20DESC`)
-            .map(response => response);
-    }
-
-    getAllByCategoryId(id): Observable<any> {
-        return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null,"category_id":${id}, "approval_status": 2 }&sort=createdAt%20DESC`)
             .map(response => response);
     }
 

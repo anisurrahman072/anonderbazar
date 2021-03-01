@@ -22,13 +22,13 @@ module.exports = {
     },
     quantity: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },
     unit_price: {
       type: 'number',
-      columnType: 'float',
+      columnType: 'decimal',
       required: false,
       defaultsTo: 0
     },

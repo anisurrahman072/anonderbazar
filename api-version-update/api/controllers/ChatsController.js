@@ -25,7 +25,7 @@ module.exports = {
     }
     let chats = await Chat.find({
       where: _where
-    }).populate('chat_user_id',{deletedAt: null});
+    }).populate('chat_user_id');
 
     let allChats = await Promise.all(
       chats.map(async item => {

@@ -7,54 +7,19 @@ const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 
 module.exports = {
 
-  //Method called for getting a product data
-  //Model models/Product.js
-
-  findOne: async (req, res) => {
-    try {
-
-      let product = await Product.findOne(req.params.id)
-        .populate('product_images', {deletedAt: null})
-        .populate('product_variants', {deletedAt: null})
-        .populate('category_id', {deletedAt: null})
-        .populate('subcategory_id', {deletedAt: null})
-        .populate('type_id', {deletedAt: null})
-        .populate('warehouse_id', {deletedAt: null})
-        .populate('craftsman_id', {deletedAt: null})
-        .populate('brand_id', {deletedAt: null});
-
-      product = {...product};
-
-      if (product) {
-        product.coupon_banner_image = await ProductCouponBannerImage.findOne({
-          product_id: product.id,
-          deletedAt: null
-        });
-      }
-
-      return res
-        .status(200)
-        .json(product);
-
-    } catch (error) {
-      const message = 'Error in Geting the product';
-      return res.status(400).json({
-        success: false,
-        message
-      });
-    }
-  },
   //Method called for deleting a product data
   //Model models/Product.js
-  destroy: function (req, res) {
-    Product.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const product = await Product.updateOne({
+        id: req.param('id')
+      }).set({
+        deletedAt: new Date()
+      });
+      return res.json(product);
+    } catch (error) {
+      return res.json(error, 400);
+    }
   },
   //Method called for finding product max price data
   //Model models/Product.js
@@ -87,10 +52,17 @@ module.exports = {
   create: async function (req, res) {
     try {
       req.body.price = parseFloat(req.body.price);
-      //parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
-      let imageCounter = parseInt(req.body.imageCounter);
+
       let body = req.body;
       console.log('request body', body);
+
+      const existingProduct = await Product.findOne({
+        code: body.code
+      });
+
+      if (existingProduct) {
+        return res.badRequest('Product already existed with this product code');
+      }
 
       if (body.brand_id === '' || body.brand_id === 'undefined') {
         body.brand_id = null;
@@ -119,35 +91,32 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          const product = await Product.create(body).fetch().usingConnection(db);
 
-
-      const product = await Product.create(body);
-
-      if (body.ImageBlukArray) {
-        let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
-        for (let i = 0; i < imagearraybulk.length; i++) {
-          await ProductImage.update(imagearraybulk[i], {product_id: product.id});
-        }
-        return res.json(200, product);
-      } else {
-        return res.json(200, product);
-      }
-
-      /*
-       if (req.body.ImageBlukArray) {
-          var imagearraybulk = JSON.parse("[" + req.body.ImageBlukArray + "]");
-          for (i = 0; i < imagearraybulk.length; i++) {
-            if (i === 0) {
-              var productimage = ProductImage.findOne(product.id);
-              await product.update(product.id, {image: productimage.image_path});
+          if (body.ImageBlukArray) {
+            let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
+            for (let i = 0; i < imagearraybulk.length; i++) {
+              await ProductImage.update(imagearraybulk[i], {product_id: product.id});
             }
-            await ProductImage.update(imagearraybulk[i], {product_id: product.id});
           }
-       }
-      */
+
+        });
+
+      return res.json({
+        success: true,
+        message: 'Product successfully created',
+        data: null
+      });
+
     } catch (error) {
-      console.log('error', error);
-      res.json(400, {message: 'wrong'});
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create product',
+        error
+      });
     }
   },
   //Method called for updating a product data
@@ -160,47 +129,32 @@ module.exports = {
       if (req.body.promo_price) {
         req.body.promo_price = parseFloat(req.body.promo_price);
       }
-
-      let imageCounter = parseInt(req.body.imageCounter);
-
-      let i = 0;
+      let body = req.body;
+      if (body.brand_id === '' || body.brand_id === 'undefined') {
+        body.brand_id = null;
+      }
+      if (body.tag === '' || body.tag === 'undefined') {
+        body.tag = null;
+      }
       if (req.body.hasImageFront === 'true') {
-        req.file('frontimage').upload(imageUploadConfig(), async (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
+        try {
+          const uploaded = await uploadImages(req.file('frontimage'));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
-
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          let body = req.body;
-          if (body.brand_id === '' || body.brand_id === 'undefined') {
-            body.brand_id = null;
-          }
-          if (body.tag === '' || body.tag === 'undefined') {
-            body.tag = null;
-          }
           body.image = '/' + newPath;
-          let product = await Product.update({id: req.param('id')}, body);
-          return res.json(200, product);
-        });
-
-      } else {
-        let body = req.body;
-        if (body.brand_id === '' || body.brand_id === 'undefined') {
-          body.brand_id = null;
+        } catch (err) {
+          console.log('err', err);
+          return res.status(400).json(err.status, {err: err});
         }
-        if (body.tag === '' || body.tag === 'undefined') {
-          body.tag = null;
-        }
-        let product = await Product.update({id: req.param('id')}, body);
-        return res.json(200, product);
       }
+      let product = await Product.update({id: req.param('id')}, body).fetch();
+      return res.json(200, product);
     } catch (err) {
       console.log(err);
-      res.json(400, {message: 'Something went wrong!'});
+      res.json(400, {message: 'Something went wrong!', err});
     }
   },
 
@@ -223,12 +177,12 @@ module.exports = {
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath);
 
-          const product = await ProductImage.create({
+          const productImage = await ProductImage.create({
             product_id: req.body.product_id,
             image_path: '/' + newPath
-          });
+          }).fetch();
 
-          return res.json(200, product);
+          return res.json(200, productImage);
         });
       } else if (req.body.hasImage === 'true') {
 
@@ -242,12 +196,12 @@ module.exports = {
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath);
 
-          const product = await ProductImage.create({
+          const productImage = await ProductImage.create({
             product_id: null,
             image_path: '/' + newPath
-          });
+          }).fetch();
 
-          return res.json(200, product);
+          return res.json(200, productImage);
 
         });
 
@@ -262,6 +216,7 @@ module.exports = {
         res.json(400, {message: 'wrong'});
       }
     } catch (err) {
+      console.log(err);
       res.json(400, {message: 'wrong'});
     }
   },
@@ -296,13 +251,13 @@ module.exports = {
       console.log('all bannerImages', bannerImages);
 
       if (productBanner && typeof productBanner.id !== 'undefined') {
-        await ProductCouponBannerImage.update({id: productBanner.id}, {banner_images: bannerImages});
+        await ProductCouponBannerImage.updateOne({id: productBanner.id}).set({banner_images: bannerImages});
       } else {
         productBanner = await ProductCouponBannerImage.create({
           product_id: req.body.product_id,
           banner_images: bannerImages,
           created_at: new Date(),
-        });
+        }).fetch();
       }
 
       return res.json(200, productBanner);
@@ -315,13 +270,13 @@ module.exports = {
   //Method called for getting a product available date
   //Model models/Product.js
   getAvailableDate: async function (req, res) {
-    initLogPlaceholder(req, 'getAvailableDate');
+
     try {
-      function randomDate(start, end) {
+      /*      function randomDate(start, end) {
         return new Date(
           start.getTime() + Math.random() * (end.getTime() - start.getTime())
         );
-      }
+      }*/
 
       let product = req.param('product');
       let productQuantity = req.param('quantity');
@@ -332,22 +287,22 @@ module.exports = {
         craftman_id: craftsmanId,
         deletedAt: null,
       });
-      if (craftmanSchedule && craftmanSchedule.end_time != null) {
-        let existingCraftsTime =
+      if (craftmanSchedule && craftmanSchedule.end_time !== null) {
+        /*        let existingCraftsTime =
           craftmanSchedule.end_time.getTime() -
-          craftmanSchedule.start_time.getTime();
-        var _time_milli =
+          craftmanSchedule.start_time.getTime();*/
+        let _time_milli =
           ((produceTimeMin * productQuantity) / 60 / 8) * 84300000;
-        var newDateObj = new Date(craftmanSchedule.end_time).setMilliseconds(
+        let newDateObj = new Date(craftmanSchedule.end_time).setMilliseconds(
           ((produceTimeMin * productQuantity) / 60 / 8) * 86400000
         );
         return res.json({date: newDateObj, miliseconds: _time_milli});
       } else {
-        var _time = new Date();
-        var _time_milli =
+        let _time = new Date();
+        let _time_milli =
           ((produceTimeMin * productQuantity) / 60 / 8) * 84300000;
-        var total_time = _time.getTime() + _time_milli + 84300000;
-        var newDateObj = new Date(total_time);
+        let total_time = _time.getTime() + _time_milli + 84300000;
+        let newDateObj = new Date(total_time);
         return res.json({date: newDateObj, miliseconds: _time_milli});
       }
     } catch (err) {

@@ -39,9 +39,17 @@ export class AuthService {
         return false;
     }
 
+    isTokenExpired() {
+        const token = this.getToken();
+        if (token) {
+            return this.jwtHelper.isTokenExpired(token);
+        } else {
+            return true;
+        }
+    }
 
     getCurrentUserId() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return jwtPayload.id;
@@ -52,10 +60,9 @@ export class AuthService {
     }
 
     getCurrentUser() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
-            const jwtPayload = this.jwtHelper.decodeToken(token);
-            return jwtPayload;
+            return this.jwtHelper.decodeToken(token);
         } else {
             return false;
         }
@@ -63,7 +70,7 @@ export class AuthService {
     }
 
     getCurrentUserInfo() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return jwtPayload.userInfo;
@@ -74,7 +81,7 @@ export class AuthService {
     }
 
     getCurrentUserAccessName() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return jwtPayload.group_id;
@@ -84,7 +91,7 @@ export class AuthService {
     }
 
     getCurrentUserAccessNameAsync(): Observable<any> {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return of(jwtPayload.group_id);

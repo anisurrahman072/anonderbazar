@@ -27,15 +27,10 @@ module.exports = {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true
     },
     user_id: {
-      model: 'user',
-      required: false
+      model: 'user'
     },
   },
   tableName: 'cms',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true*/
 };

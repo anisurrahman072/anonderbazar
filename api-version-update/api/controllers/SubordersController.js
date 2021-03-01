@@ -1,5 +1,5 @@
 /**
- * SuborderController
+ * SubordersController
  *
  * @description :: Server-side logic for managing suborders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
@@ -7,6 +7,7 @@
 const {initLogPlaceholder, pagination, asyncForEach} = require('../../libs');
 const moment = require('moment');
 const Promise = require('bluebird');
+const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 
 module.exports = {
   //Method called for getting all product suborder
@@ -19,7 +20,7 @@ module.exports = {
 
       /* WHERE condition for .......START.....................*/
 
-      const SuborderQuery = Promise.promisify(Suborder.query);
+      const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
 
       let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
       rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ';
@@ -71,15 +72,10 @@ module.exports = {
         _where += ` AND warehouses.name LIKE '%${req.query.suborderIdValue}%' `;
       }
 
-      if(req.query.PR_status){
+      if (req.query.PR_status) {
         _where += ` AND suborder.PR_status = '${req.query.PR_status}' `;
       }
 
-      /* WHERE condition..........END................*/
-
-
-      /*sort................*/
-      let _sort = {};
       if (req.query.sortName) {
         // _sort.name = req.query.sortName
         _where += ' ORDER BY suborder.created_at DESC ';
@@ -87,137 +83,152 @@ module.exports = {
         _where += ' ORDER BY suborder.created_at DESC ';
       }
 
-
-
-      /*.....SORT END..............................*/
-
-      /*      let totalSuborder = await Suborder.count().where(_where);
-
-            let suborders = await Suborder.find(
-              {
-                where: _where,
-                limit: _pagination.limit,
-                skip: _pagination.skip,
-                sort: _sort,
-              }).populateAll();*/
-
-      // .populate('warehouse_id', {
-      //   where: _vendorWhere
-      // });
-      // .populate('division_id')
-      // .populate('user');
       const totalSuborderRaw = await SuborderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
-      const totalSuborder = totalSuborderRaw[0].totalCount;
+      console.log('totalSuborderRaw', totalSuborderRaw);
 
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
+      if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
+        const totalSuborder = totalSuborderRaw.rows[0].totalCount;
 
-      let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-      const suborders = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
 
-      console.log('totalCount', totalSuborderRaw, totalSuborder);
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+        const rawResult = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
 
-      await asyncForEach(suborders, async suborder => {
-        console.log('suborder', suborder);
-        suborder.order = await Order.findOne({where: {id: suborder.product_order_id}}).populateAll();
-        suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
-        await asyncForEach(suborder.items, async item => {
-          let varientitems = [];
-          item.pending = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 1
-            }
-          }).populate('changed_by');
-          item.processing = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 2
-            }
-          }).populate('changed_by');
-          item.prepared = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 3
-            }
-          }).populate('changed_by');
-          item.departure = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 4
-            }
-          }).populate('changed_by');
-          item.pickup = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 5
-            }
-          }).populate('changed_by');
-          item.in_the_air = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 6
-            }
-          }).populate('changed_by');
-          item.landed = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 7
-            }
-          }).populate('changed_by');
-          item.arrival_at_warehouse = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 8
-            }
-          }).populate('changed_by');
-          item.shipped = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 9
-            }
-          }).populate('changed_by');
-          item.out_for_delivery = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 10
-            }
-          }).populate('changed_by');
-          item.delivered = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 11
-            }
-          }).populate('changed_by');
-          item.canceled = await StatusChange.findOne({
-            where: {
-              suborder_id: suborder.id,
-              status: 12
-            }
-          }).populate('changed_by');
+        const suborders = rawResult.rows;
 
-          await asyncForEach(item.suborderItemVariants, async varientitem => {
-            varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}}).populateAll());
+        console.log('totalCount', totalSuborderRaw, totalSuborder);
+
+        await asyncForEach(suborders, async suborder => {
+
+          console.log('suborder', suborder);
+          suborder.order = await Order.findOne({
+            where: {
+              id: suborder.product_order_id
+            }
+          }).populate('user_id')
+            .populate('billing_address')
+            .populate('shipping_address')
+            .populate('payment');
+
+          suborder.items = await SuborderItem.find({
+            where: {
+              product_suborder_id: suborder.id
+            }
+          }).populate('product_id').populate('product_suborder_id');
+
+          await asyncForEach(suborder.items, async item => {
+            let varientitems = [];
+            item.pending = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.pending
+              }
+            }).populate('changed_by');
+            item.processing = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.processing
+              }
+            }).populate('changed_by');
+            item.prepared = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.prepared
+              }
+            }).populate('changed_by');
+            item.departure = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.departure
+              }
+            }).populate('changed_by');
+            item.pickup = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.pickup
+              }
+            }).populate('changed_by');
+            item.in_the_air = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.in_the_air
+              }
+            }).populate('changed_by');
+            item.landed = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.landed
+              }
+            }).populate('changed_by');
+            item.arrival_at_warehouse = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.arrived_at_warehouse
+              }
+            }).populate('changed_by');
+            item.shipped = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.shipped
+              }
+            }).populate('changed_by');
+            item.out_for_delivery = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.out_for_delivery
+              }
+            }).populate('changed_by');
+            item.delivered = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.delivered
+              }
+            }).populate('changed_by');
+            item.canceled = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.canceled
+              }
+            }).populate('changed_by');
+            item.confirmed = await StatusChange.findOne({
+              where: {
+                suborder_id: suborder.id,
+                status: SUB_ORDER_STATUSES.confirmed
+              }
+            }).populate('changed_by');
+            await asyncForEach(item.suborderItemVariants, async varientitem => {
+              varientitems.push(await SuborderItemVariant.findOne({where: {product_suborder_item_id: item.id}})
+                .populate('product_suborder_item_id')
+                .populate('product_id')
+                .populate('warehouse_variant_id')
+                .populate('product_variant_id')
+              );
+            });
+
+            item.suborderItemVariants = varientitems;
+
           });
-
-          item.suborderItemVariants = varientitems;
-
         });
-      });
-      res.status(200).json({
-        success: true,
-        total: totalSuborder,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        page: _pagination.page,
-        message: 'Get All Suborder with pagination',
-        data: suborders
-      });
+        res.status(200).json({
+          success: true,
+          total: totalSuborder,
+          limit: _pagination.limit,
+          skip: _pagination.skip,
+          page: _pagination.page,
+          message: 'Get All Suborder with pagination',
+          data: suborders
+        });
+      } else {
+        throw new Error('No sub order found');
+      }
+
     } catch (error) {
       console.log('error', error);
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -271,17 +282,13 @@ module.exports = {
         _where.status = req.query.statusSearchValue;
       }
 
-      /* WHERE condition..........END................*/
-
       /* sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
-
-
-      /*.....SORT END..............................*/
-
 
       let totalSuborder = await Suborder.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
@@ -292,10 +299,16 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populateAll();
+        .populate('warehouse_id');
+
       await asyncForEach(suborders, async suborder => {
-        suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}}).populateAll();
-        suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
+        suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}})
+          .populate('user_id')
+          .populate('payment')
+          .populate('shipping_address');
+
+        suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}})
+          .populate('product_id');
 
         let totalPrice = 0;
         await asyncForEach(suborder.items, async item => {
@@ -304,73 +317,73 @@ module.exports = {
           item.pending = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 1
+              status: SUB_ORDER_STATUSES.pending
             }
           }).populate('changed_by');
           item.processing = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 2
+              status: SUB_ORDER_STATUSES.processing
             }
           }).populate('changed_by');
           item.prepared = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 3
+              status: SUB_ORDER_STATUSES.prepared
             }
           }).populate('changed_by');
           item.departure = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 4
+              status: SUB_ORDER_STATUSES.departure
             }
           }).populate('changed_by');
           item.pickup = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 5
+              status: SUB_ORDER_STATUSES.pickup
             }
           }).populate('changed_by');
           item.in_the_air = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 6
+              status: SUB_ORDER_STATUSES.in_the_air
             }
           }).populate('changed_by');
           item.landed = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 7
+              status: SUB_ORDER_STATUSES.landed
             }
           }).populate('changed_by');
           item.arrival_at_warehouse = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 8
+              status: SUB_ORDER_STATUSES.arrived_at_warehouse
             }
           }).populate('changed_by');
           item.shipped = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 9
+              status: SUB_ORDER_STATUSES.shipped
             }
           }).populate('changed_by');
           item.out_for_delivery = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 10
+              status: SUB_ORDER_STATUSES.out_for_delivery
             }
           }).populate('changed_by');
           item.delivered = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 11
+              status: SUB_ORDER_STATUSES.delivered
             }
           }).populate('changed_by');
           item.canceled = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 12
+              status: SUB_ORDER_STATUSES.canceled
             }
           }).populate('changed_by');
 
@@ -391,12 +404,12 @@ module.exports = {
         message: 'Get All Suborder with pagination',
         data: suborders
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

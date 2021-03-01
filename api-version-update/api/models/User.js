@@ -12,12 +12,13 @@ module.exports = {
     last_ip_address: {
       type: 'string',
       columnType: 'varchar',
+      required: false,
       allowNull: true
     },
     ip_address: {
       type: 'string',
       columnType: 'varchar',
-      allowNull: true
+      defaultsTo: '::1'
     },
     username: {
       type: 'string',
@@ -69,12 +70,14 @@ module.exports = {
     active: {
       type: 'number',
       columnType: 'integer',
-      required: false
+      required: false,
+      allowNull: true
     },
     first_name: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     last_name: {
       type: 'string',
@@ -121,7 +124,6 @@ module.exports = {
       type: 'ref',
       columnType: 'date',
       required: false,
-      allowNull: true
     },
     avatar: {
       type: 'string',
@@ -134,8 +136,7 @@ module.exports = {
       required: true
     },
     warehouse_id: {
-      model: 'warehouse',
-      required: true
+      model: 'warehouse'
     },
     address: {
       type: 'string',
@@ -144,16 +145,13 @@ module.exports = {
       allowNull: true
     },
     upazila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     zila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     division_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_address: {
       type: 'string',
@@ -162,16 +160,13 @@ module.exports = {
       allowNull: true
     },
     permanent_upazila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_zila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_division_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     award_points: {
       type: 'number',
@@ -182,7 +177,7 @@ module.exports = {
   },
   tableName: 'users',
   customToJSON: function () {
-    var obj = this.toObject();
+    var obj = {...this};
     delete obj['password'];
     delete obj['forgotten_password_code'];
     delete obj['forgotten_password_time'];

@@ -20,8 +20,5 @@ module.exports = {
     }
   },
   tableName: 'variants',
-/*  autoCreatedAt: true,
-  autoUpdatedAt: true,
-  autoDeletedAt: true,*/
 };
 

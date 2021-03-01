@@ -20,19 +20,16 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: true,
-      defaultsTo: 0
     },
     total_price: {
       type: 'number',
       columnType: 'decimal',
       required: true,
-      defaultsTo: 0
     },
     delivery_date: {
       type: 'ref',
       columnType: 'date',
-      required: false,
-      allowNull: true
+      required: false
     },
     suborderItems: {
       collection: 'suborderItem',
@@ -45,19 +42,17 @@ module.exports = {
     courier_status: {
       type: 'number',
       columnType: 'integer',
-      required: true
+      defaultsTo: 0
     },
     PR_status: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       allowNull: true,
       defaultsTo: 0
     },
     status: {
       type: 'number',
       columnType: 'integer',
-      required: false,
       allowNull: true,
       defaultsTo: 1
     },
@@ -67,13 +62,12 @@ module.exports = {
     date: {
       type: 'ref',
       columnType: 'datetime',
-      required: false,
-      allowNull: true
+      required: false
     },
   },
   tableName: 'product_suborders',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   }
 };
 

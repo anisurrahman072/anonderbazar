@@ -1,3 +1,5 @@
+const {categoryRoutes} = require('./category');
+const {eventsRoutes} = require('./events');
 const {warehousevariantRoute} = require('./warehousevariant');
 const {designcategoriesRoute} = require('./designcategories');
 const {productCategoryRoute} = require('./productCategory');
@@ -13,8 +15,10 @@ const {PaymentsRoute} = require('./payment');
 const {craftsmanPriceRoute} = require('./craftmenprice');
 const {designImageRoute} = require('./designImage');
 const {favouriteproductRoute} = require('./favouriteProduct');
+const {userRoutes} = require('./user');
 
 exports.allRouter = {
+  ...categoryRoutes,
   ...warehousevariantRoute,
   ...designcategoriesRoute,
   ...productCategoryRoute,
@@ -29,5 +33,7 @@ exports.allRouter = {
   ...suborderRoute,
   ...PaymentsRoute,
   ...designImageRoute,
-  ...favouriteproductRoute
+  ...favouriteproductRoute,
+  ...userRoutes,
+  ...eventsRoutes
 };

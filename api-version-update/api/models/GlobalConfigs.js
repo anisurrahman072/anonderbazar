@@ -11,14 +11,12 @@ module.exports = {
     dhaka_charge: {
       type: 'number',
       columnType: 'decimal',
-      required: true,
-      defaultsTo: 50
+      defaultsTo: 50.00
     },
     outside_dhaka_charge: {
       type: 'number',
       columnType: 'decimal',
-      required: true,
-      defaultsTo: 80
+      defaultsTo: 80.00
     },
     sslcommerce_user: {
       type: 'string',
@@ -53,14 +51,12 @@ module.exports = {
     default_image_width_ratio: {
       type: 'number',
       columnType: 'int',
-      required: true,
-      defaultsTo: 9,
+      defaultsTo: 9
     },
     default_image_height_ratio: {
       type: 'number',
       columnType: 'int',
-      required: true,
-      defaultsTo: 6,
+      defaultsTo: 6
     },
   },
   tableName: 'global_configs',

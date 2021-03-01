@@ -5,30 +5,27 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {
-  Helper,
-  asyncForEach,
-  initLogPlaceholder,
   pagination
 } = require('../../libs');
 
 
 module.exports = {
   // destroy a row
-  destroy: function(req, res) {
-    SuborderItem.update(
-      { id: req.param('id') },
-      { deletedAt: new Date() }
-    ).exec((err, user) => {
-      if (err) {return res.json(err, 400);}
+  destroy: function (req, res) {
+    SuborderItem.updateOne(
+      {id: req.param('id')},
+    ).set({deletedAt: new Date()}).exec((err, user) => {
+      if (err) {
+        return res.json(err, 400);
+      }
       return res.json(user[0]);
     });
   },
   //Method called for getting all product sub order item
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborderItems: async (req, res) => {
-    try {
-      initLogPlaceholder(req, 'SubOrderItemList');
 
+    try {
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -56,9 +53,11 @@ module.exports = {
         _where.date = req.query.date;
       }
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.product_total_price) {
-        _sort.product_total_price = req.query.product_total_price;
+        _sort.push({product_total_price: req.query.product_total_price});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
       /*.....SORT END..............................*/
 
@@ -66,10 +65,12 @@ module.exports = {
       _pagination.limit = _pagination.limit
         ? _pagination.limit
         : totalSuborderItem;
+
       let suborderItems = await SuborderItem.find({
         where: _where,
         sort: _sort
-      }).populate('product_id', { deletedAt: null });
+      }).populate('product_id');
+
       let allsuborderItems = await Promise.all(
         suborderItems.map(async item => {
           if (req.query.status) {
@@ -92,13 +93,17 @@ module.exports = {
 
           item.product_order_id = await Order.find({
             deletedAt: null,
-          }).populate('user_id', { deletedAt: null });
+          }).populate('user_id');
 
-          if(item.product_suborder_id.length!=0)
-          {return item;}
+          if (item.product_suborder_id.length !== 0) {
+            return item;
+          }
         })
       );
-      var filteredallsuborderItems = allsuborderItems.filter((el) => { return el; });
+
+      const filteredallsuborderItems = allsuborderItems.filter((el) => {
+        return el;
+      });
 
       res.status(200).json({
         success: true,
@@ -110,7 +115,8 @@ module.exports = {
       let message = 'Error in Get All SubOrderItemList with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

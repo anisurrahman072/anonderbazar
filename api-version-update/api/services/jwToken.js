@@ -6,27 +6,37 @@
  */
 
 let jwt = require('jsonwebtoken');
-let tokenSecret = 'secretissecet';
+let tokenSecret = '032Q8~kjhk!lsjdf8237';
 
 // Generates a token from supplied payload
-module.exports.issue = function (payload) {
+exports.issue = function (payload) {
   return jwt.sign(
     payload,
     tokenSecret, {
       // expiresIn: '1h',
+      expiresIn: 60 * 60 * 24,
       issuer: 'cccg',
       algorithm: 'HS256'
     });
 };
 
 // Verifies token on a request
-module.exports.verify = function (token, callback) {
-  return jwt.verify(
-    token, // The token to be verified
-    tokenSecret, // Same token we used to sign
-    {}, // No Option, for more see https://github.com/auth0/node-jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
-    callback //Pass errors or decoded token to callback
-  );
+exports.verify = function (token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      token, // The token to be verified
+      tokenSecret, // Same token we used to sign
+      {}, // No Option, for more see https://github.com/auth0/node-jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
+      (err, token) => {
+
+        if (err) {
+          reject(err);
+        }
+        resolve(token);
+
+      } //Pass errors or decoded token to callback
+    );
+  });
 };
 
 

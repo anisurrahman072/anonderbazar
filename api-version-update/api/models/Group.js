@@ -14,7 +14,7 @@ module.exports = {
       required: true,
     },
     description: {
-      type: 'number',
+      type: 'string',
       columnType: 'varchar',
       required: true,
     },
@@ -22,13 +22,12 @@ module.exports = {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true,
     },
   },
   tableName: 'groups',
   customToJSON: function () {
 
-    return this.toObject();
+    return this;
   }
 };
 

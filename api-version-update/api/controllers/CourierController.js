@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
+const { initLogPlaceholder } = require('../../libs');
 
 module.exports = {
 
@@ -23,7 +23,7 @@ module.exports = {
           return res.status(400).json({ success: false });
         }
       } catch (error) {
-        return res.status(400).json({ success: false });
+        return res.status(400).json({ success: false, error });
       }
     }
     if (req.body) {
@@ -33,7 +33,7 @@ module.exports = {
   },
   //Method called for updating courier data
   //Model models/Courier.js
-  update: function(req, res) {
+  update: async (req, res) => {
     Courier.update(req.param('id'), req.body).exec((
       err,
       courier

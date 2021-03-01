@@ -8,14 +8,12 @@
 module.exports = {
   attributes: {
     product_id: {
-      model: 'product',
-      required: true
+      model: 'product'
     },
     banner_images: {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'product_coupon_banner_images',

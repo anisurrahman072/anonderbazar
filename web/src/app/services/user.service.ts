@@ -20,17 +20,22 @@ export class UserService {
     }
 
     getById(id: number): Observable<any> {
-      return this.http.get<User>(`${this.EndPoint}/${id}`)
-             .pipe(catchError((error: any) => Observable.throw(error.json())));
+        return this.http.get<User>(`${this.EndPoint}/${id}`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 
     getAuthUser(): Observable<any> {
-        return this.http.get<User>(`${this.EndPoint}/getAuthUser`)
+        return this.http.get<User>(`${this.EndPoint}/authUser`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 
     getByIdForDashBoard(id: number): Observable<any> {
-        return this.http.get<User>(`${this.EndPoint}/getUserWithDashboardData/${id}`)
+        return this.http.get(`${this.EndPoint}/getUserWithDashboardData/${id}`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
+    }
+
+    getAuthUserCustomerData(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAuthCustomerData`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 

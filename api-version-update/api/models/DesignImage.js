@@ -25,7 +25,6 @@ module.exports = {
       type: 'json',
       columnType: 'text',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'design_images',

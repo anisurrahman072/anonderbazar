@@ -36,18 +36,10 @@ export class CategoryPageComponent implements OnInit {
     p;
     allProducts: any;
     allProductsByCategory: any;
-    allProductsRatingByCategory: any;
-    allProductsNewestByCategory: any;
-    allProductsPriceByCategory: any;
+
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     search: any;
-    cost: 10;
-    paramsID: number;
-
-    productStatus;
     priceFilter = false;
-    isCollapsed_filter = true;
-    isCollapsed_price = false;
 
     minPrice: number = 0.0;
     maxPrice: number = 50000;
@@ -55,17 +47,12 @@ export class CategoryPageComponent implements OnInit {
     allCategory = [];
     allsubCategory = [];
     allSubSubCategory = [];
-    subCategory = [];
-    subCategoryList: any[];
-    allClass: any[];
-    allVariant: Observable<any>;
-    allWerehouse: Observable<any>;
+
     craftsmen = [];
     allCraftsman: any[];
     min: number;
     max: number;
 
-    isCollapsed_category_sub = false;
     changeStatusP = false;
     changeStatusR = false;
     changeStatusN = false;
@@ -81,14 +68,13 @@ export class CategoryPageComponent implements OnInit {
     brand_ids = [];
 
     priceRange = [];
-    sortNew: any;
-    currentsearchterm: any;
+
     currentBrandId: any;
     currentCategoryId: any;
     currentSubCategoryId: any;
     currentSubSubCategoryId: any;
     currentCategoryType: any;
-    currentCategoryName: any;
+
 
     classList_filter_list = [];
     categoryList_filter_list = [];
@@ -101,10 +87,7 @@ export class CategoryPageComponent implements OnInit {
     categoryB = [];
     subcategoryB = [];
     subsubcategoryB = [];
-    totalpageno: number;
-    pageno: number;
-    url1 = "";
-    url2 = "";
+
     options: Options = {
         floor: 1,
         // ceil: this.maxPrice,
@@ -223,10 +206,6 @@ export class CategoryPageComponent implements OnInit {
         this.getMaxPriceOfProduct();
     }
 
-    isNotEmptyArray(val) {
-        return (Array.isArray(val) && val.length > 0);
-    }
-
     isNotEmptyObject(val) {
         return (typeof val === 'object' && val !== null && Object.keys(val).length > 0);
     }
@@ -286,18 +265,6 @@ export class CategoryPageComponent implements OnInit {
         }
     }
 
-    from_menue_filter_result(Id: number, type: String, name: String) {
-        if (type == "class") {
-            this.clearAll = false;
-
-            this.classList_ids = [];
-            this.classList_ids[0] = Id;
-            this.classList_filter_list = [];
-            this.classList_filter_list[0] = name;
-        }
-
-        return true;
-    }
 
     filter_result(event: any, type: string, name: String) {
 
@@ -479,10 +446,6 @@ export class CategoryPageComponent implements OnInit {
         //  return true;
     }
 
-    //Event method for setting up filter data
-    public search_term(search: string) {
-        return true;
-    }
 
     //Event method for setting up filter data
     public clearAllFilter() {
@@ -584,49 +547,6 @@ export class CategoryPageComponent implements OnInit {
         }
     }
 
-    //Event method for getting all craftsman
-
-    private getAllCraftsman() {
-        this.UserService.getAllCraftsman().subscribe(result => {
-            this.allCraftsman = result.data;
-        });
-    }
-
-    //Event method for getting all warehouse
-
-    private getAllwherehouse() {
-        this.WarehouseService.getAll().subscribe(result => {
-            this.allWerehouse = result;
-        });
-    }
-
-    //Event method for getting all variant
-
-    private getAllVarient() {
-        this.VariantService.getAll().subscribe(result => {
-            this.allVariant = result;
-        });
-    }
-
-    //Event method for getting all products
-
-    private getAllProducts() {
-        this.productService
-            .getAll({status: this.productStatus})
-            .subscribe(result => {
-                this.allProducts = result.data;
-            });
-    }
-
-    //Event method for getting all product by category id
-
-    private getAllByCategoryId(category_id: any) {
-        this.productService
-            .getAllByCategoryId(category_id)
-            .subscribe(result => {
-                this.allProductsByCategory = result;
-            });
-    }
 
     //Event method for getting all brands
     private getAllBrands() {
@@ -639,12 +559,6 @@ export class CategoryPageComponent implements OnInit {
     private getAllCategories() {
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.allCategory = result;
-        });
-    }
-
-    private getAllClass() {
-        this.categoryProductService.getAllClass().subscribe(result => {
-            this.allClass = result;
         });
     }
 
@@ -711,14 +625,6 @@ export class CategoryPageComponent implements OnInit {
         this.filter_search_result();
     }
 
-    searchByCategory(name) {
-    }
-
-    //Method for status change
-
-    statusChange(value) {
-        this.getAllProducts();
-    }
 
     //Event method for pagination change
     onPageChange(event) {

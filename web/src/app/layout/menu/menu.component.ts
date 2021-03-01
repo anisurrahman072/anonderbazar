@@ -74,6 +74,8 @@ export class MenuComponent implements OnInit {
         this.categoryProductService
             .getCategoriesWithSubcategories()
             .subscribe(result => {
+                console.log('getCategoriesWithSubcategories', result);
+                console.log('getCategoriesWithSubcategories', typeof result);
                 this.categoryList = result;
             });
 
