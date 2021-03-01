@@ -9,6 +9,7 @@ const {
   initLogPlaceholder,
   pagination
 } = require('../../libs');
+const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for getting all warehouse data
@@ -84,32 +85,23 @@ module.exports = {
   //Method called for creating a warehouse data
   //Model models/Warehouse.js
   create: async (req, res) => {
-
     try {
       if (req.body.haslogo === 'true') {
-        try {
-          const uploaded = await uploadImages(req.file('logo'));
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          req.body.logo = '/' + newPath;
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
+        const uploaded = await uploadImages(req.file('logo'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
         }
+        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.logo = '/' + newPath;
       }
-      const warehouse = await Warehouse.create(req.body).fetch();
-      return res.json(200, warehouse);
+      const warehouseCreate = await Warehouse.create(req.body).fetch();
+      return res.json(200, warehouseCreate);
+
     } catch (error) {
-      console.log(error);
-      res.status(400).json({
-        success: false,
-        message: 'Failed to create an warehouse',
-        error
-      });
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
+
   //Method called for updating a warehouse data
   //Model models/Warehouse.js
   update: async (req, res) => {

@@ -118,6 +118,7 @@ module.exports = {
   //Method called for getting a product
   //Model models/Product.js
   findOne: async (req, res) => {
+    console.log(res);
     try {
       let product = await Product.findOne({
         where: {
