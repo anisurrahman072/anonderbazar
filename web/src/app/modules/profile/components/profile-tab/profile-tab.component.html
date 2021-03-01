@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" *ngIf="user">
     <div class="col-md-12">
         <mat-card>
             <button mat-fab style="float: right" (click)="setValue()" color="primary">
@@ -6,7 +6,7 @@
             </button>
             <mat-card-header class="center imageDiv">
                 <div mat-card-avatar class="example-header-image" *ngIf="imageShow" style="width: 200px;height: 200px;">
-                    <img class="img-circle avatar-img " alt="Avatar Image" src="{{ IMAGE_ENDPOINT + user.avatar }}" />
+                    <img class="img-circle avatar-img " alt="Avatar Image" src="{{ user.avatar ? IMAGE_ENDPOINT + user.avatar : './assets/images/default-avatar.jpg' }}" />
                 </div>
                 <div *ngIf="imageUpload">
                     <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"

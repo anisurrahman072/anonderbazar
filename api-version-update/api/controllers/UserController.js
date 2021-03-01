@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {  pagination} = require('../../libs');
+const {pagination} = require('../../libs');
 const bcrypt = require('bcryptjs');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
@@ -61,12 +61,18 @@ module.exports = {
         .populate('zila_id')
         .populate('division_id');
 
-      if (!isResourceOwner(req.token.userInfo, user)) {
-        return res.status(401).json({
-          success: false,
-          message: 'You are not allowed to access this resource'
-        });
+      const authUser = req.token.userInfo;
+
+      if (authUser.group_id.name === 'customer') {
+        // eslint-disable-next-line eqeqeq
+        if ( !(user && user.id && user.id == authUser.id)){
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
       }
+
       return res.json(200, user);
 
     } catch (error) {
@@ -83,12 +89,17 @@ module.exports = {
     try {
       const user = await User.findOne({
         id: req.param('id')
-      });
-      if (!isResourceOwner(req.token.userInfo, user)) {
-        return res.status(401).json({
-          success: false,
-          message: 'You are not allowed to access this resource'
-        });
+      }).populate('group_id');
+
+      const authUser = req.token.userInfo;
+      if (authUser.group_id.name === 'customer') {
+        // eslint-disable-next-line eqeqeq
+        if ( !(user && user.id && user.id == authUser.id)){
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
       }
       if (!isResourceOwnerWarehouse(req.token.userInfo, user)) {
         return res.status(401).json({
@@ -210,23 +221,26 @@ module.exports = {
   //Model models/User.js
   update: async (req, res) => {
     try {
-      const user = User.findOne({
+      let user = await User.findOne({
         id: req.param('id')
-      });
+      }).populate('group_id');
+
       if (!user) {
         return res.badRequest('User not found');
       }
+
+      const authUser = req.token.userInfo;
       // eslint-disable-next-line eqeqeq
-      if (user.group_id == 4) {
-        if (['admin', 'owner'].indexOf(req.token.userInfo.group_id.name) === -1) {
+      if (user.group_id.name === 'owner') {
+        if (['admin', 'owner'].indexOf(authUser.group_id.name) === -1) {
           return res.status(401).json({
             success: false,
             message: 'You are not allowed to access this resource'
           });
         }
-        if (['owner'].indexOf(req.token.userInfo.group_id.name) !== -1) {
+        if (['owner'].indexOf(authUser.group_id.name) !== -1) {
           // eslint-disable-next-line eqeqeq
-          if (user.warehouse_id != req.token.userInfo.warehouse_id.id) {
+          if (user.warehouse_id != authUser.warehouse_id.id) {
             return res.status(401).json({
               success: false,
               message: 'You are not allowed to access this resource'
@@ -234,11 +248,15 @@ module.exports = {
           }
         }
       } else {
-        if(!isResourceOwner(req.token.userInfo, user)){
-          return res.status(401).json({
-            success: false,
-            message: 'You are not allowed to access this resource'
-          });
+
+        if (authUser.group_id.name === 'customer') {
+          // eslint-disable-next-line eqeqeq
+          if ( !(user && user.id && user.id == authUser.id)){
+            return res.status(401).json({
+              success: false,
+              message: 'You are not allowed to access this resource'
+            });
+          }
         }
       }
 
@@ -251,7 +269,7 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
-      await User.update({id: user.id}).set(req.body);
+      user = await User.updateOne({id: user.id}).set(req.body);
 
       return res.json(200, {
         user: user,
@@ -467,11 +485,15 @@ module.exports = {
         return res.badRequest('User not found');
       }
 
-      if(!isResourceOwner(req.token.userInfo, user)){
-        return res.status(401).json({
-          success: false,
-          message: 'You are not allowed to access this resource'
-        });
+      const authUser = req.token.userInfo;
+      if (authUser.group_id.name === 'customer') {
+        // eslint-disable-next-line eqeqeq
+        if (user && user.id && user.id != authUser.id) {
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
       }
 
       let _pagination = pagination(req.query);
