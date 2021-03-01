@@ -8,12 +8,14 @@
 module.exports = {
   //Method called for deleting a product Image
   //Model models/ProductImage.js
-  destroy: function (req, res) {
-    ProductImage.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, productImage) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(productImage[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const productImage = await ProductImage.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(productImage);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
   },
 };
 
