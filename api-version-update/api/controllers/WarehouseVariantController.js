@@ -10,14 +10,14 @@ const {imageUploadConfig} = require('../../libs/helper');
 module.exports = {
   //Method called for deleting a warehouse variant data
   //Model models/WarehouseVariant.js
-  destroy: function(req, res) {
-    WarehouseVariant.update(
-      { id: req.param('id') },
-      { deletedAt: new Date() }
-    ).exec((err, user) => {
-      if (err) {return res.json(err, 400);}
+  destroy: async (req, res) => {
+    try {
+      const user = await WarehouseVariant.update( { id: req.param('id') }, { deletedAt: new Date() }).fetch();
       return res.json(user[0]);
-    });
+    }
+    catch (error){
+      return res.json(err, 400);
+    }
   },
   //Method called for creating a warehouse variant data
   //Model models/WarehouseVariant.js
@@ -46,33 +46,17 @@ module.exports = {
 
   //Method called for updating a warehouse variant data
   //Model models/WarehouseVariant.js
-  update: function(req, res) {
-    if (req.body.hasImage === 'true') {
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, { err: err });
-          }
-
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {return res.serverError(err);}
-          req.body.image = '/' + newPath;
-          WarehouseVariant.update({ id: req.param('id') }, req.body).exec(
-            (err, warehouseVariant) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(200, warehouseVariant);
-            }
-          );
-        }
-      );
-    } else {
-      WarehouseVariant.update({ id: req.param('id') }, req.body).exec((
-        err,
-        warehouseVariant
-      ) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(200, warehouseVariant);
-      });
+  update: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        const uploaded = await imageUploadConfig(req.file('image'));
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.image = '/' + newPath;
+      }
+      const warehouseVariant = await WarehouseVariant.update({ id: req.param('id') }, req.body).fetch();
+      return res.json(200, warehouseVariant);
+    }catch (error){
+      return res.json(error.status, {message: '', error, success: false});
     }
   }
 };
