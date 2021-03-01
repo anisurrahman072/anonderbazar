@@ -194,16 +194,9 @@ export class WarehouseCreateComponent implements OnInit {
             formData.append('hasImage', 'false');
 
         }
-        console.log('Aniss 3rd');
-
         this.userService.insert(formData)
             .subscribe((result => {
-                    console.log('Aniss 4th');
-
-                    console.log('userService.insert-result', result)
                     if (result) {
-                        console.log('Aniss 5th');
-
                         this.submitting = false;
                         this._notification.create(
                             'success',
