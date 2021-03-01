@@ -120,28 +120,27 @@ module.exports = {
   },
   //Method called for getting cart items data by cart id
   //Model models/CartItem.js
-  bycartid: function (req, res) {
-    CartItem.findOne({id: req.param('id')})
-      .populate('product_id')
-      .populate('cart_id')
-      .populate('cart_item_variants', {deletedAt: null})
-      .then((cartItem) => {
-        let cartItemVariantData = CartItemVariant.find({cart_item_id: cartItem.id})
-          .populate('warehouse_variant_id')
-          .populate('product_variant_id')
-          .populate('variant_id')
-          .then((cartItemVariant) => {
-            return cartItemVariant;
-          });
-        return [cartItem, cartItemVariantData];
-      })
-      .spread((cartItem, cartItemVariants) => {
-        let newJson = {};
-        newJson.cartItem = cartItem;
-        newJson.cartItem.cart_item_variants = cartItemVariants;
-        return res.json(newJson);
-      });
+  bycartid: async (req, res) => {
+    try {
+      const cartItem = await CartItem.findOne({id: req.param('id')})
+        .populate('product_id')
+        .populate('cart_id')
+        .populate('cart_item_variants', {deletedAt: null});
+      const cartItemVariantData = await CartItemVariant.find({cart_item_id: cartItem.id})
+        .populate('warehouse_variant_id')
+        .populate('product_variant_id')
+        .populate('variant_id');
+
+      let newJson = {};
+      newJson.cartItem = cartItem;
+      newJson.cartItem.cart_item_variants = cartItemVariantData;
+      return res.json(newJson);
+    }
+    catch (error){
+      return res.json(error.status, {message: '', error, success: false});
+    }
   },
+
   //Method called for creating cart item data
   //Model models/CartItem.js
   create: async function (req, res) {
