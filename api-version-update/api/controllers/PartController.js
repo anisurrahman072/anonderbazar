@@ -1,13 +1,12 @@
-const {uploadImgAsync} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
-
 /**
- * DesignCategoryController
+ * PartController
  *
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-let asyncForEach = require('../../libs').asyncForEach;
+const {uploadImages} = require('../../libs/helper');
+const {imageUploadConfig} = require('../../libs/helper');
+
 
 module.exports = {
   //Method called for creating a product part data
@@ -74,7 +73,7 @@ module.exports = {
   destroy: async (req, res) => {
     try {
       const part = await Part.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.json(part[0]);
+      return res.json(part);
     } catch (error) {
       console.log(error);
       res.json(error.status, {error: error});
