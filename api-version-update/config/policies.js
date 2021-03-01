@@ -113,6 +113,19 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
+  EventPriceController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  EventPricesController: {
+    '*': false,
+    'index': true,
+    'getPriceByIds': true
+  },
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
@@ -210,4 +223,33 @@ module.exports.policies = {
   UserController: {
     '*': true
   },
+  WarehouseController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'getAll': ['isAuthorized'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+    'create':  ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  VariantController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create':  ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  WarehouseVariantController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create':  ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  WarehouseVariantsController: {
+    '*': false,
+    'getAll': true
+  }
 };

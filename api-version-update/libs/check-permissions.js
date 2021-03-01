@@ -7,5 +7,12 @@ module.exports = {
     }
     return true;
 
+  },
+  isResourceOwnerWarehouse: function(authUser, resource){
+    if (authUser.group_id.name === 'owner') {
+      // eslint-disable-next-line eqeqeq
+      return (resource && resource.warehouse_id && resource.warehouse_id == authUser.warehouse_id);
+    }
+    return true;
   }
 };
