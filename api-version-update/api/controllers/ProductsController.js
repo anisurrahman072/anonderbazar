@@ -118,21 +118,21 @@ module.exports = {
   //Method called for getting a product
   //Model models/Product.js
   findOne: async (req, res) => {
-    console.log(res);
+
     try {
       let product = await Product.findOne({
         where: {
-          id: req.params._idwms
+          id: req.params._id
         }
       });
 
       res.status(200).json({
         success: true,
-        message: 'read single farmer',
+        message: 'read single product',
         data: product ? product : {}
       });
     } catch (error) {
-      let message = 'error in read single farmer';
+      let message = 'error in read product';
       res.status(400).json({
         success: false,
         message,
@@ -210,9 +210,8 @@ module.exports = {
       _where.deletedAt = null;
 
       if (req.query.filters) {
+        console.log('filter', req.query.filters);
         let filters = JSON.parse(req.query.filters);
-
-        console.log('filters', filters);
 
         if (filters.searchTerm) {
           _where.or = [
@@ -260,8 +259,6 @@ module.exports = {
         }
       }
 
-
-      /* Sort................ */
       let _sort = [];
       if (req.query.sortTitle) {
         _sort.push({[req.query.sortTitle]: parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC'});
@@ -311,7 +308,6 @@ module.exports = {
     try {
       let _pagination = pagination(req.query);
 
-      console.log('getBySearchTerm-req.query', req.query);
       let _where = {};
       _where.deletedAt = null;
 
@@ -323,8 +319,7 @@ module.exports = {
 
       let productTotal = await Product.count(_where);
       let products = await Product.find(
-        {where: _where},
-        {select: ['id', 'name', 'subcategory_id']}
+        {where: _where}
       )
         .populate('subcategory_id')
         .paginate({page: _pagination._page, limit: _pagination._limit});
@@ -356,6 +351,7 @@ module.exports = {
         data: _categories.concat(_products)
       });
     } catch (error) {
+      console.log(error);
       return res.status(400).json({
         success: false,
         message: 'error in search product',
