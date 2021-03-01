@@ -10,7 +10,7 @@ module.exports = {
 
   //Method called for deleting cart item data
   //Model models/CartItem.js
-  destroy: async function (req, res) {
+  destroy: async (req, res) => {
     if (!req.param('id')) {
       return res.badRequest('Invalid data Provided');
     }
@@ -81,7 +81,7 @@ module.exports = {
   },
   //Method called for deleting cart item data
   //Model models/CartItem.js
-  destroyFromController: async function (req) {
+  destroyFromController: async (req) => {
     try {
       return res.json({message: 'Not Authorized'});
     } catch (error) {
@@ -120,7 +120,7 @@ module.exports = {
   },
   //Method called for getting cart items data by cart id
   //Model models/CartItem.js
-  bycartid: function (req, res) {
+  bycartid: (req, res) => {
     CartItem.findOne({id: req.param('id')})
       .populate('product_id')
       .populate('cart_id')
@@ -144,7 +144,7 @@ module.exports = {
   },
   //Method called for creating cart item data
   //Model models/CartItem.js
-  create: async function (req, res) {
+  create: async (req, res) => {
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
@@ -282,7 +282,7 @@ module.exports = {
   },
   //Method called for updating cart item data
   //Model models/CartItem.js
-  update: async function (req, res) {
+  update: async (req, res) => {
 
     if (!req.body.action_name) {
       return res.badRequest('Invalid Request!');
