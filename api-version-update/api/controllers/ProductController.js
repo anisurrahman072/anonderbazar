@@ -1,9 +1,8 @@
 const {
   asyncForEach,
-  initLogPlaceholder,
 } = require('../../libs');
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
-
+const Promise = require('bluebird');
 
 module.exports = {
 
@@ -18,34 +17,40 @@ module.exports = {
       });
       return res.json(product);
     } catch (error) {
-      return res.json(error, 400);
+      return res.status(400).json(error);
     }
   },
   //Method called for finding product max price data
   //Model models/Product.js
-  maxPrice: function (req, res) {
-    Product.query(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`, (
-      err,
-      rawResult
-    ) => {
-      if (err) {
-        return res.serverError(err);
+  maxPrice: async (req, res) => {
+    try {
+      const nativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      const rawResult = await nativeQuery(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`);
+      console.log(rawResult.rows[0]);
+
+      if (rawResult && rawResult.rows ) {
+        return res.json(rawResult.rows[0]);
       }
-      return res.ok(rawResult[0]);
-    });
+      return res.status(400).json({success: false});
+    } catch (error) {
+      return res.status(400).json(error);
+    }
   },
   //Method called for finding product min price data
   //Model models/Product.js
-  minPrice: function (req, res) {
-    Product.query(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`, (
-      err,
-      rawResult
-    ) => {
-      if (err) {
-        return res.serverError(err);
+  minPrice: async (req, res) => {
+    try {
+      const nativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      const rawResult = await nativeQuery(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`);
+      console.log(rawResult.rows);
+      if (rawResult && rawResult.rows ) {
+        return res.json(rawResult.rows[0]);
       }
-      return res.ok(rawResult[0]);
-    });
+      return res.status(400).json({success: false});
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+
   },
   //Method called for creating a product data
   //Model models/Product.js,models/ProductImage.js

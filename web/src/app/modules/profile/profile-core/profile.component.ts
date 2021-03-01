@@ -152,6 +152,13 @@ export class ProfileComponent implements OnInit {
         this.paymentAddressService.getPaymentaddressWithoutOrderid(this.authService.getCurrentUserId()).subscribe(result => {
             this.addresses = result;
         });
+
+        this.currentUser$.subscribe((res)=> {
+            console.log(' this.currentUser$.subscribe', res);
+            this.user = res;
+        }, (error)=>{
+            console.log(' this.currentUser$.subscribe', error);
+        })
     }
 
     // Event for showing the profile image

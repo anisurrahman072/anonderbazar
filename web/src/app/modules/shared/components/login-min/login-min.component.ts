@@ -31,7 +31,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'Female', value: 'female'},
         {label: 'Other', value: 'third-gender'}
     ];
-    foods = [
+/*    foods = [
         {value: 'steak-0', viewValue: 'Steak'},
         {value: 'pizza-1', viewValue: 'Pizza'},
         {value: 'tacos-2', viewValue: 'Tacos'}
@@ -50,7 +50,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'November', value: '11'},
         {label: 'December', value: '12'},
     ];
-    birthMonth: number;
+    birthMonth: number;*/
 
     isModalShown$: Observable<boolean>;
 
@@ -75,7 +75,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        public loaderService: LoaderService,
+        // public loaderService: LoaderService,
         private loginInfoService: LoginModalService,
         private authService: AuthService,
         private store: Store<fromStore.HomeState>,

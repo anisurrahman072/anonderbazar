@@ -224,7 +224,7 @@ module.exports = {
       user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
       try {
         EmailService.sendWelcomeMailCustomer(user);
-      } catch (er){
+      } catch (er) {
         console.log(er);
       }
 
@@ -257,4 +257,44 @@ module.exports = {
       return res.json(200, {isunique: true});
     }
   },
+
+  //Method called for updating a user password
+  //Model models/User.js
+  userPasswordUpdate: async (req, res) => {
+
+    const authUser = req.token.userInfo;
+
+    let oldPassword = req.body.oldPassword;
+    let newPassword = req.body.newPassword;
+
+    if (!oldPassword || !newPassword) {
+      return res.json(400, {message: 'old password and new password are required'});
+    }
+    try {
+
+      let valid = await comparePasswords(oldPassword, authUser.password);
+      if (!valid) {
+        return res.json(401, {message: 'Wrong Password'});
+      }
+
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const validUpdate = await User.updateOne({id: authUser.id}, {password: newHashedPassword});
+      if (!validUpdate) {
+        return res.json(500, 'There was a problem in processing the request.');
+      }
+
+      return res.json(200, {
+        user: authUser, token: jwToken.issue({id: authUser.id})
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update Password',
+        error
+      });
+    }
+  }
 };

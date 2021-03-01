@@ -15,8 +15,9 @@ export class ProductService {
 
     filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
 
-        const searchTermEncoded = encodeURI(searchTerm);
+        const searchTermEncoded = encodeURIComponent(searchTerm);
 
+        console.log('searchTerm', searchTermEncoded);
         let url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "typeList":[${categoryList}],"categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
         if (isFeatured !== null) {
             url = `${this.EndPoint2}/search?filters={"searchTerm":"${searchTermEncoded}", "approval_status": 2, "featured": ${isFeatured}, "typeList":[${categoryList}], "categoryList":[${subcategoryList}], "brandList":[${brandList}], "warehousesList":[${warehouses}],"subcategoryList":[${subsubcategoryList}], "craftsmanList":[${craftsmanList}], "priceRange":[${priceRange}]}&sortTitle=${sortTitle}&sortTerm=${sortTerm}&limit=500&page=${pageno}`;
