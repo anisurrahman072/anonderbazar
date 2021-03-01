@@ -97,6 +97,17 @@ exports.uploadImages = (imageFile) => {
     });
   });
 };
+exports.comparePasswords = (passwordProvided, userPassword) => {
+  return new Promise((resolve, reject)=> {
+    User.comparePassword(passwordProvided, userPassword, (err, valid) => {
+      if(err){
+        reject(err);
+      } else {
+        resolve(valid);
+      }
+    });
+  });
+};
 exports.uploadImagesWithConfig = (imageFile, customConfig) => {
   let config = imageUploadConfig();
   config = {
