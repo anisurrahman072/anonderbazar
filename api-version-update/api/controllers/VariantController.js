@@ -9,14 +9,14 @@ module.exports = {
   //Model models/Variant.js
   destroy: async (req, res) => {
     try {
-      const user = Variant.update(
+      const user = await Variant.update(
         {
           id: req.param('id')
         },
         {
           deletedAt: new Date()
         }
-      );
+      ).fetch();
       return res.json(user[0]);
     } catch (error) {
       return res.json(error.status, {message: '', error, success: false});
