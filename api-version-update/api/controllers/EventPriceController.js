@@ -14,7 +14,7 @@ module.exports = {
         await EventPrice.findOne(req.params.id)
       );
     } catch (error) {
-      let message = 'Error in Getting the product';
+      let message = 'Error in Getting the event price';
       res.status(400).json({
         success: false,
         message,
@@ -30,7 +30,7 @@ module.exports = {
       return res.json(eventPrice);
     } catch (error) {
       console.log(error);
-      res.json(error.status, {error: error});
+      res.status(error.status).json({error: error});
     }
   }
 };
