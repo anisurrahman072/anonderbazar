@@ -272,7 +272,7 @@ module.exports = {
     }
     try {
 
-      let valid = await User.comparePassword(oldPassword, authUser.password);
+      let valid = await comparePasswords(oldPassword, authUser.password);
       if (!valid) {
         return res.json(401, {message: 'Wrong Password'});
       }
