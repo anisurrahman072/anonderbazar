@@ -126,6 +126,7 @@ module.exports = {
         .populate('product_id')
         .populate('cart_id')
         .populate('cart_item_variants', {deletedAt: null});
+
       const cartItemVariantData = await CartItemVariant.find({cart_item_id: cartItem.id})
         .populate('warehouse_variant_id')
         .populate('product_variant_id')
