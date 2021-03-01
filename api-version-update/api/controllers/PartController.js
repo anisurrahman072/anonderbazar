@@ -12,16 +12,6 @@ module.exports = {
   //Method called for creating a product part data
   //Model models/Part.js
   create: async (req, res) => {
-    async function create(body) {
-      try {
-        const part = await Part.create(body).fetch();
-        return res.json(200, part);
-      } catch (error) {
-        console.log(error);
-        res.json(error.status, {error: error});
-      }
-    }
-
     try {
       if (req.body.hasImage === 'true') {
         const uploadConfig = imageUploadConfig();
@@ -31,10 +21,10 @@ module.exports = {
         }
         let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         req.body.image = '/' + newPath;
-        create(req.body);
       }
 
-      create(req.body);
+      const part = await Part.create(req.body).fetch();
+      return res.json(200, part);
     } catch (error) {
       console.log(error);
       return res.json(error.status, {error: error});
