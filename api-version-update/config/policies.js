@@ -26,9 +26,9 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
-    'create': ['isAuthorized', 'isAdmin'],
-    'update': ['isAuthorized', 'isAdmin'],
-    'destroy': ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
+    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   CartController: {
     '*': false,
