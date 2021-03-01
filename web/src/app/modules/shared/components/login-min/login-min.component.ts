@@ -12,7 +12,6 @@ import {UserService} from '../../../../services';
 import {Subscription} from 'rxjs/Subscription';
 import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
-import {LoaderService} from "../../../../services/ui/loader.service";
 import * as moment from 'moment';
 
 @Component({
@@ -31,26 +30,26 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'Female', value: 'female'},
         {label: 'Other', value: 'third-gender'}
     ];
-/*    foods = [
-        {value: 'steak-0', viewValue: 'Steak'},
-        {value: 'pizza-1', viewValue: 'Pizza'},
-        {value: 'tacos-2', viewValue: 'Tacos'}
-    ];
-    birthMonthOption = [
-        {label: 'January', value: '01'},
-        {label: 'February', value: '02'},
-        {label: 'March', value: '03'},
-        {label: 'April', value: '04'},
-        {label: 'May', value: '05'},
-        {label: 'June', value: '06'},
-        {label: 'July', value: '07'},
-        {label: 'August', value: '08'},
-        {label: 'September', value: '09'},
-        {label: 'October', value: '10'},
-        {label: 'November', value: '11'},
-        {label: 'December', value: '12'},
-    ];
-    birthMonth: number;*/
+    /*    foods = [
+            {value: 'steak-0', viewValue: 'Steak'},
+            {value: 'pizza-1', viewValue: 'Pizza'},
+            {value: 'tacos-2', viewValue: 'Tacos'}
+        ];
+        birthMonthOption = [
+            {label: 'January', value: '01'},
+            {label: 'February', value: '02'},
+            {label: 'March', value: '03'},
+            {label: 'April', value: '04'},
+            {label: 'May', value: '05'},
+            {label: 'June', value: '06'},
+            {label: 'July', value: '07'},
+            {label: 'August', value: '08'},
+            {label: 'September', value: '09'},
+            {label: 'October', value: '10'},
+            {label: 'November', value: '11'},
+            {label: 'December', value: '12'},
+        ];
+        birthMonth: number;*/
 
     isModalShown$: Observable<boolean>;
 
@@ -183,6 +182,9 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
     //Method called for login form submit
     submitForm($event, value) {
+        if (!this.validateForm.valid) {
+            return false;
+        }
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
@@ -275,6 +277,11 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     //Method called for sign up form submit
     submitSignupForm($event, value) {
 
+        console.log('this.validateSignUpForm', this.validateSignUpForm);
+
+        if (!this.validateSignUpForm.valid) {
+            return false;
+        }
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }

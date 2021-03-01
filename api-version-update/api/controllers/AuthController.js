@@ -147,7 +147,9 @@ module.exports = {
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
       }
+
       const valid = await comparePasswords(password, user.password);
+
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
       }
@@ -212,6 +214,26 @@ module.exports = {
       if (req.body && req.body.dob === '') {
         req.body.dob = null;
       }
+      if (!req.body.username) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid Request',
+
+        });
+      }
+
+      const username = req.body.username;
+      let foundUserCount = await User.count().where({
+        username: username
+      });
+
+      if (foundUserCount > 0) {
+        return res.status(422).json({
+          success: false,
+          message: 'User already exists',
+        });
+      }
+
       let user = await User.create(req.body).fetch();
       let cart = await Cart.create({
         user_id: user.id,
@@ -231,12 +253,21 @@ module.exports = {
       let data = Object.assign({}, cart);
       data.cart_items = [];
 
-      return res.json(200, {user: user, cart: data, token: jwToken.issue({id: user.id})});
+      return res.json(200, {
+        user: user,
+        cart: data,
+        token: jwToken.issue({
+          id: user.id,
+          group_id: user.group_id.name,
+          userInfo: user,
+          warehouse: user.warehouse_id
+        })
+      });
 
     } catch (error) {
       return res.status(400).json({
         success: false,
-        message: 'error in user registration',
+        message: 'error in user signup',
         error
       });
     }
