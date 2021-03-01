@@ -29,6 +29,7 @@ export class WarehouseCreateComponent implements OnInit {
     divisionSearchOptions = [];
     zilaSearchOptions: any;
     upazilaSearchOptions: any;
+    submitting: boolean = false;
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -106,6 +107,7 @@ export class WarehouseCreateComponent implements OnInit {
 
     //Event method for submitting the form
     submitForm = ($event, value) => {
+        this.submitting = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -143,11 +145,14 @@ export class WarehouseCreateComponent implements OnInit {
 
                     formData.append('invoice_footer', value.invoice_footer);
                     this.warehouseService.insert(formData).subscribe(result => {
+                        console.log('Aniss 2nd');
                         if (result.id) {
                             this.userInsert(value, result);
                         }
+                        this.submitting = false;
                     });
                 } else {
+                    this.submitting = false;
                     this._notification.create(
                         'error',
                         'User already exists',
@@ -189,10 +194,17 @@ export class WarehouseCreateComponent implements OnInit {
             formData.append('hasImage', 'false');
 
         }
+        console.log('Aniss 3rd');
+
         this.userService.insert(formData)
             .subscribe((result => {
+                    console.log('Aniss 4th');
+
                     console.log('userService.insert-result', result)
                     if (result) {
+                        console.log('Aniss 5th');
+
+                        this.submitting = false;
                         this._notification.create(
                             'success',
                             'New Shop has been successfully created!',
@@ -201,11 +213,13 @@ export class WarehouseCreateComponent implements OnInit {
                         this.router.navigate(['/dashboard/warehouse/details/', warehouse.id]);
 
                     } else {
+                        this.submitting = false;
                         this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
 
                     }
                 }),
                 (err => {
+                    this.submitting = false;
                     this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
                 })
             );
