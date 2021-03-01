@@ -1,5 +1,5 @@
 /**
- * SuborderController
+ * SubordersController
  *
  * @description :: Server-side logic for managing suborders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
@@ -86,7 +86,7 @@ module.exports = {
       const totalSuborderRaw = await SuborderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
       console.log('totalSuborderRaw', totalSuborderRaw);
 
-      if (totalSuborderRaw && totalSuborderRaw.rows &&  totalSuborderRaw.rows.length > 0) {
+      if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
         const totalSuborder = totalSuborderRaw.rows[0].totalCount;
 
         _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
@@ -282,17 +282,13 @@ module.exports = {
         _where.status = req.query.statusSearchValue;
       }
 
-      /* WHERE condition..........END................*/
-
       /* sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
-
-
-      /*.....SORT END..............................*/
-
 
       let totalSuborder = await Suborder.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
@@ -303,10 +299,16 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populateAll();
+        .populate('warehouse_id');
+
       await asyncForEach(suborders, async suborder => {
-        suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}}).populateAll();
-        suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}}).populateAll();
+        suborder.order = await Order.findOne({where: {id: suborder.product_order_id.id}})
+          .populate('user_id')
+          .populate('payment')
+          .populate('shipping_address');
+
+        suborder.items = await SuborderItem.find({where: {product_suborder_id: suborder.id}})
+          .populate('product_id');
 
         let totalPrice = 0;
         await asyncForEach(suborder.items, async item => {
@@ -315,73 +317,73 @@ module.exports = {
           item.pending = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 1
+              status: SUB_ORDER_STATUSES.pending
             }
           }).populate('changed_by');
           item.processing = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 2
+              status: SUB_ORDER_STATUSES.processing
             }
           }).populate('changed_by');
           item.prepared = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 3
+              status: SUB_ORDER_STATUSES.prepared
             }
           }).populate('changed_by');
           item.departure = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 4
+              status: SUB_ORDER_STATUSES.departure
             }
           }).populate('changed_by');
           item.pickup = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 5
+              status: SUB_ORDER_STATUSES.pickup
             }
           }).populate('changed_by');
           item.in_the_air = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 6
+              status: SUB_ORDER_STATUSES.in_the_air
             }
           }).populate('changed_by');
           item.landed = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 7
+              status: SUB_ORDER_STATUSES.landed
             }
           }).populate('changed_by');
           item.arrival_at_warehouse = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 8
+              status: SUB_ORDER_STATUSES.arrived_at_warehouse
             }
           }).populate('changed_by');
           item.shipped = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 9
+              status: SUB_ORDER_STATUSES.shipped
             }
           }).populate('changed_by');
           item.out_for_delivery = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 10
+              status: SUB_ORDER_STATUSES.out_for_delivery
             }
           }).populate('changed_by');
           item.delivered = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 11
+              status: SUB_ORDER_STATUSES.delivered
             }
           }).populate('changed_by');
           item.canceled = await StatusChange.findOne({
             where: {
               suborder_id: suborder.id,
-              status: 12
+              status: SUB_ORDER_STATUSES.canceled
             }
           }).populate('changed_by');
 
@@ -402,12 +404,12 @@ module.exports = {
         message: 'Get All Suborder with pagination',
         data: suborders
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

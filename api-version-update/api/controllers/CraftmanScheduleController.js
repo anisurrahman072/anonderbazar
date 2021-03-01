@@ -7,12 +7,15 @@
 
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    CraftmanSchedule.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, craftmanSchedule) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(craftmanSchedule[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const craftmanSchedule = await CraftmanSchedule.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, craftmanSchedule);
+    } catch (error) {
+      console.log(error);
+      res.json(400, {success: false, message: 'Something went wrong!', error});
+    }
   },
 };
+
 

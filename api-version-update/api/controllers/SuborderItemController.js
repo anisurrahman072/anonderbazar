@@ -5,7 +5,6 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {
-  initLogPlaceholder,
   pagination
 } = require('../../libs');
 
@@ -13,10 +12,9 @@ const {
 module.exports = {
   // destroy a row
   destroy: function (req, res) {
-    SuborderItem.update(
+    SuborderItem.updateOne(
       {id: req.param('id')},
-      {deletedAt: new Date()}
-    ).exec((err, user) => {
+    ).set({deletedAt: new Date()}).exec((err, user) => {
       if (err) {
         return res.json(err, 400);
       }
@@ -55,9 +53,11 @@ module.exports = {
         _where.date = req.query.date;
       }
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.product_total_price) {
-        _sort.product_total_price = req.query.product_total_price;
+        _sort.push({product_total_price: req.query.product_total_price});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
       /*.....SORT END..............................*/
 

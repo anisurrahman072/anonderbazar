@@ -4,16 +4,13 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const { Helper } = require('../../libs');
-
+const {pagination} = require('../../libs');
+const {Helper} = require('../../libs');
 
 //Method called for getting all order products data
 //Model models/Product.js
 exports.index = async (req, res) => {
   try {
-    // initLogPlaceholder(req, `${_model}List`);
-
-    console.log('--- lsdjflsjdfj -------------------- ----');
 
     const _pagination = Helper.pagination(req.query);
 
@@ -37,18 +34,23 @@ exports.index = async (req, res) => {
     if (req.query.search_term) {
 
       _where.or = [
-        { name: { like: `%${req.query.search_term}%` } }
+        {name: {like: `%${req.query.search_term}%`}}
       ];
     }
     /* WHERE condition..........END................ */
 
     /* sort................ */
-    const _sort = {};
+    const _sort = [];
     if (req.query.sortName) {
-      _sort.name = req.query.sortName;
+      _sort.push({name: req.query.sortName});
     }
     if (req.query.sortPrice) {
-      _sort.price = req.query.sortPrice;
+      _sort.push({price: req.query.sortPrice});
+    }
+    if (_sort.length === 0) {
+      _sort.push({
+        createdAt: 'DESC'
+      });
     }
     /* .....SORT END.............................. */
 
@@ -84,14 +86,14 @@ exports.index = async (req, res) => {
     const message = 'Error in Get All products with pagination';
     res.status(400).json({
       success: false,
-      message
+      message,
+      error
     });
   }
 };
 
 exports.create = async (req, res) => {
   try {
-    initLogPlaceholder(req, 'productList');
 
     const _pagination = pagination(req.query);
 
@@ -115,18 +117,23 @@ exports.create = async (req, res) => {
     if (req.query.search_term) {
 
       _where.or = [
-        { name: { like: `%${req.query.search_term}%` } }
+        {name: {like: `%${req.query.search_term}%`}}
       ];
     }
     /* WHERE condition..........END................ */
 
     /* sort................ */
-    const _sort = {};
+    const _sort = [];
     if (req.query.sortName) {
-      _sort.name = req.query.sortName;
+      _sort.push({name: req.query.sortName});
     }
     if (req.query.sortPrice) {
-      _sort.price = req.query.sortPrice;
+      _sort.push({price: req.query.sortPrice});
+    }
+    if (_sort.length === 0) {
+      _sort.push({
+        createdAt: 'DESC'
+      });
     }
     /* .....SORT END.............................. */
 
@@ -163,7 +170,8 @@ exports.create = async (req, res) => {
     const message = 'Error in Get All products with pagination';
     res.status(400).json({
       success: false,
-      message
+      message,
+      error
     });
   }
 };

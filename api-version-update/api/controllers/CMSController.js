@@ -1,14 +1,21 @@
+/**
+ * CMSController
+ *
+ * @description :: Server-side logic for managing categories
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   // destroy a row
-  destroy: (req, res) => {
-    CMS.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, cms) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(cms[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const cms = await CMS.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(cms);
+    } catch (error){
+      console.log(error);
+      res.json(400, {message: 'Something went wrong!', error});
+    }
   },
   //Method called for creating offer data
   //Model models/CMS.js
@@ -16,16 +23,16 @@ module.exports = {
     try {
 
       if (req.body.hasImage === 'true') {
-        let body;
+        let body = req.body;
         req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          // maxBytes: 10000000;
+
           if (err) {return res.serverError(err);}
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
+
           body.image = '/' + newPath;
           let data_value = [];
 
-          if (req.body.subsection === 'OFFER') {
+          if (body.subsection === 'OFFER') {
             data_value = [
               {
                 title: req.body.title,
@@ -51,13 +58,13 @@ module.exports = {
           let _payload = {
             page: 'POST',
             section: 'HOME',
-            sub_section: req.body.subsection,
+            sub_section: body.subsection,
             data_value: data_value
           };
 
           if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-          let data = await CMS.create(_payload);
+          let data = await CMS.create(_payload).fetch();
           return res.json({
             success: true,
             message: 'cms updated successfully',
@@ -66,9 +73,7 @@ module.exports = {
         });
 
       } else {
-        let data_value = [];
-
-        data_value = [
+        let data_value =  [
           {
             title: req.body.title,
             description: req.body.description,
@@ -86,7 +91,7 @@ module.exports = {
 
         if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-        let data = await CMS.create(_payload);
+        let data = await CMS.create(_payload).fetch();
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -95,7 +100,7 @@ module.exports = {
       }
 
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -108,14 +113,14 @@ module.exports = {
     try {
       if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-      let data = await CMS.update({id: req.body.id}, req.body);
+      let data = await CMS.updateOne({id: req.body.id}).set(req.body);
       return res.json({
         success: true,
         message: 'cms updated successfully',
         data
       });
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -128,12 +133,17 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        let body;
+        let body = req.body;
         req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          // maxBytes: 10000000;
+
           if (err) {return res.serverError(err);}
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
+
+          if (files.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+
+          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+
           body.image = '/' + newPath;
           let data_value = [];
 
@@ -167,7 +177,7 @@ module.exports = {
           };
 
           if (req.body.user_id) {_payload.user_id = req.body.user_id;}
-          let data = await CMS.update({id: req.body.id}, _payload);
+          let data = await CMS.updateOne({id: req.body.id}).set(_payload);
           return res.json({
             success: true,
             message: 'cms updated successfully',
@@ -207,7 +217,7 @@ module.exports = {
 
         if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-        let data = await CMS.update({id: req.body.id}, _payload);
+        let data = await CMS.updateOne({id: req.body.id}).set(_payload);
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -215,7 +225,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -227,17 +237,17 @@ module.exports = {
   //Model models/CMS.js
   customPostInsert: async (req, res) => {
     try {
-      if (req.body.hasImage == 'true') {
+      if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(),
 
           async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
-
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
             const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) {return res.serverError(err);}
-
             let data_value = [
               {
                 title: req.body.title,
@@ -256,7 +266,7 @@ module.exports = {
 
             if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-            let data = await CMS.create(_payload);
+            let data = await CMS.create(_payload).fetch();
             if (data) {
               return res.json({
                 success: true,
@@ -264,7 +274,7 @@ module.exports = {
                 data: data
               });
             } else {
-              return res.json({
+              return res.json(400, {
                 success: false,
                 message: 'cms updated failed'
               });
@@ -288,7 +298,7 @@ module.exports = {
 
         if (req.body.user_id) {_payload.user_id = req.body.user_id;}
 
-        let data = await CMS.create(_payload);
+        let data = await CMS.create(_payload).fetch();
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -296,7 +306,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -318,7 +328,9 @@ module.exports = {
             if (err) {
               return res.json(err.status, {err: err});
             }
-            if (err) {return res.serverError(err);}
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
 
             const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
@@ -338,7 +350,7 @@ module.exports = {
             cms.data_value = data_value;
 
             if (req.body.user_id) {cms.user_id = req.body.user_id;}
-            let data = await CMS.update({id: cms.id}, cms);
+            let data = await CMS.updateOne({id: cms.id}).set(cms);
 
             if (data) {
               return res.json({
@@ -347,7 +359,7 @@ module.exports = {
                 data: data
               });
             } else {
-              return res.json({
+              return res.json(400, {
                 success: false,
                 message: 'cms updated failed'
               });
@@ -371,7 +383,7 @@ module.exports = {
         cms.data_value = data_value;
         if (req.body.user_id) {cms.user_id = req.body.user_id;}
 
-        let data = await CMS.update({id: cms.id}, cms);
+        let data = await CMS.updateOne({id: cms.id}).set(cms);
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -380,7 +392,7 @@ module.exports = {
       }
     } catch (error) {
       console.log('customPostUpdate-error', error);
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -394,15 +406,17 @@ module.exports = {
     try {
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      if (req.body.hasImage == 'true') {
+      if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(),
 
           async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
             }
-            var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) {return res.serverError(err);}
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,
@@ -417,7 +431,8 @@ module.exports = {
             };
             cms.data_value.push(_payload);
 
-            let data = await CMS.update({id: cms.id}, cms);
+            let data = await CMS.updateOne({id: cms.id}).set(cms);
+
             if (data) {
               return res.json({
                 success: true,
@@ -425,7 +440,7 @@ module.exports = {
                 data: _payload
               });
             } else {
-              return res.json({
+              return res.json(400, {
                 success: false,
                 message: 'cms updated failed'
               });
@@ -436,10 +451,10 @@ module.exports = {
         cms.data_value.push({
           title: req.body.title,
           description: req.body.description,
-          image: '/images/' + newPath
+          image: null
         });
 
-        let data = await CMS.update({id: cms.id}, cms);
+        let data = await CMS.updateOne({id: cms.id}).set(cms);
         return res.json({
           success: true,
           message: 'cms updated successfully',
@@ -447,7 +462,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -466,8 +481,10 @@ module.exports = {
             if (err) {
               return res.json(err.status, {err: err});
             }
-            var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (err) {return res.serverError(err);}
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
             cms.data_value[req.body.dataValueId] = {
               title: req.body.title,
@@ -475,7 +492,7 @@ module.exports = {
               image: '/' + newPath
             };
 
-            let data = await CMS.update({id: cms.id}, cms);
+            let data = await CMS.updateOne({id: cms.id}).set(cms);
             if (data) {
               return res.json({
                 success: true,
@@ -483,7 +500,7 @@ module.exports = {
                 data: cms.data_value[req.body.dataValueId]
               });
             } else {
-              return res.json({
+              return res.json(400, {
                 success: false,
                 message: 'cms updated failed'
               });
@@ -505,11 +522,11 @@ module.exports = {
             data: cms.data_value[req.body.dataValueId]
           });
         } else {
-          return res.json({success: false, message: 'cms updated failed'});
+          return res.json(400, {success: false, message: 'cms updated failed'});
         }
       }
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error
@@ -524,7 +541,7 @@ module.exports = {
 
       cms.data_value.splice(req.body.carouselId, 1);
 
-      let data = await CMS.update({id: cms.id}, cms);
+      let data = await CMS.updateOne({id: cms.id}).set(cms);
 
       return res.json({
         success: true,
@@ -532,7 +549,7 @@ module.exports = {
         data
       });
     } catch (error) {
-      res.json({
+      res.json(400, {
         success: false,
         message: 'Error Occurred',
         error

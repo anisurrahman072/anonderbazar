@@ -1,12 +1,16 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+/**
+ * CraftmanPricesController
+ *
+ * @description :: Server-side logic for managing categories
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
+const {  pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all craftsman price list data
   //Model models/CraftmanPrice.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'CraftmanPrice ');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -71,9 +75,9 @@ module.exports = {
       /* WHERE condition..........END................*/
 
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
 
       /*.....SORT END..............................*/
@@ -110,7 +114,8 @@ module.exports = {
       let message = 'Error in Get All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

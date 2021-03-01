@@ -4,14 +4,12 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+const {asyncForEach, pagination} = require('../../libs');
 module.exports = {
   //Method called for getting all product type categories
   //Model models/Category.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'getAll type category');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .............START ...............................*/
@@ -33,12 +31,12 @@ module.exports = {
 
       /*  WHERE condition ...................END ...........*/
       /*sort.....................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
       if (req.query.sortPrice) {
-        _sort.price = req.query.sortPrice;
+        _sort.push({price: req.query.sortPrice});
       }
       /*...........SORT END .................*/
       let totalCategory = await Category.count().where(_where);
@@ -49,7 +47,7 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort,
-      }).populateAll();
+      }).populate('offer_id');
 
       res.status(200).json({
         success: true,
@@ -65,6 +63,7 @@ module.exports = {
       res.status(400).json({
         success: false,
         message,
+        error
       });
     }
   },
@@ -72,7 +71,7 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'type category  withsubcategory');
+
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .............START ...............................*/
@@ -83,9 +82,9 @@ module.exports = {
 
       /*  WHERE condition ...................END ...........*/
       /*sort.....................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
 
       let totalCategory = await Category.count().where(_where);

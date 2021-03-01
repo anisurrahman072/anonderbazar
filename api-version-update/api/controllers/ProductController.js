@@ -11,7 +11,7 @@ module.exports = {
   //Model models/Product.js
   destroy: async (req, res) => {
     try {
-      const product = await Product.update({
+      const product = await Product.updateOne({
         id: req.param('id')
       }).set({
         deletedAt: new Date()
@@ -147,14 +147,14 @@ module.exports = {
           body.image = '/' + newPath;
         } catch (err) {
           console.log('err', err);
-          return res.json(err.status, {err: err});
+          return res.status(400).json(err.status, {err: err});
         }
       }
       let product = await Product.update({id: req.param('id')}, body).fetch();
       return res.json(200, product);
     } catch (err) {
       console.log(err);
-      res.json(400, {message: 'Something went wrong!'});
+      res.json(400, {message: 'Something went wrong!', err});
     }
   },
 
@@ -270,7 +270,7 @@ module.exports = {
   //Method called for getting a product available date
   //Model models/Product.js
   getAvailableDate: async function (req, res) {
-    initLogPlaceholder(req, 'getAvailableDate');
+
     try {
       /*      function randomDate(start, end) {
         return new Date(
