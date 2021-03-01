@@ -9,14 +9,18 @@
 module.exports = {
 
   // destroy a row
-  destroy: function (req, res) {
-    FavouriteProduct.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec((err, favouriteProduct) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(favouriteProduct[0]);
+  destroy: async (req, res) => {
+    try {
+      const favouriteProduct = await FavouriteProduct.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(favouriteProduct);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create product',
+        error
       });
+    }
   },
   byAuthUser: async (req, res) => {
     if (!req.token) {
@@ -37,7 +41,7 @@ module.exports = {
         message: 'Wishlist found',
         data
       });
-    } catch (error){
+    } catch (error) {
       res.status(400).json({
         success: false,
         error
@@ -68,13 +72,23 @@ module.exports = {
       return res.json({status: 400, error: 'no user id provided'});
     }
 
-    let data = await FavouriteProduct.update({user_id: req.param('user_id')}, {deletedAt: new Date()});
+    try {
+      let data = await FavouriteProduct.update({user_id: req.param('user_id')}, {deletedAt: new Date()}).fetch();
 
-    res.json({
-      success: true,
-      message: 'Wishlist delete',
-      data
-    });
+      return res.json({
+        success: true,
+        message: 'Wishlist delete',
+        data
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to create product',
+        error
+      });
+    }
+
   },
 
 };

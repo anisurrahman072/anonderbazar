@@ -77,7 +77,8 @@ module.exports = {
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

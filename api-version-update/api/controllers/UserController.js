@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
+const {  pagination} = require('../../libs');
 const bcrypt = require('bcryptjs');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
@@ -167,8 +167,9 @@ module.exports = {
   updatepassword: async (req, res) => {
 
     if (!req.param('id')) {
-      return res.badRequest('No file was uploaded');
+      return res.badRequest('Invalid request');
     }
+
     try {
       let hash = await bcrypt.hash(req.body.password, 10);
       const user = await User.findOne({
