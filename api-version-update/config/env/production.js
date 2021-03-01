@@ -150,7 +150,7 @@ module.exports = {
     cors: {
       allRoutes: true,
       allowOrigins: '*',
-      allowCredentials: true,
+      allowCredentials: false,
       allowRequestHeaders: 'Content-Type, Authorization'
     },
 
