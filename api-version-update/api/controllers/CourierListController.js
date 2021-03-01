@@ -67,79 +67,64 @@ module.exports = {
   //Method called for updating courier sub order data
   //Model models/CourierList.js
   updateSuborder: async function (req, res) {
-
-    if (req.body.status == '2' || req.body.status == '11' || req.body.status == '12') {
-      var list = await CourierList.update({suborder_id: req.param('id')}, req.body);
-    }
-    if (list) {
-      return res.json(200, list);
-    } else {
+    try {
+      if (req.body.status === '2' || req.body.status === '11' || req.body.status === '12') {
+        let list = await CourierList.update({suborder_id: req.param('id')}, req.body).fetch();
+        return res.json(200, list);
+      }
+    } catch (error){
       return res.status(400).json({success: false});
     }
-
   },
   //Method called for updating courier list status
   //Model models/CourierList.js
-  update: function (req, res) {
-    CourierList.update({id: req.param('id')}, {status: req.body.status}).exec((
-      err,
-      courierlist
-    ) => {
-      if (err) {
-        return res.json(err, 400);
-      }
+  update: async (req, res) => {
+    try {
+      const courierlist = await CourierList.update({id: req.param('id')}, {status: req.body.status}).fetch();
       return res.json(200, courierlist);
-    });
+    } catch (error){
+      return res.json(error, 400);
+    }
   },
   //Method called for creating courier order data
   //Model models/CourierList.js
-  updatecourierlistorder: function (req, res) {
-    CourierListOrder.update({id: req.param('id')}, {status: req.body.status}).exec((
-      err,
-      courierlist
-    ) => {
-      if (err) {
-        return res.json(err, 400);
-      }
+  updatecourierlistorder: async (req, res) => {
+    try {
+      const courierlist = await CourierListOrder.update({id: req.param('id')}, {status: req.body.status}).fetch();
       return res.json(200, courierlist);
-    });
+    } catch (error){
+      return res.json(error, 400);
+    }
   },
   //Method called for updating courier list data
   //Model models/CourierList.js
-  updateCourier: function (req, res) {
-    CourierList.update({id: req.param('id')}, req.body).exec((
-      err,
-      courierlist
-    ) => {
-      if (err) {
-        return res.json(err, 400);
-      }
+  updateCourier: async (req, res) => {
+    try {
+      const courierlist = await CourierList.update({id: req.param('id')}, req.body).fetch();
       return res.json(200, courierlist);
-    });
+    } catch (error){
+      return res.json(error, 400);
+    }
   },
   //Method called for deleting courier list data
   //Model models/CourierList.js
-  destroy: function (req, res) {
-    CourierList.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const user = await CourierList.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      return res.json(200, user[0]);
+    } catch (error){
+      return res.json(error, 400);
+    }
   },
   //Method called for deleting courier order list data
   //Model models/CourierList.js
-  destroyOrder: function (req, res) {
-    CourierListOrder.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
-  }
+  CourierListOrder: async (req, res) => {
+    try {
+      const user = await CourierListOrder.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      return res.json(200, user[0]);
+    } catch (error){
+      return res.json(error, 400);
+    }
+  },
 };
 
