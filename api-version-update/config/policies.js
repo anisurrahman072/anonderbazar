@@ -126,6 +126,41 @@ module.exports.policies = {
     'index': true,
     'getPriceByIds': true
   },
+  EventRegistrationController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'destroy': ['isAuthorized'],
+  },
+  FavouriteProductController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': true,
+    'update': true,
+    'byAuthUser': ['isAuthorized', 'isCustomer'],
+    'byUser': ['isAuthorized'],
+    'deleteAll': ['isAuthorized', 'isOwnerOrAdmin'],
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  GlobalConfigsController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
+  GroupController: {
+    '*': false,
+    'find': true,
+    'findOne': true,
+    'create': ['isAuthorized', 'isAdmin'],
+    'update': ['isAuthorized', 'isAdmin'],
+    'destroy': ['isAuthorized', 'isAdmin'],
+  },
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
@@ -151,6 +186,16 @@ module.exports.policies = {
     'getBySearchTerm': true,
     'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
     'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  ProductCategoriesController: {
+    'getAll': true,
+    'withProductSubcategory': true
+  },
+  ProductVariantController: {
+    '*': false,
+    'byvariant': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin']
   },
   OrderController: {
     '*': ['isAuthorized'],
@@ -222,11 +267,12 @@ module.exports.policies = {
   },
   UserController: {
     '*': false,
+    'updatepassword': true,
     'findOne': ['isAuthorized'],
-    'find':  ['isAuthorized', 'isOwnerOrAdmin'],
-    'create':  ['isAuthorized'],
-    'update':  ['isAuthorized'],
-    'getAuthCustomerData':  ['isAuthorized'],
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'getAuthCustomerData': ['isAuthorized'],
     'authUser': ['isAuthorized', 'isCustomer'],
     'getUserWithDashboardData': ['isAuthorized']
   },
@@ -236,7 +282,7 @@ module.exports.policies = {
     'findOne': true,
     'getAll': ['isAuthorized'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'create':  ['isAuthorized', 'isAdmin'],
+    'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   VariantController: {
@@ -244,7 +290,7 @@ module.exports.policies = {
     'find': true,
     'findOne': true,
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
-    'create':  ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   WarehouseVariantController: {
@@ -252,7 +298,7 @@ module.exports.policies = {
     'find': true,
     'findOne': true,
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
-    'create':  ['isAuthorized', 'isOwnerOrAdmin'],
+    'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   WarehouseVariantsController: {

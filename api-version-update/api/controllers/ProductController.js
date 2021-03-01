@@ -83,7 +83,6 @@ module.exports = {
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          const body = req.body;
           body.image = '/' + newPath;
 
         } catch (err) {

@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const { initLogPlaceholder } = require('../../libs');
+const {initLogPlaceholder} = require('../../libs');
 
 module.exports = {
 
@@ -20,12 +20,13 @@ module.exports = {
         if (data) {
           return res.json(200, data);
         } else {
-          return res.status(400).json({ success: false });
+          return res.status(400).json({success: false});
         }
       } catch (error) {
-        return res.status(400).json({ success: false, error });
+        return res.status(400).json({success: false, error});
       }
     }
+
     if (req.body) {
       req.body.status = 1;
     }
@@ -33,25 +34,24 @@ module.exports = {
   },
   //Method called for updating courier data
   //Model models/Courier.js
-  update: function(req, res) {
-    Courier.update(req.param('id'), req.body).exec((
-      err,
-      courier
-    ) => {
-      if (err) {return res.json(err, 400);}
-      return res.json(200, courier);
-    });
+  update: async (req, res) => {
+    try {
+      const courier = await Courier.updateOne(req.param('id'));
+      return res.json(courier);
+    } catch (error) {
+      return res.json(400, {message: 'wrong', error});
+    }
   },
 
   //Method called for deleting courier data
   //Model models/Courier.js
-  destroy: function(req, res) {
-    Courier.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      (err, user) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(user[0]);
-      }
-    );
-  },
+  destroy: async (req, res) => {
+    try {
+      const courier = await Courier.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(courier);
+    } catch (error) {
+      return res.json(400, {message: 'wrong', error});
+    }
+  }
 };
 
