@@ -51,6 +51,8 @@ module.exports.policies = {
   },
   CategoryController: {
     '*': false,
+    'findOne': true,
+    'find': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'destroyType': ['isAuthorized', 'isAdmin'],
     'destroyProduct': ['isAuthorized', 'isAdmin'],
@@ -72,6 +74,8 @@ module.exports.policies = {
   },
   CMSController: {
     '*': false,
+    'find': true,
+    'findOne': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'offerInsert': ['isAuthorized', 'isAdmin'],
     'offerProductUpdate': ['isAuthorized', 'isAdmin'],
@@ -268,6 +272,7 @@ module.exports.policies = {
   UserController: {
     '*': false,
     'updatepassword': true,
+    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'findOne': ['isAuthorized'],
     'find': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized'],

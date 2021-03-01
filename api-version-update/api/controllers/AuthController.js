@@ -8,6 +8,7 @@
 const bcrypt = require('bcryptjs');
 const jwToken = require('../services/jwToken');
 const EmailService = require('../services/EmailService');
+const {comparePasswords} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
         return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
       }
 
-      const valid = await User.comparePassword(password, user.password);
+      const valid = await comparePasswords(password, user.password);
 
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
@@ -130,7 +131,7 @@ module.exports = {
   // Entry of Auth/login
   //Method called for customer login for frontend
   //Model models/User.js
-  CustomerLogin: async (req, res) => {
+  customerLogin: async (req, res) => {
     let username = req.param('username');
     let password = req.param('password');
 
@@ -146,7 +147,7 @@ module.exports = {
       if (!user) {
         return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
       }
-      const valid = await User.comparePassword(password, user.password);
+      const valid = await comparePasswords(password, user.password);
       if (!valid) {
         return res.json(401, {model: 'password', message: 'Password is invalid'});
       }
@@ -191,7 +192,8 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
-      const user = await User.create(req.body).fetch();
+      let user = await User.create(req.body).fetch();
+      user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
 
       return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
 
@@ -219,6 +221,7 @@ module.exports = {
         status: 1
       }).fetch();
 
+      user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
       try {
         EmailService.sendWelcomeMailCustomer(user);
       } catch (er){
