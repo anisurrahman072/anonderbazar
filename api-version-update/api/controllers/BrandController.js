@@ -8,15 +8,13 @@ const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    Brand.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const brand = await Brand.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, brand);
+    } catch (error) {
+      return res.json(400, {message: 'wrong', error});
+    }
   },
   // create a row
   //Method called for creating product brand
