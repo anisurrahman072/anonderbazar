@@ -33,7 +33,7 @@ module.exports = {
   },
   //Method called for updating courier data
   //Model models/Courier.js
-  update: function(req, res) {
+  update: async (req, res) => {
     Courier.update(req.param('id'), req.body).exec((
       err,
       courier

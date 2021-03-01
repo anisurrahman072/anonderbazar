@@ -21,14 +21,12 @@ module.exports = {
             return res.badRequest('No image was uploaded');
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
           body.image = '/' + newPath;
         } catch (err) {
           console.log('err', err);
           return res.json(err.status, {err: err});
         }
       }
-
       const returnCategory = await Category.create(body).fetch();
       return res.json(200, returnCategory);
     } catch (err) {
@@ -40,10 +38,8 @@ module.exports = {
   //Method called for deleting category data
   //Model models/Category.js
   destroyType: async (req, res) => {
-
     try {
       const user = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-
       return res.json(user);
     } catch (error) {
       res.json(400, {message: 'wrong', error});
@@ -52,15 +48,13 @@ module.exports = {
   },
   //Method called for deleting category data
   //Model models/Category.js
-  destroyProduct: function (req, res) {
-    Category.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroyProduct: async (req, res) => {
+    try {
+      const user = await Category.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(user);
+    } catch (error) {
+      res.json(400, {message: 'wrong', error});
+    }
   },
 
   //Method called for getting category data
@@ -84,244 +78,140 @@ module.exports = {
   },
   //Method called for getting category product data
   //Model models/Category.js
-  getProduct: function (req, res) {
-    Category.find()
-      .where({type_id: 2, deletedAt: null})
-      .then((categoryProducts) => {
-        res.json(200, categoryProducts);
-      });
+  getProduct: async (req, res) => {
+    try {
+      const categorys = await Category.find()
+        .where({type_id: 2, deletedAt: null});
+      return res.json(200, categorys);
+    } catch (error) {
+      res.status(400).json(error);
+    }
   },
 
   //Method called for getting a category data
   //Model models/Category.js
-  getSingleType: function (req, res) {
-    Category.findOne()
-      .where({id: req.param('id'), type_id: 1})
-      .then((categoryType) => {
-        res.json(200, categoryType);
-      });
+  getSingleType: async (req, res) => {
+    try {
+      const category = await Category.findOne()
+        .where({id: req.param('id'), type_id: 1});
+      return res.json(200, category);
+    } catch (error) {
+      res.status(400).json(error);
+    }
   },
   // Method called for getting a category data
   //Model models/Category.js
-  getSingleProduct: function (req, res) {
-    Category.findOne()
-      .where({id: req.param('id'), type_id: 2})
-      .then((categoryProduct) => {
-        res.json(200, categoryProduct);
-      });
+  getSingleProduct: async (req, res) => {
+    try {
+      const category = await Category.findOne()
+        .where({id: req.param('id'), type_id: 2});
+      return res.json(200, category);
+    } catch (error) {
+      res.status(400).json(error);
+    }
   },
   // Creating new row in category table
-  createType: function (req, res) {
-
+  createType: async (req, res) => {
     try {
-      if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          body.type_id = 1;
-
-          Category.create(body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
-
-      } else {
-        let body = req.body;
-        body.type_id = 1;
-        Category.create(body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
+      let body = req.body;
+      if (body.hasImage === 'true') {
+        const uploaded = await imageUploadConfig(req.file('image0'));
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
+        body.type_id = 2;
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
       }
-    } catch (err) {
-      res.json(400, {message: 'wrong'});
+      body.type_id = 2;
+      const CategoryUpload = await Category.create(body).fetch();
+      return res.json(200, CategoryUpload);
+
+    } catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
   // Creating new row in product category table
-  createProduct: function (req, res) {
+  createProduct: async (req, res) => {
     try {
-      if (req.body.hasImage === 'true') {
-        let imageCounter = 2;
-        let i;
-        let body;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          body.type_id = 1;
-
-          Category.create(body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
-
+      let body = req.body;
+      if (body.hasImage === 'true') {
+        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
+        body.type_id = 1;
       } else {
-        let body = req.body;
         body.type_id = 2;
-        Category.create(body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
       }
-    } catch (err) {
-      res.json(400, {message: 'wrong'});
+      const created = await Category.create(body).fetch();
+      return res.json(200, created);
+    } catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
   //Method called for updating category
   //Model models/Category.js
-  update: function (req, res) {
+  update: async (req, res) => {
     try {
-      if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
-
+      let body = req.body;
+      if (body.hasImage === 'true') {
+        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        if(uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
+        body.type_id = 1;
       } else {
-        let body = req.body;
-        Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
+        body.type_id = 2;
       }
-    } catch (err) {
-      res.json(400, {message: 'wrong'});
+      const created = await Category.create(body).fetch();
+      return res.json(200, created);
+    }  catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
   //Method called for updating category type
   //Model models/Category.js
-  updateType: function (req, res) {
+  updateType: async (req, res) => {
+    let body = req.body;
     try {
       if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          body.type_id = 1;
-
-          Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
-
-      } else {
-        let body = req.body;
+        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
         body.type_id = 1;
-        Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
       }
-    } catch (err) {
-      res.json(400, {message: 'wrong'});
+      const created = await Category.create(body).fetch();
+      return res.json(200, created);
+    }   catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
   //Method called for updating category product
   //Model models/Category.js
-  updateProduct: function (req, res) {
+  updateProduct: async (req, res) => {
     try {
-      if (req.body.hasImage === 'true') {
-        let body;
-        req.file('image0').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          body.type_id = 2;
-
-          Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnCategory) {
-              res.json(200, returnCategory);
-            }
-          });
-        });
-
-      } else {
-        let body = req.body;
+      let body = req.body;
+      if (body.hasImage === 'true') {
+        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        if(uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
         body.type_id = 2;
-        Category.update({id: req.param('id')}, body).exec((err, returnCategory) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (returnCategory) {
-            res.json(200, returnCategory);
-          }
-        });
       }
-    } catch (err) {
-      res.json(400, {message: 'wrong', err});
+      const created = await Category.create(body).fetch();
+      return res.json(200, created);
+    }  catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
   //Method called for getting a category with subcategories data
@@ -330,31 +220,24 @@ module.exports = {
     try {
       let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2})
         .populate('offer_id');
-
       let allCategories = await Promise.all(categories.map(async (item) => {
         item.subCategories = await Category.find({deletedAt: null, parent_id: item.id});
         return item;
       }));
-
       res.json(allCategories);
-
     } catch (error) {
       res.json(400, {success: false, message: 'There was a problem!', error});
     }
-
-
   },
   //Method called for getting a product category with subcategories data
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
-
       let categories = await Category.find({
         type_id: 2,
         deletedAt: null,
         parent_id: 0
       });
-
       await asyncForEach(categories, async _category => {
         _category.subCategories = await Category.find({
           type_id: 2,
@@ -362,14 +245,12 @@ module.exports = {
           deletedAt: null
         });
       });
-
       res.status(200).json({
         success: true,
         message: 'product category  withsubcategory',
         data: categories
       });
     } catch (error) {
-
       res.status(400).json({
         success: false,
         message: '',
