@@ -6,12 +6,14 @@
  */
 
 module.exports = {
-  destroy: function (req, res) {
-    UserLogin.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, user) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(user[0]);
-            });
+  destroy: async (req, res) => {
+    try{
+      const user = await UserLogin.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      return res.json(user[0]);
+    }
+    catch (error){
+      return res.json(error.status, {message: '', error, success: false});
+    }
   }
 };
 
