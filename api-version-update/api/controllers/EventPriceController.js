@@ -16,7 +16,9 @@ module.exports = {
     } catch (error) {
       let message = 'Error in Geting the product';
       res.status(400).json({
-        success: false
+        success: false,
+        message,
+        error
       });
     }
   },

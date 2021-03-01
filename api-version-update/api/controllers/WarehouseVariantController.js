@@ -1,3 +1,9 @@
+/**
+ * WarehouseVariantController
+ *
+ * @description :: Server-side logic for managing variant
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 const { uploadImgAsync } = require('../../libs');
 const {imageUploadConfig} = require('../../libs/helper');
 

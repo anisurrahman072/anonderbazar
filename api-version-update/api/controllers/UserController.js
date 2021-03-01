@@ -4,11 +4,13 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
+const {  pagination} = require('../../libs');
 const bcrypt = require('bcryptjs');
-const {imageUploadConfig} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const jwToken = require('../services/jwToken');
+const {isResourceOwnerWarehouse} = require('../../libs/check-permissions');
+const {isResourceOwner} = require('../../libs/check-permissions');
 const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');
 
@@ -48,81 +50,116 @@ module.exports = {
       });
   },
   findOne: async (req, res) => {
-    User.findOne({
-      id: req.param('id')
-    })
-      .populate('group_id')
-      .populate('warehouse_id')
-      .populate('upazila_id')
-      .populate('zila_id')
-      .populate('division_id')
-      .then((user) => {
-        if (!user) {
-          return res.notFound();
-        }
-        return res.json(user);
+
+    try {
+      const user = await User.findOne({
+        id: req.param('id')
       })
-      // If there was some kind of usage / validation error
-      .catch({name: 'UsageError'}, (err) => {
+        .populate('group_id')
+        .populate('warehouse_id')
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id');
+
+      if (!isResourceOwner(req.token.userInfo, user)) {
+        return res.status(401).json({
+          success: false,
+          message: 'You are not allowed to access this resource'
+        });
+      }
+      return res.json(200, user);
+
+    } catch (error) {
+      if (error && error.naame === 'UsageError') {
         return res.badRequest(err);
-      })
-      // If something completely unexpected happened.
-      .catch((err) => {
-        return res.serverError(err);
-      });
+      }
+      return res.serverError(err);
+    }
+
   },
   //Method called for deleting a user data
   //Model models/User.js
-  destroy: function (req, res) {
-    User.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
+  destroy: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        id: req.param('id')
+      });
+      if (!isResourceOwner(req.token.userInfo, user)) {
+        return res.status(401).json({
+          success: false,
+          message: 'You are not allowed to access this resource'
+        });
       }
-    );
+      if (!isResourceOwnerWarehouse(req.token.userInfo, user)) {
+        return res.status(401).json({
+          success: false,
+          message: 'You are not allowed to access this resource'
+        });
+      }
+      await User.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+
+      return res.status(202).json(user);
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: 'Problem in deleting the user',
+        error
+      });
+    }
+
   },
   //Method called for creating a user data
   //Model models/User.js
-  create: function (req, res) {
+  create: async (req, res) => {
 
-    if (req.body.hasImage === 'true') {
-
-      req.file('avatar').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {
-            return res.serverError(err);
-          }
-          req.body.avatar = '/' + newPath;
-
-
-          User.create(req.body).exec((err, user) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (user) {
-              res.json(200, {
-                user: user,
-                token: jwToken.issue({id: user.id})
-              });
-            }
+    // eslint-disable-next-line eqeqeq
+    if (req.body.group_id == 4) {
+      if (['admin', 'owner'].indexOf(req.token.userInfo.group_id.name) === -1) {
+        return res.status(401).json({
+          success: false,
+          message: 'You are not allowed to access this resource'
+        });
+      }
+      if (['owner'].indexOf(req.token.userInfo.group_id.name) !== -1) {
+        // eslint-disable-next-line eqeqeq
+        if (req.body.warehouse_id != req.token.userInfo.warehouse_id.id) {
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
           });
         }
-      );
-    } else {
-      User.create(req.body).exec((err, user) => {
-        if (err) {
-          return res.json(err.status, {err: err});
+      }
+    }
+    {
+      try {
+        if (req.body.hasImage === 'true') {
+          try {
+            const uploaded = await uploadImages(req.file('avatar'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No image was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+            req.body.avatar = '/' + newPath;
+
+          } catch (err) {
+            console.log('err', err);
+            return res.json(err.status, {err: err});
+          }
         }
-        if (user) {
-          res.json(200, {user: user, token: jwToken.issue({id: user.id})});
-        }
-      });
+
+        const user = await User.create(req.body).fetch();
+
+        return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
+
+      } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to create user',
+          error
+        });
+      }
     }
   },
   //Method called for updating a user password data
@@ -130,15 +167,15 @@ module.exports = {
   updatepassword: async (req, res) => {
 
     if (!req.param('id')) {
-      return res.badRequest('No file was uploaded');
+      return res.badRequest('Invalid request');
     }
+
     try {
       let hash = await bcrypt.hash(req.body.password, 10);
       const user = await User.findOne({
         id: req.param('id')
       });
 
-      console.log('hash-req.body.password', req.body.password, hash);
       if (!user) {
         return res.badRequest('User was not found!');
       }
@@ -179,6 +216,32 @@ module.exports = {
       if (!user) {
         return res.badRequest('User not found');
       }
+      // eslint-disable-next-line eqeqeq
+      if (user.group_id == 4) {
+        if (['admin', 'owner'].indexOf(req.token.userInfo.group_id.name) === -1) {
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
+        if (['owner'].indexOf(req.token.userInfo.group_id.name) !== -1) {
+          // eslint-disable-next-line eqeqeq
+          if (user.warehouse_id != req.token.userInfo.warehouse_id.id) {
+            return res.status(401).json({
+              success: false,
+              message: 'You are not allowed to access this resource'
+            });
+          }
+        }
+      } else {
+        if(!isResourceOwner(req.token.userInfo, user)){
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
+      }
+
       if (req.body.hasImage === 'true') {
         const uploaded = await uploadImages(req.file('avatar'));
         if (uploaded.length === 0) {
@@ -209,11 +272,6 @@ module.exports = {
   //Model models/User.js
   find: async (req, res) => {
     try {
-
-      console.log('user-find', req.query);
-
-      initLogPlaceholder(req, 'users');
-
       let _pagination = pagination(req.query);
       let query = req.query;
 
@@ -259,9 +317,9 @@ module.exports = {
       /* WHERE condition..........END................*/
 
       /* sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
 
       console.log('Users-_where', _where);
@@ -290,11 +348,11 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'Get All customer with pagination',
+        message: 'Get all users with pagination',
         data: Users
       });
     } catch (error) {
-      let message = 'Error in Get All customer with pagination';
+      let message = 'Error in get all users with pagination';
       res.status(400).json({
         success: false,
         message,
@@ -401,6 +459,21 @@ module.exports = {
   getUserWithDashboardData: async (req, res) => {
 
     try {
+      const user = User.findOne({
+        id: req.param('id')
+      });
+
+      if (!user) {
+        return res.badRequest('User not found');
+      }
+
+      if(!isResourceOwner(req.token.userInfo, user)){
+        return res.status(401).json({
+          success: false,
+          message: 'You are not allowed to access this resource'
+        });
+      }
+
       let _pagination = pagination(req.query);
 
       let _where = {};
@@ -481,11 +554,11 @@ module.exports = {
         deliveredOrder: totalDeliveredOrder,
         canceledOrder: totalCancelOrder,
         confirmedOrder: totalConfirmedOrder,
-        message: 'Get All UserDashboard with pagination',
+        message: 'Get All User Dashboard with pagination',
         data: aUser
       });
     } catch (error) {
-      let message = 'Error in Get All UserDashboard with pagination';
+      let message = 'Error in Get All User Dashboard with pagination';
 
       res.status(400).json({
         success: false,

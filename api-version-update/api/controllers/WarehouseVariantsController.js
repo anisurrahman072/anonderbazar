@@ -25,9 +25,9 @@ module.exports = {
         _where.warehouse_id = req.query.warehouse_id;
       }
 
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name : req.query.sortName});
       }
 
       let totalWarehouseVariant = await WarehouseVariant.count().where(_where);

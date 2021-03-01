@@ -1,3 +1,9 @@
+/**
+ * VariantController
+ *
+ * @description :: Server-side logic for managing variant
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 module.exports = {
   //Method called for deleting a variant data
   //Model models/Variant.js

@@ -8,12 +8,19 @@
 module.exports = {
   //Method called for deleting a group data
   //Model models/Group.js
-  destroy: function (req, res) {
-    Group.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, user) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(user[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const group = await Group.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(group);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to delete group',
+        error
+      });
+    }
+
   }
 };
 
