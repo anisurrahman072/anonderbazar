@@ -42,6 +42,7 @@ module.exports = {
         data
       });
     } catch (error) {
+      console.log(error);
       res.status(400).json({
         success: false,
         error
@@ -51,19 +52,23 @@ module.exports = {
   //Method called for getting all favourite product data by user
   //Model models/FavouriteProduct.js
   byUser: async (req, res) => {
+    try {
+      if (!req.param('user_id')) {
+        return res.json({status: 400, error: 'no user id provided'});
+      }
 
-    if (!req.param('user_id')) {
-      return res.json({status: 400, error: 'no user id provided'});
+      let data = await FavouriteProduct.find({user_id: req.param('user_id'), deletedAt: null})
+        .populate('product_id');
+
+      return res.status(200).json({
+        success: true,
+        message: 'Wishlist found',
+        data
+      });
+    }catch (error){
+      console.log(error);
+      res.status(error.status).json({'error': error});
     }
-
-    let data = await FavouriteProduct.find({user_id: req.param('user_id'), deletedAt: null})
-      .populate('product_id');
-
-    return res.status(200).json({
-      success: true,
-      message: 'Wishlist found',
-      data
-    });
   },
   //Method called for deleting all favourite product data by user
   //Model models/FavouriteProduct.js

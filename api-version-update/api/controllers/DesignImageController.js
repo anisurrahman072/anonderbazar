@@ -77,10 +77,12 @@ module.exports = {
         data: designImageList
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in Get All designImage with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -102,10 +104,12 @@ module.exports = {
         data: designImage
       });
     } catch (error) {
+      console.log(error);
       let message = 'error in read single designImage';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -116,8 +120,9 @@ module.exports = {
       try {
         return res.json(200, await DesignImage.create(body));
       } catch (error) {
+        console.log(error);
         return res.json(err.status, {
-          err: err
+          error
         });
       }
     }
@@ -151,7 +156,7 @@ module.exports = {
       let productId = req.params._id;
       let productDesignData = await ProductDesign.find({
         where: {
-          product_id: req.params._id,
+          product_id: productId,
           deletedAt: null
         }
       })
@@ -174,9 +179,11 @@ module.exports = {
         data: result
       });
     } catch (error) {
+      console.log(error);
       res.status(400).json({
         success: false,
-        message: 'error from designCombination'
+        message: 'error from designCombination',
+        error
       });
     }
   },
@@ -200,9 +207,11 @@ module.exports = {
         data: designImageData
       });
     } catch (error) {
+      console.log(error);
       res.status(400).json({
         success: false,
-        message: 'error in get design image by designCombination'
+        message: 'error in get design image by designCombination',
+        error
       });
     }
   },
@@ -248,7 +257,7 @@ module.exports = {
           {
             images: [...oldImages, ...newImages]
           }
-        );
+        ).fetch();
         res.status(200).json({
           success: true,
           data: updated[0]
@@ -261,7 +270,7 @@ module.exports = {
           combination: req.body.combination,
           images: newImages,
           warehouse_id: warehouseId
-        });
+        }).fetch();
         res.status(200).json({
           success: true,
           message: 'get from designImages updateByProductId',
@@ -269,9 +278,11 @@ module.exports = {
         });
       }
     } catch (error) {
+      console.log(error);
       res.status(400).json({
         success: false,
-        message: 'error from designimages updateByProductId'
+        message: 'error from designimages updateByProductId',
+        error
       });
     }
   }
@@ -286,6 +297,7 @@ const deleteImages1 = async (imageList, path) => {
     try {
       fs.unlinkSync(assestsdir + item);
     } catch (err) {
+      console.log(err);
     }
   });
 };

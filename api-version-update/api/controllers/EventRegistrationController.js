@@ -9,19 +9,14 @@ module.exports = {
   //Method called for getting a event registration data
   //Model models/EventRegistration.js
   create: async (req, res) => {
-
     try {
       let data = await EventRegistration.create(req.body).fetch();
-      if (data) {
-        return res.json(200, data);
-      } else {
-        return res.status(400).json({success: false});
-      }
+      return res.status(200).json({data: data});
+
     } catch (error) {
+      console.log(error);
       return res.status(400).json({success: false, error});
     }
-
   },
-
 };
 

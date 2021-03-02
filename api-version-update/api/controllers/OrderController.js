@@ -975,7 +975,7 @@ module.exports = {
         let created_at = JSON.parse(req.query.created_at);
         /*        let from = moment((moment().format('YYYY-MM-DD'))).toISOString();
                 let to = moment((moment(created_at.to).format('YYYY-MM-DD'))).toISOString();*/
-        _where.created_at = {'>=': created_at.from, '<=': created_at.to};
+        _where.createdAt = {'>=': created_at.from, '<=': created_at.to};
       }
       if (req.query.courier_status) {
         _where.courier_status = req.query.courier_status;
@@ -989,7 +989,7 @@ module.exports = {
 
       console.log('_where', _where);
 
-      let orders = await Order.find({where: _where, sort: {createdAt: 'DESC'}})
+      let orders = await Order.find({where: _where, sort: [{createdAt: 'DESC'}]})
         .populate('billing_address')
         .populate('shipping_address')
         .populate('couponProductCodes', {deletedAt: null})
@@ -1011,7 +1011,7 @@ module.exports = {
               let varientitems = [];
 
               await asyncForEach(item.suborderItemVariants, async varientitem => {
-                varientitems.push(await SuborderItemVariant.findOne({product_suborder_item_id: item.id})
+                varientitems.push(await SuborderItemVariant.find({product_suborder_item_id: item.id})
                   .populate('product_id')
                   .populate('variant_id')
                   .populate('product_suborder_item_id')
@@ -1028,7 +1028,8 @@ module.exports = {
       return res.status(200).json(orders);
 
     } catch (error) {
-      let message = 'Error in Get All Suborder with pagination';
+      console.log(error);
+      let message = 'Error in getting all orders with pagination';
       res.status(400).json({
         success: false,
         message,
