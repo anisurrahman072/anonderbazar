@@ -71,10 +71,10 @@
                                     <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
                                     </nz-option>
                             </div>
- 
+
                         </nz-select>
- 
- 
+
+
                         <div nz-form-explain *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
                             required!                        </div>
                     </div>
@@ -120,7 +120,7 @@
 
                 <div nz-form-item nz-row>
                     <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">
                             Save
                         </button>
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>

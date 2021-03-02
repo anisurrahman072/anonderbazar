@@ -16,10 +16,12 @@
                 </div>
                 <div nz-form-item nz-row>
                     <div style="display: flex; justify-content: center; ">
-                        <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)">
+                        <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)"
+                                [disabled]="submitting">
                             Save & Approve
                         </button>
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(0)">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(0)"
+                                [disabled]="submitting">
                             Save
                         </button>
                     </div>

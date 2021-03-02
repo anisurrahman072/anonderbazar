@@ -18,9 +18,9 @@ import {SuborderService} from "../../../../services/suborder.service";
 })
 export class PaymentCreateComponent implements OnInit {
     validateForm: FormGroup;
-    
+
     currentUser: any;
-    
+
     userSearchOptions = [];
     orderSearchOptions: any;
     suborderSearchOptions: any;
@@ -36,8 +36,9 @@ export class PaymentCreateComponent implements OnInit {
         {label: 'Card payment', value: 'card_payment'},
         {label: 'Direct bank transfer', value: 'direct_bank_transfer'},
     ];
-    
-    
+    submitting: boolean = false;
+
+
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -59,6 +60,7 @@ export class PaymentCreateComponent implements OnInit {
     }
     //Event method for submitting the form
     submitForm = ($event, value) => {
+        this.submitting = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -70,12 +72,18 @@ export class PaymentCreateComponent implements OnInit {
 
         this.paymentService.insert(paymentInsertPayload)
             .subscribe(result => {
-               
+                this.submitting = false;
                 if (result.id) {
                     this._notification.create('success', 'New payment Insert Succeeded', result.id);
                     this.router.navigate(['/dashboard/payment/details/', result.id]);
                 }
-            });
+            },
+               error => {
+                   this.submitting = false;
+                   this._notification.create('error', 'Error Occurred!',
+                       "Transaction disn't created!");
+
+               });
     }
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
@@ -92,7 +100,7 @@ export class PaymentCreateComponent implements OnInit {
      // init the component
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
-        
+
         this.orderService.getAll().subscribe(result => {
             this.orderSearchOptions = result;
         });
@@ -109,13 +117,13 @@ export class PaymentCreateComponent implements OnInit {
         this.suborderService.getAllByOrderId(query).subscribe(result => {
             this.suborderSearchOptions = result;
         });
-        
+
         this.orderService.getById(query).subscribe(result => {
             this.customer = result.user_id;
         });
     }
-    
+
     suborderSearchChange($event) {
-    
+
     }
 }

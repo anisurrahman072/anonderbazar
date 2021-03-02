@@ -182,7 +182,7 @@
             <div nz-form-item>
                 <div nz-form-control>
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
-                            [disabled]="!validateProductForm.valid">
+                            [disabled]="!validateProductForm.valid || submitting">
                         Create CSV
                     </button>
                 </div>

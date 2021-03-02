@@ -61,7 +61,7 @@
 
             <div nz-form-item nz-row>
                 <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Save
                     </button>
                     <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
                 </div>
