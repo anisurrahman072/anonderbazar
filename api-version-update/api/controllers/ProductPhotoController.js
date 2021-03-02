@@ -8,24 +8,25 @@
 module.exports = {
   //Method called for deleting a product photo
   //Model models/ProductPhoto.js
-  destroy: function (req, res) {
-    ProductPhoto.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, user) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(user[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const productPhoto = await ProductPhoto.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, productPhoto);
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
   },
   //Method called for creating a product photo
   //Model models/ProductPhoto.js
-  create: function (req, res) {
-    ProductPhoto.create(req.body).exec((err, productPhoto) => {
-      if (err) {
-        return res.json(err.status, {err: err});
-      }
-      if (productPhoto) {
-        res.json(200, {productPhoto: productPhoto});
-      }
-    });
+  create: async (req, res) => {
+    try {
+      const productPhoto = await ProductPhoto.create(req.body).fetch();
+      return res.json(200, {productPhoto: productPhoto});
+    }catch (error){
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
   }
 };
 
