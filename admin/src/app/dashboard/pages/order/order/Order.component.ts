@@ -83,6 +83,7 @@ export class OrderComponent implements OnInit {
     dataORDER = [];
     storeOrderIdsORDER: any = [];
     warehouse: any;
+    submitting: boolean = false;
 
 
     constructor(private orderService: OrderService,
@@ -398,9 +399,11 @@ export class OrderComponent implements OnInit {
     };
     //Event method for submitting the form
     submitForm = ($event, value) => {
+        this.submitting = true;
         let newlist = this.storeOrderIds;
         this.isProductVisible = false;
         this.dowonloadCSV(newlist);
+        this.submitting = false;
     }
 
     selectAllCsv($event) {
