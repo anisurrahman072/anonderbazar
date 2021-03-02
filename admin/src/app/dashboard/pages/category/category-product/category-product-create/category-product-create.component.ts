@@ -23,7 +23,9 @@ export class CategoryProductCreateComponent implements OnInit {
     @ViewChild('Image') Image;
     categorySearchOptions = [];
     subCategorySearchOptions = [];
-    
+    submitting: boolean = false;
+
+
     constructor(private router: Router, private cmsService: CmsService, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
@@ -39,11 +41,12 @@ export class CategoryProductCreateComponent implements OnInit {
     }
     //Event method for submitting the form
     submitForm = ($event, value) => {
+        this.submitting = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
-        
+
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
@@ -54,7 +57,7 @@ export class CategoryProductCreateComponent implements OnInit {
             parent_id = value.parent.id;
         }
         formData.append('parent_id', ''+parent_id);
-        
+
         formData.append('type_id', '2');
         if (value.offer_id) {
             formData.append('offer_id', value.offer_id);
@@ -69,17 +72,22 @@ export class CategoryProductCreateComponent implements OnInit {
             }
         } else {
             formData.append('hasImage', 'false');
-        } 
+        }
         this.categoryProductService.insert(formData)
             .subscribe((result: any) => {
+                this.submitting = false;
                 if (result.id) {
                     this._notification.create('success', 'Product category ', result.name);
                     this.router.navigate(['/dashboard/category/product/details/', result.id]);
-                    
+
                 }
-            });
+            },
+        (error: any) => {
+            this.submitting = false;
+            this._notification.create('error', 'Error occurred!', "Product Category didn't created!!");
+        });
     }
-    
+
     //Event method for removing picture
     onRemoved(_file: FileHolder) {
         this.ImageFile.splice(
@@ -91,7 +99,7 @@ export class CategoryProductCreateComponent implements OnInit {
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile.push(metadata.file);
         return metadata;
-    }; 
+    };
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -108,7 +116,7 @@ export class CategoryProductCreateComponent implements OnInit {
 
     // init the component
     ngOnInit() {
-        
+
         this.categoryProductService.getAllCategory().subscribe((result: any) => {
             this.categorySearchOptions = result;
         });
@@ -116,7 +124,7 @@ export class CategoryProductCreateComponent implements OnInit {
       .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
       .subscribe(result => {
             this.offers = result;
-      }); 
+      });
     }
     //Event method on category change
     onCategoryChange(categoryId){
