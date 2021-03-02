@@ -50,6 +50,7 @@ export class OfferCreateComponent implements OnInit {
     removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
   };
 _isSpinning: any = false;
+    submitting: boolean = false;
 
   constructor(
     private router: Router,
@@ -57,7 +58,7 @@ _isSpinning: any = false;
     private _notification: NzNotificationService,
     private fb: FormBuilder,
     private cmsService: CmsService,
-  ) { 
+  ) {
     this.validateForm = this.fb.group({
       title: ['', [Validators.required]],
       offer_type: ['', [Validators.required]],
@@ -70,6 +71,7 @@ _isSpinning: any = false;
   }
 //Event method for submitting the form
   submitForm = ($event, value) => {
+      this.submitting = true;
     $event.preventDefault();
 
     this._isSpinning = true;
@@ -77,28 +79,32 @@ _isSpinning: any = false;
         this.validateForm.controls[key].markAsDirty();
     }
 
-    let formData = new FormData(); 
+    let formData = new FormData();
     formData.append('title', value.title);
     formData.append('subsection', value.offer_type);
     formData.append('link', value.link);
-    formData.append('description', value.description); 
+    formData.append('description', value.description);
     if (this.ImageFile) {
         formData.append('hasImage', 'true');
         formData.append('image', this.ImageFile, this.ImageFile.name);
     } else {
       formData.append('hasImage', 'false');
 
-    } 
-    
-    this.cmsService.offerInsert(formData).subscribe(result => { 
+    }
+
+    this.cmsService.offerInsert(formData).subscribe(result => {
+        this.submitting = false;
         this._notification.success( 'Offer Added', "Feature Title: " );
-        this._isSpinning = false; 
+        this._isSpinning = false;
         this.resetForm(null);
         this.router.navigate(['/dashboard/offer']);
+    }, error => {
+        this.submitting = false;
+        this._notification.error( 'Error Occurred!', "Error occurred while adding offer!" );
     });
   };
   //Event method for resetting the form
-  resetForm($event: MouseEvent) {  
+  resetForm($event: MouseEvent) {
     $event ? $event.preventDefault() : null;
     this.validateForm.reset();
     for (const key in this.validateForm.controls) {
@@ -123,7 +129,7 @@ onBeforeUpload = (metadata: UploadMetadata) => {
 }
 // Method for change offer type
 typeChange($event){
-  console.log($event); 
+  console.log($event);
   if ($event === 'OFFER') {
     this.linkVisible = true;
   }else{
