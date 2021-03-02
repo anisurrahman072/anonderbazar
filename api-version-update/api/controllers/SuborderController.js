@@ -28,7 +28,7 @@ module.exports = {
   updatebyorderid: async function (req, res) {
 
     try {
-      const suborder = await Suborder.update({product_order_id: req.param('id')}, req.body);
+      const suborder = await Suborder.update({product_order_id: req.param('id')}, req.body).fetch();
       // eslint-disable-next-line eqeqeq
       if (req.body.status == SUB_ORDER_STATUSES.processing || req.body.status == SUB_ORDER_STATUSES.delivered || req.body.status == SUB_ORDER_STATUSES.canceled) {
         // eslint-disable-next-line eqeqeq
@@ -236,7 +236,7 @@ module.exports = {
   },
   //Method called for getting all product suborder with relations
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js, models/Product.js
-  getWithFull: async function (req, res) {
+  getWithFull: async  (req, res) => {
 
     let suborder = await Suborder.findOne({
       id: req.param('id'),
