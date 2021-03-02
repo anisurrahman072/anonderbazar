@@ -22,7 +22,7 @@ module.exports = {
   create: async (req, res) => {
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
@@ -43,7 +43,7 @@ module.exports = {
       return res.json(200, returnBrand);
 
     } catch (err) {
-      res.json(400, {message: 'wrong', err});
+      res.json(400, {message: 'something wrong', err});
     }
   },
 
@@ -54,7 +54,7 @@ module.exports = {
 
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
