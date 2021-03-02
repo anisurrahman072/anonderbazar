@@ -254,6 +254,8 @@ module.exports = {
     ***************************************************************************/
     onlyAllowOrigins: [
       'http://dev.anonderbazar.com',
+      'http://test.anonderbazar.com',
+      'https://anonderbazar.com',
     ],
 
 

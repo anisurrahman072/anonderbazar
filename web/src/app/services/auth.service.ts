@@ -10,10 +10,10 @@ import {of} from "rxjs/observable/of";
 
 @Injectable()
 export class AuthService {
-    jwtHelper: JwtHelper = new JwtHelper();
+    private EndPoint = `${AppSettings.API_ENDPOINT}/auth`;
     public token: string;
 
-    constructor(private http: HttpClient, private userService: UserService) {
+    constructor(private http: HttpClient, private jwtHelper: JwtHelper, private userService: UserService) {
     }
 
     login(username: string, password: string): Observable<any> {
@@ -107,5 +107,9 @@ export class AuthService {
         return this.http
             .post(AppSettings.API_ENDPOINT + '/auth/usernameUnique', data)
             .map(response => response);
+    }
+
+    forgetPassword(data: any): Observable<any> {
+        return this.http.put(`${this.EndPoint}/forgetPassword`, data).map((response) => response);
     }
 }

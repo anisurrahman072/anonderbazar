@@ -67,12 +67,11 @@ export class UserService {
     }
 
     checkEmailPhone(email: any, phone: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`).map((response) => response)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`).map((response) => response);
     }
 
+
     updatepassword(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/updatepassword/' + id, data)
-            ;
+        return this.http.put(this.EndPoint + '/updatepassword/' + id, data);
     }
 }

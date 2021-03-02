@@ -1,17 +1,44 @@
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Rx";
-import {AuthService} from "../services";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../state-management";
 import {NotificationsService} from "angular2-notifications";
+import {JwtHelper} from "angular2-jwt";
 
 @Injectable()
 export class JwtTokenInterceptor implements HttpInterceptor {
+    public token: string;
+
     constructor(
         private store: Store<fromStore.HomeState>,
-        private authService: AuthService,
+        private jwtHelper: JwtHelper,
         private _notify: NotificationsService) {
+    }
+
+    getToken() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            return token;
+        }
+        return false;
+    }
+
+
+    isTokenExpired() {
+        const token = this.getToken();
+        if (token) {
+            return this.jwtHelper.isTokenExpired(token);
+        } else {
+            return true;
+        }
+    }
+
+    logout(): void {
+        // clear token remove user from local storage to log user out
+        this.token = null;
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
     }
 
     intercept(
@@ -20,8 +47,8 @@ export class JwtTokenInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         let authReq = req;
         // Clone the request to add the new header.
-        if (!this.authService.isTokenExpired()) {
-            const token = this.authService.getToken();
+        if (!this.isTokenExpired()) {
+            const token = this.getToken();
             authReq = req.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
@@ -33,7 +60,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
         return next.handle(authReq).catch((error, caught) => {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
-                    this.authService.logout();
+                    this.logout();
                     this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
                     this.store.dispatch(new fromStore.LoadCartSuccess(null));
                     this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
