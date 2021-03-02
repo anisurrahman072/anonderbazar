@@ -38,6 +38,10 @@ module.exports = {
         }
 
       }
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
       const returnBrand = await Brand.create(body).fetch();
 
       return res.json(200, returnBrand);
@@ -69,7 +73,10 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
-
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
       const brand = await Brand.updateOne({id: req.param('id')}).set(body);
 
       return res.status(200).json(brand);
