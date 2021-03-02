@@ -23,7 +23,7 @@ module.exports = {
       }
 
       const part = await Part.create(req.body).fetch();
-      return res.json(200, part);
+      return res.status(200).json({part: part});
     } catch (error) {
       console.log(error);
       return res.json(error.status, {error: error});
@@ -34,18 +34,14 @@ module.exports = {
   update: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        try {
-          const uploaded = await uploadImages(req.file('image'));
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          req.body.image = '/' + newPath;
-        } catch (error) {
-          console.log(error);
-          return res.json(error.status, {error: error});
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
         }
+        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.image = '/' + newPath;
       }
+
       let updatedPart = await Part.updateOne({id: req.param('id')}).set(req.body);
       return res.json(200, updatedPart);
 
