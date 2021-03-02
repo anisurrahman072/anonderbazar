@@ -59,12 +59,13 @@ module.exports = {
         message: 'Get All design with pagination',
         data: genres
       });
-    } catch
-    (error) {
-      let message = 'Error in Get All Genres with pagination';
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in Getting All Genres with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
