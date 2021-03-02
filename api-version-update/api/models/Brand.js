@@ -38,7 +38,7 @@ module.exports = {
   },
   tableName: 'brands',
 
-  // generating slug from name before creating a row
+/*  // generating slug from name before creating a row
   beforeCreate: function (req, next) {
     if (req.name) {
       let stringForMakingSlug = req.name;
@@ -58,6 +58,6 @@ module.exports = {
       req.slug = stringForMakingSlug;
     }
     next();
-  }
+  }*/
 };
 

@@ -26,7 +26,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     shippingAddress: any;
     suborderItems: any;
     suborders: any[] = [];
-    options: any[];
+    options: any;
     _isSpinning = true;
 
     userPhone: string = "";
@@ -39,7 +39,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit() {
-        this.options = GLOBAL_CONFIGS.ORDER_STATUSES;
+        this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
