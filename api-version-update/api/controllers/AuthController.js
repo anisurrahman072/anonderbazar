@@ -8,6 +8,7 @@
 const bcrypt = require('bcryptjs');
 const jwToken = require('../services/jwToken');
 const EmailService = require('../services/EmailService');
+const SmsService = require('../services/SmsService');
 const {comparePasswords} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 
@@ -290,6 +291,82 @@ module.exports = {
     }
   },
 
+  customerForgetPassword: async (req, res) => {
+    console.log('req', req.body);
+    let _where = {
+      deletedAt: null,
+      group_id: 2
+    };
+
+    try {
+      if (req.body.phone && req.body.email) {
+        _where.or = [
+          {username: req.body.phone},
+          {username: req.body.email},
+        ];
+      } else if (req.body.email) {
+        _where.username = req.body.email;
+      } else if (req.body.phone) {
+        _where.username = req.body.phone;
+      }
+      let users = await User.find({
+        where: _where
+      });
+      if (users && users.length === 1) {
+
+        let user = await User.findOne({
+          id: users[0].id
+        })
+          .populate('warehouse_id')
+          .populate('group_id');
+
+        if (user.group_id.name !== 'customer') {
+          return res.json(403, {err: 'forbidden....'});
+        }
+
+        if (!user.active) {
+          return res.json(401, {err: 'Not an active user'});
+        }
+
+        let hash = await bcrypt.hash(req.body.password, 10);
+        await User.updateOne({id: user.id}).set({password: hash});
+
+        if (user.phone) {
+          try {
+            let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+            SmsService.sendingOneSmsToOne([user.phone], smsText);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+
+        if (user.email) {
+          try {
+            EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+
+        return res.status(201).json({
+          'success': true,
+          'message': 'Your password has been updated and new password has been sent your mobile/email'
+        });
+
+      }
+      return res.status(422).json({
+        success: false,
+        message: 'More than one user found with the provided information'
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to update password',
+        error
+      });
+    }
+  },
   //Method called for updating a user password
   //Model models/User.js
   userPasswordUpdate: async (req, res) => {

@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
+const { initLogPlaceholder, pagination } = require('../../libs');
 
 module.exports = {
   //Method called for getting all courier price list data
@@ -38,6 +38,7 @@ module.exports = {
         data: courierprices
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
@@ -53,9 +54,11 @@ module.exports = {
         await CourierPrice.findOne(req.params.id)
       );
     } catch (error) {
+      console.log(error);
       let message = 'Error in Geting the product';
       res.status(400).json({
-        success: false
+        success: false,
+        message: message
       });
     }
   },
@@ -86,6 +89,7 @@ module.exports = {
         data: eventprices
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,

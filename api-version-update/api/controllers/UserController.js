@@ -214,7 +214,11 @@ module.exports = {
 
     } catch (ee) {
       console.log(ee);
-      return res.badRequest('There was a problem in processing the request.');
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to update password',
+        error
+      });
     }
   },
   //Method called for updating a user data
@@ -286,6 +290,7 @@ module.exports = {
     }
 
   },
+
   //Method called for getting all user data
   //Model models/User.js
   find: async (req, res) => {
