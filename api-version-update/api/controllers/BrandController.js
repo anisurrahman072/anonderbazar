@@ -70,12 +70,12 @@ module.exports = {
         }
       }
 
-      const brand = await Brand.updateOne({id: req.param('id')}).set(req.body);
+      const brand = await Brand.updateOne({id: req.param('id')}).set(body);
 
-      return res.json(200, brand);
+      return res.status(200).json(brand);
 
     } catch (err) {
-      return res.json(400, {message: 'Something Went Wrong', err});
+      return res.status(400).json({message: 'Something Went Wrong', err});
     }
 
   },

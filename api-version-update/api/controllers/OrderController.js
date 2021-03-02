@@ -27,10 +27,10 @@ module.exports = {
   destroy: async (req, res) => {
     try {
       const order = await Order.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.json(200, order);
+      return res.status(200).json(order);
     } catch (error) {
       console.log(error);
-      res.status(error.status).json({error: error});
+      return res.status(error.status).json({error: error});
     }
   },
 
