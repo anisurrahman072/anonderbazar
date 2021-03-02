@@ -41,7 +41,7 @@ module.exports = {
   // generating slug from name before creating a row
   beforeCreate: function (req, next) {
     if (req.name) {
-      var stringForMakingSlug = req.name;
+      let stringForMakingSlug = req.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
       stringForMakingSlug = stringForMakingSlug.toLowerCase();
       req.slug = stringForMakingSlug;
@@ -52,7 +52,7 @@ module.exports = {
   // generating slug from name before updating a row
   beforeUpdate: function (req, next) {
     if (req.name) {
-      var stringForMakingSlug = req.name;
+      let stringForMakingSlug = req.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
       stringForMakingSlug = stringForMakingSlug.toLowerCase();
       req.slug = stringForMakingSlug;
