@@ -89,7 +89,7 @@
 
                         <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
                             <nz-button-group>
-                                <button nz-button [nzType]=" 'primary'" [nzSize]="'large'">Save</button>
+                                <button nz-button [nzType]=" 'primary'" [nzSize]="'large'" [disabled]="submitting">Save</button>
                                 <button nz-button [nzSize]=" 'large'" (click)="resetForm($event)">Reset</button>
                                 <button nz-button [nzSize]=" 'large'" (click)="handleModalCancel($event)">Cancel</button>
                             </nz-button-group>
