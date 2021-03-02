@@ -39,7 +39,8 @@ module.exports = {
         data: eventprices
       });
     } catch (error) {
-      let message = 'Error in Get All products with pagination';
+      console.log(error);
+      let message = 'Error in Getting All products with pagination';
       res.status(400).json({
         success: false,
         message,
@@ -74,6 +75,7 @@ module.exports = {
         data: eventprices
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
