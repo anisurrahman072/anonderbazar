@@ -1,8 +1,6 @@
 import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
-/*import { ServerPrebootModule } from 'preboot/server';
-import { BrowserPrebootModule } from 'preboot/browser';*/
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SwiperModule} from "ngx-swiper-wrapper";
@@ -15,7 +13,6 @@ import {TabsModule} from 'ngx-bootstrap';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {effects, reducers} from "../state-management";
-/* import {JasperoAlertsModule} from "@jaspero/ng2-alerts";*/
 import {NgProgressModule} from '@ngx-progressbar/core';
 import {SimpleNotificationsModule} from 'angular2-notifications';
 import {ServiceWorkerModule} from '@angular/service-worker';
@@ -53,6 +50,7 @@ import {environment} from "../../environments/environment";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
 // import {UiModule} from "../ui/ui.module";
+import {JwtHelper} from "angular2-jwt";
 
 let imports = [];
 if (environment.production) {
@@ -135,6 +133,7 @@ if (environment.production) {
         CartItemVariantService,
         AreaService,
         AuthService,
+        JwtHelper,
         OrderService,
         SuborderService,
         SuborderItemService,

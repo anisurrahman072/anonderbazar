@@ -22,6 +22,9 @@ module.exports.policies = {
     'findOne': true,
     'destroy': ['isAuthorized', 'isAdmin']
   },
+  AuthController: {
+    '*': true,
+  },
   BrandController: {
     '*': false,
     'find': true,

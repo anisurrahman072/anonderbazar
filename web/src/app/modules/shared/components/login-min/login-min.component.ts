@@ -4,7 +4,6 @@ import {Router} from "@angular/router";
 import {AuthService} from "../../../../services";
 import {Store} from "@ngrx/store";
 import * as fromStore from '../../../../state-management/index';
-import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {Observable} from "rxjs/Observable";
 import {ModalDirective} from "ngx-bootstrap";
 import {NotificationsService} from "angular2-notifications";
@@ -13,6 +12,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 import * as moment from 'moment';
+import {LoginModalService} from "../../../../services/ui/loginModal.service";
 
 @Component({
     selector: 'app-front-login-min',
@@ -30,26 +30,6 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         {label: 'Female', value: 'female'},
         {label: 'Other', value: 'third-gender'}
     ];
-    /*    foods = [
-            {value: 'steak-0', viewValue: 'Steak'},
-            {value: 'pizza-1', viewValue: 'Pizza'},
-            {value: 'tacos-2', viewValue: 'Tacos'}
-        ];
-        birthMonthOption = [
-            {label: 'January', value: '01'},
-            {label: 'February', value: '02'},
-            {label: 'March', value: '03'},
-            {label: 'April', value: '04'},
-            {label: 'May', value: '05'},
-            {label: 'June', value: '06'},
-            {label: 'July', value: '07'},
-            {label: 'August', value: '08'},
-            {label: 'September', value: '09'},
-            {label: 'October', value: '10'},
-            {label: 'November', value: '11'},
-            {label: 'December', value: '12'},
-        ];
-        birthMonth: number;*/
 
     isModalShown$: Observable<boolean>;
 
@@ -79,7 +59,6 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private store: Store<fromStore.HomeState>,
         private _notify: NotificationsService,
-        private loginModalService: LoginModalService,
         private cartService: CartService,
         private userService: UserService,
         private formValidatorService: FormValidatorService
@@ -227,33 +206,22 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         }
         if (value.email || value.phone) {
             this.forgetPaswordSubmitting = true;
-            this.userService.checkEmailPhone(value.email, value.phone).subscribe(result => {
-                let user = result.data[0];
-                console.log('submitForgotPasswordForm-user', user);
-                if (user) {
-                    let resetpassword = this.generatePassword();
-                    this.userService.updatepassword(user.id, {password: resetpassword})
-                        .subscribe(arg => {
-                            console.log('submitForgotPasswordForm-user-arg', arg);
-                            this.forgetPaswordSubmitting = false;
-                            this._notify.success('Success', 'Your password has been updated. Please check your email or sms.');
-                            this.validateForgotForm.reset();
-
-                            if (arg) {
-                                this.showLogin();
-                            }
-                        }, (err) => {
-                            this.forgetPaswordSubmitting = false;
-                            console.log('submitForgotPasswordForm', err);
-                        });
-                } else {
-                    this.forgetPaswordSubmitting = false;
-                    this._notify.error('User was not found!', 'User with your provided information was not found!');
-                }
+            let resetpassword = this.generatePassword();
+            const dataToSubmit = {
+                phone: value.phone,
+                email: value.email,
+                password: resetpassword
+            };
+            this.authService.forgetPassword(dataToSubmit).subscribe(result => {
+                console.log(result);
+                this.forgetPaswordSubmitting = false;
+                this._notify.success('Success', 'Your password has been updated. Please check your email or sms.');
+                this.validateForgotForm.reset();
+                this.loginInfoService.showLoginModal(false);
             }, (err) => {
                 this.forgetPaswordSubmitting = false;
                 console.log('submitForgotPasswordForm', err);
-
+                this._notify.error('Problem!', 'There was a problem in resetting your password.');
             });
         }
     }
