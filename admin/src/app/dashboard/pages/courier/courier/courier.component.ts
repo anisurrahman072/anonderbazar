@@ -25,11 +25,12 @@ export class CourierComponent implements OnInit {
   id: number;
   options = [
     { value: 1, label: 'Local' },
-    { value: 2, label: 'Origin Country' }, 
+    { value: 2, label: 'Origin Country' },
   ];
   origins = ['Local', 'Origin Country'];
   validateForm: FormGroup;
   validateEditForm: FormGroup;
+  submitting: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -45,7 +46,7 @@ export class CourierComponent implements OnInit {
       origin_type: ["", [Validators.required]],
     });
    }
-  courierOriginChange($event) { 
+  courierOriginChange($event) {
   }
   // init the component
   ngOnInit() {
@@ -64,24 +65,26 @@ export class CourierComponent implements OnInit {
   }
   //Event method for deleting courier
   deleteConfirm(id) {
-    this.courierService.delete(id).subscribe(result => { 
-      this.getPageData(); 
+    this.courierService.delete(id).subscribe(result => {
+      this.getPageData();
       this._notification.create('warning', 'Delete', 'Courier has been removed successfully');
 
     });
   }
   //Event method for submitting the form
   submitForm = ($event, value) => {
+    this.submitting = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
     formData.append("name", value.name);
     formData.append("origin_type", value.origin_type);
     this.courierService.insertCourier(formData).subscribe(
       result => {
         if (result.id) {
+          this.submitting = false;
           this._notification.create(
             "success",
             "Courier has been successfully added.",
@@ -93,7 +96,13 @@ export class CourierComponent implements OnInit {
         this.resetAllFilter();
       },
       error => {
+        this.submitting = false;
         this._isSpinning = false;
+        this._notification.create(
+            "error",
+            "Error Occurred!",
+            "Error occurred while adding Courier Company!"
+        );
       }
     );
   };
@@ -113,7 +122,7 @@ export class CourierComponent implements OnInit {
     this.isConfirmLoading = true;
     setTimeout(() => {
       this.isVisible = false;
-      this.isConfirmLoading = false; 
+      this.isConfirmLoading = false;
     }, 2000);
   };
 
@@ -153,7 +162,7 @@ export class CourierComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateEditForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
     formData.append("name", value.name);
     formData.append("origin_type", value.origin_type);

@@ -15,7 +15,7 @@ module.exports = {
 
     async function create(body) {
       try {
-        let data = await Courier.create(body);
+        let data = await Courier.create(body).fetch();
 
         if (data) {
           return res.json(200, data);
