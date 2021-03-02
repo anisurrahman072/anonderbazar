@@ -6,7 +6,6 @@
  */
 
 const {uploadImagesWithConfig} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
