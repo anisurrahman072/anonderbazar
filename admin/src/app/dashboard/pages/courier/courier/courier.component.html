@@ -110,7 +110,7 @@
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleCancel($event)">
                                     Cancel
                                 </button>
-                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" [nzLoading]="isConfirmLoading">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" [nzLoading]="isConfirmLoading" [disabled]="submitting">
                                     Save
                                 </button>
                             </nz-button-group>
