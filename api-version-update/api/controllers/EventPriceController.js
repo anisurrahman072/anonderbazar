@@ -14,6 +14,7 @@ module.exports = {
         await EventPrice.findOne(req.params.id)
       );
     } catch (error) {
+      console.log(error);
       let message = 'Error in Getting the event price';
       res.status(400).json({
         success: false,
