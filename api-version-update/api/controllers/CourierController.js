@@ -13,24 +13,17 @@ module.exports = {
   create: async (req, res) => {
     initLogPlaceholder(req, 'Courier Service create');
 
-    async function create(body) {
-      try {
-        let data = await Courier.create(body).fetch();
-
-        if (data) {
-          return res.json(200, data);
-        } else {
-          return res.status(400).json({success: false});
-        }
-      } catch (error) {
-        return res.status(400).json({success: false, error});
+    try {
+      if (req.body) {
+        req.body.status = 1;
       }
-    }
+      let courierData = await Courier.create(req.body).fetch();
+      return res.status(200).json({courierData: courierData});
 
-    if (req.body) {
-      req.body.status = 1;
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({success: false, error: error});
     }
-    create(req.body);
   },
   //Method called for updating courier data
   //Model models/Courier.js

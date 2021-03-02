@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {  pagination} = require('../../libs');
+const {pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all craftsman price list data
@@ -111,7 +111,8 @@ module.exports = {
         data: craftmanPrices
       });
     } catch (error) {
-      let message = 'Error in Get All CraftmanPrice with pagination';
+      console.log(error);
+      let message = 'Error in Getting All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
         message,
