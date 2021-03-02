@@ -5,87 +5,62 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {uploadImagesWithConfig} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
   // destroy a row
-  destroy: function (req, res) {
-    Genre.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, genre) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(genre[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const genre = await Genre.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.status(200).json({genre: genre});
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
   },
   //Method called for creating a genre data
   //Model models/Genre.js
-  create: function (req, res) {
-    function create(body) {
-      var genre = body;
-      Genre.create(genre).exec((err, returnGenre) => {
-        if (err) {
-          return res.json(err.status, {err: err});
+  create: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImagesWithConfig(req.file('image'), {saveAs: Date.now() + '_genre.jpg'});
+        if (uploaded.length === 0) {
+          return res.badRequest('No files were uploaded');
         }
-        if (returnGenre) {
-          res.json(200, returnGenre);
-        }
-      });
-    }
-
-    if (req.body.hasImage == 'true') {
-      const uploadConfig = imageUploadConfig();
-      req.file('image').upload({
-        ...uploadConfig,
-        saveAs: Date.now() + '_genre.jpg'
-      }, (err, uploaded) => {
-
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-        var newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        if (err) {return res.serverError(err);}
+        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         req.body.image = '/' + newPath;
-        create(req.body);
-      });
-    } else {
-      create(req.body);
+      }
+      const genre = await Genre.create(req.body).fetch();
+      return res.status(200).json({genre: genre});
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
     }
   },
 
   //Method called for updating a genre data
   //Model models/Genre.js
-  update: function (req, res) {
-    if (req.body.hasImage == 'true') {
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, { err: err });
-          }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {return res.serverError(err);}
-          req.body.image = '/' + newPath;
-          Genre.update({ id: req.param('id') }, req.body).exec((
-            err,
-            genre
-          ) => {
-            if (err) {
-              return res.json(err.status, { err: err });
-            }
-            if (genre) {
-              return res.json(200, {
-                genre: genre,
-                token: jwToken.issue({ id: genre.id })
-              });
-            }
-          });
+  update: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
         }
-      );
-    } else {
-      Genre.update({id: req.param('id')}, req.body)
-                .exec((err, genre) => {
-                  if (err) {return res.json(err, 400);}
-                  return res.json(200, genre);
-                });
+        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.image = '/' + newPath;
+      }
+
+      const genreUpdated = await Genre.updateOne({id: req.param('id')}).set(req.body);
+      return res.status(200).json({
+        genre: genreUpdated,
+        token: jwToken.issue({id: genreUpdated.id})
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json(error.status, {error: error});
     }
   }
 };
