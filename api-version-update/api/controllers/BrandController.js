@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {uploadImages} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {
@@ -22,7 +22,7 @@ module.exports = {
   create: async (req, res) => {
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
@@ -43,7 +43,7 @@ module.exports = {
       return res.json(200, returnBrand);
 
     } catch (err) {
-      res.json(400, {message: 'wrong', err});
+      res.json(400, {message: 'something wrong', err});
     }
   },
 
@@ -54,7 +54,7 @@ module.exports = {
 
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
@@ -70,12 +70,12 @@ module.exports = {
         }
       }
 
-      const brand = await Brand.updateOne({id: req.param('id')}).set(req.body);
+      const brand = await Brand.updateOne({id: req.param('id')}).set(body);
 
-      return res.json(200, brand);
+      return res.status(200).json(brand);
 
     } catch (err) {
-      return res.json(400, {message: 'Something Went Wrong', err});
+      return res.status(400).json({message: 'Something Went Wrong', err});
     }
 
   },

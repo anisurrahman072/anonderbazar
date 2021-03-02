@@ -164,7 +164,7 @@ module.exports = {
 
   //Method called for uploading product images
   //Model models/ProductImage.js
-  upload: async function (req, res) {
+  upload: async (req, res) => {
 
     try {
       if (req.body.hasImage === 'true' && req.body.product_id) {
@@ -210,12 +210,8 @@ module.exports = {
         });
 
       } else if (req.body.id) {
-        ProductImage.update({id: req.body.id}, {deletedAt: new Date()}).exec((err, product) => {
-          if (err) {
-            return res.json(err, 400);
-          }
-          return res.json(product[0]);
-        });
+        const productImage = await ProductImage.update({id: req.body.id}).set({deletedAt: new Date()}).fetch();
+        return res.status(200).json({productImage: productImage});
       } else {
         res.json(400, {message: 'wrong'});
       }
@@ -226,7 +222,7 @@ module.exports = {
   },
   //Method called for uploading product images
   //Model models/ProductImage.js
-  uploadCouponBanners: async function (req, res) {
+  uploadCouponBanners: async  (req, res) => {
     if (!req.body.product_id) {
       return res.badRequest('No Associated Product to attach banners');
     }
@@ -273,7 +269,7 @@ module.exports = {
   },
   //Method called for getting a product available date
   //Model models/Product.js
-  getAvailableDate: async function (req, res) {
+  getAvailableDate: async (req, res) => {
 
     try {
       /*      function randomDate(start, end) {

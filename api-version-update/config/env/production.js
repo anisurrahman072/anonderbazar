@@ -47,8 +47,11 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     default: {
-      adapter: 'sails-mysql',
-      url: 'mysql://master:duY$1L#8rwof@localhost:3306/anonderbazaar',
+      // adapter: 'sails-mysql',
+      // host: '3.1.166.7',
+      // url: 'mysql://master:duY$1L#8rwof@3.1.166.7:3306/anonderbazaar',
+      url: 'mysql://root@localhost:3306/anonderbazaar',
+      connectTimeout: 20000,
       //--------------------------------------------------------------------------
       //  /\   To avoid checking it in to version control, you might opt to set
       //  ||   sensitive credentials like `url` using an environment variable.
@@ -75,8 +78,6 @@ module.exports = {
     },
 
   },
-
-
 
   models: {
 
@@ -251,10 +252,9 @@ module.exports = {
     * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
     *                                                                          *
     ***************************************************************************/
-    // onlyAllowOrigins: [
-    //   'https://example.com',
-    //   'https://staging.example.com',
-    // ],
+    onlyAllowOrigins: [
+      'http://dev.anonderbazar.com',
+    ],
 
 
     /***************************************************************************
@@ -326,7 +326,7 @@ module.exports = {
     * (https://sailsjs.com/config/http)                                        *
     *                                                                          *
     ***************************************************************************/
-    // trustProxy: true,
+    trustProxy: true,
 
   },
 
