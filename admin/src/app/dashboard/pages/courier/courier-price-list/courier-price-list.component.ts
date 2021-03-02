@@ -36,6 +36,8 @@ export class CourierPriceListComponent implements OnInit {
   validateEditForm: FormGroup;
   id: number;
   editCourier_id: any;
+  submitting: boolean = false;
+
   constructor(private route: ActivatedRoute,
     private uiService: UIService,
     private fb: FormBuilder,
@@ -56,7 +58,7 @@ export class CourierPriceListComponent implements OnInit {
       editRemarks: [""],
     });
   }
-  // init the component 
+  // init the component
   ngOnInit() {
     this.getCourierPriceData();
   }
@@ -69,7 +71,7 @@ export class CourierPriceListComponent implements OnInit {
     });
 
 
-  } 
+  }
   //Event method for pagination change
   changePage(page: number, limit: number) {
     this.page = page;
@@ -78,10 +80,10 @@ export class CourierPriceListComponent implements OnInit {
     return false;
   }
   //Event method for deleting order price list
-  deleteConfirm(i, id) { 
-    this.courierPriceService.delete(id).subscribe(result => { 
+  deleteConfirm(i, id) {
+    this.courierPriceService.delete(id).subscribe(result => {
 
-      this.getCourierPriceData(); 
+      this.getCourierPriceData();
       this._notification.create('warning', 'Delete', 'Price has been removed successfully');
 
     });
@@ -94,10 +96,11 @@ export class CourierPriceListComponent implements OnInit {
   }
   //Event method for submitting the form
   submitForm = ($event, value) => {
+    this.submitting = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
 
     const formData: FormData = new FormData();
     formData.append("courier_id", value.courier_id);
@@ -107,6 +110,8 @@ export class CourierPriceListComponent implements OnInit {
 
     this.courierPriceService.insert(formData).subscribe(
       result => {
+        this.submitting = false;
+
         if (result.id) {
           this._notification.create(
             "success",
@@ -120,6 +125,12 @@ export class CourierPriceListComponent implements OnInit {
       },
       error => {
         this._isSpinning = false;
+        this.submitting = false;
+        this._notification.create(
+            "error",
+            "Error Occurred!",
+            "Error occurred while adding courier price!"
+        );
       }
     );
   };
@@ -149,7 +160,7 @@ export class CourierPriceListComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
     formData.append("courier_id", value.editCourier_id);
     formData.append("weight", value.editName);
@@ -187,7 +198,7 @@ export class CourierPriceListComponent implements OnInit {
         editName: result.weight,
         editPrice: result.price,
         editRemarks: result.remarks,
-      }); 
+      });
     });
   };
 

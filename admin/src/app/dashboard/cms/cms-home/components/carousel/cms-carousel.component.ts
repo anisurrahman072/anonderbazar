@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CmsService } from '../../../../../services/cms.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileHolder, UploadMetadata } from 'angular2-image-upload';
-import { NzNotificationService } from 'ng-zorro-antd'; 
+import { NzNotificationService } from 'ng-zorro-antd';
 import {environment} from "../../../../../../environments/environment";
 
 @Component({
@@ -27,6 +27,7 @@ export class CmsCarouselComponent implements OnInit {
   id: any;
 
   currentCarouselId: any;
+  submitting: boolean = false;
 
   constructor(
     private cmsService: CmsService,
@@ -72,7 +73,7 @@ export class CmsCarouselComponent implements OnInit {
   //Method for showing the edit modal
   showEditModal = i => {
     this.currentCarouselId = i;
-    let textDescription = this.cmsCarouselData[i].description; 
+    let textDescription = this.cmsCarouselData[i].description;
     this.cmsCarouselData[i]['short1'] = textDescription.short1;
     this.cmsCarouselData[i]['short2'] = textDescription.short2;
     this.cmsCarouselData[i]['short3'] = textDescription.short3;
@@ -94,6 +95,7 @@ export class CmsCarouselComponent implements OnInit {
   };
 //Event method for submitting the form
   submitForm = ($event, value) => {
+    this.submitting = true;
     this._isSpinning = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
@@ -113,11 +115,26 @@ export class CmsCarouselComponent implements OnInit {
     }
 
     this.cmsService.customInsert(formData).subscribe(result => {
-      this.cmsCarouselData.push(result.data); 
+      this.submitting = false;
+      this.cmsCarouselData.push(result.data);
       this._isSpinning = false;
       this.isAddModalVisible = false;
+      this._notification.create(
+          "success",
+          "New Carousel has been successfully added.",
+          result.name
+      );
       this.resetForm(null);
-    });
+    },
+        error => {
+          this.submitting = false;
+          this._notification.create(
+              "error",
+              "Error Occurred!",
+              "New Carousel didn't added successfully!"
+          );
+
+        });
     this.getData();
   };
 //Event method for submitting the edit form

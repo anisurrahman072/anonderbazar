@@ -112,7 +112,7 @@
 
                     <div nz-form-item nz-row>
                         <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || !ImageFile">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || !ImageFile || submitting">
                                 Submit
                             </button>
                             <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
@@ -248,7 +248,7 @@
             </nz-spin>
         </div>
     </ng-template>
-</nz-modal> 
+</nz-modal>
 
 <div class="col-md-6" *ngFor="let carousel of cmsCarouselData; let i = index" [attr.data-index]="i">
     <nz-card style="max-height: 260px;margin-bottom: 5px;">
@@ -286,7 +286,7 @@
                     <img class="img img-responsive " alt="{{carousel.image}}" src="{{ IMAGE_ENDPOINT + carousel.image}}" />
 
                 </div>
-            </div> 
+            </div>
         </ng-template>
     </nz-card>
 </div>
