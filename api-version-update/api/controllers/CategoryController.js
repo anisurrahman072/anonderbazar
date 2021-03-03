@@ -113,7 +113,7 @@ module.exports = {
     try {
       let body = req.body;
       if (body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig(req.file('image0'));
+        const uploaded = await uploadImages(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
@@ -134,7 +134,7 @@ module.exports = {
     try {
       let body = req.body;
       if (body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
@@ -157,7 +157,7 @@ module.exports = {
       let body = req.body;
       console.log('body', body);
       if (body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
@@ -179,7 +179,7 @@ module.exports = {
     let body = req.body;
     try {
       if (req.body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
@@ -202,7 +202,7 @@ module.exports = {
     try {
       let body = req.body;
       if (body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig.upload(req.file('image0'));
+        const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }

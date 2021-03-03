@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+const { initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all product part data
@@ -65,12 +65,13 @@ module.exports = {
         message: 'Get All products with pagination',
         data: parts
       });
-    } catch
-    (error) {
+    } catch (error) {
+      console.log(error);
       let message = 'Error in Get All products with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

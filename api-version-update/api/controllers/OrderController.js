@@ -25,6 +25,7 @@ module.exports = {
     try {
       return res.json({message: 'Not Authorized'});
     } catch (error) {
+      console.log(error);
       return res.json({error: error});
     }
   },

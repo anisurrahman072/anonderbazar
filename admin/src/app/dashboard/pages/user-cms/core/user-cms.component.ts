@@ -69,6 +69,7 @@ export class UserCmsComponent implements OnInit {
   id: any;
 
   currentPostId: any;
+  submitting: boolean = false;
 
   constructor(
     private cmsService: CmsService,
@@ -102,6 +103,7 @@ export class UserCmsComponent implements OnInit {
   };
   // Event method for submitting the form
   submitForm = ($event, value) => {
+    this.submitting = true;
     this._isSpinning = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
@@ -124,10 +126,16 @@ export class UserCmsComponent implements OnInit {
     }
 
     this.cmsService.customPostInsert(formData).subscribe(result => {
+      this.submitting = false;
+      this._notification.create('success', 'Added Successfully.', "User CMS added successfully.");
+
       this._isSpinning = false;
       this.isAddModalVisible = false;
       this.resetForm(null);
       setInterval(() => {  location.reload();  }, 10000);
+    }, error => {
+      this.submitting = false;
+      this._notification.create('error', 'Error Occurred!', "Error occurred while adding user CMS!");
     });
   };
   // Method for removing the image
