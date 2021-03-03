@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
+const { initLogPlaceholder, pagination} = require('../../libs');
 
 module.exports = {
   //Method called for getting all product part data
