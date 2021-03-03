@@ -151,6 +151,7 @@ export class OrderComponent implements OnInit {
         this._isSpinning = true;
         this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue), status: this.statusSearchValue})
             .subscribe(result => {
+                console.log('getallorders', result);
                 this.data = result;
                 this._isSpinning = false;
             }, (err) => {
