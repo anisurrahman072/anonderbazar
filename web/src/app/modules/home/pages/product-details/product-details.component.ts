@@ -43,8 +43,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     @ViewChild('scrollMe') private myScrollContainer: ElementRef;
     couponProductModalRef: BsModalRef;
     similarProducts;
-    objectKeys = Object.keys;
-    selectedVariant = [];
     id: any;
     data: Product;
     productVariants: any;
@@ -55,9 +53,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     discountBadgeIcon: any;
     cart$: Observable<any>;
     cartId: any;
-    //cartId: any=1;
     mainImg: string;
-    cartItemId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
     discountPercentage: any;
@@ -65,13 +61,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     product_quantity: any = 1;
     cartVariants: any[] = [];
     tempRating: any;
-    overStar: number;
     addTofavouriteLoading$: Observable<boolean>;
     tag: any;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
     UnitPrice: any;
-    availableDate: any;
     availableDateLoading: boolean = false;
     allTheParts: any;
     variantCalculatedPrice: {
@@ -423,7 +417,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                         allImages.push(element);
                     });
                 }
-
+                if(this.data.id == 6016){
+                    this.product_quantity = 2;
+                }
                 result.product_images = allImages;
 
                 this.buffer_time = this.data.warehouse_id.buffer_time;
@@ -431,8 +427,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
                 this.mainImg = this.data.image;
                 this.tempRating = result.rating;
-                if (result.tag != "undefined")
+                if (result.tag != "undefined"){
                     this.tag = JSON.parse(result.tag);
+                }
                 this.updateFinalprice();
                 this.getSimilarProductData(result.category_id.id, result.id);
             }
@@ -500,11 +497,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                     product_variant_id: v.product_variant_id
                 })
             });
+            let qty = this.product_quantity;
+
             if (variants.length == 0) {
                 data = {
                     cart_id: this.cartId,
                     product_id: this.data.id,
-                    product_quantity: this.product_quantity,
+                    product_quantity: qty,
                     product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                     product_total_price: product_total_price,
                 };
@@ -512,7 +511,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 data = {
                     cart_id: this.cartId,
                     product_id: this.data.id,
-                    product_quantity: this.product_quantity,
+                    product_quantity: qty,
                     product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                     product_total_price: product_total_price,
                     cartItemVariants: variants

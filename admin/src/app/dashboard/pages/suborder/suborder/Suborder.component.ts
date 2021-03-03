@@ -20,8 +20,6 @@ import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-
-
 @Component({
     selector: 'app-warehouse',
     templateUrl: './Suborder.component.html',
@@ -31,7 +29,6 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export class SuborderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
 
-    basicDemoValue = '2017-01-01';
     modelValueAsDate: Date = new Date();
     dateTimeValue: Date = new Date();
     multiDates: Date[] = [new Date(), (new Date() as any)['fp_incr'](10)];
@@ -42,7 +39,11 @@ export class SuborderComponent implements OnInit {
     inlineDatePicker: Date = new Date();
 
 
-    data = [];
+    subOrderData = [];
+    subOrderTotal: number;
+    subOrderLimit: number = 10;
+    subOrderPage: number = 1;
+
     dataPR = [];
     _isSpinning = true;
     _isSpinningCsv = true;
@@ -50,11 +51,6 @@ export class SuborderComponent implements OnInit {
     currentUser: any;
     selectedOption: any[] = [];
     viewNotRendered: boolean = true;
-
-
-    limit: number = 10;
-    page: number = 1;
-    total: number;
 
     pageCsv: number = 1;
     limitCsv: number = 10;
@@ -89,14 +85,14 @@ export class SuborderComponent implements OnInit {
     statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
     statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
-    _dateRange: any;
+
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
     isProductVisible = false;
     validateProductForm: FormGroup;
     allOders: any = [];
     products = [];
-    addNew: boolean;
+
     currentProduct: any = {};
     storeOrderIds: any = [];
 
@@ -104,8 +100,6 @@ export class SuborderComponent implements OnInit {
     validateFormPR: FormGroup;
     storeOrderIdsPR: any = [];
     warehouse: any;
-    isCsvCheckedStatus: any = {};
-
 
     constructor(private suborderService: SuborderService,
                 private _notification: NzNotificationService,
@@ -169,8 +163,8 @@ export class SuborderComponent implements OnInit {
         this._isSpinning = true;
         this.suborderService.getAllsuborder(
             this.currentWarehouseId,
-            this.page,
-            this.limit,
+            this.subOrderPage,
+            this.subOrderLimit,
             this.suborderNumberSearchValue || '',
             this.orderNumberSearchValue || '',
             this.suborderIdValue || '',
@@ -183,10 +177,10 @@ export class SuborderComponent implements OnInit {
             this.filterTerm(this.sortValue.name),
             this.filterTerm(this.sortValue.price))
             .subscribe(result => {
-                    this.data = result.data;
+                    this.subOrderData = result.data;
                     console.log(result);
 
-                    this.total = result.total;
+                    this.subOrderTotal = result.total;
                     this._isSpinning = false;
                 },
                 result => {
@@ -201,7 +195,7 @@ export class SuborderComponent implements OnInit {
         if (typeof this.pageAllCheckedStatusCsv[this.pageCsv] === 'undefined') {
             this.pageAllCheckedStatusCsv[this.pageCsv] = false;
         }
-        this.suborderService.getAllsuborder(
+        this.suborderService.getAllsuborderForCsv(
             this.currentWarehouseId,
             this.pageCsv,
             this.limitCsv,
@@ -349,9 +343,14 @@ export class SuborderComponent implements OnInit {
             let findValue = this.storeOrderIdsPR.indexOf(value);
             if (findValue !== -1) {
                 this.storeOrderIdsPR.splice(findValue, 1);
-                this.warehouse = value;
+                this.warehouse = {
+                    id: value.warehouse_id,
+                    name: value.warehouse_name,
+                    phone: value.warehouse_phone,
+                    address: value.warehouse_address,
+                };
                 this.validateFormPR.patchValue({
-                    seller_name: this.warehouse.name,
+                    seller_name: value.name,
                 });
             }
         }
@@ -364,13 +363,13 @@ export class SuborderComponent implements OnInit {
         }
 
         if (this.storeOrderIdsPR[0]) {
-            this.warehouse = this.storeOrderIdsPR[0].warehouse_id;
+
             this.validateFormPR.patchValue({
                 total_order: itemCount,
-                seller_name: this.warehouse.name,
-                seller_phone: this.warehouse.phone,
-                seller_address: this.warehouse.address,
-                k_a_m: this.warehouse.name,
+                seller_name: this.storeOrderIdsPR[0].warehouse_name,
+                seller_phone: this.storeOrderIdsPR[0].warehouse_phone,
+                seller_address: this.storeOrderIdsPR[0].warehouse_address,
+                k_a_m: this.storeOrderIdsPR[0].warehouse_name,
             });
         } else {
             this.validateFormPR.patchValue({
@@ -385,7 +384,7 @@ export class SuborderComponent implements OnInit {
 
     //Event method for setting up filter data
     sort(sortName, sortValue) {
-        this.page = 1;
+        this.subOrderPage = 1;
         this.sortValue[sortName] = sortValue;
         this.getPageData()
     }
@@ -393,8 +392,8 @@ export class SuborderComponent implements OnInit {
     //Event method for pagination change
     changePage(page: number, limit: number) {
 
-        this.page = page;
-        this.limit = limit;
+        this.subOrderPage = page;
+        this.subOrderLimit = limit;
         this.getPageData();
         return false;
     }
@@ -418,7 +417,7 @@ export class SuborderComponent implements OnInit {
 
 
     categoryIdChange($event) {
-        this.page = 1;
+        this.subOrderPage = 1;
         const query = encodeURI($event);
 
         this.subcategorySearchOptions = [];
@@ -433,11 +432,11 @@ export class SuborderComponent implements OnInit {
 
         this.suborderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             this._notification.create('success', 'Successful Message', 'suborder has been updated successfully');
-/*
-            this.courierService.updateSuborder($event, id)
-                .subscribe(arg => {
-                });
-*/
+            /*
+                        this.courierService.updateSuborder($event, id)
+                            .subscribe(arg => {
+                            });
+            */
 
             this.getPageData();
         }, (err) => {
@@ -473,7 +472,7 @@ export class SuborderComponent implements OnInit {
 
     daterangeChange() {
         if (this.dateSearchValue.from && this.dateSearchValue.to) {
-            this.page = 1;
+            this.subOrderPage = 1;
             this.getPageData()
         }
 
@@ -483,7 +482,7 @@ export class SuborderComponent implements OnInit {
         console.log('called');
 
         if (this.dateSearchValue1.from && this.dateSearchValue1.to) {
-            this.page = 1;
+            this.subOrderPage = 1;
             this.allOders = this.getPageData();
         }
     }
@@ -519,13 +518,18 @@ export class SuborderComponent implements OnInit {
         try {
             const newlist = this.storeOrderIdsPR;
 
-            const allApiCalls = newlist.map((suborder) => {
-                return this.suborderService.update(suborder.id, {PR_status: 1});
-            })
+            const allSuborderIds = newlist.map((suborder) => {
+               return suborder.id
+            });
+
+            const allApiCalls = [
+                this.suborderService.massUpdatePrStatus(allSuborderIds, 1)
+            ];
 
             let pdfDataMine = [];
             let i = 0;
 
+            const prRequestPayloads = [];
             newlist.forEach(suborder => {
 
                 suborder.items.forEach(item => {
@@ -536,7 +540,7 @@ export class SuborderComponent implements OnInit {
                     });
                     pdfDataMine.push({
                         'SL': ++i,
-                        'Vendor': item.warehouse_id.name,
+                        'Vendor': suborder.warehouse_name,
                         'Title': item.product_id.name,
                         'SKU': item.product_id.code,
                         'Size': varients,
@@ -546,7 +550,7 @@ export class SuborderComponent implements OnInit {
                     });
                 });
                 let payload = {
-                    warehouse_id: suborder.items[0].warehouse_id.id,
+                    warehouse_id: suborder.warehouse_id,
                     total_quantity: pdfDataMine.reduce(function (total, currentValue) {
                         return total + currentValue.Count;
                     }, 0),
@@ -566,7 +570,7 @@ export class SuborderComponent implements OnInit {
                     date: new Date()
                 };
 
-                allApiCalls.push(this.requisitionService.insert(payload))
+                prRequestPayloads.push(payload);
 
             });
 
@@ -574,8 +578,9 @@ export class SuborderComponent implements OnInit {
                 return [p.SL, p.Vendor, p.Title, p.SKU, p.Size, p.Count, p.Rate, (p.Amount).toFixed(2)];
             });
 
-            console.log('pdfDataFormattedMine',pdfDataMine, pdfDataFormattedMine)
+            console.log('pdfDataFormattedMine', pdfDataMine, pdfDataFormattedMine)
 
+            allApiCalls.push(this.requisitionService.insertMass(prRequestPayloads));
             forkJoin(allApiCalls).subscribe((res) => {
 
                 let docDefinition = {
@@ -596,8 +601,8 @@ export class SuborderComponent implements OnInit {
                                 widths: ['auto', 'auto'],
                                 body: [
                                     ['Total Orders', value.total_order ? value.total_order : ''],
-                                    ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name :''],
-                                    ['Seller Name', value.seller_name ? value.seller_name : '' ],
+                                    ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name : ''],
+                                    ['Seller Name', value.seller_name ? value.seller_name : ''],
                                     ['Seller Phone', value.seller_phone ? value.seller_phone : ''],
                                     ['Seller Address', value.seller_address ? value.seller_address : ''],
                                     ['Seller Address', value.k_a_m ? value.k_a_m : ''],
@@ -668,43 +673,46 @@ export class SuborderComponent implements OnInit {
         let csvData = [];
 
         data.forEach(suborder => {
-            suborder.items.forEach(item => {
-                let i = 0, varients = "";
-                item.suborderItemVariants.forEach(element => {
-                    varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
-                });
+            if (suborder.items && suborder.items.length > 0) {
+                suborder.items.forEach(item => {
+                    let i = 0, varients = "";
+                    item.suborderItemVariants.forEach(element => {
+                        varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
+                    });
 
-                csvData.push({
-                    'SL': ++i,
-                    'Order Id': suborder.product_order_id.id,
-                    'SubOrder Id': suborder.id,
-                    'Vandor Name': (item.warehouse_id) ? item.warehouse_id.name : 'N/a',
-                    'Vandor Phone': (item.warehouse_id) ? item.warehouse_id.phone : 'N/a',
-                    'Customer Name': suborder.order.user_id.first_name + ' ' + suborder.order.user_id.last_name,
-                    'Customer Phone': (suborder.order.user_id) ? suborder.order.user_id.phone : 'N/a',
-                    'Product Description': item.product_id.name + ' | ' + varients,
-                    'Price': item.product_id.price,
-                    'Quantity': item.product_quantity,
-                    'Total': item.product_total_price,
-                    'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
-                    'Suborder Changed By': ((suborder.changed_by) ? suborder.changed_by.first_name : '') + ' ' + ((suborder.changed_by) ? suborder.changed_by.last_name : ''),
-                    'Order Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.order.status] : 'Unrecognized Status',
-                    'Order Status Changed By': ((suborder.order.changed_by) ? suborder.order.changed_by.first_name : '') + ' ' + ((suborder.order.changed_by) ? suborder.order.changed_by.last_name : ''),
-                    'Date': (item.date) ? item.date : 'N/a',
-                    'Pending': (item.pending) ? moment(item.pending.date).format('YYYY-MM-DD') + '-' + item.pending.changed_by.first_name + ' ' + item.pending.changed_by.last_name : 'N/a',
-                    'Processing': (item.processing) ? moment(item.processing.date).format('YYYY-MM-DD') + '-' + item.processing.changed_by.first_name + ' ' + item.processing.changed_by.last_name : 'N/a',
-                    'Prepared': (item.prepared) ? moment(item.prepared.date).format('YYYY-MM-DD') + '-' + item.prepared.changed_by.first_name + ' ' + item.prepared.changed_by.last_name : 'N/a',
-                    'Departure': (item.departure) ? moment(item.departure.date).format('YYYY-MM-DD') + '-' + item.departure.changed_by.first_name + ' ' + item.departure.changed_by.last_name : 'N/a',
-                    'Pickup': (item.pickup) ? moment(item.pickup.date).format('YYYY-MM-DD') + '-' + item.pickup.changed_by.first_name + ' ' + item.pickup.changed_by.last_name : 'N/a',
-                    'In the Air': (item.in_the_air) ? moment(item.in_the_air.date).format('YYYY-MM-DD') + '-' + item.in_the_air.changed_by.first_name + ' ' + item.in_the_air.changed_by.last_name : 'N/a',
-                    'Landed': (item.landed) ? moment(item.landed.date).format('YYYY-MM-DD') + '-' + item.landed.changed_by.first_name + ' ' + item.landed.changed_by.last_name : 'N/a',
-                    'Arrived At Warehouse': (item.arrival_at_warehouse) ? moment(item.arrival_at_warehouse.date).format('YYYY-MM-DD') + '-' + item.arrival_at_warehouse.changed_by.first_name + ' ' + item.arrival_at_warehouse.changed_by.last_name : 'N/a',
-                    'Shipped': (item.shipped) ? moment(item.shipped.date).format('YYYY-MM-DD') + '-' + item.shipped.changed_by.first_name + ' ' + item.shipped.changed_by.last_name : 'N/a',
-                    'Out For Delivery': (item.out_for_delivery) ? moment(item.out_for_delivery.date).format('YYYY-MM-DD') + '-' + item.out_for_delivery.changed_by.first_name + ' ' + item.out_for_delivery.changed_by.last_name : 'N/a',
-                    'Delivered': (item.delivered) ? moment(item.delivered.date).format('YYYY-MM-DD') + '-' + item.delivered.changed_by.first_name + ' ' + item.delivered.changed_by.last_name : 'N/a',
-                    'Canceled': (item.canceled) ? moment(item.canceled.date).format('YYYY-MM-DD') + '-' + item.canceled.changed_by.first_name + ' ' + item.canceled.changed_by.last_name : 'N/a',
+                    csvData.push({
+                        'SL': ++i,
+                        'Order Id': suborder.product_order_id.id,
+                        'SubOrder Id': suborder.id,
+                        'Vandor Name': (suborder.warehouse_name) ? suborder.warehouse_name : 'N/A',
+                        'Vandor Phone': (suborder.warehouse_phone) ? suborder.warehouse_phone : 'N/A',
+                        'Customer Name': suborder.customer_name,
+                        'Customer Phone': (suborder.customer_phone) ? suborder.customer_phone : 'N/A',
+                        'Product Description': item.product_id.name + ' | ' + varients,
+                        'Price': item.product_id.price,
+                        'Quantity': item.product_quantity,
+                        'Total': item.product_total_price,
+                        'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
+                        'Suborder Changed By': (suborder.subOrderChangedBy ? suborder.subOrderChangedBy : ''),
+                        'Order Status': typeof this.statusOptions[suborder.order_status] !== 'undefined' ? this.statusOptions[suborder.order_status] : 'Unrecognized Status',
+                        'Order Status Changed By': (suborder.orderChangedBy ? suborder.orderChangedBy : ''),
+                        'Date': (item.date) ? item.date : 'N/A',
+                        'Pending': (item.pending) ? moment(item.pending.date).format('YYYY-MM-DD') + '-' + item.pending.changed_by.first_name + ' ' + item.pending.changed_by.last_name : 'N/A',
+                        'Processing': (item.processing) ? moment(item.processing.date).format('YYYY-MM-DD') + '-' + item.processing.changed_by.first_name + ' ' + item.processing.changed_by.last_name : 'N/A',
+                        'Prepared': (item.prepared) ? moment(item.prepared.date).format('YYYY-MM-DD') + '-' + item.prepared.changed_by.first_name + ' ' + item.prepared.changed_by.last_name : 'N/A',
+                        'Departure': (item.departure) ? moment(item.departure.date).format('YYYY-MM-DD') + '-' + item.departure.changed_by.first_name + ' ' + item.departure.changed_by.last_name : 'N/A',
+                        'Pickup': (item.pickup) ? moment(item.pickup.date).format('YYYY-MM-DD') + '-' + item.pickup.changed_by.first_name + ' ' + item.pickup.changed_by.last_name : 'N/A',
+                        'In the Air': (item.in_the_air) ? moment(item.in_the_air.date).format('YYYY-MM-DD') + '-' + item.in_the_air.changed_by.first_name + ' ' + item.in_the_air.changed_by.last_name : 'N/A',
+                        'Landed': (item.landed) ? moment(item.landed.date).format('YYYY-MM-DD') + '-' + item.landed.changed_by.first_name + ' ' + item.landed.changed_by.last_name : 'N/A',
+                        'Arrived At Warehouse': (item.arrival_at_warehouse) ? moment(item.arrival_at_warehouse.date).format('YYYY-MM-DD') + '-' + item.arrival_at_warehouse.changed_by.first_name + ' ' + item.arrival_at_warehouse.changed_by.last_name : 'N/A',
+                        'Shipped': (item.shipped) ? moment(item.shipped.date).format('YYYY-MM-DD') + '-' + item.shipped.changed_by.first_name + ' ' + item.shipped.changed_by.last_name : 'N/A',
+                        'Out For Delivery': (item.out_for_delivery) ? moment(item.out_for_delivery.date).format('YYYY-MM-DD') + '-' + item.out_for_delivery.changed_by.first_name + ' ' + item.out_for_delivery.changed_by.last_name : 'N/A',
+                        'Delivered': (item.delivered) ? moment(item.delivered.date).format('YYYY-MM-DD') + '-' + item.delivered.changed_by.first_name + ' ' + item.delivered.changed_by.last_name : 'N/A',
+                        'Canceled': (item.canceled) ? moment(item.canceled.date).format('YYYY-MM-DD') + '-' + item.canceled.changed_by.first_name + ' ' + item.canceled.changed_by.last_name : 'N/A',
+                    });
                 });
-            });
+            }
+
         });
 
         const header = [
@@ -771,7 +779,7 @@ export class SuborderComponent implements OnInit {
     }
 
     subcategoryIdChange($event) {
-        this.page = 1;
+        this.subOrderPage = 1;
         this.getPageData();
 
     }
@@ -779,9 +787,10 @@ export class SuborderComponent implements OnInit {
     subcategoryIdSearchChange($event) {
 
     }
+
     resetAllFilter() {
-        this.limit = 5;
-        this.page = 1;
+        this.subOrderLimit = 5;
+        this.subOrderPage = 1;
         this.dateSearchValue = '';
         this.nameSearchValue = '';
         this.sortValue = {

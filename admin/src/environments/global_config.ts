@@ -6,7 +6,6 @@ type GlobalConfigs = {
 export const GLOBAL_CONFIGS = {
     ORDER_STATUSES: [
         {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
-        {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
         {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
         {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
         {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
@@ -18,6 +17,7 @@ export const GLOBAL_CONFIGS = {
         {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
         {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
         {value: 12, label: 'Canceled', icon: 'anticon-close-circle'},
+        {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
     ],
     ORDER_STATUSES_KEY_VALUE: {
         1: 'Pending',

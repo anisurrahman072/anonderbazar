@@ -20,7 +20,15 @@ export class OrderService {
     }
 
     getAllOrdersForFilter(data): Observable<any> {
-        let url = `${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`;
+        let url = `${this.EndPoint}/getAllOrder?created_at= ${data.date}`;
+        if (data.status) {
+            url += `&status=${data.status}`
+        }
+        return this.http.get(url);
+    }
+
+    getAllOrdersGrid(data, page: number = 1, limit: number = 25): Observable<any> {
+        let url = `${this.EndPoint}/allOrders?&page=${page}&limit=${limit}&created_at= ${data.date}`;
         if (data.status) {
             url += `&status=${data.status}`
         }

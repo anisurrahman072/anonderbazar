@@ -5,15 +5,20 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {adminPaymentAddressId, dhakaZilaId, sslCommerceSandbox, sslCommerzSandboxCred} = require('../../config/softbd');
-
+const moment = require('moment');
+const Promise = require('bluebird');
 const _ = require('lodash');
 const SSLCommerz = require('sslcommerz-nodejs');
-const webURL = 'https://anonderbazar.com';
-const APIURL = 'https://api.anonderbazar.com/api/v1';
+
+const webURL = 'http://test.anonderbazar.com';
+const APIURL = 'http://api.test.anonderbazar.com/api/v1';
+
 const {asyncForEach} = require('../../libs');
 const {calcCartTotal} = require('../../libs/cartHelper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {sslcommerzInstance} = require('../../libs/sslcommerz');
+const {pagination} = require('../../libs');
 
 module.exports = {
   index: (req, res) => {
@@ -420,7 +425,7 @@ module.exports = {
     try {
 
       let cart = await Cart.findOne({
-        user_id: user.id,
+        user_id: authUser.id,
         deletedAt: null
       });
 
@@ -508,20 +513,7 @@ module.exports = {
         }
       }
 
-      let settings = {
-        isSandboxMode: sslCommerceSandbox, //false if live version
-        store_id: globalConfigs && globalConfigs.sslcommerce_user ? globalConfigs.sslcommerce_user : 'anonderbazarlive@ssl',
-        store_passwd: globalConfigs && globalConfigs.sslcommerce_pass ? globalConfigs.sslcommerce_pass : 'i2EFz@ZNt57@t@r',
-      };
-
-      if (sslCommerceSandbox) {
-        settings = {
-          isSandboxMode: true,
-          ...sslCommerzSandboxCred
-        };
-      }
-
-      let sslcommerz = new SSLCommerz(settings);
+      const sslcommerz = sslcommerzInstance(globalConfigs);
 
       let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
       let string_length = 16;
@@ -589,10 +581,10 @@ module.exports = {
       post_body['product_profile'] = 'general';
 
       sslcommerz.init_transaction(post_body).then(response => {
-        console.log('slcommerz.init_transaction success', response);
+        console.log('sslcommerz.init_transaction success', response);
         return res.json(response);
       }).catch(error => {
-        console.log('slcommerz.init_transaction error', error);
+        console.log('sslcommerz.init_transaction error', error);
         res.writeHead(301,
           {Location: webURL + '/checkout'}
         );
@@ -614,13 +606,20 @@ module.exports = {
       return res.badRequest('Invalid order request');
     }
 
-    try {
+    let globalConfigs = await GlobalConfigs.findOne({
+      deletedAt: null
+    });
 
+    if (!globalConfigs) {
+      return res.badRequest('Global config was not found!');
+    }
+    try {
+      const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
       console.log('validationResponse', validationResponse);
 
-      if (!(validationResponse && validationResponse.status === 'VALID')) {
+      if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.badRequest('Invalid order request');
       }
 
@@ -638,14 +637,6 @@ module.exports = {
 
       if (!user) {
         return res.badRequest('User was not found!');
-      }
-
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
-
-      if (!globalConfigs) {
-        return res.badRequest('Global config was not found!');
       }
 
       let cart = await Cart.findOne({
@@ -755,7 +746,7 @@ module.exports = {
 
               let newSuborderItemPayload = {
                 product_suborder_id: suborder.id,
-                product_id: thisCartItem.product_id,
+                product_id: thisCartItem.product_id.id,
                 warehouse_id: thisCartItem.product_id.warehouse_id,
                 product_quantity: thisCartItem.product_quantity,
                 product_total_price: thisCartItem.product_total_price,
@@ -961,6 +952,71 @@ module.exports = {
       {Location: webURL + '/checkout'}
     );
     res.end();
+  },
+  allOrders: async (req, res) => {
+    try {
+      let _pagination = pagination(req.query);
+
+      const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = 'SELECT orders.id as id,';
+      rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, ';
+      rawSelect += ' CONCAT(users.first_name, \' \',users.first_name) as  full_name,  CONCAT(changedBy.first_name, \' \',changedBy.first_name) as changedByName  ';
+
+      let fromSQL = ' FROM product_orders as orders  ';
+      fromSQL += '  LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id  ';
+      fromSQL += '  LEFT JOIN users as users ON users.id = orders.user_id  ';
+
+      let _where = ' WHERE orders.deleted_at IS NULL ';
+
+      if (req.query.status) {
+        _where += ` AND orders.status = ${req.query.status}`;
+      }
+      if (req.query.name) {
+        _where += ` AND users.first_name LIKE '%${req.query.status}%'`;
+      }
+
+      if (req.query.created_at) {
+        let created_at = JSON.parse(req.query.created_at);
+        let from = moment(created_at.from).format('YYYY-MM-DD HH:mm:ss');
+        let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
+        _where += `AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
+      }
+
+      _where += ' ORDER BY orders.created_at DESC ';
+      const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      let totalOrder = 0;
+      let orders = [];
+      if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
+        totalOrder = totalOrderRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+
+        const rawResult = await orderQuery(rawSelect + fromSQL + _where + limitSQL, []);
+
+        orders = rawResult.rows;
+      }
+
+      return res.status(200).json({
+        success: true,
+        total: totalOrder,
+        limit: _pagination.limit,
+        skip: _pagination.skip,
+        page: _pagination.page,
+        message: 'Get All orders with pagination',
+        data: orders
+      });
+
+    } catch (error) {
+      console.log('error', error);
+      let message = 'Error in getting all orders with pagination';
+      return res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
   },
   //Method called for getting all order data
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js, models/SuborderItemVariant.js

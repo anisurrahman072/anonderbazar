@@ -47,9 +47,9 @@
                   <td nz-td>
                     <ng-container
                       *ngIf="('order-read' | accessControl); else elseTemplate"
-                    > 
+                    >
                     </ng-container>
-                    <ng-template #elseTemplate> 
+                    <ng-template #elseTemplate>
                       {{ data.product_suborder_id[0].id }}
                     </ng-template>
                   </td>
@@ -130,26 +130,25 @@
                   <ng-container
                     *ngIf="('order-read' | accessControl); else elseTemplate"
                   >
-                    {{ data.product_suborder_id[0].product_order_id }}
+                    {{ data.order_id }}
                   </ng-container>
                   <ng-template #elseTemplate>
-                    {{ data.product_suborder_id[0].product_order_id }} /
-                    {{ data.product_suborder_id[0].id }}
+                    {{ data.suborder_id }}
                   </ng-template>
                 </td>
                   <td nz-td>
                     <nz-tag>
-                      {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+                      {{ data.customer_name}}
                     </nz-tag>
                   </td>
 
-                  <td nz-td>{{ data.product_id.name }}</td>
+                  <td nz-td>{{ data.product_name }}</td>
                   <td nz-td>{{ data.product_quantity }}</td>
-                  <td nz-td>{{ data.createdAt | date }}</td>
+                  <td nz-td>{{ data.created_at | date }}</td>
                   <td nz-td><i class="fa fa-circle text-success"></i></td>
                   <td>
                     <button
-                      [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+                      [routerLink]="['/dashboard/suborder/invoice/', data.suborder_id]"
                       nz-button
                       [nzType]="'info'"
                       [nzSize]="'default'"
@@ -202,26 +201,25 @@
             <ng-container
               *ngIf="('order-read' | accessControl); else elseTemplate"
             >
-              {{ data.product_suborder_id[0].product_order_id }} /
+              {{ data.order_id }} /
             </ng-container>
             <ng-template #elseTemplate>
-              {{ data.product_suborder_id[0].product_order_id }} /
-              {{ data.product_suborder_id[0].id }}
+              {{ data.suborder_id }}
             </ng-template>
           </td>
           <td nz-td>
             <nz-tag>
-              {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+              {{ data.customer_name}}
             </nz-tag>
           </td>
 
-          <td nz-td>{{ data.product_id.name }}</td>
+          <td nz-td>{{ data.product_name }}</td>
           <td nz-td>{{ data.product_quantity }}</td>
           <td nz-td>{{ now }}</td>
           <td nz-td><i class="fa fa-circle text-success"></i></td>
           <td>
             <button
-              [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+              [routerLink]="['/dashboard/suborder/invoice/', data.suborder_id]"
               nz-button
               [nzType]="'info'"
               [nzSize]="'default'"
@@ -288,7 +286,7 @@
           <td nz-td><i class="fa fa-circle text-success"></i></td>
 
           <!-- trying -->
-          
+
           <td>
             <button
               [routerLink]="['/dashboard/suborder/invoice/', data.id]"

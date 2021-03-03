@@ -164,6 +164,7 @@ module.exports = {
       if (!product) {
         return res.badRequest('Invalid data Provided');
       }
+
       const quantityPassed = parseFloat(req.body.product_quantity);
 
       if (product.quantity < quantityPassed) {
@@ -181,7 +182,7 @@ module.exports = {
         deletedAt: null
       });
 
-      let cartItem = null;
+
       let selectedCartItem = null;
       let cartItemVariantsLength = 0;
       if (cartItems && cartItems.length > 0) {
@@ -209,6 +210,7 @@ module.exports = {
           selectedCartItem = cartItems[0];
         }
       }
+      let cartItem = null;
       await sails.getDatastore()
         .transaction(async (db) => {
           if (selectedCartItem !== null && cartItemVariantsLength === 0) {
@@ -218,7 +220,7 @@ module.exports = {
               product_total_price: productUnitPrice * finalQuantity
             };
 
-            await CartItem.update({id: selectedCartItem.id}).set(cartItemBody)
+            cartItem = await CartItem.updateOne({id: selectedCartItem.id}).set(cartItemBody)
               .usingConnection(db);
 
           } else {
@@ -260,7 +262,7 @@ module.exports = {
             'total_price': totalPrice,
             'total_quantity': totalQty,
           };
-
+          console.log('cartItem', cartItem);
           await Cart.update({id: cartItem.cart_id}).set(cartPayload)
             .usingConnection(db);
         });

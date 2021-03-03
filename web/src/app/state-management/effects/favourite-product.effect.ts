@@ -5,24 +5,24 @@ import {AuthService, FavouriteProductService} from "../../services";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {of} from "rxjs/observable/of";
 import * as favouriteProductActions from "../actions/favourite-product.action";
-import {ToastrService} from "ngx-toastr";
 
 @Injectable()
 export class FavouriteProductEffects {
     constructor(private actions$: Actions,
                 private authService: AuthService,
-                private favouriteProductService: FavouriteProductService,
-                private toastr: ToastrService,) {
+                private favouriteProductService: FavouriteProductService) {
     }
-    
+
     @Effect()
     loadFavouriteProduct$ = this.actions$.ofType(favouriteProductActions.LOAD_FAVOURITE_PRODUCT).pipe(
         switchMap(() => {
             if (this.authService.getCurrentUserId()) {
                 return this.favouriteProductService
-                    .getByUserIdWithNoPopulate(this.authService.getCurrentUserId())
+                    .getByAuthUserNoPopulate()
                     .pipe(
-                        map(result => new favouriteProductActions.LoadFavouriteProductSuccess(result)),
+                        map(result => {
+                            return new favouriteProductActions.LoadFavouriteProductSuccess(result)
+                        }),
                         catchError(error => of(new favouriteProductActions.LoadFavouriteProductFail(error)))
                     );
             } else {
@@ -30,18 +30,18 @@ export class FavouriteProductEffects {
             }
         })
     )
-    
+
     @Effect()
     addFavouriteProduct$ = this.actions$.ofType(favouriteProductActions.ADD_TO_FAVOURITE_PRODUCT).pipe(
         switchMap((action: any) => {
-            
+
             return this.favouriteProductService
                 .insert(action.payload)
                 .pipe(
                     map(result => new favouriteProductActions.AddToFavouriteProductSuccess(result)),
                     catchError(error => of(new favouriteProductActions.LoadFavouriteProductFail(error)))
                 );
-            
+
         })
     )
 }

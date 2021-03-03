@@ -247,13 +247,12 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
         console.log('this.validateSignUpForm', this.validateSignUpForm);
 
-        if (!this.validateSignUpForm.valid) {
-            return false;
-        }
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }
-
+        if (!this.validateSignUpForm.valid) {
+            return false;
+        }
         let signupBirthDate = '';
         if (value.full_birth_date) {
             signupBirthDate = moment(value.full_birth_date).format('YYYY-MM-DD');

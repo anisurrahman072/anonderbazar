@@ -6,6 +6,7 @@ import {AuthService} from "../../../services/auth.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {Subscription} from "rxjs";
 import {UIService} from "../../../services/ui/ui.service";
+import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 
 @Component({
     selector: "app-running-order",
@@ -58,29 +59,10 @@ export class RunningOrderComponent implements OnInit {
     ngOnInit() {
         this.isVisibleRunning = false;
 
-        this.options = [
-            {
-                value: 1,
-                label: "Pending",
-                icon: "anticon-spin anticon-loading"
-            },
-            {
-                value: 2,
-                label: "Processing",
-                icon: "anticon-spin anticon-hourglass"
-            },
-            {
-                value: 3,
-                label: "Delivered",
-                icon: "anticon-check-circle"
-            },
-            {
-                value: 4,
-                label: "Canceled",
-                icon: "anticon-close-circle"
-            }
-        ];
+        this.options = GLOBAL_CONFIGS.ORDER_STATUSES;
         this.currentUser = this.authService.getCurrentUser();
+
+        console.log('this.currentUser', this.currentUser);
 
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
@@ -92,29 +74,57 @@ export class RunningOrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-
     getPageData() {
         let pendingCount = 0;
         let processingCount = 0;
         let deliveredCount = 0;
         let canceledCount = 0;
-        this.subOrderService
-            .getSuborder(this.currentWarehouseId, 1, null)
-            .subscribe(result => {
-                this.data = result.data;
+        if(this.currentWarehouseId){
+            this.subOrderService
+                .getSuborder(this.currentWarehouseId, 1, null)
+                .subscribe(result => {
+                    this.data = result.data;
 
-                pendingCount = result.pendingOrder;
-                processingCount = result.processingOrder;
-                deliveredCount = result.deliveredOrder;
-                canceledCount = result.canceledOrder;
-                this.setDashboardData(
-                    pendingCount,
-                    processingCount,
-                    deliveredCount,
-                    canceledCount
-                );
-                this._isSpinning = false;
-            });
+                    pendingCount = result.pendingOrder;
+                    processingCount = result.processingOrder;
+                    deliveredCount = result.deliveredOrder;
+                    canceledCount = result.canceledOrder;
+
+                    this.setDashboardData(
+                        pendingCount,
+                        processingCount,
+                        deliveredCount,
+                        canceledCount
+                    );
+                    this._isSpinning = false;
+                }, (error) => {
+                    console.log(error);
+                    this._isSpinning = false;
+                });
+        } else {
+            this.subOrderService
+                .getSuborder(null, 1, null)
+                .subscribe(result => {
+                    this.data = result.data;
+
+                    pendingCount = result.pendingOrder;
+                    processingCount = result.processingOrder;
+                    deliveredCount = result.deliveredOrder;
+                    canceledCount = result.canceledOrder;
+
+                    this.setDashboardData(
+                        pendingCount,
+                        processingCount,
+                        deliveredCount,
+                        canceledCount
+                    );
+                    this._isSpinning = false;
+                }, (error) => {
+                    console.log(error);
+                    this._isSpinning = false;
+                });
+        }
+
     }
 
     //Event method for getting all the data for dashboard
@@ -176,20 +186,20 @@ export class RunningOrderComponent implements OnInit {
                 .getSuborder(this.currentUser.warehouse.id, 1, null)
                 .subscribe(result => {
                     this.allData = result.data;
+                }, (error) => {
+                    console.log(error);
+                    this._isSpinning = false;
                 });
         } else {
             this.subOrderService
                 .getSuborder('', 1, null)
                 .subscribe(result => {
                     this.allData = result.data;
+                }, (error) => {
+                    console.log(error);
+                    this._isSpinning = false;
                 });
         }
-        this.subOrderService
-            .getSuborder(this.currentUser.warehouse.id, 1, null)
-            .subscribe(result => {
-                this.allData = result.data;
-            });
-
     }
 
     handleOk = (e) => {

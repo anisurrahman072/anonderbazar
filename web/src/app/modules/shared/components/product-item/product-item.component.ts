@@ -149,7 +149,8 @@ export class ProductItemComponent implements OnInit {
 
     //Method for direct buy
 
-    buyNow(product) {
+    buyNow(event: any, product) {
+        event.stopPropagation();
         this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
@@ -157,8 +158,9 @@ export class ProductItemComponent implements OnInit {
 
     //Method for add to favourite
 
-    addToFavourite(product: Product) {
+    addToFavourite(event: any, product: Product) {
 
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {
@@ -176,7 +178,8 @@ export class ProductItemComponent implements OnInit {
 
     //Method for remove from favourite
 
-    removeFromFavourite(favouriteProduct) {
+    removeFromFavourite(event: any, favouriteProduct) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             if (favouriteProduct) {
@@ -193,8 +196,8 @@ export class ProductItemComponent implements OnInit {
 
     //Method for add to compare
 
-    addToCompare(product: Product) {
-
+    addToCompare(event: any,product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
 
@@ -211,7 +214,8 @@ export class ProductItemComponent implements OnInit {
 
     //Method for remove from compare
 
-    removeFromCompare(product: Product) {
+    removeFromCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));

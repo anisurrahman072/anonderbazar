@@ -1,45 +1,50 @@
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { AuthService } from "./auth.service";
-import { HttpClient } from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {Observable} from "rxjs";
+import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class RequisitionService {
-  private EndPoint = `${environment.API_ENDPOINT}/prstatus`;
-  private EndPoint2 = `${environment.API_ENDPOINT}/suborders`;
+    private EndPoint = `${environment.API_ENDPOINT}/prstatus`;
+    private EndPoint2 = `${environment.API_ENDPOINT}/suborders`;
 
-  constructor(
-    private http: HttpClient,
-    private authenticationService: AuthService
-  ) {}
+    constructor(
+        private http: HttpClient
+    ) {
+    }
 
-  getAll(): Observable<any> {
-    return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
-  }
+    getAll(): Observable<any> {
+        return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
+    }
 
-  getAllByOrderId(id): Observable<any> {
-    return this.http.get(
-      `${this.EndPoint}?where={"deletedAt":null,"product_order_id":${id}}`
-    );
-  }
+    getAllByOrderId(id): Observable<any> {
+        return this.http.get(
+            `${this.EndPoint}?where={"deletedAt":null,"product_order_id":${id}}`
+        );
+    }
 
-  getById(id): Observable<any> {
-    return this.http.get(this.EndPoint + "/" + id);
-  }
+    getById(id): Observable<any> {
+        return this.http.get(this.EndPoint + "/" + id);
+    }
 
-  insert(data): Observable<any> {
-    return this.http.post(this.EndPoint, data);
-  }
+    insert(data): Observable<any> {
+        return this.http.post(this.EndPoint, data);
+    }
 
-  delete(id): Observable<any> {
-    // get users from api
-    return this.http.delete(`${this.EndPoint}/${id}`);
-  }
+    insertMass(data): Observable<any> {
+        return this.http.post(this.EndPoint + '/massInsert', {
+            dataToInsert: data
+        });
+    }
 
-  update(id: number, data: any) {
-    return this.http.put(`${this.EndPoint}/${id}`, data);
-  }
+    delete(id): Observable<any> {
+        // get users from api
+        return this.http.delete(`${this.EndPoint}/${id}`);
+    }
+
+    update(id: number, data: any) {
+        return this.http.put(`${this.EndPoint}/${id}`, data);
+    }
 }

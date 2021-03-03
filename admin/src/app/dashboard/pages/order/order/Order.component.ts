@@ -47,14 +47,16 @@ export class OrderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
     validateFormORDER: FormGroup;
     validateProductForm: FormGroup;
-    private currentWarehouseSubscriprtion: Subscription;
     viewNotRendered: boolean = true;
     maxSearchDate: string = '';
     minSearchDate: string = '';
     searchStartDate: any;
     searchEndDate: any;
 
-    data = [];
+    orderData = [];
+    orderTotal: number = 0;
+    orderLimit: number = 25;
+    orderPage: number = 1;
     _isSpinning = true;
     currentUser: any;
     selectedOption: any[] = [];
@@ -149,13 +151,17 @@ export class OrderComponent implements OnInit {
         console.log('getData: ', dateSearchValue);
 
         this._isSpinning = true;
-        this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue), status: this.statusSearchValue})
+        this.orderService.getAllOrdersGrid( {date: JSON.stringify(dateSearchValue), status: this.statusSearchValue}, this.orderPage, this.orderLimit)
             .subscribe(result => {
                 console.log('getallorders', result);
-                this.data = result;
+                this.orderData = result.data;
+                this.orderTotal = result.total;
                 this._isSpinning = false;
+
             }, (err) => {
+                console.log(err);
                 this._isSpinning = false;
+                this._notification.error('Problems!', 'Problems in loading the orders');
             });
     }
 
@@ -164,9 +170,16 @@ export class OrderComponent implements OnInit {
         this.searchStartDate = '';
         this.searchEndDate = '';
         this.statusSearchValue = '';
+        this.orderPage = 1;
         this.getData();
     }
-
+    // Event method for pagination change
+    changePage(page: number, limit: number) {
+        this.orderPage = page;
+        this.orderLimit = limit;
+        this.getData();
+        return false;
+    }
     searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
 
         /*
@@ -239,7 +252,6 @@ export class OrderComponent implements OnInit {
         this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
-            // this.data[index].status = $event;
             this.getData();
         }, (err) => {
             this._notification.create('error', 'Error', 'Something went wrong');

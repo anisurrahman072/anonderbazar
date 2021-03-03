@@ -11,6 +11,9 @@ const {
   pagination
 } = require('../../libs');
 
+const Promise = require('bluebird');
+const {ORDER_STATUSES} = require('../../libs/orders');
+
 module.exports = {
   // destroy a row
   destroy: async (req, res) => {
@@ -49,7 +52,7 @@ module.exports = {
       } else {
         return res.status(400).json({success: false});
       }
-    } catch (error){
+    } catch (error) {
       return res.json(400, error);
     }
 
@@ -60,103 +63,136 @@ module.exports = {
   getSuborder: async (req, res) => {
     try {
 
+      const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
-      let _where = {
-        deletedAt: null
-      };
+      let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
+      rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, ';
+      rawSelect += ' suborder.courier_status, suborder.changed_by, suborder.PR_status, ';
+      rawSelect += ' suborder.status, suborder.`date`,  ';
+      rawSelect += ' orders.status as order_status, orders.user_id,  ';
+      rawSelect += ' CONCAT(customer.first_name, \' \',customer.first_name) as customer_name,  ';
+      rawSelect += ' customer.phone as customer_phone ';
 
-      if (req.query.product_suborder_id) {
-        _where.product_suborder_id = req.query.product_suborder_id;
-      }
+      let fromSQL = ' FROM product_suborders as suborder  ';
+      fromSQL += ' LEFT JOIN product_orders as orders ON orders.id = suborder.product_order_id   ';
+      fromSQL += ' LEFT JOIN users as customer ON customer.id = orders.user_id   ';
+
+      let _where = ' WHERE suborder.deleted_at IS NULL ';
+
       if (req.query.warehouse_id) {
-        _where.warehouse_id = req.query.warehouse_id;
+        _where += ` AND suborder.warehouse_id = ${req.query.warehouse_id} `;
       }
 
-      if (req.query.product_id) {
-        _where.product_id = req.query.product_id;
-      }
       if (req.query.product_quantity) {
-        _where.product_quantity = req.query.product_quantity;
+        _where += ` AND suborder.total_quantity = '%${req.query.product_quantity}%' `;
       }
-      if (req.query.status) {
-        _where.status = req.query.status;
-      }
-      /*sort................*/
-      let _sort = [];
-      if (req.query.product_total_price) {
-        _sort.push({product_total_price: req.query.product_total_price});
-      } else {
-        _sort.push({createdAt: 'DESC'});
-      }
-      /*.....SORT END..............................*/
-      let totalSubOrder = await Suborder.count().where(_where);
 
+      if (req.query.PR_status) {
+        _where += ` AND suborder.PR_status = '${req.query.PR_status}' `;
+      }
+
+      if (req.query.status) {
+        _where += ` AND suborder.status = '${req.query.status}' `;
+      }
+
+      if (req.query.product_total_price) {
+        _where += ' ORDER BY suborder.total_price DESC ';
+      } else {
+        _where += ' ORDER BY suborder.created_at DESC ';
+      }
+
+      const totalSuborderRaw = await SuborderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      let totalSubOrder = 0;
+      let allSubOrders = [];
       let totalPendingOrder = 0;
       let totalProcessingOrder = 0;
       let totalDeliveredOrder = 0;
       let totalCancelOrder = 0;
+      let totalOtherStatusOrder = 0;
 
-      if (req.query.warehouse_id) {
-        totalPendingOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.pending,
-          warehouse_id: _where.warehouse_id
-        });
-        totalProcessingOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.processing,
-          warehouse_id: _where.warehouse_id
-        });
-        totalDeliveredOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.delivered,
-          warehouse_id: _where.warehouse_id
-        });
-        totalCancelOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.canceled,
-          warehouse_id: _where.warehouse_id
-        });
-      } else {
-        totalPendingOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.pending,
-        });
-        totalProcessingOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.processing,
-        });
-        totalDeliveredOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.delivered,
-        });
-        totalCancelOrder = await Suborder.count().where({
-          status: SUB_ORDER_STATUSES.canceled,
-        });
+      if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
+        totalSubOrder = totalSuborderRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalSubOrder;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+        const rawResult = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
+
+        allSubOrders = rawResult.rows;
+
+        if (req.query.status) {
+          const subOrderStatus = parseInt(req.query.status, 10);
+          switch (subOrderStatus) {
+            case ORDER_STATUSES.pending: {
+              totalPendingOrder = totalSubOrder;
+              break;
+            }
+            case ORDER_STATUSES.processing: {
+              totalProcessingOrder = totalSubOrder;
+              break;
+            }
+            case ORDER_STATUSES.delivered: {
+              totalDeliveredOrder = totalSubOrder;
+              break;
+            }
+            case ORDER_STATUSES.canceled: {
+              totalCancelOrder = totalSubOrder;
+              break;
+            }
+            default: {
+              break;
+            }
+          }
+        } else {
+          if (req.query.warehouse_id) {
+            totalPendingOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.pending,
+              warehouse_id: req.query.warehouse_id
+            });
+            totalProcessingOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.processing,
+              warehouse_id: req.query.warehouse_id
+            });
+            totalDeliveredOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.delivered,
+              warehouse_id: req.query.warehouse_id
+            });
+            totalCancelOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.canceled,
+              warehouse_id: req.query.warehouse_id
+            });
+          } else {
+            totalPendingOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.pending,
+            });
+            totalProcessingOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.processing,
+            });
+            totalDeliveredOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.delivered,
+            });
+            totalCancelOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.canceled,
+            });
+          }
+        }
       }
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalSubOrder;
-      let SubOrders = await Suborder.find({
-        where: _where,
-        sort: _sort
-      }).populate('product_order_id');
 
-      let allSubOrders = await Promise.all(
-        SubOrders.map(async item => {
-          item.product_order_id = await Order.find({
-            deletedAt: null,
-            id: item.product_order_id.id
-          }).populate('user_id');
-          return item;
-        })
-      );
-
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         total: totalSubOrder,
         pendingOrder: totalPendingOrder,
         processingOrder: totalProcessingOrder,
         deliveredOrder: totalDeliveredOrder,
         canceledOrder: totalCancelOrder,
+        totalOtherStatusOrder: totalOtherStatusOrder,
         message: 'Get All SubOrderList with pagination',
         data: allSubOrders
       });
     } catch (error) {
       let message = 'Error in Get All SubOrderList with pagination';
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message,
         error
@@ -236,39 +272,58 @@ module.exports = {
   },
   //Method called for getting all product suborder with relations
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js, models/Product.js
-  getWithFull: async  (req, res) => {
+  getWithFull: async (req, res) => {
 
-    let suborder = await Suborder.findOne({
-      id: req.param('id'),
-      deletedAt: null
-    }).populate(['suborderItems', 'warehouse_id', 'product_order_id', 'couponProductCodes']);
-
-    let suborderItems = [];
-    for (let i = 0; i < suborder.suborderItems.length; i++) {
-      let suborderItem = await SuborderItem.findOne({
-        id: suborder.suborderItems[i].id,
+    try {
+      let suborder = await Suborder.findOne({
+        id: req.param('id'),
         deletedAt: null
-      })
-        .populate('product_id');
+      }).populate('warehouse_id')
+        .populate('product_order_id')
+        .populate('suborderItems', {deletedAt: null})
+        .populate('couponProductCodes', {deletedAt: null});
 
-      let oiv = await SuborderItemVariant.find({
-        product_id: suborderItem.product_id.id,
-        product_suborder_item_id: suborder.suborderItems[i].id,
-        deletedAt: null
-      })
-        .populate('variant_id')
-        .populate('warehouse_variant_id')
-        .populate('product_variant_id');
+      let suborderItems = [];
+      if (suborder && suborder.suborderItems && suborder.suborderItems.length > 0) {
 
-      if (oiv.length > 0) {
-        suborderItem.orderitemvariant = oiv;
-      } else {
-        suborderItem.orderitemvariant = {};
+        for (let i = 0; i < suborder.suborderItems.length; i++) {
+          let suborderItem = await SuborderItem.findOne({
+            id: suborder.suborderItems[i].id,
+            deletedAt: null
+          })
+            .populate('product_id');
+
+          let oiv = await SuborderItemVariant.find({
+            product_id: suborderItem.product_id.id,
+            product_suborder_item_id: suborder.suborderItems[i].id,
+            deletedAt: null
+          })
+            .populate('variant_id')
+            .populate('warehouse_variant_id')
+            .populate('product_variant_id');
+
+          if (oiv.length > 0) {
+            suborderItem.orderitemvariant = oiv;
+          } else {
+            suborderItem.orderitemvariant = {};
+          }
+          suborderItems.push(suborderItem);
+        }
       }
-      suborderItems.push(suborderItem);
+
+      if(suborder){
+        suborder.suborderItems = suborderItems;
+      }
+
+      return res.status(200).json(suborder);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: '',
+        error
+      });
     }
-    let d = Object.assign({}, suborder);
-    d.suborderItems = suborderItems;
-    return res.json(d);
+
   }
 };

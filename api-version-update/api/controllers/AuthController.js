@@ -138,7 +138,7 @@ module.exports = {
     let password = req.param('password');
 
     if (!username || !password) {
-      return res.json(401, {err: 'username and password required'});
+      return res.json(422, {err: 'username and password required'});
     }
 
     try {
@@ -147,13 +147,13 @@ module.exports = {
         .populate('warehouse_id');
 
       if (!user) {
-        return res.json(401, {model: 'userName', message: 'Phone number is invalid'});
+        return res.json(422, {model: 'userName', message: 'Phone number is invalid'});
       }
 
       const valid = await comparePasswords(password, user.password);
 
       if (!valid) {
-        return res.json(401, {model: 'password', message: 'Password is invalid'});
+        return res.json(422, {model: 'password', message: 'Password is invalid'});
       }
 
       if (user.group_id.name !== 'customer') {
@@ -161,7 +161,7 @@ module.exports = {
       }
 
       if (!user.active) {
-        return res.json(401, {err: 'Not an active user'});
+        return res.json(403, {err: 'Not an active user'});
       }
 
       return res.json({
@@ -220,7 +220,6 @@ module.exports = {
         return res.status(400).json({
           success: false,
           message: 'Invalid Request',
-
         });
       }
 
@@ -280,7 +279,7 @@ module.exports = {
   usernameUnique: async (req, res) => {
     try {
       let user = await User.find({username: req.body.username});
-      if (user[0].username === req.body.username) {
+      if ( user && user.length > 0) {
         return res.json(200, {isunique: false});
       } else {
         return res.json(200, {isunique: true});

@@ -17,6 +17,7 @@ const {designImageRoute} = require('./designImage');
 const {favouriteproductRoute} = require('./favouriteProduct');
 const {userRoutes} = require('./user');
 const {brandRoute} = require('./brands');
+const {orderRoutes}=require('./orders');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -37,5 +38,6 @@ exports.allRouter = {
   ...favouriteproductRoute,
   ...userRoutes,
   ...eventsRoutes,
-  ...brandRoute
+  ...brandRoute,
+  ...orderRoutes
 };

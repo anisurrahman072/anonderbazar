@@ -7,7 +7,7 @@
             <div class="col-md-12">
               <div class="heading-order col-md-6">
                 <div>
-                  <h2 style="color: #1dbb99;">Ongoing order</h2> 
+                  <h2 style="color: #1dbb99;">Ongoing order</h2>
                 </div>
                 <div class="heading-order-title">
                   <h2>Status of ongoing orders</h2>
@@ -36,14 +36,14 @@
                     <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data; let i = index">
                         <td nz-td>
                           <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
-                            {{ data.product_order_id[0].id }}
+                            {{ data.product_order_id }}
                           </ng-container>
                           <ng-template #elseTemplate>
-                            {{ data.product_order_id[0].id }} / {{ data.id }} 
+                            {{ data.product_order_id }} / {{ data.id }}
                           </ng-template>
                         </td>
                         <td nz-td>
-                          <nz-tag>{{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}</nz-tag>
+                          <nz-tag>{{ data.customer_name }}</nz-tag>
                         </td>
                         <td nz-td>{{ data.total_quantity }}</td>
                         <td nz-td>{{ data.total_price }}</td>
@@ -100,14 +100,14 @@
         <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data; let i = index">
           <td nz-td>
             <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
-              {{ data.product_order_id[0].id }}
+              {{ data.product_order_id }}
             </ng-container>
             <ng-template #elseTemplate>
-              {{ data.product_order_id[0].id }} / {{ data.id }} 
+              {{ data.product_order_id }} / {{ data.id }}
             </ng-template>
           </td>
           <td nz-td>
-            <nz-tag>{{ data.product_order_id[0].user_id.first_name}} {{ data.product_order_id[0].user_id.last_name}}</nz-tag>
+            <nz-tag>{{ data.customer_name }}</nz-tag>
           </td>
           <td nz-td>{{ data.total_quantity }}</td>
           <td nz-td>{{ data.total_price }}</td>

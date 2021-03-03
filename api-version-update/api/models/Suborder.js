@@ -48,6 +48,7 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       allowNull: true,
+      isIn: [0, 1],
       defaultsTo: 0
     },
     status: {

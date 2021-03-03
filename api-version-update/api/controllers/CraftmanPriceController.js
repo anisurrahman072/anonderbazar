@@ -68,7 +68,7 @@ module.exports = {
 
       let newCraftmanPrice = [];
       await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
-        let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
+        let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id})
           .populate('craftman_id')
           .populate('type_id')
           .populate('category_id')

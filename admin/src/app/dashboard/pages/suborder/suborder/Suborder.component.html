@@ -7,30 +7,30 @@
             <nz-button-group>
 
                 <button nz-button [nzType]="'primary'"
-                        [nzSize]="'large'" (click)='showProductModal()' *ngIf="currentUser.group_id==='admin'">
+                        [nzSize]="'large'" (click)='showProductModal()' *ngIf="currentUser.group_id === 'admin'">
                     <i class="anticon anticon-download"></i><span> Download CSV </span>
                 </button>
                 <button nz-button [nzType]="'primary'"
-                        [nzSize]="'large'" (click)='showPRModal()' *ngIf="currentUser.group_id==='admin'">
+                        [nzSize]="'large'" (click)='showPRModal()' *ngIf="currentUser.group_id === 'admin'">
                     <i class="anticon anticon-download"></i><span> Download PR</span>
                 </button>
             </nz-button-group>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
+                <nz-table #nzTable [nzDataSource]="subOrderData" [nzPageSize]="10" [nzTotal]="subOrderTotal" [nzIsPagination]="false"
                           [nzSize]="'default'" [nzShowTitle]="true">
 
                     <thead nz-thead>
                     <tr>
                         <th nz-th>
+                            <span> Number </span>
+                        </th>
+                        <th nz-th>
                             <span> Order number </span>
                         </th>
                         <th nz-th>
                             <span> Order Date </span>
-                        </th>
-                        <th nz-th>
-                            <span> Vendor Id </span>
                         </th>
                         <th nz-th>
                             <span> Vendor Name </span>
@@ -56,8 +56,13 @@
                     <!--search bar.....................-->
                     <tr>
                         <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Order number'" [(ngModel)]="suborderNumberSearchValue"
-                                      (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}">
+                            <nz-input [nzPlaceHolder]="'Vendor Order'" [(ngModel)]="suborderNumberSearchValue"
+                                      (ngModelChange)="subOrderPage=1; getPageData()" [ngStyle]="{'width': '100px'}">
+                            </nz-input>
+                        </th>
+                        <th nz-th>
+                            <nz-input [nzPlaceHolder]="'Order number'" [(ngModel)]="orderNumberSearchValue"
+                                      (ngModelChange)="subOrderPage=1; getPageData()" [ngStyle]="{'width': '100px'}">
                             </nz-input>
                         </th>
                         <th nz-th class="suborder-daterange">
@@ -67,30 +72,26 @@
                             <!--         [altInput]="true" [convertModelValue]="true" mode="range"> -->
                         </th>
                         <th nz-th>
-
-                        </th>
-                        <th nz-th>
                             <nz-input [nzPlaceHolder]="'Vendor Name'" [(ngModel)]="suborderIdValue"
                                       *ngIf="currentUser.group_id=='admin'"
-                                      (ngModelChange)="page=1; getPageData()">
+                                      (ngModelChange)="subOrderPage=1; getPageData()">
                             </nz-input>
                         </th>
                         <th nz-th>
                             <nz-input [nzPlaceHolder]="'Quantity'" [(ngModel)]="quantitySearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
+                                      (ngModelChange)="subOrderPage=1;getPageData()">
                             </nz-input>
                         </th>
                         <th nz-th>
                             <nz-input [nzPlaceHolder]="'Total Price'" [(ngModel)]="totalPriceSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
+                                      (ngModelChange)="subOrderPage=1;getPageData()">
                             </nz-input>
                         </th>
 
-
                         <th nz-th>
-                            <span *ngIf="setStatus(i, data.status)"></span>
+
                             <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
-                                       nzAllowClear (ngModelChange)="page=1; getPageData()"
+                                       nzAllowClear (ngModelChange)="subOrderPage=1; getPageData()"
                                        [nzPlaceHolder]="'Select Status'"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option *ngFor="let option of options" [nzLabel]="option.label"
@@ -111,9 +112,9 @@
                     </thead>
                     <tbody nz-tbody>
                     <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                        <td nz-td>{{data.product_order_id}} / {{data.id}}</td>
-                        <td nz-td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
-                        <td nz-td>{{data.warehouse_id}}</td>
+                        <td nz-td>{{data.id}}</td>
+                        <td nz-td>{{data.product_order_id}}</td>
+                        <td nz-td>{{data.created_at|date:'d/M/yyyy, h:mm a'}}</td>
                         <td nz-td>{{data.name}}</td>
                         <td nz-td>{{data.total_quantity}}</td>
                         <td nz-td>{{data.total_price}}</td>
@@ -168,10 +169,10 @@
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
                     <span nz-table-title class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,subOrderLimit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
-                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
-                                       [nzPageSize]="limit">
+                                       nzShowTotal [nzPageIndex]="subOrderPage" [nzTotal]="subOrderTotal" nzShowSizeChanger
+                                       [nzPageSize]="subOrderLimit">
                         </nz-pagination>
                     </span>
                     <span nz-table-title class="pull-right col-md-6">
@@ -338,7 +339,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('k_a_m').dirty&&getFormControl('k_a_m').hasError('required')">
+                                 *ngIf="getFormControl('k_a_m').dirty && getFormControl('k_a_m').hasError('required')">
                                 Please enter KAM!
                             </div>
                         </div>
@@ -356,7 +357,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('pickup_carrier_name').dirty&&getFormControl('pickup_carrier_name').hasError('required')">
+                                 *ngIf="getFormControl('pickup_carrier_name').dirty && getFormControl('pickup_carrier_name').hasError('required')">
                                 Please enter pickup carrier name!
                             </div>
                         </div>
@@ -371,7 +372,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('payment_method').dirty&&getFormControl('payment_method').hasError('required')">
+                                 *ngIf="getFormControl('payment_method').dirty && getFormControl('payment_method').hasError('required')">
                                 Please enter payment method!
                             </div>
                         </div>
@@ -386,7 +387,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('pickup_slot').dirty&&getFormControl('pickup_slot').hasError('required')">
+                                 *ngIf="getFormControl('pickup_slot').dirty && getFormControl('pickup_slot').hasError('required')">
                                 Please enter pickup slot!
                             </div>
                         </div>
@@ -401,7 +402,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('pickup_rider_name').dirty&&getFormControl('pickup_rider_name').hasError('required')">
+                                 *ngIf="getFormControl('pickup_rider_name').dirty && getFormControl('pickup_rider_name').hasError('required')">
                                 Please enter pickup rider name!
                             </div>
                         </div>
@@ -416,7 +417,7 @@
                                       [nzSize]="'large'">
                             </nz-input>
                             <div nz-form-explain
-                                 *ngIf="getFormControl('pickup_rider_contact_number').dirty&&getFormControl('pickup_rider_contact_number').hasError('required')">
+                                 *ngIf="getFormControl('pickup_rider_contact_number').dirty && getFormControl('pickup_rider_contact_number').hasError('required')">
                                 Please enter pickup rider contact number!
                             </div>
                         </div>

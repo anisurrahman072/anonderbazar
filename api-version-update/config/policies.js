@@ -145,12 +145,12 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
-    'create': true,
-    'update': true,
+    'create': ['isAuthorized'],
+    'update': ['isAuthorized'],
+    'destroy':['isAuthorized'],
+    'deleteAll': ['isAuthorized'],
     'byAuthUser': ['isAuthorized', 'isCustomer'],
     'byUser': ['isAuthorized'],
-    'deleteAll': ['isAuthorized', 'isOwnerOrAdmin'],
-    'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
   GlobalConfigsController: {
     '*': false,
@@ -223,6 +223,7 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isAdmin'],
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
+    'massInsert': ['isAuthorized', 'isAdmin'],
   },
   ProductDesignController:{
     '*': false,
@@ -250,6 +251,9 @@ module.exports.policies = {
   },
   OrderController: {
     '*': ['isAuthorized'],
+    'sslcommerzsuccess': true,
+    'sslcommerzfail': true,
+    'sslcommerzerror': true,
     'create': false,
     'add': false,
     'remove': false,
@@ -258,6 +262,7 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
+    'allOrders': ['isAuthorized', 'isAdmin'],
   },
   ShippingAddressController: {
     '*': false,
