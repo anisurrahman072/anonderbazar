@@ -169,7 +169,7 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true' && req.body.product_id) {
 
-        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
+        req.file('image').upload(uploadImages(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);
@@ -190,7 +190,7 @@ module.exports = {
         });
       } else if (req.body.hasImage === 'true') {
 
-        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
+        req.file('image').upload(uploadImages(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);

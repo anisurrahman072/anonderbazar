@@ -20,7 +20,7 @@ module.exports = {
       if (req.method === 'GET'){
         return res.json({'status': 'GET not allowed'});
       }
-      const files = await imageUploadConfig(req.file('imageFile'));
+      const files = await uploadImages(req.file('imageFile'));
       return res.status(200).json({files: files});
     }
     catch(error){

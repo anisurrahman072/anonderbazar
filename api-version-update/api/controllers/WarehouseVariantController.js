@@ -23,7 +23,7 @@ module.exports = {
   create: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        const uploadConfig = imageUploadConfig();
+        const uploadConfig = uploadImages();
         let tempImg = await uploadImgAsync(req.file('image'), {
           ...uploadConfig,
           saveAs: Date.now() + '_warehouse_variant.jpg'
@@ -48,7 +48,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        const uploaded = await imageUploadConfig(req.file('image'));
+        const uploaded = await uploadImages(req.file('image'));
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         req.body.image = '/' + newPath;
       }

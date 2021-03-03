@@ -24,7 +24,7 @@ module.exports = {
 
       if (req.body.hasImage === 'true') {
         let body = req.body;
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
+        req.file('image').upload(uploadImages(), async (err, files) => {
 
           if (err) {return res.serverError(err);}
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
@@ -134,7 +134,7 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         let body = req.body;
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
+        req.file('image').upload(uploadImages(), async (err, files) => {
 
           if (err) {return res.serverError(err);}
 
@@ -238,7 +238,7 @@ module.exports = {
   customPostInsert: async (req, res) => {
     try {
       if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(),
+        req.file('image').upload(uploadImages(),
 
           async (err, uploaded) => {
             if (err) {
@@ -322,7 +322,7 @@ module.exports = {
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
       console.log('customPostUpdate', req.body);
       if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(),
+        req.file('image').upload(uploadImages(),
 
           async (err, uploaded) => {
             if (err) {
@@ -407,7 +407,7 @@ module.exports = {
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
       if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(),
+        req.file('image').upload(uploadImages(),
 
           async (err, uploaded) => {
             if (err) {
@@ -476,7 +476,7 @@ module.exports = {
       console.log('customUpdate',  req.body);
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
       if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(),
+        req.file('image').upload(uploadImages(),
           async (err, uploaded) => {
             if (err) {
               return res.json(err.status, {err: err});
