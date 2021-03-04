@@ -38,6 +38,10 @@ export class ProductService {
         return this.http.get(this.EndPoint + '/' + id + '?populate=false').map(response => response);
     }
 
+    getByIdWithPopulate(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id).map(response => response);
+    }
+
     insert(data): Observable<any> {
         return this.http.post(this.EndPoint, data).map(response => response);
     }

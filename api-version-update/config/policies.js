@@ -304,6 +304,9 @@ module.exports.policies = {
   UserController: {
     '*': false,
     'updatepassword': true,
+    'checkUsername': true,
+    'checkEmail': true,
+    'checkPhone': true,
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'findOne': ['isAuthorized'],
     'find': ['isAuthorized', 'isOwnerOrAdmin'],

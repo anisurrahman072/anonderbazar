@@ -10,6 +10,7 @@ import {environment} from "../../environments/environment";
 export class WarehouseService {
 
   private EndPoint = `${environment.API_ENDPOINT}/warehouse`;
+  private EndPointAUTH = `${environment.API_ENDPOINT}/auth`;
   private EndPoint2 = `${environment.API_ENDPOINT}/product`;
 
   constructor(private http: HttpClient,
@@ -26,8 +27,7 @@ export class WarehouseService {
   }
   getById(id): Observable<any> {
     // get users from api
-    return this.http.get(this.EndPoint + '/' + id)
-      ;
+    return this.http.get(this.EndPoint + '/' + id);
   }
 
   getallproductbywarehouseid(id): Observable<any>{
@@ -38,11 +38,13 @@ export class WarehouseService {
     return this.http.post(this.EndPoint, data);
   }
 
+  signup(warehouseData): Observable<any> {
+    return this.http.post(this.EndPointAUTH + '/warehouseSignup', warehouseData);
+  }
 
   delete(id): Observable<any> {
     // get users from api
-    return this.http.delete(`${this.EndPoint}/${id}`)
-      ;
+    return this.http.delete(`${this.EndPoint}/${id}`);
   }
 
   update(id: number, data: any) {

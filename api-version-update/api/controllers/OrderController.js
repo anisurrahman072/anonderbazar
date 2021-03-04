@@ -4,11 +4,10 @@
  * @description :: Server-side logic for managing orders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {adminPaymentAddressId, dhakaZilaId, sslCommerceSandbox, sslCommerzSandboxCred} = require('../../config/softbd');
+const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const SSLCommerz = require('sslcommerz-nodejs');
 
 const webURL = 'http://test.anonderbazar.com';
 const APIURL = 'http://api.test.anonderbazar.com/api/v1';

@@ -193,19 +193,19 @@
                                 <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.type_id?.name}}</nz-tag>
+                                <nz-tag>{{data.type_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
+                                <nz-tag>{{data.brand_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.category_id?.name}}</nz-tag>
+                                <nz-tag>{{data.category_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                {{data.subcategory_id?.name}}
+                                {{data.subcategory_name}}
                             </td>
                             <td nz-td>
-                                <nz-tag [nzColor]="data.quantity<data.alert_quantity? '#f50':''">
+                                <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
                                     {{data.quantity}}
                                 </nz-tag>
                             </td>

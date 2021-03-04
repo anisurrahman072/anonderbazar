@@ -126,17 +126,12 @@ export class ProductService {
         return this.http.post(this.EndPoint + '/uploadCouponBanners', data, {params, headers});
     }
 
-    getGeneratedExcelFile(userId = null): Observable<any> {
-        if (!userId) {
-            return of();
-        }
-        return this.http.get(this.EndPoint2 + '/generate-excel?user_id=' + userId, {responseType: 'blob'});
+    getGeneratedExcelFile(): Observable<any> {
+        return this.http.get(this.EndPoint2 + '/generate-excel', {responseType: 'blob'});
     }
 
-    submitDataForBulkUpload(data, userId = null, isApproved = 1): Observable<any> {
-        if (!userId) {
-            return of();
-        }
-        return this.http.post(this.EndPoint2 + '/bulk-upload?user_id='+userId+'&isApproved=' + isApproved, data);
+    submitDataForBulkUpload(data, isApproved = 1): Observable<any> {
+
+        return this.http.post(this.EndPoint2 + '/bulk-upload?isApproved=' + isApproved, data);
     }
 }

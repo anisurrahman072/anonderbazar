@@ -7,82 +7,142 @@
 const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 const {escapeExcel} = require('../../libs/helper');
 const xl = require('excel4node');
+// const moment = require('moment');
+const Promise = require('bluebird');
 
 module.exports = {
   //Method called for getting all products
   //Model models/Product.js
   index: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'productList');
+      const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
-      let _where = {};
-      _where.deletedAt = null;
+      let rawSelect = `
+        SELECT
+            product.id as id,
+            product.code as code,
+            product.name as name,
+            product.price as price,
+            product.vendor_price as vendor_price,
+            product.min_unit as min_unit,
+            product.alert_quantity as alert_quantity,
+            product.image as image,
+            product.type_id as type_id,
+            product.category_id as category_id,
+            product.subcategory_id as subcategory_id,
+            product.brand_id as brand_id,
+            product.quantity as quantity,
+            product.warehouse_id as warehouse_id,
+            product.is_coupon_product as is_coupon_product,
+            product.promotion as promotion,
+            product.promo_price as promo_price,
+            product.featured as featured,
+            product.weight as weight,
+            product.approval_status as approval_status,
+            product.status as status,
+            product.created_at as createdAt,
+            product.updated_at as updatedAt,
+            types.name as type_name,
+            category.name as category_name,
+            subcategory.name as subcategory_name,
+            warehouse.name as warehouse_name,
+            brand.name as brand_name
+        `;
+
+      let fromSQL = `
+          FROM products as product
+          LEFT JOIN categories as types ON types.id = product.type_id
+          LEFT JOIN categories as category ON category.id = product.category_id
+          LEFT JOIN categories as subcategory ON subcategory.id = product.subcategory_id
+          LEFT JOIN brands as brand ON brand.id = product.brand_id
+          LEFT JOIN warehouses as warehouse ON warehouse.id = product.warehouse_id
+      `;
+
+      let _where = ' WHERE product.deleted_at IS NULL ';
 
       if (req.query.status) {
-        _where.status = req.query.status;
+        // _where.status = req.query.status;
+        _where += ` AND product.status = ${req.query.status}`;
       }
       if (req.query.warehouse_id) {
-        _where.warehouse_id = req.query.warehouse_id;
+        // _where.warehouse_id = req.query.warehouse_id;
+        _where += ` AND product.warehouse_id = ${req.query.warehouse_id}`;
+      } else if (req.token && req.token.userInfo.warehouse_id) {
+        // _where.warehouse_id = req.token.userInfo.warehouse_id.id;
+        _where += ` AND product.approval_status = ${req.token.userInfo.warehouse_id.id}`;
       }
+
       if (req.query.approval_status) {
-        _where.approval_status = req.query.approval_status;
+        // _where.approval_status = req.query.approval_status;
+        _where += ` AND product.approval_status = ${req.query.approval_status}`;
       }
-      if (req.token && req.token.userInfo.warehouse_id) {
-        _where.warehouse_id = req.token.userInfo.warehouse_id.id;
-      }
+
       if (req.query.type_id) {
-        _where.type_id = req.query.type_id;
+        // _where.type_id = req.query.type_id;
+        _where += ` AND product.type_id = ${req.query.type_id}`;
       }
       if (req.query.category_id) {
-        _where.category_id = req.query.category_id;
-      }
-      if (req.query.brand_id) {
-        _where.brand_id = req.query.brand_id;
-      }
-      if (req.query.price) {
-        _where.price = req.query.price;
+        // _where.category_id = req.query.category_id;
+        _where += ` AND product.category_id = ${req.query.category_id}`;
       }
       if (req.query.subcategory_id) {
-        _where.subcategory_id = req.query.subcategory_id;
+        // _where.subcategory_id = req.query.subcategory_id;
+        _where += ` AND product.subcategory_id = ${req.query.subcategory_id}`;
+      }
+      if (req.query.brand_id) {
+        // _where.brand_id = req.query.brand_id;
+        _where += ` AND product.brand_id = ${req.query.brand_id}`;
+      }
+      if (req.query.price) {
+        // _where.price = req.query.price;
+        _where += ` AND product.price = ${req.query.price}`;
       }
 
       if (req.query.search_term) {
-
-        _where.or = [
-          {name: {like: `%${req.query.search_term}%`}},
-          {code: {like: `%${req.query.search_term}%`}}
-        ];
+        _where += ` AND (product.name LIKE '%${req.query.search_term}%' OR product.code LIKE '%${req.query.search_term}%' ) `;
       } else if (req.query.search_code) {
-        // class: { 'like': '%history%' }})
-
-        _where.or = [
-          {code: {like: `%${req.query.search_code}%`}}
-        ];
+        _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      let _sort = [];
+      let _sort =  [];
       if (req.query.sortCode) {
-        _sort.push({code: req.query.sortCode});
+        _sort.push(` product.code ${req.query.sortCode} `);
       }
       if (req.query.sortName) {
-        _sort.push({name: req.query.sortName});
+        _sort.push(` product.name ${req.query.sortName} `);
       }
       if (req.query.sortPrice) {
-        __sort.push({price: req.query.sortPrice});
+        __sort.push(` product.price  ${req.query.sortPrice} `);
       }
       if (req.query.sortQuantity) {
-        _sort.push({quantity: req.query.sortQuantity});
-      }
-      if (req.query.sortUpdatedAt) {
-        _sort.push({updatedAt: req.query.sortUpdatedAt});
+        _sort.push(` product.quantity  ${req.query.sortQuantity} `);
       }
 
-      let totalProduct = await Product.count().where(_where);
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
-      let products = await Product.find({
+      if (req.query.sortUpdatedAt) {
+        _sort.push(` product.updated_at  ${req.query.sortUpdatedAt} `);
+      }
+
+      if(_sort.length === 0){
+        _sort.push(` product.created_at DESC `);
+      }
+      const totalProductRaw = await productQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      //let totalProduct = await Product.count().where(_where);
+      let totalProducts = 0;
+      let products = [];
+      if (totalProductRaw && totalProductRaw.rows && totalProductRaw.rows.length > 0) {
+        totalProducts = totalProductRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalProducts;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+        let orderSql =  ' ORDER BY ' + _sort.join(',');
+        const rawResult = await productQuery(rawSelect + fromSQL + _where + orderSql + limitSQL, []);
+
+        products = rawResult.rows;
+      }
+      /*      _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
+      products = await Product.find({
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip,
@@ -94,19 +154,20 @@ module.exports = {
         .populate('type_id')
         .populate('warehouse_id')
         .populate('craftsman_id')
-        .populate('brand_id');
+        .populate('brand_id');*/
       res.status(200).json({
         success: true,
-        total: totalProduct,
+        total: totalProducts,
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'Get All products with pagination',
+        message: 'Get all products with pagination',
         data: products
       });
     } catch (error) {
-      let message = 'Error in Get All products with pagination';
+      console.log('error', error);
 
+      let message = 'Error in getting all products with pagination';
       res.status(400).json({
         success: false,
         message,
@@ -313,7 +374,8 @@ module.exports = {
 
       if (req.query.searchterm) {
         _where.or = [
-          {name: {contains: req.query.searchterm}}
+          {name: {contains: req.query.searchterm}},
+          {code: {contains: req.query.searchterm}}
         ];
       }
 
@@ -362,22 +424,10 @@ module.exports = {
   //Method called for generating bulk product upload excel file
   //Model models/Product.js, models/Category.js
   generateExcel: async (req, res) => {
-    console.log(req.query);
-    if (!req.query.user_id) {
-      return res.badRequest('Invalid Request');
-    }
+
     try {
 
-      const user = await User.findOne({
-        id: req.query.user_id,
-        deletedAt: null
-      }).populate('group_id', {deletedAt: null});
-
-      if (!user || !user.group_id) {
-        return res.badRequest('Invalid Request');
-      }
-      //admin owner
-      console.log('user', user);
+      const authUser = req.token.userInfo;
 
       // Create a new instance of a Workbook class
       const wb = new xl.Workbook({
@@ -524,7 +574,7 @@ module.exports = {
         'Image 5': {width: 15}
       };
 
-      if (user.group_id.name === 'owner') {
+      if (authUser.group_id.name === 'owner') {
         delete columnNamesObject['Vendor Code'];
       }
 
@@ -570,19 +620,10 @@ module.exports = {
   //Method called for creating bulk products
   //Model models/Product.js ,models/Category.js
   bulkUpload: async (req, res) => {
-    if (!req.query.user_id) {
-      return res.badRequest('Invalid Request');
-    }
+
     try {
 
-      const user = await User.findOne({
-        id: req.query.user_id,
-        deletedAt: null
-      }).populate('group_id', {deletedAt: null});
-
-      if (!user || !user.group_id) {
-        return res.badRequest('Invalid Request');
-      }
+      const authUser = req.token.userInfo;
 
       const isApproved = parseInt(req.query.isApproved);
 
@@ -595,7 +636,7 @@ module.exports = {
         ) {
           problematicRow = i + 1;
           break;
-        } else if (user.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
+        } else if (authUser.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
           problematicRow = i + 1;
           break;
         }
@@ -671,14 +712,14 @@ module.exports = {
           newItem.promo_price = 0;
         }
 
-        if (user.group_id.name === 'admin') {
+        if (authUser.group_id.name === 'admin') {
           parts = item.warehouse_id.split('|');
           if (parts[1]) {
             newItem.warehouse_id = parseInt(parts[1].trim(), 10);
           }
         }
 
-        if (isApproved !== 0 && user.group_id.name === 'admin') {
+        if (isApproved !== 0 && authUser.group_id.name === 'admin') {
           newItem.approval_status = 2;
           newItem.approval_status_updated_by = newItem.created_by;
         } else {

@@ -6,7 +6,6 @@ import {ForgotPasswordComponent} from '../pages/forgot-password/forgot-password.
 import {SignupComponent} from '../pages/signup/signup.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {WarehouseEntryComponent} from '../pages/warehouse-entry/warehouse-entry.component';
-import {AuthGuard} from './guard/guard';
 import {UiModule} from "../../dashboard/shared/ui.module";
 
 
@@ -28,7 +27,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         ReactiveFormsModule,
         UiModule
-    
+
     ],
     declarations: [LoginComponent, SignupComponent, WarehouseEntryComponent, ForgotPasswordComponent]
 })

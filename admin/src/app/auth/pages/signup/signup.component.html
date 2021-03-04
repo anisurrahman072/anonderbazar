@@ -84,17 +84,17 @@
                                     <label> Email </label>
                                 </div>
                                 <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                                    <nz-input formControlName="email" [nzType]="'email'" [nzPlaceHolder]="'Please Enter Email'"
-                                        [nzSize]="'large'">
+                                    <nz-input   formControlName="email" [nzType]="'email'" [nzPlaceHolder]="'Please Enter Email'"
+                                        [nzSize]="'large'" >
                                     </nz-input>
                                     <div nz-form-explain *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('email')">
                                         Email is required!
                                     </div>
 
-                                    <div nz-form-explain *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('taken')">
+                                    <div nz-form-explain *ngIf="getFormControl('email').dirty && getFormControl('email').hasError('taken')">
                                         "{{getFormControl('email').value}}" Already used!
                                     </div>
-                                    <div nz-form-explain *ngIf="getFormControl('email').dirty&&getFormControl('email').pending">
+                                    <div nz-form-explain *ngIf="getFormControl('email').dirty && getFormControl('email').pending">
                                         Verifying ...
                                     </div>
                                 </div>
@@ -115,7 +115,7 @@
                                     <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('taken')">
                                         "{{getFormControl('phone').value}}" Already used!
                                     </div>
-                                    <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').pending">
+                                     <div nz-form-explain *ngIf="getFormControl('phone').dirty && getFormControl('phone').pending">
                                         Verifying ...
                                     </div>
                                 </div>
@@ -179,7 +179,7 @@
                                     <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('taken')">
                                         "{{getFormControl('username').value}}" Already used!
                                     </div>
-                                    <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
+                                     <div nz-form-explain *ngIf="getFormControl('username').dirty && getFormControl('username').pending">
                                         Verifying ...
                                     </div>
                                 </div>
@@ -237,7 +237,7 @@
                                 <div nz-col [nzSpan]="7" nz-form-label>
                                     <label> Division </label>
                                 </div>
-                                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
                                     <nz-select formControlName="division_id" nzAllowClear [nzPlaceHolder]="'select division'"
                                         [nzFilter]="true" (ngModelChange)="divisionChange($event)" (nzSearchChange)="divisionSearchChange($event)"
                                         [nzNotFoundContent]="'Not found'" nzShowSearch>
@@ -319,7 +319,7 @@
                                                   clearButtonCaption="Clear" (removed)="logoFile=null" [beforeUpload]="onBeforeLogoUpload"></image-upload>
 
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                     <div class="steps-action">
@@ -331,7 +331,7 @@
                         </button>
                         <button nz-button [nzType]="'primary'" *ngIf="current === 1" [disabled]="!validateForm.valid">Save</button>
                         <button nz-button *ngIf="current === 1" (click)="resetForm($event)"> Reset </button>
-                    </div> 
+                    </div>
                 </form>
 
             </ng-template>

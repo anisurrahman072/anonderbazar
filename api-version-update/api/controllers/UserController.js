@@ -291,6 +291,105 @@ module.exports = {
 
   },
 
+  checkUsername: async (req, res) => {
+
+    try {
+      if(!req.body.username){
+        return res.status(422).json({
+          success: false,
+          message: 'username was not provided'
+        });
+      }
+      const user = await User.find({
+        username: req.body.username,
+        deletedAt: null
+      });
+
+      if(user && user.length > 0){
+        return res.status(422).json({
+          success: false,
+          message: 'User already exists with this username',
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: 'username is available'
+      });
+    } catch (error){
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Problem in server',
+        error
+      });
+    }
+  },
+  checkPhone: async (req, res) => {
+
+    try {
+      if(!req.body.phone){
+        return res.status(422).json({
+          success: false,
+          message: 'phone was not provided'
+        });
+      }
+      const user = await User.find({
+        phone: req.body.phone,
+        deletedAt: null
+      });
+
+      if(user && user.length > 0){
+        return res.status(422).json({
+          success: false,
+          message: 'User already exists with this phone',
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: 'phone is available'
+      });
+    } catch (error){
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Problem in server',
+        error
+      });
+    }
+  },
+  checkEmail: async (req, res) => {
+
+    try {
+      if(!req.body.email){
+        return res.status(422).json({
+          success: false,
+          message: 'email was not provided'
+        });
+      }
+      const user = await User.find({
+        email: req.body.email,
+        deletedAt: null
+      });
+
+      if(user && user.length > 0){
+        return res.status(422).json({
+          success: false,
+          message: 'User already exists with this email',
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: 'email is available'
+      });
+    } catch (error){
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Problem in server',
+        error
+      });
+    }
+  },
   //Method called for getting all user data
   //Model models/User.js
   find: async (req, res) => {

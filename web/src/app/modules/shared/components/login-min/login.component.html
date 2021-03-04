@@ -15,7 +15,7 @@
                         <section id="signup-section-login" style="padding: 0px;">
                             <div class="col-md-12">
                                 <div class="mb-3 mx-lg-auto w-25">
-                                    <img src="assets/images/logo.png" alt="">
+                                    <img src="assets/images/logo.png" alt="Logo">
                                 </div>
                                 <h4 class="signup-title">Sign In</h4>
                                 <div *ngIf="loginErrorMessage" class="alert alert-danger text-center text-capitalize"
@@ -97,10 +97,10 @@
                     </ng-container>
                     <ng-container *ngIf="register && !isForgot">
                         <!--Sign up form-->
-                        <section id="signup-section-register" style="padding: 0px;">
+                        <section id="signup-section-register" style="padding: 0;">
                             <div class="col-md-12 offset-md-12">
                                 <div class="mb-3 mx-lg-auto w-25">
-                                    <img class="text-center" src="assets/images/logo.png" alt="">
+                                    <img class="text-center" src="assets/images/logo.png" alt="Logo">
                                 </div>
                                 <h4 class="signup-title text-center">Sign Up</h4>
                                 <div class="signup-form">
@@ -111,7 +111,7 @@
                                                 <div class="form-group"
                                                      [ngClass]="{'has-error': validateSignUpForm.get('first_name').dirty && validateSignUpForm.get('first_name').errors, 'has-success': validateSignUpForm.get('first_name').dirty&&!validateSignUpForm.get('first_name').errors }">
                                                     <label for="first_name" class="col-lg-12 control-label">First
-                                                        Name</label>
+                                                        Name <span class="required">*</span></label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your first name" class="form-control"
                                                                id="first_name"
@@ -148,7 +148,7 @@
                                                 <div class="form-group"
                                                      [ngClass]="{'has-error': validateSignUpForm.get('phone').dirty && validateSignUpForm.get('phone').errors, 'has-success': validateSignUpForm.get('phone').dirty && !validateSignUpForm.get('phone').errors }">
                                                     <label for="phone" class="col-lg-12 control-label">Phone
-                                                        Number</label>
+                                                        Number <span class="required">*</span></label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Enter your phone number" id="phone"
                                                                class="form-control" formControlName="phone"
@@ -201,7 +201,7 @@
                                                 <div class="form-group"
                                                      [ngClass]="{'has-error': validateSignUpForm.get('password').dirty && validateSignUpForm.get('password').errors, 'has-success':validateSignUpForm.get('password').dirty && !validateSignUpForm.get('password').errors}">
                                                     <label for="password"
-                                                           class="col-lg-12 control-label">Password</label>
+                                                           class="col-lg-12 control-label">Password <span class="required">*</span></label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your password" class="form-control"
                                                                id="password"
@@ -222,7 +222,7 @@
                                                 <div class="form-group"
                                                      [ngClass]="{'has-error': validateSignUpForm.get('confirmPassword').dirty && validateSignUpForm.get('confirmPassword').errors,'has-success':validateSignUpForm.get('confirmPassword').dirty && !validateSignUpForm.get('confirmPassword').errors}">
                                                     <label for="confirmPassword" class="col-lg-12 control-label">Confirm
-                                                        Password</label>
+                                                        Password <span class="required">*</span></label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your password again"
                                                                id="confirmPassword"

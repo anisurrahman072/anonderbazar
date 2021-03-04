@@ -16,7 +16,6 @@
                                    [matAutocomplete]="auto"
                                    [formControl]="stateCtrl" (keyup)="main_search($event)"
                                    (keydown.enter)="onPressEnter($event)">
-                            <button class="icon-search p-0" type="submit"><i class="fa fa-search"></i></button>
                         </div>
                     </form>
                     <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]="true" (optionSelected)="dda($event)" [displayWith]="displayFn">

@@ -185,22 +185,63 @@ module.exports = {
   //Method called for vendor signup for backend
   //Model models/User.js
   warehouseSignup: async (req, res) => {
-
+    console.log(req.body);
     try {
-      if (req.body.hasImage === 'true') {
-        const uploaded = await uploadImages(req.file('avatar'));
-        if (uploaded.length === 0) {
-          return res.badRequest('No file was uploaded');
-        }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        req.body.avatar = '/' + newPath;
+      let postBody = {...req.body};
+      try {
+        postBody.userdata = JSON.parse(postBody.userdata);
+      } catch (__) {
+        return res.status(422).json({
+          success: false,
+          message: 'Invalid User data'
+        });
       }
+      console.log(postBody);
+      let userData = postBody.userdata;
+      delete postBody.userdata;
 
-      let user = await User.create(req.body).fetch();
-      user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
+      const {
+        warehouse,
+        user
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          if (postBody.hasLogo === 'true') {
+            const uploaded = await uploadImages(req.file('logo'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No logo image was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            postBody.logo = '/' + newPath;
+          }
 
-      return res.json(200, {user: user, token: jwToken.issue({id: user.id})});
+          postBody.status = 0;
+          const warehouse = await Warehouse.create(postBody).fetch().usingConnection(db);
 
+          if (userData.hasImage === 'true') {
+            const uploaded = await uploadImages(req.file('user_avatar'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No user avatar was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            userData.avatar = '/' + newPath;
+          }
+
+          userData.warehouse_id = warehouse.id;
+          userData.active = 1;
+          userData.group_id = 4; // 4 for owner / warehouse
+
+          let user = await User.create(userData).fetch().usingConnection(db);
+
+          return {
+            warehouse,
+            user
+          };
+        });
+
+      return res.status(201).json({
+        warehouse,
+        user
+      });
     } catch (error) {
       console.log(error);
       return res.json(400, {message: 'Something went wrong!', error});
@@ -279,7 +320,7 @@ module.exports = {
   usernameUnique: async (req, res) => {
     try {
       let user = await User.find({username: req.body.username});
-      if ( user && user.length > 0) {
+      if (user && user.length > 0) {
         return res.json(200, {isunique: false});
       } else {
         return res.json(200, {isunique: true});

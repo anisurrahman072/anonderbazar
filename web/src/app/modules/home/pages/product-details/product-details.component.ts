@@ -9,7 +9,7 @@ import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {FavouriteProduct, Product} from "../../../../models";
 import {AppSettings} from "../../../../config/app.config";
-import {MatButtonToggleChange, MatDialog} from "@angular/material";
+import {MatButtonToggleChange} from "@angular/material";
 import {
     AuthService,
     CartItemService,
@@ -28,11 +28,6 @@ import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DesignimageService} from "../../../../services/designimage.service";
 import {LoaderService} from "../../../../services/ui/loader.service";
-
-export interface Food {
-    value: string;
-    viewValue: string;
-}
 
 @Component({
     selector: "page-product-details",
@@ -79,17 +74,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }[] = [];
     variantCalculatedTotalPrice: number = 0;
     clock: any = [9, 10, 11, 12, 13, 14, 15, 16, 17];
-    stringClock: { [key: number]: string } = {
-        9: "9am",
-        10: "10am",
-        11: "11am",
-        12: "12pm",
-        13: "1pm",
-        14: "2pm",
-        15: "3pm",
-        16: "4pm",
-        17: "5pm"
-    };
     finalprice: any = 0.0;
     unitPrice: any = 0.0;
     days: any;
@@ -109,24 +93,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         8: "8",
         9: "9"
     };
-
-    designs: any = [
-        {
-            name: "Design-1"
-        },
-        {
-            name: "Design-2"
-        },
-        {
-            name: "Design-3"
-        }
-    ];
     selectedIndex: number;
     craftsman_id: any;
     designCombinationData: any;
     designImageCheck: any = [];
     allCraftsmanPrice: any;
-    closeResult: string;
     modalRef: BsModalRef;
     design_id: any;
     craftsmanList: any = [];
@@ -134,11 +105,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     total: any;
     imagedata: any;
     buffer_time: any;
-    foods: Food[] = [
-        {value: 'steak-0', viewValue: 'Steak'},
-        {value: 'pizza-1', viewValue: 'Pizza'},
-        {value: 'tacos-2', viewValue: 'Tacos'}
-    ];
     isVisible: boolean = false;
     isVisibleFab: boolean = false;
     listOfMessages: any;
@@ -177,11 +143,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private cartItemVariantService: CartItemVariantService,
         private toastr: ToastrService,
         private designImageService: DesignimageService,
-        public dialog: MatDialog,
         private fb: FormBuilder,
         private modalService: BsModalService,
         private craftsmanService: CraftsmanService,
-        private partService: PartService, // private localCartService: LocalCartService, // private localCartItemService: LocalCartItemService, // private localStorageMergeService: LocalStorageMergeService
+        private partService: PartService,
         private router: Router,
         public loaderService: LoaderService,
         private favouriteProductService: FavouriteProductService
@@ -391,7 +356,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     getProductData() {
         this.loaderService.showLoader();
-        this.productService.getById(this.id).subscribe(result => {
+        this.productService.getByIdWithPopulate(this.id).subscribe(result => {
             this.loaderService.hideLoader();
             this.data = result;
 
@@ -403,7 +368,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
             }
 
-            console.log('getProductData', this.data)
             if (result) {
                 let allImages = [];
 
@@ -417,7 +381,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                         allImages.push(element);
                     });
                 }
-                if(this.data.id == 6016){
+                if (this.data.id == 6016) {
                     this.product_quantity = 2;
                 }
                 result.product_images = allImages;
@@ -427,7 +391,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
                 this.mainImg = this.data.image;
                 this.tempRating = result.rating;
-                if (result.tag != "undefined"){
+                if (result.tag != "undefined") {
                     this.tag = JSON.parse(result.tag);
                 }
                 this.updateFinalprice();
@@ -475,7 +439,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     //Method for add to cart
 
     addProductToCart(product: any, callback?) {
-        console.log('addProductToCart')
+        console.log('addProductToCart',  this.product_quantity);
         if (this.productVariants.length !== this.variantCalculatedPrice.length) {
             console.log('Please select all variant!')
             this.toastr.error('Please select all variant!', 'Note');

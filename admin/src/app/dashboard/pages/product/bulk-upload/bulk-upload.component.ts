@@ -139,7 +139,7 @@ export class BulkUploadComponent implements OnInit {
         this._isSpinning = true;
         console.log('this.importProducts', this.importProducts)
         this.fileInputVariable.nativeElement.value = "";
-        return this.productService.submitDataForBulkUpload(this.importProducts, this.currentUser.id, isApproved).subscribe((result: any) => {
+        return this.productService.submitDataForBulkUpload(this.importProducts, isApproved).subscribe((result: any) => {
             this.submitting = false;
             this._isSpinning = false;
             if (result.success) {
@@ -157,7 +157,7 @@ export class BulkUploadComponent implements OnInit {
 
     downloadExcel() {
         this.isLoading = true;
-        return this.productService.getGeneratedExcelFile(this.currentUser.id).subscribe((result: any) => {
+        return this.productService.getGeneratedExcelFile().subscribe((result: any) => {
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
             const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
