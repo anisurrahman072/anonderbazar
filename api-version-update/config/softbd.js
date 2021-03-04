@@ -8,6 +8,8 @@ module.exports = {
     store_id: 'anond5efeb984e900f',
     store_passwd: 'anond5efeb984e900f@ssl'
   },
+  sslWebUrl: 'https://anonderbazar.com',
+  sslApiUrl: 'https://api.anonderbazar.com/api/v1',
   sslCommerzProductionCred: {
     store_id: 'anonderbazarlive@ssl',
     store_passwd: 'i2EFz@ZNt57@t@r'

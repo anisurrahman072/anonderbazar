@@ -15,7 +15,8 @@ import {
     CartItemService,
     CartItemVariantService,
     CartService,
-    CraftsmanService, FavouriteProductService,
+    CraftsmanService,
+    FavouriteProductService,
     ProductService,
     ProductVariantService
 } from "../../../../services";
@@ -24,7 +25,7 @@ import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {ToastrService} from "ngx-toastr";
 import {PartService} from "../../../../services/part.service";
 import {ChatService} from "../../../../services/chat.service";
-import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DesignimageService} from "../../../../services/designimage.service";
 import {LoaderService} from "../../../../services/ui/loader.service";
@@ -408,11 +409,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     updateFinalprice() {
-        this.unitPrice = this.data.promotion ? this.data.promo_price : this.data.price;
-        this.finalprice =
-            (this.unitPrice +
-                this.variantCalculatedTotalPrice) *
-            this.product_quantity;
+        if (this.data) {
+            this.unitPrice = this.data.promotion ? this.data.promo_price : this.data.price;
+            this.finalprice =
+                (this.unitPrice +
+                    this.variantCalculatedTotalPrice) *
+                this.product_quantity;
+        }
     }
 
     getAllVariant() {
@@ -423,7 +426,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.loaderService.hideLoader();
                 if (result) {
                     this.productVariants = result;
-                    console.log('this.productVariants', this.productVariants)
                     this.defaultVariantSelection();
                 }
             });
@@ -439,11 +441,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     //Method for add to cart
 
     addProductToCart(product: any, callback?) {
-
-        console.log('addProductToCart',  this.product_quantity);
-
         if (this.productVariants.length !== this.variantCalculatedPrice.length) {
-            console.log('Please select all variant!')
             this.toastr.error('Please select all variant!', 'Note');
             return false;
         }
@@ -507,7 +505,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                     }
                 );
         } else {
-            console.log('Please Login First')
             this.toastr.success("warning", "Please Login First");
             this.loginModalService.showLoginModal(true);
         }
@@ -661,10 +658,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     checkSelected(variant) {
-        console.log('checkSelected', this.variantCalculatedPrice, variant)
-        const res = this.variantCalculatedPrice.find(v => v.variant_name == variant.variant_id.name && v.product_variant_id == variant.id);
-        console.log('res', res)
-        return res;
+
+        return this.variantCalculatedPrice.find(v => v.variant_name == variant.variant_id.name && v.product_variant_id == variant.id);
     }
 
     onVariantChange(variant) {

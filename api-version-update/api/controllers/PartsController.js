@@ -5,8 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const { initLogPlaceholder, pagination} = require('../../libs');
-
+const {pagination} = require('../../libs/pagination');
+const {initLogPlaceholder} = require('../../libs/helper');
 module.exports = {
   //Method called for getting all product part data
   //Model models/Part.js
@@ -33,16 +33,10 @@ module.exports = {
           {name: {'like': `%${req.query.search_term}%`}},
         ];
       }
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name : req.query.sortName});
       }
-      /*.....SORT END..............................*/
-
-
       let totalPart = await  Part.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalPart;
       let parts = await Part.find(
@@ -62,12 +56,12 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'Get All products with pagination',
+        message: 'Get all parts with pagination',
         data: parts
       });
     } catch (error) {
       console.log(error);
-      let message = 'Error in Get All products with pagination';
+      let message = 'Error in getting all parts with pagination';
       res.status(400).json({
         success: false,
         message,

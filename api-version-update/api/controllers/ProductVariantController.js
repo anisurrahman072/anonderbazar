@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const _ = require('lodash');
-
+const async = require('async');
 module.exports = {
   //Method called for deleting a product variant
   //Model models/ProductVariant.js
@@ -89,6 +89,7 @@ module.exports = {
         return res.ok(data);
       });
     } catch (error) {
+      console.log(error);
       let message = '';
       return res.status(400).json({
         success: false,

@@ -5,13 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
-const {
-  asyncForEach,
-  initLogPlaceholder,
-  pagination
-} = require('../../libs');
-
 const Promise = require('bluebird');
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 const {ORDER_STATUSES} = require('../../libs/orders');
 
 module.exports = {
@@ -203,8 +199,6 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getSuborderWithDate: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'SubOrderListWithDate');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/

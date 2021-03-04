@@ -1,9 +1,7 @@
-const {
-  Helper,
-  initLogPlaceholder,
-  pagination
-} = require('../../libs');
+const {initLogPlaceholder} = require('../../libs/helper');
 const _ = require('lodash');
+const {Helper} = require('../../libs/HelperClass');
+const {pagination} = require('../../libs/pagination');
 const {uploadImagesWithConfig} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 

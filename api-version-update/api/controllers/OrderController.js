@@ -9,13 +9,15 @@ const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-const webURL = 'http://test.anonderbazar.com';
-const APIURL = 'http://api.test.anonderbazar.com/api/v1';
+/*const webURL = 'http://anonderbazar.com';
+const APIURL = 'http://api.anonderbazar.com/api/v1';*/
 
 const {asyncForEach} = require('../../libs');
 const {calcCartTotal} = require('../../libs/cartHelper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {sslWebUrl} = require('../../config/softbd');
+const {sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {pagination} = require('../../libs');
 
@@ -561,9 +563,9 @@ module.exports = {
       post_body['currency'] = 'BDT';
       post_body['tran_id'] = randomstring;
 
-      post_body['success_url'] = APIURL + '/order/sslcommerzsuccess/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-      post_body['fail_url'] = APIURL + '/order/sslcommerzfail/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-      post_body['cancel_url'] = APIURL + '/order/sslcommerzerror/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['success_url'] = sslApiUrl + '/order/sslcommerzsuccess/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['fail_url'] = sslApiUrl + '/order/sslcommerzfail/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+      post_body['cancel_url'] = sslApiUrl + '/order/sslcommerzerror/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
 
       post_body['emi_option'] = 0;
       post_body['cus_name'] = authUser.first_name + ' ' + authUser.last_name;
@@ -586,7 +588,7 @@ module.exports = {
       }).catch(error => {
         console.log('sslcommerz.init_transaction error', error);
         res.writeHead(301,
-          {Location: webURL + '/checkout'}
+          {Location: sslWebUrl + '/checkout'}
         );
         res.end();
       });

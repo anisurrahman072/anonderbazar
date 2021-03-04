@@ -56,6 +56,7 @@ export class ProductItemFlashDealComponent implements OnInit {
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.cart$.subscribe(result => {
+
             if (result) {
                 this.cartId = result.data.id;
                 this.cartTotalprice = result.data.total_price;

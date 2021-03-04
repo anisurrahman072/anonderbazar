@@ -142,9 +142,13 @@ module.exports = {
   //Method called for creating cart item data
   //Model models/CartItem.js
   create: async (req, res) => {
+
+    console.log(req.body);
+
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
+
     try {
       let cart = await Cart.findOne({
         id: req.body.cart_id

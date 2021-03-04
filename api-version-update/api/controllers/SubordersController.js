@@ -4,9 +4,11 @@
  * @description :: Server-side logic for managing suborders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination, asyncForEach} = require('../../libs');
+
 const moment = require('moment');
 const Promise = require('bluebird');
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 
 module.exports = {
@@ -259,8 +261,6 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'Suborders');
-
       let _pagination = pagination(req.query);
 
       const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
@@ -303,7 +303,7 @@ module.exports = {
       if (req.query.dateSearchValue) {
         let dateSearchValue = JSON.parse(req.query.dateSearchValue);
         let from = moment(dateSearchValue.from).format('YYYY-MM-DD');
-        let to =  moment(dateSearchValue.to).format('YYYY-MM-DD');
+        let to = moment(dateSearchValue.to).format('YYYY-MM-DD');
         // _where.created_at = {'>=': from, '<=': to};
         _where += ` AND ( suborder.created_at >= '${from}' AND suborder.created_at <= '${to}') `;
       }
@@ -368,7 +368,6 @@ module.exports = {
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getsuborderwithpr: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'Suborders');
 
       let _pagination = pagination(req.query);
 

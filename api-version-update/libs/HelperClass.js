@@ -18,7 +18,6 @@ exports.Helper = {
     });
   },
   pagination: async (reqBody) => {
-
     let limit;
     let skip;
     let page;

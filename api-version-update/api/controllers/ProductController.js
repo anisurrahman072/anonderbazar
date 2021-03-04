@@ -1,8 +1,6 @@
-const {
-  asyncForEach,
-} = require('../../libs');
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 const Promise = require('bluebird');
+const {asyncForEach} = require('../../libs/helper');
 
 module.exports = {
 
