@@ -95,7 +95,7 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
-      await sails.getDatastore()
+      const product = await sails.getDatastore()
         .transaction(async (db) => {
           const product = await Product.create(body).fetch().usingConnection(db);
 
@@ -106,12 +106,13 @@ module.exports = {
             }
           }
 
+          return product;
         });
 
       return res.json({
         success: true,
         message: 'Product successfully created',
-        data: null
+        data: product
       });
 
     } catch (error) {
@@ -154,8 +155,8 @@ module.exports = {
           return res.status(400).json(err.status, {err: err});
         }
       }
-      let product = await Product.update({id: req.param('id')}, body).fetch();
-      return res.json(200, product);
+      let product = await Product.updateOne({id: req.param('id')}).set(body);
+      return res.status(200).json(product);
     } catch (err) {
       console.log(err);
       res.json(400, {message: 'Something went wrong!', err});
@@ -169,7 +170,7 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true' && req.body.product_id) {
 
-        req.file('image').upload(uploadImages(), async (err, uploaded) => {
+        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);
@@ -190,13 +191,15 @@ module.exports = {
         });
       } else if (req.body.hasImage === 'true') {
 
-        req.file('image').upload(uploadImages(), async (err, uploaded) => {
+        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
 
           if (err) {
             console.log('err', err);
             return res.json(err.status, {err: err});
           }
-
+          if (uploaded.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
           console.log('uploaded-newPath', newPath);
 
@@ -288,9 +291,11 @@ module.exports = {
         deletedAt: null,
       });
       if (craftmanSchedule && craftmanSchedule.end_time !== null) {
-        /*        let existingCraftsTime =
+        /*
+          let existingCraftsTime =
           craftmanSchedule.end_time.getTime() -
-          craftmanSchedule.start_time.getTime();*/
+          craftmanSchedule.start_time.getTime();
+        */
         let _time_milli =
           ((produceTimeMin * productQuantity) / 60 / 8) * 84300000;
         let newDateObj = new Date(craftmanSchedule.end_time).setMilliseconds(

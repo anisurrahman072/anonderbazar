@@ -22,6 +22,7 @@ import {BrandService} from '../../../../../services/brand.service';
     styleUrls: ['./fullyCustom-product-create.component.css']
 })
 export class FullyCustomProductCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     tagOptions: any = [];
     validateForm: FormGroup;
     ImageFile: File[] = [];
@@ -56,7 +57,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-    @ViewChild('Image') Image;
+
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
@@ -66,7 +67,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
     tag: any;
     tags = [];
     inputVisible = false;
-    inputValue = '';
+
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -75,6 +76,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
 
     currentUser: any;
     queryStatus: any;
+    isSubmiting: boolean = false;
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
@@ -151,15 +153,25 @@ export class FullyCustomProductCreateComponent implements OnInit {
         } else {
             formData.append('hasImage', 'false');
         }
+        this.isSubmiting = true;
         this.productService.insert(formData).subscribe(result => {
-            if (result.id) {
+            this.isSubmiting = false;
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New fully customize product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
+        }, error => {
+            this.isSubmiting = false;
+            console.log('error', error);
+            this._notification.create(
+                'error',
+                'Ooops!',
+                'There was a problem creating the product'
+            );
         });
     };
 

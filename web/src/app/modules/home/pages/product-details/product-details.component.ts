@@ -439,7 +439,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     //Method for add to cart
 
     addProductToCart(product: any, callback?) {
+
         console.log('addProductToCart',  this.product_quantity);
+
         if (this.productVariants.length !== this.variantCalculatedPrice.length) {
             console.log('Please select all variant!')
             this.toastr.error('Please select all variant!', 'Note');

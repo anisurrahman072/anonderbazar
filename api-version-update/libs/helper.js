@@ -1,3 +1,4 @@
+const {asyncForEach} = require('./index');
 const {devEnv} = require('../config/softbd');
 
 exports.asyncForEach = async (array, callback) => {
@@ -15,36 +16,6 @@ exports.initLogPlaceholder = (req, funcName) => {
   sails.log('query ========>', req.query);
   sails.log('params =======>', req.params);
   sails.log('body =========>', req.body);
-};
-
-exports.uploadImgAsync = (param, option = {}) => {
-  return new Promise(((resolve, reject) => {
-    param.upload(option, (err, data) => {
-      if (err !== null) {
-        return reject(err);
-      }
-      resolve(data);
-    });
-  }));
-};
-
-exports.deleteImages = async (imageList, path) => {
-  asyncForEach(imageList, (item) => {
-    console.log(item);
-
-    let dir = __dirname.split('/api');
-    let assestsdir = dir[0] + '/assets';
-
-    try {
-      fs.unlinkSync(assestsdir + item);
-      console.log('successfully deleted' + item);
-    } catch (err) {
-
-      console.log(err);
-      console.log('error to delete' + item);
-      // handle the error
-    }
-  });
 };
 
 exports.baseFilter = (reqBody, Model, localWhere) => {
@@ -85,6 +56,35 @@ const imageUploadConfig = function () {
 };
 exports.imageUploadConfig = imageUploadConfig;
 
+exports.uploadImgAsync = (param, option = {}) => {
+  return new Promise(((resolve, reject) => {
+    param.upload(option, (err, data) => {
+      if (err !== null) {
+        return reject(err);
+      }
+      resolve(data);
+    });
+  }));
+};
+
+exports.deleteImages = async (imageList, path) => {
+  asyncForEach(imageList, (item) => {
+    console.log(item);
+
+    let dir = __dirname.split('/api');
+    let assestsdir = dir[0] + '/assets';
+
+    try {
+      fs.unlinkSync(assestsdir + item);
+      console.log('successfully deleted' + item);
+    } catch (err) {
+
+      console.log(err);
+      console.log('error to delete' + item);
+      // handle the error
+    }
+  });
+};
 exports.uploadImages = (imageFile) => {
   return new Promise((resolve, reject) => {
     imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
@@ -93,17 +93,6 @@ exports.uploadImages = (imageFile) => {
         reject(err);
       } else {
         resolve(uploaded);
-      }
-    });
-  });
-};
-exports.comparePasswords = (passwordProvided, userPassword) => {
-  return new Promise((resolve, reject)=> {
-    User.comparePassword(passwordProvided, userPassword, (err, valid) => {
-      if(err){
-        reject(err);
-      } else {
-        resolve(valid);
       }
     });
   });
@@ -125,6 +114,18 @@ exports.uploadImagesWithConfig = (imageFile, customConfig) => {
     });
   });
 };
+exports.comparePasswords = (passwordProvided, userPassword) => {
+  return new Promise((resolve, reject)=> {
+    User.comparePassword(passwordProvided, userPassword, (err, valid) => {
+      if(err){
+        reject(err);
+      } else {
+        resolve(valid);
+      }
+    });
+  });
+};
+
 exports.getContentTypeByFile = function (fileName) {
   var rc = 'application/octet-stream';
   var fn = fileName.toLowerCase();

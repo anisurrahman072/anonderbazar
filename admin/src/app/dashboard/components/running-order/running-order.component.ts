@@ -20,24 +20,17 @@ export class RunningOrderComponent implements OnInit {
     data: any = [];
     _isSpinning: boolean = true;
     view: any[] = [630, 350];
-
-    // options
     showLegend = true;
     style: any = {
         top: '10px'
     };
-
     colorScheme = {
         domain: ["#5AA454", "#A10A28", "#C7B42C", "#AAAAAA"]
     };
-
-    // pie
     showLabels = true;
     explodeSlices = false;
     doughnut = false;
-
     single: any = [];
-
     customColors: any = [];
     allData: any = [];
     isVisibleRunning: boolean;
@@ -55,7 +48,6 @@ export class RunningOrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-
     ngOnInit() {
         this.isVisibleRunning = false;
 
@@ -128,7 +120,6 @@ export class RunningOrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for dashboard
-
     setDashboardData(
         PendingCount,
         processingCount,

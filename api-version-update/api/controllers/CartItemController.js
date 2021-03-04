@@ -14,21 +14,18 @@ module.exports = {
     if (!req.param('id')) {
       return res.badRequest('Invalid data Provided');
     }
-    let cartItem = await CartItem.findOne({id: req.param('id')});
-    if (!cartItem) {
+    let cartItem = await CartItem.findOne({id: req.param('id')}).populate('cart_id');
+    if (!cartItem || !cartItem.cart_id) {
       return res.badRequest('Item does not exist in the cart');
     }
 
-    if (!isResourceOwner(req.token.userInfo, cartItem)) {
+    const cart = cartItem.cart_id;
+
+    console.log('req.token.userInfo', req.token.userInfo);
+    console.log('cartItem', cartItem);
+
+    if (!isResourceOwner(req.token.userInfo, cart)) {
       return res.forbidden();
-    }
-
-    let cart = await Cart.findOne({
-      id: cartItem.cart_id
-    });
-
-    if (!cart) {
-      return res.badRequest('Invalid data Provided');
     }
 
     try {
@@ -60,7 +57,7 @@ module.exports = {
             'total_quantity': totalQty,
           };
 
-          await Cart.update({id: cartItem.cart_id}).set(cartPayload)
+          await Cart.update({id: cart.id}).set(cartPayload)
             .usingConnection(db);
         });
 
@@ -167,9 +164,11 @@ module.exports = {
 
       const quantityPassed = parseFloat(req.body.product_quantity);
 
+      /*
       if (product.quantity < quantityPassed) {
         return res.badRequest('Product stock is not sufficient enough.');
       }
+*/
 
       let productUnitPrice = product.price;
       if (product.promotion) {

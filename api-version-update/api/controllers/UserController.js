@@ -10,7 +10,6 @@ const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const jwToken = require('../services/jwToken');
 const {isResourceOwnerWarehouse} = require('../../libs/check-permissions');
-const {isResourceOwner} = require('../../libs/check-permissions');
 const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');
 

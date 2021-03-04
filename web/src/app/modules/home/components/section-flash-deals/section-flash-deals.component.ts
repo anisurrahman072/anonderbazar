@@ -26,8 +26,6 @@ export class FlashDealsComponent implements OnInit {
     isDisplay: boolean;
     cart$: Observable<any>;
     cartId: any;
-    cartTotalprice: any;
-    cartTotalquantity: any;
 
     private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
@@ -81,7 +79,12 @@ export class FlashDealsComponent implements OnInit {
                     },
                     error => {
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if(error && error.error){
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
+
                     }
                 );
         } else {

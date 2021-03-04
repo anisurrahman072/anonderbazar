@@ -5,8 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {imageUploadConfig} = require('../../libs/helper');
-
+const {uploadImages} = require('../../libs/helper');
 module.exports = {
   //Method called for sending a image data
   sendImage: function (req, res) {

@@ -1,12 +1,10 @@
 const {
-  asyncForEach,
   Helper,
   initLogPlaceholder,
-  pagination,
-  uploadImgAsync
+  pagination
 } = require('../../libs');
-const fs = require('fs');
 const _ = require('lodash');
+const {uploadImagesWithConfig} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
@@ -129,23 +127,24 @@ module.exports = {
 
     if (req.body.hasImage === 'true') {
       let newImages = [];
-
-      // for (let i = 0; i < req.body.oldImages.length; i++) {}
-
       const uploadConfig = imageUploadConfig();
       for (let i = 0; i < req.body.newImageCounter; i++) {
-        let tempImg = await uploadImgAsync(req.file('image' + i), {
+        let tempImg = await uploadImagesWithConfig(req.file('image' + i), {
           ...uploadConfig,
-          saveAs: Date.now() + '_brand.jpg'
+          saveAs: Date.now() + i.toString() + '_brand.jpg'
         });
+        if (tempImg.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
         let newPath = '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
         newImages.push(newPath);
       }
 
       req.body.images = newImages;
-      createDesignImage(req.body);
-    } else {
+
     }
+
+    await createDesignImage(req.body);
   },
   //Method called for getting all design image list data by product id
   //Model models/DesignImage.js
@@ -191,8 +190,6 @@ module.exports = {
   //Model models/DesignImage.js
   getSingleDesignCombinationImage: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'getSingleDesignCombinationImage');
-
       let designImageData = await DesignImage.findOne({
         where: {
           product_id: req.params._id,
@@ -201,14 +198,14 @@ module.exports = {
         }
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'get design image by designCombination',
         data: designImageData
       });
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'error in get design image by designCombination',
         error
@@ -239,10 +236,13 @@ module.exports = {
       if (req.body.hasImage === 'true') {
         const uploadConfig = imageUploadConfig();
         for (let i = 0; i < parseInt(req.body.newImageCounter); i++) {
-          let tempImg = await uploadImgAsync(req.file('image' + i), {
+          let tempImg = await uploadImagesWithConfig(req.file('image' + i), {
             ...uploadConfig,
             saveAs: Date.now() + '_design.jpg'
           });
+          if (tempImg.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
           let newPath =
             '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
           newImages.push(newPath);
@@ -258,12 +258,19 @@ module.exports = {
             images: [...oldImages, ...newImages]
           }
         ).fetch();
-        res.status(200).json({
+
+        try {
+          let d = productDesignData.images.filter(p => !oldImages.includes(p));
+          await Helper.deleteImages(d, '');
+        } catch (error1) {
+          console.log(error1);
+        }
+
+        return res.status(200).json({
           success: true,
           data: updated[0]
         });
-        let d = productDesignData.images.filter(p => !oldImages.includes(p));
-        Helper.deleteImages(d, '');
+
       } else {
         let newData = await DesignImage.create({
           product_id: req.params._id,
@@ -271,7 +278,8 @@ module.exports = {
           images: newImages,
           warehouse_id: warehouseId
         }).fetch();
-        res.status(200).json({
+
+        return res.status(200).json({
           success: true,
           message: 'get from designImages updateByProductId',
           data: newData
@@ -287,17 +295,4 @@ module.exports = {
     }
   }
 };
-//Method called for deleting design image
-//Model models/DesignImage.js
-const deleteImages1 = async (imageList, path) => {
-  asyncForEach(imageList, item => {
-    let dir = __dirname.split('/api');
-    let assestsdir = dir[0] + '/assets';
 
-    try {
-      fs.unlinkSync(assestsdir + item);
-    } catch (err) {
-      console.log(err);
-    }
-  });
-};

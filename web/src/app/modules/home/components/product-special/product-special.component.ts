@@ -34,16 +34,12 @@ export class ProductSpecialComponent implements OnInit {
 
     data: Product;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    promotionalProducts$: Observable<any>;
     _trialEndsAt;
     private _diff: number;
     private _days: number;
     private _hours: number;
     private _minutes: number;
     private _seconds: number;
-    selectedProductVariants: any;
-    objectKeys = Object.keys;
-    selectedVariant = [];
     id: any;
     productVariants: any;
     private sub: Subscription;
@@ -51,21 +47,18 @@ export class ProductSpecialComponent implements OnInit {
     cart$: Observable<any>;
     cartId: any;
     mainImg: string;
-    cartItemId: any;
     cartTotalprice: any;
     cartTotalquantity: any;
     currentUser: Observable<any>;
     product_quantity: any = 1;
     cartVariants: any[] = [];
     tempRating: any;
-    overStar: number;
     addTofavouriteLoading$: Observable<boolean>;
     tag: any;
     produce_time: any;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
     UnitPrice: any;
-    availableDate: any;
     availableDateLoading: boolean = false;
     variantCalculatedPrice: {
         name;
@@ -77,7 +70,6 @@ export class ProductSpecialComponent implements OnInit {
     promoCategoey: Observable<any>;
     finalprice: Number = 0.0;
     unitPrice: any = 0.0;
-    isOn: "selected";
     counter: any;
     clock: any;
     hours: any;
@@ -267,7 +259,11 @@ export class ProductSpecialComponent implements OnInit {
                 },
                 error => {
                     this._progress.complete("mainLoader");
-                    this._notify.error("something went wrong");
+                    if(error && error.error){
+                        this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                    } else {
+                        this._notify.error("Oooops! Product was not added to the cart.");
+                    }
                 }
             );
     }

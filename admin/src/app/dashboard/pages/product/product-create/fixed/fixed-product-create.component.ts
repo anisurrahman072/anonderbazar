@@ -31,20 +31,6 @@ export class FixedProductCreateComponent implements OnInit {
     ImageFrontFile: File[] = [];
     isSubmit: boolean = true;
 
-    /*    ckConfig = {
-            uiColor: '#662d91',
-            toolbarGroups: [
-                { name: 'document', groups: ['mode', 'document', 'doctools'] },
-                {
-                    name: 'editing',
-                    groups: ['find', 'selection', 'spellchecker', 'editing']
-                },
-                { name: 'forms', groups: ['forms'] }
-            ],
-            removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-        };
-    */
-
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -80,11 +66,9 @@ export class FixedProductCreateComponent implements OnInit {
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
     brandSearchOptions: any;
-    craftsmanSearchOptions: any;
     tag: any;
     tags = [];
     inputVisible = false;
-    inputValue = '';
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -189,14 +173,15 @@ export class FixedProductCreateComponent implements OnInit {
 
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
+            this.isSubmit = true;
             console.log(result);
-            if (result.id) {
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New fixed product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
         }, error => {
             this.isSubmit = true;
