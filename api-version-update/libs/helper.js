@@ -8,7 +8,6 @@ exports.asyncForEach = async (array, callback) => {
       await callback(array[index], index, array);
     }
   }
-
 };
 
 exports.initLogPlaceholder = (req, funcName) => {
@@ -146,26 +145,12 @@ exports.getContentTypeByFile = function (fileName) {
 
   return rc;
 };
-exports.generateUuid = function (count, k) {
-  const _sym = 'abcdefghijklmnopqrstuvwxyz1234567890';
-  let str = '';
 
-  for (let i = 0; i < count; i++) {
-    str += _sym[parseInt(Math.random() * (_sym.length))];
-  }
-  base.getID(str, (err, res) => {
-    if (!res.length) {
-      k(str);                   // use the continuation
-    } else {
-      generate(count, k);
-    }  // otherwise, recurse on generate
-  });
-};
 exports.makeUniqueId = function (length) {
-  var result = '';
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
