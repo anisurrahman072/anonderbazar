@@ -79,9 +79,8 @@ module.exports = {
           }
         ];
       }
-      /* WHERE condition..........END................*/
 
-      /*sort................*/
+      /* Sort................*/
       let _sort = [];
       if (req.query.sortName) {
         _sort.push({name: req.query.sortName});

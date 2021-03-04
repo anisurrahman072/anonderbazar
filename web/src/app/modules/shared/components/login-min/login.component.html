@@ -9,10 +9,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class=" container form-background" style="height: auto">
+                <div class=" container form-background" style="height: auto;">
                     <!--Login Form-->
                     <ng-container *ngIf="!register && !isForgot">
-                        <section id="signup-section-login" style="padding: 0px;">
+                        <section id="signup-section-login" style="padding: 0;">
                             <div class="col-md-12">
                                 <div class="mb-3 mx-lg-auto w-25">
                                     <img src="assets/images/logo.png" alt="Logo">
@@ -30,7 +30,7 @@
                                             <div class="form-group w-100"
                                                  [ngClass]="{'has-error': getFormControl('username').dirty && getFormControl('username').hasError('required'), 'has-success':getFormControl('username').dirty&&!getFormControl('username').hasError('required') }">
                                                 <label for="username" class="col-lg-12 control-label">Phone
-                                                    Number</label>
+                                                    Number <span class="required">*</span></label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Phone Number" class="form-control" id="username"
                                                            formControlName="username" [autofocus]="true" required>
@@ -48,7 +48,8 @@
                                             <div class="form-group w-100"
                                                  [ngClass]="{'has-error': getFormControl('password').dirty && getFormControl('password').hasError('required'), 'has-success':getFormControl('password').dirty&&!getFormControl('password').hasError('required') }">
                                                 <label for="password_login"
-                                                       class="col-lg-12 control-label">Password</label>
+                                                       class="col-lg-12 control-label">Password <span
+                                                        class="required">*</span></label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Password" class="form-control"
                                                            id="password_login"
@@ -201,7 +202,8 @@
                                                 <div class="form-group"
                                                      [ngClass]="{'has-error': validateSignUpForm.get('password').dirty && validateSignUpForm.get('password').errors, 'has-success':validateSignUpForm.get('password').dirty && !validateSignUpForm.get('password').errors}">
                                                     <label for="password"
-                                                           class="col-lg-12 control-label">Password <span class="required">*</span></label>
+                                                           class="col-lg-12 control-label">Password <span
+                                                            class="required">*</span></label>
                                                     <div class="col-lg-12">
                                                         <input placeholder="Input your password" class="form-control"
                                                                id="password"
@@ -244,11 +246,12 @@
                                                 <div class="form-group">
                                                     <label for="full_birth_date" class="col-lg-12 control-label">Birthday</label>
                                                     <div class="col-lg-12">
-                                                        <input [matDatepicker]="fullBirthDatePicker" [min]="minBirthDate" [max]="maxBirthDate"
-                                                               formControlName="full_birth_date"
-
+                                                        <input [matDatepicker]="fullBirthDatePicker"
+                                                               [min]="minBirthDate" [max]="maxBirthDate"
+                                                               formControlName="full_birth_date" readonly
                                                                id="full_birth_date" placeholder="Choose a date">
-                                                        <mat-datepicker-toggle matSuffix [for]="fullBirthDatePicker"></mat-datepicker-toggle>
+                                                        <mat-datepicker-toggle matSuffix
+                                                                               [for]="fullBirthDatePicker"></mat-datepicker-toggle>
                                                         <mat-datepicker #fullBirthDatePicker></mat-datepicker>
                                                     </div>
                                                 </div>
@@ -264,7 +267,6 @@
                                                         *ngIf="!signupSubmitting; else loadingContentSignup"
                                                 >Sign Up
                                                 </button>
-                                                <!--                                            [disabled]="validateSignUpForm.invalid"-->
                                                 <ng-template #loadingContentSignup>
                                                     <button disabled type="button"
                                                             style="color: #333333; font-weight: bold;"
@@ -272,7 +274,8 @@
                                                         lease wait
                                                     </button>
                                                 </ng-template>
-                                                <p>Already have an account?
+                                                <p>
+                                                    Already have an account?
                                                     <a title="Sign In" (click)="register =false" style="color: red">Sign In</a>
                                                 </p>
                                             </div>
@@ -287,7 +290,7 @@
                         <section id="signup-section" style="padding: 0;">
                             <div class="col-md-12">
                                 <div class="mb-3 mx-lg-auto w-25">
-                                    <img src="assets/images/logo.png" alt="">
+                                    <img src="assets/images/logo.png" alt="Logo">
                                 </div>
                                 <h4 class="signup-title">Forgot Password</h4>
                                 <div *ngIf="loginErrorMessage" class="alert alert-danger text-center text-capitalize"
@@ -299,7 +302,7 @@
                                           (ngSubmit)="submitForgotPasswordForm($event,validateForgotForm.value)">
                                         <div class="row">
                                             <div class="form-group w-100"
-                                                 [ngClass]="{'has-success':getForgotFormControl('email').dirty }">
+                                                 [ngClass]="{ 'has-success':getForgotFormControl('email').dirty }">
                                                 <label for="email" class="col-lg-12 control-label">Email</label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Enter Your Email" class="form-control"
@@ -314,7 +317,7 @@
                                             <div class="form-group w-100"
                                                  [ngClass]="{'has-error': getForgotFormControl('phone').dirty && getForgotFormControl('phone').hasError('required'), 'has-success':getForgotFormControl('phone').dirty&&!getForgotFormControl('phone').hasError('required') }">
                                                 <label for="phone-forget-password"
-                                                       class="col-lg-12 control-label">Phone</label>
+                                                       class="col-lg-12 control-label">Phone <span class="required">*</span></label>
                                                 <div class="col-lg-12">
                                                     <input placeholder="Enter Phone Number" class="form-control"
                                                            id="phone-forget-password"
@@ -322,9 +325,7 @@
                                                     <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                     <i class='fa fa-exclamation-circle feedback-icon-error'></i>
                                                     <div class="validation-feedback">
-                                                <span>
-                                                    <i class='fa fa-exclamation-circle'></i> Enter Phone Number
-                                                </span>
+                                                        <span> <i class='fa fa-exclamation-circle'></i> Enter Phone Number </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -338,12 +339,11 @@
                                                     <button disabled type="button"
                                                             style="color: #333333; font-weight: bold;"
                                                             class="btn btn-flat">
-                                                        lease wait
+                                                        Please Wait
                                                     </button>
                                                 </ng-template>
                                                 <p>
-                                                    Create an account? <a class="btn-link" style="color: red"
-                                                                          (click)="showLogin()">Sign In</a>
+                                                    Create an account? <a class="btn-link" style="color: red;" (click)="showLogin()">Sign In</a>
                                                 </p>
                                             </div>
                                         </div>
@@ -355,10 +355,9 @@
                 </div>
                 <div class="col-md-12 col-xs-12">
                 </div>
-                <section style="padding: 0px;">
-                    <div class="row" [ngClass]=""
-                         style="background-position: center; /* Center the image */background-repeat: no-repeat; /* Do not repeat the image */background-size: cover; ">
-                    </div>
+                <section style="padding: 0;">
+                    <div class="row"
+                         style="background-position: center;  background-repeat: no-repeat; background-size: cover; "></div>
                 </section>
             </div>
         </div>

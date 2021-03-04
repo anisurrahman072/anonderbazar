@@ -161,11 +161,13 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
     //Method called for login form submit
     submitForm($event, value) {
-        if (!this.validateForm.valid) {
-            return false;
-        }
+
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
+        }
+
+        if (!this.validateForm.valid) {
+            return false;
         }
 
         this.loginSubmitting = true;

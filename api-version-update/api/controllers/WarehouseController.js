@@ -9,7 +9,6 @@ const {
   initLogPlaceholder,
   pagination
 } = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for getting all warehouse data
@@ -87,7 +86,6 @@ module.exports = {
   create: async (req, res) => {
     try {
 
-
       if (req.body.haslogo === 'true') {
         const uploaded = await uploadImages(req.file('logo'));
         if (uploaded.length === 0) {
@@ -96,10 +94,10 @@ module.exports = {
         let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         req.body.logo = '/' + newPath;
       }
+      req.body.status = 0;
+      const warehouseCreate = await Warehouse.create(req.body).fetch();
 
-      // const warehouseCreate = await Warehouse.create(req.body).fetch();
-
-      return res.status(200).json(req.body);
+      return res.status(200).json(warehouseCreate);
 
     } catch (error) {
       return res.json(error.status, {message: '', error, success: false});

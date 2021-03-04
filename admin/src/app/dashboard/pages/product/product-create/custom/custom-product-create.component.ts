@@ -181,17 +181,25 @@ export class CustomProductCreateComponent implements OnInit {
 
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
-            if (result.id) {
+            this.isSubmit = true;
+            console.log('result', result);
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
+
+        }, (error) => {
+            console.log('error', error);
             this.isSubmit = true;
-        }, (error)=> {
-            this.isSubmit = true;
+            this._notification.create(
+                'error',
+                'Ooops!',
+                'Problem in creating the product'
+            );
         });
     };
 
@@ -292,8 +300,6 @@ export class CustomProductCreateComponent implements OnInit {
 
     craftsmanSearchChange($event) {
     }
-
-
 
 
 }

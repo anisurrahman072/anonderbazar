@@ -6,7 +6,6 @@
  */
 const {uploadImages} = require('../../libs/helper');
 const {asyncForEach} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for creating category data
@@ -155,7 +154,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       let body = req.body;
-      console.log('body', body);
+
       if (body.hasImage === 'true') {
         const uploaded = await uploadImages.upload(req.file('image0'));
         if (uploaded.length === 0) {

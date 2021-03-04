@@ -134,8 +134,13 @@ export class ProductItemComponent implements OnInit {
                         }
                     },
                     error => {
+                        console.log(error);
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if(error && error.error){
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
                     }
                 );
             this.productname = this.product.name;

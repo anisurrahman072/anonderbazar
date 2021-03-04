@@ -23,8 +23,8 @@
                             <mat-option *ngIf="p.type === 'product'" routerLink="/product-details/{{p.id}}">
                                 <a><small>{{p.name}}</small></a>
                             </mat-option>
-                            <mat-option *ngIf="(filteredProducts )?.length < 1" [value]="">
-                                There is no product to be found
+                            <mat-option *ngIf="(filteredProducts)?.length < 1" [value]="">
+                               No product was found
                             </mat-option>
                         </div>
                     </mat-autocomplete>
