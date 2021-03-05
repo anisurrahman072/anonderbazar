@@ -38,7 +38,15 @@ export class ProductService {
         return this.http.get(this.EndPoint + '/' + id + '?populate=false').map(response => response);
     }
 
+    getByIds(ids): Observable<any> {
+        const url = `${this.EndPoint}/byIds?ids=${JSON.stringify(ids)}&populate=false`;
+        console.log('getByIds', url);
+
+        return this.http.get(url).map(response => response);
+    }
+
     getByIdWithPopulate(id): Observable<any> {
+        console.log('getByIdWithPopulate', this.EndPoint + '/' + id);
         return this.http.get(this.EndPoint + '/' + id).map(response => response);
     }
 

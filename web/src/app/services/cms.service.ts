@@ -9,16 +9,12 @@ import {AppSettings} from '../config/app.config';
 export class CmsService {
     private EndPoint = `${AppSettings.API_ENDPOINT}/cms`;
 
-    constructor(
-        private http: HttpClient,
-        private authenticationService: AuthService
-    ) {
+    constructor(private http: HttpClient) {
     }
 
-    getAll(): Observable<any> {
-        return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null}&populate=false')
-            .map(response => response);
+    getByIds(ids: number[]): Observable<any> {
+        const url = `${this.EndPoint}/byIds?ids=${JSON.stringify(ids)}&populate=false`;
+        return this.http.get(url).map(response => response);
     }
 
     getById(id): Observable<any> {
@@ -29,10 +25,6 @@ export class CmsService {
         return this.http.post(this.EndPoint, data).map(response => response);
     }
 
-    delete(id): Observable<any> {
-        // get users from api
-        return this.http.delete(`${this.EndPoint}/${id}`).map(response => response);
-    }
 
     update(id: number, data: any) {
         return this.http

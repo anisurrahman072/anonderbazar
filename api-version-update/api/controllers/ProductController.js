@@ -1,9 +1,68 @@
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 const Promise = require('bluebird');
+const {removeCacheForProduct} = require('../../libs/cache-manage');
 const {asyncForEach} = require('../../libs/helper');
+const {storeToCache} = require('../../libs/cache-manage');
+const {fetchFromCache} = require('../../libs/cache-manage');
 
 module.exports = {
 
+  findOne: async (req, res) => {
+
+    try {
+      let key = 'product-' + req.param('id') + '-with-pop';
+      if (req.query.populate === 'false') {
+        key = 'product-' + req.param('id') + '-no-pop';
+      }
+
+      let product = await fetchFromCache(key);
+
+      if (product === undefined) {
+        if (req.query.populate === 'false') {
+          product = await Product.findOne({id: req.param('id')});
+        } else {
+          product = await Product.findOne({id: req.param('id')})
+            .populate('warehouse_id')
+            .populate('product_images', {deletedAt: null})
+            .populate('product_variants', {deletedAt: null});
+        }
+
+        await storeToCache(key, product);
+      }
+      return res.status(200).json(product);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        error
+      });
+    }
+  },
+  byIds: async (req, res) => {
+    try {
+      req.query.ids = JSON.parse(req.query.ids);
+      console.log(req.query);
+
+      if (req.query.ids && Array.isArray(req.query.ids) && req.query.ids.length > 0) {
+        let products = await Product.find({
+          id: req.query.ids,
+          deletedAt: null
+        });
+        return res.status(200).json(products);
+      }
+
+      return res.status(422).json({
+        success: false,
+        message: 'Invalid'
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error
+      });
+    }
+
+  },
   //Method called for deleting a product data
   //Model models/Product.js
   destroy: async (req, res) => {
@@ -13,6 +72,7 @@ module.exports = {
       }).set({
         deletedAt: new Date()
       });
+      await removeCacheForProduct(req.param('id'));
       return res.json(product);
     } catch (error) {
       return res.status(400).json(error);
@@ -26,7 +86,7 @@ module.exports = {
       const rawResult = await nativeQuery(`SELECT MAX(price) as max FROM products WHERE approval_status = 2`);
       console.log(rawResult.rows[0]);
 
-      if (rawResult && rawResult.rows ) {
+      if (rawResult && rawResult.rows) {
         return res.json(rawResult.rows[0]);
       }
       return res.status(400).json({success: false});
@@ -41,7 +101,7 @@ module.exports = {
       const nativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       const rawResult = await nativeQuery(`SELECT MIN(price) as min FROM products WHERE approval_status = 2`);
       console.log(rawResult.rows);
-      if (rawResult && rawResult.rows ) {
+      if (rawResult && rawResult.rows) {
         return res.json(rawResult.rows[0]);
       }
       return res.status(400).json({success: false});
@@ -154,6 +214,9 @@ module.exports = {
         }
       }
       let product = await Product.updateOne({id: req.param('id')}).set(body);
+
+      await removeCacheForProduct(req.param('id'));
+
       return res.status(200).json(product);
     } catch (err) {
       console.log(err);
@@ -223,7 +286,7 @@ module.exports = {
   },
   //Method called for uploading product images
   //Model models/ProductImage.js
-  uploadCouponBanners: async  (req, res) => {
+  uploadCouponBanners: async (req, res) => {
     if (!req.body.product_id) {
       return res.badRequest('No Associated Product to attach banners');
     }

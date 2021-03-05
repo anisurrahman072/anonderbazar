@@ -8,6 +8,30 @@
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
+  byIds: async (req, res) => {
+    try {
+      req.query.ids = JSON.parse(req.query.ids);
+      console.log(req.query);
+
+      if (req.query.ids && Array.isArray(req.query.ids) && req.query.ids.length > 0) {
+        let cmses = await CMS.find({
+          id: req.query.ids,
+          deletedAt: null
+        });
+        return res.status(200).json(cmses);
+      }
+
+      return res.status(422).json({
+        success: false,
+        message: 'Invalid'
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error
+      });
+    }
+  },
   // destroy a row
   destroy: async (req, res) => {
     try {

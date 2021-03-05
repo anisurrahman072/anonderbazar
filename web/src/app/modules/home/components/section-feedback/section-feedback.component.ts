@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {ProductService} from '../../../../services';
 
@@ -13,12 +12,9 @@ export class FeedbackComponent implements OnInit {
     newProducts: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
-    constructor(private productService: ProductService,
-                private cmsService: CmsService
-    ) {
+    constructor(private productService: ProductService) {
     }
 
-    //Event method for getting all the data for the page
     ngOnInit() {
         this.productService.getFeedbackProducts().subscribe(arg => this.feedbackProducts = arg);
         this.productService.getNewProducts().subscribe(arg => this.newProducts = arg);

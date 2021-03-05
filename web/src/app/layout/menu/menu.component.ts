@@ -24,13 +24,10 @@ export class MenuComponent implements OnInit {
     currentUser$: Observable<any>;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     productTypeList: any;
-    isCategoryShow = false;
     categoryList: any[];
     subCategoryList: any[];
     brandList: any[];
-    isClicked: Boolean = false;
     selectedCategoryId: any;
-    class_list: any;
     @Input()
     isCollapsed: boolean;
     isDisplay: boolean;
@@ -67,15 +64,12 @@ export class MenuComponent implements OnInit {
             this.productTypeList = result;
         });
 
-
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.categoryProductService
             .getCategoriesWithSubcategories()
             .subscribe(result => {
-                console.log('getCategoriesWithSubcategories', result);
-                console.log('getCategoriesWithSubcategories', typeof result);
                 this.categoryList = result;
             });
 

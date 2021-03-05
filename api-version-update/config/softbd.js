@@ -1,5 +1,6 @@
 module.exports = {
   devEnv: false,
+  radisEnabled: false,
   couponCodePadCount: 6,
   adminPaymentAddressId: 75,
   dhakaZilaId: 2942,
@@ -21,5 +22,5 @@ module.exports = {
   sslCommerzSMSConfig: {
     'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
     'sid': 'SOFTBDNONAPI',
-  }
+  },
 };

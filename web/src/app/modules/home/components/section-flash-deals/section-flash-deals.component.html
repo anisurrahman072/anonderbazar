@@ -1,4 +1,4 @@
-<section id="flashdeal" *ngIf="dataProductList" style="padding-bottom: 20px;">
+<section id="flashdeal" *ngIf="productList && productList.length > 0" style="padding-bottom: 20px;">
     <div class="container-fluid">
         <div class="category-head cate-flash justify-content-between d-flex">
             <div class="titel d-flex">
@@ -11,7 +11,7 @@
             <button class="flash d-none"><a href="#">Ends in:<span>12 : 06 : 32</span></a></button>
         </div>
         <div class="row">
-            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of (dataProductList|async)">
+            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of productList">
                 <app-product-item-flash-deals [dataProduct]="product"></app-product-item-flash-deals>
             </div>
         </div>

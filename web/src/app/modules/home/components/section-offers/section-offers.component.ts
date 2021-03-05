@@ -9,12 +9,10 @@ import {ProductService} from '../../../../services';
     styleUrls: ['./section-offers.component.scss']
 })
 export class OfferComponent implements OnInit {
-    private middleblogList: any;
     homeOfferData: any = [];
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
-
     products: any = [];
     offers: any = [];
 
@@ -26,31 +24,34 @@ export class OfferComponent implements OnInit {
         this.cmsService
             .getBySubSectionName('POST', 'HOME', 'PARENTOFFER')
             .subscribe(result => {
-                console.log('cmsService-getBySubSectionName-result', result);
+
                 this.homeOfferData = result;
-                this.homeOfferData.forEach(element => {
-                    if (element.data_value[0].offers.length > 0) {
-                        let newOffers = [];
-                        element.data_value[0].offers.forEach(element => {
-                            this.cmsService.getById(element)
+
+                this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0))
+                    .forEach(element => {
+
+                        if (element.data_value[0].offers && element.data_value[0].offers.length > 0) {
+                            element.data_value[0].alloffers = [];
+                            this.cmsService.getByIds(element.data_value[0].offers)
                                 .subscribe(result => {
-                                    newOffers.push(result.data_value[0]);
+                                    console.log(' this.cmsService.getByIds', result);
+                                    element.data_value[0].alloffers = result;
+                                }, (err) => {
+                                    console.log(err);
                                 });
-                        });
-                        element.data_value['alloffers'] = newOffers;
-                    }
-                    if (element.data_value[0].products.length > 0) {
-                        let newProducts = [];
-                        element.data_value[0].products.forEach(element => {
-                            this.productservice.getById(element)
+                        }
+
+                        if (element.data_value[0].products && element.data_value[0].products.length > 0) {
+                            element.data_value[0].allproducts = [];
+                            this.productservice.getByIds(element.data_value[0].products)
                                 .subscribe(result => {
-                                    newProducts.push(result);
+                                    element.data_value[0].allproducts = result;
+                                }, (err) => {
+                                    console.log(err);
                                 });
-                        });
-                        element.data_value['allproducts'] = newProducts;
-                    }
-                });
-                console.log('this.homeOfferData', this.homeOfferData);
+                        }
+                    });
+
             });
     }
 

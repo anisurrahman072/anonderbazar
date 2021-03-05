@@ -12,9 +12,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class CmsPageComponent implements OnInit {
     array = [];
     all_cms_post: any;
-    all_cms_post_by_scroll: Array<any>;
-    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    Titles: any;
+    IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     start: number;
     end: number;
     cms_length: number;
@@ -24,7 +22,7 @@ export class CmsPageComponent implements OnInit {
     p: any;
 
     constructor(
-        private CmsService: CmsService,
+        private cmsService: CmsService,
         private productservice: ProductService,
         private router: Router,
         private route: ActivatedRoute,
@@ -32,13 +30,14 @@ export class CmsPageComponent implements OnInit {
         this.start = 0;
 
         this.end = 9;
-        if (this.cms_length < 1)
+        if (this.cms_length < 1) {
             this.end = this.cms_length;
-
+        }
     }
 
-// init the component
+    // init the component
     ngOnInit() {
+        console.log('this.route.snapshot.data["title"]', this.route.snapshot.data["title"]);
         if (this.route.snapshot.data["title"] == "OFFERS") {
             this.get_all_offer_cms();
             this.offerpage = true;
@@ -53,22 +52,6 @@ export class CmsPageComponent implements OnInit {
         }
     }
 
-    //Method for add cms items
-
-    addItems(startIndex, endIndex, _method) {
-        for (; this.start < this.end; ++this.start) {
-
-            this.array.concat(this.all_cms_post[this.start])
-
-        }
-    }
-
-    //Method for append cms items
-
-    appendItems(startIndex, endIndex) {
-        this.addItems(startIndex, endIndex, 'push');
-    }
-
     onScroll(event) {
 
         this.end += 3;
@@ -76,54 +59,64 @@ export class CmsPageComponent implements OnInit {
 
     //Event method for getting all the cms data for the page
     private get_all_cms() {
-        this.CmsService.getRecentPost("POST", this.end, "id", "desc").subscribe(result => {
-            this.CmsService.getBySubSectionName("POST", "NONE", "NONE").subscribe(result => {
-                this.all_cms_post = result;
-                for (let i = 0; i < this.all_cms_post.length; i++) {
-                    let inputWords = this.all_cms_post[i].data_value[0].description.replace(/<[^>]*>/g, '');
-                    inputWords = inputWords.replace("&nbsp;", "").split(' ');
-                    if (inputWords.length > 20)
-                        this.all_cms_post[i].data_value[0].description = inputWords.slice(0, 20).join(' ') + ' ...';
-                    else
-                        this.all_cms_post[i].data_value[0].description = inputWords.join(' ');
-                }
-                this.cms_length = this.all_cms_post.length;
+        // this.cmsService.getRecentPost("POST", this.end, "id", "desc").subscribe(result => {
+        this.cmsService.getBySubSectionName("POST", "NONE", "NONE").subscribe(result => {
+            this.all_cms_post = result;
+            for (let i = 0; i < this.all_cms_post.length; i++) {
+                let inputWords = this.all_cms_post[i].data_value[0].description.replace(/<[^>]*>/g, '');
+                inputWords = inputWords.replace("&nbsp;", "").split(' ');
+                if (inputWords.length > 20)
+                    this.all_cms_post[i].data_value[0].description = inputWords.slice(0, 20).join(' ') + ' ...';
+                else
+                    this.all_cms_post[i].data_value[0].description = inputWords.join(' ');
+            }
+            this.cms_length = this.all_cms_post.length;
 
-            });
+            console.log('get_all_cms', this.all_cms_post);
         });
-
+        // });
 
     }
 
     //Event method for getting all the offer cms data for the page
     private get_all_offer_cms() {
-        this.CmsService
+        this.cmsService
             .getBySubSectionName('POST', 'HOME', 'PARENTOFFER')
             .subscribe(result => {
-                this.homeOfferData = result;
-                this.homeOfferData.forEach(element => {
-                    if (element.data_value[0].offers.length > 0) {
 
-                        let newOffers = [];
-                        element.data_value[0].offers.forEach(element => {
-                            this.CmsService.getById(element)
+
+                if (!(result && Array.isArray(result) && result.length > 0)) {
+                    return false;
+                }
+
+                this.homeOfferData = result;
+
+                this.homeOfferData.filter((element) => element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0)
+                    .forEach(element => {
+                        // console.log('title', element.data_value[0]);
+                        if (element.data_value[0].offers && element.data_value[0].offers.length > 0) {
+
+                            element.data_value[0].alloffers = [];
+
+                            this.cmsService.getByIds(element.data_value[0].offers)
                                 .subscribe(result => {
-                                    newOffers.push(result.data_value[0]);
+                                    element.data_value[0].alloffers = result;
+                                }, (err) => {
+                                    console.log(err);
                                 });
-                        });
-                        element.data_value['alloffers'] = newOffers;
-                    }
-                    if (element.data_value[0].products.length > 0) {
-                        let newProducts = [];
-                        element.data_value[0].products.forEach(element => {
-                            this.productservice.getById(element)
+                        }
+                        if (element.data_value[0].products && element.data_value[0].products.length > 0) {
+
+                            element.data_value[0].allproducts = [];
+
+                            this.productservice.getByIds(element.data_value[0].products)
                                 .subscribe(result => {
-                                    newProducts.push(result);
+                                    element.data_value[0].allproducts = result;
+                                }, (err) => {
+                                    console.log(err);
                                 });
-                        });
-                        element.data_value['allproducts'] = newProducts;
-                    }
-                });
+                        }
+                    });
             });
     }
 
