@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing payments
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {pagination} = require('../../libs');
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all payment data
   //Model models/Payment.js

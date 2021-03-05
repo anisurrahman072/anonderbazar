@@ -6,13 +6,12 @@
  */
 
 const {pagination} = require('../../libs/pagination');
-const {initLogPlaceholder} = require('../../libs/helper');
+
 module.exports = {
   //Method called for getting all product part data
   //Model models/Part.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'PartsList ');
 
       let _pagination = pagination(req.query);
 

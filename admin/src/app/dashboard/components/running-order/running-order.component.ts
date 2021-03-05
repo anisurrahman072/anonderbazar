@@ -1,11 +1,9 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {SuborderService} from "../../../services/suborder.service";
 import {OrderService} from "../../../services/order.service";
-import {UserService} from "../../../services/user.service";
 import {AuthService} from "../../../services/auth.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {Subscription} from "rxjs";
-import {UIService} from "../../../services/ui/ui.service";
 import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 
 @Component({
@@ -14,10 +12,11 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
     styleUrls: ["./running-order.component.css"]
 })
 export class RunningOrderComponent implements OnInit {
-    orderList: any = [];
+
+    private _runningOrderData: any;
+    subOrderData: any[] = [];
     options: { value: number; label: string; icon: string }[];
     currentUser: any;
-    data: any = [];
     _isSpinning: boolean = true;
     view: any[] = [630, 350];
     showLegend = true;
@@ -41,10 +40,48 @@ export class RunningOrderComponent implements OnInit {
         private orderService: OrderService,
         private _notification: NzNotificationService,
         private authService: AuthService,
-        private subOrderService: SuborderService,
-        private userService: UserService,
-        private uiService: UIService
+        private subOrderService: SuborderService
     ) {
+    }
+
+    @Input()
+    set runningOrders(data: any) {
+        this._runningOrderData = data;
+        let pendingCount = 0;
+        let processingCount = 0;
+        let deliveredCount = 0;
+        let canceledCount = 0;
+        this._isSpinning = true;
+
+        if (this._runningOrderData) {
+            this.subOrderData = this._runningOrderData.data;
+            pendingCount = this._runningOrderData.pendingOrder;
+            processingCount = this._runningOrderData.processingOrder;
+            deliveredCount = this._runningOrderData.deliveredOrder;
+            canceledCount = this._runningOrderData.canceledOrder;
+
+            this.setDashboardData(
+                pendingCount,
+                processingCount,
+                deliveredCount,
+                canceledCount
+            );
+            this._isSpinning = false;
+        } else {
+            this.setDashboardData(
+                pendingCount,
+                processingCount,
+                deliveredCount,
+                canceledCount
+            );
+            this._isSpinning = false;
+            this.subOrderData = [];
+        }
+
+    }
+
+    get runningOrders(): any {
+        return this._runningOrderData;
     }
 
     //Event method for getting all the data for the page
@@ -54,40 +91,116 @@ export class RunningOrderComponent implements OnInit {
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES;
         this.currentUser = this.authService.getCurrentUser();
 
-        console.log('this.currentUser', this.currentUser);
+        /*        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
+                    warehouseId => {
 
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-            warehouseId => {
-                this.currentWarehouseId = warehouseId || '';
-                this.getPageData();
-            }
-        );
+                        this.currentWarehouseId = warehouseId || '';
+                        if(!isNaN(this.currentWarehouseId)){
+                            this.getPageData();
+                        }
 
+                    }
+                );
+          */
+        /* let pendingCount = 0;
+         let processingCount = 0;
+         let deliveredCount = 0;
+         let canceledCount = 0;
+         console.log('ngOnInit', this.data);
+
+         if (this.data) {
+             this.subOrderData = this.data.data;
+             pendingCount = this.data.pendingOrder;
+             processingCount = this.data.processingOrder;
+             deliveredCount = this.data.deliveredOrder;
+             canceledCount = this.data.canceledOrder;
+
+             this.setDashboardData(
+                 pendingCount,
+                 processingCount,
+                 deliveredCount,
+                 canceledCount
+             );
+         } else {
+             this.setDashboardData(
+                 pendingCount,
+                 processingCount,
+                 deliveredCount,
+                 canceledCount
+             );
+         }*/
     }
 
-    //Event method for getting all the data for the page
-    getPageData() {
-        let pendingCount = 0;
-        let processingCount = 0;
-        let deliveredCount = 0;
-        let canceledCount = 0;
-        if(this.currentWarehouseId){
+    /*
+
+        //Event method for getting all the data for the page
+        getPageData() {
+
+            let pendingCount = 0;
+            let processingCount = 0;
+            let deliveredCount = 0;
+            let canceledCount = 0;
+            if (this.currentWarehouseId) {
+                this.subOrderService
+                    .getSuborder(this.currentWarehouseId, 1, null)
+                    .subscribe(result => {
+                        this.data = result.data;
+
+                        pendingCount = result.pendingOrder;
+                        processingCount = result.processingOrder;
+                        deliveredCount = result.deliveredOrder;
+                        canceledCount = result.canceledOrder;
+
+                        this.setDashboardData(
+                            pendingCount,
+                            processingCount,
+                            deliveredCount,
+                            canceledCount
+                        );
+                        this._isSpinning = false;
+                    }, (error) => {
+                        console.log(error);
+                        this._isSpinning = false;
+                    });
+            } else {
+                this.subOrderService
+                    .getSuborder(null, 1, null)
+                    .subscribe(result => {
+                        this.data = result.data;
+
+                        pendingCount = result.pendingOrder;
+                        processingCount = result.processingOrder;
+                        deliveredCount = result.deliveredOrder;
+                        canceledCount = result.canceledOrder;
+
+                        this.setDashboardData(
+                            pendingCount,
+                            processingCount,
+                            deliveredCount,
+                            canceledCount
+                        );
+                        this._isSpinning = false;
+                    }, (error) => {
+                        console.log(error);
+                        this._isSpinning = false;
+                    });
+            }
+
+        }
+
+    */
+
+    //Method for showing the modal
+    showModal = () => {
+        console.log('RunningOrderComponent-showModal')
+        this.isVisibleRunning = true;
+        this._isSpinning = true;
+        this.currentUser = this.authService.getCurrentUser();
+        if (this.currentUser.warehouse) {
             this.subOrderService
-                .getSuborder(this.currentWarehouseId, 1, null)
+                .getSuborder(this.currentUser.warehouse.id, 1, null)
                 .subscribe(result => {
-                    this.data = result.data;
-
-                    pendingCount = result.pendingOrder;
-                    processingCount = result.processingOrder;
-                    deliveredCount = result.deliveredOrder;
-                    canceledCount = result.canceledOrder;
-
-                    this.setDashboardData(
-                        pendingCount,
-                        processingCount,
-                        deliveredCount,
-                        canceledCount
-                    );
+                    this.allData = result.data;
                     this._isSpinning = false;
                 }, (error) => {
                     console.log(error);
@@ -95,28 +208,15 @@ export class RunningOrderComponent implements OnInit {
                 });
         } else {
             this.subOrderService
-                .getSuborder(null, 1, null)
+                .getSuborder('', 1, null)
                 .subscribe(result => {
-                    this.data = result.data;
-
-                    pendingCount = result.pendingOrder;
-                    processingCount = result.processingOrder;
-                    deliveredCount = result.deliveredOrder;
-                    canceledCount = result.canceledOrder;
-
-                    this.setDashboardData(
-                        pendingCount,
-                        processingCount,
-                        deliveredCount,
-                        canceledCount
-                    );
+                    this.allData = result.data;
                     this._isSpinning = false;
                 }, (error) => {
                     console.log(error);
                     this._isSpinning = false;
                 });
         }
-
     }
 
     //Event method for getting all the data for dashboard
@@ -168,30 +268,6 @@ export class RunningOrderComponent implements OnInit {
     onSelect(event) {
     }
 
-    //Method for showing the modal
-    showModal = () => {
-        this.isVisibleRunning = true;
-        this.currentUser = this.authService.getCurrentUser();
-        if (this.currentUser.warehouse) {
-            this.subOrderService
-                .getSuborder(this.currentUser.warehouse.id, 1, null)
-                .subscribe(result => {
-                    this.allData = result.data;
-                }, (error) => {
-                    console.log(error);
-                    this._isSpinning = false;
-                });
-        } else {
-            this.subOrderService
-                .getSuborder('', 1, null)
-                .subscribe(result => {
-                    this.allData = result.data;
-                }, (error) => {
-                    console.log(error);
-                    this._isSpinning = false;
-                });
-        }
-    }
 
     handleOk = (e) => {
         this.isVisibleRunning = false;

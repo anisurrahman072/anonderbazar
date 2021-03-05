@@ -195,31 +195,31 @@
         <tr
           nz-tbody-tr
           #dataFor
-          *ngFor="let data of nzTable.data; let i = index"
+          *ngFor="let datum of nzTable.data; let i = index"
         >
           <td nz-td>
             <ng-container
               *ngIf="('order-read' | accessControl); else elseTemplate"
             >
-              {{ data.order_id }} /
+              {{ datum.order_id }} /
             </ng-container>
             <ng-template #elseTemplate>
-              {{ data.suborder_id }}
+              {{ datum.suborder_id }}
             </ng-template>
           </td>
           <td nz-td>
             <nz-tag>
-              {{ data.customer_name}}
+              {{ datum.customer_name}}
             </nz-tag>
           </td>
 
-          <td nz-td>{{ data.product_name }}</td>
-          <td nz-td>{{ data.product_quantity }}</td>
+          <td nz-td>{{ datum.product_name }}</td>
+          <td nz-td>{{ datum.product_quantity }}</td>
           <td nz-td>{{ now }}</td>
           <td nz-td><i class="fa fa-circle text-success"></i></td>
           <td>
             <button
-              [routerLink]="['/dashboard/suborder/invoice/', data.suborder_id]"
+              [routerLink]="['/dashboard/suborder/invoice/', datum.suborder_id]"
               nz-button
               [nzType]="'info'"
               [nzSize]="'default'"
@@ -261,35 +261,30 @@
         <tr
           nz-tbody-tr
           #dataFor
-          *ngFor="let data of nzTables.data; let i = index"
+          *ngFor="let datum of nzTables.data; let i = index"
         >
           <td nz-td>
             <ng-container
               *ngIf="('order-read' | accessControl); else elseTemplate"
             >
-              {{ data.product_suborder_id[0].product_order_id }}
+              {{ datum.order_id }}
             </ng-container>
             <ng-template #elseTemplate>
-              {{ data.product_suborder_id[0].product_order_id }} /
-              {{ data.product_suborder_id[0].id }}
+              {{ datum.suborder_id }}
             </ng-template>
           </td>
           <td nz-td>
             <nz-tag>
-              {{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}
+              {{ datum.customer_name}}
             </nz-tag>
           </td>
-
-          <td nz-td>{{ data.product_id.name }}</td>
-          <td nz-td>{{ data.product_quantity }}</td>
-          <td nz-td>{{ data.createdAt | date }}</td>
+          <td nz-td>{{ datum.product_name }}</td>
+          <td nz-td>{{ datum.product_quantity }}</td>
+          <td nz-td>{{ datum.created_at | date: 'd/M/yyyy, h:mm a' }}</td>
           <td nz-td><i class="fa fa-circle text-success"></i></td>
-
-          <!-- trying -->
-
           <td>
             <button
-              [routerLink]="['/dashboard/suborder/invoice/', data.id]"
+              [routerLink]="['/dashboard/suborder/invoice/', datum.suborder_id]"
               nz-button
               [nzType]="'info'"
               [nzSize]="'default'"

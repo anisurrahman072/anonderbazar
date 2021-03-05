@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WarehouseService} from '../../../../services/warehouse.service';
-import {UserService} from "../../../../services/user.service";
 import {UIService} from "../../../../services/ui/ui.service";
-
 import {environment} from "../../../../../environments/environment";
 import { NzNotificationService } from 'ng-zorro-antd';
 
@@ -28,7 +26,7 @@ export class WarehouseComponent implements OnInit {
      // init the component
     ngOnInit(): void {
         this.getAllData();
-      
+
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
@@ -38,19 +36,19 @@ export class WarehouseComponent implements OnInit {
     }
       //Event method for getting all the data for the page
     getAllData() {
-        
+
         this.warehouseService.getAllIndex(
             this.page,
             this.limit,
             this.currentWarehouseId,
         )
             .subscribe(result => {
-                    this.data = result.data; 
-                    this.total = result.total; 
-                    console.log(this.data); 
+                    this.data = result.data;
+                    this.total = result.total;
+                    console.log(this.data);
                     this._isSpinning = false;
                 },
-                result => { 
+                result => {
                     this._isSpinning = false;
                 });
     }

@@ -4,13 +4,12 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const { initLogPlaceholder } = require('../../libs');
 
 module.exports = {
   //Method called for initiating a chat room
   //Model models/Chat.js
   create: async (req, res) => {
-    initLogPlaceholder(req, 'chat Service create');
+
     async function create(body) {
       try {
         let data = await Chat.create(body);
@@ -47,7 +46,7 @@ module.exports = {
       }
     }
 
-    create(req.body);
+    await create(req.body);
   },
 
 };

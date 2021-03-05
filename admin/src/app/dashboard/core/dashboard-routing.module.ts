@@ -3,8 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { DashboardCoreComponent } from './dashboard-core.component';
 import { DashboardHomeComponent } from '../pages/dashboard-home/dashboard-home.component';
 import { IsAdmin } from '../../auth/core/guard/isAdmin';
-import { AuthGuard } from '../../auth/core/guard/guard';
-import { GroupGuard } from '../../auth/core/guard/group.guard';
 import { UserComponent } from '../pages/craftsman/user/user.component';
 import { CustomerComponent } from '../pages/craftsman/customer/customer.component';
 import { AccessControl } from '../../auth/core/guard/AccessControl.guard';

@@ -4,18 +4,14 @@
  * @description :: Server-side logic for managing warehouses
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
-const {
-  initLogPlaceholder,
-  pagination
-} = require('../../libs');
 
 module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'craftsman');
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -47,10 +43,10 @@ module.exports = {
         message: 'Get All Warehouses with pagination',
         data: Warehouses
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Warehouses with pagination';
 
+      console.log(error);
       res.status(400).json({
         success: false,
         message,

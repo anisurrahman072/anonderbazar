@@ -5,8 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {pagination} = require('../../libs');
-
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all warehouse variant data
   //Model models/WarehouseVariant.js

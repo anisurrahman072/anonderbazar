@@ -1,4 +1,3 @@
-const {initLogPlaceholder} = require('../../libs/helper');
 const _ = require('lodash');
 const {Helper} = require('../../libs/HelperClass');
 const {pagination} = require('../../libs/pagination');
@@ -10,8 +9,6 @@ module.exports = {
   //Model models/DesignImage.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'brand');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -35,9 +32,7 @@ module.exports = {
           }
         ];
       }
-      /* WHERE condition..........END................*/
 
-      /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
         _sort.name = req.query.sortName;
@@ -86,8 +81,6 @@ module.exports = {
   //Model models/DesignImage.js
   findOne: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'designImage findOne');
-
       let designImage = await DesignImage.findOne({
         where: {
           id: req.params._id
@@ -148,7 +141,6 @@ module.exports = {
   //Model models/DesignImage.js
   getAllByProductId: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'designCombination');
 
       let productId = req.params._id;
       let productDesignData = await ProductDesign.find({
@@ -214,7 +206,6 @@ module.exports = {
   //Model models/DesignImage.js
   updateByProductId: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'updateByProductId');
 
       let warehouseId = req.token.userInfo.warehouse_id.id;
 

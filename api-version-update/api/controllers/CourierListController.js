@@ -4,14 +4,12 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {initLogPlaceholder} = require('../../libs');
 
 module.exports = {
 
   //Method called for creating courier sub order data
   //Model models/CourierList.js
   create: async (req, res) => {
-    initLogPlaceholder(req, 'Courier create');
     try {
 
       if (req.body) {
@@ -34,7 +32,6 @@ module.exports = {
   //Method called for creating courier order data
   //Model models/CourierList.js
   courierordercreate: async (req, res) => {
-    initLogPlaceholder(req, 'Courier create');
 
     try {
       if (req.body) {
@@ -90,7 +87,7 @@ module.exports = {
   //Model models/CourierList.js
   updateCourier: async (req, res) => {
     try {
-      const courierlist = await CourierList.update({id: req.param('id')}, req.body).fetch();
+      const courierlist = await CourierList.updateOne({id: req.param('id')}).set(req.body);
       return res.json(200, courierlist);
     } catch (error) {
       return res.json(error, 400);
@@ -100,7 +97,7 @@ module.exports = {
   //Model models/CourierList.js
   destroy: async (req, res) => {
     try {
-      const user = await CourierList.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      const user = await CourierList.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(200, user[0]);
     } catch (error) {
       return res.json(error, 400);
@@ -110,7 +107,7 @@ module.exports = {
   //Model models/CourierList.js
   CourierListOrder: async (req, res) => {
     try {
-      const user = await CourierListOrder.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      const user = await CourierListOrder.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(200, user[0]);
     } catch (error) {
       return res.json(error, 400);

@@ -4,22 +4,16 @@
  * @description :: Server-side logic for managing orders
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
-
-/*const webURL = 'http://anonderbazar.com';
-const APIURL = 'http://api.anonderbazar.com/api/v1';*/
-
-const {asyncForEach} = require('../../libs');
 const {calcCartTotal} = require('../../libs/cartHelper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {sslWebUrl} = require('../../config/softbd');
-const {sslApiUrl} = require('../../config/softbd');
+const {pagination} = require('../../libs/pagination');
+const {asyncForEach} = require('../../libs/helper');
+const {adminPaymentAddressId, dhakaZilaId, sslWebUrl, sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
-const {pagination} = require('../../libs');
 
 module.exports = {
   index: (req, res) => {

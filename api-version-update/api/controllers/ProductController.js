@@ -1,3 +1,4 @@
+const moment = require('moment');
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 const Promise = require('bluebird');
 const {removeCacheForProduct} = require('../../libs/cache-manage');
@@ -213,6 +214,15 @@ module.exports = {
           return res.status(400).json(err.status, {err: err});
         }
       }
+
+      if(body.start_date){
+        body.start_date = moment(body.start_date).format('YYYY-MM-DD');
+      }
+
+      if(body.end_date){
+        body.end_date = moment(body.end_date).format('YYYY-MM-DD');
+      }
+
       let product = await Product.updateOne({id: req.param('id')}).set(body);
 
       await removeCacheForProduct(req.param('id'));

@@ -4,8 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {pagination} = require('../../libs');
-const {Helper} = require('../../libs');
+const {Helper} = require('../../libs/HelperClass');
 
 //Method called for getting all order products data
 //Model models/Product.js

@@ -112,6 +112,8 @@ export class TodoListComponent implements OnInit {
             .getSuborderItems(this.currentWarehouseId, 2, this.currentDate, null)
             .subscribe(result => {
                 this.allDataTodayTodo = result.data;
+            }, (error)=> {
+                console.log(error);
             });
     };
 

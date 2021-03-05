@@ -4,15 +4,14 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const { initLogPlaceholder, pagination } = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all courier price list data
   //Model models/CourierPrice.js
   index: async (req, res) => {
 
     try {
-      initLogPlaceholder(req, 'CourierPriceList');
 
       let _pagination = pagination(req.query);
 
@@ -66,7 +65,6 @@ module.exports = {
   //Model models/CourierPrice.js
   getPriceByIds:async (req, res)=>{
     try {
-      initLogPlaceholder(req, 'EventPriceList');
 
       let _pagination = pagination(req.query);
 

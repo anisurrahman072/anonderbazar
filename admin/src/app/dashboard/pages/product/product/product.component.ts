@@ -383,6 +383,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
         this.productService.update(this.currentProduct.id, formValue).subscribe(
             result => {
+                console.log('submitAddPromotionForm-result', result);
                 this.currentProduct.promotion = value.promotion;
                 this.currentProduct.promo_price = value.promo_price;
                 this.currentProduct.start_date = value.start_date;
@@ -405,6 +406,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.formReset();
         this.addNew = false;
         this.currentProduct = data;
+        console.log('showPromotionModal', this.currentProduct);
         this.getProductPromotions();
     }
 

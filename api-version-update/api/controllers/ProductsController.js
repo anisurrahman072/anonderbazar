@@ -4,11 +4,11 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 const {escapeExcel} = require('../../libs/helper');
 const xl = require('excel4node');
-// const moment = require('moment');
 const Promise = require('bluebird');
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
   //Method called for getting all products
@@ -38,6 +38,9 @@ module.exports = {
             product.is_coupon_product as is_coupon_product,
             product.promotion as promotion,
             product.promo_price as promo_price,
+            product.start_date as start_date,
+            product.end_date as end_date,
+            product.sale_unit as sale_unit,
             product.featured as featured,
             product.weight as weight,
             product.approval_status as approval_status,
@@ -205,8 +208,6 @@ module.exports = {
   //Model models/Product.js,models/ProductDesign.js,models/CraftmanPrice.js
   designCombination: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'designCombination');
-
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
       })

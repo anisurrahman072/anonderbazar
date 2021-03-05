@@ -4,11 +4,11 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {pagination} = require('../../libs');
 const bcrypt = require('bcryptjs');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const jwToken = require('../services/jwToken');
+const {pagination} = require('../../libs/pagination');
 const {isResourceOwnerWarehouse} = require('../../libs/check-permissions');
 const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');

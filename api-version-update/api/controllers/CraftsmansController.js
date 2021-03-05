@@ -4,22 +4,18 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all craftsman list data
   //Model models/User.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'craftsman');
-
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
       _where.group_id = 6;
-
 
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
@@ -36,7 +32,6 @@ module.exports = {
         ];
       }
 
-
       if (req.query.searchTermPhone) {
         _where.phone = {'like': `%${req.query.searchTermPhone}%`};
       }
@@ -45,18 +40,10 @@ module.exports = {
         _where.gender = req.query.gender;
       }
 
-
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
       let _sort = [];
       if (req.query.sortName) {
         _sort.push({name: req.query.sortName});
       }
-
-
-      /*.....SORT END..............................*/
-
 
       let totalCraftsman = await User.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCraftsman;

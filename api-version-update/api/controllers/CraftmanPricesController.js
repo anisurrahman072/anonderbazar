@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {pagination} = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all craftsman price list data
   //Model models/CraftmanPrice.js

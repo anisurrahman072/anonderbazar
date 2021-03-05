@@ -168,71 +168,71 @@
                     </thead>
 
                     <tbody nz-tbody>
-                    <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
+                    <ng-template ngFor let-datum let-i="index" [ngForOf]="nzTable.data">
                         <tr nz-tbody-tr>
 
                             <td nz-td>
-                                <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
-                                           [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
+                                <nz-avatar [routerLink]="['/dashboard/product/details/', datum.id]" [nzShape]="'square'"
+                                           [nzSrc]="IMAGE_ENDPOINT+datum.image" [nzSize]="'large'"
                                            [nzIcon]="'user'"></nz-avatar>
                             </td>
                             <td nz-td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.code}}</nz-tag>
+                                <nz-tag [routerLink]="['/dashboard/product/details/', datum.id]">{{datum.code}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</nz-tag>
+                                <nz-tag [routerLink]="['/dashboard/product/details/', datum.id]">{{datum.name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
-                                <nz-tag *ngIf="data.promotion == 1">
-                                    <del style="color: red">{{data.price}}</del>
-                                    {{data.promo_price}}</nz-tag>
+                                <nz-tag *ngIf="datum.promotion == 0">{{datum.price}}</nz-tag>
+                                <nz-tag *ngIf="datum.promotion == 1">
+                                    <del style="color: red">{{datum.price}}</del>
+                                    {{datum.promo_price}}</nz-tag>
                             </td>
 
                             <td nz-td>
-                                <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
+                                <nz-tag>{{datum.approval_status == 2 ? 'Yes' : datum.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.type_name}}</nz-tag>
+                                <nz-tag>{{datum.type_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.brand_name}}</nz-tag>
+                                <nz-tag>{{datum.brand_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{data.category_name}}</nz-tag>
+                                <nz-tag>{{datum.category_name}}</nz-tag>
                             </td>
                             <td nz-td>
-                                {{data.subcategory_name}}
+                                {{datum.subcategory_name}}
                             </td>
                             <td nz-td>
-                                <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
-                                    {{data.quantity}}
+                                <nz-tag [nzColor]="datum.quantity < datum.alert_quantity? '#f50':''">
+                                    {{datum.quantity}}
                                 </nz-tag>
                             </td>
                             <td nz-td>
-                                <nz-tag>{{formattedDate(data.updatedAt)}}</nz-tag>
+                                <nz-tag>{{formattedDate(datum.updatedAt)}}</nz-tag>
                             </td>
                             <td>
                                 <nz-button-group>
                                     <button *ngIf="'product-read'|accessControl"
-                                            [routerLink]="['/dashboard/product/details/', data.id]"
+                                            [routerLink]="['/dashboard/product/details/', datum.id]"
                                             [queryParams]="{status: status}"
                                             nz-button [nzType]="'info'" [nzSize]="'default'">
                                         <i class="anticon anticon-info-circle"></i>
                                     </button>
                                     <button *ngIf="'product-edit'|accessControl"
-                                            [routerLink]="['/dashboard/product/edit', data.id]"
+                                            [routerLink]="['/dashboard/product/edit', datum.id]"
                                             [queryParams]="{status: status}"
                                             nz-button [nzType]="'primary'" [nzSize]="'default'">
                                         <i class="anticon anticon-edit"></i>
                                     </button>
-                                    <ng-container *ngIf="data.approval_status == 1 || data.approval_status == 99">
+                                    <ng-container *ngIf="datum.approval_status == 1 || datum.approval_status == 99">
                                         <ng-container *ngIf="'product-pending-approvals'|accessControl">
                                             <nz-popconfirm [nzTitle]="'Are you sure you want to approve?'"
                                                            [nzOkText]="'Approve'"
                                                            [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="approveConfirm(i,data.id)">
-                                                <a nz-popconfirm [attr.title]="'Approve This Product: '+ data.id">
+                                                           (nzOnConfirm)="approveConfirm(i,datum.id)">
+                                                <a nz-popconfirm [attr.title]="'Approve This Product: '+ datum.id">
                                                     <button nz-button [nzType]="'default'" [nzSize]="'default'">
                                                         <i class="anticon anticon-check-circle"></i>
                                                     </button>
@@ -240,13 +240,13 @@
                                             </nz-popconfirm>
                                         </ng-container>
                                     </ng-container>
-                                    <ng-container *ngIf="data.approval_status == 2">
+                                    <ng-container *ngIf="datum.approval_status == 2">
                                         <ng-container *ngIf="'product-pending-approvals'|accessControl">
                                             <nz-popconfirm [nzTitle]="'Are you sure you want to reject?'"
                                                            [nzOkText]="'Reject'"
                                                            [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="rejectConfirm(i,data.id)">
-                                                <a nz-popconfirm [attr.title]="'Reject This Product: ' + data.id">
+                                                           (nzOnConfirm)="rejectConfirm(i,datum.id)">
+                                                <a nz-popconfirm [attr.title]="'Reject This Product: ' + datum.id">
                                                     <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                         <i class="anticon anticon-close-circle"></i>
                                                     </button>
@@ -258,7 +258,7 @@
                                         <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                        [nzOkText]="'Delete'"
                                                        [nzCancelText]="'Cancel'"
-                                                       (nzOnConfirm)="deleteConfirm(i,data.id)">
+                                                       (nzOnConfirm)="deleteConfirm(i,datum.id)">
                                             <a nz-popconfirm>
                                                 <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                     <i class="anticon anticon-delete "></i>
@@ -276,13 +276,13 @@
                                             <li nz-menu-item *ngIf="status==2 || status==3">
 
                                                 <button style="width: 100%" nz-button [nzType]="'primary'"
-                                                        (click)="showVariantModal(data)">
+                                                        (click)="showVariantModal(datum)">
                                                     <span> Add Attribute </span>
                                                 </button>
                                             </li>
                                             <li nz-menu-item>
                                                 <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                        (click)="showPromotionModal(data)">
+                                                        (click)="showPromotionModal(datum)">
                                                     <span> Add Discount </span>
                                                 </button>
                                             </li>
@@ -293,7 +293,6 @@
                         </tr>
                     </ng-template>
                     </tbody>
-
                 </nz-table>
             </nz-spin>
             <div class="row">

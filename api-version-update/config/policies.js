@@ -201,6 +201,8 @@ module.exports.policies = {
   ProductVariantController: {
     '*': false,
     'byvariant': true,
+    'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'findOne': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin']
   },
@@ -258,6 +260,7 @@ module.exports.policies = {
     'add': false,
     'remove': false,
     'replace': false,
+    'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],

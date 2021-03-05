@@ -4,7 +4,10 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach, pagination} = require('../../libs');
+
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
+
 module.exports = {
   //Method called for getting all product categories data
   //Model models/Category.js
@@ -51,7 +54,7 @@ module.exports = {
       })
         .populate('offer_id');
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         total: totalCategory,
         limit: _pagination.limit,
@@ -62,7 +65,7 @@ module.exports = {
       });
     } catch (error) {
       let message = 'Error in Get All category with pagination';
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message,
         error
@@ -82,8 +85,6 @@ module.exports = {
       _where.deletedAt = null;
       _where.parent_id = 0;
 
-      /*  WHERE condition ...................END ...........*/
-      /*sort.....................*/
       let _sort = [];
       if (req.query.sortName) {
         _sort.push({name: req.query.sortName});
@@ -108,7 +109,7 @@ module.exports = {
         _category.subCategories = await Category.find({type_id: 2, parent_id: _category.id, deletedAt: null});
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         total: totalCategory,
         limit: _pagination.limit,
@@ -120,7 +121,8 @@ module.exports = {
       });
     } catch (error) {
 
-      res.status(400).json({
+      console.log(error);
+      return res.status(400).json({
         success: false,
         message: '',
         error

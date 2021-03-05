@@ -1,6 +1,5 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
-import {AuthService} from "./auth.service";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 
@@ -8,6 +7,7 @@ import {environment} from "../../environments/environment";
     providedIn: 'root'
 })
 export class SuborderItemService {
+
     private EndPoint = `${environment.API_ENDPOINT}/suborderItem`;
 
     private EndPoint1 = `${
@@ -15,13 +15,8 @@ export class SuborderItemService {
     }/suborderItem/getSuborderItems`;
 
     constructor(
-        private http: HttpClient,
-        private authenticationService: AuthService
+        private http: HttpClient
     ) {
-    }
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
     }
 
     getSuborderItems(
@@ -30,18 +25,13 @@ export class SuborderItemService {
         date: string,
         sortPrice: String
     ): Observable<any> {
+        let url;
         if (warehouseId == null || warehouseId == "") {
-            return this.http.get(`${this.EndPoint1}?status=${status}&date=${date}&sortPrice=${sortPrice}`);
+            url = `${this.EndPoint1}?status=${status}&date=${date}&sortPrice=${sortPrice}`;
         } else {
-            return this.http.get(`${this.EndPoint1}?warehouse_id=${warehouseId}&status=${status}&date=${date}&sortPrice=${sortPrice}`);
+            url = `${this.EndPoint1}?warehouse_id=${warehouseId}&status=${status}&date=${date}&sortPrice=${sortPrice}`;
         }
-    }
-
-
-    getAllByWarehouseId(id): Observable<any> {
-        return this.http.get(
-            `${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`
-        );
+        return this.http.get(url)
     }
 
     getById(id): Observable<any> {
@@ -61,7 +51,4 @@ export class SuborderItemService {
         return this.http.put(`${this.EndPoint}/${id}`, data);
     }
 
-    getBySuborderId(id): Observable<any> {
-        return this.http.get(this.EndPoint + "/?product_suborder_id=" + id);
-    }
 }

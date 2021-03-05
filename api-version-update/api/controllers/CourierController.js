@@ -4,14 +4,12 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {initLogPlaceholder} = require('../../libs');
 
 module.exports = {
 
   //Method called for creating courier data
   //Model models/Courier.js
   create: async (req, res) => {
-    initLogPlaceholder(req, 'Courier Service create');
 
     try {
       if (req.body) {

@@ -4,8 +4,9 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach} = require('../../libs');
 
+
+const {asyncForEach} = require('../../libs/helper');
 module.exports = {
 
   //Method called for creating a product design

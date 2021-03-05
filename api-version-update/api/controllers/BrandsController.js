@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting shopbybrand data
   //Model models/Brand.js
@@ -54,7 +54,6 @@ module.exports = {
   //Model models/Brand.js
   index: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'brands');
 
       let _pagination = pagination(req.query);
 

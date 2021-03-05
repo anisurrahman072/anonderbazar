@@ -4,11 +4,10 @@
  * @description :: Server-side logic for managing order_items
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {
-  pagination
-} = require('../../libs');
+
 const moment = require('moment');
 const Promise = require('bluebird');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
   // destroy a row

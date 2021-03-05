@@ -9,7 +9,6 @@ module.exports = {
       console.log(error);
       res.json(400, {success: false, message: 'Something went wrong!', error});
     }
-
   }
 };
 

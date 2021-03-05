@@ -2,11 +2,16 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
+import {share} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
 })
 export class SuborderService {
+
+    subOrderObservable1: Observable<any>;
+    subOrderObservable2: Observable<any>;
+
     private EndPoint = `${environment.API_ENDPOINT}/suborder`;
     private EndPoint2 = `${environment.API_ENDPOINT}/suborders`;
 
@@ -15,25 +20,29 @@ export class SuborderService {
     ) {
     }
 
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
-    }
-
     getSuborder(
         warehouseId: string,
         status: number,
         sortPrice: String
     ): Observable<any> {
+
         let url;
         if (warehouseId == null || warehouseId == "") {
             url = `${this.EndPoint + "/getSuborder"}?status=${status}&sortPrice=${sortPrice}`;
-
-        } else {
-            url = `${this.EndPoint + "/getSuborder"}?warehouse_id=${warehouseId}&status=${status}&sortPrice=${sortPrice}`;
+            if (this.subOrderObservable1) {
+                return this.subOrderObservable1;
+            }
+            this.subOrderObservable1 = this.http.get(url).pipe(share());
+            return this.subOrderObservable1;
         }
-        console.log('url', url);
 
-        return this.http.get(url);
+        url = `${this.EndPoint + "/getSuborder"}?warehouse_id=${warehouseId}&status=${status}&sortPrice=${sortPrice}`;
+
+        if (this.subOrderObservable2) {
+            return this.subOrderObservable2;
+        }
+        this.subOrderObservable2 = this.http.get(url).pipe(share());
+        return this.subOrderObservable2;
     }
 
     getSuborderWithDate(
