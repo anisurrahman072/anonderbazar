@@ -187,14 +187,14 @@
                                (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
                     </td>
                     <td nz-td>{{data.id}}</td>
-                    <td nz-td>{{data.createdAt|date}}</td>
+                    <td nz-td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
                     <td nz-td>
-                        <nz-tag>{{data.user_id.first_name}} {{data.user_id.last_name}}</nz-tag>
+                        <nz-tag>{{data.full_name}}</nz-tag>
                     </td>
                     <td nz-td>{{data.total_quantity}}</td>
                     <td nz-td>{{data.total_price}}</td>
                     <td nz-td>{{getStatusLabel(data.status)}}</td>
-                    <td nz-td>{{data.changed_by?.first_name}} {{data.changed_by?.last_name}}</td>
+                    <td nz-td>{{data.changedByName}}</td>
                 </tr>
                 </tbody>
             </nz-table>

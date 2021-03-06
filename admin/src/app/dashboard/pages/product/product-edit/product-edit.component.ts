@@ -171,25 +171,31 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.productService.getById(this.id).subscribe(result => {
                 console.log('product', result);
-                this.warehouse_name = result.warehouse_id.name;
+                if(result.warehouse_id){
+                    this.warehouse_name = result.warehouse_id.name;
+                } else {
+                    this.warehouse_name = 'N/F';
+                }
+
                 this.data = result;
 
                 this.validateForm.patchValue(this.data);
-                if (this.data && this.data.brand_id && this.data.brand_id) {
-                    this.brand_id = this.data.brand_id.id;
+                if (this.data && this.data.brand_id) {
+                    this.brand_id = this.data.brand_id;
                 }
 
-                if (this.data && this.data.category_id && this.data.category_id) {
-                    this.category_id = this.data.category_id.id;
+                if (this.data && this.data.category_id) {
+                    this.category_id = this.data.category_id;
                 }
+
                 this.isCouponProductEnabled = !!this.data.is_coupon_product;
 
-                if (this.data && this.data.subcategory_id && this.data.subcategory_id) {
-                    this.subcategory_id = this.data.subcategory_id.id;
+                if (this.data && this.data.subcategory_id) {
+                    this.subcategory_id = this.data.subcategory_id;
                 }
 
-                if (this.data && this.data.type_id && this.data.type_id.id) {
-                    this.type_id = this.data.type_id.id;
+                if (this.data && this.data.type_id && this.data.type_id) {
+                    this.type_id = this.data.type_id;
                 }
 
                 if (this.data && this.data.product_details) {
@@ -241,6 +247,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                     this.tag = JSON.parse(this.data.tag);
                 }
 
+            }, (error)=> {
+                this._notification.error('Product could not be retrieved', 'Product could not be retrieved');
             });
         });
 
@@ -298,6 +306,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
         this.isSubmit = false;
         this.productService.update(this.id, formData).subscribe(result => {
+            this.isSubmit = true;
             if (result) {
                 this._notification.create(
                     'success',
@@ -307,6 +316,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/dashboard/product/details/', this.id], {queryParams: {status: this.queryStatus}});
             }
         }, error => {
+            this.isSubmit = true;
             this._notification.create(
                 'error',
                 'Problem in updating the product',
@@ -428,10 +438,26 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
     categorySearchChange($event) {
     }
+    // Method called on product type change
+    onTypeChange($event) {
 
+        const query = encodeURI($event);
+        console.log('onTypeChange', $event);
+        this.categorySearchOptions = [];
+        if (query !== 'null') {
+            this.categoryProductService
+                .getSubcategoryByCategoryId(query)
+                .subscribe(result => {
+                    this.categorySearchOptions = result;
+                });
+        } else {
+            this.categorySearchOptions = {};
+        }
+    }
     // Method called on category change
     categoryChange($event) {
         const query = encodeURI($event);
+        console.log('categoryChange', $event);
         this.subcategorySearchOptions = {};
         this.subcategory_id = null;
         if (query !== 'null') {
@@ -441,10 +467,9 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                     this.subcategorySearchOptions = result;
                     if (
                         this.data &&
-                        this.data.subcategory_id &&
                         this.data.subcategory_id
                     ) {
-                        this.subcategory_id = this.data.subcategory_id.id;
+                        this.subcategory_id = this.data.subcategory_id;
                     }
                 });
         } else {
@@ -464,20 +489,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     subcategoryChange($event) {
     }
 
-    // Method called on product type change
-    onTypeChange($event) {
-        const query = encodeURI($event);
-        this.categorySearchOptions = [];
-        if (query !== 'null') {
-            this.categoryProductService
-                .getSubcategoryByCategoryId(query)
-                .subscribe(result => {
-                    this.categorySearchOptions = result;
-                });
-        } else {
-            this.categorySearchOptions = {};
-        }
-    }
+
 
     handleCancelModal($event) {
         this.couponProductModalVisible = false;

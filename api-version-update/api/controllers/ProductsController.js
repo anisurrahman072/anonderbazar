@@ -109,7 +109,7 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      let _sort =  [];
+      let _sort = [];
       if (req.query.sortCode) {
         _sort.push(` product.code ${req.query.sortCode} `);
       }
@@ -127,7 +127,7 @@ module.exports = {
         _sort.push(` product.updated_at  ${req.query.sortUpdatedAt} `);
       }
 
-      if(_sort.length === 0){
+      if (_sort.length === 0) {
         _sort.push(` product.created_at DESC `);
       }
       const totalProductRaw = await productQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
@@ -139,7 +139,7 @@ module.exports = {
         _pagination.limit = _pagination.limit ? _pagination.limit : totalProducts;
 
         let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        let orderSql =  ' ORDER BY ' + _sort.join(',');
+        let orderSql = ' ORDER BY ' + _sort.join(',');
         const rawResult = await productQuery(rawSelect + fromSQL + _where + orderSql + limitSQL, []);
 
         products = rawResult.rows;
@@ -469,7 +469,7 @@ module.exports = {
         let categoryRowIndex = 1;
         for (let cat = 0; cat < categoryLen; cat++) {
           let categoryLabel = categoryList[cat].name;
-          categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(categoryLabel) + '|' + categoryList[cat].id);
+          categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + '|' + escapeExcel(categoryLabel));
           categoryRowIndex++;
           let subCategoryList = await Category.find({
             where: {type_id: 2, deletedAt: null, parent_id: categoryList[cat].id},
@@ -479,7 +479,7 @@ module.exports = {
             const subCategoryLen = subCategoryList.length;
             for (let subCat = 0; subCat < subCategoryLen; subCat++) {
               let subCategoryLabel = categoryLabel + '=>' + subCategoryList[subCat].name;
-              categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(subCategoryLabel) + '|' + categoryList[cat].id + ',' + subCategoryList[subCat].id);
+              categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + '|' + escapeExcel(subCategoryLabel));
               categoryRowIndex++;
               let subSubCategoryList = await Category.find({
                 where: {type_id: 2, deletedAt: null, parent_id: subCategoryList[subCat].id},
@@ -490,7 +490,7 @@ module.exports = {
                 const subSubCategoryLen = subSubCategoryList.length;
                 for (let subSubCat = 0; subSubCat < subSubCategoryLen; subSubCat++) {
                   let subSubCategoryLabel = subCategoryLabel + '=>' + subSubCategoryList[subSubCat].name;
-                  categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(subSubCategoryLabel) + '|' + categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id);
+                  categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id + '|' + escapeExcel(subSubCategoryLabel));
                   categoryRowIndex++;
                 }
               }
@@ -506,7 +506,7 @@ module.exports = {
       });
 
       brandList.forEach((item, i) => {
-        brandSheet.cell(i + 1, 1).string(escapeExcel(item.name) + '|' + item.id);
+        brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
 
       /* Fetch Brand List */
@@ -516,7 +516,7 @@ module.exports = {
       });
 
       wareHouseList.forEach((item, i) => {
-        wareHouseSheet.cell(i + 1, 1).string(escapeExcel(item.name) + '|' + item.id);
+        wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
 
       // Create a reusable style
@@ -657,7 +657,7 @@ module.exports = {
           ...item,
           min_unit: 1,
           alert_quantity: 1,
-          weight: item.weight ? parseFloat(item.weight) : null,
+          weight: item.weight ? parseFloat(item.weight) : 0,
           image: item.image ? item.image : null,
         };
         newItem.additional_images = [];
@@ -678,7 +678,7 @@ module.exports = {
         }
 
         let parts = item.category.split('|');
-        const allCategoryIds = parts[1].trim();
+        const allCategoryIds = parts[0].trim();
         let categoryIdParts = allCategoryIds.split(',');
 
         const categoryColumns = ['type_id', 'category_id', 'subcategory_id'];
@@ -698,7 +698,7 @@ module.exports = {
 
         if (item.brand_id && item.brand_id.indexOf('|') !== -1) {
           parts = item.brand_id.split('|');
-          newItem.brand_id = parseInt(parts[1].trim());
+          newItem.brand_id = parseInt(parts[0].trim());
         }
 
         newItem.price = parseFloat(item.price);
@@ -715,8 +715,8 @@ module.exports = {
 
         if (authUser.group_id.name === 'admin') {
           parts = item.warehouse_id.split('|');
-          if (parts[1]) {
-            newItem.warehouse_id = parseInt(parts[1].trim(), 10);
+          if (parts[0]) {
+            newItem.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
 

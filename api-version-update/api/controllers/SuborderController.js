@@ -27,9 +27,9 @@ module.exports = {
   updatebyorderid: async function (req, res) {
 
     try {
-      const suborder = await Suborder.update({product_order_id: req.param('id')}, req.body).fetch();
+      const suborders = await Suborder.update({product_order_id: req.param('id')}, req.body).fetch();
       // eslint-disable-next-line eqeqeq
-      if (req.body.status == SUB_ORDER_STATUSES.processing || req.body.status == SUB_ORDER_STATUSES.delivered || req.body.status == SUB_ORDER_STATUSES.canceled) {
+      /*if (req.body.status == SUB_ORDER_STATUSES.processing || req.body.status == SUB_ORDER_STATUSES.delivered || req.body.status == SUB_ORDER_STATUSES.canceled) {
         // eslint-disable-next-line eqeqeq
         if (req.body.status == SUB_ORDER_STATUSES.processing) {
           await CourierListOrder.update({order_id: req.param('id')}, {status: SUB_ORDER_STATUSES.prepared});
@@ -42,9 +42,9 @@ module.exports = {
             await CourierList.update({suborder_id: element.id}, req.body);
           });
         }
-      }
-      if (suborder) {
-        return res.json(200, suborder);
+      }*/
+      if (suborders) {
+        return res.status(200).json(suborders);
       } else {
         return res.status(400).json({success: false});
       }

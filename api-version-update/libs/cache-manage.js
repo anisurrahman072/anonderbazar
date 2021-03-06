@@ -37,8 +37,10 @@ exports.removeCacheByKey = removeCacheByKey;
 const removeCacheForProduct = async (productId) => {
   let keyWithPop = 'product-' + productId + '-with-pop';
   let keyNoPop = 'product-' + productId + '-no-pop';
+  let keyDetails = 'product-' + productId + '-details';
   await removeCacheByKey(keyWithPop);
   await removeCacheByKey(keyNoPop);
+  await removeCacheByKey(keyDetails);
 };
 
 exports.removeCacheForProduct = removeCacheForProduct;

@@ -46,8 +46,11 @@ export class ProductService {
     }
 
     getByIdWithPopulate(id): Observable<any> {
-        console.log('getByIdWithPopulate', this.EndPoint + '/' + id);
         return this.http.get(this.EndPoint + '/' + id).map(response => response);
+    }
+
+    getByIdWithDetails(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/details/' + id).map(response => response);
     }
 
     insert(data): Observable<any> {

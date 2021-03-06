@@ -11,20 +11,7 @@ export class OrderService {
 
     private EndPoint = `${environment.API_ENDPOINT}/order`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
-    }
-
-    getAllOrders(data): Observable<any> {
-        return this.http.get(`${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`);
-    }
-
-    getAllOrdersForFilter(data): Observable<any> {
-        let url = `${this.EndPoint}/getAllOrder?created_at= ${data.date}`;
-        if (data.status) {
-            url += `&status=${data.status}`
-        }
-        return this.http.get(url);
+    constructor(private http: HttpClient ) {
     }
 
     getAllOrdersGrid(data, page: number = 1, limit: number = 25): Observable<any> {
@@ -37,10 +24,6 @@ export class OrderService {
 
     getAll(): Observable<any> {
         return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
-    }
-
-    getAllByWarehouseId(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`);
     }
 
     getById(id): Observable<any> {

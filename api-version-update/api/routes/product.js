@@ -1,5 +1,6 @@
 exports.productRoute = {
   'GET /api/v1/products': 'ProductsController.index',
+  'GET /api/v1/product/details/:id': 'ProductController.details',
   'GET /api/v1/products/:_id': 'ProductsController.findOne',
   'GET /api/v1/products/getbysearchterm': 'ProductsController.getBySearchTerm',
   'GET /api/v1/products/search': 'ProductsController.search',

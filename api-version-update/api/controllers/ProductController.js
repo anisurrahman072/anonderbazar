@@ -1,3 +1,9 @@
+/**
+ * ProductController
+ *
+ * @description :: Server-side actions for handling incoming requests.
+ * @help        :: See https://sailsjs.com/docs/concepts/actions
+ */
 const moment = require('moment');
 const {imageUploadConfig, uploadImages} = require('../../libs/helper');
 const Promise = require('bluebird');
@@ -8,6 +14,34 @@ const {fetchFromCache} = require('../../libs/cache-manage');
 
 module.exports = {
 
+  details: async (req, res) => {
+    try {
+      let key = 'product-' + req.param('id') + '-details';
+
+      let product = await fetchFromCache(key);
+
+      if (product === undefined) {
+
+        product = await Product.findOne({id: req.param('id')})
+          .populate('warehouse_id')
+          .populate('type_id')
+          .populate('brand_id')
+          .populate('category_id')
+          .populate('subcategory_id')
+          .populate('product_images', {deletedAt: null})
+          .populate('product_variants', {deletedAt: null});
+
+        await storeToCache(key, product);
+      }
+      return res.status(200).json(product);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        error
+      });
+    }
+  },
   findOne: async (req, res) => {
 
     try {
@@ -187,6 +221,7 @@ module.exports = {
   //Model models/Product.js,models/ProductImage.js
   update: async function (req, res) {
     try {
+
       if (req.body.price) {
         req.body.price = parseFloat(req.body.price); //parseFloat(req.body.craftsman_price) + parseFloat((req.body.craftsman_price * 0.1));
       }
@@ -194,11 +229,14 @@ module.exports = {
         req.body.promo_price = parseFloat(req.body.promo_price);
       }
       let body = req.body;
-      if (body.brand_id === '' || body.brand_id === 'undefined') {
+      if (body.brand_id === '' || body.brand_id === 'undefined' || body.brand_id === 'null') {
         body.brand_id = null;
       }
-      if (body.tag === '' || body.tag === 'undefined') {
+      if (body.tag === '' || body.tag === 'undefined' || body.tag === 'null') {
         body.tag = null;
+      }
+      if (body.weight === '' || body.weight === 'undefined' || body.weight === 'null') {
+        body.weight = 0;
       }
       if (req.body.hasImageFront === 'true') {
         try {
@@ -215,11 +253,11 @@ module.exports = {
         }
       }
 
-      if(body.start_date){
+      if (body.start_date) {
         body.start_date = moment(body.start_date).format('YYYY-MM-DD');
       }
 
-      if(body.end_date){
+      if (body.end_date) {
         body.end_date = moment(body.end_date).format('YYYY-MM-DD');
       }
 

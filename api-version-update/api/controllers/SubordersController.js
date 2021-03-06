@@ -257,6 +257,7 @@ module.exports = {
       });
     }
   },
+
   //Method called for getting all product suborder
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   getAll: async (req, res) => {

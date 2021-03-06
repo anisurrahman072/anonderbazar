@@ -17,7 +17,7 @@ module.exports = {
     const allSubOrderStatuses = Object.keys(SUB_ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
     const allOrderStatuses = Object.keys(ORDER_STATUSES_INDEX).map(key=>parseInt(key, 10));
 
-    const submittedStatus = parseInt(req.body.status, 10);
+    const submittedStatus = parseInt(req.body.order_status, 10);
     if (req.body.suborder_id && allSubOrderStatuses.indexOf(submittedStatus) === -1) {
       return res.json(400, {
         success: false,

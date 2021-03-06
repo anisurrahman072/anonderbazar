@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {AuthService} from './auth.service';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from "../../environments/environment";
-
 
 @Injectable({
     providedIn: 'root'
@@ -13,8 +11,7 @@ export class ProductService {
     private EndPoint2 = `${environment.API_ENDPOINT}/products`;
     private EndPoint3 = `${environment.API_ENDPOINT}/productImage`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient) {
     }
 
     getAllProducts(page: number,
@@ -71,6 +68,11 @@ export class ProductService {
     getById(id): Observable<any> {
         // get users from api
         return this.http.get(this.EndPoint + '/' + id);
+    }
+
+    getByIdWithPopulate(id): Observable<any> {
+        // get users from api
+        return this.http.get(this.EndPoint + '/details/' + id);
     }
 
     insert(data): Observable<any> {

@@ -966,17 +966,17 @@ module.exports = {
       let _where = ' WHERE orders.deleted_at IS NULL ';
 
       if (req.query.status) {
-        _where += ` AND orders.status = ${req.query.status}`;
+        _where += ` AND orders.status = ${req.query.status} `;
       }
       if (req.query.name) {
-        _where += ` AND users.first_name LIKE '%${req.query.status}%'`;
+        _where += ` AND users.first_name LIKE '%${req.query.status}%' `;
       }
 
       if (req.query.created_at) {
         let created_at = JSON.parse(req.query.created_at);
         let from = moment(created_at.from).format('YYYY-MM-DD HH:mm:ss');
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
-        _where += `AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
+        _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
 
       _where += ' ORDER BY orders.created_at DESC ';

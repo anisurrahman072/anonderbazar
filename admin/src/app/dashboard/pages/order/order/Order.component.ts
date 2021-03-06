@@ -2,21 +2,21 @@ import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {OrderService} from '../../../../services/order.service';
 import {AuthService} from '../../../../services/auth.service';
 import {NzNotificationService} from "ng-zorro-antd";
-import {Subscription} from 'rxjs';
 import {UIService} from '../../../../services/ui/ui.service';
 import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
-import * as ___ from 'lodash';
-import * as _moment from 'moment';
-import {default as _rollupMoment} from 'moment';
-
-const moment = _rollupMoment || _moment;
 import {MatDatepickerInputEvent} from "@angular/material/datepicker";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {SuborderItemService} from "../../../../services/suborder-item.service";
+
+import * as ___ from 'lodash';
+import * as _moment from 'moment';
+import {default as _rollupMoment} from 'moment';
+const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
     parse: {
@@ -89,6 +89,7 @@ export class OrderComponent implements OnInit {
 
 
     constructor(private orderService: OrderService,
+                private suborderItemService: SuborderItemService,
                 private fb: FormBuilder,
                 private _notification: NzNotificationService,
                 private uiService: UIService,
@@ -151,7 +152,10 @@ export class OrderComponent implements OnInit {
         console.log('getData: ', dateSearchValue);
 
         this._isSpinning = true;
-        this.orderService.getAllOrdersGrid( {date: JSON.stringify(dateSearchValue), status: this.statusSearchValue}, this.orderPage, this.orderLimit)
+        this.orderService.getAllOrdersGrid({
+            date: JSON.stringify(dateSearchValue),
+            status: this.statusSearchValue
+        }, this.orderPage, this.orderLimit)
             .subscribe(result => {
                 console.log('getallorders', result);
                 this.orderData = result.data;
@@ -173,6 +177,7 @@ export class OrderComponent implements OnInit {
         this.orderPage = 1;
         this.getData();
     }
+
     // Event method for pagination change
     changePage(page: number, limit: number) {
         this.orderPage = page;
@@ -180,6 +185,7 @@ export class OrderComponent implements OnInit {
         this.getData();
         return false;
     }
+
     searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
 
         /*
@@ -252,18 +258,18 @@ export class OrderComponent implements OnInit {
         this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
+            this.suborderService.updateByOrderId(id, {status: $event})
+                .subscribe(arg => {});
+
+            this.statusChangeService.updateStatus({order_id: id, order_status: $event, changed_by: this.currentUser.id})
+                .subscribe(arg => this.statusData = arg);
+
             this.getData();
         }, (err) => {
             this._notification.create('error', 'Error', 'Something went wrong');
             $event = oldStatus;
         });
-        this.suborderService.updateByOrderId(id, {status: $event})
-            .subscribe(arg => {
 
-            });
-
-        this.statusChangeService.updateStatus({order_id: id, order_status: $event, changed_by: this.currentUser.id})
-            .subscribe(arg => this.statusData = arg);
 
     }
 
@@ -276,63 +282,45 @@ export class OrderComponent implements OnInit {
         }
 
         let csvData = [];
-        data.filter((element) => {
-            return (Array.isArray(element.suborders) && element.suborders.length > 0);
-        }).forEach(element => {
-            let sslTransactionId = '';
+        data.forEach(suborderItem => {
+
             let allCouponCodes = '';
 
-            if (element.couponProductCodes && element.couponProductCodes.length > 0) {
-                allCouponCodes = element.couponProductCodes.map((coupon) => {
-                    return '1' + ___.padStart(coupon.id, 6, '0');
-                }).join('|');
-            }
-
-            if (element.payment && element.payment.length > 0) {
-                if (element.payment[0].payment_type === 'SSLCommerce') {
-                    try {
-                        let details = JSON.parse(element.payment[0].details);
-                        sslTransactionId = details.tran_id;
-                    } catch (ee) {
-                    }
-                }
-            }
-
-            element.suborders.filter(suborder => {
-                return (Array.isArray(suborder.items) && suborder.items.length > 0);
-            }).forEach(suborder => {
-                suborder.items.forEach((item, j) => {
-                    let i = 0, varients = "";
-                    item.suborderItemVariants.forEach(element => {
-                        varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
-                    });
-
-                    csvData.push({
-                        'SL': i++,
-                        'Order Id': element.id,
-                        'SubOrder Id': suborder.id,
-                        'Vandor Name': (item.warehouse_id) ? item.warehouse_id.name : 'N/a',
-                        'Vandor Phone': (item.warehouse_id) ? item.warehouse_id.phone : 'N/a',
-                        'Customer Name': element.user_id.first_name + ' ' + element.user_id.last_name,
-                        'Customer Phone': (element.user_id) ? element.user_id.phone : 'N/a',
-                        'Product Description': '(' + item.product_id.code + ') | ' + item.product_id.name + ' | ' + varients,
-                        'Price': item.product_id.price,
-                        'Quantity': item.product_quantity,
-                        'Total': item.product_total_price,
-                        'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
-                        'Suborder Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Order Status': typeof this.statusOptions[element.status] !== 'undefined' ? this.statusOptions[element.status] : 'Unrecognized Status',
-                        'Order Status Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Date': (item.createdAt) ? moment(item.createdAt).format('DD/MM/YYYY h:m a') : 'N/a',
-                        'SSLCommerce Transaction Id': sslTransactionId,
-                        'Coupon Product Code': allCouponCodes,
-                    });
+            if (suborderItem.all_coupons) {
+                allCouponCodes = suborderItem.all_coupons.split(',').map((coupon) => {
+                    return '1' + ___.padStart(coupon, 6, '0')
                 });
+            }
+
+            let varients = "";
+            /*                    item.suborderItemVariants.forEach(element => {
+                                    varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
+                                });
+           */
+
+            csvData.push({
+                'Order Id': suborderItem.order_id,
+                'SubOrder Id': suborderItem.suborder_id,
+                'Vandor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                'Vandor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
+                'Customer Name': suborderItem.customer_name,
+                'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
+                'Product Description': '(' + suborderItem.product_code + ') | ' + suborderItem.product_id + ' | ' + varients,
+                'Price': suborderItem.price,
+                'Quantity': suborderItem.product_quantity,
+                'Total': suborderItem.product_total_price,
+                'Suborder Status': typeof this.statusOptions[suborderItem.sub_order_status] !== 'undefined' ? this.statusOptions[suborderItem.sub_order_status] : 'Unrecognized Status',
+                'Suborder Changed By': ((suborderItem.suborder_changed_by_name) ? suborderItem.suborder_changed_by_name : ''),
+                'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',
+                'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
+                'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
+                'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id: '',
+                'Coupon Product Code': allCouponCodes,
             });
+
         });
 
         const header = [
-            'SL',
             'Order Id',
             'SubOrder Id',
             'Vandor Name',
@@ -352,6 +340,28 @@ export class OrderComponent implements OnInit {
             'Coupon Product Code',
         ];
         this.exportService.downloadFile(csvData, header);
+    }
+
+    //Event method for submitting the form
+    submitForm = ($event, value) => {
+        this.submitting = true;
+        let orderIds = this.storeOrderIds.map(item => {
+            return item.id;
+        });
+
+        this.isProductVisible = false;
+        this._isSpinning = true;
+        this.suborderItemService.allOrderItemsByOrderIds(orderIds)
+            .subscribe((result: any) => {
+                console.log('submitForm', result);
+                this._isSpinning = false;
+                this.dowonloadCSV(result.data);
+                this.submitting = false;
+            }, (err) => {
+                console.log(err);
+                this._isSpinning = false;
+                this._notification.error('Problems!', 'Problems in loading the orders');
+            });
     }
 
     //Method for set status
@@ -410,14 +420,7 @@ export class OrderComponent implements OnInit {
         this.isProductVisible = true;
         this.storeOrderIds = [];
     };
-    //Event method for submitting the form
-    submitForm = ($event, value) => {
-        this.submitting = true;
-        let newlist = this.storeOrderIds;
-        this.isProductVisible = false;
-        this.dowonloadCSV(newlist);
-        this.submitting = false;
-    }
+
 
     selectAllCsv($event) {
 

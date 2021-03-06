@@ -9,7 +9,6 @@ import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {FavouriteProduct, Product} from "../../../../models";
 import {AppSettings} from "../../../../config/app.config";
-import {MatButtonToggleChange} from "@angular/material";
 import {
     AuthService,
     CartItemService,
@@ -55,13 +54,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     discountPercentage: any;
     currentUser: Observable<any>;
     product_quantity: any = 1;
-    cartVariants: any[] = [];
     tempRating: any;
     addTofavouriteLoading$: Observable<boolean>;
     tag: any;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
-    UnitPrice: any;
     availableDateLoading: boolean = false;
     allTheParts: any;
     variantCalculatedPrice: {
@@ -77,9 +74,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     clock: any = [9, 10, 11, 12, 13, 14, 15, 16, 17];
     finalprice: any = 0.0;
     unitPrice: any = 0.0;
-    days: any;
-    hours: any;
-    minutes: any;
     counter: number;
 
     numbers = {
@@ -95,16 +89,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         9: "9"
     };
     selectedIndex: number;
-    craftsman_id: any;
     designCombinationData: any;
-    designImageCheck: any = [];
-    allCraftsmanPrice: any;
-    modalRef: BsModalRef;
-    design_id: any;
-    craftsmanList: any = [];
-    part_id: any;
     total: any;
-    imagedata: any;
     buffer_time: any;
     isVisible: boolean = false;
     isVisibleFab: boolean = false;
@@ -112,13 +98,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     chatForm: FormGroup;
     currentUserId: any;
     userId: any;
-    producttId: any;
-    warehouseId: any;
     messageId: any;
-    userdata: any;
-
-    fileToUpload: File[] = [];
-    createdData: Object;
     recentlyViewedProducts: Observable<any>;
     primaryPicture: string;
     addToCartSuccessProduct: any;
@@ -160,7 +140,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Event method for getting all the data for the page
-
     ngOnInit() {
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
@@ -256,45 +235,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         }
     }
 
-    //Method for submitting the form
-    public submitForm = ($event, value) => {
-        let person_status = 0;
-        const formData: FormData = new FormData();
-        formData.append("message", value.message);
-        formData.append("chat_user_id", this.messageId);
-        if (this.fileToUpload) {
-            formData.append('hasFile', 'true');
-            formData.append('fileCounter', this.fileToUpload.length.toString());
-
-            for (let i = 0; i < this.fileToUpload.length; i++) {
-                formData.append('file' + i, this.fileToUpload[i], this.fileToUpload[i].name);
-            }
-        } else {
-            formData.append('hasFile', 'false');
-        }
-
-        this.chatService.insert(formData).subscribe(
-            result => {
-                this.createdData = result;
-                this.messageId = this.createdData["chat_user_id"];
-                this.getChatMessages();
-                this.chatForm.reset();
-                this.fileToUpload = [];
-            },
-            error => {
-            }
-        );
-
-    };
-
-    handleFileInput(files: FileList) {
-        this.fileToUpload.push(files.item(0));
-    }
-
-    //Method for removing file
-    removeFile(index: number) {
-        this.fileToUpload.splice(index, 1);
-    }
 
     getChatMessages() {
         this.chatService.getAllChatByUserId(this.messageId).subscribe(result => {
@@ -303,45 +243,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.scrollToBottom();
     }
 
-    showChatBox(userId, productId, warehouseId) {
-        this.isVisible = true;
-        this.userId = userId;
-        this.producttId = productId;
-        this.warehouseId = warehouseId;
-
-        this.chatService.checkChatUser(this.userId, this.producttId, this.warehouseId).subscribe(result => {
-            if (result[0]) {
-                this.userdata = result[0];
-                this.messageId = result[0].id;
-                this.getChatMessages();
-            } else {
-                let person_status = 0;
-                const formData: FormData = new FormData();
-                formData.append("user_id", this.userId);
-                formData.append("product_id", this.producttId);
-                formData.append("warehouse_id", this.warehouseId);
-                formData.append("person_status", person_status.toString());
-                this.chatService.createChatUser(formData)
-                    .subscribe(result => {
-                        this.chatService.checkChatUser(this.userId, this.producttId, this.warehouseId).subscribe(result => {
-                            this.userdata = result[0];
-                        });
-
-                        this.messageId = result.id;
-                        this.getChatMessages();
-                    });
-            }
-        });
-
-
-        this.isVisibleFab = false;
-
-    }
-
-    closeChatBox() {
-        this.isVisible = false;
-        this.isVisibleFab = true;
-    }
 
     replaceNumbers(input) {
         let output = [];
@@ -357,7 +258,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     getProductData() {
         this.loaderService.showLoader();
-        this.productService.getByIdWithPopulate(this.id).subscribe(result => {
+        this.productService.getByIdWithDetails(this.id).subscribe(result => {
             this.loaderService.hideLoader();
             this.data = result;
 
@@ -398,6 +299,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.updateFinalprice();
                 this.getSimilarProductData(result.category_id.id, result.id);
             }
+        }, (error) => {
+            this._notify.error('Problem!', "Problem in loading the product");
         });
     }
 
@@ -429,13 +332,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                     this.defaultVariantSelection();
                 }
             });
-    }
-
-    getVariantData() {
-        let sum = 0;
-        this.UnitPrice = this.cartVariants.reduce((sum: number, a) => {
-            return sum + a.product_id.price;
-        }, sum);
     }
 
     //Method for add to cart
@@ -523,27 +419,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     }
 
-    addCouponProductToCart(product) {
-        this.addProductToCart(product, () => {
-            this.router.navigate([`/checkout`]);
-        });
-    }
 
     getProductAvailableDate(buffer_time: any) {
         this.availableDateLoading = true;
-    }
-
-    setProductAvailableSchedule(aDay, anHour, dayss, miliseconds) {
-        this.days = this.replaceNumbers(
-            Math.floor(miliseconds / aDay + 1).toString()
-        );
-        let hour = Math.floor((miliseconds - dayss * aDay) / anHour);
-        this.hours = this.replaceNumbers(hour.toString());
-        this.minutes = this.replaceNumbers(
-            Math.round(
-                (miliseconds - dayss * aDay - hour * anHour) / 60000
-            ).toString()
-        );
     }
 
     ngOnDestroy(): void {
@@ -646,17 +524,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this._notify.error("compare list is full, delete first!!!");
     }
 
-    quantityCheck() {
-        setTimeout(() => {
-            this.product_quantity =
-                this.product_quantity > this.data.quantity
-                    ? this.data.quantity
-                    : this.product_quantity < 1
-                    ? 1
-                    : this.product_quantity;
-        }, 2000);
-    }
-
     checkSelected(variant) {
 
         return this.variantCalculatedPrice.find(v => v.variant_name == variant.variant_id.name && v.product_variant_id == variant.id);
@@ -694,92 +561,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.updateFinalprice();
     }
 
-    variantChange(type, $event: MatButtonToggleChange) {
-
-        if (type == 0) {
-            return;
-        }
-
-        this.variantCalculatedTotalPrice = 0;
-        this.variantCalculatedPrice = [];
-        this.cartVariants.map(cv => {
-            if (cv.variant_type == 1) {
-                this.variantCalculatedPrice.push({
-                    name: cv.warehouse_variant_name,
-                    price: cv.variant_price,
-                    quantity: cv.variant_quantity,
-                    variant_name: cv.variant_name
-                });
-                this.variantCalculatedTotalPrice +=
-                    cv.variant_price * cv.variant_quantity;
-            }
-        });
-        this.updateFinalprice();
-    }
-
-    //Method for showing the modal
-    openModal(template: TemplateRef<any>, id: any, part_id: number, part_name: string) {
-        this.craftsman_id = null;
-
-        this.designImageCheck[part_name] = `${part_id}:${id}`;
-        let designCombinationObject = Object.assign({}, this.designImageCheck);
-
-        this.designImageService.getImageWithCombination(JSON.stringify(designCombinationObject), this.data.id).subscribe(result => {
-            this.imagedata = result.data.images;
-        });
-        this.modalRef = this.modalService.show(template);
-        this.craftsmanService.getCraftsmanAndPriceById(id).subscribe(result => {
-
-            this.allCraftsmanPrice = result;
-        });
-    }
-
-    public setRow(_index: number, id: any, craftman_id, design_id, part_id) {
-        this.selectedIndex = _index; // don't forget to update the model here
-        this.craftsman_id = craftman_id;
-        this.design_id = design_id;
-        this.part_id = part_id;
-        // ... do other stuff here ...
-    }
-
-    confirm(): void {
-
-        this.craftsmanService
-            .getCraftsmanByBothDesignAndCraftsmanId(
-                this.design_id,
-                this.craftsman_id,
-                this.part_id,
-                this.data.id,
-            )
-            .subscribe(result => {
-                if (result.pricedata[0].material_price.length > 0) {
-                    this.finalprice = result.pricedata[0].material_price[0].price + result.pricedata[0].price + this.finalprice;
-                    this.total = result.pricedata[0].material_price[0].price + result.pricedata[0].price;
-                } else {
-                    this.finalprice = result.pricedata[0].price + this.finalprice;
-                    this.total = result.pricedata[0].price + this.total;
-                }
-                this.craftsmanList.push(result.pricedata[0]);
-            });
-
-
-        this.modalRef.hide();
-    }
-
-    decline(): void {
-        this.modalRef.hide();
-    }
-
-    removeCraftsman(index: number, price: number, materialprice: number) {
-        this.craftsmanList.splice(index, 1);
-        if (materialprice) {
-            this.total = this.total - price - materialprice;
-            this.finalprice = this.finalprice - price - materialprice;
-        } else {
-            this.total = this.total - price;
-            this.finalprice = this.finalprice - price;
-        }
-    }
 
     showCouponProductModal(template: TemplateRef<any>) {
         this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
