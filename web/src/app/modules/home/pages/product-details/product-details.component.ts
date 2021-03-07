@@ -506,6 +506,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     showCouponProductModal(template: TemplateRef<any>) {
         this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
+        document.getElementById('scroll').scrollIntoView({ behavior: 'smooth', block: 'end' });
 /*        setTimeout(() => {
             this.scrollToBottom();
         }, 2000);*/
