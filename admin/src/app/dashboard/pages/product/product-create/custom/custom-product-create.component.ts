@@ -26,17 +26,12 @@ export class CustomProductCreateComponent implements OnInit {
 
     tagOptions: any = [];
     validateForm: FormGroup;
-
     ImageBlukArray: any = [];
-
     ImageFile: File[] = [];
     ImageFrontFile: File[] = [];
-
     tag: any;
     tags = [];
-
     isSubmit: boolean = true;
-
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
@@ -72,12 +67,9 @@ export class CustomProductCreateComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
+
     brandSearchOptions: any;
-
-    craftsmanSearchOptions: any;
-
     inputVisible = false;
-    inputValue = '';
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -260,10 +252,6 @@ export class CustomProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-
-    categorySearchChange($event) {
-    }
-
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -291,15 +279,5 @@ export class CustomProductCreateComponent implements OnInit {
             this.subcategorySearchOptions = {};
         }
     }
-
-    subcategorySearchChange($event) {
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
-
 
 }

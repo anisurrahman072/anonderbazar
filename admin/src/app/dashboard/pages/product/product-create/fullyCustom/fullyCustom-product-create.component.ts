@@ -88,6 +88,10 @@ export class FullyCustomProductCreateComponent implements OnInit {
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
                 private productService: ProductService) {
+
+    }
+    // For initiating the section element with data
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
@@ -109,8 +113,23 @@ export class FullyCustomProductCreateComponent implements OnInit {
             featured: [false, []],
             weight: ['', []]
         });
-    }
+        this.currentUser = this.authService.getCurrentUser();
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.queryStatus = params.status;
+        });
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
 
+        });
+        this.userService
+            .getAllCraftsmanByWarehouseId(this.currentUser.warehouse.id)
+            .subscribe(result => {
+                this.craftsmanSearchOptions = result.data;
+            });
+    }
     // Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -203,28 +222,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    // For initiating the section element with data
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.queryStatus = params.status;
-        });
-        this.categoryProductService.getAllCategory().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
 
-        });
-        this.userService
-            .getAllCraftsmanByWarehouseId(this.currentUser.warehouse.id)
-            .subscribe(result => {
-                this.craftsmanSearchOptions = result.data;
-            });
-    }
-
-    categorySearchChange($event) {
-    }
 
     // Method called on product type change
     onTypeChange($event) {
@@ -254,12 +252,5 @@ export class FullyCustomProductCreateComponent implements OnInit {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
 
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
 }

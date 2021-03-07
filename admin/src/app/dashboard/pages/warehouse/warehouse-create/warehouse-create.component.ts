@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NzNotificationService} from 'ng-zorro-antd';
@@ -15,10 +15,11 @@ import {UserService} from "../../../../services/user.service";
     styleUrls: ['./warehouse-create.component.css']
 })
 export class WarehouseCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     validateForm: FormGroup;
     ImageFile: File;
     logoFile: File;
-    @ViewChild('Image') Image;
+    pass: any;
 
     current = 0;
     genderSearchOptions = [
@@ -115,7 +116,7 @@ export class WarehouseCreateComponent implements OnInit {
 
         if (value.username) {
             this.userService.checkUsername(value.username).subscribe(result => {
-                if(result.total == 0){
+                if (result.total == 0) {
                     console.log('checkUsername', result)
 
                     const formData: FormData = new FormData();
@@ -264,11 +265,6 @@ export class WarehouseCreateComponent implements OnInit {
         });
     }
 
-    //Method for division search change
-
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
 
     //Method for division change
 
@@ -289,9 +285,4 @@ export class WarehouseCreateComponent implements OnInit {
         });
     }
 
-    zilaSearchChange($event: string) {
-    }
-
-    upazilaSearchChange($event: string) {
-    }
 }

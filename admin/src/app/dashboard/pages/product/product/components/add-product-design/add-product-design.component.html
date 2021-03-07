@@ -11,83 +11,80 @@
                 </button>
             </ng-template>
             <ng-template #body>
-                <nz-table #nzTable [nzAjaxData]="productDesignData" class="table table-responsive">
-                    <thead  >
-                        <tr>
-                            <th   >
-                                <span>অংশ</span>
-                            </th>
-                            <th   >
-                                <span>নকশা</span>
-                            </th>
-                            <th   >
-                                <span>Price</span>
-                            </th>
-                            <th   >
-                                <span>মন্তব্য</span>
-                            </th>
-                            <th    *ngIf="'productPartDesign-edit'|accessControl">
-                                <span> Action </span>
-                            </th>
-                        </tr>
+                <nz-table #nzTable [nzData]="productDesignData" class="table table-responsive">
+                    <thead>
+                    <tr>
+                        <th>
+                            <span>অংশ</span>
+                        </th>
+                        <th>
+                            <span>নকশা</span>
+                        </th>
+                        <th>
+                            <span>Price</span>
+                        </th>
+                        <th>
+                            <span>মন্তব্য</span>
+                        </th>
+                        <th *ngIf="'productPartDesign-edit'|accessControl">
+                            <span> Action </span>
+                        </th>
+                    </tr>
                     </thead>
-                    <tbody   >
-                        <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
+                    <tbody>
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
 
-                            <tr   >
-                                <!--Part-->
-                                <td>
+                        <tr>
+                            <!--Part-->
+                            <td>
                                     <span *ngIf="editRow!==i">
                                         {{data.part_id?.name}}
                                     </span>
-                                </td>
-                                <!--Design-->
-                                <td>
-                                    <div>
+                            </td>
+                            <td>
+                                <div>
                                         <span *ngIf="editRow!==i">
                                             {{data.design_id?.name || 'n/a'}}
                                         </span>
-                                    </div>
-                                </td>
+                                </div>
+                            </td>
+                            <td>
+                                <span *ngIf="editRow!==i">{{data?.price}}</span>
+                            </td>
+                            <!--Comment-->
+                            <td>
+                                <span *ngIf="editRow!==i">{{data?.comment}}</span>
+                            </td>
 
-                                <!--Price-->
-                                <td>
-                                    <span *ngIf="editRow!==i">{{data?.price}}</span>
-                                </td>
-                                <!--Comment-->
-                                <td>
-                                    <span *ngIf="editRow!==i">{{data?.comment}}</span>
-                                </td>
-
-                                <!--procedure-->
-                                <td *ngIf="'productPartDesign-edit'|accessControl">
-
-
+                            <!--procedure-->
+                            <td *ngIf="'productPartDesign-edit'|accessControl">
                                     <span *ngIf="editRow!==i">
-
-
-                                        <button nz-button (click)="editThisRow(i,data)" [nzType]="'primary'" [nzSize]="'default'">
+                                        <button nz-button (click)="editThisRow(i,data)" [nzType]="'primary'"
+                                                [nzSize]="'default'">
                                             <i class="anticon anticon-edit "> </i>
                                         </button>
                                     </span>
-                                    <span *ngIf="editRow===i">
-                                        <button nz-button (click)="saveThisRow(i,data)" [nzType]="'primary'" [nzSize]="'default'">
+                                <span *ngIf="editRow===i">
+                                        <button nz-button (click)="saveThisRow(i,data)" [nzType]="'primary'"
+                                                [nzSize]="'default'">
                                             <i class="anticon anticon-save "> </i>
                                         </button>
                                     </span>
 
 
-                                    <nz-popconfirm *ngIf="'productPartDesign-delete'|accessControl" [nzTitle]="'Are you sure you want to delete?'"
-                                        [nzOkText]="'Delete'" [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,data)">
-                                        <a nz-popconfirm>
-                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                <i class="anticon anticon-delete "> </i>
-                                            </button>
-                                        </a>
-                                    </nz-popconfirm>
-                                </td>
-                            </tr>
-                        </ng-template>
+                                <nz-popconfirm *ngIf="'productPartDesign-delete'|accessControl"
+                                               [nzTitle]="'Are you sure you want to delete?'"
+                                               [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
+                                               (nzOnConfirm)="deleteConfirm(i,data)">
+                                    <a nz-popconfirm>
+                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <i class="anticon anticon-delete "> </i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </td>
+                        </tr>
+                    </ng-template>
                     </tbody>
                 </nz-table>
             </ng-template>
@@ -106,7 +103,8 @@
                     </button>
                 </ng-template>
                 <ng-template #body>
-                    <app-design-combination [productData]="currentProductForAddPart" [designCombinationData]="designCombinationData">
+                    <app-design-combination [productData]="currentProductForAddPart"
+                                            [designCombinationData]="designCombinationData">
                     </app-design-combination>
                 </ng-template>
             </nz-card>
@@ -117,8 +115,9 @@
     </div>
 </div>
 
-<nz-modal [nzFooter]="null" [nzVisible]="isPartDesignVisible" nzOkText="Save" nzCancelText="Cancel" nzWidth="70%" [nzTitle]="'অংশ এবং নকশা যুক্তকরন'"
-    [nzContent]="modalContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
+<nz-modal [nzFooter]="null" [nzVisible]="isPartDesignVisible" nzOkText="Save" nzCancelText="Cancel" nzWidth="70%"
+          [nzTitle]="'অংশ এবং নকশা যুক্তকরন'"
+          [nzContent]="modalContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalContent>
         <div class="row" style="margin: 0 20px 0px 20px;">
             <div class="col-md-6">
@@ -126,45 +125,49 @@
                     <div class="col-md-12">
                         <table style="width: 100%" class="desingCreateTable">
                             <thead>
-                                <th style="text-align: center;">শৈলী</th>
-                                <th style="text-align: center;">ধরন</th>
-                                <th style="text-align: center;">Subcategory</th>
+                            <th style="text-align: center;">শৈলী</th>
+                            <th style="text-align: center;">ধরন</th>
+                            <th style="text-align: center;">Subcategory</th>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <nz-select [(ngModel)]="tempEditObject.genre_id" style="width: 90%;"
-                                            nzAllowClear (ngModelChange)="genreSearchChange($event)" [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"
-                                            [nzFilter]="true" (nzSearch)="genreSearchChange($event)" (nzSearchChange)="genreSearchChange($event)"
-                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                            <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
-                                                [nzValue]="option.id">
-                                            </nz-option>
-                                        </nz-select>
-                                    </td>
-                                    <td>
-                                        <nz-select style="width: 90%;" nzAllowClear [(ngModel)]="tempEditObject.design_category_id"
-                                            (ngModelChange)="designCategorySearchChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
-                                            [nzFilter]="true" (nzSearch)="designCategorySearchChange($event)"
-                                            (nzSearchChange)="designCategorySearchChange($event)" [nzNotFoundContent]="'Not found'"
-                                            nzShowSearch>
-                                            <nz-option *ngFor="let option of designCategorySearchOptions" [nzLabel]="option.name"
-                                                [nzValue]="option.id">
-                                            </nz-option>
-                                        </nz-select>
-                                    </td>
-                                    <td>
-                                        <nz-select style="width: 90%;" nzAllowClear [(ngModel)]="tempEditObject.design_subcategory_id"
-                                            [nzPlaceHolder]="'Select Product Subcategory'" [nzFilter]="true" (ngModelChange)="designSubcategorySearchChange($event)"
-                                            (nzSearch)="designSubcategorySearchChange($event)" (nzSearchChange)="designSubcategorySearchChange($event)"
-                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                            <nz-option *ngFor="let option of designSubcategorySearchOptions" [nzLabel]="option.name"
-                                                [nzValue]="option.id">
-                                            </nz-option>
+                            <tr>
+                                <td>
+                                    <nz-select [(ngModel)]="tempEditObject.genre_id" style="width: 90%;"
+                                               nzAllowClear (ngModelChange)="genreSearchChange($event)"
+                                               [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"
+                                               [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                        <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
+                                                   [nzValue]="option.id">
+                                        </nz-option>
+                                    </nz-select>
+                                </td>
+                                <td>
+                                    <nz-select style="width: 90%;" nzAllowClear
+                                               [(ngModel)]="tempEditObject.design_category_id"
+                                               (ngModelChange)="designCategorySearchChange($event)"
+                                               [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
 
-                                        </nz-select>
-                                    </td>
-                                </tr>
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
+                                        <nz-option *ngFor="let option of designCategorySearchOptions"
+                                                   [nzLabel]="option.name"
+                                                   [nzValue]="option.id">
+                                        </nz-option>
+                                    </nz-select>
+                                </td>
+                                <td>
+                                    <nz-select style="width: 90%;" nzAllowClear
+                                               [(ngModel)]="tempEditObject.design_subcategory_id"
+                                               [nzPlaceHolder]="'Select Product Subcategory'"
+                                               (ngModelChange)="designSubcategorySearchChange($event)"
+                                               [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                        <nz-option *ngFor="let option of designSubcategorySearchOptions"
+                                                   [nzLabel]="option.name"
+                                                   [nzValue]="option.id">
+                                        </nz-option>
+                                    </nz-select>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -173,9 +176,9 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="row" style="height: 350px;margin-top: 10px;margin-left: 5px;">
-
-                            <div class="col-md-3" *ngFor="let design of designs; let i = index" [ngClass]="{'highlight': selectedIndex === i}"
-                                (click)="setRow(i, design.id)" style="
+                            <div class="col-md-3" *ngFor="let design of designs; let i = index"
+                                 [ngClass]="{'highlight': selectedIndex === i}"
+                                 (click)="setRow(i, design.id)" style="
                                         border: 1px solid gray;
                                         padding: 5px 5px 5px 5px;
                                         height: 185px;
@@ -185,8 +188,9 @@
                                 <div style="margin-bottom: 15px;">
                                     <div class="row">
                                         <div class="col-md-12 text-center">
-                                            <img class="img-responsive img-thumbnail" src="{{IMAGE_ENDPOINT + design.image}}"
-                                                alt="{{design.name}}" style="height: 130px;width: 250px">
+                                            <img class="img-responsive img-thumbnail"
+                                                 src="{{IMAGE_ENDPOINT + design.image}}"
+                                                 alt="{{design.name}}" style="height: 130px;width: 250px">
                                         </div>
                                     </div>
                                     <br>
@@ -211,11 +215,12 @@
                     </div>
 
                     <nz-select
-                    [(ngModel)]="tempEditObject.type_id" style="width: 90%;"
-                    nzAllowClear (ngModelChange)="typeSearchChange($event)" [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'"
-                    [nzFilter]="true" (nzSearch)="typeSearchChange($event)" (nzSearchChange)="typeSearchChange($event)"
-                    [nzNotFoundContent]="'Not found'" nzShowSearch>
-                        <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                            [(ngModel)]="tempEditObject.type_id" style="width: 90%;"
+                            nzAllowClear (ngModelChange)="typeSearchChange($event)"
+                            [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'"
+                            [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
                         </nz-option>
 
                     </nz-select>
@@ -225,11 +230,11 @@
                         <label> Product category </label>
                     </div>
                     <nz-select
-                    [(ngModel)]="tempEditObject.category_id" style="width: 90%;"
-                    nzAllowClear (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
-                    [nzFilter]="true" (nzSearch)="categoryChange($event)" (nzSearchChange)="categoryChange($event)"
-                    [nzNotFoundContent]="'Not found'" nzShowSearch>
-                        <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                            [(ngModel)]="tempEditObject.category_id" style="width: 90%;"
+                            nzAllowClear (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
+                            [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
                 </div>
@@ -238,10 +243,11 @@
                         <label> পণ্যের ঊপধরন </label>
                     </div>
                     <nz-select [(ngModel)]="tempEditObject.subcategory_id" nzAllowClear style="width: 90%;"
-                        [nzPlaceHolder]="'পণ্যের ঊপধরন নির্বাচন করুন'" [nzFilter]="true" (ngModelChange)="subcategorySearchChange($event)"
-                        (nzSearch)="subcategorySearchChange($event)" (nzSearchChange)="subcategorySearchChange($event)"
-                        [nzNotFoundContent]="'Not found'" nzShowSearch>
-                        <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                               [nzPlaceHolder]="'পণ্যের ঊপধরন নির্বাচন করুন'"
+                               (ngModelChange)="subcategorySearchChange($event)"
+                               [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
                         </nz-option>
 
                     </nz-select>
@@ -250,11 +256,13 @@
                     <div>
                         <label> পণ্যের অংশ </label>
                     </div>
-                    <nz-select [(ngModel)]="tempEditObject.part_id" nzAllowClear style="width: 90%;"  (ngModelChange)="partSearchChange($event)"
-                        [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'" [nzFilter]="true" (nzSearch)="partSearchChange($event)"
-                        (nzSearchChange)="partSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                        nzShowSearch>
-                        <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
+                    <nz-select [(ngModel)]="tempEditObject.part_id" nzAllowClear style="width: 90%;"
+                               (ngModelChange)="partSearchChange($event)"
+                               [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
                         </nz-option>
 
                     </nz-select>
@@ -262,15 +270,15 @@
                 <div class="row">
                     <div>
                         <label> Price </label></div>
-                      <input nz-input   [(ngModel)]="tempEditObject.price" style="width: 90%;"
-                        [placeholder]="'Price লিপিবদ্ধ করুন'"  >
+                    <input nz-input [(ngModel)]="tempEditObject.price" style="width: 90%;"
+                           [placeholder]="'Price লিপিবদ্ধ করুন'">
                 </div>
                 <div class="row">
                     <div>
                         <label> মন্তব্য </label>
                     </div>
-                      <input nz-input   style="width: 90%;" [(ngModel)]="tempEditObject.comment"
-                        [placeholder]="'মন্তব্য লিপিবদ্ধ করুন'" >
+                    <input nz-input style="width: 90%;" [(ngModel)]="tempEditObject.comment"
+                           [placeholder]="'মন্তব্য লিপিবদ্ধ করুন'">
                 </div>
             </div>
         </div>

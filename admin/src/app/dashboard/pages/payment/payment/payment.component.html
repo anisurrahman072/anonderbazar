@@ -93,9 +93,9 @@
 
                         </th>
                         <th   >
-                            <span *ngIf="setStatus(i, data.status)"></span>
+
                             <nz-select style="width: 180px;"
-                                       [nzFilter]="true"
+
                                        [(ngModel)]="statusSearchValue"
                                        nzAllowClear
                                        (ngModelChange)="page=1;getPageData()"

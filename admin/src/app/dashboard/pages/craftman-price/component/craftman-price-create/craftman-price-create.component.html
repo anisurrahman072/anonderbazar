@@ -26,8 +26,8 @@
                                     <tr>
                                         <td>
                                             <nz-select formControlName="genre_id" nzAllowClear (ngModelChange)="genreSearchChange($event)"
-                                                [nzPlaceHolder]="'Select genre'" [nzFilter]="true" (nzSearch)="genreSearchChange($event)"
-                                                (nzSearchChange)="genreSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                                [nzPlaceHolder]="'Select genre'"
+                                                 [nzNotFoundContent]="'Not found'"
                                                 nzShowSearch>
                                                 <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
                                                     [nzValue]="option.id">
@@ -37,8 +37,6 @@
                                         <td>
                                             <nz-select formControlName="design_category_id" nzAllowClear
                                                 (ngModelChange)="designCategorySearchChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
-                                                [nzFilter]="true" (nzSearch)="designCategorySearchChange($event)"
-                                                (nzSearchChange)="designCategorySearchChange($event)"
                                                 [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                 <nz-option *ngFor="let option of designCategorySearchOptions" [nzLabel]="option.name"
                                                     [nzValue]="option.id">
@@ -47,9 +45,8 @@
                                         </td>
                                         <td>
                                             <nz-select formControlName="design_subcategory_id" nzAllowClear
-                                                [nzPlaceHolder]="'Select Product Subcategory'" [nzFilter]="true"
-                                                (ngModelChange)="designSubcategorySearchChange($event)" (nzSearch)="designSubcategorySearchChange($event)"
-                                                (nzSearchChange)="designSubcategorySearchChange($event)"
+                                                [nzPlaceHolder]="'Select Product Subcategory'"
+                                                (ngModelChange)="designSubcategorySearchChange($event)"
                                                 [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                 <nz-option *ngFor="let option of designSubcategorySearchOptions"
                                                     [nzLabel]="option.name" [nzValue]="option.id">
@@ -101,9 +98,9 @@
                                         <label> পণ্যের শ্রেণী </label>
                                     </div>
 
-                                    <nz-select formControlName="type_id" nzAllowClear (ngModelChange)="typeSearchChange($event)"
-                                        [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'" [nzFilter]="true" (nzSearch)="typeSearchChange($event)"
-                                        (nzSearchChange)="typeSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                    <nz-select formControlName="type_id" nzAllowClear
+                                        [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'"
+                                         [nzNotFoundContent]="'Not found'"
                                         nzShowSearch>
                                         <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
                                             [nzValue]="option.id">
@@ -116,8 +113,8 @@
                                         <label> Product category </label>
                                     </div>
                                     <nz-select formControlName="category_id" nzAllowClear (ngModelChange)="categoryChange($event)"
-                                        [nzPlaceHolder]="'Select Product category'" [nzFilter]="true" (nzSearch)="categoryChange($event)"
-                                        (nzSearchChange)="categoryChange($event)" [nzNotFoundContent]="'Not found'"
+                                        [nzPlaceHolder]="'Select Product category'"
+                                         [nzNotFoundContent]="'Not found'"
                                         nzShowSearch>
                                         <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
                                             [nzValue]="option.id">
@@ -130,8 +127,8 @@
                                         <label> পণ্যের ঊপধরন </label>
                                     </div>
                                     <nz-select formControlName="subcategory_id" nzAllowClear [nzPlaceHolder]="'পণ্যের ঊপধরন নির্বাচন করুন'"
-                                        [nzFilter]="true" (ngModelChange)="subcategorySearchChange($event)" (nzSearch)="subcategorySearchChange($event)"
-                                        (nzSearchChange)="subcategorySearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                         (ngModelChange)="subcategorySearchChange($event)"
+                                         [nzNotFoundContent]="'Not found'"
                                         nzShowSearch>
                                         <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
                                             [nzValue]="option.id">
@@ -143,9 +140,9 @@
                                     <div>
                                         <label> পণ্যের অংশ </label>
                                     </div>
-                                    <nz-select formControlName="part_id" nzAllowClear (ngModelChange)="partSearchChange($event)"
-                                        [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'" [nzFilter]="true" (nzSearch)="partSearchChange($event)"
-                                        (nzSearchChange)="partSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                    <nz-select formControlName="part_id" nzAllowClear
+                                        [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'"
+                                         [nzNotFoundContent]="'Not found'"
                                         nzShowSearch>
                                         <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name"
                                             [nzValue]="option.id">
@@ -158,8 +155,8 @@
                                         <label> Craftsman </label>
                                     </div>
                                     <nz-select formControlName="craftman_id" nzAllowClear (ngModelChange)="crafmanChange($event)"
-                                        [nzPlaceHolder]="'Craftsman নির্বাচন করুন'" [nzFilter]="true" (nzSearch)="crafmanChange($event)"
-                                        (nzSearchChange)="crafmanChange($event)" [nzNotFoundContent]="'Not found'"
+                                        [nzPlaceHolder]="'Craftsman নির্বাচন করুন'"
+                                          [nzNotFoundContent]="'Not found'"
                                         nzShowSearch>
                                         <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
                                             [nzValue]="option.id">

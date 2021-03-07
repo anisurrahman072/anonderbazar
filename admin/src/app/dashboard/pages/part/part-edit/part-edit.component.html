@@ -56,7 +56,6 @@
                         </div>
                         <div nz-col [nzSpan]="16"      >
                             <nz-select formControlName="type_id" nzAllowClear [ngModel]="type_id" [nzPlaceHolder]="'শ্রেণী নির্বাচন করুন'"
-                                [nzFilter]="true" (nzSearch)="typeSearchChange($event)" (nzSearchChange)="typeSearchChange($event)"
                                 [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
                                 </nz-option>
@@ -74,7 +73,6 @@
                         <div nz-col [nzSpan]="16"      >
                             <nz-select [ngModel]="category_id" formControlName="category_id" nzAllowClear
                                 (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'Select Product category'"
-                                [nzFilter]="true" (nzSearch)="categorySearchChange($event)" (nzSearchChange)="categorySearchChange($event)"
                                 [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
                                     [nzValue]="option.id">
@@ -93,8 +91,8 @@
                         <div nz-col [nzSpan]="16"      >
 
                             <nz-select formControlName="subcategory_id" nzAllowClear [ngModel]="subcategory_id"
-                                [nzPlaceHolder]="'পণ্যের Select Product Subcategory'" [nzFilter]="true" (nzSearch)="subcategorySearchChange($event)"
-                                (nzSearchChange)="subcategorySearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                [nzPlaceHolder]="'পণ্যের Select Product Subcategory'"
+                                [nzNotFoundContent]="'Not found'"
                                 nzShowSearch>
                                 <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
                                     [nzValue]="option.id">
@@ -112,7 +110,7 @@
                         </div>
                         <div nz-col [nzSpan]="16"      >
 
-                            <ckeditor [(ngModel)]="details" formControlName="details" [config]="ckConfig" [readonly]="false"
+                            <ckeditor   formControlName="details" [config]="ckConfig" [readonly]="false"
                                 debounce="500">
                             </ckeditor>
                             <div    *ngIf="getFormControl('details').dirty&&getFormControl('details').hasError('required')">

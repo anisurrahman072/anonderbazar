@@ -59,7 +59,7 @@
                     <div nz-col [nzSpan]="16"      >
 
                         <nz-select formControlName="parent_id" nzAllowClear [nzPlaceHolder]="'নকশার ধরন নির্বাচন করুন'"
-                            [nzFilter]="true" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                              [nzNotFoundContent]="'Not found'" nzShowSearch>
                             <nz-option *ngFor="let option of designCategorySearchOptions" [nzLabel]="option.name"
                                 [nzValue]="option.id">
                             </nz-option>

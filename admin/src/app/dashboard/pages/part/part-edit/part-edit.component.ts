@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -7,7 +7,6 @@ import { FileHolder, UploadMetadata } from 'angular2-image-upload';
 import { PartService } from '../../../../services/part.service';
 import { CategoryTypeService } from '../../../../services/category-type.service';
 import { CategoryProductService } from '../../../../services/category-product.service';
-
 import {environment} from "../../../../../environments/environment";
 
 @Component({
@@ -61,7 +60,7 @@ export class PartEditComponent implements OnInit, OnDestroy {
     formData.append('subcategory_id', value.subcategory_id);
 
     if (this.ImageFile) {
-      
+
       formData.append('hasImage', 'true');
       formData.append('image', this.ImageFile, this.ImageFile.name);
 
@@ -111,6 +110,10 @@ export class PartEditComponent implements OnInit, OnDestroy {
     private categoryProductService: CategoryProductService,
     private partService: PartService
   ) {
+
+  }
+
+  ngOnInit() {
     this.validateForm = this.fb.group({
       name: ['', [Validators.required]],
       type_id: ['', []],
@@ -119,9 +122,6 @@ export class PartEditComponent implements OnInit, OnDestroy {
       details: ['', [Validators.required]],
       image: [null, []]
     });
-  }
-
-  ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.id = +params['id']; // (+) converts string 'id' to a number
       this.partService.getById(this.id).subscribe(result => {
@@ -164,8 +164,6 @@ export class PartEditComponent implements OnInit, OnDestroy {
     this.sub ? this.sub.unsubscribe() : '';
   }
 
-  categorySearchChange($event) { }
-
   categoryChange($event) {
     const query = encodeURI($event);
     if (query !== 'null') {
@@ -184,17 +182,5 @@ export class PartEditComponent implements OnInit, OnDestroy {
     } else {
       this.subcategorySearchOptions = {};
     }
-  }
-
-  subcategorySearchChange($event) { }
-
-  typeSearchChange($event) { }
-
-  subcategoryChange($event) { }
-
-  typeChange($event) { }
-
-  imageEditModeOn() {
-    this.imageEditMode = true;
   }
 }
