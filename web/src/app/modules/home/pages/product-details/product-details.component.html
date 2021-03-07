@@ -86,7 +86,7 @@
                                 {{ finalprice }}</h6>
                             <div class="sku">
                                 <ul class="d-flex">
-                                    <li class="first pl-0">Code:{{data.code}}</li>
+                                    <li class="first pl-0">Code: {{data.code}}</li>
                                     <li class="secend">Reward point: {{data.warehouse_id.award_points}}</li>
                                 </ul>
                             </div>
@@ -135,21 +135,25 @@
                     </div>
                     <div class="add-carts-detail" *ngIf="data.quantity > 0">
                         <div class="add-cart d-flex">
-                            <ul class="d-flex mt-1">
-                                <li class="cursor-pointer"><a (click)="decreaseProduct_quantity()">-</a></li>
-
-                                <li class="num" *ngIf="data.is_coupon_product; else productQtyBlock"><input
-                                        class="form-control qty-input" style="width: 60px;"
-                                        [(ngModel)]="product_quantity" type="number" #productQuantity></li>
-                                <ng-template #productQtyBlock>
-                                    <li class="num"><a>{{product_quantity}}</a></li>
-                                </ng-template>
-                                <li class="mr-0 cursor-pointer"><a (click)="increaseProduct_quantity()">+</a></li>
+                            <ul class="d-flex mt-1 coupon-qty-block" *ngIf="data.is_coupon_product; else productQtyBlock">
+                                <li class="cursor-pointer"><a class="minus-qty" (click)="decreaseProduct_quantity()">-</a></li>
+                                <li class="num" >
+                                    <input class="form-control qty-input" style="width: 80px;"
+                                           [(ngModel)]="product_quantity" type="number" #productQuantity>
+                                </li>
+                                <li class="mr-0 cursor-pointer"><a class="plus-qty"  (click)="increaseProduct_quantity()">+</a></li>
                             </ul>
+                            <ng-template #productQtyBlock>
+                                <ul class="d-flex mt-1" >
+                                    <li class="cursor-pointer"><a (click)="decreaseProduct_quantity()">-</a></li>
+                                    <li class="num"><a>{{product_quantity}}</a></li>
+                                    <li class="mr-0 cursor-pointer"><a (click)="increaseProduct_quantity()">+</a></li>
+                                </ul>
+                            </ng-template>
                             <div class="add-wishlist" *ngIf="!(favourites$ | async | isaddedtofavourite: data?.id)">
-                                <a class="wishlist mt-1"
-                                   (click)="addToFavourite(data)">
-                                    <i class="fa fa-heart-o"></i>Add to Wishlist</a>
+                                <a class="wishlist mt-1" (click)="addToFavourite(data)">
+                                    <i class="fa fa-heart-o"></i>Add to Wishlist
+                                </a>
                             </div>
                             <div class="add-wishlist"
                                  *ngIf="(favourites$ | async | isaddedtofavourite: data?.id) as fav">
@@ -186,7 +190,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" id="coupon-term-cond-modal-body">
         <div class="term-condition-coupon" style=" margin-bottom: 40px; margin-top: 20px; color: black; ">
             <ul>
                 <li>1. "আনন্দের বাজার" নতুন গ্রাহকদের জন্য নিয়ে এলো "স্বাধীনতা ৫০", গিফট ভাউচার ডিল।</li>
@@ -251,7 +255,7 @@
             </div>
         </div>
         <p class="add-cartbtn" style="text-align: center;">
-            <button type="button" class="addto2" (click)="buyCouponProduct(data)">I Accept</button>
+            <button type="button" autofocus  class="addto2" (click)="buyCouponProduct(data)">I Accept</button>
         </p>
     </div>
 </ng-template>

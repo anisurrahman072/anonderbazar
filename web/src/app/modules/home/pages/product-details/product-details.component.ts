@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, TemplateRef} from "@angular/core";
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
@@ -35,7 +35,6 @@ import {LoaderService} from "../../../../services/ui/loader.service";
     styleUrls: ["./product-details.component.scss"]
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
-    @ViewChild('scrollMe') private myScrollContainer: ElementRef;
     couponProductModalRef: BsModalRef;
     similarProducts;
     id: any;
@@ -76,34 +75,19 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     unitPrice: any = 0.0;
     counter: number;
 
-    numbers = {
-        0: "0",
-        1: "1",
-        2: "2",
-        3: "3",
-        4: "4",
-        5: "5",
-        6: "6",
-        7: "7",
-        8: "8",
-        9: "9"
-    };
     selectedIndex: number;
     designCombinationData: any;
     total: any;
     buffer_time: any;
     isVisible: boolean = false;
     isVisibleFab: boolean = false;
-    listOfMessages: any;
     chatForm: FormGroup;
     currentUserId: any;
     userId: any;
-    messageId: any;
     recentlyViewedProducts: Observable<any>;
     primaryPicture: string;
     addToCartSuccessProduct: any;
     addToWhishlistSuccessProduct: any;
-
     currentUser$: Observable<any>;
 
     constructor(
@@ -130,7 +114,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private partService: PartService,
         private router: Router,
         public loaderService: LoaderService,
-        private favouriteProductService: FavouriteProductService
+        private favouriteProductService: FavouriteProductService,
+        private _elementRef: ElementRef
     ) {
         this.chatForm = this.fb.group({
             message: ["", Validators.required],
@@ -217,43 +202,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Event method for getting all recently viewed product
-
     private getRecentlyViewedProducts() {
         this.recentlyViewedProducts = this.productService.getAllHotProducts();
     }
 
     ngAfterViewChecked() {
-        this.scrollToBottom();
-    }
-
-    //Method for scroll to bottom
-
-    scrollToBottom(): void {
-        try {
-            this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-        } catch (err) {
-        }
-    }
-
-
-    getChatMessages() {
-        this.chatService.getAllChatByUserId(this.messageId).subscribe(result => {
-            this.listOfMessages = result.data;
-        });
-        this.scrollToBottom();
-    }
-
-
-    replaceNumbers(input) {
-        let output = [];
-        for (let i = 0; i < input.length; ++i) {
-            if (this.numbers.hasOwnProperty(input[i])) {
-                output.push(this.numbers[input[i]]);
-            } else {
-                output.push(input[i]);
-            }
-        }
-        return output.join("");
+        // this.scrollToBottom();
     }
 
     getProductData() {
@@ -314,10 +268,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     updateFinalprice() {
         if (this.data) {
             this.unitPrice = this.data.promotion ? this.data.promo_price : this.data.price;
-            this.finalprice =
-                (this.unitPrice +
-                    this.variantCalculatedTotalPrice) *
-                this.product_quantity;
+            this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
         }
     }
 
@@ -335,7 +286,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for add to cart
-
     addProductToCart(product: any, callback?) {
         if (this.productVariants.length !== this.variantCalculatedPrice.length) {
             this.toastr.error('Please select all variant!', 'Note');
@@ -407,7 +357,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for direct buy
-
     buyNow(product, template: TemplateRef<any>) {
         if (this.data.is_coupon_product) {
             this.showCouponProductModal(template);
@@ -416,9 +365,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.router.navigate([`/checkout`]);
             });
         }
-
     }
-
 
     getProductAvailableDate(buffer_time: any) {
         this.availableDateLoading = true;
@@ -451,7 +398,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for increase product quantity in shopping cart modal
-
     increaseProduct_quantity() {
         if (this.product_quantity < this.data.quantity) {
             this.product_quantity += 1;
@@ -463,7 +409,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for decrese product quantity in shopping cart modal
-
     decreaseProduct_quantity() {
         if (this.product_quantity > 1) {
             this.product_quantity -= 1;
@@ -475,7 +420,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for add to favourite
-
     addToFavourite(product: Product) {
         let userId = this.authService.getCurrentUserId();
         if (userId) {
@@ -492,13 +436,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         } else {
             this._notify.create("warning", "Please Login First");
-
             this.loginModalService.showLoginModal(true);
         }
     }
 
     //Method for remove from favourite
-
     removeFromFavourite(favouriteProduct) {
         let userId = this.authService.getCurrentUserId();
         if (userId) {
@@ -530,7 +472,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     onVariantChange(variant) {
-        console.log('EEE')
+
         let isExist = this.variantCalculatedPrice.find(v => v.variant_name == variant.variant_id.name);
         if (isExist) {
             let index = this.variantCalculatedPrice.indexOf(isExist);
@@ -564,6 +506,19 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     showCouponProductModal(template: TemplateRef<any>) {
         this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
+/*        setTimeout(() => {
+            this.scrollToBottom();
+        }, 2000);*/
+    }
+
+    //Method for scroll to bottom
+    scrollToBottom(): void {
+        try {
+            const domElem = this._elementRef.nativeElement.querySelector('#coupon-term-cond-modal-body');
+            domElem.scrollTop = domElem.scrollHeight;
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     private addPageTitleNMetaTag() {

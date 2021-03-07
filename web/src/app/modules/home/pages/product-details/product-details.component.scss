@@ -35,7 +35,18 @@
   padding-left: 2px;
   font-size: 12px;
 }
-
+.coupon-qty-block .cursor-pointer a.minus-qty {
+  line-height: 40px;
+  position: relative;
+  left: 20px;
+  font-size: 40px;
+}
+.coupon-qty-block .cursor-pointer a.plus-qty {
+  line-height: 32px;
+  position: relative;
+  right: 25px;
+  font-size: 27px;
+}
 .breadcrumbs a {
   color: #666;
 
