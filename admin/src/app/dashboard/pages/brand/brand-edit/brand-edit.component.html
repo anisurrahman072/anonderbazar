@@ -15,14 +15,14 @@
 
                 <div class="col-md-3">
                     <div class="row">
-                        <div nz-form-item nz-row>
-                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                        <div    nz-row>
+                            <div nz-col [nzSpan]="16"      >
                                 <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                 dropBoxMessage="Drop Picture here"
                                 clearButtonCaption="remove it?"
                                     [beforeUpload]="onBeforeUpload">
                                 </image-upload>
-                                <div nz-form-explain *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                <div    *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
                                     Please upload an image here!
                                 </div>
                             </div>
@@ -31,36 +31,36 @@
                     </div>
                 </div>
                 <div class="col-md-9">
-                    <div nz-form-item nz-row>
+                    <div    nz-row>
                         <!--name start-->
 
-                        <div nz-form-label nz-col [nzSpan]="2">
+                        <div    nz-col [nzSpan]="2">
                             <label> Name </label>
                         </div>
-                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                        <div nz-col [nzSpan]="16"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--name -->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="2" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="2"   >
                             <label> Code </label>
                         </div>
-                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="code" [nzType]="'text'" [nzPlaceHolder]="'Enter Code'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
+                        <div nz-col [nzSpan]="16"      >
+                               <input nz-input  formControlName="code"  [placeholder]="'Enter Code'" [nzSize]="'large'">
+
+                            <div    *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
                                 দয়া করে Enter Code!
                             </div>
                         </div>
@@ -70,8 +70,8 @@
 
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                    <div    nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16"   >
                             <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                                 Save
                             </button>

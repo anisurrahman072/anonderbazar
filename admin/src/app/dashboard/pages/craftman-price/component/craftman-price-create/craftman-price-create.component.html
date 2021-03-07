@@ -165,24 +165,24 @@
                                             [nzValue]="option.id">
                                         </nz-option>
 
-                                    </nz-select> 
+                                    </nz-select>
                                 </div>
                                 <div class="row">
                                     <div>
                                         <label> Price </label></div>
-                                    <nz-input [nzType]="'number'" formControlName="price" [(ngModel)]="tempEditObject.price"></nz-input> 
+                                      <input nz-input   formControlName="price" [(ngModel)]="tempEditObject.price">
                                 </div>
                                 <div class="row">
                                     <div>
                                         <label> সময় </label>
                                     </div>
-                                    <nz-input [nzType]="'number'" formControlName="time" [(ngModel)]="tempEditObject.time"></nz-input> 
+                                      <input nz-input   formControlName="time" [(ngModel)]="tempEditObject.time">
                                 </div>
                                 <div class="row">
                                     <div>
                                         <label> মন্তব্য </label>
                                     </div>
-                                    <nz-input [nzType]="'text'" formControlName="comment" [(ngModel)]="tempEditObject.comment"></nz-input> 
+                                      <input nz-input   formControlName="comment" [(ngModel)]="tempEditObject.comment">
                                 </div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div nz-col nz-form-control class="text-center">
+                    <div nz-col    class="text-center">
                         <nz-button-group>
                             <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                                 Save

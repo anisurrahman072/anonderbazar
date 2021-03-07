@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -47,6 +47,11 @@ export class PaymentCreateComponent implements OnInit {
                 private fb: FormBuilder,
                 private authService: AuthService,
                 private paymentService: PaymentService) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             order_id: ['', [Validators.required]],
             suborder_id: ['', [Validators.required]],
@@ -57,7 +62,13 @@ export class PaymentCreateComponent implements OnInit {
             user_id: ['', []],
             payment_date: ['', [Validators.required]],
         });
+        this.currentUser = this.authService.getCurrentUser();
+
+        this.orderService.getAll().subscribe(result => {
+            this.orderSearchOptions = result;
+        });
     }
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
@@ -72,19 +83,20 @@ export class PaymentCreateComponent implements OnInit {
 
         this.paymentService.insert(paymentInsertPayload)
             .subscribe(result => {
-                this.submitting = false;
-                if (result.id) {
-                    this._notification.create('success', 'New payment Insert Succeeded', result.id);
-                    this.router.navigate(['/dashboard/payment/details/', result.id]);
-                }
-            },
-               error => {
-                   this.submitting = false;
-                   this._notification.create('error', 'Error Occurred!',
-                       "Transaction disn't created!");
+                    this.submitting = false;
+                    if (result.id) {
+                        this._notification.create('success', 'New payment Insert Succeeded', result.id);
+                        this.router.navigate(['/dashboard/payment/details/', result.id]);
+                    }
+                },
+                error => {
+                    this.submitting = false;
+                    this._notification.create('error', 'Error Occurred!',
+                        "Transaction disn't created!");
 
-               });
+                });
     }
+
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -93,24 +105,14 @@ export class PaymentCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-     // init the component
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
 
-        this.orderService.getAll().subscribe(result => {
-            this.orderSearchOptions = result;
-        });
-    }
-      //Method for order search change
 
-    orderSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
-      //Method for order status change
+    //Method for order status change
 
     orderChange($event) {
         const query = encodeURI($event);
@@ -123,7 +125,4 @@ export class PaymentCreateComponent implements OnInit {
         });
     }
 
-    suborderSearchChange($event) {
-
-    }
 }

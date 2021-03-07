@@ -13,40 +13,40 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
                 [nzSize]="'default'" [nzShowTitle]="true">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span>Logo</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Name</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Buffer time</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Phone</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Email</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Owner</span>
                             </th>
-                            <th nz-th>
+                            <th   >
 
                             </th>
 
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr *ngFor="let data of nzTable.data">
-                            <td nz-td>
+                    <tbody   >
+                        <tr    *ngFor="let data of nzTable.data">
+                            <td   >
                                 <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.logo" [nzSize]="'large'"
                                     [nzIcon]="'user'"></nz-avatar>
                             </td>
-                            <td nz-td>{{data.name}}</td>
-                            <td nz-td>
+                            <td   >{{data.name}}</td>
+                            <td   >
                                 <ng-container *ngIf="data.buffer_time; then thenTemplate; else elseTemplate"></ng-container>
                                 <ng-template #thenTemplate>
                                     {{data.buffer_time}} Day
@@ -55,13 +55,13 @@
                                     0 Day
                                 </ng-template>
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.phone}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.email}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.user[0]?.first_name}} {{data.user[0]?.last_name}}, {{data.user[0]?.phone}},
                                 {{data.user[0]?.email}}
                             </td>
@@ -112,9 +112,9 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
-                        <nz-pagination nzPlaceHolder="'পৃষ্ঠা'" (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                    <span    class="col-md-6">
+                        <nz-pagination  (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
                 </div>

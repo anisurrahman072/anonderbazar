@@ -93,7 +93,7 @@ export class CraftmanPriceEditComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
 
     formData.append('genre_id', value.genre_id);
@@ -117,7 +117,7 @@ export class CraftmanPriceEditComponent implements OnInit {
       .subscribe(result => {
         this._notification.create('success', 'Update successful', this.data.name);
         this.router.navigate(['/dashboard/craftsmanprice/details/', this.id]);
-      }); 
+      });
 
   }
   //Event method for removing picture
@@ -130,7 +130,7 @@ export class CraftmanPriceEditComponent implements OnInit {
       this.ImageFile[0] = metadata.file;
       return metadata;
 
-    } catch (error) { 
+    } catch (error) {
     }
 
   }
@@ -154,7 +154,7 @@ export class CraftmanPriceEditComponent implements OnInit {
       this.id = +params['id']; // (+) converts string 'id' to a number
       this.craftmanpriceService.getById(this.id)
         .subscribe(result => {
-          this.loadFormData(); 
+          this.loadFormData();
           this.data = result;
           this.validateForm.patchValue(this.data);
           this.selectedIndex = this.data.design_id.id;
@@ -165,7 +165,7 @@ export class CraftmanPriceEditComponent implements OnInit {
           this.category_id = this.data.category_id.id;
           this.subcategory_id = this.data.subcategory_id.id;
           this.part_id = this.data.part_id.id;
-          this.craftman_id = this.data.craftman_id.id; 
+          this.craftman_id = this.data.craftman_id.id;
         });
     });
   }
@@ -176,7 +176,7 @@ export class CraftmanPriceEditComponent implements OnInit {
       this.genreSearchOptions = result;
     });
     this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-      warehouseId => { 
+      warehouseId => {
         this.currentWarehouseId = warehouseId || '';
         this.getAllCraftsmanSearchData();
       }
@@ -184,7 +184,7 @@ export class CraftmanPriceEditComponent implements OnInit {
     this.designCategoryService.getAllDesignCategory().subscribe(result => {
       this.designCategorySearchOptions = result;
     });
-    this.categoryProductService.getAllCategory().subscribe((result: any) => {  
+    this.categoryProductService.getAllCategory().subscribe((result: any) => {
       this.categorySearchOptions = result;
     });
     this.categoryTypeService.getAll().subscribe(result => {
@@ -205,19 +205,9 @@ export class CraftmanPriceEditComponent implements OnInit {
   }
 
 
-  crafmanChange($event: string) { 
+  crafmanChange($event: string) {
   }
-  categoryIdChange($event) { 
-    const query = encodeURI($event); 
 
-    if (query !== 'null') {
-      this.categoryProductService
-        .getSubcategoryByCategoryId(query)
-        .subscribe(result => {
-          this.subcategorySearchOptions = result;
-        });
-    }
-  }
   subcategorySearchChange($event) {
     this.tempEditObject.part_id = null;
     const query = encodeURI($event);
@@ -229,14 +219,14 @@ export class CraftmanPriceEditComponent implements OnInit {
       this.partSearchOptions = {};
     }
   }
-  categoryIdSearchChange($event) { }
-  subcategoryIdSearchChange($event) { }
 
-  genreSearchChange($event) { 
+
+
+  genreSearchChange($event) {
 
     this.tempEditObject.design_id = null;
     const query = encodeURI($event);
-    if (this.validateForm.get("genre_id").value !== 'null') { 
+    if (this.validateForm.get("genre_id").value !== 'null') {
 
       this.designService.getDesigns(this.validateForm.get("genre_id").value, this.validateForm.get("design_category_id").value,
         this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
@@ -248,7 +238,7 @@ export class CraftmanPriceEditComponent implements OnInit {
 
       this.designService.getDesigns(" ", this.validateForm.get("design_category_id").value,
         this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
-          this.designs = result; 
+          this.designs = result;
 
         });
 
@@ -257,7 +247,7 @@ export class CraftmanPriceEditComponent implements OnInit {
 
   }
 
-  public setRow(_index: number, id: any) { 
+  public setRow(_index: number, id: any) {
     this.selectedIndex = _index;  // don't forget to update the model here
     this.design_id = id;
     // ... do other stuff here ...

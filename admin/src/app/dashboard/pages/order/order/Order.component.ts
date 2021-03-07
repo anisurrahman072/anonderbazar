@@ -7,41 +7,17 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {MomentDateAdapter} from '@angular/material-moment-adapter';
-import {MatDatepickerInputEvent} from "@angular/material/datepicker";
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
-
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
 const moment = _rollupMoment || _moment;
 
-export const MY_FORMATS = {
-    parse: {
-        dateInput: 'YYYY-MM-DD H:m:s',
-    },
-    display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY',
-    },
-};
-
 @Component({
     selector: 'app-warehouse',
     templateUrl: './Order.component.html',
-    styleUrls: ['./Order.component.css'],
-    providers: [
-        // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
-        // application's root module. We provide it at the component level here, due to limitations of
-        // our example generation script.
-        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-
-        {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
-    ],
+    styleUrls: ['./Order.component.css']
 })
 export class OrderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
@@ -186,18 +162,6 @@ export class OrderComponent implements OnInit {
         return false;
     }
 
-    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
-
-        /*
-        console.log('searchDateChangeHandler: ', event.value.toString());
-           if (type === 'startDate') {
-               this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-           } else if (type === 'endDate') {
-               this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-           }
-        */
-        this.getData();
-    }
 
     //Method for status change
     selectAllOrder($event) {

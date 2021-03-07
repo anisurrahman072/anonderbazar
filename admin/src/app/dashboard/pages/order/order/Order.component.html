@@ -14,57 +14,42 @@
                 <nz-table #nzTable [nzTotal]="orderTotal" [nzDataSource]="orderData" [nzIsPageIndexReset]="true"
                           [nzIsPagination]="false" [nzPageSize]="orderLimit"
                           [nzSize]="'default'" [nzShowTitle]="false">
-                    <thead nz-thead>
+                    <thead>
                     <tr>
-                        <th nz-th>
+                        <th>
                             <span> Order Number </span>
                         </th>
-                        <th nz-th style="width: 160px">
+                        <th style="width: 160px">
                             <span> Date </span>
                         </th>
-                        <th nz-th>
+                        <th>
                             <span> Customer </span>
                         </th>
-                        <th nz-th>
+                        <th>
                             <span> Quantity </span>
                         </th>
-                        <th nz-th>
+                        <th>
                             <span>Total Amount</span>
                         </th>
-                        <th nz-th>
+                        <th>
                             <span>Order Status</span>
                         </th>
-                        <th nz-th>
+                        <th>
                             <span>Status Changed By</span>
                         </th>
-                        <th nz-th>Actions</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
-                    <thead nz-thead>
+                    <thead>
                     <tr>
-                        <th nz-th></th>
-                        <th nz-th>
-                            <mat-form-field>
-                                <input [(ngModel)]="searchStartDate" [min]="minSearchDate" [max]="maxSearchDate"
-                                       matInput [matDatepicker]="startDatePicker" placeholder=""
-                                       (dateChange)="searchDateChangeHandler('startDate', $event)"/>
-                                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-                                <mat-datepicker #startDatePicker></mat-datepicker>
-                            </mat-form-field>
-                            <br>
-                            <mat-form-field>
-                                <input [(ngModel)]="searchEndDate" [min]="minSearchDate" [max]="maxSearchDate" matInput
-                                       [matDatepicker]="endDatePicker" placeholder=""
-                                       (dateChange)="searchDateChangeHandler('endDate', $event)"/>
-                                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                                <mat-datepicker #endDatePicker></mat-datepicker>
-                            </mat-form-field>
+                        <th></th>
+                        <th>
                         </th>
-                        <th nz-th></th>
-                        <th nz-th></th>
-                        <th nz-th></th>
-                        <th nz-th>
-                            <nz-select style="width: 180px;" [nzFilter]="true" [(ngModel)]="statusSearchValue"
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <nz-select style="width: 180px;"  [(ngModel)]="statusSearchValue"
                                        nzAllowClear (ngModelChange)="getData()"
                                        [nzPlaceHolder]="'Select Status'"
                                        [nzNotFoundContent]="'Not found'">
@@ -77,20 +62,20 @@
                                 </nz-option>
                             </nz-select>
                         </th>
-                        <th nz-th></th>
-                        <th nz-th>
+                        <th></th>
+                        <th>
                             <button nz-button (click)="resetAllFilter()">Clear filter</button>
                         </th>
                     </tr>
                     </thead>
-                    <tbody nz-tbody>
-                    <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                        <td nz-td>{{data.id}}</td>
-                        <td nz-td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                        <td nz-td>{{data.full_name}}</td>
-                        <td nz-td>{{data.total_quantity}}</td>
-                        <td nz-td>{{data.total_price}}</td>
-                        <td nz-td>
+                    <tbody>
+                    <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
+                        <td>{{data.id}}</td>
+                        <td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                        <td>{{data.full_name}}</td>
+                        <td>{{data.total_quantity}}</td>
+                        <td>{{data.total_price}}</td>
+                        <td>
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
                                        (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
@@ -103,8 +88,8 @@
                                 </nz-option>
                             </nz-select>
                         </td>
-                        <td nz-td>{{data.changedByName}}</td>
-                        <td nz-td>
+                        <td>{{data.changedByName}}</td>
+                        <td>
                             <nz-button-group>
                                 <button *ngIf="'order-read'|accessControl"
                                         [routerLink]="['/dashboard/order/details/', data.id]"
@@ -119,15 +104,15 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event, orderLimit)"
                                        (nzPageSizeChange)="changePage(1, $event)"
-                                       nzShowTotal [nzPageIndex]="page"
+                                          [nzPageIndex]="page"
                                        [nzTotal]="orderTotal"
                                        [nzPageSize]="orderLimit" nzShowSizeChanger>
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -151,55 +136,55 @@
             <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders"
                       (nzPageIndexChange)="csvPageChangeHandler($event)" [nzIsPagination]="true"
                       [nzIsPageIndexReset]="true" [nzPageSize]="25">
-                <thead nz-thead>
+                <thead>
                 <tr>
-                    <th nz-th>
+                    <th>
                         <input style="margin-left: 15px;" type="checkbox" id="order_check_all_pr"
                                (change)="selectAllCsv($event)">
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Order number </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Date </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Customer </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Qunatity </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Total Amount </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Order Status </span>
                     </th>
-                    <th nz-th>
+                    <th>
                         <span> Status Changed By </span>
                     </th>
                 </tr>
                 </thead>
-                <tbody nz-tbody>
-                <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                    <td nz-td [nzCheckbox]="true">
+                <tbody>
+                <tr *ngFor="let data of nzTable.data;let i=index;">
+                    <td [nzCheckbox]="true">
                         <input type="checkbox" id="{{'order_checked_pr' + data.id}}"
                                (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
                     </td>
-                    <td nz-td>{{data.id}}</td>
-                    <td nz-td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                    <td nz-td>
+                    <td>{{data.id}}</td>
+                    <td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td>
                         <nz-tag>{{data.full_name}}</nz-tag>
                     </td>
-                    <td nz-td>{{data.total_quantity}}</td>
-                    <td nz-td>{{data.total_price}}</td>
-                    <td nz-td>{{getStatusLabel(data.status)}}</td>
-                    <td nz-td>{{data.changedByName}}</td>
+                    <td>{{data.total_quantity}}</td>
+                    <td>{{data.total_price}}</td>
+                    <td>{{getStatusLabel(data.status)}}</td>
+                    <td>{{data.changedByName}}</td>
                 </tr>
                 </tbody>
             </nz-table>
-            <div nz-form-item>
-                <div nz-form-control>
+            <div   >
+                <div   >
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
                             [disabled]="!validateProductForm.valid || submitting">
                         Create CSV

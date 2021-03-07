@@ -16,25 +16,25 @@
               (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="row">
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
+                    <div    nz-row>
                         <!--name start-->
 
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label> Name </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('name').dirty && getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('name').dirty && getFormControl('name').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty && getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty && getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>
@@ -43,30 +43,30 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Code </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="code" [nzType]="'text'" [nzPlaceHolder]="'Enter Code'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="code"  [placeholder]="'Enter Code'"
                                       [nzSize]="'large'">
-                            </nz-input>
+
                         </div>
                     </div>
                     <!--code-->
                 </div>
                 <!-- cost -->
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="price" [nzType]="'number'" [nzPlaceHolder]="'Enter Price'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="price"  [placeholder]="'Enter Price'"
                                       [nzSize]="'large'">
-                            </nz-input>
 
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
                                 required!
                             </div>
@@ -74,14 +74,14 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Vendor Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="vendor_price" [nzType]="'number'"
-                                      [nzPlaceHolder]="'Enter Vendor Price'" [nzSize]="'large'"></nz-input>
-                            <div nz-form-explain
+                        <div nz-col [nzSpan]="12"      >
+                              <input nz-input  formControlName="vendor_price"
+                                      [nzPlaceHolder]="'Enter Vendor Price'" [nzSize]="'large'">
+                            <div
                                  *ngIf="getFormControl('vendor_price').dirty&&getFormControl('vendor_price').hasError('required')">
                                 required!
                             </div>
@@ -90,14 +90,14 @@
                 </div>
                 <!--price-->
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Min Order Quantity</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="min_unit" [nzType]="'number'"
-                                      [nzPlaceHolder]="'Enter Min Order Quantity'" [nzSize]="'large'"></nz-input>
-                            <div nz-form-explain
+                        <div nz-col [nzSpan]="12"      >
+                              <input nz-input  formControlName="min_unit"
+                                      [nzPlaceHolder]="'Enter Min Order Quantity'" [nzSize]="'large'">
+                            <div
                                  *ngIf="getFormControl('min_unit').dirty&&getFormControl('min_unit').hasError('required')">
                                 required!
                             </div>
@@ -106,15 +106,15 @@
                     <!--min_unit-->
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Quantity </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="quantity" [nzType]="'number'" [nzPlaceHolder]="'Enter Quantity'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="quantity"  [placeholder]="'Enter Quantity'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('quantity').dirty&&getFormControl('quantity').hasError('required')">
                                 required!
                             </div>
@@ -125,15 +125,15 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Alert Quantity</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="alert_quantity" [nzType]="'number'"
+                        <div nz-col [nzSpan]="12"      >
+                              <input nz-input  formControlName="alert_quantity"
                                       [nzPlaceHolder]="'Enter Alert Quantity'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('alert_quantity').dirty&&getFormControl('alert_quantity').hasError('required')">
                                 required!
                             </div>
@@ -143,11 +143,11 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Product Category</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="type_id" nzAllowClear (ngModelChange)="onTypeChange($event)"
                                        [ngModel]="type_id" [nzPlaceHolder]="'Select Product Category'"
                                        [nzFilter]="true" (nzSearch)="typeSearchChange($event)"
@@ -157,7 +157,7 @@
                                            [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('type_id').dirty&&getFormControl('type_id').hasError('required')">
                                 required!
                             </div>
@@ -167,11 +167,11 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Product Brand</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select [ngModel]="brand_id" formControlName="brand_id" nzAllowClear
                                        [nzPlaceHolder]="'Select Product Brand'" [nzFilter]="true"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
@@ -179,7 +179,7 @@
                                            [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('brand_id').dirty&&getFormControl('brand_id').hasError('required')">
                                 required!
                             </div>
@@ -193,11 +193,11 @@
             <div class="row">
 
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Product S-category </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-select [ngModel]="category_id" formControlName="category_id" nzAllowClear
                                        (ngModelChange)="categoryChange($event)"
@@ -211,7 +211,7 @@
                             </nz-select>
 
 
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('category_id').dirty&&getFormControl('category_id').hasError('required')">
                                 required!
                             </div>
@@ -220,11 +220,11 @@
                     <!--category_id-->
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row *ngIf="subcategorySearchOptions.length>0">
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row *ngIf="subcategorySearchOptions.length>0">
+                        <div nz-col [nzSpan]="7"   >
                             <label> Product subcategory </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-select formControlName="subcategory_id" nzAllowClear
                                        (ngModelChange)="subcategoryChange($event)" [ngModel]="subcategory_id"
@@ -236,7 +236,7 @@
                                            [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('subcategory_id').dirty&&getFormControl('subcategory_id').hasError('required')">
                                 required!
                             </div>
@@ -248,11 +248,11 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Tag</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-select style="width: 100%" formControlName="tag" [(ngModel)]="tag"
                                        [nzMode]="'tags'">
@@ -261,7 +261,7 @@
                                 </nz-option>
                             </nz-select>
 
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('tag').dirty&&getFormControl('tag').hasError('required')">
                                 required!
                             </div>
@@ -270,15 +270,15 @@
                     <!--tag-->
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Weight </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="weight" [nzType]="'number'" [nzPlaceHolder]="'Select Weight'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="weight"  [placeholder]="'Select Weight'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('weight').dirty&&getFormControl('weight').hasError('required')">
                                 required!
                             </div>
@@ -288,11 +288,11 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Product Status</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-select formControlName="status" [nzSize]="size" nzPlaceHolder="Select Product">
                                 <nz-option *ngFor="let option of statusOptions" [nzLabel]=" option.label"
@@ -300,7 +300,7 @@
                                 </nz-option>
                             </nz-select>
 
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('status').dirty && getFormControl('status').hasError('required')">
                                 required!
                             </div>
@@ -310,16 +310,16 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Product Featured?</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-switch formControlName="featured">
                                 <span checked>Yes</span>
                                 <span unchecked>No</span>
                             </nz-switch>
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('featured').dirty&&getFormControl('featured').hasError('required')">
                                 required!
                             </div>
@@ -328,11 +328,11 @@
                     <!--featured-->
                 </div>
                 <div class="col-md-6">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Is Coupon Product?</label>
                         </div>
-                        <div nz-col [nzSpan]="2" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="2"      >
                             <nz-switch formControlName="is_coupon_product"
                                        (ngModelChange)="onChangeCouponProduct($event)">
                                 <span checked>Yes</span>
@@ -350,17 +350,17 @@
                 </div>
                 <div class="col-md-12">
                     <div class="col-md-6">
-                        <div nz-form-item nz-row>
-                            <div nz-col [nzSpan]="7" nz-form-label>
+                        <div    nz-row>
+                            <div nz-col [nzSpan]="7"   >
                                 <label>Front Image</label>
                             </div>
-                            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                            <div nz-col [nzSpan]="12"      >
                                 <image-upload #Image [max]="1" buttonCaption="Select picture"
                                               dropBoxMessage="Drop Picture here"
                                               clearButtonCaption="remove" (removed)="onRemovedFront($event)"
                                               [uploadedFiles]="ImageFrontEdit" [beforeUpload]="onBeforeUploadFront">
                                 </image-upload>
-                                <div nz-form-explain
+                                <div
                                      *ngIf="getFormControl('frontimage').dirty && getFormControl('frontimage').hasError('required')">
                                     required!
                                 </div>
@@ -369,11 +369,11 @@
                         <!--image-->
                     </div>
                     <div class="col-md-6">
-                        <div nz-form-item nz-row>
-                            <div nz-col [nzSpan]="3" nz-form-label>
+                        <div    nz-row>
+                            <div nz-col [nzSpan]="3"   >
                                 <label>Picture</label>
                             </div>
-                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                            <div nz-col [nzSpan]="16"      >
 
                                 <image-upload #Image [max]="3"
                                               (removed)="onRemoved($event)"
@@ -384,7 +384,7 @@
                                               [beforeUpload]="onBeforeUpload">
                                 </image-upload>
 
-                                <div nz-form-explain
+                                <div
                                      *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
                                     required!
                                 </div>
@@ -394,16 +394,16 @@
                 </div>
 
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="3" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="3"   >
                             <label> Product Description </label>
                         </div>
-                        <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="16"      >
                             <ckeditor [(ngModel)]="product_details" formControlName="product_details"
                                       [config]="ckConfig" [readonly]="false" debounce="500">
                             </ckeditor>
 
-                            <div nz-form-explain
+                            <div
                                  *ngIf="getFormControl('product_details').dirty && getFormControl('product_details').hasError('required')">
                                 required!
                             </div>
@@ -412,8 +412,8 @@
                     <!--product_details-->
                 </div>
             </div>
-            <div nz-form-item nz-row>
-                <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+            <div    nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                     <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                             [disabled]="!validateForm.valid || isSubmit==false">Save
                     </button>
@@ -435,11 +435,11 @@
     <ng-template #couponBannerImages>
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateFormCouponBanner"
               (ngSubmit)="submitFormCouponBanner($event, validateFormCouponBanner.value)">
-            <div nz-form-item nz-row>
-                <div nz-col [nzSpan]="7" nz-form-label>
+            <div    nz-row>
+                <div nz-col [nzSpan]="7"   >
                     <label>Coupon Banner Images</label>
                 </div>
-                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                <div nz-col [nzSpan]="12"      >
                     <image-upload
                             [max]="5"
                             buttonCaption="Select picture for banner"
@@ -454,8 +454,8 @@
                     </image-upload>
                 </div>
             </div>
-            <div nz-form-item nz-row>
-                <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+            <div    nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                     <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                             [disabled]="!validateFormCouponBanner.valid">Save
                     </button>

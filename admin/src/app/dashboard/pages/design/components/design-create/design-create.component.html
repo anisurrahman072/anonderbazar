@@ -15,11 +15,11 @@
                 <div class="col-md-12">
                     <div class="col-md-6">
                         <div class="col-md-12">
-                            <div nz-form-item nz-row>
-                                <div nz-col [nzSpan]="7" nz-form-label>
-                                    <label nz-form-item-required> Picture </label>
+                            <div    nz-row>
+                                <div nz-col [nzSpan]="7"   >
+                                    <label   -required> Picture </label>
                                 </div>
-                                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                                <div nz-col [nzSpan]="12"      >
                                     <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                         dropBoxMessage="Drop Picture here" clearButtonCaption="remove it?"
                                         [beforeUpload]="onBeforeUpload">
@@ -28,23 +28,23 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div nz-form-item nz-row>
+                            <div    nz-row>
                                 <!--name start-->
 
-                                <div nz-form-label nz-col [nzSpan]="7">
+                                <div    nz-col [nzSpan]="7">
                                     <label> Name </label>
                                 </div>
-                                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                                    <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'"
+                                <div nz-col [nzSpan]="12"      >
+                                       <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
                                         [nzSize]="'large'">
-                                    </nz-input>
-                                    <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                                    <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                         Name is required!
                                     </div>
-                                    <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                                    <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                         Name already exists!
                                     </div>
-                                    <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                                    <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                         Verifying ...
                                     </div>
                                 </div>
@@ -52,29 +52,29 @@
                             <!--name -->
                         </div>
                         <div class="col-md-12">
-                            <div nz-form-item nz-row>
-                                <div nz-col [nzSpan]="7" nz-form-label>
+                            <div    nz-row>
+                                <div nz-col [nzSpan]="7"   >
                                     <label> Code </label>
                                 </div>
-                                <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                                    <nz-input formControlName="code" [nzType]="'text'" [nzPlaceHolder]="'Enter Code'"
+                                <div nz-col [nzSpan]="12"      >
+                                       <input nz-input  formControlName="code"  [placeholder]="'Enter Code'"
                                         [nzSize]="'large'">
-                                    </nz-input> 
+
                                 </div>
                             </div>
                             <!--code-->
                         </div>
                         <div class="col-md-12">
 
-                            <div nz-form-item nz-row>
-                                <div nz-col [nzSpan]="7" nz-form-label>
+                            <div    nz-row>
+                                <div nz-col [nzSpan]="7"   >
                                     <label> নকশা Description </label>
                                 </div>
-                                <div nz-col [nzSpan]="15" nz-form-control nzHasFeedback>
+                                <div nz-col [nzSpan]="15"      >
 
                                     <ckeditor formControlName="details" [config]="ckConfig" [readonly]="false" debounce="500">
                                     </ckeditor>
-                                    <div nz-form-explain *ngIf="getFormControl('details').dirty&&getFormControl('details').hasError('required')">
+                                    <div    *ngIf="getFormControl('details').dirty&&getFormControl('details').hasError('required')">
                                         required!
                                     </div>
                                 </div>
@@ -95,13 +95,13 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                
+
                                 <tbody>
                                     <tr *ngFor="let control of controlArray;let i = index">
                                         <td>
-                                            <div nz-form-item nz-row>
+                                            <div    nz-row>
 
-                                                <div nz-form-control nz-col>
+                                                <div    nz-col>
                                                     <nz-select [formControlName]="control[0].controlInstance" nzAllowClear
                                                         (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'" [nzFilter]="true"
                                                         (nzSearch)="categorySearchChange($event)" (nzSearchChange)="categorySearchChange($event)"
@@ -110,7 +110,7 @@
                                                             [nzLabel]="option.name" [nzValue]="option.id">
                                                         </nz-option>
                                                     </nz-select>
-                                                    <div nz-form-explain *ngIf="getFormControl(control.controlInstance)?.dirty&&getFormControl(control.controlInstance)?.hasError('required')">
+                                                    <div    *ngIf="getFormControl(control.controlInstance)?.dirty&&getFormControl(control.controlInstance)?.hasError('required')">
                                                         দয়া করে এখানে কিছু নির্বাচন করুন !
                                                     </div>
                                                 </div>
@@ -119,8 +119,8 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div nz-form-item nz-row>
-                                                <div nz-form-control nz-col > 
+                                            <div    nz-row>
+                                                <div    nz-col >
                                                     <nz-select [formControlName]="control[1].controlInstance1" nzAllowClear
                                                         [nzPlaceHolder]="'Select Product Subcategory'" [nzFilter]="true" (nzSearch)="subcategorySearchChange($event)"
                                                         (nzSearchChange)="subcategorySearchChange($event)"
@@ -129,30 +129,30 @@
                                                             [nzLabel]="option.name" [nzValue]="option.id">
                                                         </nz-option>
                                                     </nz-select>
-                                                    <div nz-form-explain *ngIf="getFormControl('design_subcategory_id').dirty&&getFormControl('design_subcategory_id').hasError('required')">
+                                                    <div    *ngIf="getFormControl('design_subcategory_id').dirty&&getFormControl('design_subcategory_id').hasError('required')">
                                                         দয়া করে এখানে কিছু নির্বাচন করুন !
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div nz-form-item nz-row>
-                                                <div nz-form-control nz-col > 
+                                            <div    nz-row>
+                                                <div    nz-col >
                                                     <nz-select [formControlName]="control[2].controlInstance2" nzAllowClear [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"[nzFilter]="true"
                                                         [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                         <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
                                                             [nzValue]="option.id">
                                                         </nz-option>
                                                     </nz-select>
-                                                    <div nz-form-explain *ngIf="getFormControl('genre_id').dirty&&getFormControl('genre_id').hasError('required')">
+                                                    <div    *ngIf="getFormControl('genre_id').dirty&&getFormControl('genre_id').hasError('required')">
                                                         দয়া করে এখানে কিছু নির্বাচন করুন !
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div nz-form-item nz-row>
-                                                <div nz-form-control nz-col [nzSpan]="20">
+                                            <div    nz-row>
+                                                <div    nz-col [nzSpan]="20">
                                                     <nz-button-group>
                                                         <button type="button" nz-button [nzType]="'primary'" (click)="addField($event)"
                                                             [nzSize]="'small'">
@@ -165,16 +165,16 @@
                                                     </nz-button-group>
                                                 </div>
                                             </div>
-                                        </td> 
-                                    </tr> 
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <div nz-form-item nz-row>
-                <div nz-col [nzOffset]="9" [nzSpan]="12" nz-form-control>
+            <div    nz-row>
+                <div nz-col [nzOffset]="9" [nzSpan]="12"   >
                     <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save</button>
                     <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                 </div>

@@ -2,55 +2,55 @@
     <nz-card class="card-height">
         <ng-template #title>
             Product Requisition List
-        </ng-template>  
+        </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
-                    [nzSize]="'default'" [nzShowTitle]="true"> 
-                    <thead nz-thead>
+                    [nzSize]="'default'" [nzShowTitle]="true">
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> PR No </span>
-                            </th> 
-                            <th nz-th>
+                            </th>
+                            <th   >
                                 <span> Date </span>
-                            </th> 
-                            <th nz-th>
-                                <span> Vendor Id </span> 
                             </th>
-                            <th nz-th>
-                                <span> Vendor Name </span> 
+                            <th   >
+                                <span> Vendor Id </span>
                             </th>
-                            <th nz-th>
+                            <th   >
+                                <span> Vendor Name </span>
+                            </th>
+                            <th   >
                                 <span> Quantity </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Total Price</span>
-                            </th> 
-                            <th nz-th>
+                            </th>
+                            <th   >
                                 <span> Created by </span>
                             </th>
-                            <th nz-th>
+                            <th   >
 
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr #dataFor *ngFor="let item of nzTable.data;let i=index">
-                            <td nz-td>{{item.id}}</td> 
-                            <td nz-td>{{item.date|date:'yyyy-MM-dd'}}</td>
-                            <td nz-td>{{item.warehouse_id.id}}</td>
-                            <td nz-td>{{item.warehouse_id.name}}</td>
-                            <td nz-td>{{item.total_quantity}}</td>
-                            <td nz-td>{{item.total_amount}}</td> 
-                            <td nz-td>{{item.created_by?.first_name}} {{item.created_by?.last_name}}</td>
+                    <tbody   >
+                        <tr    #dataFor *ngFor="let item of nzTable.data;let i=index">
+                            <td   >{{item.id}}</td>
+                            <td   >{{item.date|date:'yyyy-MM-dd'}}</td>
+                            <td   >{{item.warehouse_id.id}}</td>
+                            <td   >{{item.warehouse_id.name}}</td>
+                            <td   >{{item.total_quantity}}</td>
+                            <td   >{{item.total_amount}}</td>
+                            <td   >{{item.created_by?.first_name}} {{item.created_by?.last_name}}</td>
                             <td>
                                 <nz-button-group>
                                     <button *ngIf="'suborder-read'|accessControl" (click)='downloadPDF(item.id)' nz-button [nzType]="'info'" [nzSize]="'default'">
                                         <i class="anticon anticon-download"> </i>
-                                    </button> 
+                                    </button>
                                 </nz-button-group>
-                                <!--Details--> 
+                                <!--Details-->
                             </td>
                         </tr>
                     </tbody>
@@ -58,12 +58,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>

@@ -253,10 +253,6 @@ export class FixedProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-
-    categorySearchChange($event) {
-    }
-
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -285,12 +281,4 @@ export class FixedProductCreateComponent implements OnInit {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
 }

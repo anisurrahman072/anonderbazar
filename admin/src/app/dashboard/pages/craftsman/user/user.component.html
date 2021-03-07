@@ -16,86 +16,86 @@
                     [nzSize]="'default'" [nzShowTitle]="true">
 
 
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> Picture </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> UserName </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Email </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Name</span>
                                 <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
                                 </nz-table-sort>
                             </th>
 
-                            <th nz-th>
+                            <th   >
                                 <span> Phone Number </span>
                             </th>
 
-                            <th nz-th>
+                            <th   >
                                 <span> Location </span>
-                            </th> 
-                        <th nz-th>
+                            </th>
+                        <th   >
 
-                        </th> 
+                        </th>
                         </tr>
                     </thead>
-                    <thead nz-thead>
+                    <thead  >
                         <!--search bar.....................-->
                         <tr>
-                            <th nz-th>
+                            <th   >
 
                             </th>
-                            <th nz-th>
+                            <th   >
 
 
                             </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Email Search'" [(ngModel)]="emailSearchValue"
+                            <th   >
+                                  <input nz-input  [placeholder]="'Email Search'" [(ngModel)]="emailSearchValue"
                                     (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
 
                             </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Phone Number Search'" [(ngModel)]="phoneSearchValue"
+                            <th   >
+                                  <input nz-input  [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
+
+
+                            </th>
+                            <th   >
+                                  <input nz-input  [placeholder]="'Phone Number Search'" [(ngModel)]="phoneSearchValue"
                                     (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
+
                             </th>
-                            <th nz-th> 
+                            <th   >
                             </th>
-                            <th nz-th>
-                            </th> 
+                            <th   >
+                            </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr *ngFor="let data of nzTable.data">
-                            <td nz-td>
+                    <tbody   >
+                        <tr    *ngFor="let data of nzTable.data">
+                            <td   >
                                 <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT + data.avatar" [nzSize]="'large'"
                                     [nzIcon]="'user'"></nz-avatar>
                             </td>
-                            <td nz-td>{{data.username}}
+                            <td   >{{data.username}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.email}}</nz-tag>
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.first_name}} {{data.last_name}}</nz-tag>
                             </td>
 
-                            <td nz-td>
+                            <td   >
                                 {{data.phone}}
                             </td>
 
-                            <td nz-td>
+                            <td   >
                                 {{data.upazila_id?.name}}, {{data.zila_id?.name}}, {{data.division_id?.name}}
                             </td>
                             <td>
@@ -125,13 +125,13 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-3" style="margin-top: 10px">
-                    <div nz-table-title class="col-md-6">
+                    <div    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
-                        
+
                     </div>
-                    <div nz-table-title class="pull-right col-md-6">
+                    <div    class="pull-right col-md-6">
                             <button nz-button (click)="resetAllFilter()">Clear filter</button>
                         </div>
 

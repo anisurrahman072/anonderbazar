@@ -1,13 +1,12 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AreaService } from '../../../services/area.service';
-import { NzNotificationService } from 'ng-zorro-antd';
-import { FileHolder, UploadMetadata } from 'angular2-image-upload';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { WarehouseService } from '../../../services/warehouse.service';
-import { AuthService } from '../../../services/auth.service';
-import { UserService } from '../../../services/user.service';
-import { ValidationService } from "../../../services/validation.service";
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AreaService} from '../../../services/area.service';
+import {NzNotificationService} from 'ng-zorro-antd';
+import {FileHolder, UploadMetadata} from 'angular2-image-upload';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {WarehouseService} from '../../../services/warehouse.service';
+import {AuthService} from '../../../services/auth.service';
+import {UserService} from '../../../services/user.service';
 
 @Component({
     selector: 'app-warehouse-entry',
@@ -55,10 +54,11 @@ export class WarehouseEntryComponent implements OnInit {
                 name: 'paragraph',
                 groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
             },
-            { name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize'] }
+            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
+
     constructor(
         private router: Router,
         private authService: AuthService,
@@ -69,6 +69,10 @@ export class WarehouseEntryComponent implements OnInit {
         private userService: UserService,
         private warehouseService: WarehouseService
     ) {
+
+    }
+
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: ['', [Validators.required]],
@@ -95,7 +99,15 @@ export class WarehouseEntryComponent implements OnInit {
             question_9: ['', [Validators.required]],
             logo: ['']
         });
+        this.userID = this.authService.getCurrentUserId();
+        if (this.userID == false) {
+            this.router.navigate(['/auth/login']);
+        }
+        this.areaService.getAllDivision().subscribe(result => {
+            this.divisionSearchOptions = result;
+        });
     }
+
 //Event method for submitting the form
 
     submitForm = ($event, value) => {
@@ -127,17 +139,17 @@ export class WarehouseEntryComponent implements OnInit {
         formData.append('question_6_value', value.question_6_value);
         formData.append('question_7_value', value.question_7_value);
         formData.append('question_8_value', value.question_8_value);
-        formData.append('question_9', value.question_9); 
+        formData.append('question_9', value.question_9);
         if (this.ImageFile) {
             formData.append('logo', this.ImageFile, this.ImageFile.name);
             formData.append('haslogo', 'true');
         } else {
             formData.append('haslogo', 'false');
         }
-        
+
         this.warehouseService.insert(formData).subscribe(result => {
             if (result.id) {
-                let updateData = { warehouse_id: result.id };
+                let updateData = {warehouse_id: result.id};
                 this.userService.update(this.userID, updateData).subscribe(results => {
                     this._notification.create(
                         'success',
@@ -149,11 +161,13 @@ export class WarehouseEntryComponent implements OnInit {
             }
         });
     };
-    //removing the image 
+
+    //removing the image
 
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
+
     //storing the image before upload
 
     onBeforeUpload = (metadata: UploadMetadata) => {
@@ -161,6 +175,7 @@ export class WarehouseEntryComponent implements OnInit {
 
         return metadata;
     };
+
 //Event method for resetting the form
 
     resetForm($event: MouseEvent) {
@@ -170,28 +185,17 @@ export class WarehouseEntryComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
 //Event method for setting up form in validation
 
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-  //Event method for getting all the data for the page
 
-    ngOnInit() {
-        this.userID = this.authService.getCurrentUserId();
-        if (this.userID == false) {
-            this.router.navigate(['/auth/login']);
-        }
-        this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
-        });
-    }
-      //Method for division search change
+    //Event method for getting all the data for the page
 
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
-      //Method for division change
+
+    //Method for division change
 
     divisionChange($event) {
         const query = encodeURI($event);
@@ -200,20 +204,15 @@ export class WarehouseEntryComponent implements OnInit {
             this.zilaSearchOptions = result;
         });
     }
-      //Method for zila change
+
+    //Method for zila change
 
     zilaChange($event) {
-        const query = encodeURI($event); 
+        const query = encodeURI($event);
         this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {
-            this.upazilaSearchOptions = result; 
+            this.upazilaSearchOptions = result;
         });
     }
-      //Method for zila search change
-
-    zilaSearchChange($event: string) { }
-      //Method for upazila search change
-
-    upazilaSearchChange($event: string) { }
 
 
     pre(): void {
@@ -248,8 +247,9 @@ export class WarehouseEntryComponent implements OnInit {
             }
         }
     }
+
     get isHorizontal(): boolean {
         return this.validateForm.controls.formLayout && this.validateForm.controls.formLayout.value === 'horizontal';
-      }
+    }
 
 }

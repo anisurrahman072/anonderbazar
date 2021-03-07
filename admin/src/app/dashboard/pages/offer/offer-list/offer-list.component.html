@@ -19,29 +19,29 @@
                         <div>
                             <nz-table #nzTable [nzDataSource]="homeOfferData" [nzPageSize]="10" [nzIsPagination]="false"
                                 [nzSize]="'default'" [nzShowTitle]="true">
-                                <thead nz-thead>
+                                <thead  >
                                     <tr>
-                                        <th nz-th>
+                                        <th   >
                                             <span> ID </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
                                             <span> Title </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
                                             <span> Description </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
 
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody nz-tbody>
-                                    <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index">
-                                        <td nz-td>{{data.id}}</td>
-                                        <td nz-td>
+                                <tbody   >
+                                    <tr    *ngFor="let data of nzTable.data;let i=index">
+                                        <td   >{{data.id}}</td>
+                                        <td   >
                                             <nz-tag>{{data.data_value[0].title}}</nz-tag>
                                         </td>
-                                        <td nz-td [innerHTML]="data.data_value[0].description"></td>
+                                        <td    [innerHTML]="data.data_value[0].description"></td>
                                         <td>
                                             <nz-button-group>
 
@@ -98,29 +98,29 @@
                         <div>
                             <nz-table #nzTable1 [nzDataSource]="homeChildOfferData" [nzPageSize]="10"
                                 [nzIsPagination]="false" [nzSize]="'default'" [nzShowTitle]="true">
-                                <thead nz-thead>
+                                <thead  >
                                     <tr>
-                                        <th nz-th>
+                                        <th   >
                                             <span> ID </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
                                             <span> Title </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
                                             <span> Description </span>
                                         </th>
-                                        <th nz-th>
+                                        <th   >
 
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody nz-tbody>
-                                    <tr nz-tbody-tr *ngFor="let data1 of nzTable1.data;let i=index">
-                                        <td nz-td>{{data1.id}}</td>
-                                        <td nz-td>
+                                <tbody   >
+                                    <tr    *ngFor="let data1 of nzTable1.data;let i=index">
+                                        <td   >{{data1.id}}</td>
+                                        <td   >
                                             <nz-tag>{{data1.data_value[0].title}}</nz-tag>
                                         </td>
-                                        <td nz-td [innerHTML]="data1.data_value[0].description"></td>
+                                        <td    [innerHTML]="data1.data_value[0].description"></td>
                                         <td>
                                             <nz-button-group>
 
@@ -175,30 +175,30 @@
     <ng-template #modalOfferContent>
 
         <nz-table #nzTable2 [nzBordered]="true" [nzDataSource]="offers" [nzIsPagination]="false">
-            <thead nz-thead>
+            <thead  >
                 <tr>
-                    <th nz-th>
+                    <th   >
                         <span> ID </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Title </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Description </span>
                     </th>
-                    <th nz-th>
+                    <th   >
 
                     </th>
                 </tr>
             </thead>
-            <tbody nz-tbody>
-                <tr nz-tbody-tr *ngFor="let data of nzTable2.data;let i=index;">
-                    <td nz-td>{{data.id}}</td>
-                    <td nz-td>
+            <tbody   >
+                <tr    *ngFor="let data of nzTable2.data;let i=index;">
+                    <td   >{{data.id}}</td>
+                    <td   >
                         <nz-tag>{{data.data_value[0].title}}</nz-tag>
                     </td>
-                    <td nz-td [innerHTML]="data.data_value[0].description"></td>
-                    <td nz-td>
+                    <td    [innerHTML]="data.data_value[0].description"></td>
+                    <td   >
                         <ng-container>
                             <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
                                 [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirmOffer(i,data.id)">
@@ -223,37 +223,37 @@
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateFormOffer"
             (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
 
-            <div nz-form-item>
+            <div   >
                 <nz-table #nzTable3 [nzBordered]="true" [nzDataSource]="alloffers" [nzIsPagination]="false">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
 
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Title </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Description </span>
                             </th>
 
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr *ngFor="let data of nzTable3.data;let i=index;">
-                            <td nz-td [nzCheckbox]="true">
+                    <tbody   >
+                        <tr    *ngFor="let data of nzTable3.data;let i=index;">
+                            <td    [nzCheckbox]="true">
                                 <label nz-checkbox [(ngModel)]="data.checked" formControlName='offerChecked'
                                     (ngModelChange)="_refreshStatusOffer($event, data.id)">
                                 </label>
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.data_value[0].title}}</nz-tag>
                             </td>
-                            <td nz-td [innerHTML]="data.data_value[0].description"></td>
+                            <td    [innerHTML]="data.data_value[0].description"></td>
                         </tr>
                     </tbody>
                 </nz-table>
-                <div nz-form-control>
+                <div   >
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
                         [disabled]="!validateFormOffer.valid">
                         Add Offer
@@ -272,39 +272,39 @@
     <ng-template #modalProductContent>
 
         <nz-table #nzTable [nzBordered]="true" [nzDataSource]="products" [nzIsPagination]="false">
-            <thead nz-thead>
+            <thead  >
                 <tr>
-                    <th nz-th>
+                    <th   >
                         <span> Product Name </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Brand </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Category </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Sub-Category </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Sub-Sub-Category </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                         <span> Price </span>
                     </th>
-                    <th nz-th>
+                    <th   >
                     </th>
                 </tr>
             </thead>
-            <tbody nz-tbody>
-                <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                    <td nz-td>{{data.name}}</td>
-                    <td nz-td>{{data.brand_id?.name}}</td>
-                    <td nz-td>{{data.type_id?.name}}</td>
-                    <td nz-td>{{data.category_id?.name}}</td>
-                    <td nz-td>{{data.subcategory_id?.name}}</td>
-                    <td nz-td>{{data.price}}</td>
-                    <td nz-td>
+            <tbody   >
+                <tr    *ngFor="let data of nzTable.data;let i=index;">
+                    <td   >{{data.name}}</td>
+                    <td   >{{data.brand_id?.name}}</td>
+                    <td   >{{data.type_id?.name}}</td>
+                    <td   >{{data.category_id?.name}}</td>
+                    <td   >{{data.subcategory_id?.name}}</td>
+                    <td   >{{data.price}}</td>
+                    <td   >
                         <ng-container>
                             <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
                                 [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,data.id)">
@@ -329,56 +329,56 @@
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
             (ngSubmit)="submitForm($event,validateProductForm.value)">
             <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allProduct" [nzIsPagination]="false">
-                <thead nz-thead>
+                <thead  >
                     <tr>
-                        <th nz-th>
+                        <th   >
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Product Name </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Brand </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Category </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Sub-Category </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Sub-Sub-Category </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Price </span>
                         </th>
                     </tr>
                 </thead>
-                <tbody nz-tbody>
-                    <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
-                        <td nz-td [nzCheckbox]="true">
+                <tbody   >
+                    <tr    *ngFor="let data of nzTable.data;let i=index;">
+                        <td    [nzCheckbox]="true">
                             <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
                                 (ngModelChange)="_refreshStatus($event, data.id)">
                             </label>
                         </td>
-                        <td nz-td>{{data.name}}</td>
-                        <td nz-td>{{data.brand_id?.name}}</td>
-                        <td nz-td>{{data.type_id?.name}}</td>
-                        <td nz-td>{{data.category_id?.name}}</td>
-                        <td nz-td>{{data.subcategory_id?.name}}</td>
-                        <td nz-td>{{data.price}}</td>
+                        <td   >{{data.name}}</td>
+                        <td   >{{data.brand_id?.name}}</td>
+                        <td   >{{data.type_id?.name}}</td>
+                        <td   >{{data.category_id?.name}}</td>
+                        <td   >{{data.subcategory_id?.name}}</td>
+                        <td   >{{data.price}}</td>
                     </tr>
                 </tbody>
             </nz-table>
             <div>
                 <nz-pagination (nzPageIndexClickChange)="changePage($event, allProductLimit)"
                                (nzPageSizeChange)="changePage(1,$event)"
-                               nzShowTotal [nzPageIndex]="allProductPage"
+                                  [nzPageIndex]="allProductPage"
                                [nzTotal]="allProductTotal"
                                [nzPageSize]="allProductLimit" nzShowSizeChanger>
                 </nz-pagination>
             </div>
-            <div nz-form-item>
-                <div nz-form-control>
+            <div   >
+                <div   >
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
                         [disabled]="!validateProductForm.valid">
                         Add Product

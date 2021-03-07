@@ -6,7 +6,6 @@ import {
 import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import {enUS, NZ_LOCALE} from 'ng-zorro-antd';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AuthService} from '../services/auth.service';
@@ -58,6 +57,10 @@ import {CourierService} from '../services/courier.service';
 import {CourierPriceService} from '../services/courier-price.service';
 import {ChatService} from '../services/chat.service';
 import {ExcelService} from "../services/excel.service";
+import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
+import { registerLocaleData } from '@angular/common';
+import en from '@angular/common/locales/en';
+registerLocaleData(en);
 
 @NgModule({
     declarations: [AppComponent],
@@ -69,10 +72,11 @@ import {ExcelService} from "../services/excel.service";
         AppRoutingModule,
         PrebootModule.withConfig({appRoot: 'app-root'}),
         BrowserTransferStateModule,
+        NgZorroAntdModule,
         UiModule,
     ],
     providers: [
-        {provide: NZ_LOCALE, useValue: enUS},
+        { provide: NZ_I18N, useValue: en_US },
         ValidationService,
         AuthService,
         IsAdmin,

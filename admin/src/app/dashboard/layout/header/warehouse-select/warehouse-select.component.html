@@ -3,9 +3,6 @@
            nzAllowClear
            (ngModelChange)="warehouseChange($event)"
            [nzPlaceHolder]="'Select shop'"
-           [nzFilter]="true"
-           (nzSearch)="warehouseSearchChange($event)"
-           (nzSearchChange)="warehouseSearchChange($event)"
            [nzNotFoundContent]="'Not found'"
            nzShowSearch>
     <nz-option

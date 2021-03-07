@@ -15,84 +15,84 @@
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10"
                           [nzTotal]="total"
                           [nzIsPagination]="false"
-                          
+
                           [nzSize]="'default'"
                           [nzShowTitle]="true">
-                    
-                    <thead nz-thead>
+
+                    <thead  >
                     <tr>
-                        <th nz-th>
+                        <th   >
                             <span> Customer Name </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Order Id </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Vendor Order Id </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Vendor Name </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Transaction ID</span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Payment type </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Payment Amount </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Payment Date </span>
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span> Status </span>
                         </th>
-                        <th nz-th>
+                        <th   >
 
                         </th>
                     </tr>
                     </thead>
-                    <thead nz-thead><!--search bar.....................-->
+                    <thead  ><!--search bar.....................-->
                     <tr>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Customer Search'" [(ngModel)]="nameSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Customer Search'" [(ngModel)]="nameSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Order Id Search'" [(ngModel)]="orderNumberSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Order Id Search'" [(ngModel)]="orderNumberSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Vendor Order Id Search'" [(ngModel)]="suborderNumberSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Vendor Order Id Search'" [(ngModel)]="suborderNumberSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
+                        <th   >
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Transaction ID Search'" [(ngModel)]="transactionSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Transaction ID Search'" [(ngModel)]="transactionSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Payment type Search'" [(ngModel)]="paymentTypeSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Payment type Search'" [(ngModel)]="paymentTypeSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Payment Amount Search'" [(ngModel)]="paymentAmountSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Payment Amount Search'" [(ngModel)]="paymentAmountSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
-                            <nz-input [nzPlaceHolder]="'Payment Date Search'" [(ngModel)]="dateSearchValue"
+                        <th   >
+                              <input nz-input  [placeholder]="'Payment Date Search'" [(ngModel)]="dateSearchValue"
                                       (ngModelChange)="page=1;getPageData()">
-                            </nz-input>
+
                         </th>
-                        <th nz-th>
+                        <th   >
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"
                                        [nzFilter]="true"
@@ -112,23 +112,23 @@
                                 </nz-option>
                             </nz-select>
                         </th>
-                        <th nz-th>
+                        <th   >
                         </th>
                     </tr>
                     </thead>
-                    <tbody nz-tbody>
-                    <tr nz-tbody-tr *ngFor="let data of nzTable.data">
-                        <td nz-td>{{data.user_id.first_name}} {{data.user_id.last_name}}</td>
-                        <td nz-td>{{data.order_id?.id}}</td>
-                        <td nz-td>{{data.suborder_id?.id}}</td>
-                        <td nz-td>{{data.receiver_id?.username || 'n/a'}}</td>
-                        <td nz-td>{{data.transection_key}}</td>
-                        <td nz-td>{{data.payment_type}}</td>
-                        <td nz-td>{{data.payment_amount }}</td>
-                        <td nz-td>{{(data.payment_date|date) || 'n/a'}}</td>
+                    <tbody   >
+                    <tr    *ngFor="let data of nzTable.data">
+                        <td   >{{data.user_id.first_name}} {{data.user_id.last_name}}</td>
+                        <td   >{{data.order_id?.id}}</td>
+                        <td   >{{data.suborder_id?.id}}</td>
+                        <td   >{{data.receiver_id?.username || 'n/a'}}</td>
+                        <td   >{{data.transection_key}}</td>
+                        <td   >{{data.payment_type}}</td>
+                        <td   >{{data.payment_amount }}</td>
+                        <td   >{{(data.payment_date|date) || 'n/a'}}</td>
 
-                        <td nz-td>
-                            <span *ngIf="setStatus(i,data.id, data.status)"></span>
+                        <td   >
+
                             <nz-select style="width: 180px;" [(ngModel)]="selectedOption[i]"
                                        [nzPlaceHolder]="'choose option'">
                                 <nz-option
@@ -182,14 +182,14 @@
             </nz-spin>
             <div class="row">
                     <div class="col-md-offset-5" style="margin-top: 10px">
-                        <span nz-table-title class="col-md-6">
+                        <span    class="col-md-6">
                             <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                             (nzPageSizeChange)="changePage(1,$event)"
-                                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
+                                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
                                             [nzPageSize]="limit">
                             </nz-pagination>
                         </span>
-                        <span nz-table-title class="pull-right col-md-6">
+                        <span    class="pull-right col-md-6">
                                 <button nz-button (click)="resetAllFilter()">Clear filter</button>
                             </span>
                     </div>

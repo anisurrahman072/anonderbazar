@@ -14,25 +14,25 @@
                 <div class="table-operations">
                 </div>
                 <nz-table #nzTable [nzDataSource]="data" [nzIsPagination]="true" nzSize="large">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span>Courier</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Origin Type</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Action</span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>
+                    <tbody   >
+                        <tr    #dataFor *ngFor="let data of nzTable.data;let i=index">
+                            <td   >
                                 {{data.name}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{origins[data.origin_type-1]}}
                             </td>
                             <!--trying-->
@@ -72,40 +72,40 @@
         <div class="row">
             <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Courier Name </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Courier Enter Name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Courier Enter Name'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
                         </div>
                     </div>
                     <!-- courier name -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Origin Type
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="origin_type" (ngModelChange)="courierOriginChange($event)"
                                 nzMaxMultipleCount="3" style="width: 100%" nzPlaceHolder="Select Origin Type">
                                 <nz-option *ngFor="let courier of options" [nzLabel]="courier.label" [nzValue]="courier.value"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('origin_type').dirty&&getFormControl('origin_type').hasError('required')">
+                            <div    *ngIf="getFormControl('origin_type').dirty&&getFormControl('origin_type').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleCancel($event)">
                                     Cancel
@@ -131,40 +131,40 @@
         <div class="row">
             <form nz-form [formGroup]="validateEditForm" id="validateEditForm" (ngSubmit)="submitEditForm($event,validateEditForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Courier Name </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Courier Enter Name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Courier Enter Name'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
                         </div>
                     </div>
                     <!-- courier name -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Origin Type
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="origin_type" (ngModelChange)="courierOriginChange($event)"
                                 nzMaxMultipleCount="3" style="width: 100%" nzPlaceHolder="Select Origin Type">
                                 <nz-option *ngFor="let courier of options" [nzLabel]="courier.label" [nzValue]="courier.value"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('origin_type').dirty&&getFormControl('origin_type').hasError('required')">
+                            <div    *ngIf="getFormControl('origin_type').dirty&&getFormControl('origin_type').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleEditCancel($event)">
                                     Cancel

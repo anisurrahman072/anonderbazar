@@ -14,69 +14,69 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
                     [nzSize]="'default'" [nzShowTitle]="true">
-                    
-                    <thead nz-thead>
+
+                    <thead  >
                         <tr>
-                            <th nz-th nzExpand></th>
-                            <th nz-th>
+                            <th    nzExpand></th>
+                            <th   >
                                 <span> Picture </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Name </span>
                                 <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
                                 </nz-table-sort>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Code </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Slug</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Action </span>
                             </th>
                         </tr>
                     </thead>
 
-                    <thead nz-thead>
+                    <thead  >
                         <!--search bar.....................-->
                         <tr>
-                            <th nz-th>
+                            <th   >
 
                             </th>
-                            <th nz-th>
+                            <th   >
 
                             </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
+                            <th   >
+                                  <input nz-input  [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
 
                             </th>
-                            <th nz-th>
+                            <th   >
 
                             </th>
-                            <th nz-th>
+                            <th   >
+
+                            </th>
+                            <th   >
                             </th>
                         </tr>
                     </thead>
 
-                    <tbody nz-tbody>
+                    <tbody   >
                         <ng-template ngFor let-data [ngForOf]="nzTable.data">
-                            <tr nz-tbody-tr class="parent-tr">
-                                <td nz-td nzExpand>
+                            <tr    class="parent-tr">
+                                <td    nzExpand>
 
                                     {{data.subCategories.length}}
                                     <nz-row-expand-icon [(nzExpand)]="data.expand"></nz-row-expand-icon>
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +data.image" [nzSize]="'large'"
                                         [nzIcon]="'user'"></nz-avatar>
                                 </td>
-                                <td nz-td>{{data.name}}</td>
-                                <td nz-td>{{data.code}}</td>
-                                <td nz-td>
+                                <td   >{{data.name}}</td>
+                                <td   >{{data.code}}</td>
+                                <td   >
                                     <nz-tag>{{data.slug}}</nz-tag>
                                 </td>
                                 <td>
@@ -114,9 +114,9 @@
                                     </ng-container>
                                 </ng-container>
 
-                                <tr nz-tbody-tr *ngIf="!data.subCategories.length">
-                                    <td nz-td></td>
-                                    <td nz-td colspan="4">
+                                <tr    *ngIf="!data.subCategories.length">
+                                    <td   ></td>
+                                    <td    colspan="4">
                                         no subcategories....
                                     </td>
 
@@ -129,12 +129,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                             <button nz-button (click)="resetAllFilter()">Clear filter</button>
                         </span>
                 </div>
@@ -145,27 +145,27 @@
 
 
 <ng-template #firstSubCategoryTemplate let-sub>
-    <tr nz-tbody-tr>
-        <td nz-td nzExpand>
+    <tr   >
+        <td    nzExpand>
             {{sub?.subCategories?.length}}
             <nz-row-expand-icon style="background: red" (nzExpandChange)="getSubCategory($event, sub)"
                                 [(nzExpand)]="sub.expand"></nz-row-expand-icon>
         </td>
 
-        <td nz-td>
+        <td   >
             <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +sub.image" [nzSize]="'large'"
                        [nzIcon]="'user'"></nz-avatar>
         </td>
-        <td nz-td>{{sub.name}}</td>
-        <td nz-td *ngIf="sub.code && sub.code!=='undefined'; else notShow; else notShow">
+        <td   >{{sub.name}}</td>
+        <td    *ngIf="sub.code && sub.code!=='undefined'; else notShow; else notShow">
             <nz-tag>{{sub.code}}</nz-tag>
         </td>
         <ng-template #notShow>
-            <td nz-td>
+            <td   >
                 <nz-tag>N/A</nz-tag>
             </td>
         </ng-template>
-        <td nz-td>
+        <td   >
             <nz-tag>{{sub.slug}}</nz-tag>
         </td>
         <td>
@@ -198,25 +198,25 @@
     <div *ngIf="sub.loading">
         Loading...
     </div>
-    <tr nz-tbody-tr *ngFor="let sub of sub?.subCategories">
-        <td nz-td></td>
+    <tr    *ngFor="let sub of sub?.subCategories">
+        <td   ></td>
 
-        <td nz-td>
+        <td   >
             <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +sub.image"
                        [nzSize]="'large'"
                        [nzIcon]="'user'"></nz-avatar>
         </td>
-        <td nz-td>{{sub.name}}</td>
-        <td nz-td
+        <td   >{{sub.name}}</td>
+        <td
             *ngIf="sub.code && sub.code!=='undefined'; else notShow; else notShow">
             <nz-tag>{{sub.code}}</nz-tag>
         </td>
         <ng-template #notShow>
-            <td nz-td>
+            <td   >
                 <nz-tag>N/A</nz-tag>
             </td>
         </ng-template>
-        <td nz-td>
+        <td   >
             <nz-tag>{{sub.slug}}</nz-tag>
         </td>
         <td>
@@ -244,9 +244,9 @@
             </ng-container>
         </td>
     </tr>
-    <tr nz-tbody-tr *ngIf="!sub.loading && sub.subCategories.length == 0">
-        <td nz-td></td>
-        <td nz-td colspan="4">
+    <tr    *ngIf="!sub.loading && sub.subCategories.length == 0">
+        <td   ></td>
+        <td    colspan="4">
             No Sub Categories data found!
         </td>
     </tr>

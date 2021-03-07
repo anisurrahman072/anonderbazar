@@ -15,13 +15,13 @@
                 <div class="col-md-3">
                     <div class="row">
                         <div class="col-md-12">
-                            <div nz-form-item nz-row>
-                                <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback class="event-create-img">
+                            <div    nz-row>
+                                <div nz-col [nzSpan]="16"       class="event-create-img">
                                     <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                         dropBoxMessage="Drop Picture here" clearButtonCaption="remove it?"
                                         [uploadedFiles]="ImageFileEdit" [beforeUpload]="onBeforeUpload">
                                     </image-upload>
-                                    <div nz-form-explain *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                    <div    *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
                                         দয়া করে Drop Picture here
                                     </div>
                                 </div>
@@ -32,88 +32,88 @@
                     <!--Image-->
                 </div>
                 <div class="col-md-9">
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Name </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--name -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} পরিচালনাকারীর Email </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="admin_email" [nzType]="'text'" [nzPlaceHolder]="'Email লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="admin_email"  [placeholder]="'Email লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').hasError('required')">
+
+                            <div    *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').hasError('required')">
                                 Email is required!
                             </div>
 
-                            <div nz-form-explain *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').hasError('taken')">
+                            <div    *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').hasError('taken')">
                                 "{{getFormControl('admin_email').value}}" Already used!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').pending">
+                            <div    *ngIf="getFormControl('admin_email').dirty&&getFormControl('admin_email').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--adminemail-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} পরিচালনাকারীর Phone Number </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="admin_phone" [nzType]="'text'" [nzPlaceHolder]="'Phone Number লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="admin_phone"  [placeholder]="'Phone Number লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').hasError('required')">
+
+                            <div    *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').hasError('required')">
                                 বৈধ Phone Number লিপিবদ্ধ করুন (Ex: +8801*********)!
                             </div>
 
-                            <div nz-form-explain *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').hasError('taken')">
+                            <div    *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').hasError('taken')">
                                 "{{getFormControl('admin_phone').value}}" Already used!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').pending">
+                            <div    *ngIf="getFormControl('admin_phone').dirty&&getFormControl('admin_phone').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--adminphone-->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label>{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} স্থান
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <textarea nz-input formControlName="event_place" [nzSize]="'large'" placeholder="{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} স্থান লিপিবদ্ধ করুন">
                                             </textarea>
-                            <div nz-form-explain *ngIf="getFormControl('event_place').dirty&&getFormControl('event_place').hasError('required')">
+                            <div    *ngIf="getFormControl('event_place').dirty&&getFormControl('event_place').hasError('required')">
                                 দয়া করে স্থান লিপিবদ্ধ করুন!
                             </div>
                         </div>
                     </div>
                     <!--name -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} তারিখ
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="event_startdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 [nzPlaceHolder]="status_id==1?' মেলা শুরুর তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ শুরুর তারিখ নির্বাচন করুন':' ইভেন্ট শুরুর তারিখ নির্বাচন করুন' "></nz-datepicker>
                             থেকে <nz-datepicker formControlName="event_enddate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
@@ -121,12 +121,12 @@
                             পর্যন্ত
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} সময়
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-timepicker formControlName="event_starttime" [ngModel]="event_starttime"
                                 [nzPlaceHolder]="status_id==1?' শেষ সময়':(status_id==2)?'শেষ সময়':' শেষ সময়' "
                                 [nzFormat]="'HH:mm'"></nz-timepicker> পর্যন্ত
@@ -135,27 +135,27 @@
                                 [nzFormat]="'HH:mm'"></nz-timepicker> পর্যন্ত
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলা ':(status_id==2)?'প্রশিক্ষণ ':' ইভেন্ট '}} নিবন্ধনের শেষ
                                 তারিখ </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="registration_lastdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 style="width: 100%" [nzPlaceHolder]="status_id==1?' মেলা নিবন্ধনের শেষ তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ নিবন্ধনের শেষ তারিখ নির্বাচন করুন':' ইভেন্ট নিবন্ধনের শেষ তারিখ নির্বাচন করুন' "></nz-datepicker>
-                            <div nz-form-explain *ngIf="getFormControl('registration_lastdate').dirty&&getFormControl('registration_lastdate').hasError('required')">
+                            <div    *ngIf="getFormControl('registration_lastdate').dirty&&getFormControl('registration_lastdate').hasError('required')">
                                 দয়া করে তারিখ নির্বাচন করুন !
                             </div>
                         </div>
                     </div>
                     <!--registration end date-->
-                    <div nz-form-item nz-row *ngIf="status_id===1 || status_id===2">
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row *ngIf="status_id===1 || status_id===2">
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} Price
                                 List
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="event_price_ids" (ngModelChange)="priceChange($event)"
                                 nzMaxMultipleCount="3" style="width: 100%" nzMode="multiple" nzPlaceHolder="{{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} Price List নির্বাচন করুন">
                                 <nz-option *ngFor="let option of listOfPrice" [nzLabel]="option.name" [nzValue]="option.id"></nz-option>
@@ -163,10 +163,10 @@
                         </div>
                     </div>
                     <!--price-->
-                    <div nz-form-item nz-row *ngIf="addedPrices && (status_id===1 || status_id===2)">
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row *ngIf="addedPrices && (status_id===1 || status_id===2)">
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-table #basicTable [nzIsPagination]="false" [nzSize]="'default'" [nzDataSource]="addedPrices">
                                 <thead>
@@ -187,22 +187,22 @@
                         </div>
                     </div>
                     <!-- price table -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> {{status_id==1?' মেলার ':(status_id==2)?'প্রশিক্ষণের ':' ইভেন্টের '}} Description
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false" debounce="500">
                             </ckeditor>
-                            <div nz-form-explain *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
+                            <div    *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                    <div    nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16"   >
                             <nz-button-group>
                                 <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                                     Save

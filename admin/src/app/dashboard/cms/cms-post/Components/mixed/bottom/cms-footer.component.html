@@ -4,14 +4,14 @@
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
                 <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
-                    <div nz-form-item nz-row *ngIf="sectionoptionsData">
+                    <div    nz-row *ngIf="sectionoptionsData">
                         <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label>Section</label>
                         </div>
 
 
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
 
 
@@ -23,13 +23,13 @@
 
                         </div>
                     </div>
-                    <div nz-form-item nz-row *ngIf="subsectionOptions">
+                    <div    nz-row *ngIf="subsectionOptions">
                         <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label>SubSection</label>
                         </div>
 
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
 
                             <nz-select [(ngModel)]="selectedSubSection" formControlName="sub_section" [nzPlaceHolder]=" 'input search text'">
@@ -40,21 +40,21 @@
 
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
+                    <div    nz-row>
                         <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'insert title'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="title"  [placeholder]="'insert title'" [nzSize]="'large'">
+
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
                                 Validating...
                             </div>
                         </div>
@@ -64,28 +64,28 @@
 
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Image</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <image-upload [max]="1" (removed)="onRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div nz-form-explain *ngIf="!ImageFile">
+                            <div    *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
                     <!--image-->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Description</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback> 
+                        <div nz-col [nzSpan]="12"      >
                             <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
                             </ckeditor>
-                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>
                         </div>
@@ -93,8 +93,8 @@
                     <!--description-->
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                    <div    nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                             <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
 
                                 Submit
@@ -140,11 +140,11 @@
 
                 <div class="col-md-6">
                     <div> Description:
-                        <div [innerHTML]="footer.data_value[0].description"></div> 
+                        <div [innerHTML]="footer.data_value[0].description"></div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="fa"> 
+                    <div class="fa">
                         <img class="img img-responsive " alt="{{footer.data_value[0].image}}" src="{{ IMAGE_ENDPOINT + footer.data_value[0].image}}"
                         />
 

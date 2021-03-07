@@ -16,8 +16,8 @@
             </nz-steps>
             <div class="steps-content">
                 <div *ngIf="current === 0" class="step">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Picture</label>
                         </div>
                         <div nz-col [nzSpan]="12">
@@ -27,154 +27,154 @@
                         </div>
                     </div>
                     <!-- image -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>First name</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="first_name" [nzType]="'text'" [nzPlaceHolder]="'Write the first part of the name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="first_name"  [placeholder]="'Write the first part of the name'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('first_name').dirty&&getFormControl('first_name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('first_name').dirty&&getFormControl('first_name').hasError('required')">
                                Please enter the first part of the name!
                             </div>
                         </div>
                     </div>
                     <!--first_name-->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Last name</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="last_name" [nzType]="'text'" [nzPlaceHolder]="'Enter Last name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="last_name"  [placeholder]="'Enter Last name'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('last_name').dirty&&getFormControl('last_name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('last_name').dirty&&getFormControl('last_name').hasError('required')">
                                 Last name is required!
                             </div>
                         </div>
                     </div>
                     <!--last_name-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label> Gender </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="gender" nzAllowClear [nzPlaceHolder]="'Select gender'"
                                        [nzFilter]="true" [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of genderSearchOptions" [nzLabel]="option.label"
                                            [nzValue]="option.value">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('gender').dirty&&getFormControl('gender').hasError('required')">
+                            <div    *ngIf="getFormControl('gender').dirty&&getFormControl('gender').hasError('required')">
                                Select gender !
                             </div>
                         </div>
                     </div>
                     <!--gender-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Phone</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="phone" [nzType]="'text'" [nzPlaceHolder]="'Please Enter Phone Number'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="phone"  [placeholder]="'Please Enter Phone Number'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('required')">
+
+                            <div    *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('required')">
                                 Please insert your Phone Number!
                             </div>
                         </div>
                     </div>
                     <!--phone-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Email</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="email" [nzType]="'email'" [nzPlaceHolder]="'Please Enter Email'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="email"  [placeholder]="'Please Enter Email'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('required')">
+
+                            <div    *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('required')">
                                 Email is required!
                             </div>
                         </div>
                     </div>
                     <!--email-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>License no</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="license_no" [nzType]="'text'" [nzPlaceHolder]="'Please Enter License no'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="license_no"  [placeholder]="'Please Enter License no'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('license_no').dirty&&getFormControl('license_no').hasError('required')">
+
+                            <div    *ngIf="getFormControl('license_no').dirty&&getFormControl('license_no').hasError('required')">
                                 License no is required
                             </div>
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Tin number</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="tin_no" [nzType]="'text'" [nzPlaceHolder]="'Please Enter Tin number'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="tin_no"  [placeholder]="'Please Enter Tin number'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('tin_no').dirty&&getFormControl('tin_no').hasError('required')">
+
+                            <div    *ngIf="getFormControl('tin_no').dirty&&getFormControl('tin_no').hasError('required')">
                                 Tin number is required!
                             </div>
                         </div>
                     </div>
                 </div>
                 <div *ngIf="current === 1" class="step">
-                    <div nz-form-item nz-row>
+                    <div    nz-row>
                         <!--name start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label>Shop name</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Validating...
                             </div>
                         </div>
                     </div>
                     <!--name -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="7">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="7">
                             <label> Username </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="username" [nzType]="'text'" [nzPlaceHolder]="'Enter username'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="username"  [placeholder]="'Enter username'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
+
+                            <div    *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
                                 required!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('taken')">
+                            <div    *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('taken')">
                                 "{{getFormControl('username').value}}" Already used!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
+                            <div    *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Division</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="division_id" [(ngModel)]="division_id" nzAllowClear [nzPlaceHolder]="'select division'"
                                        [nzFilter]="true" (ngModelChange)="divisionChange($event)" (nzSearchChange)="divisionSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
@@ -183,18 +183,18 @@
                             </nz-select>
 
 
-                            <div nz-form-explain *ngIf="getFormControl('division_id').dirty&&getFormControl('division_id').hasError('required')">
+                            <div    *ngIf="getFormControl('division_id').dirty&&getFormControl('division_id').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--division-->
-                    <div nz-form-item nz-row *ngIf="division_id">
+                    <div    nz-row *ngIf="division_id">
 
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                        <div nz-col [nzSpan]="7"   >
                             <label>District</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <nz-select formControlName="zila_id" [(ngModel)]="zila_id" nzAllowClear [nzPlaceHolder]="'Select District'"
                                        [nzFilter]="true" (ngModelChange)="zilaChange($event)" (nzSearchChange)="zilaSearchChange($event)"
@@ -202,53 +202,53 @@
                                 <nz-option *ngFor="let option of zilaSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('zila_id').dirty&&getFormControl('zila_id').hasError('required')">
+                            <div    *ngIf="getFormControl('zila_id').dirty&&getFormControl('zila_id').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--zila-->
-                    <div nz-form-item nz-row *ngIf="division_id && zila_id">
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row *ngIf="division_id && zila_id">
+                        <div nz-col [nzSpan]="7"   >
                             <label>Upazila</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="upazila_id" [(ngModel)]="upazila_id" nzAllowClear [nzPlaceHolder]="'Select Upazila'"
                                        [nzFilter]="true" (nzSearch)="upazilaSearchChange($event)" (nzSearchChange)="upazilaSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of upazilaSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
                                 </nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('upazila_id').dirty&&getFormControl('upazila_id').hasError('required')">
+                            <div    *ngIf="getFormControl('upazila_id').dirty&&getFormControl('upazila_id').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--upazila-->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Address</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="address" [nzType]="'text'" [nzPlaceHolder]="'Address লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="address"  [placeholder]="'Address লিপিবদ্ধ করুন'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('address').dirty&&getFormControl('address').hasError('required')">
+
+                            <div    *ngIf="getFormControl('address').dirty&&getFormControl('address').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--address-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Post code</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="postal_code" [nzType]="'text'" [nzPlaceHolder]="'Post Enter Code'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="postal_code"  [placeholder]="'Post Enter Code'"
                                       [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('postal_code').dirty&&getFormControl('postal_code').hasError('required')">
+
+                            <div    *ngIf="getFormControl('postal_code').dirty&&getFormControl('postal_code').hasError('required')">
                                 required!
                             </div>
                         </div>
@@ -256,21 +256,21 @@
                     <!--postal-->
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Invoice footer</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <ckeditor formControlName="invoice_footer" [config]="ckConfig" [readonly]="false" debounce="500">
                             </ckeditor>
-                            <div nz-form-explain *ngIf="getFormControl('invoice_footer').dirty&&getFormControl('invoice_footer').hasError('required')">
+                            <div    *ngIf="getFormControl('invoice_footer').dirty&&getFormControl('invoice_footer').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--invoiceFooter-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Logo</label>
                         </div>
                         <div nz-col [nzSpan]="12">
@@ -284,8 +284,8 @@
             </div>
 
             <div class="steps-action">
-                <div nz-form-item nz-row>
-                    <div nz-col [nzOffset]="2" [nzSpan]="12" nz-form-control>
+                <div    nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="12"   >
                         <button nz-button nzType="default" type="button" [nzSize]="'large'" (click)="current=0" *ngIf="current > 0">
                             <span>Previous</span>
                         </button>

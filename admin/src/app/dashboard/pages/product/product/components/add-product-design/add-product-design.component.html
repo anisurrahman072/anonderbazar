@@ -12,29 +12,29 @@
             </ng-template>
             <ng-template #body>
                 <nz-table #nzTable [nzAjaxData]="productDesignData" class="table table-responsive">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span>অংশ</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>নকশা</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Price</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>মন্তব্য</span>
                             </th>
-                            <th nz-th *ngIf="'productPartDesign-edit'|accessControl">
+                            <th    *ngIf="'productPartDesign-edit'|accessControl">
                                 <span> Action </span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
+                    <tbody   >
                         <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
 
-                            <tr nz-tbody-tr>
+                            <tr   >
                                 <!--Part-->
                                 <td>
                                     <span *ngIf="editRow!==i">
@@ -209,7 +209,7 @@
                     <div>
                         <label> পণ্যের শ্রেণী </label>
                     </div>
-                
+
                     <nz-select
                     [(ngModel)]="tempEditObject.type_id" style="width: 90%;"
                     nzAllowClear (ngModelChange)="typeSearchChange($event)" [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'"
@@ -262,15 +262,15 @@
                 <div class="row">
                     <div>
                         <label> Price </label></div>
-                    <nz-input [nzType]="'number'" [(ngModel)]="tempEditObject.price" style="width: 90%;"
-                        [nzPlaceHolder]="'Price লিপিবদ্ধ করুন'" [(ngModel)]="tempEditObject.price"></nz-input>
+                      <input nz-input   [(ngModel)]="tempEditObject.price" style="width: 90%;"
+                        [placeholder]="'Price লিপিবদ্ধ করুন'"  >
                 </div>
                 <div class="row">
                     <div>
                         <label> মন্তব্য </label>
                     </div>
-                    <nz-input [nzType]="'text'" style="width: 90%;" [(ngModel)]="tempEditObject.comment"
-                        [nzPlaceHolder]="'মন্তব্য লিপিবদ্ধ করুন'" [(ngModel)]="tempEditObject.comment"></nz-input>
+                      <input nz-input   style="width: 90%;" [(ngModel)]="tempEditObject.comment"
+                        [placeholder]="'মন্তব্য লিপিবদ্ধ করুন'" >
                 </div>
             </div>
         </div>

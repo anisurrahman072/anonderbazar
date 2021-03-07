@@ -6,22 +6,22 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
 
-                    <div nz-form-item nz-row>
+                    <div    nz-row>
                         <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div    nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'Enter Title'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="title"  [placeholder]="'Enter Title'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
                                 Verifying ...
                             </div>
                         </div>
@@ -29,39 +29,39 @@
                     <!--Title -->
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Picture</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                 dropBoxMessage="Drop Picture here" clearButtonCaption="Clear"
                                 (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div nz-form-explain *ngIf="!ImageFile">
+                            <div    *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
                     <!--image-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="7"   >
                             <label>Details</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
 
                             <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
                             </ckeditor>
 
-                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>
                         </div>
                     </div>
                     <!--description-->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                    <div    nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                             <nz-button-group>
                                 <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
                                     Save

@@ -14,7 +14,7 @@
                     <label for="upload_bulk_import">Upload Product Upload Excel File</label>
                     <input  #uploadFileInputField type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
                 </div>
-                <div nz-form-item nz-row>
+                <div    nz-row>
                     <div style="display: flex; justify-content: center; ">
                         <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)"
                                 [disabled]="submitting">

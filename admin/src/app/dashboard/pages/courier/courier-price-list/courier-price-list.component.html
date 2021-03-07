@@ -15,40 +15,40 @@
                 </div>
                 <nz-table [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
                     [nzSize]="'middle'" [nzShowTitle]="true">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> Courier</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Weight </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Price</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Details</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Actions</span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
+                    <tbody   >
                         <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
-                            <tr nz-tbody-tr>
+                            <tr   >
 
-                                <td nz-td>
+                                <td   >
                                     {{data.id}}  /
                                     {{data.courier_id?.name}}
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     {{data.weight}}
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     <nz-tag>{{data.price}}</nz-tag>
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     <nz-tag>{{data.remarks}}</nz-tag>
                                 </td>
                                 <td>
@@ -76,12 +76,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -99,74 +99,74 @@
         <div class="row">
             <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Courier
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="courier_id" nzMaxMultipleCount="3" style="width: 100%"
                                 nzPlaceHolder="Select courier">
                                 <nz-option *ngFor="let courier of listOfCourier" [nzLabel]="courier.name" [nzValue]="courier.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
+                            <div    *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier-->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Weight </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Weight'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Enter Weight'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Please enter weight!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 The weight is already inserted.
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!-- name -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="price" [nzType]="'number'" [nzPlaceHolder]="'Please enter Price'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="price"  [placeholder]="'Please enter Price'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
+
+                            <div    *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
                                 Please enter Price!
                             </div>
                         </div>
                     </div>
                     <!-- price -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> Details </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <textarea nz-input formControlName="remarks" [nzSize]="'large'" placeholder="Write the details">
                                                 </textarea>
-                            <div nz-form-explain *ngIf="getFormControl('remarks').dirty&&getFormControl('remarks').hasError('required')">
+                            <div    *ngIf="getFormControl('remarks').dirty&&getFormControl('remarks').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!-- remarks -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleCancel($event)">
                                     Cancel
@@ -193,74 +193,74 @@
         <div class="row">
             <form nz-form [formGroup]="validateEditForm" id="validateEditForm" (ngSubmit)="submitEditForm($event,validateEditForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Courier
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="editCourier_id" style="width: 100%" nzPlaceHolder="Select courier">
                                 <nz-option *ngFor="let courier of listOfCourier" [nzLabel]="courier.name" [nzValue]="courier.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getEditFormControl('editCourier_id').dirty&&getEditFormControl('editCourier_id').hasError('required')">
+                            <div    *ngIf="getEditFormControl('editCourier_id').dirty&&getEditFormControl('editCourier_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier-->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Weight </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="editName" [nzType]="'text'" [ngModel]="editName" [nzPlaceHolder]="'ওজন লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="editName"  [ngModel]="editName" [placeholder]="'ওজন লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('required')">
+
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('required')">
                                 Please enter weight!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('duplicated')">
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('duplicated')">
                                 The weight is already inserted.
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').pending">
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!-- name -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="editPrice" [nzType]="'number'" [ngModel]="editPrice"
-                                [nzPlaceHolder]="'Please enter Price'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('editPrice').dirty&&getEditFormControl('editPrice').hasError('required')">
+                        <div nz-col [nzSpan]="12"      >
+                              <input nz-input  formControlName="editPrice"  [ngModel]="editPrice"
+                                [placeholder]="'Please enter Price'" [nzSize]="'large'">
+
+                            <div    *ngIf="getEditFormControl('editPrice').dirty&&getEditFormControl('editPrice').hasError('required')">
                                 Please enter Price!
                             </div>
                         </div>
                     </div>
                     <!-- price -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> Details </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <textarea nz-input formControlName="editRemarks" [ngModel]="editRemarks" [nzSize]="'large'"
                                 placeholder="Write the Details">
                             </textarea>
-                            <!-- <div nz-form-explain *ngIf="getEditFormControl('editRemarks').dirty&&getEditFormControl('editRemarks').hasError('required')">
+                            <!-- <div    *ngIf="getEditFormControl('editRemarks').dirty&&getEditFormControl('editRemarks').hasError('required')">
                                 required!
                             </div> -->
                         </div>
                     </div>
                     <!-- remarks -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleEditCancel($event)">
                                     Cancel

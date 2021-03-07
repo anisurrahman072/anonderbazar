@@ -30,7 +30,6 @@ export class SignupComponent implements OnInit {
     userID: any;
     currentUser: any;
     current = 0;
-
     index = 'first';
     loginServerError: any;
 
@@ -47,8 +46,6 @@ export class SignupComponent implements OnInit {
     upazila_id: any;
     permanent_divisionSearchOptions: any;
     permanent_zilaSearchOptions: any;
-    permanent_upazilaSearchOptions: any;
-
     divisionSelect: any;
     oldImages = [];
     validateForm: FormGroup;
@@ -186,56 +183,6 @@ export class SignupComponent implements OnInit {
             );
     };
 
-//Event method for user insert
-
-    userInsert(value, warehouse) {
-        const formData: FormData = new FormData();
-        formData.append('username', value.username);
-        formData.append('password', value.password);
-        formData.append('confirmPassword', value.password);
-        formData.append('email', value.email);
-        formData.append('first_name', value.first_name);
-        formData.append('last_name', value.last_name);
-        formData.append('father_name', '');
-        formData.append('mother_name', 'mother_name');
-
-        formData.append('phone', value.phone);
-        formData.append('national_id', value.national_id);
-        formData.append('gender', value.gender);
-        formData.append('group_id', '4');
-        formData.append('address', value.address);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('division_id', value.division_id);
-        formData.append('active', '1');
-        formData.append('warehouse_id', warehouse.id);
-        if (this.ImageFile) {
-            formData.append('avatar', this.ImageFile, this.ImageFile.name);
-            formData.append('hasImage', 'true');
-
-        } else {
-            formData.append('hasImage', 'false');
-
-        }
-        this.userService.insert(formData)
-            .subscribe((result => {
-                    if (result) {
-                        this._notification.create('success', 'Successfully Message', 'You have been registered successfully');
-                        localStorage.clear();
-                        this.router.navigate(['/']);
-                    } else {
-                        this._notification.create('error', 'Failure message', 'Your registration was not successful');
-                    }
-                }),
-                (err => {
-                    this._notification.create('error', 'Failure message', 'Your registration was not successful');
-                    const errors = err.json();
-                    this.loginServerError.show = true;
-                    this.loginServerError.message = errors.message;
-                })
-            );
-    }
-
     //Event method for password confirmation validation
     passwordConfirmationValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
@@ -338,28 +285,7 @@ export class SignupComponent implements OnInit {
         });
     }
 
-    //Method for get permanent zila address
 
-    permanent_zilaChange($event) {
-        const query = encodeURI($event);
-        this.validateForm.controls.permanent_upazila_id.patchValue(null);
-
-        this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {
-            this.permanent_upazilaSearchOptions = result;
-        });
-    }
-
-    //Method for get permanent zila search address
-
-    permanent_zilaSearchChange($event: string) {
-
-    }
-
-    //Method for get permanent upazila search address
-
-    permanent_upazilaSearchChange($event: string) {
-
-    }
 
     pre() {
         this.current -= 1;

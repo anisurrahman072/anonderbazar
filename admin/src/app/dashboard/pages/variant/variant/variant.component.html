@@ -15,46 +15,46 @@
                 <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
                     [nzSize]="'default'" [nzShowTitle]="true">
 
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> Name </span>
 
                                 <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
                                 </nz-table-sort>
                             </th>
 
-                            <th nz-th>
+                            <th   >
                                 <span> Price Variation Status</span>
                             </th>
 
-                            <th nz-th>
+                            <th   >
 
                             </th>
 
                         </tr>
                     </thead>
 
-                    <thead nz-thead>
+                    <thead  >
                         <!--search bar.....................-->
                         <tr>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
+                            <th   >
+                                  <input nz-input  [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
+
                             </th>
-                            <th nz-th>
+                            <th   >
 
 
                             </th>
-                            <th nz-th>
+                            <th   >
 
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr *ngFor="let data of nzTable.data">
-                            <td nz-td>{{data.name}}</td>
-                            <td nz-td>
+                    <tbody   >
+                        <tr    *ngFor="let data of nzTable.data">
+                            <td   >{{data.name}}</td>
+                            <td   >
                                 <nz-tag [nzColor]="'orange'">
                                     <label *ngIf=" data?.type === 0 ; else elseBlock"> No </label>
                                     <ng-template #elseBlock>
@@ -92,12 +92,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class=col-md-6>
+                    <span    class=col-md-6>
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>

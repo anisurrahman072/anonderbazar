@@ -12,8 +12,8 @@
     <ng-template #body>
         <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="col-md-3">
-                <div nz-form-item nz-row>
-                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                <div    nz-row>
+                    <div nz-col [nzSpan]="16"      >
                         <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                         dropBoxMessage="Drop Picture here"
                         clearButtonCaption="remove it?" [uploadedFiles]="oldImages"
@@ -23,40 +23,40 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <div nz-form-item nz-row>
-                    <div nz-form-label nz-col [nzSpan]="2">
-                        <label nz-form-item-required> Name </label>
+                <div    nz-row>
+                    <div    nz-col [nzSpan]="2">
+                        <label   -required> Name </label>
                     </div>
-                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'">
-                        </nz-input>
-                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                    <div nz-col [nzSpan]="16"      >
+                           <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
+
+                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                             Name is required!
                         </div>
-                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                             Name already exists!
                         </div>
-                        <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                             Verifying ...
                         </div>
                     </div>
                 </div>
 
 
-                <div nz-form-item nz-row>
-                    <div nz-col [nzSpan]="2" nz-form-label>
-                        <label nz-form-item-required> Code </label>
+                <div    nz-row>
+                    <div nz-col [nzSpan]="2"   >
+                        <label   -required> Code </label>
                     </div>
-                    <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="code" [nzType]="'text'" [nzPlaceHolder]="'Enter Code '" [nzSize]="'large'">
-                        </nz-input> 
+                    <div nz-col [nzSpan]="16"      >
+                           <input nz-input  formControlName="code"  [placeholder]="'Enter Code '" [nzSize]="'large'">
+
                     </div>
                 </div>
 
 
 
-                <div nz-form-item nz-row>
-                    <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                <div    nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="16"   >
                         <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                             Save
                         </button>

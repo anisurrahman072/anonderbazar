@@ -14,62 +14,62 @@
                 <div class="table-operations">
                 </div>
                 <nz-table #nzTable [nzDataSource]="data" [nzIsPagination]="false">
-                    <thead nz-thead>
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> Order number </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Courier</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Weight</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Price</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Delivery Place</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Pickup Date</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Delivery Date</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span> Status </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Actions</span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                            <td nz-td>
+                    <tbody   >
+                        <tr    #dataFor *ngFor="let data of nzTable.data;let i=index">
+                            <td   >
                                 {{data.suborder_id?.product_order_id}} / {{data.suborder_id?.id}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.courier_id?.name}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.courier_price_id?.weight}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 {{data.courier_price_id?.price}}
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.destination}}</nz-tag>
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.shipping_date | date}}</nz-tag>
                             </td>
-                            <td nz-td>
+                            <td   >
                                 <nz-tag>{{data.arrival_date | date}}</nz-tag>
                             </td>
                             <!--trying-->
-                            <td nz-td *ngIf='data.courier_id.origin_type==1'>
+                            <td    *ngIf='data.courier_id.origin_type==1'>
 
                                 <span *ngIf="setStatus(i, data.status)"></span>
                                 <nz-select style="width: 180px;" (ngModelChange)="changeStatusConfirm($event,data.id,data.status,data.suborder_id?.product_order_id)"
@@ -82,7 +82,7 @@
                                     </nz-option>
                                 </nz-select>
                             </td>
-                            <td nz-td *ngIf='data.courier_id.origin_type==2'>
+                            <td    *ngIf='data.courier_id.origin_type==2'>
 
                                 <span *ngIf="setStatus(i, data.status)"></span>
                                 <nz-select style="width: 180px;" (ngModelChange)="changeStatusConfirm($event,data.id,data.status, data.suborder_id?.product_order_id)"
@@ -102,7 +102,7 @@
                                         nz-button [nzType]="'primary'" [nzSize]="'default'">
                                         <i class="anticon anticon-edit"></i>
                                     </button>
-                                </nz-button-group> 
+                                </nz-button-group>
                             <ng-container *ngIf="'courier-delete'|accessControl">
                                 <nz-popconfirm
                                         [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
@@ -122,12 +122,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -144,117 +144,117 @@
         <div class="row">
             <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Order number
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="suborder_id" nzMaxMultipleCount="3" style="width: 100%" (ngModelChange)="subOrderChange($event)"
                                 nzPlaceHolder="Select order">
                                 <nz-option *ngFor="let option of listOfSubOrder" [nzLabel]="option.product_order_id[0].id+'/'+option.id"
                                     [nzValue]="option.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
+                            <div    *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--order-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Courier
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="courier_id" (ngModelChange)="courierChange($event)"
                                 nzMaxMultipleCount="3" style="width: 100%" nzPlaceHolder="Select courier">
                                 <nz-option *ngFor="let courier of listOfCourier" [nzLabel]="courier.name" [nzValue]="courier.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
+                            <div    *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Weight
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="courier_price_id" nzMaxMultipleCount="3" (ngModelChange)="courierPriceChange($event)"
                                 style="width: 100%" nzPlaceHolder="Select courier price">
                                 <nz-option *ngFor="let courierprice of listOfCourierPrice" [nzLabel]="courierprice.weight"
                                     [nzValue]="courierprice.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('courier_price_id').dirty&&getFormControl('courier_price_id').hasError('required')">
+                            <div    *ngIf="getFormControl('courier_price_id').dirty&&getFormControl('courier_price_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier weight-->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="price" [nzType]="'text'" [nzPlaceHolder]="'Please enter price'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="price"  [placeholder]="'Please enter price'"
                                 [nzSize]="'large'" [nzDisabled]="true">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
+
+                            <div    *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
                                 Please enter price!
                             </div>
                         </div>
                     </div>
                     <!-- destination -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Delivery Place </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="destination" [nzType]="'text'" [nzPlaceHolder]="'Please enter deliver Place'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="destination"  [placeholder]="'Please enter deliver Place'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('destination').dirty&&getFormControl('destination').hasError('required')">
+
+                            <div    *ngIf="getFormControl('destination').dirty&&getFormControl('destination').hasError('required')">
                                 Please enter deliver Place!
                             </div>
                         </div>
                     </div>
                     <!-- destination -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Pickup Date</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="shipping_date" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 style="width: 100%" [nzPlaceHolder]="'Select shiping date'"></nz-datepicker>
-                            <div nz-form-explain *ngIf="getFormControl('shipping_date').dirty&&getFormControl('shipping_date').hasError('required')">
+                            <div    *ngIf="getFormControl('shipping_date').dirty&&getFormControl('shipping_date').hasError('required')">
                                 Select a date !
                             </div>
                         </div>
                     </div>
                     <!-- shipping date -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Delivery Date</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="arrival_date" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 style="width: 100%" [nzPlaceHolder]="'Please enter Delivery Date'"></nz-datepicker>
-                            <div nz-form-explain *ngIf="getFormControl('arrival_date').dirty&&getFormControl('arrival_date').hasError('required')">
+                            <div    *ngIf="getFormControl('arrival_date').dirty&&getFormControl('arrival_date').hasError('required')">
                                 Please enter Delivery Date!
                             </div>
                         </div>
                     </div>
                     <!-- arrival date -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleCancel($event)">
                                     Cancel
@@ -280,116 +280,116 @@
         <div class="row">
             <form nz-form [formGroup]="validateEditForm" id="validateEditForm" (ngSubmit)="submitEditForm($event,validateEditForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Order number
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="suborder_id" style="width: 100%" nzPlaceHolder="Select order">
                                 <nz-option *ngFor="let option of listOfSubOrder" [nzLabel]="option.product_order_id[0].id+'/'+option.id"
                                     [nzValue]="option.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
+                            <div    *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--order-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Courier
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="courier_id" (ngModelChange)="courierChange($event)"
                                 nzMaxMultipleCount="3" style="width: 100%" nzPlaceHolder="Select courier">
                                 <nz-option *ngFor="let courier of listOfCourier" [nzLabel]="courier.name" [nzValue]="courier.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
+                            <div    *ngIf="getFormControl('courier_id').dirty&&getFormControl('courier_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label>
                                 Weight
                             </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="courier_price_id" (ngModelChange)="courierPriceEditChange($event)"
                                 style="width: 100%" nzPlaceHolder="Please select Weight">
                                 <nz-option *ngFor="let courierprice of listOfCourierPrice" [nzLabel]="courierprice.weight"
                                     [nzValue]="courierprice.id"></nz-option>
                             </nz-select>
-                            <div nz-form-explain *ngIf="getFormControl('courier_price_id').dirty&&getFormControl('courier_price_id').hasError('required')">
+                            <div    *ngIf="getFormControl('courier_price_id').dirty&&getFormControl('courier_price_id').hasError('required')">
                                 Please select !
                             </div>
                         </div>
                     </div>
                     <!--courier weight-->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="price" [nzType]="'text'" [nzPlaceHolder]="'Please enter price'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="price"  [placeholder]="'Please enter price'"
                                 [nzSize]="'large'" [nzDisabled]="true">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
+
+                            <div    *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
                                 Please enter price!
                             </div>
                         </div>
                     </div>
                     <!-- destination -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Delivery Place </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="destination" [nzType]="'text'" [nzPlaceHolder]="'Please Enter delivery Place'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="destination"  [placeholder]="'Please Enter delivery Place'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('destination').dirty&&getFormControl('destination').hasError('required')">
+
+                            <div    *ngIf="getFormControl('destination').dirty&&getFormControl('destination').hasError('required')">
                                 Please Enter delivery Place!
                             </div>
                         </div>
                     </div>
                     <!-- destination -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Pickup Date</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="shipping_date" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 style="width: 100%" [nzPlaceHolder]="'Please enter pickup date'"></nz-datepicker>
-                            <div nz-form-explain *ngIf="getFormControl('shipping_date').dirty&&getFormControl('shipping_date').hasError('required')">
+                            <div    *ngIf="getFormControl('shipping_date').dirty&&getFormControl('shipping_date').hasError('required')">
                                 Please enter pickup date !
                             </div>
                         </div>
                     </div>
                     <!-- shipping date -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Delivery Date</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-datepicker formControlName="arrival_date" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
                                 style="width: 100%" [nzPlaceHolder]="'Please enter Delivery Date'"></nz-datepicker>
-                            <div nz-form-explain *ngIf="getFormControl('arrival_date').dirty&&getFormControl('arrival_date').hasError('required')">
+                            <div    *ngIf="getFormControl('arrival_date').dirty&&getFormControl('arrival_date').hasError('required')">
                                 Please enter Delivery Date !
                             </div>
                         </div>
                     </div>
                     <!-- arrival date -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleEditCancel($event)">
                                     Cancel
