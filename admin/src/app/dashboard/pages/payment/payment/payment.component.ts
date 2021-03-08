@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { PaymentService } from '../../../../services/payment.service';
-
-import { AuthService } from '../../../../services/auth.service';
+import {Component, OnInit} from '@angular/core';
+import {PaymentService} from '../../../../services/payment.service';
+import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
-import { NzNotificationService } from 'ng-zorro-antd';
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
   selector: 'app-payment',
@@ -16,7 +15,7 @@ export class PaymentComponent implements OnInit {
   IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
   currentUser: any;
 
-  limit: number = 10;
+  loading = false;
   page: number = 1;
   total: number;
   selectedOption: any[] = [];
@@ -31,6 +30,7 @@ export class PaymentComponent implements OnInit {
   paymentAmountSearchValue: string = '';
   dateSearchValue: string = '';
   statusSearchValue: string = '';
+  limit: number = 10;
 
   sortValue = {
     name: null,
@@ -43,11 +43,13 @@ export class PaymentComponent implements OnInit {
   options: any[];
 
   constructor(
-    private paymentService: PaymentService,
-    private _notification: NzNotificationService,
-    private authService: AuthService
-  ) {}
- // init the component
+      private paymentService: PaymentService,
+      private _notification: NzNotificationService,
+      private authService: AuthService
+  ) {
+  }
+
+  // init the component
   ngOnInit(): void {
     this.options = [
       {
@@ -72,66 +74,71 @@ export class PaymentComponent implements OnInit {
       }
     ];
     this.currentUser = this.authService.getCurrentUser();
-    if(this.currentUser.group_id !="admin")
-    {
-     this.receiver_id=this.currentUser.id;
+    if (this.currentUser.group_id != "admin") {
+      this.receiver_id = this.currentUser.id;
     }
     this.getPageData();
   }
+
   //Event method for getting all the data for the page
   getPageData() {
+    this.loading = true;
     this.paymentService
-      .getAllPayment(
-        this.page,
-        this.limit,
-        this.nameSearchValue || '',
-        this.orderNumberSearchValue || '',
-        this.suborderNumberSearchValue || '',
-        this.userIdSearchValue || '',
-        this.transactionSearchValue || '',
-        this.paymentTypeSearchValue || '',
-        this.paymentAmountSearchValue || '',
-        this.dateSearchValue || '',
-        this.statusSearchValue || '',
-        this.receiver_id || '',
-        this.filterTerm(this.sortValue.name),
-        this.filterTerm(this.sortValue.price)
-      )
-      .subscribe(
-        result => {
-          this.data = result.data;
-          this.total = result.total;
-          console.log(result);
-          this._isSpinning = false;
+        .getAllPayment(
+            this.page,
+            this.limit,
+            this.nameSearchValue || '',
+            this.orderNumberSearchValue || '',
+            this.suborderNumberSearchValue || '',
+            this.userIdSearchValue || '',
+            this.transactionSearchValue || '',
+            this.paymentTypeSearchValue || '',
+            this.paymentAmountSearchValue || '',
+            this.dateSearchValue || '',
+            this.statusSearchValue || '',
+            this.receiver_id || '',
+            this.filterTerm(this.sortValue.name),
+            this.filterTerm(this.sortValue.price)
+        )
+        .subscribe(
+            result => {
+              this.loading = false;
+              this.data = result.data;
+              this.total = result.total;
+              console.log(result);
+              this._isSpinning = false;
 
-        },
-        result => {
-          this._isSpinning = false;
-        }
-      );
+            },
+            result => {
+              this.loading = false
+              this._isSpinning = false;
+            }
+        );
   }
+
   //Method for status change
 
   changeStatusConfirm(index, id, oldStatus) {
-      if(this.currentUser.group_id=="admin") {
-          this.paymentService
-              .update(id, {status: this.selectedOption[index]})
-              .subscribe(
-                  res => {
-                      this.data[index].status = this.selectedOption[index];
-                  },
-                  err => {
-                      this.selectedOption[index] = oldStatus;
-                  }
-              );
-      }
-  }
-    //Method for set status
-
-    setStatus(index, id) {
-        if (!this.viewNotRendered) return;
-        this.selectedOption[index] = status;
+    if (this.currentUser.group_id == "admin") {
+      this.paymentService
+          .update(id, {status: this.selectedOption[index]})
+          .subscribe(
+              res => {
+                this.data[index].status = this.selectedOption[index];
+              },
+              err => {
+                this.selectedOption[index] = oldStatus;
+              }
+          );
     }
+  }
+
+  //Method for set status
+
+  setStatus(index, id) {
+    if (!this.viewNotRendered) return;
+    this.selectedOption[index] = status;
+  }
 
   //Event method for pagination change
   changePage(page: number, limit: number) {
@@ -140,6 +147,7 @@ export class PaymentComponent implements OnInit {
     this.getPageData();
     return false;
   }
+
   //Event method for setting up filter data
   private filterTerm(sortValue: string): string {
     switch (sortValue) {
@@ -151,6 +159,7 @@ export class PaymentComponent implements OnInit {
         return '';
     }
   }
+
   //Event method for resetting all filters
   resetAllFilter() {
     this.limit = 5;
@@ -172,27 +181,29 @@ export class PaymentComponent implements OnInit {
     this.getPageData();
   }
 
-  categoryIdSearchChange($event) {}
+  categoryIdSearchChange($event) {
+  }
 
   subcategoryIdChange($event) {
     this.page = 1;
     this.getPageData();
   }
 
-  subcategoryIdSearchChange($event) {}
+  subcategoryIdSearchChange($event) {
+  }
+
   //Event method for deleting payment
   deleteConfirm(id) {
-      if(this.currentUser.group_id =="admin")
-      {
-        this._isSpinning = true;
+    if (this.currentUser.group_id == "admin") {
+      this._isSpinning = true;
 
-          this.paymentService.delete(id).subscribe(result => {
-            this._notification.create('warning', 'Delete', 'Transaction has been removed successfully');
+      this.paymentService.delete(id).subscribe(result => {
+        this._notification.create('warning', 'Delete', 'Transaction has been removed successfully');
 
-            this._isSpinning = false;
+        this._isSpinning = false;
 
-          });
-          this.getPageData();
-      }
+      });
+      this.getPageData();
+    }
   }
 }
