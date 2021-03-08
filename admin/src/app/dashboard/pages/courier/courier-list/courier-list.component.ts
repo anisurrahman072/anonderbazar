@@ -4,12 +4,12 @@ import { UIService } from '../../../../services/ui/ui.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CourierService } from '../../../../services/courier.service';
 import { ActivatedRoute } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd';
 import { CourierPriceService } from '../../../../services/courier-price.service';
 import { StatusChangeService } from '../../../../services/statuschange.service';
 import { AuthService } from '../../../../services/auth.service';
 import { SuborderService } from '../../../../services/suborder.service';
 import { OrderService } from '../../../../services/order.service';
+import {NzNotificationService} from "ng-zorro-antd";
 
 
 @Component({
@@ -17,6 +17,7 @@ import { OrderService } from '../../../../services/order.service';
   templateUrl: './courier-list.component.html',
   styleUrls: ['./courier-list.component.css']
 })
+
 export class CourierListComponent implements OnInit {
   @ViewChildren('dataFor') dataFor: QueryList<any>;
   status: any;
@@ -51,15 +52,40 @@ export class CourierListComponent implements OnInit {
   statusData: any;
   currentUser: any;
   data1:any;
+  loading;
   constructor(private route: ActivatedRoute,
-    private uiService: UIService,
-    private courierPriceService: CourierPriceService,
-    private suborderService: SuborderService,
-    private orderService: OrderService,
-    private statusChangeService: StatusChangeService,
-    private fb: FormBuilder,private authService: AuthService,
-    private _notification: NzNotificationService,
-    private courierService: CourierService) {
+              private uiService: UIService,
+              private courierPriceService: CourierPriceService,
+              private suborderService: SuborderService,
+              private orderService: OrderService,
+              private statusChangeService: StatusChangeService,
+              private fb: FormBuilder,private authService: AuthService,
+              private _notification: NzNotificationService,
+              private courierService: CourierService) {
+
+  }
+  options1 = [
+    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
+    { value: 4, label: 'Pickup/Departure', icon: 'anticon-spin anticon-loading' },
+    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
+    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
+    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
+  ];
+  options2 = [
+    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
+    { value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading' },
+    { value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading' },
+    { value: 7, label: 'landed', icon: 'anticon-spin anticon-loading' },
+    { value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading' },
+    { value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass' },
+    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
+    { value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading' },
+    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
+    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
+  ];
+  // init the component
+  ngOnInit() {
+
     this.validateForm = this.fb.group({
       suborder_id: ["", [Validators.required]],
       courier_id: ["", [Validators.required]],
@@ -80,40 +106,20 @@ export class CourierListComponent implements OnInit {
       shipping_date: [""],
       arrival_date: [""]
     });
-  }
-  options1 = [
-            { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
-            { value: 4, label: 'Pickup/Departure', icon: 'anticon-spin anticon-loading' },
-            { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
-            { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
-            { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
-  ];
-  options2 = [
-    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
-    { value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading' },
-    { value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading' },
-    { value: 7, label: 'landed', icon: 'anticon-spin anticon-loading' },
-    { value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading' },
-    { value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass' },
-    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
-    { value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading' },
-    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
-    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
-];
-  // init the component
-  ngOnInit() { 
+
     this.currentUser = this.authService.getCurrentUser();
 
     this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-      warehouseId => { 
-        this.currentWarehouseId = warehouseId || '';
-        this.getCourierSettingsData();
-      }
+        warehouseId => {
+          this.currentWarehouseId = warehouseId || '';
+          this.getCourierSettingsData();
+        }
     );
   }
 
   //Event method for setting up courier setting data
   getCourierSettingsData(): void {
+    this.loading = true;
     this.courierService.getAllCouriers(this.currentWarehouseId,this.page, this.limit).subscribe(result => {
       this.data = result.data;
       this.total = result.total;
@@ -124,10 +130,10 @@ export class CourierListComponent implements OnInit {
     this.courierService.update($event,id,oldStatus).subscribe(result=>{
       this.data1 = result[0].status;
       this.getCourierSettingsData();
-    }); 
-    
+    });
+
     this.statusChangeService.updateStatusCourier({ order_id: order_id, status: $event,changed_by: this.currentUser.id  })
-            .subscribe(arg => this.statusData = arg); 
+        .subscribe(arg => this.statusData = arg);
   }
   //Method for set status
   setStatus(index, status) {
@@ -139,7 +145,7 @@ export class CourierListComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
     formData.append("suborder_id", value.suborder_id);
     formData.append("courier_id", value.courier_id);
@@ -149,22 +155,22 @@ export class CourierListComponent implements OnInit {
     formData.append("arrival_date", value.arrival_date);
     formData.append("warehouse_id", this.currentWarehouseId);
     this.courierService.insert(formData).subscribe(
-      result => {
-        if (result.id) {
-          this._notification.create(
-            "success",
-            "Courier list has been successfully added.",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Courier list has been successfully added.",
+                result.name
+            );
+          }
+          this.isVisible = false;
+          this.getCourierSettingsData();
+          this.resetAllFilter();
+          this._isSpinning = false;
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isVisible = false;
-        this.getCourierSettingsData();
-        this.resetAllFilter();
-        this._isSpinning = false;
-      },
-      error => {
-        this._isSpinning = false;
-      }
     );
   };
   //Method for showing the modal
@@ -183,7 +189,7 @@ export class CourierListComponent implements OnInit {
     this.isConfirmLoading = true;
     setTimeout(() => {
       this.isVisible = false;
-      this.isConfirmLoading = false; 
+      this.isConfirmLoading = false;
     }, 2000);
   };
 
@@ -194,7 +200,7 @@ export class CourierListComponent implements OnInit {
       this.validateForm.controls[key].markAsPristine();
     }
   };
-  courierChange($event) { 
+  courierChange($event) {
     this.validateForm.controls.courier_price_id.patchValue(null);
     this.validateForm.controls.price.patchValue(null);
     this.validateEditForm.controls.courier_price_id.patchValue(null);
@@ -204,19 +210,19 @@ export class CourierListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getAllCourierPricesByCourierId(query).subscribe(
-      result => {
-        this.listOfCourierPrice = result;
-      },
-      error => { }
+        result => {
+          this.listOfCourierPrice = result;
+        },
+        error => { }
     );
   }
-  subOrderChange($event) { 
+  subOrderChange($event) {
     this.suborderService.getById($event)
-      .subscribe(arg => {
-        this.orderService.getById(arg.product_order_id.id)
-        .subscribe(order => {
-          });
-      });
+        .subscribe(arg => {
+          this.orderService.getById(arg.product_order_id.id)
+              .subscribe(order => {
+              });
+        });
   }
   courierPriceChange($event) {
     this.validateForm.controls.price.patchValue(null);
@@ -228,10 +234,10 @@ export class CourierListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getById(query).subscribe(
-      result => {
-        this.validateForm.controls.price.patchValue(result.price);
-      },
-      error => { }
+        result => {
+          this.validateForm.controls.price.patchValue(result.price);
+        },
+        error => { }
     );
   }
   courierPriceEditChange($event) {
@@ -243,10 +249,10 @@ export class CourierListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getById(query).subscribe(
-      result => {
-        this.validateEditForm.controls.price.patchValue(result.price);
-      },
-      error => { }
+        result => {
+          this.validateEditForm.controls.price.patchValue(result.price);
+        },
+        error => { }
     );
   }
   //Event method for setting up form in validation
@@ -261,9 +267,9 @@ export class CourierListComponent implements OnInit {
     return false;
   }
   //Event method for deleting courier list
-  deleteConfirm(id) { 
-    this.courierService.deleteCourierList(id).subscribe(result => { 
-      this.getCourierSettingsData(); 
+  deleteConfirm(id) {
+    this.courierService.deleteCourierList(id).subscribe(result => {
+      this.getCourierSettingsData();
       this._notification.create('warning', 'Delete', 'Courier has been removed successfully');
 
     });
@@ -280,7 +286,7 @@ export class CourierListComponent implements OnInit {
       this.listOfCourier = result;
     });
     this.courierService.getById(this.id).subscribe(result => {
-      
+
       this.validateEditForm.patchValue({
         suborder_id: result.data.suborder_id.id,
         courier_id: result.data.courier_id.id,
@@ -297,7 +303,7 @@ export class CourierListComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
 
     const formData: FormData = new FormData();
     formData.append("suborder_id", value.suborder_id);
@@ -309,20 +315,20 @@ export class CourierListComponent implements OnInit {
     formData.append("warehouse_id", this.currentWarehouseId);
 
     this.courierService.updateCourierList(this.id, formData).subscribe(
-      result => {
-        if (result.id) {
-          this._notification.create(
-            "success",
-            "Successful Message",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Successful Message",
+                result.name
+            );
+          }
+          this.isEditVisible = false;
+          this.getCourierSettingsData();
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isEditVisible = false;
-        this.getCourierSettingsData();
-      },
-      error => {
-        this._isSpinning = false;
-      }
     );
   };
   //Event method for resetting all filters
