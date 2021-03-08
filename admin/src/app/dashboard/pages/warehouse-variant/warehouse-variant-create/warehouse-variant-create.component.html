@@ -61,9 +61,6 @@
                                     [nzPlaceHolder]="'Select Attribute'"
                                     [nzNotFoundContent]="'Not found'"
                                     [(ngModel)]="selectedVariant_id"
-                                    (ngModelChange)="variantOptionChange($event)"
-                                    (nzSearch)="variantSearchChange($event)"
-                                     (nzSearchChange)="variantSearchChange($event)"
                                     nzShowSearch>
                                 <nz-option
                                         *ngFor="let option of variantSearchOptions"
