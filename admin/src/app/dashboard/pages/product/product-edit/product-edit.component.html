@@ -80,7 +80,7 @@
                         </div>
                         <div nz-col [nzSpan]="12"      >
                               <input nz-input  formControlName="vendor_price"
-                                      [nzPlaceHolder]="'Enter Vendor Price'" [nzSize]="'large'">
+                                      [placeholder]="'Enter Vendor Price'" [nzSize]="'large'">
                             <div
                                  *ngIf="getFormControl('vendor_price').dirty&&getFormControl('vendor_price').hasError('required')">
                                 required!
@@ -96,7 +96,7 @@
                         </div>
                         <div nz-col [nzSpan]="12"      >
                               <input nz-input  formControlName="min_unit"
-                                      [nzPlaceHolder]="'Enter Min Order Quantity'" [nzSize]="'large'">
+                                      [placeholder]="'Enter Min Order Quantity'" [nzSize]="'large'">
                             <div
                                  *ngIf="getFormControl('min_unit').dirty&&getFormControl('min_unit').hasError('required')">
                                 required!
@@ -131,7 +131,7 @@
                         </div>
                         <div nz-col [nzSpan]="12"      >
                               <input nz-input  formControlName="alert_quantity"
-                                      [nzPlaceHolder]="'Enter Alert Quantity'" [nzSize]="'large'">
+                                      [placeholder]="'Enter Alert Quantity'" [nzSize]="'large'">
 
                             <div
                                  *ngIf="getFormControl('alert_quantity').dirty&&getFormControl('alert_quantity').hasError('required')">
