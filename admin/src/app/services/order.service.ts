@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -17,7 +16,13 @@ export class OrderService {
     getAllOrdersGrid(data, page: number = 1, limit: number = 25): Observable<any> {
         let url = `${this.EndPoint}/allOrders?&page=${page}&limit=${limit}&created_at= ${data.date}`;
         if (data.status) {
-            url += `&status=${data.status}`
+            url += `&status=${data.status}`;
+        }
+        if(data.customerName){
+            url += `&customerName=${data.customerName}`;
+        }
+        if(data.orderNumber){
+            url += `&orderNumber=${data.orderNumber}`;
         }
         return this.http.get(url);
     }
