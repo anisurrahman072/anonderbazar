@@ -103,7 +103,7 @@
 
                                                 <div    nz-col>
                                                     <nz-select [formControlName]="control[0].controlInstance" nzAllowClear
-                                                        (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'" [nzFilter]="true"
+                                                        (ngModelChange)="categoryChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
                                                         (nzSearch)="categorySearchChange($event)" (nzSearchChange)="categorySearchChange($event)"
                                                         [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                         <nz-option *ngFor="let option of designCategorySearchOptions"
@@ -122,7 +122,7 @@
                                             <div    nz-row>
                                                 <div    nz-col >
                                                     <nz-select [formControlName]="control[1].controlInstance1" nzAllowClear
-                                                        [nzPlaceHolder]="'Select Product Subcategory'" [nzFilter]="true" (nzSearch)="subcategorySearchChange($event)"
+                                                        [nzPlaceHolder]="'Select Product Subcategory'" (nzSearch)="subcategorySearchChange($event)"
                                                         (nzSearchChange)="subcategorySearchChange($event)"
                                                         [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                         <nz-option *ngFor="let option of designSubcategorySearchOptions"
@@ -138,7 +138,7 @@
                                         <td>
                                             <div    nz-row>
                                                 <div    nz-col >
-                                                    <nz-select [formControlName]="control[2].controlInstance2" nzAllowClear [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"[nzFilter]="true"
+                                                    <nz-select [formControlName]="control[2].controlInstance2" nzAllowClear [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"
                                                         [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                         <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
                                                             [nzValue]="option.id">

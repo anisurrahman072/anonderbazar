@@ -59,7 +59,6 @@
                                     formControlName="variant_id"
                                     nzAllowClear
                                     [nzPlaceHolder]="'Select Attribute'"
-                                    [nzFilter]="true"
                                     [nzNotFoundContent]="'Not found'"
                                     [(ngModel)]="selectedVariant_id"
                                     (ngModelChange)="variantOptionChange($event)"
@@ -91,7 +90,6 @@
                                     formControlName="brand_id"
                                     nzAllowClear
                                     [nzPlaceHolder]="'Select brand'"
-                                    [nzFilter]="true"
                                     [nzNotFoundContent]="'Not found'"
                                     nzShowSearch>
                                 <nz-option
