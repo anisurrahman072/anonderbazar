@@ -30,7 +30,7 @@
                             <label>Description</label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <textarea  nz-input  formControlName="description"   [nzPlaceHolder]="'insert description'" [nzSize]="'large'"></textarea>
+                            <textarea  nz-input  formControlName="description"   [placeholder]="'insert description'" [nzSize]="'large'"></textarea>
 
                             <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
