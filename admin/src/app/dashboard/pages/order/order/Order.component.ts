@@ -12,6 +12,7 @@ import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
+
 const moment = _rollupMoment || _moment;
 
 @Component({
@@ -182,6 +183,7 @@ export class OrderComponent implements OnInit {
                 this._notification.error('Problems!', 'Problems in loading the orders');
             });
     }
+
     // Method for showing the modal
     showProductModal = () => {
 
@@ -192,38 +194,15 @@ export class OrderComponent implements OnInit {
     };
 
 
-    csvPageChangeHandler($event) {
-
-        const thisTotal = this.allOders.length;
-
-        if (this.storeOrderIds && this.storeOrderIds.length) {
-            for (let index = 0; index < thisTotal; index++) {
-                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                    return storedOder.id == this.allOders[index].id;
-                });
-                this.allOders[index].checked = foundIndex !== -1;
-            }
-        } else {
-            for (let index = 0; index < thisTotal; index++) {
-                this.allOders[index].checked = false;
-            }
-        }
-    }
     //Event method for resetting all filters
     resetAllFilter() {
         this.searchStartDate = '';
         this.searchEndDate = '';
         this.statusSearchValue = '';
+        this.customerNameFilter = '';
+        this.orderNumberFilter = '';
         this.orderPage = 1;
         this.getData();
-    }
-
-    // Event method for pagination change
-    changePage(page: number, limit: number) {
-        this.orderPage = page;
-        this.orderLimit = limit;
-        this.getData();
-        return false;
     }
 
 
@@ -287,7 +266,8 @@ export class OrderComponent implements OnInit {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
-                .subscribe(arg => {});
+                .subscribe(arg => {
+                });
 
             this.statusChangeService.updateStatus({order_id: id, order_status: $event, changed_by: this.currentUser.id})
                 .subscribe(arg => this.statusData = arg);
@@ -342,7 +322,7 @@ export class OrderComponent implements OnInit {
                 'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',
                 'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
-                'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id: '',
+                'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
                 'Coupon Product Code': allCouponCodes,
             });
 
@@ -454,7 +434,6 @@ export class OrderComponent implements OnInit {
         }
         console.log('this.storeOrderIds', this.storeOrderIds);
     }
-
 
 
     //Method for status checkbox
