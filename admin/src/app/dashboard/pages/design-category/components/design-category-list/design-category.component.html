@@ -5,20 +5,25 @@
         </ng-template>
         <ng-template #extra>
             <button *ngIf="'designcategory-create'|accessControl" [routerLink]="['./create']" nz-button
-                    [nzType]="'primary'"
                     [nzSize]="'large'">
                 <i class="anticon anticon-download"></i><span> Add New </span>
             </button>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzData]="data" [nzPageSize]="10" [nzTotal]="total" [nzFrontPagination]="false"
-                          [nzSize]="'default'">
-
-
-                    <thead>
+                <nz-table #nzTable
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="data"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          [(nzPageIndex)]="page"
+                          [(nzPageSize)]="limit"
+                          (nzPageIndexChange)="getPageData()"
+                >
+                    <thead [nzSingleSort]="true" (nzSortChange)="sort($event) ">
                     <tr>
-                        <th nzExpand></th>
+                        <th></th>
                         <th>
                             <span> Picture </span>
                         </th>
@@ -46,9 +51,8 @@
                         </th>
                         <th>
 
-                            <input nz-input [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue"
+                            <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
                                    (ngModelChange)="page=1;getPageData()">
-
                         </th>
                         <th>
 
@@ -85,19 +89,19 @@
                             <td>
                                 <button *ngIf="'designcategory-read'|accessControl"
                                         [routerLink]="['/dashboard/designcategory/details/', data.id]"
-                                        nz-button [nzType]="'info'" [nzSize]="'default'">
+                                        nz-button [nzSize]="'default'">
                                     <i class="anticon anticon-info-circle"></i>
                                 </button>
                                 <button *ngIf="'designcategory-edit'|accessControl"
                                         [routerLink]="['/dashboard/designcategory/edit', data.id]"
-                                        nz-button [nzType]="'primary'" [nzSize]="'default'">
+                                        nz-button [nzSize]="'default'">
                                     <i class="anticon anticon-edit"></i>
                                 </button>
                                 <ng-container *ngIf="'designcategory-delete'|accessControl">
                                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
                                                    [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
                                         <a nz-popconfirm>
-                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <button nz-button [nzSize]="'default'">
                                                 <i class="anticon anticon-delete"></i>
                                             </button>
                                         </a>
@@ -105,7 +109,7 @@
                                 </ng-container>
                             </td>
                         </tr>
-                        <ng-container *ngIf="data.expand">
+                        <ng-container>
                             <tr *ngFor="let sub of data.subCategories">
                                 <td></td>
 
@@ -129,12 +133,12 @@
                                 <td>
                                     <button *ngIf="'designcategory-read'|accessControl"
                                             [routerLink]="['/dashboard/designcategory/details/', sub.id]"
-                                            nz-button [nzType]="'info'" [nzSize]="'default'">
+                                            nz-button [nzSize]="'default'">
                                         <i class="anticon anticon-info-circle"> </i>
                                     </button>
                                     <button *ngIf="'designcategory-edit'|accessControl"
                                             [routerLink]="['/dashboard/designcategory/edit', sub.id]"
-                                            nz-button [nzType]="'primary'" [nzSize]="'default'">
+                                            nz-button [nzSize]="'default'">
                                         <i class="anticon anticon-edit"> </i>
                                     </button>
                                     <ng-container *ngIf="'designcategory-delete'|accessControl">
@@ -142,7 +146,7 @@
                                                        [nzOkText]="'Delete'"
                                                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(sub.id)">
                                             <a nz-popconfirm>
-                                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <button nz-button [nzSize]="'default'">
                                                     <i class="anticon anticon-delete"> </i>
                                                 </button>
                                             </a>
@@ -166,19 +170,20 @@
                     </tbody>
                 </nz-table>
             </nz-spin>
-            <div class="row">
+            <!--<div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span class="col-md-6">
+                    <span nz-table-title class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
-                                       [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
+                                       [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span class="pull-right col-md-6">
+                    <span nz-table-title class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
-            </div>
+            </div>-->
         </ng-template>
     </nz-card>
 </section>
