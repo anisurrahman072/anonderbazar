@@ -4,10 +4,9 @@ import {
 } from '@angular/forms';
 import {CategoryTypeService} from '../../../../../services/category-type.service';
 import {Subscription} from 'rxjs';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute} from '@angular/router';
-
 import {environment} from "../../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-category-type-read',
@@ -23,7 +22,8 @@ export class CategoryTypeReadComponent implements OnInit, OnDestroy {
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
-                private fb: FormBuilder, private categoryTypeService: CategoryTypeService) {
+                private fb: FormBuilder,
+                private categoryTypeService: CategoryTypeService) {
     }
 
     ngOnInit() {
@@ -38,7 +38,7 @@ export class CategoryTypeReadComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 
 }

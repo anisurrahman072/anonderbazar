@@ -3,11 +3,10 @@ import {
     FormBuilder,
 } from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute} from '@angular/router';
 import {CategoryProductService} from '../../../../../services/category-product.service';
-
 import {environment} from "../../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-category-product-read',
@@ -23,8 +22,10 @@ export class CategoryProductReadComponent implements OnInit, OnDestroy {
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
-                private fb: FormBuilder, private categoryProductService: CategoryProductService) {
+                private fb: FormBuilder,
+                private categoryProductService: CategoryProductService) {
     }
+
     // init the component
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
@@ -36,10 +37,11 @@ export class CategoryProductReadComponent implements OnInit, OnDestroy {
         });
 
     }
+
     //Method for destroying the component
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 
 }

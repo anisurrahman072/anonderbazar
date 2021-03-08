@@ -27,7 +27,7 @@ export class CategoryTypeCreateComponent implements OnInit {
                 private categoryTypeService: CategoryTypeService) {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code:[''],
+            code: [''],
             image: ['']
         });
     }
@@ -39,7 +39,7 @@ export class CategoryTypeCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsDirty();
         }
 
-        
+
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
@@ -66,7 +66,7 @@ export class CategoryTypeCreateComponent implements OnInit {
         this.ImageFile = null;
     }
 
-    onBeforeUpload = (metadata: UploadMetadata) => { 
+    onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
     }
