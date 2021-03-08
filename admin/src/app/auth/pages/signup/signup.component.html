@@ -26,7 +26,7 @@
             <ng-template #body>
                 <form nz-form [formGroup]="validateForm" id="validateForm"
                       (ngSubmit)="submitForm($event, validateForm.value)">
-                    <nz-steps [(nzCurrent)]="current">
+                    <nz-steps [nzCurrent]="current">
                         <nz-step (click)="toggle(0)" [nzTitle]="'Owner info'"></nz-step>
                         <nz-step (click)="toggle(1)" [nzTitle]="'Address'"></nz-step>
                     </nz-steps>

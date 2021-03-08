@@ -86,9 +86,9 @@
                 </th>
             </tr>
             </thead>
-            <tbody nz-tbody>
+            <tbody >
             <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
-                <tr nz-tbody-tr>
+                <tr >
                     <td>
                             <span *ngIf="editRow!==i">
                                 <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT + data.craftman_id?.avatar"
