@@ -4,7 +4,7 @@
     </ng-template>
     <ng-template #extra>
         <button *ngIf="'productcategory-read'|accessControl" routerLink="/dashboard/category/product" nz-button
-            [nzType]="'primary'" [nzSize]="'large'">
+                [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>
             <span> List </span>
         </button>
@@ -12,83 +12,87 @@
     <ng-template #body>
         <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="col-md-3">
-                <div    nz-row>
-                    <div nz-col [nzSpan]="16"      >
+                <div nz-row>
+                    <div nz-col [nzSpan]="16">
                         <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                        dropBoxMessage="Drop Picture here"
-                        clearButtonCaption="remove it?" [uploadedFiles]="oldImages" [beforeUpload]="onBeforeUpload">
+                                      dropBoxMessage="Drop Picture here"
+                                      clearButtonCaption="remove it?" [uploadedFiles]="oldImages"
+                                      [beforeUpload]="onBeforeUpload">
                         </image-upload>
-                        <div    *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
-                                Please upload an image here!
-                            </div>
+                        <div
+                                *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                            Please upload an image here!
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-9">
-                <div    nz-row>
-                    <div    nz-col [nzSpan]="2">
-                        <label  > Name </label>
+                <div nz-row>
+                    <div nz-col [nzSpan]="2">
+                        <label -required> Name </label>
                     </div>
-                    <div nz-col [nzSpan]="16"      >
-                           <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
-
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                    <div nz-col [nzSpan]="16">
+                        <input nz-input formControlName="name" placeholder="Enter Name" [nzSize]="'large'">
+                        <div
+                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                             Name is required!
                         </div>
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                        <div
+                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                             Name already exists!
                         </div>
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                        <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                             Verifying ...
                         </div>
                     </div>
                 </div>
                 <!--Name-->
 
-                <div    nz-row>
-                    <div nz-col [nzSpan]="2"   >
-                        <label   -required> Code </label>
+                <div nz-row>
+                    <div nz-col [nzSpan]="2">
+                        <label -required> Code </label>
                     </div>
-                    <div nz-col [nzSpan]="16"      >
-                           <input nz-input  formControlName="code"  [placeholder]="'Enter Code'" [nzSize]="'large'">
-
+                    <div nz-col [nzSpan]="16">
+                        <input nz-input formControlName="code" placeholder="Enter Code" [nzSize]="'large'">
                         <div
-                             *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
+                                *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
                             Please enter category code !
                         </div>
                     </div>
                 </div>
                 <!--parent_id-->
 
-               <div    nz-row *ngIf='data.parent_id==0'>
-                   <div nz-col [nzSpan]="2"   >
-                       <label> Add Offer </label>
-                   </div>
-                   <div nz-col [nzSpan]="16"      >
-                       <nz-select [ngModel]="data?.id" formControlName="offer_id" nzAllowClear [nzPlaceHolder]="'Select Product category'"
-                           [nzNotFoundContent]="'Not found'" nzShowSearch>
-                           <div *ngFor="let option of offers">
-                                   <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
-                                   </nz-option>
-                           </div>
+                <div nz-row *ngIf='data.parent_id==0'>
+                    <div nz-col [nzSpan]="2">
+                        <label> Add Offer </label>
+                    </div>
+                    <div nz-col [nzSpan]="16">
+                        <nz-select [ngModel]="data?.id" formControlName="offer_id" nzAllowClear
+                                   nzPlaceHolder="Select Product category"
+                                   [nzNotFoundContent]="'Not found'" nzShowSearch>
+                            <div *ngFor="let option of offers">
+                                <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
+                                </nz-option>
+                            </div>
 
-                       </nz-select>
+                        </nz-select>
 
 
-                       <div    *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
-                           required!                        </div>
-                   </div>
-               </div>
+                        <div
+                                *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
+                            required!
+                        </div>
+                    </div>
+                </div>
                 <!--parent_id-->
 
 
-
-                <div    nz-row>
-                    <div nz-col [nzOffset]="2" [nzSpan]="16"   >
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                <div nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="16">
+                        <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
                             Save
                         </button>
-                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
                     </div>
                 </div>
             </div>
