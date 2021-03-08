@@ -149,8 +149,8 @@
                     <label> Date </label>
                 </div>
                 <div nz-col [nzSpan]="12"      >
-                    <nz-datepicker formControlName="payment_date"
-                                   [nzPlaceHolder]="'Select date'"></nz-datepicker>
+                    <nz-date-picker formControlName="payment_date"
+                                   [nzPlaceHolder]="'Select date'"></nz-date-picker>
 
                     <div
                          *ngIf="getFormControl('payment_date').dirty&&getFormControl('payment_date').hasError('required')">

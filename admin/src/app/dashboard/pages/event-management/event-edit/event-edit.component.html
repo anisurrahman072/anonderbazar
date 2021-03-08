@@ -114,10 +114,10 @@
                             </label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <nz-datepicker formControlName="event_startdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
-                                [nzPlaceHolder]="status_id==1?' মেলা শুরুর তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ শুরুর তারিখ নির্বাচন করুন':' ইভেন্ট শুরুর তারিখ নির্বাচন করুন' "></nz-datepicker>
-                            থেকে <nz-datepicker formControlName="event_enddate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
-                                [nzPlaceHolder]="status_id==1?' মেলা শেষ তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ শেষ তারিখ নির্বাচন করুন':' ইভেন্ট শেষ তারিখ নির্বাচন করুন' "></nz-datepicker>
+                            <nz-date-picker formControlName="event_startdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
+                                [nzPlaceHolder]="status_id==1?' মেলা শুরুর তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ শুরুর তারিখ নির্বাচন করুন':' ইভেন্ট শুরুর তারিখ নির্বাচন করুন' "></nz-date-picker>
+                            থেকে <nz-date-picker formControlName="event_enddate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
+                                [nzPlaceHolder]="status_id==1?' মেলা শেষ তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ শেষ তারিখ নির্বাচন করুন':' ইভেন্ট শেষ তারিখ নির্বাচন করুন' "></nz-date-picker>
                             পর্যন্ত
                         </div>
                     </div>
@@ -127,12 +127,12 @@
                             </label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <nz-timepicker formControlName="event_starttime" [ngModel]="event_starttime"
+                            <nz-time-picker formControlName="event_starttime" [ngModel]="event_starttime"
                                 [nzPlaceHolder]="status_id==1?' শেষ সময়':(status_id==2)?'শেষ সময়':' শেষ সময়' "
-                                [nzFormat]="'HH:mm'"></nz-timepicker> পর্যন্ত
-                            থেকে <nz-timepicker formControlName="event_endtime" [ngModel]="event_endtime"
+                                [nzFormat]="'HH:mm'"></nz-time-picker> পর্যন্ত
+                            থেকে <nz-time-picker formControlName="event_endtime" [ngModel]="event_endtime"
                                 [nzPlaceHolder]="status_id==1?' শেষ সময়':(status_id==2)?'শেষ সময়':' শেষ সময়' "
-                                [nzFormat]="'HH:mm'"></nz-timepicker> পর্যন্ত
+                                [nzFormat]="'HH:mm'"></nz-time-picker> পর্যন্ত
                         </div>
                     </div>
                     <div    nz-row>
@@ -141,8 +141,8 @@
                                 তারিখ </label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <nz-datepicker formControlName="registration_lastdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
-                                style="width: 100%" [nzPlaceHolder]="status_id==1?' মেলা নিবন্ধনের শেষ তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ নিবন্ধনের শেষ তারিখ নির্বাচন করুন':' ইভেন্ট নিবন্ধনের শেষ তারিখ নির্বাচন করুন' "></nz-datepicker>
+                            <nz-date-picker formControlName="registration_lastdate" nzFormat='YYYY-MM-DD' [nzSize]="'large'"
+                                style="width: 100%" [nzPlaceHolder]="status_id==1?' মেলা নিবন্ধনের শেষ তারিখ নির্বাচন করুন':(status_id==2)?'প্রশিক্ষণ নিবন্ধনের শেষ তারিখ নির্বাচন করুন':' ইভেন্ট নিবন্ধনের শেষ তারিখ নির্বাচন করুন' "></nz-date-picker>
                             <div    *ngIf="getFormControl('registration_lastdate').dirty&&getFormControl('registration_lastdate').hasError('required')">
                                 দয়া করে তারিখ নির্বাচন করুন !
                             </div>
