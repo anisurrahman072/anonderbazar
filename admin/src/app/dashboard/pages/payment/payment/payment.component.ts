@@ -10,7 +10,7 @@ import {NzNotificationService} from "ng-zorro-antd";
   styleUrls: ['./payment.component.css']
 })
 export class PaymentComponent implements OnInit {
-  data = [];
+  data : any;
   _isSpinning = true;
   IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
   currentUser: any;

@@ -5,7 +5,6 @@
         </ng-template>
         <ng-template #extra>
             <nz-button-group>
-
                 <button nz-button
                         [nzSize]="'large'" (click)='showProductModal()' *ngIf="currentUser.group_id==='admin'">
                     <i class="anticon anticon-download"></i><span> Download CSV </span>
@@ -31,31 +30,31 @@
 
                     <thead>
                     <tr>
-                        <th nz-th>
+                        <th >
                             <span> Order number </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Order Date </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Vendor Id </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Vendor Name </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Quantity </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Total Price</span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status changed by </span>
                         </th>
-                        <th nz-th>
+                        <th >
 
                         </th>
                     </tr>
@@ -63,33 +62,33 @@
                     <thead>
                     <!--search bar.....................-->
                     <tr>
-                        <th nz-th>
+                        <th >
                             <input nz-input placeholder="Order number" [(ngModel)]="suborderNumberSearchValue" (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}">
                         </th>
-                        <th nz-th class="suborder-daterange">
+                        <th  class="suborder-daterange">
 
                             <!--   <input class="form-control" placeholder="Select Order Date" type="text"-->
                             <!--   mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
                             <!--         [altInput]="true" [convertModelValue]="true" mode="range"> -->
                         </th>
-                        <th nz-th>
+                        <th >
 
                         </th>
-                        <th nz-th>
+                        <th >
                             <input nz-input placeholder="Vendor Name" [(ngModel)]="suborderIdValue"
                                    *ngIf="currentUser.group_id=='admin'"
                                    (ngModelChange)="page=1; getPageData()">
 
                         </th>
-                        <th nz-th>
+                        <th >
                             <input nz-input placeholder="Quantity" [(ngModel)]="quantitySearchValue" (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th nz-th>
+                        <th >
                             <input nz-input placeholder="Total Price" [(ngModel)]="totalPriceSearchValue" (ngModelChange)="page=1;getPageData()">
                         </th>
 
 
-                        <th nz-th>
+                        <th >
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"  [(ngModel)]="statusSearchValue"
                                        nzAllowClear (ngModelChange)="page=1; getPageData()"
@@ -104,9 +103,9 @@
                                 </nz-option>
                             </nz-select>
                         </th>
-                        <th nz-th>
+                        <th >
                         </th>
-                        <th nz-th>
+                        <th >
 
                         </th>
                     </tr>
@@ -194,29 +193,29 @@
                 <nz-table #nzTable [nzBordered]="true" [nzData]="allOders" [nzShowPagination]="false">
                     <thead>
                     <tr>
-                        <th nz-th>
+                        <th >
                             <input type="checkbox" id="order_check_all_csv" (change)="selectAllCsv($event)"
                                    [checked]="pageAllCheckedStatusCsv[pageCsv]">
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Order number </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Order Date </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Vendor Name </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Quantity </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Total Price</span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status changed by </span>
                         </th>
                     </tr>
@@ -437,32 +436,32 @@
                 >
                     <thead>
                     <tr>
-                        <th nz-th>
+                        <th >
                             <input type="checkbox" id="order_check_all_pr" (change)="selectAllPr($event)"
                                    [checked]="pageAllCheckedStatusPr[pagePr]">
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Order number </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Date </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Vendor Name </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Quantity </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Total Price</span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Date of delivery </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status </span>
                         </th>
-                        <th nz-th>
+                        <th >
                             <span> Status changed by </span>
                         </th>
                     </tr>

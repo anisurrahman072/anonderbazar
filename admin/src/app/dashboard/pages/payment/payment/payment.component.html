@@ -89,12 +89,11 @@
                                    (ngModelChange)="page=1;getPageData()">
                         </th>
                         <th>
-                            <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"
                                        [(ngModel)]="statusSearchValue"
                                        nzAllowClear
                                        (ngModelChange)="page=1;getPageData()"
-                                       placeholder="Select Status"
+                                       nzPlaceHolder="Select Status"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option
                                         *ngFor="let option of options"
@@ -123,7 +122,7 @@
                         <td>{{(data.payment_date|date) || 'n/a'}}</td>
 
                         <td>
-                            <span *ngIf="setStatus(i,data.id, data.status)"></span>
+
                             <nz-select style="width: 180px;" [(ngModel)]="selectedOption[i]"
                                        nzPlaceHolder="choose option">
                                 <nz-option

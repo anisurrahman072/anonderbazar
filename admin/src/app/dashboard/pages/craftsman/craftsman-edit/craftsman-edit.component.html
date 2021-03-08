@@ -169,7 +169,7 @@
                             </nz-option>
                         </nz-select>
 
-                        <div *ngIf="getFormControl('upazila_id').dirty&&getFormControl('upazila_id').hasError('required')">
+                        <div *ngIf="getFormControl('upazila_id').dirty && getFormControl('upazila_id').hasError('required')">
                             দয়া করে select division!
                         </div>
                     </div>
@@ -177,14 +177,11 @@
                 <!--upazila_id-->
                 <div nz-row>
                     <div nz-col [nzOffset]="2" [nzSpan]="16">
-                        <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">Save
-                        </button>
+                        <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">Save</button>
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
                     </div>
                 </div>
             </div>
-
-
         </form>
     </ng-template>
 </nz-card>

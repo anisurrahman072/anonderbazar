@@ -16,11 +16,7 @@ import {NzNotificationService} from "ng-zorro-antd";
 export class DesignReadComponent implements OnInit, OnDestroy {
     sub: Subscription;
     id: number;
-    data: {
-        design_category_id: any,
-        design_subcategory_id: any,
-        genre_id: any,
-    };
+    data: any;
     designCategory: any = [];
     designSubCategory: any = [];
     designGenre: any = [];
