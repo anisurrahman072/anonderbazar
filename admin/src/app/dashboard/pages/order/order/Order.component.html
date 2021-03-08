@@ -168,7 +168,7 @@
                     </thead>
                     <tbody>
                     <tr *ngFor="let data of nzTable.data;let i=index;">
-                        <td [nzCheckbox]="true">
+                        <td [nzShowCheckbox]="true">
                             <input type="checkbox" id="{{'order_checked_pr' + data.id}}"
                                    (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
                         </td>
