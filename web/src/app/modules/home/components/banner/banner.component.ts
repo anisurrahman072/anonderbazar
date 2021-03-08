@@ -24,7 +24,7 @@ export class BannerComponent implements OnInit {
     directiveRef: SwiperDirective;
 
     activeSlideIndex = 0;
-    myInterval = 5000;
+    myInterval = 2500;
     showNavigationArrows = false;
     showNavigationIndicators = false;
     cmsBANNERData: any;
