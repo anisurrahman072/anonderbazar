@@ -13,15 +13,9 @@ export class UserService {
     private currentUser: any | boolean;
 
     constructor(private http: HttpClient,
-                private authService: AuthService,
-                private authenticationService: AuthService) {
+                private authService: AuthService) {
 
         this.currentUser = this.authService.getCurrentUser();
-    }
-
-    getAll(): Observable<any> {
-        // get users from api
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`);
     }
 
     getAllShopOwner(page: number, warehouseId: number, limit: number,
@@ -50,25 +44,25 @@ export class UserService {
         );
     }
 
-    getAllCustomer(page: number, warehouseId: number, limit: number,
-                   emailSearchValue: string,
-                   searchTermName: string,
-                   searchTermPhone: string,
-                   gender: string,
-                   categoryId: number,
-                   subcategoryId: number,
-                   sortName: string,
-                   sortPrice: String): Observable<any> {
+    getAllCustomer(
+        page: number,
+        limit: number,
+        emailSearchValue: string,
+        searchTermName: string,
+        searchTermPhone: string,
+        username: string,
+        gender: string,
+        sortName: string,
+        sortPrice: String
+    ): Observable<any> {
         return this.http.get(`${this.EndPoint
-            }?group_id=2&page=${page
+            }/all-customers?page=${page
             }&limit=${limit
-            }&warehouse_id=${warehouseId
+            }&username=${username
             }&searchTermEmail=${emailSearchValue
             }&searchTermName=${searchTermName
             }&searchTermPhone=${searchTermPhone
             }&gender=${gender
-            }&category_id=${categoryId
-            }&subcategory_id=${subcategoryId
             }&sortName=${sortName
             }&sortPrice=${sortPrice}`
         );

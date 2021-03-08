@@ -22,6 +22,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
   data = [];
   _isSpinning = true;
   IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+  IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
   currentUser: any;
   private currentWarehouseSubscriprtion: any;
 
@@ -35,6 +36,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
   emailSearchValue: string = '';
   phoneSearchValue: string = '';
   genderSearchValue: string = '';
+  usernameSearchValue: string = '';
 
   sortValue = {
     name: null,
@@ -65,29 +67,28 @@ export class CustomerComponent implements OnInit, OnDestroy {
   }
   //Event method for getting all the data for the page
   getPageData() {
+    this._isSpinning = true;
     this.userService.getAllCustomer(
         this.page,
-        this.currentWarehouseId,
         this.limit,
         this.emailSearchValue || '',
         this.nameSearchValue || '',
         this.phoneSearchValue || '',
+        this.usernameSearchValue || '',
         this.genderSearchValue || '',
-        this.categoryId ? this.categoryId : '',
-        this.subcategoryId ? this.subcategoryId : '',
         this.filterTerm(this.sortValue.name),
         this.filterTerm(this.sortValue.price)
-      )
-      .subscribe(
-        result => {
-          this.data = result.data;
-          this.total = result.total;
-          this._isSpinning = false;
-        },
-        error => {
-          this._isSpinning = false;
-        }
-      );
+    )
+        .subscribe(
+            result => {
+              this.data = result.data;
+              this.total = result.total;
+              this._isSpinning = false;
+            },
+            error => {
+              this._isSpinning = false;
+            }
+        );
   }
   //Event method for getting all the data for the page
   private filterTerm(sortValue: string): string {

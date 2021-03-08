@@ -314,6 +314,7 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'findOne': ['isAuthorized'],
     'find': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getAllCustomers': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
     'getAuthCustomerData': ['isAuthorized'],
