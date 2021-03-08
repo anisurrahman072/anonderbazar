@@ -25,7 +25,7 @@ export class CmsService {
         page?: String;
         section?: String;
         subsection?: String;
-    } = {}): Observable<any> {
+    } = {}, homeOfferLimit = 10, homeOfferPage = 1): Observable<any> {
         return this.http
             .get(
                 this.EndPoint +
@@ -34,7 +34,8 @@ export class CmsService {
       ${option.section ? ',"section":"' + option.section + '"' : ''}
       ${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}
   
-      }`
+      }&limit=${homeOfferLimit}
+      &page=${homeOfferPage}`
             )
             .map(response => response);
     }
@@ -68,8 +69,8 @@ export class CmsService {
             .map(response => response);
     }
 
-    getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id).map(response => response);
+    getById(id, homeOfferPage = 1, homeOfferLimit = 10): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id+`?limit=${homeOfferLimit}&page=${homeOfferPage}`).map(response => response);
     }
 
     insert(data): Observable<any> {

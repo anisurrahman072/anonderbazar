@@ -1,104 +1,100 @@
 <section>
     <nz-card class="card-height">
         <ng-template #title>
-           {{currentUser.group_id==4? currentUser.username+"'s":""}} Financial History
+            {{currentUser.group_id == 4 ? currentUser.username + "'s" : ""}} Financial History
         </ng-template>
         <ng-template #extra>
-            <button *ngIf="'payment-create'|accessControl"
-                    routerLink="/dashboard/payment/create" nz-button [nzType]="'primary'"
+            <button *ngIf="'payment-create'| accessControl"
+                    routerLink="/dashboard/payment/create" nz-button
                     [nzSize]="'large'">
                 <i class="anticon anticon-download"></i><span> Add New </span>
             </button>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzData]="data" [nzPageSize]="10"
-                          [nzTotal]="total"
+                <nz-table #nzTable
+                          nzShowSizeChanger
                           [nzFrontPagination]="false"
-
-                          [nzSize]="'default'">
-
-                    <thead  >
+                          [nzData]="data"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          [(nzPageIndex)]="page"
+                          [(nzPageSize)]="limit"
+                          (nzPageIndexChange)="getPageData()"
+                >
+                    <thead>
                     <tr>
-                        <th   >
+                        <th>
                             <span> Customer Name </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Order Id </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Vendor Order Id </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Vendor Name </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Transaction ID</span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Payment type </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Payment Amount </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Payment Date </span>
                         </th>
-                        <th   >
+                        <th>
                             <span> Status </span>
                         </th>
-                        <th   >
+                        <th>
 
                         </th>
                     </tr>
                     </thead>
-                    <thead  ><!--search bar.....................-->
+                    <thead>
                     <tr>
-                        <th   >
-                              <input nz-input  [placeholder]="'Customer Search'" [(ngModel)]="nameSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Customer Search" [(ngModel)]="nameSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Order Id Search'" [(ngModel)]="orderNumberSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Order Id Search" [(ngModel)]="orderNumberSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Vendor Order Id Search'" [(ngModel)]="suborderNumberSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Vendor Order Id Search" [(ngModel)]="suborderNumberSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
+                        <th>
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Transaction ID Search'" [(ngModel)]="transactionSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Transaction ID Search" [(ngModel)]="transactionSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Payment type Search'" [(ngModel)]="paymentTypeSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Payment type Search" [(ngModel)]="paymentTypeSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Payment Amount Search'" [(ngModel)]="paymentAmountSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Payment Amount Search" [(ngModel)]="paymentAmountSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Payment Date Search'" [(ngModel)]="dateSearchValue"
-                                      (ngModelChange)="page=1;getPageData()">
-
+                        <th>
+                            <input nz-input placeholder="Payment Date Search" [(ngModel)]="dateSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
                         </th>
-                        <th   >
-
+                        <th>
+                            <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"
-
                                        [(ngModel)]="statusSearchValue"
                                        nzAllowClear
                                        (ngModelChange)="page=1;getPageData()"
-                                       [nzPlaceHolder]="'Select Status'"
+                                       placeholder="Select Status"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option
                                         *ngFor="let option of options"
@@ -111,25 +107,25 @@
                                 </nz-option>
                             </nz-select>
                         </th>
-                        <th   >
+                        <th>
                         </th>
                     </tr>
                     </thead>
-                    <tbody   >
-                    <tr    *ngFor="let data of nzTable.data">
-                        <td   >{{data.user_id.first_name}} {{data.user_id.last_name}}</td>
-                        <td   >{{data.order_id?.id}}</td>
-                        <td   >{{data.suborder_id?.id}}</td>
-                        <td   >{{data.receiver_id?.username || 'n/a'}}</td>
-                        <td   >{{data.transection_key}}</td>
-                        <td   >{{data.payment_type}}</td>
-                        <td   >{{data.payment_amount }}</td>
-                        <td   >{{(data.payment_date|date) || 'n/a'}}</td>
+                    <tbody>
+                    <tr *ngFor="let data of nzTable.data">
+                        <td>{{data.user_id.first_name}} {{data.user_id.last_name}}</td>
+                        <td>{{data.order_id?.id}}</td>
+                        <td>{{data.suborder_id?.id}}</td>
+                        <td>{{data.receiver_id?.username || 'n/a'}}</td>
+                        <td>{{data.transection_key}}</td>
+                        <td>{{data.payment_type}}</td>
+                        <td>{{data.payment_amount }}</td>
+                        <td>{{(data.payment_date|date) || 'n/a'}}</td>
 
-                        <td   >
-
+                        <td>
+                            <span *ngIf="setStatus(i,data.id, data.status)"></span>
                             <nz-select style="width: 180px;" [(ngModel)]="selectedOption[i]"
-                                       [nzPlaceHolder]="'choose option'">
+                                       nzPlaceHolder="choose option">
                                 <nz-option
                                         *ngFor="let option of options"
                                         [nzLabel]="option.label"
@@ -144,7 +140,7 @@
                                            [nzCancelText]="'cancel'"
                                            (nzOnConfirm)="changeStatusConfirm(i,data.id,data.status)">
                                 <a nz-popconfirm *ngIf="selectedOption[i]!=data.status">
-                                    <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                    <button nz-button [nzSize]="'default'">
                                         <i class="anticon anticon-edit"> Save </i>
                                     </button>
                                 </a>
@@ -153,14 +149,14 @@
 
                         <td>
                             <button *ngIf="'payment-read'|accessControl"
-                                    [routerLink]="['/dashboard/payment/details/', data.id]" nz-button [nzType]="'info'"
+                                    [routerLink]="['/dashboard/payment/details/', data.id]" nz-button
                                     [nzSize]="'default'">
-                                <i class="anticon anticon-info-circle">  </i>
+                                <i class="anticon anticon-info-circle"> </i>
                             </button>
                             <button *ngIf="'payment-edit'|accessControl"
-                                    [routerLink]="['/dashboard/payment/edit', data.id]" nz-button [nzType]="'primary'"
+                                    [routerLink]="['/dashboard/payment/edit', data.id]" nz-button
                                     [nzSize]="'default'">
-                                <i class="anticon anticon-edit">  </i>
+                                <i class="anticon anticon-edit"> </i>
                             </button>
                             <ng-container *ngIf="'payment-delete'|accessControl">
                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
@@ -168,8 +164,8 @@
                                                [nzCancelText]="'Cancel'"
                                                (nzOnConfirm)="deleteConfirm(data.id)">
                                     <a nz-popconfirm>
-                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                            <i class="anticon anticon-delete">  </i>
+                                        <button nz-button [nzSize]="'default'">
+                                            <i class="anticon anticon-delete"> </i>
                                         </button>
                                     </a>
                                 </nz-popconfirm>
@@ -180,19 +176,12 @@
                 </nz-table>
             </nz-spin>
             <div class="row">
-                    <div class="col-md-offset-5" style="margin-top: 10px">
-                        <span    class="col-md-6">
-                            <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
-                                            (nzPageSizeChange)="changePage(1,$event)"
-                                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
-                                            [nzPageSize]="limit">
-                            </nz-pagination>
-                        </span>
-                        <span    class="pull-right col-md-6">
+                <div class="col-md-offset-5" style="margin-top: 10px">
+                    <span  class="pull-right col-md-6">
                                 <button nz-button (click)="resetAllFilter()">Clear filter</button>
                             </span>
-                    </div>
-                    </div>
+                </div>
+            </div>
         </ng-template>
     </nz-card>
 </section>

@@ -17,8 +17,16 @@
                             Parent Offer
                         </ng-template>
                         <div>
-                            <nz-table #nzTable [nzData]="homeOfferData" [nzPageSize]="10" [nzFrontPagination]="false"
-                                [nzSize]="'default'">
+                            <nz-table #nzTable
+                                      nzShowSizeChanger
+                                      [nzFrontPagination]="false"
+                                      [nzData]="homeOfferData"
+                                      [nzLoading]="loading"
+                                      [nzTotal]="homeOfferTotal"
+                                      [(nzPageIndex)]="homeOfferPage"
+                                      [(nzPageSize)]="homeOfferLimit"
+                                      (nzPageIndexChange)="getData()"
+                            >
                                 <thead  >
                                     <tr>
                                         <th   >
@@ -96,8 +104,16 @@
                             Child Offer
                         </ng-template>
                         <div>
-                            <nz-table #nzTable1 [nzData]="homeChildOfferData" [nzPageSize]="10"
-                                [nzFrontPagination]="false" [nzSize]="'default'">
+                            <nz-table #nzTableHomeChild
+                                      nzShowSizeChanger
+                                      [nzFrontPagination]="false"
+                                      [nzData]="homeChildOfferData"
+                                      [nzLoading]="loading"
+                                      [nzTotal]="homeOfferTotal"
+                                      [(nzPageIndex)]="homeOfferPage"
+                                      [(nzPageSize)]="homeOfferLimit"
+                                      (nzPageIndexChange)="getChildData()"
+                            >
                                 <thead  >
                                     <tr>
                                         <th   >
@@ -174,7 +190,16 @@
     (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalOfferContent>
 
-        <nz-table #nzTable2 [nzBordered]="true" [nzData]="offers" [nzFrontPagination]="false">
+        <nz-table #nzTableOffer1
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="offers"
+                  [nzLoading]="loading"
+                  [nzTotal]="homeOfferTotal"
+                  [(nzPageIndex)]="homeOfferPage"
+                  [(nzPageSize)]="homeOfferLimit"
+                  (nzPageIndexChange)="getOfferData(homeOfferData)"
+        >
             <thead  >
                 <tr>
                     <th   >
@@ -224,8 +249,16 @@
             (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
 
             <div   >
-                <nz-table #nzTable3 [nzBordered]="true" [nzData]="alloffers" [nzFrontPagination]="false">
-                    <thead  >
+                <nz-table #nzTableOffer
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="alloffers"
+                          [nzLoading]="loading"
+                          [nzTotal]="homeOfferTotal"
+                          [(nzPageIndex)]="homeOfferPage"
+                          [(nzPageSize)]="homeOfferLimit"
+                          (nzPageIndexChange)="getOfferData(homeOfferData)"
+                >
                         <tr>
                             <th   >
 
@@ -241,7 +274,7 @@
                     </thead>
                     <tbody   >
                         <tr    *ngFor="let data of nzTable3.data;let i=index;">
-                            <td    [nzCheckbox]="true">
+                            <td    [nzShowCheckbox]="true">
                                 <label nz-checkbox [(ngModel)]="data.checked" formControlName='offerChecked'
                                     (ngModelChange)="_refreshStatusOffer($event, data.id)">
                                 </label>
@@ -271,7 +304,16 @@
     (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalProductContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzData]="products" [nzFrontPagination]="false">
+        <nz-table #nzTable
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="products"
+                  [nzLoading]="loading"
+                  [nzTotal]="homeOfferTotal"
+                  [(nzPageIndex)]="homeOfferPage"
+                  [(nzPageSize)]="homeOfferLimit"
+                  (nzPageIndexChange)="getProduct(homeOfferData)"
+        >
             <thead  >
                 <tr>
                     <th   >
@@ -328,7 +370,16 @@
 
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
             (ngSubmit)="submitForm($event,validateProductForm.value)">
-            <nz-table #nzTable [nzBordered]="true" [nzData]="allProduct" [nzFrontPagination]="false">
+            <nz-table #nzTable
+                      nzShowSizeChanger
+                      [nzFrontPagination]="false"
+                      [nzData]="allProduct"
+                      [nzLoading]="loading"
+                      [nzTotal]="homeOfferTotal"
+                      [(nzPageIndex)]="homeOfferPage"
+                      [(nzPageSize)]="homeOfferLimit"
+                      (nzPageIndexChange)="getAllProducts()"
+            >
                 <thead  >
                     <tr>
                         <th   >
@@ -355,7 +406,7 @@
                 </thead>
                 <tbody   >
                     <tr    *ngFor="let data of nzTable.data;let i=index;">
-                        <td    [nzCheckbox]="true">
+                        <td    [nzShowCheckbox]="true">
                             <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
                                 (ngModelChange)="_refreshStatus($event, data.id)">
                             </label>
@@ -369,14 +420,6 @@
                     </tr>
                 </tbody>
             </nz-table>
-            <div>
-                <nz-pagination (nzPageIndexClickChange)="changePage($event, allProductLimit)"
-                               (nzPageSizeChange)="changePage(1,$event)"
-                                  [nzPageIndex]="allProductPage"
-                               [nzTotal]="allProductTotal"
-                               [nzPageSize]="allProductLimit" nzShowSizeChanger>
-                </nz-pagination>
-            </div>
             <div   >
                 <div   >
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"

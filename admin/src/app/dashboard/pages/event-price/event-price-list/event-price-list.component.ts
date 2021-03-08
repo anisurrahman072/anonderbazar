@@ -35,6 +35,7 @@ export class EventPriceListComponent implements OnInit {
   editRemarks: string;
   validateEditForm: FormGroup;
   id: number;
+  loading: boolean = false;
   constructor(private route: ActivatedRoute,
     private uiService: UIService,
     private fb: FormBuilder,
@@ -58,6 +59,7 @@ export class EventPriceListComponent implements OnInit {
   }
   //Event method for getting all the data for the page
   getEventPriceData(): void {
+    this.loading = true;
     this.eventPriceService
       .getAllEventsByStatus(
         this.page,
@@ -65,12 +67,14 @@ export class EventPriceListComponent implements OnInit {
       )
       .subscribe(
         result => {
+          this.loading = false;
           this.data = result.data;
           this.total = result.total;
           this._isSpinning = false;
           // temporary
         },
         result => {
+          this.loading = false;
           this._isSpinning = false;
         }
       );

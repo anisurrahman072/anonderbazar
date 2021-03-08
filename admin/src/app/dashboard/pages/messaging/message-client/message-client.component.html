@@ -181,7 +181,7 @@
                                             <div nz-col [nzSpan]="16"      >
                                                   <input nz-input  formControlName="product_price"
                                                     [placeholder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'"
-                                                    [nzDisabled]="'true'">
+                                                         [disabled] ="true">
 
                                                 <div
                                                     *ngIf="getFormControl('product_price').dirty&&getFormControl('product_price').hasError('required')">
@@ -214,7 +214,7 @@
                                             <div nz-col [nzSpan]="16"      >
                                                   <input nz-input  formControlName="user_name"
                                                     [placeholder]="'Enter Name'" [nzSize]="'large'"
-                                                    [nzDisabled]="'true'">
+                                                         [disabled] ="true">
 
                                                 <div
                                                     *ngIf="getFormControl('user_name').dirty&&getFormControl('user_name').hasError('required')">

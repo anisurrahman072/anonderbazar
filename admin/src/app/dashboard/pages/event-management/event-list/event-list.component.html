@@ -14,8 +14,16 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations">
                 </div>
-                <nz-table [nzTotal]="total" [nzFrontPagination]="false" #nzTable [nzData]="data" [nzPageSize]="limit"
-                    [nzSize]="'default'">
+                <nz-table #nzTable
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="data"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          [(nzPageIndex)]="page"
+                          [nzPageSize]="limit"
+                          (nzPageIndexChange)="getEventData()"
+                >
 
 
                     <thead  >
@@ -74,11 +82,6 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span    class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
-                        </nz-pagination>
-                    </span>
                     <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
