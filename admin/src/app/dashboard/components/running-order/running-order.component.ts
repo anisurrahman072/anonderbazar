@@ -50,6 +50,7 @@ export class RunningOrderComponent implements OnInit {
         let pendingCount = 0;
         let processingCount = 0;
         let deliveredCount = 0;
+        let confirmedOrder = 0;
         let canceledCount = 0;
         this._isSpinning = true;
 
@@ -59,12 +60,14 @@ export class RunningOrderComponent implements OnInit {
             processingCount = this._runningOrderData.processingOrder;
             deliveredCount = this._runningOrderData.deliveredOrder;
             canceledCount = this._runningOrderData.canceledOrder;
+            confirmedOrder = this._runningOrderData.confirmedOrder;
 
             this.setDashboardData(
                 pendingCount,
                 processingCount,
                 deliveredCount,
-                canceledCount
+                canceledCount,
+                confirmedOrder
             );
             this._isSpinning = false;
         } else {
@@ -72,7 +75,8 @@ export class RunningOrderComponent implements OnInit {
                 pendingCount,
                 processingCount,
                 deliveredCount,
-                canceledCount
+                canceledCount,
+                confirmedOrder
             );
             this._isSpinning = false;
             this.subOrderData = [];
@@ -224,12 +228,17 @@ export class RunningOrderComponent implements OnInit {
         PendingCount,
         processingCount,
         deliveredCount,
-        canceledCount
+        canceledCount,
+        confirmedOrder
     ) {
         this.single = [
             {
                 name: "Pending",
                 value: PendingCount
+            },
+            {
+                name: "Confirmed",
+                value: confirmedOrder
             },
             {
                 name: "Processing",
@@ -249,6 +258,10 @@ export class RunningOrderComponent implements OnInit {
             {
                 name: "Pending",
                 value: "#108EE9"
+            },
+            {
+                name: "Confirmed",
+                value: "#0f7c1d"
             },
             {
                 name: "Processing",

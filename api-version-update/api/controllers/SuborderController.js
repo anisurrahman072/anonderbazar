@@ -106,6 +106,7 @@ module.exports = {
       let totalProcessingOrder = 0;
       let totalDeliveredOrder = 0;
       let totalCancelOrder = 0;
+      let totalConfirmedOrder = 0;
       let totalOtherStatusOrder = 0;
 
       if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
@@ -132,6 +133,10 @@ module.exports = {
               totalDeliveredOrder = totalSubOrder;
               break;
             }
+            case ORDER_STATUSES.confirmed: {
+              totalConfirmedOrder = totalSubOrder;
+              break;
+            }
             case ORDER_STATUSES.canceled: {
               totalCancelOrder = totalSubOrder;
               break;
@@ -154,6 +159,10 @@ module.exports = {
               status: SUB_ORDER_STATUSES.delivered,
               warehouse_id: req.query.warehouse_id
             });
+            totalConfirmedOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.confirmed,
+              warehouse_id: req.query.warehouse_id
+            });
             totalCancelOrder = await Suborder.count().where({
               status: SUB_ORDER_STATUSES.canceled,
               warehouse_id: req.query.warehouse_id
@@ -168,6 +177,9 @@ module.exports = {
             totalDeliveredOrder = await Suborder.count().where({
               status: SUB_ORDER_STATUSES.delivered,
             });
+            totalConfirmedOrder = await Suborder.count().where({
+              status: SUB_ORDER_STATUSES.confirmed,
+            });
             totalCancelOrder = await Suborder.count().where({
               status: SUB_ORDER_STATUSES.canceled,
             });
@@ -181,6 +193,7 @@ module.exports = {
         pendingOrder: totalPendingOrder,
         processingOrder: totalProcessingOrder,
         deliveredOrder: totalDeliveredOrder,
+        confirmedOrder: totalConfirmedOrder,
         canceledOrder: totalCancelOrder,
         totalOtherStatusOrder: totalOtherStatusOrder,
         message: 'Get All SubOrderList with pagination',
