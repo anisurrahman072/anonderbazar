@@ -1,11 +1,7 @@
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { CourierService } from '../../../../services/courier.service';
-import { Subscription } from 'rxjs';
-import { UIService } from '../../../../services/ui/ui.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd';
-
+import {Component, OnInit} from '@angular/core';
+import {CourierService} from '../../../../services/courier.service';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
   selector: 'app-courier',
@@ -24,18 +20,26 @@ export class CourierComponent implements OnInit {
   isConfirmLoading = false;
   id: number;
   options = [
-    { value: 1, label: 'Local' },
-    { value: 2, label: 'Origin Country' },
+    {value: 1, label: 'Local'},
+    {value: 2, label: 'Origin Country'},
   ];
   origins = ['Local', 'Origin Country'];
   validateForm: FormGroup;
   validateEditForm: FormGroup;
-  submitting: boolean = false;
+  loading;
 
   constructor(
-    private fb: FormBuilder,
-    private courierService: CourierService,
-    private _notification: NzNotificationService) {
+      private fb: FormBuilder,
+      private courierService: CourierService,
+      private _notification: NzNotificationService) {
+
+  }
+
+  courierOriginChange($event) {
+  }
+
+  // init the component
+  ngOnInit() {
     this.validateForm = this.fb.group({
       name: ["", [Validators.required]],
       origin_type: ["", [Validators.required]],
@@ -45,24 +49,31 @@ export class CourierComponent implements OnInit {
       name: ["", [Validators.required]],
       origin_type: ["", [Validators.required]],
     });
-   }
-  courierOriginChange($event) {
-  }
-  // init the component
-  ngOnInit() {
-   this.getPageData();
-  }
-  changePage(page: number, limit: number) {
-    this.page = page;
-    this.limit = limit;
     this.getPageData();
-    return false;
   }
+
+  /*    changePage(page: number, limit: number) {
+          this.page = page;
+          this.limit = limit;
+          this.getPageData();
+          return false;
+      }*/
+
   //Event method for getting all the data for the page
-  getPageData(){
-    this.courierService.getAllCourier()
-    .subscribe(result => {this.data = result; this._isSpinning = false;});
+  getPageData() {
+    this.loading = true;
+    this.courierService.getAllCourier(this.page, this.limit)
+        .subscribe(result => {
+          this.total = result.total;
+          this.data = result;
+          this._isSpinning = false;
+          this.loading = false;
+        }, error => {
+          this.loading = false;
+        });
+
   }
+
   //Event method for deleting courier
   deleteConfirm(id) {
     this.courierService.delete(id).subscribe(result => {
@@ -71,9 +82,9 @@ export class CourierComponent implements OnInit {
 
     });
   }
+
   //Event method for submitting the form
   submitForm = ($event, value) => {
-    this.submitting = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
@@ -82,36 +93,31 @@ export class CourierComponent implements OnInit {
     formData.append("name", value.name);
     formData.append("origin_type", value.origin_type);
     this.courierService.insertCourier(formData).subscribe(
-      result => {
-        if (result.id) {
-          this.submitting = false;
-          this._notification.create(
-            "success",
-            "Courier has been successfully added.",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Courier has been successfully added.",
+                result.name
+            );
+          }
+          this.isVisible = false;
+          this.getPageData();
+          this.resetAllFilter();
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isVisible = false;
-        this.getPageData();
-        this.resetAllFilter();
-      },
-      error => {
-        this.submitting = false;
-        this._isSpinning = false;
-        this._notification.create(
-            "error",
-            "Error Occurred!",
-            "Error occurred while adding Courier Company!"
-        );
-      }
     );
   };
+
   //Event method for resetting all filters
   resetAllFilter() {
     this.limit = 10;
     this.page = 1;
     this.getPageData();
   }
+
   //Method for showing the modal
   showModal = () => {
     this.isVisible = true;
@@ -133,6 +139,7 @@ export class CourierComponent implements OnInit {
       this.validateForm.controls[key].markAsPristine();
     }
   };
+
   //Event method for setting up form in validation
   getFormControl(name) {
     return this.validateForm.controls[name];
@@ -168,20 +175,20 @@ export class CourierComponent implements OnInit {
     formData.append("origin_type", value.origin_type);
 
     this.courierService.updateCourier(this.id, formData).subscribe(
-      result => {
-        if (result.id) {
-          this._notification.create(
-            "success",
-            "Courier has been updated successfully",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Courier has been updated successfully",
+                result.name
+            );
+          }
+          this.isEditVisible = false;
+          this.getPageData();
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isEditVisible = false;
-        this.getPageData();
-      },
-      error => {
-        this._isSpinning = false;
-      }
     );
   };
   handleEditCancel = (e) => {
@@ -191,6 +198,7 @@ export class CourierComponent implements OnInit {
     }
     this.isEditVisible = false;
   };
+
 //Event method for setting up edit form in validation
   getEditFormControl(name) {
     return this.validateEditForm.controls[name];

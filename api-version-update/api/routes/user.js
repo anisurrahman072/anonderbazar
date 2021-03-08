@@ -6,4 +6,5 @@ exports.userRoutes = {
   'POST /api/v1/user/checkEmail': 'UserController.checkEmail',
   'POST /api/v1/user/checkPhone': 'UserController.checkPhone',
   'POST /api/v1/user/checkUsername': 'UserController.checkUsername',
+  'GET /api/v1/user/all-customers': 'UserController.getAllCustomers'
 };
