@@ -54,8 +54,8 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody >
-                    <tr #dataFor *ngFor="let data of nzTable.data;let i=index" >
+                    <tbody nz-tbody>
+                    <tr #dataFor *ngFor="let data of nzTable.data;let i=index" nz-tbody-tr>
                         <td>
                             {{data.suborder_id?.product_order_id}} / {{data.suborder_id?.id}}
                         </td>
@@ -137,14 +137,14 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span class="col-md-6">
+<!--                    <span class="col-md-6" nz-table-title>
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
                                        [nzPageIndex]="page" [nzPageSize]="limit" [nzTotal]="total" nzShowSizeChanger
                                        nzShowTotal>
                         </nz-pagination>
-                    </span>
-                    <span class="pull-right col-md-6" >
+                    </span>-->
+                    <span class="pull-right col-md-6">
                         <button (click)="resetAllFilter()" nz-button>Clear filter</button>
                     </span>
                 </div>
