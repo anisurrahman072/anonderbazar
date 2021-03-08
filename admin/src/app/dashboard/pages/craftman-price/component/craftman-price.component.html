@@ -42,8 +42,8 @@
                 <th>
                     <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="nameSearchValue"
                                (ngModelChange)="page=1;getPageData()"
-                               nzPlaceHolder="Craftsman নির্বাচন করুন" (nzSearch)="crafmanSearchChange($event)"
-                               (nzSearchChange)="crafmanSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                               nzPlaceHolder="Craftsman নির্বাচন করুন"
+                               [nzNotFoundContent]="'Not found'"
                                nzShowSearch>
                         <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
                                    [nzValue]="option.id">
@@ -98,8 +98,7 @@
                             </span>
                         <span *ngIf="editRow===i">
                                 <nz-select [(ngModel)]="tempEditObject.craftman_id" style="width: 100px;" nzAllowClear
-                                           (ngModelChange)="crafmanChange($event)" nzPlaceHolder="Select picture"
-                                           (nzSearch)="crafmanChange($event)" (nzSearchChange)="crafmanChange($event)"
+                                           nzPlaceHolder="Select picture"
                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                     <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
                                                [nzValue]="option.id">
@@ -116,10 +115,7 @@
                                 {{data.part_id?.name}}
                             </span>
                         <span *ngIf="editRow===i && partSearchOptions.length>0">
-                                <nz-select [(ngModel)]="tempEditObject.part_id" style="width: 100px;" nzAllowClear
-                                           (ngModelChange)="partSearchChange($event)" nzPlaceHolder="Select picture"
-                                           (nzSearch)="partSearchChange($event)"
-                                           (nzSearchChange)="partSearchChange($event)"
+                                <nz-select [(ngModel)]="tempEditObject.part_id" style="width: 100px;" nzAllowClear nzPlaceHolder="Select picture"
                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                     <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name"
                                                [nzValue]="option.id">
@@ -140,9 +136,7 @@
                             <span *ngIf="editRow===i">
                                     <nz-select [(ngModel)]="tempEditObject.genre_id" style="width: 100px;" nzAllowClear
                                                nzPlaceHolder="Select picture"
-                                               (nzModelChange)="genreSearchChange($event)"
-                                               (nzSearch)="genreSearchChange($event)"
-                                               (nzSearchChange)="genreSearchChange($event)"
+                                               (ngModelChange)="genreSearchChange($event)"
                                                [nzNotFoundContent]="'Not found'" nzShowSearch>
                                         <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
                                                    [nzValue]="option.id">
@@ -161,9 +155,7 @@
                                 </span>
                             <span *ngIf="editRow===i && designSearchOptions.length>0">
                                     <nz-select [(ngModel)]="tempEditObject.design_id" style="width: 100px;"
-                                               nzAllowClear placeholder="Select picture"
-                                               (nzSearch)="designSearchChange($event)"
-                                               (nzSearchChange)="designSearchChange($event)"
+                                               nzAllowClear nzPlaceHolder="Select picture"
                                                [nzNotFoundContent]="'Not found'"
                                                nzShowSearch>
                                         <nz-option *ngFor="let option of designSearchOptions" [nzLabel]="option.name"
@@ -227,14 +219,14 @@
         </nz-table>
         <div class="row">
             <div class="col-md-offset-5" style="margin-top: 10px">
-                <span nz-table-title class="col-md-6">
+                <span   class="col-md-6">
                     <nz-pagination *ngIf="!editRowActive" (nzPageIndexClickChange)="changePage($event,limit)"
                                    (nzPageSizeChange)="changePage(1,$event)" nzShowTotal [nzPageIndex]="page"
                                    [nzTotal]="total"
                                    nzShowSizeChanger [nzPageSize]="limit">
                     </nz-pagination>
                 </span>
-                <span nz-table-title class="pull-right col-md-6">
+                <span   class="pull-right col-md-6">
                     <button nz-button *ngIf="!editRowActive" (click)="resetAllFilter()">Clear filter</button>
                 </span>
             </div>

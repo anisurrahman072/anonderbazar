@@ -236,16 +236,12 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
-    categoryIdSearchChange($event) {
-    }
 
     subcategoryIdChange($event) {
         this.page = 1;
         this.getPageData();
     }
 
-    subcategoryIdSearchChange($event) {
-    }
 
     addRow() {
         this.tempEditObject = {
@@ -337,9 +333,6 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
-    partSearchChange($event) {
-    }
-
     designCategorySearchChange($event) {
         this.tempEditObject.design_subcategory_id = null;
         const query = encodeURI($event);
@@ -368,8 +361,6 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
-    designSearchChange($event) {
-    }
 
     genreSearchChange($event) {
         this.tempEditObject.design_id = null;
@@ -381,9 +372,6 @@ export class CraftmanPriceComponent implements OnInit {
         } else {
             this.designSearchOptions = {};
         }
-    }
-
-    categorySearchChange($event) {
     }
 
     categoryChange($event) {
@@ -412,12 +400,4 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
-    typeSearchChange($event: string) {
-    }
-
-    crafmanChange($event: string) {
-    }
-
-    crafmanSearchChange($event: string) {
-    }
 }

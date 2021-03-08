@@ -22,7 +22,7 @@ import {NzNotificationService} from "ng-zorro-antd";
     styleUrls: ['./craftman-price-create.component.css']
 })
 export class CraftmanPriceCreateComponent implements OnInit {
-
+    @ViewChild('Image') Image;
     validateForm: FormGroup;
     _isSpinning: boolean = false;
     ImageFile: File[] = [];
@@ -42,9 +42,6 @@ export class CraftmanPriceCreateComponent implements OnInit {
     craftmanSearchoptions: any[];
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
-
-
-    @ViewChild('Image') Image;
     currentUser: any;
     design_id: any;
 
@@ -193,9 +190,6 @@ export class CraftmanPriceCreateComponent implements OnInit {
             : '';
     }
 
-    crafmanChange($event: string) {
-    }
-
     categoryIdChange($event) {
         const query = encodeURI($event);
 
@@ -221,11 +215,6 @@ export class CraftmanPriceCreateComponent implements OnInit {
         }
     }
 
-    categoryIdSearchChange($event) {
-    }
-
-    subcategoryIdSearchChange($event) {
-    }
 
     genreSearchChange($event) {
 
@@ -297,16 +286,6 @@ export class CraftmanPriceCreateComponent implements OnInit {
         } else {
             this.designSearchOptions = {};
         }
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    partSearchChange($event) {
-    }
-
-    onUploadStateChanged(state: boolean) {
-
     }
 
     categoryChange($event) {

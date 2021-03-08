@@ -168,8 +168,6 @@
                                     <nz-select formControlName="craftman_id" [ngModel]="craftman_id" nzAllowClear
                                                (ngModelChange)="crafmanChange($event)"
                                                nzPlaceHolder="Craftsman নির্বাচন করুন"
-                                               (nzSearch)="crafmanChange($event)"
-                                               (nzSearchChange)="crafmanChange($event)"
                                                [nzNotFoundContent]="'Not found'"
                                                nzShowSearch>
                                         <nz-option *ngFor="let option of craftmanSearchoptions"

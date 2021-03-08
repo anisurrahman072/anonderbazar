@@ -215,10 +215,6 @@ export class DesignCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-
-    categorySearchChange($event) {
-    }
-
     //Method for category change
     categoryChange($event) {
         const query = encodeURI($event);
@@ -233,20 +229,4 @@ export class DesignCreateComponent implements OnInit {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
-
-    genreSearchChange($event) {
-    }
-
-    // Method for adding custom field
-    addFieldValue() {
-        this.fieldArray.push(this.newAttribute);
-        this.newAttribute = {};
-    }
-
-    // Method for deleting custom field
-    deleteFieldValue(index) {
-        this.fieldArray.splice(index, 1);
-    }
 }

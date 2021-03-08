@@ -17,7 +17,7 @@
 
                         <div nz-row>
                             <div nz-col [nzSpan]="7">
-                                <label -required> Picture </label>
+                                <label> Picture </label>
                             </div>
                             <div nz-col [nzSpan]="12">
                                 <image-upload [max]="1" buttonCaption="Select picture"
@@ -99,8 +99,6 @@
                                                            nzAllowClear (ngModelChange)="categoryChange($event)"
                                                            [ngModel]="design_category_ids[i]"
                                                            nzPlaceHolder="ধরন নির্বাচন করুন"
-                                                           (nzSearch)="categorySearchChange($event)"
-                                                           (nzSearchChange)="categorySearchChange($event)"
                                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                     <nz-option *ngFor="let option of designCategorySearchOptions"
                                                                [nzLabel]="option.name" [nzValue]="option.id">
@@ -120,8 +118,6 @@
                                                 <nz-select [formControlName]="control[1].controlInstance1"
                                                            nzAllowClear nzPlaceHolder="Select Product Subcategory"
                                                            [ngModel]="design_subcategory_ids[i]"
-                                                           (nzSearch)="subcategorySearchChange($event)"
-                                                           (nzSearchChange)="subcategorySearchChange($event)"
                                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                     <nz-option *ngFor="let option of designSubcategorySearchOptions"
                                                                [nzLabel]="option.name" [nzValue]="option.id">

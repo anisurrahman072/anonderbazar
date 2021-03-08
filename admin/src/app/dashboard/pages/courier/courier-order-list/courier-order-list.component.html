@@ -74,7 +74,7 @@
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"
                                        (ngModelChange)="changeStatusConfirm($event,data.id,data.status,data.order_id?.id)"
-                                       [(ngModel)]="selectedOption[i]" placeholder="Select Status">
+                                       [(ngModel)]="selectedOption[i]" nzPlaceHolder="Select Status">
                                 <nz-option *ngFor="let option of options1" [nzLabel]="option.label"
                                            [nzValue]="option.value">
                                     <ng-template #nzOptionTemplate>
@@ -89,7 +89,7 @@
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;"
                                        (ngModelChange)="changeStatusConfirm($event,data.id,data.status, data.order_id?.id)"
-                                       [(ngModel)]="selectedOption[i]" placeholder="Select Status">
+                                       [(ngModel)]="selectedOption[i]" nzPlaceHolder="Select Status">
                                 <nz-option *ngFor="let option of options2" [nzLabel]="option.label"
                                            [nzValue]="option.value">
                                     <ng-template #nzOptionTemplate>

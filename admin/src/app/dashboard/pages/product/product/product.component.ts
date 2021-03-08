@@ -327,8 +327,6 @@ export class ProductComponent implements OnInit, OnDestroy {
         }
     }
 
-    variantSearchChange($event) {
-    }
 
     // Method for check disable
     checkDisabled() {
@@ -555,21 +553,10 @@ export class ProductComponent implements OnInit, OnDestroy {
         }
     }
 
-    categoryIdSearchChange($event) {
-    }
-
-    brandIdSearchChange($event) {
-    }
-
-    typeIdSearchChange($event) {
-    }
-
     // Method called in subcategory option change
     subcategoryIdChange($event) {
         this.page = 1;
         this.getProductData();
     }
 
-    subcategoryIdSearchChange($event) {
-    }
 }

@@ -166,10 +166,6 @@ export class CraftsmanEditComponent implements OnInit {
         return metadata;
     };
 
-    //Method for division search change
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
 
     //Method for division change
     divisionChange($event) {
@@ -199,9 +195,4 @@ export class CraftsmanEditComponent implements OnInit {
         });
     }
 
-    zilaSearchChange($event: string) {
-    }
-
-    upazilaSearchChange($event: string) {
-    }
 }
