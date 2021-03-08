@@ -25,10 +25,8 @@
                         <th>
                             <span> Email </span>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="name">
                             <span>Name</span>
-                            <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
-                            </nz-table-sort>
                         </th>
 
                         <th>
@@ -83,7 +81,8 @@
                     <tbody>
                     <tr *ngFor="let data of nzTable.data">
                         <td>
-                            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.customer_avatar" [nzSize]="'large'"
+                            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.customer_avatar"
+                                       [nzSize]="'large'"
                                        [nzIcon]="'user'"></nz-avatar>
                         </td>
                         <td>{{data.username}}
