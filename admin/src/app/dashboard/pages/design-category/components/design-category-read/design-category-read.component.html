@@ -3,13 +3,14 @@
         নকশার ধরনের Description
     </ng-template>
     <ng-template #extra>
-        <button *ngIf="data && ('designcategory-edit'|accessControl)" [routerLink]="['/dashboard/designcategory/edit', data.id]"
-            nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button *ngIf="data && ('designcategory-edit'|accessControl)"
+                [routerLink]="['/dashboard/designcategory/edit', data.id]"
+                nz-button [nzSize]="'large'">
             <i class="anticon anticon-edit"></i>
             <span>Edit</span>
         </button>
 
-        <button routerLink="/dashboard/designcategory/" nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button routerLink="/dashboard/designcategory/" nz-button [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>
             <span> List </span>
         </button>
@@ -18,7 +19,8 @@
         <div class="row" *ngIf="data">
             <div class="col-md-4">
                 <div class="profile-img">
-                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                         src="{{  IMAGE_ENDPOINT + data.image}}"/>
                 </div>
             </div>
             <div class="col-md-6">
