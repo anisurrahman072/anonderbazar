@@ -7,17 +7,16 @@ import {
 } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {
-    NzNotificationService
-} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {DesignService} from '../../../../../services/design.service';
 import {DesignCategoryService} from '../../../../../services/design-category.service';
 import {GenreService} from '../../../../../services/genre.service';
-
 import {environment} from "../../../../../../environments/environment";
+import {
+    NzNotificationService
+} from 'ng-zorro-antd';
 
 @Component({
     selector: 'app-design-edit',
@@ -45,10 +44,10 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
     @ViewChild('Image') Image;
+    @ViewChild('input') input: any;
     designCategorySearchOptions: any;
     designSubcategorySearchOptions: any = {};
     genreSearchOptions: any;
-
     sub: Subscription;
     id: number;
     data: any;
@@ -61,7 +60,6 @@ export class DesignEditComponent implements OnInit, OnDestroy {
     currentUser: any;
     details: any;
 
-
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -73,6 +71,11 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         private designCategoryService: DesignCategoryService,
         private designService: DesignService
     ) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
@@ -81,6 +84,54 @@ export class DesignEditComponent implements OnInit, OnDestroy {
             genre_id: ['', [Validators.required]],
             details: ['', [Validators.required]]
         });
+        this.currentUser = this.authService.getCurrentUser();
+        this.sub = this.route.params.subscribe(params => {
+            this.id = +params['id']; // (+) converts string 'id' to a number
+            this.designService.getById(this.id).subscribe(result => {
+                this.data = result;
+                this.validateForm.patchValue(this.data);
+                this.ImageFileEdit = [];
+
+                let newCategory = this.data.design_category_id;
+                let newSubCategory = this.data.design_subcategory_id;
+                let newGenre = this.data.genre_id;
+
+                let choiceLength = 0;
+                if (newCategory.length > newSubCategory.length) {
+                    choiceLength = newCategory.length;
+                } else if (newCategory.length < newSubCategory.length) {
+                    choiceLength = newSubCategory.length;
+                } else {
+                    choiceLength = newGenre.length;
+                }
+
+                for (let index = 0; index < choiceLength; index++) {
+                    this.addField();
+                }
+
+
+                if (this.data && this.data.image) {
+                    this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
+                }
+                this.design_category_ids = newCategory;
+                this.design_subcategory_ids = newSubCategory;
+                this.design_Genre_ids = newGenre;
+
+                if (this.data && this.data.details) {
+                    this.details = this.data.details;
+                }
+            });
+        });
+
+        this.designCategoryService.getAllDesignCategory().subscribe(result => {
+            this.designCategorySearchOptions = result;
+        });
+
+        this.genreService.getAll().subscribe(result => {
+            this.genreSearchOptions = result;
+        });
+
+        this.designSubcategorySearchOptions = null;
     }
 
 //Event method for submitting the form
@@ -132,58 +183,6 @@ export class DesignEditComponent implements OnInit, OnDestroy {
             }
         });
     };
-
-    // init the component
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.sub = this.route.params.subscribe(params => {
-            this.id = +params['id']; // (+) converts string 'id' to a number
-            this.designService.getById(this.id).subscribe(result => {
-                this.data = result;
-                this.validateForm.patchValue(this.data);
-                this.ImageFileEdit = [];
-
-                let newCategory = this.data.design_category_id;
-                let newSubCategory = this.data.design_subcategory_id;
-                let newGenre = this.data.genre_id;
-
-                let choiceLength = 0;
-                if (newCategory.length > newSubCategory.length) {
-                    choiceLength = newCategory.length;
-                } else if (newCategory.length < newSubCategory.length) {
-                    choiceLength = newSubCategory.length;
-                } else {
-                    choiceLength = newGenre.length;
-                }
-
-                for (let index = 0; index < choiceLength; index++) {
-                    this.addField();
-                }
-
-
-                if (this.data && this.data.image) {
-                    this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
-                }
-                this.design_category_ids = newCategory;
-                this.design_subcategory_ids = newSubCategory;
-                this.design_Genre_ids = newGenre;
-
-                if (this.data && this.data.details) {
-                    this.details = this.data.details;
-                }
-            });
-        });
-
-        this.designCategoryService.getAllDesignCategory().subscribe(result => {
-            this.designCategorySearchOptions = result;
-        });
-
-        this.genreService.getAll().subscribe(result => {
-            this.genreSearchOptions = result;
-        });
-
-        this.designSubcategorySearchOptions = null;
-    }
 
     //Event method for removing picture
     onRemoved(file: FileHolder) {
@@ -251,6 +250,8 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
     }
 
+    categorySearchChange($event) {
+    }
 
     categoryChange($event) {
         const query = encodeURI($event);
@@ -265,4 +266,12 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         }
     }
 
+    subcategorySearchChange($event) {
+    }
+
+    subcategoryChange($event) {
+    }
+
+    genreSearchChange($event) {
+    }
 }
