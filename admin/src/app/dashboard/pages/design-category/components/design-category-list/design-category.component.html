@@ -63,9 +63,8 @@
                     <tbody>
                     <ng-template ngFor let-data [ngForOf]="nzTable.data">
                         <tr class="parent-tr">
-                            <td nzExpand>
+                            <td>
                                 {{data.subCategories.length}}
-                                <nz-row-expand-icon [(nzExpand)]="data.expand"></nz-row-expand-icon>
                             </td>
                             <td>
                                 <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +data.image" [nzSize]="'large'"
