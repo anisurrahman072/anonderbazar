@@ -150,7 +150,7 @@
                         <div nz-col [nzSpan]="12"      >
                             <nz-select formControlName="type_id" nzAllowClear (ngModelChange)="onTypeChange($event)"
                                        [ngModel]="type_id" [nzPlaceHolder]="'Select Product Category'"
-                                       [nzFilter]="true" (nzSearch)="typeSearchChange($event)"
+                                       (nzSearch)="typeSearchChange($event)"
                                        (nzSearchChange)="typeSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
@@ -173,7 +173,7 @@
                         </div>
                         <div nz-col [nzSpan]="12"      >
                             <nz-select [ngModel]="brand_id" formControlName="brand_id" nzAllowClear
-                                       [nzPlaceHolder]="'Select Product Brand'" [nzFilter]="true"
+                                       [nzPlaceHolder]="'Select Product Brand'"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
@@ -201,8 +201,7 @@
 
                             <nz-select [ngModel]="category_id" formControlName="category_id" nzAllowClear
                                        (ngModelChange)="categoryChange($event)"
-                                       [nzPlaceHolder]="'Select Product s-category'"
-                                       [nzFilter]="true" (nzSearch)="categorySearchChange($event)"
+                                       [nzPlaceHolder]="'Select Product s-category'" (nzSearch)="categorySearchChange($event)"
                                        (nzSearchChange)="categorySearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
@@ -228,7 +227,7 @@
 
                             <nz-select formControlName="subcategory_id" nzAllowClear
                                        (ngModelChange)="subcategoryChange($event)" [ngModel]="subcategory_id"
-                                       [nzPlaceHolder]="'Select Product ss-category'" [nzFilter]="true"
+                                       [nzPlaceHolder]="'Select Product ss-category'"
                                        (nzSearch)="subcategorySearchChange($event)"
                                        (nzSearchChange)="subcategorySearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
