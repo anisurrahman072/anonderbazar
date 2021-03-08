@@ -269,11 +269,6 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
         return metadata;
     }
 
-    //Method for division search change
-
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
 
     //Method for division change
 
@@ -314,9 +309,4 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
         });
     }
 
-    zilaSearchChange($event: string) {
-    }
-
-    upazilaSearchChange($event: string) {
-    }
 }

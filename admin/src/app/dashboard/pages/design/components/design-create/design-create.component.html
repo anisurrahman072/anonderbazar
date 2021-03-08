@@ -17,7 +17,7 @@
                         <div class="col-md-12">
                             <div nz-row>
                                 <div nz-col [nzSpan]="7">
-                                    <label -required> Picture </label>
+                                    <label> Picture </label>
                                 </div>
                                 <div nz-col [nzSpan]="12">
                                     <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
@@ -102,8 +102,6 @@
                                                 <nz-select [formControlName]="control[0].controlInstance" nzAllowClear
                                                            (ngModelChange)="categoryChange($event)"
                                                            nzPlaceHolder="ধরন নির্বাচন করুন"
-                                                           (nzSearch)="categorySearchChange($event)"
-                                                           (nzSearchChange)="categorySearchChange($event)"
                                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                     <nz-option *ngFor="let option of designCategorySearchOptions"
                                                                [nzLabel]="option.name" [nzValue]="option.id">
@@ -122,8 +120,6 @@
                                             <div nz-col>
                                                 <nz-select [formControlName]="control[1].controlInstance1" nzAllowClear
                                                            nzPlaceHolder="Select Product Subcategory"
-                                                           (nzSearch)="subcategorySearchChange($event)"
-                                                           (nzSearchChange)="subcategorySearchChange($event)"
                                                            [nzNotFoundContent]="'Not found'" nzShowSearch>
                                                     <nz-option *ngFor="let option of designSubcategorySearchOptions"
                                                                [nzLabel]="option.name" [nzValue]="option.id">

@@ -11,15 +11,17 @@
         </ng-template>
         <ng-template #body>
 
-            <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <form nz-form [formGroup]="validateForm" id="validateForm"
+                  (ngSubmit)="submitForm($event,validateForm.value)">
 
                 <div class="col-md-3">
-                    <div    nz-row *ngIf="selectedVariant_id?.type==1">
-                        <div nz-col [nzSpan]="16"      >
+                    <div nz-row *ngIf="selectedVariant_id?.type==1">
+                        <div nz-col [nzSpan]="16">
                             <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                            dropBoxMessage="Drop Picture here" clearButtonCaption="remove it?" [uploadedFiles]="ImageFileEdit"
-                                [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div    *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                          dropBoxMessage="Drop Picture here" clearButtonCaption="remove it?"
+                                          [uploadedFiles]="ImageFileEdit"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
                                 Please upload an image here!
                             </div>
                         </div>
@@ -27,62 +29,65 @@
                     <!--image-->
                 </div>
                 <div class="col-md-9">
-                    <div    nz-row>
+                    <div nz-row>
                         <!--name start-->
-                        <div    nz-col [nzSpan]="2">
+                        <div nz-col [nzSpan]="2">
                             <label> Name </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
-                               <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="name" [placeholder]="'Enter Name'" [nzSize]="'large'">
 
-                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 Name is required!
                             </div>
-                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 The name is redundant!
                             </div>
-                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Validating...
                             </div>
                         </div>
                     </div>
                     <!--name -->
 
-                    <div    nz-row>
-                        <div nz-col [nzSpan]="2"   >
+                    <div nz-row>
+                        <div nz-col [nzSpan]="2">
                             <label> Attribute </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
+                        <div nz-col [nzSpan]="16">
 
-                            <nz-select formControlName="variant_id" [nzPlaceHolder]="'Select Attribute'" [nzNotFoundContent]="'Not found'" [(ngModel)]="selectedVariant_id"
-                            (ngModelChange)="variantOptionChange($event)" (nzSearch)="variantSearchChange($event)"
-                             (nzSearchChange)="variantSearchChange($event)" nzShowSearch>
+                            <nz-select formControlName="variant_id" [nzPlaceHolder]="'Select Attribute'"
+                                       [nzNotFoundContent]="'Not found'" [(ngModel)]="selectedVariant_id"
+                                       nzShowSearch>
 
-                                <nz-option *ngFor="let option of variantSearchOptions" [nzLabel]="option.name" [nzValue]="option">
+                                <nz-option *ngFor="let option of variantSearchOptions" [nzLabel]="option.name"
+                                           [nzValue]="option">
                                 </nz-option>
                             </nz-select>
 
 
-                            <div    *ngIf="getFormControl('variant_id').dirty&&getFormControl('variant_id').hasError('required')">
+                            <div *ngIf="getFormControl('variant_id').dirty&&getFormControl('variant_id').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--variant_id-->
 
-                    <div    nz-row *ngIf="selectedVariant_id?.type==2">
-                        <div nz-col [nzSpan]="2"   >
+                    <div nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2">
                             <label> Brand </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
+                        <div nz-col [nzSpan]="16">
 
-                            <nz-select formControlName="brand_id" nzAllowClear [nzPlaceHolder]="'Select brand'" [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name" [nzValue]="option">
+                            <nz-select formControlName="brand_id" nzAllowClear [nzPlaceHolder]="'Select brand'"
+                                       [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
+                                           [nzValue]="option">
                                 </nz-option>
                             </nz-select>
 
 
-                            <div    *ngIf="getFormControl('brand_id').dirty&&getFormControl('brand_id').hasError('required')">
+                            <div *ngIf="getFormControl('brand_id').dirty&&getFormControl('brand_id').hasError('required')">
                                 required!
                             </div>
                         </div>
@@ -90,45 +95,45 @@
                     <!--brand_id-->
 
 
-                    <div    nz-row *ngIf="selectedVariant_id?.type==2">
-                        <div nz-col [nzSpan]="2"   >
+                    <div nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2">
                             <label> Quantity </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
-                               <input nz-input  formControlName="quantity"  [placeholder]="'Enter Quantity'"
-                                [nzSize]="'large'">
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="quantity" [placeholder]="'Enter Quantity'"
+                                   [nzSize]="'large'">
 
-                            <div    *ngIf="getFormControl('quantity').dirty&&getFormControl('quantity').hasError('required')">
+                            <div *ngIf="getFormControl('quantity').dirty&&getFormControl('quantity').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--quantity-->
 
-                    <div    nz-row *ngIf="selectedVariant_id?.type==2">
-                        <div nz-col [nzSpan]="2"   >
+                    <div nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2">
                             <label> Unit Name </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
-                               <input nz-input  formControlName="unit_name"  [placeholder]="'Enter Unit Name'"
-                                [nzSize]="'large'">
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="unit_name" [placeholder]="'Enter Unit Name'"
+                                   [nzSize]="'large'">
 
-                            <div    *ngIf="getFormControl('unit_name').dirty&&getFormControl('unit_name').hasError('required')">
+                            <div *ngIf="getFormControl('unit_name').dirty&&getFormControl('unit_name').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--unit_name-->
 
-                    <div    nz-row *ngIf="selectedVariant_id?.type==2">
-                        <div nz-col [nzSpan]="2"   >
+                    <div nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="2">
                             <label> Unit Price </label>
                         </div>
-                        <div nz-col [nzSpan]="16"      >
-                               <input nz-input  formControlName="unit_price"  [placeholder]="'Enter Unit price'"
-                                [nzSize]="'large'">
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="unit_price" [placeholder]="'Enter Unit price'"
+                                   [nzSize]="'large'">
 
-                            <div    *ngIf="getFormControl('unit_price').dirty&&getFormControl('unit_price').hasError('required')">
+                            <div *ngIf="getFormControl('unit_price').dirty&&getFormControl('unit_price').hasError('required')">
                                 required!
                             </div>
                         </div>
@@ -136,19 +141,18 @@
                     <!--unit_price-->
 
 
-                    <div    nz-row *ngIf="selectedVariant_id?.type==2">
-                        <div nz-col [nzSpan]="16"      >
-                               <input nz-input  formControlName="rack"  [placeholder]="'তাক লিপিবদ্ধ করুন'" [nzSize]="'large'">
+                    <div nz-row *ngIf="selectedVariant_id?.type==2">
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="rack" [placeholder]="'তাক লিপিবদ্ধ করুন'"
+                                   [nzSize]="'large'">
 
                         </div>
                     </div>
                     <!--rack-->
 
 
-
-
-                    <div    nz-row>
-                        <div nz-col [nzOffset]="2" [nzSpan]="16"   >
+                    <div nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16">
                             <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                                 Save
                             </button>

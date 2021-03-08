@@ -250,8 +250,6 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
     }
 
-    categorySearchChange($event) {
-    }
 
     categoryChange($event) {
         const query = encodeURI($event);
@@ -266,12 +264,4 @@ export class DesignEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
-
-    subcategoryChange($event) {
-    }
-
-    genreSearchChange($event) {
-    }
 }

@@ -19,7 +19,7 @@ export class WarehouseVariantCreateComponent implements OnInit {
   brandSearchOptions: any = [];
   type: any;
   _isSpinning: boolean = false;
-
+  selectedVariant_id: any;
   ImageFile: File;
   @ViewChild("Image") Image;
   currentUser: any;
@@ -137,5 +137,4 @@ export class WarehouseVariantCreateComponent implements OnInit {
     });
   }
 
-  variantOptionChange($event) {}
 }

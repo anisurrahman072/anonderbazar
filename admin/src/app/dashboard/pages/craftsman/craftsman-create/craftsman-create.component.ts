@@ -31,7 +31,7 @@ export class CraftsmanCreateComponent implements OnInit {
         {label: 'Female', value: 'female'},
         {label: 'Not Specified', value: 'not-specified'}
     ];
-
+    pass: any;
     zilaSearchOptions: any;
     upazilaSearchOptions: any;
     divisionSearchOptions: any;
@@ -184,10 +184,6 @@ export class CraftsmanCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    //Method for division search change
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
 
     //Method for division change
     divisionChange($event) {
@@ -208,9 +204,4 @@ export class CraftsmanCreateComponent implements OnInit {
         });
     }
 
-    zilaSearchChange($event: string) {
-    }
-
-    upazilaSearchChange($event: string) {
-    }
 }

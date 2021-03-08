@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   Validators
 } from '@angular/forms';
@@ -12,8 +11,6 @@ import { FileHolder, UploadMetadata } from 'angular2-image-upload';
 import { WarehouseVariantService } from '../../../../services/warehouse-variant.service';
 import { BrandService } from '../../../../services/brand.service';
 import { VariantService } from '../../../../services/variant.service';
-
-import set = Reflect.set;
 import {environment} from "../../../../../environments/environment";
 
 @Component({
@@ -160,7 +157,5 @@ export class WarehouseVariantEditComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub ? this.sub.unsubscribe() : '';
   }
-  variantSearchChange($event){}
-  variantOptionChange($event){}
 
 }

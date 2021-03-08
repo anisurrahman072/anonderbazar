@@ -7,7 +7,6 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {
-    NzInputDirectiveComponent,
     NzNotificationService
 } from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -27,7 +26,6 @@ import {environment} from "../../../../../environments/environment";
 export class ProductEditComponent implements OnInit, OnDestroy {
 
     @ViewChild('Image') Image;
-    @ViewChild('input') input: NzInputDirectiveComponent;
     sub: Subscription;
 
     tagOptions: any = [];
@@ -436,8 +434,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
     }
 
-    categorySearchChange($event) {
-    }
     // Method called on product type change
     onTypeChange($event) {
 
@@ -477,17 +473,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
-
-    subcategoryChange($event) {
-    }
 
 
 

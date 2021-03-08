@@ -67,7 +67,6 @@
                     <!--search bar.....................-->
                     <tr>
                         <th>
-
                         </th>
                         <th>
                             <input nz-input style="width: 150px;" placeholder="Code"
@@ -98,8 +97,7 @@
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="typeId"
                                        (ngModelChange)="typeIdChange($event)"
                                        nzPlaceHolder="Select Product Type"
-                                       (nzSearch)="typeIdSearchChange($event)"
-                                       (nzSearchChange)="typeIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                       [nzNotFoundContent]="'Not found'"
                                        nzShowSearch>
                                 <nz-option *ngFor="let option of TypeSearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
@@ -111,8 +109,7 @@
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
                                        (ngModelChange)="brandIdChange($event)"
                                        nzPlaceHolder="Select Brand"
-                                       (nzSearch)="brandIdSearchChange($event)"
-                                       (nzSearchChange)="brandIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                       [nzNotFoundContent]="'Not found'"
                                        nzShowSearch>
                                 <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
@@ -123,8 +120,6 @@
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="categoryId"
                                        (ngModelChange)="categoryIdChange($event)"
                                        nzPlaceHolder="Select Product category"
-                                       (nzSearch)="categoryIdSearchChange($event)"
-                                       (nzSearchChange)="categoryIdSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'"
                                        nzShowSearch>
                                 <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
@@ -137,8 +132,6 @@
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="subcategoryId"
                                        (ngModelChange)="subcategoryIdChange($event)"
                                        nzPlaceHolder="Select Product Subcategory"
-                                       (nzSearch)="subcategoryIdSearchChange($event)"
-                                       (nzSearchChange)="subcategoryIdSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
@@ -346,11 +339,8 @@
                 <td>{{data.quantity}}</td>
 
                 <td>
-
                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
                                    [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteProductVariantConfirm(i,data.id)">
-
-
                         <a nz-popconfirm>
                             <button nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-delete "> Remove </i>
@@ -374,8 +364,6 @@
                     <nz-select style="width: 200px;" formControlName="variant_id" [(ngModel)]="selectedVariant_id"
                                nzAllowClear (ngModelChange)="variantOptionChange($event)"
                                nzPlaceHolder="Select Attribute"
-                               (nzSearch)="variantSearchChange($event)"
-                               (nzSearchChange)="variantSearchChange($event)"
                                [nzNotFoundContent]="'Not found'" nzShowSearch>
                         <nz-option *ngFor="let option of variantOptions" [nzLabel]="option.name" [nzValue]="option">
                         </nz-option>
