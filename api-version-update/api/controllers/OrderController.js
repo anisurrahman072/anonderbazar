@@ -968,8 +968,16 @@ module.exports = {
       if (req.query.status) {
         _where += ` AND orders.status = ${req.query.status} `;
       }
+
+      if (req.query.orderNumber) {
+        _where += ` AND orders.id = ${req.query.orderNumber} `;
+      }
       if (req.query.name) {
-        _where += ` AND users.first_name LIKE '%${req.query.status}%' `;
+        _where += ` AND LOWER(users.first_name) LIKE '%${req.query.status.toLowerCase()}%' `;
+      }
+      if (req.query.customerName) {
+        const customerName = req.query.customerName.toLowerCase();
+        _where += ` AND ( LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
       }
 
       if (req.query.created_at) {
