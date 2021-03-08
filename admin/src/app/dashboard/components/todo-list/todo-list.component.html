@@ -26,7 +26,7 @@
 
         <div class="col-md-12">
           <div class="heading-todo-news">
-            <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
+            <nz-table #nzTable [nzPageSize]="5" [nzData]="data">
               <thead  >
                 <tr>
                   <th   ><span> Order number </span></th>
@@ -108,7 +108,7 @@
 
         <div class="col-md-12">
           <div class="heading-todo-news">
-            <nz-table #nzTables [nzPageSize]="5" [nzDataSource]="newData">
+            <nz-table #nzTables [nzPageSize]="5" [nzData]="newData">
               <thead  >
                 <tr>
                   <th   ><span> Order number </span></th>
@@ -179,7 +179,7 @@
   (nzOnOk)="handleOk($event)"
 >
   <ng-template #modalContent>
-    <nz-table #nzTable [nzDataSource]="allDataTodayTodo">
+    <nz-table #nzTable [nzData]="allDataTodayTodo">
       <thead  >
         <tr>
           <th   ><span> Order number </span></th>
