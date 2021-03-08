@@ -4,140 +4,146 @@
             পণ্যের অংশ
         </ng-template>
         <ng-template #extra>
-            <button *ngIf=" 'part-create'| accessControl " routerLink="/dashboard/part/create" nz-button [nzType]="'primary'"
-                [nzSize]="'large'">
+            <button *ngIf=" 'part-create'| accessControl " routerLink="/dashboard/part/create" nz-button
+                    [nzType]="'primary'"
+                    [nzSize]="'large'">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false"
-                    [nzSize]="'default'" [nzShowTitle]="true">
+                <nz-table #nzTable [nzData]="data" [nzPageSize]="10" [nzTotal]="total" [nzFrontPagination]="false"
+                          [nzSize]="'default'">
 
-                    <thead  >
-                        <tr>
-                            <th   >
-                                <span>Picture</span>
-                            </th>
-                            <th   >
-                                <span>Name</span>
-                                <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
-                                </nz-table-sort>
-                            </th>
-                            <th   >
-                                <span>শ্রেণী</span>
-                            </th>
-                            <th   >
-                                <span>ধরন</span>
-                            </th>
-                            <th   >
-                                <span>Subcategory</span>
-                            </th>
-                            <th   >
-                                <span>Details</span>
-                            </th>
-                            <th   >
+                    <thead>
+                    <tr>
+                        <th>
+                            <span>Picture</span>
+                        </th>
+                        <th nzShowSort nzSortKey="name">
+                            <span>Name</span>
+                        </th>
+                        <th>
+                            <span>শ্রেণী</span>
+                        </th>
+                        <th>
+                            <span>ধরন</span>
+                        </th>
+                        <th>
+                            <span>Subcategory</span>
+                        </th>
+                        <th>
+                            <span>Details</span>
+                        </th>
+                        <th>
 
-                            </th>
-                        </tr>
+                        </th>
+                    </tr>
                     </thead>
-                    <thead  >
-                        <!--search bar.....................-->
-                        <tr>
-                            <th   >
+                    <thead>
+                    <!--search bar.....................-->
+                    <tr>
+                        <th>
 
-                            </th>
-                            <th   >
+                        </th>
+                        <th>
 
-                                  <input nz-input  [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
+                            <input nz-input [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue"
+                                   (ngModelChange)="page=1;getPageData()">
 
-                            </th>
-                            <th   >
-                                <nz-select style="width: 200px;" nzAllowClear nzShowSearch [(ngModel)]="typeId" (ngModelChange)="page=1;getPageData()"
-                                    [nzPlaceHolder]="'শ্রেণী Search'"
-                                     [nzNotFoundContent]="'Not found'"
-                                    >
-                                    <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option?.name"
-                                        [nzValue]="option?.id">
-                                    </nz-option>
-                                </nz-select>
-                            </th>
-                            <th   >
-                                <nz-select style="width: 200px;" nzAllowClear [(ngModel)]="categoryId" (ngModelChange)="categoryIdChange($event)"
-                                    [nzPlaceHolder]="'ধরন Search'"
-                                     [nzNotFoundContent]="'Not found'"
-                                    nzShowSearch>
-                                    <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
-                                        [nzValue]="option.id">
-                                    </nz-option>
-                                </nz-select>
-                            </th>
-                            <th   >
-                                <nz-select style="width: 200px;" nzAllowClear [(ngModel)]="subcategoryId"
-                                    (ngModelChange)="subcategoryIdChange($event)" [nzPlaceHolder]="'Subcategory Search'"
+                        </th>
+                        <th>
+                            <nz-select style="width: 200px;" nzAllowClear nzShowSearch [(ngModel)]="typeId"
+                                       (ngModelChange)="page=1;getPageData()"
+                                       [nzPlaceHolder]="'শ্রেণী Search'"
+                                       [nzNotFoundContent]="'Not found'"
+                            >
+                                <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option?.name"
+                                           [nzValue]="option?.id">
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th>
+                            <nz-select style="width: 200px;" nzAllowClear [(ngModel)]="categoryId"
+                                       (ngModelChange)="categoryIdChange($event)"
+                                       [nzPlaceHolder]="'ধরন Search'"
+                                       [nzNotFoundContent]="'Not found'"
+                                       nzShowSearch>
+                                <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
+                                           [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th>
+                            <nz-select style="width: 200px;" nzAllowClear [(ngModel)]="subcategoryId"
+                                       (ngModelChange)="subcategoryIdChange($event)"
+                                       [nzPlaceHolder]="'Subcategory Search'"
 
-                                    [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                    <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
-                                        [nzValue]="option.id">
-                                    </nz-option>
-                                </nz-select>
-                            </th>
-                            <th   >
+                                       [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
+                                           [nzValue]="option.id">
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th>
 
-                            </th>
-                            <th   >
+                        </th>
+                        <th>
 
-                            </th>
-                        </tr>
+                        </th>
+                    </tr>
                     </thead>
-                    <tbody   >
-                        <tr    *ngFor="let data of nzTable.data">
-                            <td   >
-                                <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
-                                    [nzIcon]="'user'"></nz-avatar>
-                            </td>
-                            <td   >{{data.name}}</td>
-                            <td   >{{data.type_id?.name}}</td>
-                            <td   >{{data.category_id?.name}}</td>
-                            <td   >{{data.subcategory_id?.name}}</td>
-                            <td   >
-                                <nz-tag [innerHTML]="data.details"></nz-tag>
-                            </td>
-                            <td>
-                                <nz-button-group>
-                                    <button *ngIf="'part-read'|accessControl" [routerLink]="['/dashboard/part/details/', data.id]"
+                    <tbody>
+                    <tr *ngFor="let data of nzTable.data">
+                        <td>
+                            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
+                                       [nzIcon]="'user'"></nz-avatar>
+                        </td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.type_id?.name}}</td>
+                        <td>{{data.category_id?.name}}</td>
+                        <td>{{data.subcategory_id?.name}}</td>
+                        <td>
+                            <nz-tag [innerHTML]="data.details"></nz-tag>
+                        </td>
+                        <td>
+                            <nz-button-group>
+                                <button *ngIf="'part-read'|accessControl"
+                                        [routerLink]="['/dashboard/part/details/', data.id]"
                                         nz-button [nzType]="'info'" [nzSize]="'default'">
-                                        <i class="anticon anticon-info-circle"> </i>
-                                    </button>
-                                    <button *ngIf="'part-edit'|accessControl" (click)="editModeOn()" [routerLink]="['/dashboard/part/edit', data.id]"
+                                    <i class="anticon anticon-info-circle"> </i>
+                                </button>
+                                <button *ngIf="'part-edit'|accessControl" (click)="editModeOn()"
+                                        [routerLink]="['/dashboard/part/edit', data.id]"
                                         nz-button [nzType]="'primary'" [nzSize]="'default'">
-                                        <i class="anticon anticon-edit"> </i>
-                                    </button>
-                                </nz-button-group>
-                                <ng-container *ngIf="'part-delete'|accessControl">
-                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
-                                        <a nz-popconfirm>
-                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                <i class="anticon anticon-delete"></i>
-                                            </button>
-                                        </a>
-                                    </nz-popconfirm>
-                                </ng-container>
-                            </td>
-                        </tr>
+                                    <i class="anticon anticon-edit"> </i>
+                                </button>
+                            </nz-button-group>
+                            <ng-container *ngIf="'part-delete'|accessControl">
+                                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                               [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
+                                    <a nz-popconfirm>
+                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <i class="anticon anticon-delete"></i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </ng-container>
+                        </td>
+                    </tr>
                     </tbody>
                 </nz-table>
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span    class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                    <span class="col-md-6">
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
+                                       (nzPageSizeChange)="changePage(1,$event)"
+                                       [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span    class="pull-right col-md-6">
+                    <span class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>

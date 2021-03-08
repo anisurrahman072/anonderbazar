@@ -6,93 +6,94 @@
         <ng-template #extra>
             <nz-button-group>
 
-                <button nz-button [nzType]="'primary'"
-                        [nzSize]="'large'" (click)='showProductModal()' *ngIf="currentUser.group_id === 'admin'">
+                <button nz-button
+                        [nzSize]="'large'" (click)='showProductModal()' *ngIf="currentUser.group_id==='admin'">
                     <i class="anticon anticon-download"></i><span> Download CSV </span>
                 </button>
-                <button nz-button [nzType]="'primary'"
-                        [nzSize]="'large'" (click)='showPRModal()' *ngIf="currentUser.group_id === 'admin'">
+                <button nz-button
+                        [nzSize]="'large'" (click)='showPRModal()' *ngIf="currentUser.group_id==='admin'">
                     <i class="anticon anticon-download"></i><span> Download PR</span>
                 </button>
             </nz-button-group>
         </ng-template>
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzDataSource]="subOrderData" [nzPageSize]="10" [nzTotal]="subOrderTotal" [nzIsPagination]="false"
-                          [nzSize]="'default'" [nzShowTitle]="true">
+                <nz-table #nzTable
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="data"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          [(nzPageIndex)]="page"
+                          [(nzPageSize)]="limit"
+                          (nzPageIndexChange)="getPageData()"
+                >
 
-                    <thead  >
+                    <thead>
                     <tr>
-                        <th   >
-                            <span> Number </span>
-                        </th>
-                        <th   >
+                        <th nz-th>
                             <span> Order number </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Order Date </span>
                         </th>
-                        <th   >
+                        <th nz-th>
+                            <span> Vendor Id </span>
+                        </th>
+                        <th nz-th>
                             <span> Vendor Name </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Quantity </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Total Price</span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status changed by </span>
                         </th>
-                        <th   >
+                        <th nz-th>
 
                         </th>
                     </tr>
                     </thead>
-                    <thead  >
+                    <thead>
                     <!--search bar.....................-->
                     <tr>
-                        <th   >
-                              <input nz-input  [placeholder]="'Vendor Order'" [(ngModel)]="suborderNumberSearchValue"
-                                      (ngModelChange)="subOrderPage=1; getPageData()" [ngStyle]="{'width': '100px'}">
-
+                        <th nz-th>
+                            <input nz-input placeholder="Order number" [(ngModel)]="suborderNumberSearchValue" (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}">
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Order number'" [(ngModel)]="orderNumberSearchValue"
-                                      (ngModelChange)="subOrderPage=1; getPageData()" [ngStyle]="{'width': '100px'}">
-
-                        </th>
-                        <th    class="suborder-daterange">
+                        <th nz-th class="suborder-daterange">
 
                             <!--   <input class="form-control" placeholder="Select Order Date" type="text"-->
                             <!--   mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
                             <!--         [altInput]="true" [convertModelValue]="true" mode="range"> -->
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Vendor Name'" [(ngModel)]="suborderIdValue"
-                                      *ngIf="currentUser.group_id=='admin'"
-                                      (ngModelChange)="subOrderPage=1; getPageData()">
+                        <th nz-th>
 
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Quantity'" [(ngModel)]="quantitySearchValue"
-                                      (ngModelChange)="subOrderPage=1;getPageData()">
+                        <th nz-th>
+                            <input nz-input placeholder="Vendor Name" [(ngModel)]="suborderIdValue"
+                                   *ngIf="currentUser.group_id=='admin'"
+                                   (ngModelChange)="page=1; getPageData()">
 
                         </th>
-                        <th   >
-                              <input nz-input  [placeholder]="'Total Price'" [(ngModel)]="totalPriceSearchValue"
-                                      (ngModelChange)="subOrderPage=1;getPageData()">
-
+                        <th nz-th>
+                            <input nz-input placeholder="Quantity" [(ngModel)]="quantitySearchValue" (ngModelChange)="page=1;getPageData()">
+                        </th>
+                        <th nz-th>
+                            <input nz-input placeholder="Total Price" [(ngModel)]="totalPriceSearchValue" (ngModelChange)="page=1;getPageData()">
                         </th>
 
-                        <th   >
 
-                            <nz-select style="width: 180px;"   [(ngModel)]="statusSearchValue"
-                                       nzAllowClear (ngModelChange)="subOrderPage=1; getPageData()"
-                                       [nzPlaceHolder]="'Select Status'"
+                        <th nz-th>
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;"  [(ngModel)]="statusSearchValue"
+                                       nzAllowClear (ngModelChange)="page=1; getPageData()"
+                                       nzPlaceHolder="Select Status"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option *ngFor="let option of options" [nzLabel]="option.label"
                                            [nzValue]="option.value">
@@ -103,26 +104,26 @@
                                 </nz-option>
                             </nz-select>
                         </th>
-                        <th   >
+                        <th nz-th>
                         </th>
-                        <th   >
+                        <th nz-th>
 
                         </th>
                     </tr>
                     </thead>
-                    <tbody   >
-                    <tr    #dataFor *ngFor="let data of nzTable.data;let i=index">
-                        <td   >{{data.id}}</td>
-                        <td   >{{data.product_order_id}}</td>
-                        <td   >{{data.created_at|date:'d/M/yyyy, h:mm a'}}</td>
-                        <td   >{{data.name}}</td>
-                        <td   >{{data.total_quantity}}</td>
-                        <td   >{{data.total_price}}</td>
-                        <td   >
+                    <tbody>
+                    <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
+                        <td>{{data.product_order_id}} / {{data.id}}</td>
+                        <td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
+                        <td>{{data.warehouse_id}}</td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.total_quantity}}</td>
+                        <td>{{data.total_price}}</td>
+                        <td>
                             <div *ngIf="currentUser.group_id === 'admin'; else loggedOut">
                                 <span *ngIf="setStatus(i, data.status)"></span>
                                 <nz-select style="width: 180px;" [(ngModel)]="data.status"
-                                           [nzPlaceHolder]="'choose option'"
+                                           nzPlaceHolder="choose option"
                                            (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
                                     <nz-option *ngFor="let option of options" [nzLabel]="option.label"
                                                [nzValue]="option.value">
@@ -139,12 +140,12 @@
                             </ng-template>
 
                         </td>
-                        <td   >{{data.changedBy}}</td>
+                        <td>{{data.changedBy}}</td>
                         <td>
                             <nz-button-group>
                                 <!--Invoice-->
                                 <button [routerLink]="['/dashboard/suborder/invoice/', data.id]" nz-button
-                                        [nzType]="'info'"
+
                                         [nzSize]="'default'">
                                     <i class="anticon anticon-file-text"> </i>
                                 </button>
@@ -155,7 +156,7 @@
                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
                                                [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
                                     <a nz-popconfirm>
-                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                        <button nz-button  [nzSize]="'default'">
                                             <i class="anticon anticon-delete"> </i>
                                         </button>
                                     </a>
@@ -168,14 +169,14 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span    class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,subOrderLimit)"
+                    <span nz-table-title class="col-md-6">
+                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
-                                          [nzPageIndex]="subOrderPage" [nzTotal]="subOrderTotal" nzShowSizeChanger
-                                       [nzPageSize]="subOrderLimit">
+                                       nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
+                                       [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span    class="pull-right col-md-6">
+                    <span nz-table-title class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -190,67 +191,67 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="submitForm($event,validateProductForm.value)">
             <nz-spin [nzSpinning]="_isSpinningCsv">
-                <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allOders" [nzIsPagination]="false">
-                    <thead  >
+                <nz-table #nzTable [nzBordered]="true" [nzData]="allOders" [nzShowPagination]="false">
+                    <thead>
                     <tr>
-                        <th   >
+                        <th nz-th>
                             <input type="checkbox" id="order_check_all_csv" (change)="selectAllCsv($event)"
                                    [checked]="pageAllCheckedStatusCsv[pageCsv]">
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Order number </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Order Date </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Vendor Name </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Quantity </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Total Price</span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status changed by </span>
                         </th>
                     </tr>
                     </thead>
-                    <tbody   >
-                    <tr    *ngFor="let data of nzTable.data;let i=index;">
-                        <td   >
+                    <tbody>
+                    <tr *ngFor="let data of nzTable.data;let i=index;">
+                        <td>
                             <input type="checkbox" id="{{'order_'+data.id}}" (change)="_refreshStatus($event, data)"
                                    [checked]="data.checked">
                         </td>
-                        <td   >{{data.product_order_id}} / {{data.id}}</td>
-                        <td   >{{data.created_at|date}}</td>
-                        <td   >{{data.name}}</td>
-                        <td   >{{data.total_quantity}}</td>
-                        <td   >{{data.total_price}}</td>
-                        <td   >{{getStatusLabel(data.status)}}</td>
-                        <td   >{{data.changedBy}}</td>
+                        <td>{{data.product_order_id}} / {{data.id}}</td>
+                        <td>{{data.created_at|date}}</td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.total_quantity}}</td>
+                        <td>{{data.total_price}}</td>
+                        <td>{{getStatusLabel(data.status)}}</td>
+                        <td>{{data.changedBy}}</td>
                     </tr>
                     </tbody>
                 </nz-table>
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span    class="col-md-6">
+                    <span nz-table-title class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePageCsv($event, limitCsv)"
                                        (nzPageSizeChange)="changePageCsv(1, $event)"
-                                          [nzPageIndex]="pageCsv" [nzTotal]="totalCsv" nzShowSizeChanger
+                                       nzShowTotal [nzPageIndex]="pageCsv" [nzTotal]="totalCsv" nzShowSizeChanger
                                        [nzPageSize]="limitCsv">
                         </nz-pagination>
                     </span>
                 </div>
             </div>
-            <div   >
-                <div   >
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+            <div >
+                <div >
+                    <button nz-button class="login-form-button"  [nzSize]="'large'"
                             [disabled]="!validateProductForm.valid">
                         Create CSV
                     </button>
@@ -270,76 +271,74 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Total Orders </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="total_order"
-                                      [placeholder]="'Please enter total order'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="total_order"
+                                   placeholder="Please enter total order"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('total_order').dirty&&getFormControl('total_order').hasError('required')">
+                                    *ngIf="getFormControl('total_order').dirty&&getFormControl('total_order').hasError('required')">
                                 Please enter total order!
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Seller Name </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="seller_name"
-                                      [placeholder]="'Please enter seller name'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="seller_name"
+                                   placeholder="Please enter seller name"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('seller_name').dirty&&getFormControl('seller_name').hasError('required')">
+                                    *ngIf="getFormControl('seller_name').dirty&&getFormControl('seller_name').hasError('required')">
                                 Please enter seller name!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Seller Phone </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="seller_phone"
-                                      [placeholder]="'Please enter seller phone'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="seller_phone"
+                                   placeholder="Please enter seller phone"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('seller_phone').dirty&&getFormControl('seller_phone').hasError('required')">
+                                    *ngIf="getFormControl('seller_phone').dirty&&getFormControl('seller_phone').hasError('required')">
                                 Please enter seller phone!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Seller Address </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="seller_address"
-                                      [nzPlaceHolder]="'Please enter seller address'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="seller_address"
+                                   placeholder="Please enter seller address"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('seller_address').dirty&&getFormControl('seller_address').hasError('required')">
+                                    *ngIf="getFormControl('seller_address').dirty&&getFormControl('seller_address').hasError('required')">
                                 Please enter seller address!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> KAM </label>
                         </div>
-                        <div class="col-md-5"      >
-                               <input nz-input  formControlName="k_a_m"  [placeholder]="'Please enter KAM'"
-                                      [nzSize]="'large'">
-
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="k_a_m"  placeholder="Please enter KAM" [nzSize]="'large'">
                             <div
-                                 *ngIf="getFormControl('k_a_m').dirty && getFormControl('k_a_m').hasError('required')">
+                                    *ngIf="getFormControl('k_a_m').dirty&&getFormControl('k_a_m').hasError('required')">
                                 Please enter KAM!
                             </div>
                         </div>
@@ -348,76 +347,76 @@
                 <div class="col-md-6">
 
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Pickup Carrier Name </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="pickup_carrier_name"
-                                      [placeholder]="'Please enter pickup carrier name'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="pickup_carrier_name"
+                                   placeholder="Please enter pickup carrier name"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('pickup_carrier_name').dirty && getFormControl('pickup_carrier_name').hasError('required')">
+                                    *ngIf="getFormControl('pickup_carrier_name').dirty&&getFormControl('pickup_carrier_name').hasError('required')">
                                 Please enter pickup carrier name!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Payment Method </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="payment_method"
-                                      [placeholder]="'Please enter payment method'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="payment_method"
+                                   placeholder="Please enter payment method"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('payment_method').dirty && getFormControl('payment_method').hasError('required')">
+                                    *ngIf="getFormControl('payment_method').dirty&&getFormControl('payment_method').hasError('required')">
                                 Please enter payment method!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Pickup Slot </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="pickup_slot"
-                                      [placeholder]="'Please enter pickup slot'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="pickup_slot"
+                                   placeholder="Please enter pickup slot"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('pickup_slot').dirty && getFormControl('pickup_slot').hasError('required')">
+                                    *ngIf="getFormControl('pickup_slot').dirty&&getFormControl('pickup_slot').hasError('required')">
                                 Please enter pickup slot!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Pickup Rider Name </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="pickup_rider_name"
-                                      [placeholder]="'Please enter pickup rider name'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="pickup_rider_name"
+                                   placeholder="Please enter pickup rider name"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('pickup_rider_name').dirty && getFormControl('pickup_rider_name').hasError('required')">
+                                    *ngIf="getFormControl('pickup_rider_name').dirty&&getFormControl('pickup_rider_name').hasError('required')">
                                 Please enter pickup rider name!
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div    class="col-md-4">
+                        <div  class="col-md-4">
                             <label> Pickup Rider Contact Number </label>
                         </div>
-                        <div class="col-md-5"      >
-                              <input nz-input  formControlName="pickup_rider_contact_number"
-                                      [placeholder]="'Please enter pickup rider contact number'"
-                                      [nzSize]="'large'">
+                        <div class="col-md-5"  >
+                            <input nz-input formControlName="pickup_rider_contact_number"
+                                   placeholder="Please enter pickup rider contact number"
+                                   [nzSize]="'large'">
 
                             <div
-                                 *ngIf="getFormControl('pickup_rider_contact_number').dirty && getFormControl('pickup_rider_contact_number').hasError('required')">
+                                    *ngIf="getFormControl('pickup_rider_contact_number').dirty&&getFormControl('pickup_rider_contact_number').hasError('required')">
                                 Please enter pickup rider contact number!
                             </div>
                         </div>
@@ -425,72 +424,71 @@
                 </div>
             </div>
             <nz-spin [nzSpinning]="_isSpinningPr">
-                <nz-table #nzTable [nzBordered]="true" [nzDataSource]="dataPR" [nzIsPagination]="false">
-                    <thead  >
+                <nz-table #nzTable
+                          [nzBordered]="true"
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="dataPR"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          [(nzPageIndex)]="page"
+                          [(nzPageSize)]="limit"
+                          (nzPageIndexChange)="getPageData()"
+                >
+                    <thead>
                     <tr>
-                        <th   >
+                        <th nz-th>
                             <input type="checkbox" id="order_check_all_pr" (change)="selectAllPr($event)"
                                    [checked]="pageAllCheckedStatusPr[pagePr]">
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Order number </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Date </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Vendor Name </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Quantity </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Total Price</span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Date of delivery </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status </span>
                         </th>
-                        <th   >
+                        <th nz-th>
                             <span> Status changed by </span>
                         </th>
                     </tr>
                     </thead>
-                    <tbody   >
-                    <tr    *ngFor="let data1 of nzTable.data;let i=index;">
-                        <td   >
+                    <tbody>
+                    <tr *ngFor="let data1 of nzTable.data;let i=index;">
+                        <td>
                             <input type="checkbox" id="{{'order_checked_pr' + data1.id}}"
                                    (change)="_refreshStatusPR($event, data1)" [checked]="data1.checked"/>
                         </td>
-                        <td   >{{data1.product_order_id}} / {{data1.id}}</td>
-                        <td   >{{data1.created_at|date}}</td>
-                        <td   >{{data1.name}}</td>
-                        <td   >{{data1.total_quantity}}</td>
-                        <td   >{{data1.total_price}}</td>
-                        <td   >{{data1.delivery_date|date:'yyyy-MM-dd'}}</td>
-                        <td   >{{getStatusLabel(data1.status)}}</td>
-                        <td   >{{data1.changedBy}}</td>
+                        <td>{{data1.product_order_id}} / {{data1.id}}</td>
+                        <td>{{data1.created_at|date}}</td>
+                        <td>{{data1.name}}</td>
+                        <td>{{data1.total_quantity}}</td>
+                        <td>{{data1.total_price}}</td>
+                        <td>{{data1.delivery_date|date:'yyyy-MM-dd'}}</td>
+                        <td>{{getStatusLabel(data1.status)}}</td>
+                        <td>{{data1.changedBy}}</td>
 
                     </tr>
                     </tbody>
                 </nz-table>
             </nz-spin>
-            <div class="row">
-                <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span    class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePagePr($event, limitPr)"
-                                       (nzPageSizeChange)="changePagePr(1, $event)"
-                                          [nzPageIndex]="pagePr" [nzTotal]="totalPr" nzShowSizeChanger
-                                       [nzPageSize]="limitPr">
-                        </nz-pagination>
-                    </span>
-                </div>
-            </div>
-            <div   >
-                <div   >
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+            <div >
+                <div >
+                    <button nz-button class="login-form-button"  [nzSize]="'large'"
                             [disabled]="!validateFormPR.valid || _isSpinningPr">
                         Create PR PDF
                     </button>

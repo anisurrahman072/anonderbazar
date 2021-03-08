@@ -13,9 +13,15 @@ export class UserService {
     private currentUser: any | boolean;
 
     constructor(private http: HttpClient,
-                private authService: AuthService) {
+                private authService: AuthService,
+                private authenticationService: AuthService) {
 
         this.currentUser = this.authService.getCurrentUser();
+    }
+
+    getAll(): Observable<any> {
+        // get users from api
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`);
     }
 
     getAllShopOwner(page: number, warehouseId: number, limit: number,
@@ -44,25 +50,25 @@ export class UserService {
         );
     }
 
-    getAllCustomer(
-        page: number,
-        limit: number,
-        emailSearchValue: string,
-        searchTermName: string,
-        searchTermPhone: string,
-        username: string,
-        gender: string,
-        sortName: string,
-        sortPrice: String
-    ): Observable<any> {
+    getAllCustomer(page: number, warehouseId: number, limit: number,
+                   emailSearchValue: string,
+                   searchTermName: string,
+                   searchTermPhone: string,
+                   gender: string,
+                   categoryId: number,
+                   subcategoryId: number,
+                   sortName: string,
+                   sortPrice: String): Observable<any> {
         return this.http.get(`${this.EndPoint
-            }/all-customers?page=${page
+            }?group_id=2&page=${page
             }&limit=${limit
-            }&username=${username
+            }&warehouse_id=${warehouseId
             }&searchTermEmail=${emailSearchValue
             }&searchTermName=${searchTermName
             }&searchTermPhone=${searchTermPhone
             }&gender=${gender
+            }&category_id=${categoryId
+            }&subcategory_id=${subcategoryId
             }&sortName=${sortName
             }&sortPrice=${sortPrice}`
         );
@@ -99,15 +105,15 @@ export class UserService {
     }
 
     checkUsername(username: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkUsername`, {username: username});
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&username=${username}`);
     }
 
     checkEmail(email: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkEmail`, {email: email});
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"searchTermEmail":"${email}"}`);
     }
 
     checkPhone(phone: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkPhone`, {phone: phone});
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"phone":"${phone}"}`);
     }
 
     checkEmailPhone(email: any, phone: any): Observable<any> {

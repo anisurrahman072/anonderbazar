@@ -19,7 +19,7 @@
                             <div class="post-meta h6">
                                 <span class="author "
                                       *ngIf="cms_post_by_id?.user_id"> By {{cms_post_by_id.user_id?.first_name}}  {{cms_post_by_id.user_id?.last_name}}</span>
-                                <span class="date">{{ cms_post_by_id?.createdAt | date }}  </span>
+                                <!--<span class="date">{{ cms_post_by_id?.createdAt | date }}  </span>-->
                             </div>
                             <div style="margin-top:40px" class="blog-content"
                                  [innerHTML]="cms_detail.description">

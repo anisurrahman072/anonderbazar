@@ -5,11 +5,11 @@
     <ng-template #extra>
 
         <button *ngIf="data && 'design-edit'|accessControl" [routerLink]="['/dashboard/design/edit', data.id]"
-            nz-button [nzType]="'primary'" [nzSize]="'large'">
+                nz-button [nzSize]="'large'">
             <i class="anticon anticon-edit"></i><span>Edit</span>
         </button>
 
-        <button routerLink="/dashboard/design" nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button routerLink="/dashboard/design" nz-button [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
         </button>
 
@@ -18,7 +18,8 @@
         <div class="row" *ngIf="data">
             <div class="col-md-4">
                 <div class="profile-img">
-                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                         src="{{  IMAGE_ENDPOINT + data.image}}"/>
                 </div>
             </div>
             <div class="col-md-6">
@@ -59,21 +60,22 @@
                             <br>
                             <br>
                             <div class="row">
-                                <table style="width: 100%;table-layout: fixed" class="table table-responsive table-bordered desingCreateTable">
+                                <table style="width: 100%;table-layout: fixed"
+                                       class="table table-responsive table-bordered desingCreateTable">
                                     <thead>
-                                        <tr>
-                                            <th style="text-align: center;">শৈলী</th>
-                                            <th style="text-align: center;">ধরন</th>
-                                            <th style="text-align: center;">Subcategory</th>
-                                        </tr>
+                                    <tr>
+                                        <th style="text-align: center;">শৈলী</th>
+                                        <th style="text-align: center;">ধরন</th>
+                                        <th style="text-align: center;">Subcategory</th>
+                                    </tr>
                                     </thead>
 
                                     <tbody>
-                                        <tr *ngFor="let control of data.design_category_id;let i = index">
-                                            <td style="text-align: center;">{{designCategory[i]?.name}}</td>
-                                            <td style="text-align: center;">{{designSubCategory[i]?.name}}</td>
-                                            <td style="text-align: center;">{{designGenre[i]?.name}}</td>
-                                        </tr>
+                                    <tr *ngFor="let control of data.design_category_id;let i = index">
+                                        <td style="text-align: center;">{{designCategory[i]?.name}}</td>
+                                        <td style="text-align: center;">{{designSubCategory[i]?.name}}</td>
+                                        <td style="text-align: center;">{{designGenre[i]?.name}}</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>

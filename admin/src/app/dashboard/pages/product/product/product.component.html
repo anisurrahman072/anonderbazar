@@ -5,13 +5,13 @@
         </ng-template>
         <ng-template #extra>
             <button *ngIf="'product-create'|accessControl" routerLink="/dashboard/product/create"
-                    [queryParams]="{status: status}" nz-button [nzType]="'primary'"
+                    [queryParams]="{status: status}" nz-button
                     [nzSize]="'large'">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
             <button routerLink="/dashboard/product/bulk-upload"
-                    [queryParams]="{status: status}" nz-button [nzType]="'primary'" style="margin-left: 10px;"
+                    [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
                     [nzSize]="'large'">
                 <i class="anticon anticon-upload"></i>
                 <span> Bulk Upload Products </span>
@@ -20,28 +20,22 @@
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations"></div>
-                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data"
+                <nz-table class="product-grid" [nzTotal]="total" [nzShowPagination]="false" #nzTable [nzData]="data"
                           [nzPageSize]="limit"
-                          [nzSize]="'default'" [nzShowTitle]="true">
-                    <thead>
+                          [nzSize]="'default'">
+                    <thead (nzSortChange)="sort($event)" nzSingleSort>
                     <tr>
                         <th>
                             <span> Picture </span>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="code">
                             <span>Code</span>
-                            <nz-table-sort [(nzValue)]="sortValue.code"
-                                           (nzValueChange)="sort('code', $event)"></nz-table-sort>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="name">
                             <span> Name </span>
-                            <nz-table-sort [(nzValue)]="sortValue.name"
-                                           (nzValueChange)="sort('name', $event)"></nz-table-sort>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="price">
                             <span> Price </span>
-                            <nz-table-sort [(nzValue)]="sortValue.price"
-                                           (nzValueChange)="sort('price', $event)"></nz-table-sort>
                         </th>
                         <th>
                             <span> Approved ? </span>
@@ -58,15 +52,11 @@
                         <th>
                             <span> S-category </span>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="quantity">
                             <span> Quantity </span>
-                            <nz-table-sort [(nzValue)]="sortValue.quantity"
-                                           (nzValueChange)="sort('quantity', $event)"></nz-table-sort>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="updatedAt">
                             <span>Last Updated</span>
-                            <nz-table-sort [(nzValue)]="sortValue.updatedAt"
-                                           (nzValueChange)="sort('updatedAt', $event)"></nz-table-sort>
                         </th>
                         <th>
                             <span> Action </span>
@@ -80,24 +70,24 @@
 
                         </th>
                         <th>
-                            <input nz-input style="width: 150px;" [placeholder]="'Code'"
+                            <input nz-input style="width: 150px;" placeholder="Code"
                                    [(ngModel)]="codeSearchValue"
                                    (ngModelChange)="page=1;getProductData()">
                         </th>
 
                         <th>
-                            <input nz-input style="width: 150px;" [placeholder]="'Name'"
+                            <input nz-input style="width: 150px;" placeholder="Name"
                                    [(ngModel)]="nameSearchValue"
                                    (ngModelChange)="page=1;getProductData()">
                         </th>
 
                         <th>
-                            <input nz-input style="width: 150px;" [placeholder]="'Price'"
+                            <input nz-input style="width: 150px;" placeholder="Price"
                                    [(ngModel)]="priceSearchValue"
                                    (ngModelChange)="page=1;getProductData()">
                         </th>
                         <th>
-                            <nz-select style="width: 100px;" [nzPlaceHolder]="'Select Approval Status'"
+                            <nz-select style="width: 100px;" nzPlaceHolder="Select Approval Status"
                                        ngModel="approval_status" (ngModelChange)="approvalStatusChange($event)">
                                 <nz-option nzValue="1" nzLabel="Pending"></nz-option>
                                 <nz-option nzValue="2" nzLabel="Approved"></nz-option>
@@ -105,11 +95,12 @@
                             </nz-select>
                         </th>
                         <th>
-                            <nz-select style="width: 100px;" nzAllowClear nzShowSearch [(ngModel)]="typeId"
+                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="typeId"
                                        (ngModelChange)="typeIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product Type'"
-                                       [nzNotFoundContent]="'Not found'"
-                            >
+                                       nzPlaceHolder="Select Product Type"
+                                       (nzSearch)="typeIdSearchChange($event)"
+                                       (nzSearchChange)="typeIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                       nzShowSearch>
                                 <nz-option *ngFor="let option of TypeSearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
                                 </nz-option>
@@ -117,11 +108,12 @@
                         </th>
                         <th>
 
-                            <nz-select style="width: 100px;" nzAllowClear nzShowSearch [(ngModel)]="brandId"
+                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
                                        (ngModelChange)="brandIdChange($event)"
-                                       [nzPlaceHolder]="'Select Brand'"
-                                       [nzNotFoundContent]="'Not found'"
-                            >
+                                       nzPlaceHolder="Select Brand"
+                                       (nzSearch)="brandIdSearchChange($event)"
+                                       (nzSearchChange)="brandIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
+                                       nzShowSearch>
                                 <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
                                 </nz-option>
@@ -130,7 +122,9 @@
                         <th>
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="categoryId"
                                        (ngModelChange)="categoryIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product category'"
+                                       nzPlaceHolder="Select Product category"
+                                       (nzSearch)="categoryIdSearchChange($event)"
+                                       (nzSearchChange)="categoryIdSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'"
                                        nzShowSearch>
                                 <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
@@ -142,7 +136,9 @@
                         <th>
                             <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="subcategoryId"
                                        (ngModelChange)="subcategoryIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product Subcategory'"
+                                       nzPlaceHolder="Select Product Subcategory"
+                                       (nzSearch)="subcategoryIdSearchChange($event)"
+                                       (nzSearchChange)="subcategoryIdSearchChange($event)"
                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
                                            [nzValue]="option.id">
@@ -162,86 +158,86 @@
                     </thead>
 
                     <tbody>
-                    <ng-template ngFor let-datum let-i="index" [ngForOf]="nzTable.data">
+                    <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
                         <tr>
 
                             <td>
-                                <nz-avatar [routerLink]="['/dashboard/product/details/', datum.id]" [nzShape]="'square'"
-                                           [nzSrc]="IMAGE_ENDPOINT+datum.image" [nzSize]="'large'"
+                                <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
+                                           [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
                                            [nzIcon]="'user'"></nz-avatar>
                             </td>
                             <td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', datum.id]">{{datum.code}}</nz-tag>
+                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.code}}</nz-tag>
                             </td>
                             <td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', datum.id]">{{datum.name}}</nz-tag>
+                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</nz-tag>
                             </td>
                             <td>
-                                <nz-tag *ngIf="datum.promotion == 0">{{datum.price}}</nz-tag>
-                                <nz-tag *ngIf="datum.promotion == 1">
-                                    <del style="color: red">{{datum.price}}</del>
-                                    {{datum.promo_price}}</nz-tag>
+                                <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
+                                <nz-tag *ngIf="data.promotion == 1">
+                                    <del style="color: red">{{data.price}}</del>
+                                    {{data.promo_price}}</nz-tag>
                             </td>
 
                             <td>
-                                <nz-tag>{{datum.approval_status == 2 ? 'Yes' : datum.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
+                                <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
                             </td>
                             <td>
-                                <nz-tag>{{datum.type_name}}</nz-tag>
+                                <nz-tag>{{data.type_id?.name}}</nz-tag>
                             </td>
                             <td>
-                                <nz-tag>{{datum.brand_name}}</nz-tag>
+                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
                             </td>
                             <td>
-                                <nz-tag>{{datum.category_name}}</nz-tag>
+                                <nz-tag>{{data.category_id?.name}}</nz-tag>
                             </td>
                             <td>
-                                {{datum.subcategory_name}}
+                                {{data.subcategory_id?.name}}
                             </td>
                             <td>
-                                <nz-tag [nzColor]="datum.quantity < datum.alert_quantity? '#f50':''">
-                                    {{datum.quantity}}
+                                <nz-tag [nzColor]="data.quantity<data.alert_quantity? '#f50':''">
+                                    {{data.quantity}}
                                 </nz-tag>
                             </td>
                             <td>
-                                <nz-tag>{{formattedDate(datum.updatedAt)}}</nz-tag>
+                                <nz-tag>{{formattedDate(data.updatedAt)}}</nz-tag>
                             </td>
                             <td>
                                 <nz-button-group>
                                     <button *ngIf="'product-read'|accessControl"
-                                            [routerLink]="['/dashboard/product/details/', datum.id]"
+                                            [routerLink]="['/dashboard/product/details/', data.id]"
                                             [queryParams]="{status: status}"
-                                            nz-button [nzType]="'info'" [nzSize]="'default'">
+                                            nz-button [nzSize]="'default'">
                                         <i class="anticon anticon-info-circle"></i>
                                     </button>
                                     <button *ngIf="'product-edit'|accessControl"
-                                            [routerLink]="['/dashboard/product/edit', datum.id]"
+                                            [routerLink]="['/dashboard/product/edit', data.id]"
                                             [queryParams]="{status: status}"
-                                            nz-button [nzType]="'primary'" [nzSize]="'default'">
+                                            nz-button [nzSize]="'default'">
                                         <i class="anticon anticon-edit"></i>
                                     </button>
-                                    <ng-container *ngIf="datum.approval_status == 1 || datum.approval_status == 99">
+                                    <ng-container *ngIf="data.approval_status == 1 || data.approval_status == 99">
                                         <ng-container *ngIf="'product-pending-approvals'|accessControl">
                                             <nz-popconfirm [nzTitle]="'Are you sure you want to approve?'"
                                                            [nzOkText]="'Approve'"
                                                            [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="approveConfirm(i,datum.id)">
-                                                <a nz-popconfirm [attr.title]="'Approve This Product: '+ datum.id">
-                                                    <button nz-button [nzType]="'default'" [nzSize]="'default'">
+                                                           (nzOnConfirm)="approveConfirm(i,data.id)">
+                                                <a nz-popconfirm [attr.title]="'Approve This Product: '+ data.id">
+                                                    <button nz-button [nzSize]="'default'">
                                                         <i class="anticon anticon-check-circle"></i>
                                                     </button>
                                                 </a>
                                             </nz-popconfirm>
                                         </ng-container>
                                     </ng-container>
-                                    <ng-container *ngIf="datum.approval_status == 2">
+                                    <ng-container *ngIf="data.approval_status == 2">
                                         <ng-container *ngIf="'product-pending-approvals'|accessControl">
                                             <nz-popconfirm [nzTitle]="'Are you sure you want to reject?'"
                                                            [nzOkText]="'Reject'"
                                                            [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="rejectConfirm(i,datum.id)">
-                                                <a nz-popconfirm [attr.title]="'Reject This Product: ' + datum.id">
-                                                    <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                           (nzOnConfirm)="rejectConfirm(i,data.id)">
+                                                <a nz-popconfirm [attr.title]="'Reject This Product: ' + data.id">
+                                                    <button nz-button [nzSize]="'default'">
                                                         <i class="anticon anticon-close-circle"></i>
                                                     </button>
                                                 </a>
@@ -252,9 +248,9 @@
                                         <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                        [nzOkText]="'Delete'"
                                                        [nzCancelText]="'Cancel'"
-                                                       (nzOnConfirm)="deleteConfirm(i,datum.id)">
+                                                       (nzOnConfirm)="deleteConfirm(i,data.id)">
                                             <a nz-popconfirm>
-                                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <button nz-button [nzSize]="'default'">
                                                     <i class="anticon anticon-delete "></i>
                                                 </button>
                                             </a>
@@ -269,14 +265,14 @@
                                         <ul nz-menu>
                                             <li nz-menu-item *ngIf="status==2 || status==3">
 
-                                                <button style="width: 100%" nz-button [nzType]="'primary'"
-                                                        (click)="showVariantModal(datum)">
+                                                <button style="width: 100%" nz-button
+                                                        (click)="showVariantModal(data)">
                                                     <span> Add Attribute </span>
                                                 </button>
                                             </li>
                                             <li nz-menu-item>
-                                                <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                        (click)="showPromotionModal(datum)">
+                                                <button nz-button style="width: 100%"
+                                                        (click)="showPromotionModal(data)">
                                                     <span> Add Discount </span>
                                                 </button>
                                             </li>
@@ -287,19 +283,20 @@
                         </tr>
                     </ng-template>
                     </tbody>
+
                 </nz-table>
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span class="col-md-6">
+                    <span nz-table-title class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
                                        (nzPageSizeChange)="changePage(1,$event)"
-                                       [nzPageIndex]="page"
+                                       nzShowTotal [nzPageIndex]="page"
                                        [nzTotal]="total"
                                        [nzPageSize]="limit" nzShowSizeChanger>
                         </nz-pagination>
                     </span>
-                    <span class="pull-right col-md-6">
+                    <span nz-table-title class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -320,7 +317,7 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalVariantContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="currentProduct_variants" [nzIsPagination]="false">
+        <nz-table #nzTable [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false">
             <thead>
             <tr>
                 <th>
@@ -355,7 +352,7 @@
 
 
                         <a nz-popconfirm>
-                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                            <button nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-delete "> Remove </i>
                             </button>
                         </a>
@@ -365,7 +362,7 @@
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" (click)="addNew=!addNew;">
+        <button nz-button [nzSize]="'large'" (click)="addNew=!addNew;">
             <span *ngIf="!addNew"> Add Product Variant </span>
             <span *ngIf="addNew">Cancel</span>
         </button>
@@ -376,7 +373,9 @@
                 <div>
                     <nz-select style="width: 200px;" formControlName="variant_id" [(ngModel)]="selectedVariant_id"
                                nzAllowClear (ngModelChange)="variantOptionChange($event)"
-                               [nzPlaceHolder]="'Select Attribute'"
+                               nzPlaceHolder="Select Attribute"
+                               (nzSearch)="variantSearchChange($event)"
+                               (nzSearchChange)="variantSearchChange($event)"
                                [nzNotFoundContent]="'Not found'" nzShowSearch>
                         <nz-option *ngFor="let option of variantOptions" [nzLabel]="option.name" [nzValue]="option">
                         </nz-option>
@@ -392,7 +391,7 @@
                     <!--{{selectedVariant_id | json}}-->
                     <nz-select style="width: 200px;" formControlName="warehouses_variant_id" nzAllowClear
                                [(ngModel)]="selectedWarehousesVariantOption"
-                               [nzPlaceHolder]="'Select Attribute\'s Variant'"
+                               nzPlaceHolder="Select Attribute\'s Variant"
                                [nzNotFoundContent]="'Not found'"
                                nzShowSearch>
                         <nz-option *ngFor="let option of warehouseVariantOptions" [nzLabel]="option.name"
@@ -409,7 +408,7 @@
             <!--Name-->
             <div>
                 <div>
-                    <input nz-input formControlName="name" [placeholder]="'Enter variant label'"
+                    <input nz-input formControlName="name" placeholder="Enter variant label"
                            [nzSize]="'large'">
                     <ng-template #prefix>
                         <i class="anticon anticon-unlock"></i>
@@ -425,7 +424,7 @@
             <!--Quantity-->
             <div *ngIf="selectedVariant_id?.type==1">
                 <div>
-                    <input nz-input formControlName="quantity" [placeholder]="'Additional price'"
+                    <input nz-input formControlName="quantity" placeholder="Additional price"
                            [nzSize]="'large'">
                     <ng-template #prefix>
                         <i class="anticon anticon-unlock"></i>
@@ -438,10 +437,9 @@
                 </div>
             </div>
             <div>
-
                 <!--Add Button-->
                 <div>
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                    <button nz-button class="login-form-button" [nzSize]="'large'"
                             [disabled]="!validateForm.valid">
                         Add Product Variant
                     </button>
@@ -457,7 +455,7 @@
           [nzContent]="modalPromotionContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalPromotionContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="currentProduct" [nzIsPagination]="false">
+        <nz-table #nzTable [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false">
             <thead>
             <tr>
                 <th>
@@ -477,7 +475,7 @@
                 </th>
             </tr>
             </thead>
-            <tbody>
+            <tbody >
             <tr *ngIf="currentProduct">
 
                 <td *ngIf="currentProduct.promotion==0">No</td>
@@ -490,12 +488,12 @@
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" *ngIf="currentProduct.promotion != 1"
+        <button nz-button [nzSize]="'large'" *ngIf="currentProduct.promotion != 1"
                 (click)="addNew=!addNew;">
             <span *ngIf="!addNew">Add Product Discount</span>
             <span *ngIf="addNew">Cancel</span>
         </button>
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" *ngIf="currentProduct.promotion == 1"
+        <button nz-button [nzSize]="'large'" *ngIf="currentProduct.promotion == 1"
                 (click)="addNew=!addNew;">
             <span *ngIf="!addNew">Update Product Discount</span>
             <span *ngIf="addNew">Cancel</span>
@@ -506,10 +504,10 @@
 
             <!--Promotion-->
             <div>
-                <div>
+                <div >
                     <nz-switch formControlName="promotion">
-                        <span checked>Yes</span>
-                        <span unchecked>No</span>
+                        <span >Yes</span>
+                        <span >No</span>
                     </nz-switch>
                     <div
                             *ngIf="validatePromotionForm.controls.promotion.dirty&&validatePromotionForm.controls.promotion.hasError('required')">
@@ -519,9 +517,9 @@
             </div>
 
             <!--Promotion Price-->
-            <div>
-                <div>
-                    <input nz-input formControlName="promo_price" [placeholder]="'insert price'"
+            <div >
+                <div >
+                    <input nz-input formControlName="promo_price" placeholder="insert price"
                            [nzSize]="'large'">
                     <ng-template #prefix>
                         <i class="anticon anticon-unlock"></i>
@@ -535,9 +533,9 @@
             </div>
 
             <!--Start Date-->
-            <div>
-                <div>
-                    <nz-datepicker formControlName="start_date" [nzPlaceHolder]="'Select start date'"></nz-datepicker>
+            <div >
+                <div >
+                    <nz-date-picker formControlName="start_date" [nzPlaceHolder]="'Select start date'"></nz-date-picker>
                     <div
                             *ngIf="validatePromotionForm.controls.start_date.dirty&&validatePromotionForm.controls.start_date.hasError('required')">
                         Please select your promotion Start date!
@@ -546,9 +544,9 @@
             </div>
 
             <!--End Date-->
-            <div>
-                <div>
-                    <nz-datepicker formControlName="end_date" [nzPlaceHolder]="'Select end date'"></nz-datepicker>
+            <div >
+                <div >
+                    <nz-date-picker formControlName="end_date" [nzPlaceHolder]="'Select end date'"></nz-date-picker>
                     <div
                             *ngIf="validatePromotionForm.controls.end_date.dirty&&validatePromotionForm.controls.end_date.hasError('required')">
                         Please select your promotion Start date!
@@ -557,9 +555,9 @@
             </div>
 
             <!--Sale Unit-->
-            <div>
-                <div>
-                    <input nz-input formControlName="sale_unit" [placeholder]="'Insert quantity'"
+            <div >
+                <div >
+                    <input nz-input formControlName="sale_unit" placeholder="Insert quantity"
                            [nzSize]="'large'">
                     <ng-template #prefix>
                         <i class="anticon anticon-unlock"></i>
@@ -573,9 +571,9 @@
             </div>
 
             <!--Add Button-->
-            <div>
-                <div>
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+            <div >
+                <div >
+                    <button nz-button class="login-form-button" [nzSize]="'large'"
                             [disabled]="!validatePromotionForm.valid">Save
                     </button>
                 </div>

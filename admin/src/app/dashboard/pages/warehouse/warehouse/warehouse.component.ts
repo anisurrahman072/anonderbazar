@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {WarehouseService} from '../../../../services/warehouse.service';
 import {UIService} from "../../../../services/ui/ui.service";
 import {environment} from "../../../../../environments/environment";
-import { NzNotificationService } from 'ng-zorro-antd';
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-warehouse',
@@ -18,12 +18,14 @@ export class WarehouseComponent implements OnInit {
     total: number;
     private currentWarehouseSubscriprtion: any;
     private currentWarehouseId: any | string;
+    loading: boolean = false;
 
     constructor(private warehouseService: WarehouseService,
-        private _notification: NzNotificationService,
-        private uiService: UIService) {
+                private _notification: NzNotificationService,
+                private uiService: UIService) {
     }
-     // init the component
+
+    // init the component
     ngOnInit(): void {
         this.getAllData();
 
@@ -34,9 +36,10 @@ export class WarehouseComponent implements OnInit {
             }
         );
     }
-      //Event method for getting all the data for the page
-    getAllData() {
 
+    //Event method for getting all the data for the page
+    getAllData() {
+        this.loading = true;
         this.warehouseService.getAllIndex(
             this.page,
             this.limit,
@@ -44,22 +47,26 @@ export class WarehouseComponent implements OnInit {
         )
             .subscribe(result => {
                     this.data = result.data;
+                    this.loading = false;
                     this.total = result.total;
                     console.log(this.data);
                     this._isSpinning = false;
                 },
                 result => {
+                    this.loading = false;
                     this._isSpinning = false;
                 });
     }
-      //Event method for pagination change
+
+    //Event method for pagination change
     changePage(page: number, limit: number) {
         this.page = page;
         this.limit = limit;
         this.getAllData();
         return false;
     }
-      //Event method for deleting warehouse
+
+    //Event method for deleting warehouse
     deleteConfirm(id) {
         this.warehouseService.delete(id)
             .subscribe(result => {
@@ -71,7 +78,8 @@ export class WarehouseComponent implements OnInit {
                 this.getAllData();
             });
     }
-      //Method for status change
+
+    //Method for status change
 
     changeStatus(id: any, status: any) {
         if (status != 2) {

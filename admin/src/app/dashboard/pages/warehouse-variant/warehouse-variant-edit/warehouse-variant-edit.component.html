@@ -54,8 +54,7 @@
                         </div>
                         <div nz-col [nzSpan]="16"      >
 
-                            <nz-select formControlName="variant_id" [nzPlaceHolder]="'Select Attribute'"
-                            [nzFilter]="true" [nzNotFoundContent]="'Not found'" [(ngModel)]="selectedVariant_id"
+                            <nz-select formControlName="variant_id" [nzPlaceHolder]="'Select Attribute'" [nzNotFoundContent]="'Not found'" [(ngModel)]="selectedVariant_id"
                             (ngModelChange)="variantOptionChange($event)" (nzSearch)="variantSearchChange($event)"
                              (nzSearchChange)="variantSearchChange($event)" nzShowSearch>
 
@@ -77,8 +76,7 @@
                         </div>
                         <div nz-col [nzSpan]="16"      >
 
-                            <nz-select formControlName="brand_id" nzAllowClear [nzPlaceHolder]="'Select brand'"
-                                [nzFilter]="true" [nzNotFoundContent]="'Not found'" nzShowSearch>
+                            <nz-select formControlName="brand_id" nzAllowClear [nzPlaceHolder]="'Select brand'" [nzNotFoundContent]="'Not found'" nzShowSearch>
                                 <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name" [nzValue]="option">
                                 </nz-option>
                             </nz-select>

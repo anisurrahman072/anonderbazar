@@ -11,38 +11,34 @@
     </ng-template>
     <ng-template #extra>
         <button *ngIf="data && 'craftsman-edit'|accessControl" [routerLink]="['/dashboard/craftsman/edit', data.id]"
-                nz-button [nzType]="'primary'" [nzSize]="'large'">
+                nz-button [nzSize]="'large'">
             <i class="anticon anticon-edit"></i>
             <span>Edit</span>
         </button>
         <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
         <ng-template #thenTemplate>
-            <button routerLink="/dashboard/craftsman" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <button routerLink="/dashboard/craftsman" nz-button [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i>
                 <span> List </span>
             </button>
         </ng-template>
         <ng-template #elseTemplate>
-            <button routerLink="/dashboard/customer" nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <button routerLink="/dashboard/customer" nz-button [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i>
                 <span> List </span>
             </button>
         </ng-template>
+
+
     </ng-template>
     <ng-template #body>
         <div class="row">
             <div class="col-md-4">
                 <div class="profile-img">
-                    <div class="custom-image" *ngIf="data.avatar; else defaultAvatar">
+                    <div class="custom-image">
                         <img height="250px" width="250px" class="img  img-responsive" alt="example.jpg"
                              style="margin: auto;" src="{{  IMAGE_ENDPOINT + data.avatar}}"/>
                     </div>
-                    <ng-template #defaultAvatar>
-                        <div class="custom-image">
-                            <img class="img  img-responsive" alt="example.jpg"
-                                 style="margin: auto; " src="./assets/images/default-avatar.jpg"/>
-                        </div>
-                    </ng-template>
                 </div>
             </div>
             <div class="col-md-6">
@@ -80,22 +76,6 @@
                                     <p>{{data.gender}}</p>
                                 </div>
                             </div>
-                            <div class="row" *ngIf="data.dob">
-                                <div class="col-md-3">
-                                    <label>Date of Birth</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <p>{{data.dob}}</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label>Status</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <p>{{data.active ? 'Active' : 'Inactive'}}</p>
-                                </div>
-                            </div>
                             <div class="row">
                                 <div class="col-md-3">
                                     <label>Entrepreneur</label>
@@ -110,9 +90,9 @@
                                 </div>
                                 <div class="col-md-9">
                                     <p>
-                                        {{data.zila_id?.name}},
-                                        {{data.upazila_id?.name}},
-                                        {{data.division_id?.name}}.
+                                        {{data.zila_id.name}},
+                                        {{data.upazila_id.name}},
+                                        {{data.division_id.name}}.
                                     </p>
                                 </div>
                             </div>
@@ -126,7 +106,7 @@
         <br>
         <br>
         <div class="row">
-            <div *ngIf="craftsmanproducts && craftsmanproducts.length > 0" class="col-md-6" style="border-right: 1px solid" >
+            <div class="col-md-6" style="border-right: 1px solid">
                 <div class="title">
                     <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
                     <ng-template #thenTemplate>
@@ -140,10 +120,12 @@
                         <ng-template #elseTemplate>
 
                         </ng-template>
+
+
                     </ng-template>
                     <ng-template #elseTemplate>
                         <ng-container
-                                *ngIf="craftsmanproducts.length > 0; then thenTemplate; else elseTemplate"></ng-container>
+                                *ngIf="craftsmanproducts.length!==0; then thenTemplate; else elseTemplate"></ng-container>
                         <ng-template #thenTemplate>
                             <h2>
                                 ক্রেতার Product List
@@ -153,6 +135,8 @@
 
                         </ng-template>
                     </ng-template>
+
+
                 </div>
                 <hr>
                 <br>
@@ -193,7 +177,7 @@
                 </div>
 
             </div>
-            <div class="col-md-6" *ngIf="designs && designs.length > 0">
+            <div class="col-md-6">
                 <div class="title">
                     <ng-container *ngIf="data.group_id.id===6; then thenTemplate1; else elseTemplate1"></ng-container>
                     <ng-template #thenTemplate1>

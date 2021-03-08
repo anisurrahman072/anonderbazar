@@ -13,8 +13,8 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations">
                 </div>
-                <nz-table [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
-                    [nzSize]="'middle'" [nzShowTitle]="true">
+                <nz-table [nzTotal]="total" [nzFrontPagination]="false" #nzTable [nzData]="data" [nzPageSize]="limit"
+                    [nzSize]="'middle'">
                     <thead  >
                         <tr>
                             <th   >

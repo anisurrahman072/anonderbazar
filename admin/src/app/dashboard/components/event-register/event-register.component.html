@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
+                <nz-table #nzTable [nzPageSize]="5" [nzData]="data">
                     <thead  >
                         <tr>
                             <th   ><span> Picture </span></th>
@@ -584,8 +584,8 @@
                             <div    nz-row *ngIf="addedPrices">
                                 <div nz-col [nzSpan]="7"   ></div>
                                 <div nz-col [nzSpan]="12"   >
-                                    <nz-table #basicTable [nzIsPagination]="false" [nzSize]="'small'"
-                                        [nzDataSource]="addedPrices">
+                                    <nz-table #basicTable [nzFrontPagination]="false" [nzSize]="'small'"
+                                        [nzData]="addedPrices">
                                         <thead>
                                             <tr>
                                                 <th class="col-sm-2">Title</th>

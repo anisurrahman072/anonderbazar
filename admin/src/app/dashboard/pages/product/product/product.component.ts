@@ -5,7 +5,6 @@ import {ProductVariantService} from '../../../../services/product-variant.servic
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {VariantService} from '../../../../services/variant.service';
 import {WarehouseVariantService} from '../../../../services/warehouse-variant.service';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../../services/auth.service';
 import {CategoryProductService} from '../../../../services/category-product.service';
@@ -15,6 +14,7 @@ import {Subscription} from 'rxjs';
 import {DesignImagesService} from '../../../../services/design-images.service';
 import {environment} from "../../../../../environments/environment";
 import {formatDate} from "@angular/common";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-product',
@@ -96,6 +96,11 @@ export class ProductComponent implements OnInit, OnDestroy {
         private warehouseVariantService: WarehouseVariantService,
         private productVariantService: ProductVariantService
     ) {
+
+    }
+
+    // For initiating the section element with data
+    ngOnInit(): void {
         this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
         this.validateForm = this.fb.group({
@@ -112,10 +117,6 @@ export class ProductComponent implements OnInit, OnDestroy {
             end_date: ['', [Validators.required]],
             sale_unit: ['', [Validators.required]]
         });
-    }
-
-    // For initiating the section element with data
-    ngOnInit(): void {
         this.route.queryParams.filter(params => params.status).subscribe(params => {
             this.status = params.status;
         });
@@ -160,10 +161,9 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     // Event method for setting up filter data
-    sort(sortName, sortValue) {
-        console.log('sort(sortName, sortValue)', sortName, sortValue)
+    sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sortName] = sortValue;
+        this.sortValue[sort.key] = sort.value;
         this.getProductData();
     }
 
@@ -383,7 +383,6 @@ export class ProductComponent implements OnInit, OnDestroy {
 
         this.productService.update(this.currentProduct.id, formValue).subscribe(
             result => {
-                console.log('submitAddPromotionForm-result', result);
                 this.currentProduct.promotion = value.promotion;
                 this.currentProduct.promo_price = value.promo_price;
                 this.currentProduct.start_date = value.start_date;
@@ -406,7 +405,6 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.formReset();
         this.addNew = false;
         this.currentProduct = data;
-        console.log('showPromotionModal', this.currentProduct);
         this.getProductPromotions();
     }
 

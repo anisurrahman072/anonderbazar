@@ -21,7 +21,7 @@
                         </div>
                         <div class="clr"></div>
                         <nz-spin [nzSpinning]="_isSpinning">
-                            <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="subOrderData">
+                            <nz-table #nzTable [nzPageSize]="5" [nzData]="subOrderData">
                                 <thead  >
                                 <tr>
                                     <th   ><span> Order number </span></th>
@@ -92,7 +92,7 @@
           (nzOnOk)="handleOk($event)">
     <ng-template #modalContent>
         <nz-spin [nzSpinning]="_isSpinning">
-            <nz-table #nzTable [nzDataSource]="allData">
+            <nz-table #nzTable [nzData]="allData">
                 <thead  >
                 <tr>
                     <th   ><span> Order number </span></th>
