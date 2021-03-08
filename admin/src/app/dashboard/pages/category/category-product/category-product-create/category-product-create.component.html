@@ -70,10 +70,7 @@
                             <div *ngFor="let option of offers">
                                 <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id"></nz-option>
                             </div>
-
                         </nz-select>
-
-
                         <div
                                 *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
                             required!
@@ -93,8 +90,6 @@
                                        [nzValue]="option">
                             </nz-option>
                         </nz-select>
-
-
                         <div
                                 *ngIf="getFormControl('parent').dirty&&getFormControl('parent').hasError('required')">
                             required!
@@ -115,8 +110,6 @@
                                        [nzValue]="option">
                             </nz-option>
                         </nz-select>
-
-
                         <div
                                 *ngIf="getFormControl('sub_parent').dirty&&getFormControl('sub_parent').hasError('required')">
                             required!
@@ -124,8 +117,6 @@
                     </div>
                 </div>
                 <!--Sub Parent-->
-
-
                 <div nz-row>
                     <div nz-col [nzOffset]="2" [nzSpan]="16">
                         <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
