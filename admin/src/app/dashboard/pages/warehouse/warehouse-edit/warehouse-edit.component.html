@@ -10,7 +10,7 @@
     </ng-template>
     <ng-template #body *ngIf="data">
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-            <nz-steps [(nzCurrent)]="current">
+            <nz-steps [nzCurrent]="current">
                 <nz-step (click)="current=0" [nzTitle]="'Owner Info'"></nz-step>
                 <nz-step (click)="current=1" [nzTitle]="'Address'"></nz-step>
             </nz-steps>

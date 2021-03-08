@@ -29,7 +29,7 @@
             <div class="col-md-9">
                 <div nz-row>
                     <div nz-col [nzSpan]="2">
-                        <label -required> Name </label>
+                        <label> Name </label>
                     </div>
                     <div nz-col [nzSpan]="16">
                         <input nz-input formControlName="name" placeholder="Enter Name" [nzSize]="'large'">
@@ -50,7 +50,7 @@
 
                 <div nz-row>
                     <div nz-col [nzSpan]="2">
-                        <label -required> Code </label>
+                        <label> Code </label>
                     </div>
                     <div nz-col [nzSpan]="16">
                         <input nz-input formControlName="code" placeholder="Enter Code" [nzSize]="'large'">
@@ -76,8 +76,6 @@
                             </div>
 
                         </nz-select>
-
-
                         <div
                                 *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
                             required!
@@ -85,8 +83,6 @@
                     </div>
                 </div>
                 <!--parent_id-->
-
-
                 <div nz-row>
                     <div nz-col [nzOffset]="2" [nzSpan]="16">
                         <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
