@@ -45,6 +45,11 @@ export class OfferListComponent implements OnInit, AfterViewInit {
     allProductLimit = 30;
     allProductTotal = 0;
 
+    homeOfferLimit: number = 10;
+    homeOfferPage: number = 1;
+    homeOfferTotal: number = 1;
+    loading: boolean = false;
+
     constructor(
         private fb: FormBuilder,
         private productservice: ProductService,
@@ -73,35 +78,49 @@ export class OfferListComponent implements OnInit, AfterViewInit {
 
     // Event method for getting all the data for the page
     getData() {
+        this.loading = true;
         this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'PARENTOFFER'})
+            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'PARENTOFFER'},
+                this.homeOfferLimit,
+                this.homeOfferPage)
             .subscribe(result => {
+                this.loading = false;
                 this.homeOfferData = result;
+                this.homeOfferTotal = result.total;
                 this._isSpinning = false;
+            }, error => {
+                this.loading = false;
             });
     };
 
     // Event method for getting all child data for the page
     getChildData() {
+        this.loading = true;
         this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
+            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'},
+                this.homeOfferLimit,
+                this.homeOfferPage)
             .subscribe(result1 => {
+                this.loading = false;
                 this.homeChildOfferData = result1;
                 this._isSpinning = false;
+            }, error => {
+                this.loading = false;
             });
     };
 
     //Event method for getting all offer data for the page
     getOfferData(data) {
+        this.loading = true;
         this.offers = [];
-        this.cmsService.getById(data.id)
+        this.cmsService.getById(data.id, this.homeOfferPage, this.homeOfferLimit)
             .subscribe(arg => {
 
                 this.childOffers = arg.data_value[0].offers;
                 console.log(this.childOffers);
                 if (this.childOffers.length > 0) {
                     this.childOffers.forEach(element => {
-                        this.cmsService.getById(element)
+                        this.cmsService.getById(element,  this.homeOfferPage, this.homeOfferLimit)
                             .subscribe(result => {
                                 this.offers.push(result);
                             });
@@ -113,6 +132,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.cmsService
             .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
             .subscribe(result => {
+                this.loading = false;
                 console.log(result);
 
                 result.forEach(element => {
@@ -125,12 +145,14 @@ export class OfferListComponent implements OnInit, AfterViewInit {
                 });
 
                 this.alloffers2.forEach(element => {
-                    this.cmsService.getById(element)
+                    this.cmsService.getById(element,  this.homeOfferPage, this.homeOfferLimit)
                         .subscribe(result => {
                             this.alloffers.push(result);
                         });
                 });
 
+            }, error => {
+                this.loading = false;
             });
     }
 
@@ -196,15 +218,15 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.isProductVisible = false;
     };
     // Event method for pagination change
-    changePage(page: number, limit: number) {
-        this.allProductPage = page;
-        this.allProductLimit = limit;
-        console.log('changePage', page, limit)
-        this.getAllProducts(page, limit);
-        return false;
-    }
+    // changePage(page: number, limit: number) {
+    //     this.allProductPage = page;
+    //     this.allProductLimit = limit;
+    //     console.log('changePage', page, limit)
+    //     this.getAllProducts(page, limit);
+    //     return false;
+    // }
     getProduct(data) {
-        this.cmsService.getById(data.id)
+        this.cmsService.getById(data.id,  this.homeOfferPage, this.homeOfferLimit)
             .subscribe(arg => {
                 this.productOffers = arg.data_value[0].products;
                 console.log('getProduct', this.productOffers);
@@ -219,13 +241,13 @@ export class OfferListComponent implements OnInit, AfterViewInit {
             });
 
     };
-    getAllProducts(page= 1, limit = 30){
-        this.productservice.getAllWithPagination(page, limit)
+    getAllProducts() {
+        this.productservice.getAllWithPagination(this.homeOfferPage, this.homeOfferLimit)
             .subscribe(result => {
                 console.log(' this.productservice.getAll', result)
                 this.allProduct = [];
-                if(typeof result.data !== 'undefined'){
-                    this.allProduct = result.data.filter((item)=> {
+                if (typeof result.data !== 'undefined') {
+                    this.allProduct = result.data.filter((item) => {
                         return this.productOffers.indexOf(item.id) === -1
                     })
                 }
