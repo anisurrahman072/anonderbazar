@@ -17,7 +17,7 @@
                             Parent Offer
                         </ng-template>
                         <div>
-                            <nz-table #nzTable [nzDataSource]="homeOfferData" [nzPageSize]="10" [nzIsPagination]="false"
+                            <nz-table #nzTable [nzData]="homeOfferData" [nzPageSize]="10" [nzIsPagination]="false"
                                 [nzSize]="'default'" [nzShowTitle]="true">
                                 <thead  >
                                     <tr>
@@ -96,7 +96,7 @@
                             Child Offer
                         </ng-template>
                         <div>
-                            <nz-table #nzTable1 [nzDataSource]="homeChildOfferData" [nzPageSize]="10"
+                            <nz-table #nzTable1 [nzData]="homeChildOfferData" [nzPageSize]="10"
                                 [nzIsPagination]="false" [nzSize]="'default'" [nzShowTitle]="true">
                                 <thead  >
                                     <tr>
@@ -174,7 +174,7 @@
     (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalOfferContent>
 
-        <nz-table #nzTable2 [nzBordered]="true" [nzDataSource]="offers" [nzIsPagination]="false">
+        <nz-table #nzTable2 [nzBordered]="true" [nzData]="offers" [nzIsPagination]="false">
             <thead  >
                 <tr>
                     <th   >
@@ -224,7 +224,7 @@
             (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
 
             <div   >
-                <nz-table #nzTable3 [nzBordered]="true" [nzDataSource]="alloffers" [nzIsPagination]="false">
+                <nz-table #nzTable3 [nzBordered]="true" [nzData]="alloffers" [nzIsPagination]="false">
                     <thead  >
                         <tr>
                             <th   >
@@ -271,7 +271,7 @@
     (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalProductContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="products" [nzIsPagination]="false">
+        <nz-table #nzTable [nzBordered]="true" [nzData]="products" [nzIsPagination]="false">
             <thead  >
                 <tr>
                     <th   >
@@ -328,7 +328,7 @@
 
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
             (ngSubmit)="submitForm($event,validateProductForm.value)">
-            <nz-table #nzTable [nzBordered]="true" [nzDataSource]="allProduct" [nzIsPagination]="false">
+            <nz-table #nzTable [nzBordered]="true" [nzData]="allProduct" [nzIsPagination]="false">
                 <thead  >
                     <tr>
                         <th   >

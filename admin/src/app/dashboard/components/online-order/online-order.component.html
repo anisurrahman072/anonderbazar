@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="col-md-12">
-        <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
+        <nz-table #nzTable [nzPageSize]="5" [nzData]="data">
           <thead  >
             <tr>
               <th   ><span> Order number </span></th>
@@ -84,7 +84,7 @@
   (nzOnOk)="handleOk($event)"
 >
   <ng-template #modalContent>
-      <nz-table #nzTable [nzDataSource]="allDataOnline">
+      <nz-table #nzTable [nzData]="allDataOnline">
           <thead  >
             <tr>
               <th   ><span> Order number </span></th>
