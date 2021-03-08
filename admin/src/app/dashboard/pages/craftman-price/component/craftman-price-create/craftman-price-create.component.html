@@ -4,57 +4,66 @@
             নতুন কারিগরের Price যুক্তকরন
         </ng-template>
         <ng-template #extra>
-            <button *ngIf="'craftsmanprice-read'|accessControl" routerLink="/dashboard/craftsmanprice" nz-button [nzType]="'primary'"
-                [nzSize]="'large'">
+            <button *ngIf="'craftsmanprice-read'|accessControl" routerLink="/dashboard/craftsmanprice" nz-button
+                    [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
 
         </ng-template>
         <ng-template #body>
 
-            <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <form nz-form [formGroup]="validateForm" id="validateForm"
+                  (ngSubmit)="submitForm($event,validateForm.value)">
                 <div class="row" style="padding-left: 50px;padding-right: 50px;">
                     <div class="row">
                         <div class="col-md-5">
                             <table style="width: 100%" class="desingCreateTable">
                                 <thead>
-                                    <th style="text-align: center;">শৈলী</th>
-                                    <th style="text-align: center;">ধরন</th>
-                                    <th style="text-align: center;">Subcategory</th>
+                                <th style="text-align: center;">শৈলী</th>
+                                <th style="text-align: center;">ধরন</th>
+                                <th style="text-align: center;">Subcategory</th>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <nz-select formControlName="genre_id" nzAllowClear (ngModelChange)="genreSearchChange($event)"
-                                                [nzPlaceHolder]="'Select genre'"
-                                                 [nzNotFoundContent]="'Not found'"
-                                                nzShowSearch>
-                                                <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
-                                                    [nzValue]="option.id">
-                                                </nz-option>
-                                            </nz-select>
-                                        </td>
-                                        <td>
-                                            <nz-select formControlName="design_category_id" nzAllowClear
-                                                (ngModelChange)="designCategorySearchChange($event)" [nzPlaceHolder]="'ধরন নির্বাচন করুন'"
-                                                [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                                <nz-option *ngFor="let option of designCategorySearchOptions" [nzLabel]="option.name"
-                                                    [nzValue]="option.id">
-                                                </nz-option>
-                                            </nz-select>
-                                        </td>
-                                        <td>
-                                            <nz-select formControlName="design_subcategory_id" nzAllowClear
-                                                [nzPlaceHolder]="'Select Product Subcategory'"
-                                                (ngModelChange)="designSubcategorySearchChange($event)"
-                                                [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                                <nz-option *ngFor="let option of designSubcategorySearchOptions"
-                                                    [nzLabel]="option.name" [nzValue]="option.id">
-                                                </nz-option>
+                                <tr>
+                                    <td>
+                                        <nz-select formControlName="genre_id" nzAllowClear
+                                                   (ngModelChange)="genreSearchChange($event)"
+                                                   nzPlaceHolder="Select genre" (nzSearch)="genreSearchChange($event)"
+                                                   (nzSearchChange)="genreSearchChange($event)"
+                                                   [nzNotFoundContent]="'Not found'"
+                                                   nzShowSearch>
+                                            <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
+                                                       [nzValue]="option.id">
+                                            </nz-option>
+                                        </nz-select>
+                                    </td>
+                                    <td>
+                                        <nz-select formControlName="design_category_id" nzAllowClear
+                                                   (ngModelChange)="designCategorySearchChange($event)"
+                                                   nzPlaceHolder="ধরন নির্বাচন করুন"
+                                                   (nzSearch)="designCategorySearchChange($event)"
+                                                   (nzSearchChange)="designCategorySearchChange($event)"
+                                                   [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                            <nz-option *ngFor="let option of designCategorySearchOptions"
+                                                       [nzLabel]="option.name"
+                                                       [nzValue]="option.id">
+                                            </nz-option>
+                                        </nz-select>
+                                    </td>
+                                    <td>
+                                        <nz-select formControlName="design_subcategory_id" nzAllowClear
+                                                   nzPlaceHolder="Select Product Subcategory"
+                                                   (ngModelChange)="designSubcategorySearchChange($event)"
+                                                   (nzSearch)="designSubcategorySearchChange($event)"
+                                                   (nzSearchChange)="designSubcategorySearchChange($event)"
+                                                   [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                            <nz-option *ngFor="let option of designSubcategorySearchOptions"
+                                                       [nzLabel]="option.name" [nzValue]="option.id">
+                                            </nz-option>
 
-                                            </nz-select>
-                                        </td>
-                                    </tr>
+                                        </nz-select>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -63,8 +72,9 @@
                         <div class="col-md-5">
                             <div class="row" style="height: 350px;margin-top: 10px;margin-left: 5px;">
 
-                                <div class="col-md-3" *ngFor="let design of designs; let i = index" [ngClass]="{'highlight': selectedIndex === i}"
-                                    (click)="setRow(i, design.id)" style="
+                                <div class="col-md-3" *ngFor="let design of designs; let i = index"
+                                     [ngClass]="{'highlight': selectedIndex === i}"
+                                     (click)="setRow(i, design.id)" style="
                                         border: 1px solid gray;
                                         padding: 5px 5px 5px 5px;
                                         height: 185px;
@@ -74,8 +84,9 @@
                                     <div style="margin-bottom: 15px;">
                                         <div class="row">
                                             <div class="col-md-12 text-center">
-                                                <img class="img-responsive img-thumbnail" src="{{IMAGE_ENDPOINT + design.image}}"
-                                                    alt="{{design.name}}" style="height: 130px;width: 250px">
+                                                <img class="img-responsive img-thumbnail"
+                                                     src="{{IMAGE_ENDPOINT + design.image}}"
+                                                     alt="{{design.name}}" style="height: 130px;width: 250px">
                                             </div>
                                         </div>
                                         <br>
@@ -99,11 +110,14 @@
                                     </div>
 
                                     <nz-select formControlName="type_id" nzAllowClear
-                                        [nzPlaceHolder]="'পণ্যের শ্রেণী নির্বাচন করুন'"
-                                         [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
+                                               (ngModelChange)="typeSearchChange($event)"
+                                               nzPlaceHolder="পণ্যের শ্রেণী নির্বাচন করুন"
+                                               (nzSearch)="typeSearchChange($event)"
+                                               (nzSearchChange)="typeSearchChange($event)"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
                                         <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                                   [nzValue]="option.id">
                                         </nz-option>
 
                                     </nz-select>
@@ -112,12 +126,15 @@
                                     <div>
                                         <label> Product category </label>
                                     </div>
-                                    <nz-select formControlName="category_id" nzAllowClear (ngModelChange)="categoryChange($event)"
-                                        [nzPlaceHolder]="'Select Product category'"
-                                         [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
+                                    <nz-select formControlName="category_id" nzAllowClear
+                                               (ngModelChange)="categoryChange($event)"
+                                               nzPlaceHolder="Select Product category"
+                                               (nzSearch)="categoryChange($event)"
+                                               (nzSearchChange)="categoryChange($event)"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
                                         <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                                   [nzValue]="option.id">
                                         </nz-option>
 
                                     </nz-select>
@@ -126,12 +143,16 @@
                                     <div>
                                         <label> পণ্যের ঊপধরন </label>
                                     </div>
-                                    <nz-select formControlName="subcategory_id" nzAllowClear [nzPlaceHolder]="'পণ্যের ঊপধরন নির্বাচন করুন'"
-                                         (ngModelChange)="subcategorySearchChange($event)"
-                                         [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
-                                        <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                    <nz-select formControlName="subcategory_id" nzAllowClear
+                                               nzPlaceHolder="পণ্যের ঊপধরন নির্বাচন করুন"
+                                               (ngModelChange)="subcategorySearchChange($event)"
+                                               (nzSearch)="subcategorySearchChange($event)"
+                                               (nzSearchChange)="subcategorySearchChange($event)"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
+                                        <nz-option *ngFor="let option of subcategorySearchOptions"
+                                                   [nzLabel]="option.name"
+                                                   [nzValue]="option.id">
                                         </nz-option>
 
                                     </nz-select>
@@ -141,11 +162,14 @@
                                         <label> পণ্যের অংশ </label>
                                     </div>
                                     <nz-select formControlName="part_id" nzAllowClear
-                                        [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'"
-                                         [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
+                                               (ngModelChange)="partSearchChange($event)"
+                                               nzPlaceHolder="পণ্যের অংশ নির্বাচন করুন"
+                                               (nzSearch)="partSearchChange($event)"
+                                               (nzSearchChange)="partSearchChange($event)"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
                                         <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                                   [nzValue]="option.id">
                                         </nz-option>
 
                                     </nz-select>
@@ -154,12 +178,16 @@
                                     <div>
                                         <label> Craftsman </label>
                                     </div>
-                                    <nz-select formControlName="craftman_id" nzAllowClear (ngModelChange)="crafmanChange($event)"
-                                        [nzPlaceHolder]="'Craftsman নির্বাচন করুন'"
-                                          [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
-                                        <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
-                                            [nzValue]="option.id">
+                                    <nz-select formControlName="craftman_id" nzAllowClear
+                                               (ngModelChange)="crafmanChange($event)"
+                                               nzPlaceHolder="Craftsman নির্বাচন করুন"
+                                               (nzSearch)="crafmanChange($event)"
+                                               (nzSearchChange)="crafmanChange($event)"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
+                                        <nz-option *ngFor="let option of craftmanSearchoptions"
+                                                   [nzLabel]="option.username"
+                                                   [nzValue]="option.id">
                                         </nz-option>
 
                                     </nz-select>
@@ -167,19 +195,19 @@
                                 <div class="row">
                                     <div>
                                         <label> Price </label></div>
-                                      <input nz-input   formControlName="price" [(ngModel)]="tempEditObject.price">
+                                    <input nz-input formControlName="price" [(ngModel)]="tempEditObject.price">
                                 </div>
                                 <div class="row">
                                     <div>
                                         <label> সময় </label>
                                     </div>
-                                      <input nz-input   formControlName="time" [(ngModel)]="tempEditObject.time">
+                                    <input nz-input formControlName="time" [(ngModel)]="tempEditObject.time">
                                 </div>
                                 <div class="row">
                                     <div>
                                         <label> মন্তব্য </label>
                                     </div>
-                                      <input nz-input   formControlName="comment" [(ngModel)]="tempEditObject.comment">
+                                    <input nz-input formControlName="comment" [(ngModel)]="tempEditObject.comment">
                                 </div>
                             </div>
                         </div>
@@ -187,9 +215,9 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div nz-col    class="text-center">
+                    <div nz-col class="text-center">
                         <nz-button-group>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                            <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
                                 Save
                             </button>
                             <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>

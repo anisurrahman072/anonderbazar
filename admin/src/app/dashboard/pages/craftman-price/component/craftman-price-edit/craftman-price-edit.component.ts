@@ -1,21 +1,20 @@
-import { UIService } from '../../../../../services/ui/ui.service';
-import { Subscription } from 'rxjs';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-
-import { CraftmanPriceService } from '../../../../../services/craftman-price.service';
-import { PartService } from '../../../../../services/part.service';
-import { AuthService } from '../../../../../services/auth.service';
-import { DesignCategoryService } from '../../../../../services/design-category.service';
-import { DesignService } from '../../../../../services/design.service';
-import { GenreService } from '../../../../../services/genre.service';
-import { CategoryTypeService } from '../../../../../services/category-type.service';
-import { CategoryProductService } from '../../../../../services/category-product.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CraftsmanService } from '../../../../../services/craftsman.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd';
-import { FileHolder, UploadMetadata } from 'angular2-image-upload';
+import {UIService} from '../../../../../services/ui/ui.service';
+import {Subscription} from 'rxjs';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {CraftmanPriceService} from '../../../../../services/craftman-price.service';
+import {PartService} from '../../../../../services/part.service';
+import {AuthService} from '../../../../../services/auth.service';
+import {DesignCategoryService} from '../../../../../services/design-category.service';
+import {DesignService} from '../../../../../services/design.service';
+import {GenreService} from '../../../../../services/genre.service';
+import {CategoryTypeService} from '../../../../../services/category-type.service';
+import {CategoryProductService} from '../../../../../services/category-product.service';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {CraftsmanService} from '../../../../../services/craftsman.service';
+import {Router, ActivatedRoute} from '@angular/router';
+import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
   selector: 'app-craftman-price-edit',
@@ -59,20 +58,25 @@ export class CraftmanPriceEditComponent implements OnInit {
   design_id: any;
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private _notification: NzNotificationService,
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private craftmanService: CraftsmanService,
-    private genreService: GenreService,
-    private designService: DesignService,
-    private designCategoryService: DesignCategoryService,
-    private categoryTypeService: CategoryTypeService,
-    private categoryProductService: CategoryProductService,
-    private craftsmanService: CraftsmanService,
-    private craftmanpriceService: CraftmanPriceService,
-    private uiService: UIService,
-    private partService: PartService) {
+              private route: ActivatedRoute,
+              private _notification: NzNotificationService,
+              private fb: FormBuilder,
+              private authService: AuthService,
+              private craftmanService: CraftsmanService,
+              private genreService: GenreService,
+              private designService: DesignService,
+              private designCategoryService: DesignCategoryService,
+              private categoryTypeService: CategoryTypeService,
+              private categoryProductService: CategoryProductService,
+              private craftsmanService: CraftsmanService,
+              private craftmanpriceService: CraftmanPriceService,
+              private uiService: UIService,
+              private partService: PartService) {
+
+  }
+
+  // init the component
+  ngOnInit() {
     this.validateForm = this.fb.group({
       craftman_id: ['', [Validators.required]],
       genre_id: ['', [Validators.required]],
@@ -87,7 +91,26 @@ export class CraftmanPriceEditComponent implements OnInit {
       comment: ['']
 
     });
+    this.sub = this.route.params.subscribe(params => {
+      this.id = +params['id']; // (+) converts string 'id' to a number
+      this.craftmanpriceService.getById(this.id)
+          .subscribe(result => {
+            this.loadFormData();
+            this.data = result;
+            this.validateForm.patchValue(this.data);
+            this.selectedIndex = this.data.design_id.id;
+            this.genre_id = this.data.genre_id.id;
+            this.design_category_id = this.data.design_category_id.id;
+            this.design_subcategory_id = this.data.design_subcategory_id.id;
+            this.type_id = this.data.type_id.id;
+            this.category_id = this.data.category_id.id;
+            this.subcategory_id = this.data.subcategory_id.id;
+            this.part_id = this.data.part_id.id;
+            this.craftman_id = this.data.craftman_id.id;
+          });
+    });
   }
+
   //Event method for submitting the form
   submitForm = ($event, value) => {
     $event.preventDefault();
@@ -113,17 +136,19 @@ export class CraftmanPriceEditComponent implements OnInit {
     formData.append('warehouse_id', this.currentWarehouseId);
     formData.append('craftman_id', value.craftman_id);
 
-     this.craftmanpriceService.update(this.id, formData)
-      .subscribe(result => {
-        this._notification.create('success', 'Update successful', this.data.name);
-        this.router.navigate(['/dashboard/craftsmanprice/details/', this.id]);
-      });
+    this.craftmanpriceService.update(this.id, formData)
+        .subscribe(result => {
+          this._notification.create('success', 'Update successful', this.data.name);
+          this.router.navigate(['/dashboard/craftsmanprice/details/', this.id]);
+        });
 
   }
+
   //Event method for removing picture
   onRemoved(_file: FileHolder) {
     this.ImageFile = [];
   }
+
   //Event method for storing imgae in variable
   onBeforeUpload = (metadata: UploadMetadata) => {
     try {
@@ -134,6 +159,7 @@ export class CraftmanPriceEditComponent implements OnInit {
     }
 
   }
+
   //Event method for resetting the form
   resetForm($event: MouseEvent) {
     $event.preventDefault();
@@ -143,31 +169,10 @@ export class CraftmanPriceEditComponent implements OnInit {
     }
     this.loadFormData();
   }
+
   //Event method for setting up form in validation
   getFormControl(name) {
     return this.validateForm.controls[name];
-  }
-  // init the component
-  ngOnInit() {
-
-    this.sub = this.route.params.subscribe(params => {
-      this.id = +params['id']; // (+) converts string 'id' to a number
-      this.craftmanpriceService.getById(this.id)
-        .subscribe(result => {
-          this.loadFormData();
-          this.data = result;
-          this.validateForm.patchValue(this.data);
-          this.selectedIndex = this.data.design_id.id;
-          this.genre_id = this.data.genre_id.id;
-          this.design_category_id = this.data.design_category_id.id;
-          this.design_subcategory_id = this.data.design_subcategory_id.id;
-          this.type_id = this.data.type_id.id;
-          this.category_id = this.data.category_id.id;
-          this.subcategory_id = this.data.subcategory_id.id;
-          this.part_id = this.data.part_id.id;
-          this.craftman_id = this.data.craftman_id.id;
-        });
-    });
   }
 
 
@@ -176,10 +181,10 @@ export class CraftmanPriceEditComponent implements OnInit {
       this.genreSearchOptions = result;
     });
     this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-      warehouseId => {
-        this.currentWarehouseId = warehouseId || '';
-        this.getAllCraftsmanSearchData();
-      }
+        warehouseId => {
+          this.currentWarehouseId = warehouseId || '';
+          this.getAllCraftsmanSearchData();
+        }
     );
     this.designCategoryService.getAllDesignCategory().subscribe(result => {
       this.designCategorySearchOptions = result;
@@ -198,14 +203,26 @@ export class CraftmanPriceEditComponent implements OnInit {
 
   getAllCraftsmanSearchData() {
     this.craftsmanService
-      .getAllCraftsmanByWarehouseId(this.currentWarehouseId)
-      .subscribe((result: any) => {
-        this.craftmanSearchoptions = result.data;
-      });
+        .getAllCraftsmanByWarehouseId(this.currentWarehouseId)
+        .subscribe((result: any) => {
+          this.craftmanSearchoptions = result.data;
+        });
   }
 
 
   crafmanChange($event: string) {
+  }
+
+  categoryIdChange($event) {
+    const query = encodeURI($event);
+
+    if (query !== 'null') {
+      this.categoryProductService
+          .getSubcategoryByCategoryId(query)
+          .subscribe(result => {
+            this.subcategorySearchOptions = result;
+          });
+    }
   }
 
   subcategorySearchChange($event) {
@@ -220,7 +237,11 @@ export class CraftmanPriceEditComponent implements OnInit {
     }
   }
 
+  categoryIdSearchChange($event) {
+  }
 
+  subcategoryIdSearchChange($event) {
+  }
 
   genreSearchChange($event) {
 
@@ -229,18 +250,18 @@ export class CraftmanPriceEditComponent implements OnInit {
     if (this.validateForm.get("genre_id").value !== 'null') {
 
       this.designService.getDesigns(this.validateForm.get("genre_id").value, this.validateForm.get("design_category_id").value,
-        this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
-          this.designs = result;
+          this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
+        this.designs = result;
 
-        });
+      });
     } else {
       this.designSearchOptions = {};
 
       this.designService.getDesigns(" ", this.validateForm.get("design_category_id").value,
-        this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
-          this.designs = result;
+          this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
+        this.designs = result;
 
-        });
+      });
 
     }
 
@@ -252,21 +273,22 @@ export class CraftmanPriceEditComponent implements OnInit {
     this.design_id = id;
     // ... do other stuff here ...
   }
+
   designCategorySearchChange($event) {
 
     this.tempEditObject.design_subcategory_id = null;
     const query = encodeURI($event);
     if (query !== 'null') {
       this.designCategoryService
-        .getDesignSubcategoryByDesignCategoryId(query)
-        .subscribe(result => {
-          this.designSubcategorySearchOptions = result;
+          .getDesignSubcategoryByDesignCategoryId(query)
+          .subscribe(result => {
+            this.designSubcategorySearchOptions = result;
 
-          this.designService.getDesigns(this.validateForm.get("genre_id").value, this.validateForm.get("design_category_id").value,
-            this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
+            this.designService.getDesigns(this.validateForm.get("genre_id").value, this.validateForm.get("design_category_id").value,
+                this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
               this.designs = result;
             });
-        });
+          });
     } else {
       this.designSubcategorySearchOptions = [];
     }
@@ -277,34 +299,40 @@ export class CraftmanPriceEditComponent implements OnInit {
     const query = encodeURI($event);
     if (query !== 'null') {
       this.designService
-        .getDesignByDesignSubcategoryId(query)
-        .subscribe(result => {
-          this.designSearchOptions = result;
-        });
+          .getDesignByDesignSubcategoryId(query)
+          .subscribe(result => {
+            this.designSearchOptions = result;
+          });
 
       this.designService.getDesigns(this.validateForm.get("genre_id").value, this.validateForm.get("design_category_id").value,
-        this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
-          this.designs = result;
+          this.validateForm.get("design_subcategory_id").value, "desc").subscribe(result => {
+        this.designs = result;
 
-        });
+      });
     } else {
       this.designSearchOptions = {};
     }
   }
-  typeSearchChange($event: string) { }
-  partSearchChange($event) { }
+
+  typeSearchChange($event: string) {
+  }
+
+  partSearchChange($event) {
+  }
+
   onUploadStateChanged(state: boolean) {
 
   }
+
   categoryChange($event) {
     this.tempEditObject.subcategory_id = null;
     const query = encodeURI($event);
     if (query !== 'null') {
       this.categoryProductService
-        .getSubcategoryByCategoryId(query)
-        .subscribe(result => {
-          this.subcategorySearchOptions = result;
-        });
+          .getSubcategoryByCategoryId(query)
+          .subscribe(result => {
+            this.subcategorySearchOptions = result;
+          });
     } else {
       this.subcategorySearchOptions = {};
     }

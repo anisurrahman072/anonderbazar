@@ -1,6 +1,7 @@
 import {UIService} from '../../../../services/ui/ui.service';
 import {Subscription} from 'rxjs';
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+
 import {CraftmanPriceService} from '../../../../services/craftman-price.service';
 import {PartService} from '../../../../services/part.service';
 import {AuthService} from '../../../../services/auth.service';
@@ -336,6 +337,8 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
+    partSearchChange($event) {
+    }
 
     designCategorySearchChange($event) {
         this.tempEditObject.design_subcategory_id = null;
@@ -365,6 +368,8 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
+    designSearchChange($event) {
+    }
 
     genreSearchChange($event) {
         this.tempEditObject.design_id = null;
@@ -376,6 +381,9 @@ export class CraftmanPriceComponent implements OnInit {
         } else {
             this.designSearchOptions = {};
         }
+    }
+
+    categorySearchChange($event) {
     }
 
     categoryChange($event) {
@@ -404,4 +412,12 @@ export class CraftmanPriceComponent implements OnInit {
         }
     }
 
+    typeSearchChange($event: string) {
+    }
+
+    crafmanChange($event: string) {
+    }
+
+    crafmanSearchChange($event: string) {
+    }
 }
