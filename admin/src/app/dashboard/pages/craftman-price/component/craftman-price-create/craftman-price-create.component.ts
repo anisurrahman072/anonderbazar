@@ -1,7 +1,6 @@
 import {UIService} from '../../../../../services/ui/ui.service';
 import {Subscription} from 'rxjs';
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {CraftmanPriceService} from '../../../../../services/craftman-price.service';
 import {PartService} from '../../../../../services/part.service';
 import {AuthService} from '../../../../../services/auth.service';
@@ -13,9 +12,9 @@ import {CategoryProductService} from '../../../../../services/category-product.s
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CraftsmanService} from '../../../../../services/craftsman.service';
 import {Router, ActivatedRoute} from '@angular/router';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-craftman-price-create',
@@ -23,7 +22,7 @@ import {environment} from "../../../../../../environments/environment";
     styleUrls: ['./craftman-price-create.component.css']
 })
 export class CraftmanPriceCreateComponent implements OnInit {
-    @ViewChild('Image') Image;
+
     validateForm: FormGroup;
     _isSpinning: boolean = false;
     ImageFile: File[] = [];
@@ -44,6 +43,8 @@ export class CraftmanPriceCreateComponent implements OnInit {
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
 
+
+    @ViewChild('Image') Image;
     currentUser: any;
     design_id: any;
 
@@ -63,6 +64,10 @@ export class CraftmanPriceCreateComponent implements OnInit {
                 private craftmanpriceService: CraftmanPriceService,
                 private uiService: UIService,
                 private partService: PartService) {
+
+    }
+
+    ngOnInit() {
         this.validateForm = this.fb.group({
             craftman_id: ['', [Validators.required]],
             genre_id: ['', [Validators.required]],
@@ -76,6 +81,31 @@ export class CraftmanPriceCreateComponent implements OnInit {
             time: ['', [Validators.required]],
             comment: ['']
 
+        });
+
+        this.currentUser = this.authService.getCurrentUser();
+        this.genreService.getAll().subscribe((result: any) => {
+            this.genreSearchOptions = result;
+        });
+
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
+            warehouseId => {
+                this.currentWarehouseId = warehouseId || '';
+                this.getAllCraftsmanSearchData();
+            }
+        );
+
+        this.designCategoryService.getAllDesignCategory().subscribe(result => {
+            this.designCategorySearchOptions = result;
+        });
+        this.categoryProductService.getAllCategory().subscribe((result: any) => {
+            this.categorySearchOptions = result;
+        });
+        this.categoryTypeService.getAll().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.partService.getAll().subscribe(result => {
+            this.partsSearchOptions = result;
         });
     }
 
@@ -148,32 +178,6 @@ export class CraftmanPriceCreateComponent implements OnInit {
     }
 
     // init the component
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.genreService.getAll().subscribe((result: any) => {
-            this.genreSearchOptions = result;
-        });
-
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-            warehouseId => {
-                this.currentWarehouseId = warehouseId || '';
-                this.getAllCraftsmanSearchData();
-            }
-        );
-
-        this.designCategoryService.getAllDesignCategory().subscribe(result => {
-            this.designCategorySearchOptions = result;
-        });
-        this.categoryProductService.getAllCategory().subscribe((result: any) => {
-            this.categorySearchOptions = result;
-        });
-        this.categoryTypeService.getAll().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.partService.getAll().subscribe(result => {
-            this.partsSearchOptions = result;
-        });
-    }
 
     getAllCraftsmanSearchData() {
         this.craftsmanService
@@ -195,6 +199,7 @@ export class CraftmanPriceCreateComponent implements OnInit {
     categoryIdChange($event) {
         const query = encodeURI($event);
 
+
         if (query !== 'null') {
             this.categoryProductService
                 .getSubcategoryByCategoryId(query)
@@ -214,6 +219,12 @@ export class CraftmanPriceCreateComponent implements OnInit {
         } else {
             this.partSearchOptions = {};
         }
+    }
+
+    categoryIdSearchChange($event) {
+    }
+
+    subcategoryIdSearchChange($event) {
     }
 
     genreSearchChange($event) {
@@ -286,6 +297,16 @@ export class CraftmanPriceCreateComponent implements OnInit {
         } else {
             this.designSearchOptions = {};
         }
+    }
+
+    typeSearchChange($event: string) {
+    }
+
+    partSearchChange($event) {
+    }
+
+    onUploadStateChanged(state: boolean) {
+
     }
 
     categoryChange($event) {
