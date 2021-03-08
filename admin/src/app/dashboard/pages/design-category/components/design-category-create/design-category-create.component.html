@@ -3,7 +3,7 @@
         নকশার ধরন সংযোজন
     </ng-template>
     <ng-template #extra>
-        <button routerLink="/dashboard/designcategory" nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button routerLink="/dashboard/designcategory" nz-button [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>
             <span> List </span>
         </button>
@@ -11,62 +11,64 @@
     <ng-template #body>
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="col-md-3">
-                <div    nz-row>
+                <div nz-row>
                     <div nz-col [nzSpan]="16">
                         <image-upload [max]="1" buttonCaption="Select picture"
-                        dropBoxMessage="Drop Picture here"
-                        clearButtonCaption="Clear" (removed)="onRemoved($event)" [beforeUpload]="onBeforeUpload"></image-upload>
+                                      dropBoxMessage="Drop Picture here"
+                                      clearButtonCaption="Clear" (removed)="onRemoved($event)"
+                                      [beforeUpload]="onBeforeUpload"></image-upload>
                     </div>
                 </div>
                 <!--Image-->
             </div>
             <div class="col-md-9">
-                <div    nz-row>
-                    <div    nz-col [nzSpan]="2">
+                <div nz-row>
+                    <div nz-col [nzSpan]="2">
                         <label> Name </label>
                     </div>
-                    <div nz-col [nzSpan]="16"      >
-                           <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
-
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                    <div nz-col [nzSpan]="16">
+                        <input nz-input formControlName="name" placeholder="Enter Name" [nzSize]="'large'">
+                        <div
+                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                             দয়া করে Name লিখুন !
                         </div>
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                        <div
+                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                             Name already exists!
                         </div>
-                        <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                        <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                             Verifying ...
                         </div>
                     </div>
                 </div>
                 <!--Name-->
 
-                <div    nz-row>
-                    <div nz-col [nzSpan]="2"   >
+                <div nz-row>
+                    <div nz-col [nzSpan]="2">
                         <label> Code </label>
                     </div>
-                    <div nz-col [nzSpan]="16"      >
-                           <input nz-input  formControlName="code"  [placeholder]="'Enter Code'" [nzSize]="'large'">
-
+                    <div nz-col [nzSpan]="16">
+                        <input nz-input formControlName="code" placeholder="Enter Code" [nzSize]="'large'">
                     </div>
                 </div>
                 <!--Code-->
 
-                <div    nz-row>
-                    <div nz-col [nzSpan]="2"   >
+                <div nz-row>
+                    <div nz-col [nzSpan]="2">
                         <label> নকশার ধরন</label>
                     </div>
-                    <div nz-col [nzSpan]="16"      >
+                    <div nz-col [nzSpan]="16">
 
-                        <nz-select formControlName="parent_id" nzAllowClear [nzPlaceHolder]="'নকশার ধরন নির্বাচন করুন'"
-                              [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <nz-select formControlName="parent_id" nzAllowClear nzPlaceHolder="নকশার ধরন নির্বাচন করুন"
+                                   [nzNotFoundContent]="'Not found'" nzShowSearch>
                             <nz-option *ngFor="let option of designCategorySearchOptions" [nzLabel]="option.name"
-                                [nzValue]="option.id">
+                                       [nzValue]="option.id">
                             </nz-option>
                         </nz-select>
 
 
-                        <div    *ngIf="getFormControl('parent_id').dirty&&getFormControl('parent_id').hasError('required')">
+                        <div
+                                *ngIf="getFormControl('parent_id').dirty&&getFormControl('parent_id').hasError('required')">
                             দয়া করে নকশার ধরন নির্বাচন করুন !
                         </div>
                     </div>
@@ -74,10 +76,9 @@
                 <!--Parent Id-->
 
 
-
-                <div    nz-row>
-                    <div nz-col [nzOffset]="2" [nzSpan]="16"   >
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                <div nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="16">
+                        <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
                             Save
                         </button>
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
