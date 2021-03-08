@@ -4,12 +4,12 @@
     </ng-template>
     <ng-template #extra>
         <button *ngIf="data && 'brand-edit'|accessControl" [routerLink]="['/dashboard/brand/edit', data.id]" nz-button
-            [nzType]="'primary'" [nzSize]="'large'">
+                [nzSize]="'large'">
             <i class="anticon anticon-edit"></i><span>Edit</span>
         </button>
 
-        <button *ngIf="'brand-read'|accessControl" routerLink="/dashboard/brand" nz-button [nzType]="'primary'"
-            [nzSize]="'large'">
+        <button *ngIf="'brand-read'|accessControl" routerLink="/dashboard/brand" nz-button
+                [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
         </button>
     </ng-template>
@@ -17,7 +17,8 @@
         <div class="row" *ngIf="data">
             <div class="col-md-4">
                 <div class="profile-img">
-                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
+                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                         src="{{  IMAGE_ENDPOINT + data.image}}"/>
                 </div>
             </div>
             <div class="col-md-6">
