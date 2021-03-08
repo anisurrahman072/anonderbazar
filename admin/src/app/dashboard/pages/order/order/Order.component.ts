@@ -26,6 +26,8 @@ export class OrderComponent implements OnInit {
     viewNotRendered: boolean = true;
     maxSearchDate: string = '';
     minSearchDate: string = '';
+    orderNumberFilter: string = '';
+    customerNameFilter: string = '';
     searchStartDate: any;
     searchEndDate: any;
 
@@ -36,6 +38,9 @@ export class OrderComponent implements OnInit {
     _isSpinning = true;
     currentUser: any;
     selectedOption: any[] = [];
+
+    orderCsvTotal: number = 0;
+    csvPage: number = 1;
 
     statusSearchValue: string = '';
     dateSearchValue: any;
@@ -97,7 +102,7 @@ export class OrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getData() {
+    getData(forCsv: boolean = false) {
 
         let dateSearchValue = {
             from: null,
@@ -125,17 +130,50 @@ export class OrderComponent implements OnInit {
             dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
 
-        console.log('getData: ', dateSearchValue);
+        let page = this.orderPage;
+        let limit = this.orderLimit;
+        if (forCsv) {
+            page = this.csvPage;
+            limit = 20;
+        }
 
         this._isSpinning = true;
         this.orderService.getAllOrdersGrid({
             date: JSON.stringify(dateSearchValue),
-            status: this.statusSearchValue
-        }, this.orderPage, this.orderLimit)
+            status: this.statusSearchValue,
+            customerName: this.customerNameFilter,
+            orderNumber: this.orderNumberFilter
+        }, page, limit)
             .subscribe(result => {
                 console.log('getallorders', result);
-                this.orderData = result.data;
-                this.orderTotal = result.total;
+                if (!forCsv) {
+                    this.orderData = result.data;
+                    this.orderTotal = result.total;
+                } else {
+                    this.allOders = result.data.map((item) => {
+                        return {
+                            ...item,
+                            checked: false
+                        }
+                    });
+
+                    this.orderCsvTotal = result.total;
+                    const thisTotal = this.allOders.length;
+
+                    if (this.storeOrderIds && this.storeOrderIds.length) {
+                        for (let index = 0; index < thisTotal; index++) {
+                            const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
+                                return storedOder.id == this.allOders[index].id;
+                            });
+                            this.allOders[index].checked = foundIndex !== -1;
+                        }
+                    } else {
+                        for (let index = 0; index < thisTotal; index++) {
+                            this.allOders[index].checked = false;
+                        }
+                    }
+                }
+
                 this._isSpinning = false;
 
             }, (err) => {
@@ -144,7 +182,33 @@ export class OrderComponent implements OnInit {
                 this._notification.error('Problems!', 'Problems in loading the orders');
             });
     }
+    // Method for showing the modal
+    showProductModal = () => {
 
+        this.isProductVisible = true;
+        this.storeOrderIds = [];
+
+        this.getData(true);
+    };
+
+
+    csvPageChangeHandler($event) {
+
+        const thisTotal = this.allOders.length;
+
+        if (this.storeOrderIds && this.storeOrderIds.length) {
+            for (let index = 0; index < thisTotal; index++) {
+                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
+                    return storedOder.id == this.allOders[index].id;
+                });
+                this.allOders[index].checked = foundIndex !== -1;
+            }
+        } else {
+            for (let index = 0; index < thisTotal; index++) {
+                this.allOders[index].checked = false;
+            }
+        }
+    }
     //Event method for resetting all filters
     resetAllFilter() {
         this.searchStartDate = '';
@@ -341,10 +405,6 @@ export class OrderComponent implements OnInit {
         })
     }
 
-    //Method for order status change
-    orderStatusChange($event) {
-        this.orderStatus = $event;
-    }
 
     //Event method for deleting order
     deleteConfirm(id) {
@@ -372,20 +432,6 @@ export class OrderComponent implements OnInit {
     };
 
 
-    // Method for showing the modal
-    showProductModal = data => {
-        console.log('showProductModal')
-        this.allOders = data.map((item) => {
-            return {
-                ...item,
-                checked: false
-            }
-        });
-        this.isProductVisible = true;
-        this.storeOrderIds = [];
-    };
-
-
     selectAllCsv($event) {
 
         const isChecked = !!$event.target.checked;
@@ -409,23 +455,7 @@ export class OrderComponent implements OnInit {
         console.log('this.storeOrderIds', this.storeOrderIds);
     }
 
-    csvPageChangeHandler($event) {
 
-        const thisTotal = this.allOders.length;
-
-        if (this.storeOrderIds && this.storeOrderIds.length) {
-            for (let index = 0; index < thisTotal; index++) {
-                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                    return storedOder.id == this.allOders[index].id;
-                });
-                this.allOders[index].checked = foundIndex !== -1;
-            }
-        } else {
-            for (let index = 0; index < thisTotal; index++) {
-                this.allOders[index].checked = false;
-            }
-        }
-    }
 
     //Method for status checkbox
 

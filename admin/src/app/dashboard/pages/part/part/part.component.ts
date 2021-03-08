@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
 import { AuthService } from '../../../../services/auth.service';
-import { NzNotificationService } from 'ng-zorro-antd';
 import { PartService } from '../../../../services/part.service';
 import { CategoryProductService } from '../../../../services/category-product.service';
 import {environment} from "../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
   selector: 'app-part',
@@ -20,8 +19,10 @@ export class PartComponent implements OnInit {
   limit: number = 10;
   page: number = 1;
   total: number;
-  nameSearchValue: string = '';
 
+  loading = true;
+
+  nameSearchValue: string = '';
   sortValue = {
     name: null,
     price: null
@@ -37,10 +38,10 @@ export class PartComponent implements OnInit {
   editMode: boolean = false;
 
   constructor(
-    private partService: PartService,
-    private categoryProductService: CategoryProductService,
-    private _notification: NzNotificationService,
-    private authService: AuthService
+      private partService: PartService,
+      private categoryProductService: CategoryProductService,
+      private _notification: NzNotificationService,
+      private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -49,27 +50,30 @@ export class PartComponent implements OnInit {
   }
 
   getPageData() {
+    this.loading = true;
     this.partService
-      .getAllParts(
-        this.page,
-        this.limit,
-        this.nameSearchValue,
-        this.typeId || '',
-        this.categoryId || '',
-        this.subcategoryId || '',
-        this.filterTerm(this.sortValue.name),
-        this.filterTerm(this.sortValue.price)
-      )
-      .subscribe(
-        result => {
-          this.data = result.data;
-          this.total = result.total;
-          this._isSpinning = false;
-        },
-        result => {
-          this._isSpinning = false;
-        }
-      );
+        .getAllParts(
+            this.page,
+            this.limit,
+            this.nameSearchValue,
+            this.typeId || '',
+            this.categoryId || '',
+            this.subcategoryId || '',
+            this.filterTerm(this.sortValue.name),
+            this.filterTerm(this.sortValue.price)
+        )
+        .subscribe(
+            result => {
+              this.loading = false;
+              this.data = result.data;
+              this.total = result.total;
+              this._isSpinning = false;
+            },
+            result => {
+              this.loading = false;
+              this._isSpinning = false;
+            }
+        );
 
     this.categoryProductService.getAllCategory().subscribe((result: any) => {
       this.categorySearchOptions = result;
@@ -104,9 +108,9 @@ export class PartComponent implements OnInit {
     this.subcategorySearchOptions = [];
     this.getPageData();
   }
-  sort(sortName, sortValue) {
+  sort(sort: { key: string, value: string }) {
     this.page = 1;
-    this.sortValue[sortName] = sortValue;
+    this.sortValue[sort.key] = sort.value;
     this.getPageData();
   }
 
@@ -127,10 +131,10 @@ export class PartComponent implements OnInit {
 
     if (query !== 'null') {
       this.categoryProductService
-        .getSubcategoryByCategoryId(query)
-        .subscribe(result => {
-          this.subcategorySearchOptions = result;
-        });
+          .getSubcategoryByCategoryId(query)
+          .subscribe(result => {
+            this.subcategorySearchOptions = result;
+          });
     }
   }
 

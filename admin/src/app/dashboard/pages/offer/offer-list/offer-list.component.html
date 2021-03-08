@@ -241,7 +241,7 @@
                     </thead>
                     <tbody   >
                         <tr    *ngFor="let data of nzTable3.data;let i=index;">
-                            <td    [nzCheckbox]="true">
+                            <td    [nzShowCheckbox]="true">
                                 <label nz-checkbox [(ngModel)]="data.checked" formControlName='offerChecked'
                                     (ngModelChange)="_refreshStatusOffer($event, data.id)">
                                 </label>
@@ -355,7 +355,7 @@
                 </thead>
                 <tbody   >
                     <tr    *ngFor="let data of nzTable.data;let i=index;">
-                        <td    [nzCheckbox]="true">
+                        <td    [nzShowCheckbox]="true">
                             <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
                                 (ngModelChange)="_refreshStatus($event, data.id)">
                             </label>
