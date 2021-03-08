@@ -12,7 +12,7 @@
         <ng-template #body>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable [nzTotal]="orderTotal" [nzData]="orderData" [nzIsPageIndexReset]="true"
-                          [nzIsPagination]="false" [nzPageSize]="orderLimit"
+                          [nzFrontPagination]="false" [nzPageSize]="orderLimit"
                           [nzSize]="'default'" [nzShowTitle]="false">
                     <thead>
                     <tr>
@@ -134,7 +134,7 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="submitForm($event, validateProductForm.value)">
             <nz-table #nzTable [nzBordered]="true" [nzData]="allOders"
-                      (nzPageIndexChange)="csvPageChangeHandler($event)" [nzIsPagination]="true"
+                      (nzPageIndexChange)="csvPageChangeHandler($event)" [nzFrontPagination]="true"
                       [nzIsPageIndexReset]="true" [nzPageSize]="25">
                 <thead>
                 <tr>
