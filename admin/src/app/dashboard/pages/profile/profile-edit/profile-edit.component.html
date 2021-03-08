@@ -38,7 +38,7 @@
                                 <label> UserName </label>
                             </div>
                             <div nz-col [nzSpan]="12"      >
-                                  <input nz-input  formControlName="username"  [nzDisabled]="'true'" [nzSize]="'large'">
+                                  <input nz-input  formControlName="username"  [disabled] ="true" [nzSize]="'large'">
 
                                 <div    *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
                                     Please input username !
@@ -58,7 +58,7 @@
                                 <label> Email </label>
                             </div>
                             <div nz-col [nzSpan]="12"      >
-                                  <input nz-input  formControlName="email"  [nzDisabled]="'true'" [nzSize]="'large'">
+                                  <input nz-input  formControlName="email"  [disabled] ="true" [nzSize]="'large'">
 
                                 <div    *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('required')">
                                     Please write something here!
