@@ -243,9 +243,7 @@
                     <label>Featured Product?</label>
                 </div>
                 <div nz-col [nzSpan]="12"      >
-                    <nz-switch formControlName="featured">
-                        <span checked>Yes</span>
-                        <span unchecked>No</span>
+                    <nz-switch formControlName="featured" nzUnCheckedChildren="No" nzCheckedChildren="Yes">
                     </nz-switch>
                     <div    *ngIf="getFormControl('featured').dirty&&getFormControl('featured').hasError('required')">
                         required!

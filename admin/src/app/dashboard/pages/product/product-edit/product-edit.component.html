@@ -314,9 +314,7 @@
                             <label>Product Featured?</label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <nz-switch formControlName="featured">
-                                <span checked>Yes</span>
-                                <span unchecked>No</span>
+                            <nz-switch formControlName="featured" nzUnCheckedChildren="No" nzCheckedChildren="Yes">
                             </nz-switch>
                             <div
                                  *ngIf="getFormControl('featured').dirty&&getFormControl('featured').hasError('required')">
@@ -333,9 +331,7 @@
                         </div>
                         <div nz-col [nzSpan]="2"      >
                             <nz-switch formControlName="is_coupon_product"
-                                       (ngModelChange)="onChangeCouponProduct($event)">
-                                <span checked>Yes</span>
-                                <span unchecked>No</span>
+                                       (ngModelChange)="onChangeCouponProduct($event)" nzUnCheckedChildren="No" nzCheckedChildren="Yes">
                             </nz-switch>
                         </div>
                         <div *ngIf="isCouponProductEnabled" nz-col [nzSpan]="3">

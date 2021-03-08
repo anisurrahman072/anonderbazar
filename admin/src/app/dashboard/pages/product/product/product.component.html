@@ -505,9 +505,7 @@
             <!--Promotion-->
             <div>
                 <div >
-                    <nz-switch formControlName="promotion">
-                        <span >Yes</span>
-                        <span >No</span>
+                    <nz-switch formControlName="promotion" nzUnCheckedChildren="No" nzCheckedChildren="Yes">
                     </nz-switch>
                     <div
                             *ngIf="validatePromotionForm.controls.promotion.dirty&&validatePromotionForm.controls.promotion.hasError('required')">
