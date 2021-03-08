@@ -1,14 +1,14 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
     Validators
 } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
 import {BrandService} from '../../../../services/brand.service';
 import {AuthService} from '../../../../services/auth.service';
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-brand-create',
@@ -21,8 +21,8 @@ export class BrandCreateComponent implements OnInit {
     ImageFile: File[] = [];
     @ViewChild('Image') Image;
     currentUser: any;
-    
-    
+
+
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -43,15 +43,15 @@ export class BrandCreateComponent implements OnInit {
         }
         const formData: FormData = new FormData();
         formData.append('name', value.name);
-        formData.append('code', value.code); 
-        
+        formData.append('code', value.code);
+
         if (this.ImageFile.length) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile[0], this.ImageFile[0].name);
         } else {
             formData.append('hasImage', 'false');
-            
-        } 
+
+        }
         this.brandService.insert(formData)
             .subscribe((result: any) => {
                 if (result.id) {
@@ -70,11 +70,11 @@ export class BrandCreateComponent implements OnInit {
         try {
             this.ImageFile[0] = metadata.file;
             return metadata;
-            
+
         } catch (error) {
         }
     }
-    
+
     //Event method for storing imgae in variable
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -87,13 +87,13 @@ export class BrandCreateComponent implements OnInit {
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-     // init the component
+    // init the component
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
     }
-    
+
     onUploadStateChanged(state: boolean) {
-    
+
     }
-    
+
 }
