@@ -146,7 +146,6 @@ export class WarehouseCreateComponent implements OnInit {
 
                     formData.append('invoice_footer', value.invoice_footer);
                     this.warehouseService.insert(formData).subscribe(result => {
-                        console.log('Aniss 2nd');
                         if (result.id) {
                             this.userInsert(value, result);
                         }
