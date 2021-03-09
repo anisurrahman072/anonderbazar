@@ -14,8 +14,8 @@
         </button>
     </ng-template>
 
-    <ng-template #body>
-        <div class="row" *ngIf="data">
+    <ng-template [ngIf]="data">
+        <div class="row">
             <div class="col-md-4">
                 <div class="profile-img">
                     <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.logo}}" />

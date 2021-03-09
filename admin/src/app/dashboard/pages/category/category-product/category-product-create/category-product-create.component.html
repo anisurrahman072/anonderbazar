@@ -1,14 +1,11 @@
-<nz-card class="card-height">
-    <ng-template #title>
-        Add new product category
-    </ng-template>
+<nz-card class="card-height" nzTitle="Add new product category" [nzExtra]="extra">
     <ng-template #extra>
         <button *ngIf="'productcategory-read'|accessControl" routerLink="/dashboard/category/product" nz-button
                 [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
         </button>
     </ng-template>
-    <ng-template #body>
+    <ng-container>
         <ul class="breadcrumb">
             <li *ngIf="getFormControl('parent').value">{{getFormControl('parent').value.name}}</li>
             <li *ngIf="getFormControl('sub_parent').value">{{getFormControl('sub_parent').value.name}}</li>
@@ -128,5 +125,5 @@
             </div>
 
         </form>
-    </ng-template>
+    </ng-container>
 </nz-card>

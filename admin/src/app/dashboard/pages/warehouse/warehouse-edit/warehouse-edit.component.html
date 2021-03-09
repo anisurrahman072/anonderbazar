@@ -8,7 +8,7 @@
             <span> List </span>
         </button>
     </ng-template>
-    <ng-template #body *ngIf="data">
+    <ng-template #body [ngIf]="data">
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <nz-steps [nzCurrent]="current">
                 <nz-step (click)="current=0" [nzTitle]="'Owner Info'"></nz-step>
