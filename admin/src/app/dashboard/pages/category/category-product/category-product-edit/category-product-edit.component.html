@@ -1,7 +1,4 @@
-<nz-card>
-    <ng-template #title>
-        Edit Product category
-    </ng-template>
+<nz-card nzTitle="Edit Product category" [nzExtra]="extra">
     <ng-template #extra>
         <button *ngIf="'productcategory-read'|accessControl" routerLink="/dashboard/category/product" nz-button
                 [nzSize]="'large'">
@@ -9,7 +6,7 @@
             <span> List </span>
         </button>
     </ng-template>
-    <ng-template #body>
+    <ng-container>
         <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="col-md-3">
                 <div nz-row>
@@ -94,5 +91,5 @@
             </div>
 
         </form>
-    </ng-template>
+    </ng-container>
 </nz-card>
