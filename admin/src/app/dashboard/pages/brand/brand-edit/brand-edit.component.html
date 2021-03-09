@@ -1,8 +1,5 @@
 <nz-spin [nzSpinning]="_isSpinning">
-    <nz-card>
-        <ng-template #title>
-            Edit Brand
-        </ng-template>
+    <nz-card nzTitle="Edit Brand" [nzExtra]="extra">
         <ng-template #extra>
             <button *ngIf="'brand-read'|accessControl" routerLink="/dashboard/brand" nz-button
                     [nzSize]="'large'">
@@ -10,72 +7,70 @@
             </button>
 
         </ng-template>
-        <ng-template #body>
-            <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-                <div class="col-md-3">
-                    <div class="row">
-                        <div  nz-row>
-                            <div nz-col [nzSpan]="16"  >
-                                <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                                              dropBoxMessage="Drop Picture here"
-                                              clearButtonCaption="remove it?"
-                                              [beforeUpload]="onBeforeUpload">
-                                </image-upload>
-                                <div  *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
-                                    Please upload an image here!
-                                </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div  nz-row>
+                        <div nz-col [nzSpan]="16"  >
+                            <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
+                                          dropBoxMessage="Drop Picture here"
+                                          clearButtonCaption="remove it?"
+                                          [beforeUpload]="onBeforeUpload">
+                            </image-upload>
+                            <div  *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                Please upload an image here!
                             </div>
                         </div>
-                        <!--image-->
                     </div>
+                    <!--image-->
                 </div>
-                <div class="col-md-9">
-                    <div  nz-row>
-                        <!--name start-->
+            </div>
+            <div class="col-md-9">
+                <div  nz-row>
+                    <!--name start-->
 
-                        <div  nz-col [nzSpan]="2">
-                            <label> Name </label>
-                        </div>
-                        <div nz-col [nzSpan]="16"  >
-                            <input nz-input formControlName="name"  placeholder="Enter Name" [nzSize]="'large'">
-                            <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
-                                Name is required!
-                            </div>
-                            <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
-                                Name already exists!
-                            </div>
-                            <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
-                                Verifying ...
-                            </div>
-                        </div>
+                    <div  nz-col [nzSpan]="2">
+                        <label> Name </label>
                     </div>
-                    <!--name -->
-
-                    <div  nz-row>
-                        <div nz-col [nzSpan]="2" >
-                            <label> Code </label>
+                    <div nz-col [nzSpan]="16"  >
+                        <input nz-input formControlName="name"  placeholder="Enter Name" [nzSize]="'large'">
+                        <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                            Name is required!
                         </div>
-                        <div nz-col [nzSpan]="16"  >
-                            <input nz-input formControlName="code"  placeholder="Enter Code" [nzSize]="'large'">
-                            <div  *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
-                                দয়া করে Enter Code!
-                            </div>
+                        <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            Name already exists!
                         </div>
-                    </div>
-                    <!--code-->
-
-                    <div  nz-row>
-                        <div nz-col [nzOffset]="2" [nzSpan]="16" >
-                            <button nz-button  [nzSize]="'large'" [disabled]="!validateForm.valid">
-                                Save
-                            </button>
-                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        <div  *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            Verifying ...
                         </div>
                     </div>
                 </div>
+                <!--name -->
 
-            </form>
-        </ng-template>
+                <div  nz-row>
+                    <div nz-col [nzSpan]="2" >
+                        <label> Code </label>
+                    </div>
+                    <div nz-col [nzSpan]="16"  >
+                        <input nz-input formControlName="code"  placeholder="Enter Code" [nzSize]="'large'">
+                        <div  *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
+                            দয়া করে Enter Code!
+                        </div>
+                    </div>
+                </div>
+                <!--code-->
+
+                <div  nz-row>
+                    <div nz-col [nzOffset]="2" [nzSpan]="16" >
+                        <button nz-button  [nzSize]="'large'" [disabled]="!validateForm.valid">
+                            Save
+                        </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
     </nz-card>
 </nz-spin>
