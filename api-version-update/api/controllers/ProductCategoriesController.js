@@ -103,19 +103,16 @@ module.exports = {
         _where += ` AND categories.code LIKE '%${req.query.code_search}%' `;
       }
 
-      let _sort = [];
-      if(req.query.sortName){
-        _sort.push(` categories.name ${req.query.sortName} `);
-      } else if(req.query.sortCode){
-        _sort.push(` categories.code ${req.query.sortCode} `);
-      } else if(req.query.sortChildCount){
-        _sort.push(` COUNT(categories.id) ${req.query.sortChildCount} `);
+      let _sort = '';
+      if (req.query.sortKey && req.query.sortVal) {
+        if(req.query.sortKey !== 'child_count'){
+          _sort = ` ORDER BY categories.${req.query.sortKey} ${req.query.sortVal} `;
+        } else {
+          _sort = ` ORDER BY COUNT(categories.id) ${req.query.sortVal} `;
+        }
+      } else {
+        _sort = ` ORDER BY COUNT(categories.id) DESC `;
       }
-
-      if(_sort.length === 0){
-        _sort.push(` COUNT(categories.id) DESC `);
-      }
-      let sortSQL = ' ORDER BY ' + _sort.join(',');
 
       const totalCategoryRaw = await categoryNativeQuery('SELECT COUNT(*) as totalCount FROM categories ' + _where, []);
 
@@ -128,7 +125,7 @@ module.exports = {
         _pagination.limit = _pagination.limit ? _pagination.limit : totalCategories;
 
         let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        const rawResult = await categoryNativeQuery(rawSelect + fromSQL + _where + _groupBy + sortSQL + limitSQL, []);
+        const rawResult = await categoryNativeQuery(rawSelect + fromSQL + _where + _groupBy + _sort + limitSQL, []);
 
         allCategories = rawResult.rows;
       }

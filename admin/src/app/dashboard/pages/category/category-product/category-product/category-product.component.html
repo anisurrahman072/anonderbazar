@@ -22,7 +22,7 @@
                 <th>
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="child_count"> <span>Child Count</span></th>
+                <th nzShowSort nzSortKey="child_count"><span>Child Count</span></th>
 
                 <th nzShowSort nzSortKey="name">
                     <span> Name </span>
@@ -35,17 +35,16 @@
                 </th>
                 <th>&nbsp;</th>
             </tr>
-
             <tr>
                 <th></th>
                 <th></th>
                 <th>
                     <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
-                           (ngModelChange)="page=1; getPageData()">
+                           (ngModelChange)="page=1; getPageData(); ">
                 </th>
                 <th>
                     <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
-                           (ngModelChange)="page=1; getPageData()">
+                           (ngModelChange)="page=1; getPageData(); ">
                 </th>
                 <th></th>
                 <th></th>
@@ -55,9 +54,12 @@
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
                 <td>
-                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
-                               [nzIcon]="'user'">
-                    </nz-avatar>
+                    <ng-container *ngIf="data.image">
+                        <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
+                                   [nzIcon]="'user'">
+                        </nz-avatar>
+                    </ng-container>
+
                 </td>
                 <td>
                     {{data.total_sub_categories}}

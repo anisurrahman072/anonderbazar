@@ -67,6 +67,7 @@ export class CategoryProductComponent implements OnInit {
 
     //Event method for setting up filter data
     sort(sort: { key: string, value: string }) {
+        console.log('sort', sort);
         this.page = 1;
         this.sortKey = sort.key;
         this.sortValue = CategoryProductComponent.filterTerm(sort.value);
