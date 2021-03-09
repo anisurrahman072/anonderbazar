@@ -295,7 +295,7 @@ export class OrderComponent implements OnInit {
             let allCouponCodes = '';
 
             if (suborderItem.all_coupons) {
-                allCouponCodes = suborderItem.all_coupons.split(',').map((coupon) => {
+                allCouponCodes = suborderItem.all_coupons.split('|').map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
                 });
             }
