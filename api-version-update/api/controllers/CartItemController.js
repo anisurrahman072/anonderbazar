@@ -133,8 +133,7 @@ module.exports = {
       newJson.cartItem = cartItem;
       newJson.cartItem.cart_item_variants = cartItemVariantData;
       return res.json(newJson);
-    }
-    catch (error){
+    } catch (error) {
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -167,6 +166,10 @@ module.exports = {
       }
 
       const quantityPassed = parseFloat(req.body.product_quantity);
+
+      if (quantityPassed <= 0) {
+        return res.badRequest('Invalid data Provided');
+      }
 
       /*
       if (product.quantity < quantityPassed) {
@@ -315,10 +318,14 @@ module.exports = {
         return res.status(401).json({err: 'You are not authorized to do it.'});
       }*/
 
+      let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
+
+      if (quantityToChange <= 0) {
+        return res.badRequest('Invalid quantity provided.');
+      }
+
       const response = await sails.getDatastore()
         .transaction(async (db) => {
-
-          let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
 
           let itemCurrentQuantity = cartItem.product_quantity;
 

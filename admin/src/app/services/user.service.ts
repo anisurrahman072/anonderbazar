@@ -13,15 +13,9 @@ export class UserService {
     private currentUser: any | boolean;
 
     constructor(private http: HttpClient,
-                private authService: AuthService,
-                private authenticationService: AuthService) {
+                private authService: AuthService) {
 
         this.currentUser = this.authService.getCurrentUser();
-    }
-
-    getAll(): Observable<any> {
-        // get users from api
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`);
     }
 
     getAllShopOwner(page: number, warehouseId: number, limit: number,
@@ -36,7 +30,7 @@ export class UserService {
 
 
         return this.http.get(`${this.EndPoint
-            }?group_id=4&page=${page
+            }/all-shop-users?page=${page
             }&limit=${limit
             }&warehouse_id=${warehouseId
             }&searchTermEmail=${emailSearchValue

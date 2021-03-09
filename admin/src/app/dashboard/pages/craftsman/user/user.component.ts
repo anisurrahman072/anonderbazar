@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-
 import {UserService} from "../../../../services/user.service";
 import {UIService} from "../../../../services/ui/ui.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -28,7 +27,7 @@ export class UserComponent implements OnInit, OnDestroy {
     categoryId: any = null;
     subcategoryId: any = null;
 
-    limit: number = 10;
+    limit: number = 20;
     page: number = 1;
     total: number;
     nameSearchValue: string = '';
@@ -70,8 +69,11 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     //Event method for getting all the data for the page
-    getPageData() {
-        this.loading = true;
+    getPageData(event?:any) {
+        if(event){
+            this.page = event;
+        }
+        this._isSpinning = true;
         this.userService
             .getAllShopOwner(
                 this.page,
@@ -88,14 +90,12 @@ export class UserComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 result => {
-                    this.loading = false;
                     this.data = result.data;
                     this.total = result.total;
                     this._isSpinning = false;
                 },
                 error => {
                     this._isSpinning = false;
-                    this.loading = false;
                 }
             );
     }
