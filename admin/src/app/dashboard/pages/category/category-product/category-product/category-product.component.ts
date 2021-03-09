@@ -11,6 +11,7 @@ import {NzNotificationService} from "ng-zorro-antd";
 export class CategoryProductComponent implements OnInit {
     _isSpinning = true;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     data = [];
 
     categoryId: any = null;
@@ -20,10 +21,9 @@ export class CategoryProductComponent implements OnInit {
     page: number = 1;
     total: number;
     nameSearchValue: string = '';
-    sortValue = {
-        name: null,
-        price: null
-    };
+    codeSearchValue: string = '';
+    sortValue = 'DESC';
+    sortKey = 'child_count';
 
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
@@ -42,33 +42,39 @@ export class CategoryProductComponent implements OnInit {
 
     //Event method for getting all the data for the page
     getPageData() {
-        this.loading = true;
+        this._isSpinning = true;
         this.categoryProductService
             .getAllWithSubcategory(
                 this.page,
                 this.limit,
                 this.nameSearchValue,
-                this.categoryId ? this.categoryId : '',
-                this.subcategoryId ? this.subcategoryId : '',
-                this.filterTerm(this.sortValue.name),
-                this.filterTerm(this.sortValue.price),
+                this.codeSearchValue,
+                this.sortKey,
+                this.sortValue
             )
             .subscribe(
                 result => {
                     this.data = result.data;
                     this.total = result.total;
                     this._isSpinning = false;
-                    this.loading = false;
                 },
                 error => {
+                    console.log('error', error);
                     this._isSpinning = false;
-                    this.loading = false;
                 }
             );
     }
 
     //Event method for setting up filter data
-    private filterTerm(sortValue: string): string {
+    sort(sort: { key: string, value: string }) {
+        this.page = 1;
+        this.sortKey = sort.key;
+        this.sortValue = CategoryProductComponent.filterTerm(sort.value);
+        this.getPageData();
+    }
+
+    //Event method for setting up filter data
+    private static filterTerm(sortValue: string): string {
         switch (sortValue) {
             case 'ascend':
                 return 'ASC';
@@ -79,22 +85,13 @@ export class CategoryProductComponent implements OnInit {
         }
     }
 
-    //Event method for setting up filter data
-    sort(sort: { key: string, value: string }) {
-        this.page = 1;
-        this.sortValue[sort.key] = sort.value;
-        this.getPageData();
-    }
-
     //Event method for resetting all filters
     resetAllFilter() {
         this.limit = 5;
         this.page = 1;
         this.nameSearchValue = '';
-        this.sortValue = {
-            name: null,
-            price: null
-        };
+        this.sortKey = 'child_count';
+        this.sortValue = 'DESC';
         this.categoryId = null;
         this.subcategoryId = null;
         this.subcategorySearchOptions = [];

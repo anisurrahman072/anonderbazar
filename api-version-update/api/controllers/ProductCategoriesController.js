@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {asyncForEach} = require('../../libs/helper');
+const Promise = require('bluebird');
 const {pagination} = require('../../libs/pagination');
 
 module.exports = {
@@ -76,47 +76,71 @@ module.exports = {
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {
     try {
-
+      const categoryNativeQuery = Promise.promisify(Category.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .............START ...............................*/
-      let _where = {};
-      _where.type_id = 2;
-      _where.deletedAt = null;
-      _where.parent_id = 0;
+      let rawSelect = `
+        SELECT
+            categories.id as id,
+            categories.code as code,
+            categories.name as name,
+            categories.parent_id as parent_id,
+            categories.image as image,
+            categories.slug as slug
+
+      `;
+
+      let fromSQL = ' FROM categories as categories  ';
+      fromSQL += ' LEFT JOIN categories as subCategory ON subCategory.parent_id = categories.id   ';
+      let _where = ` WHERE categories.deleted_at IS NULL AND categories.type_id = 2 `;
+
+      let _groupBy = ' GROUP By categories.id ';
+
+      if (req.query.name_search) {
+        _where += ` AND categories.name LIKE '%${req.query.name_search}%' `;
+      }
+      if (req.query.code_search) {
+        _where += ` AND categories.code LIKE '%${req.query.code_search}%' `;
+      }
 
       let _sort = [];
-      if (req.query.sortName) {
-        _sort.push({name: req.query.sortName});
+      if(req.query.sortName){
+        _sort.push(` categories.name ${req.query.sortName} `);
+      } else if(req.query.sortCode){
+        _sort.push(` categories.code ${req.query.sortCode} `);
+      } else if(req.query.sortChildCount){
+        _sort.push(` COUNT(categories.id) ${req.query.sortChildCount} `);
       }
 
-      if (req.query.search_term) {
-        _where.or = [
-          {name: {'like': `%${req.query.search_term}%`}}
-        ];
+      if(_sort.length === 0){
+        _sort.push(` COUNT(categories.id) DESC `);
       }
+      let sortSQL = ' ORDER BY ' + _sort.join(',');
 
-      let totalCategory = await Category.count().where(_where);
-      let categories = await Category.find({
-        where: _where,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        sort: _sort,
-      });
+      const totalCategoryRaw = await categoryNativeQuery('SELECT COUNT(*) as totalCount FROM categories ' + _where, []);
 
+      rawSelect += ' , (COUNT(categories.id) -1) as total_sub_categories ';
 
-      await asyncForEach(categories, async (_category) => {
-        _category.subCategories = await Category.find({type_id: 2, parent_id: _category.id, deletedAt: null});
-      });
+      let totalCategories = 0;
+      let allCategories = [];
+      if (totalCategoryRaw && totalCategoryRaw.rows && totalCategoryRaw.rows.length > 0) {
+        totalCategories = totalCategoryRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalCategories;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+        const rawResult = await categoryNativeQuery(rawSelect + fromSQL + _where + _groupBy + sortSQL + limitSQL, []);
+
+        allCategories = rawResult.rows;
+      }
 
       return res.status(200).json({
         success: true,
-        total: totalCategory,
+        total: totalCategories,
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'product category  withsubcategory',
-        data: categories
+        message: 'product categories  with subcategory ccount ',
+        data: allCategories
 
       });
     } catch (error) {

@@ -1,228 +1,106 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Product category list
-        </ng-template>
-        <ng-template #extra>
+    <nz-card class="card-height" nzTitle="Product category list" [nzExtra]="extraTemplate">
+        <ng-template #extraTemplate>
             <button *ngIf="'productcategory-create'|accessControl" routerLink="/dashboard/category/product/create"
                     nz-button [nzSize]="'large'">
                 <i class="anticon anticon-download"><span> Add New </span></i>
             </button>
         </ng-template>
-        <ng-template #body>
-            <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable
-                          nzShowSizeChanger
-                          [nzFrontPagination]="false"
-                          [nzData]="data"
-                          [nzLoading]="loading"
-                          [nzTotal]="total"
-                          [(nzPageIndex)]="page"
-                          [(nzPageSize)]="limit"
-                          (nzPageIndexChange)="getPageData()"
-                >
+        <nz-table #nzTable
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="data"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="total"
+                  [(nzPageIndex)]="page"
+                  [(nzPageSize)]="limit"
+                  (nzPageIndexChange)="getPageData()"
+        >
 
-                    <thead (nzSortChange)="sort($event)" nzSingleSort>
-                    <tr>
-                        <th>
-                            <span> Picture </span>
-                        </th>
-                        <th nzShowSort nzSortKey="name">
-                            <span> Name </span>
-                        </th>
-                        <th nzShowSort nzSortKey="code">
-                            <span> Code </span>
-                        </th>
-                        <th nzShowSort nzSortKey="slug">
-                            <span>Slug</span>
-                        </th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    </thead>
+            <thead (nzSortChange)="sort($event)" nzSingleSort>
+            <tr>
+                <th>
+                    <span> Picture </span>
+                </th>
+                <th nzShowSort nzSortKey="child_count"> <span>Child Count</span></th>
 
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>
-                            <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
-                                   (ngModelChange)="page=1; getPageData()">
-                        </th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    </thead>
+                <th nzShowSort nzSortKey="name">
+                    <span> Name </span>
+                </th>
+                <th nzShowSort nzSortKey="code">
+                    <span> Code </span>
+                </th>
+                <th>
+                    <span>Slug</span>
+                </th>
+                <th>&nbsp;</th>
+            </tr>
 
-                    <tbody>
-                    <tr *ngFor="let data of nzTable.data;let i =  index ">
-                        <td>
-                            {{data.subCategories.length}}
-                        </td>
-                        <td>
-                            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
-                                       [nzIcon]="'user'">
-                            </nz-avatar>
-                        </td>
-                        <td>{{data.name}}</td>
-                        <td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow">
-                            <nz-tag>{{data.code}}</nz-tag>
-                        </td>
-                        <ng-template #notShow>
-                            <td>
-                                <nz-tag>N/A</nz-tag>
-                            </td>
-                        </ng-template>
-                        <td>
-                            <nz-tag>{{data.slug}}</nz-tag>
-                        </td>
-                        <td>
-                            <nz-button-group>
-                                <button *ngIf="'productcategory-read'|accessControl"
-                                        [routerLink]="['/dashboard/category/product/details/', data.id]"
-                                        nz-button [nzSize]="'default'">
-                                    <i class="anticon anticon-info-circle"></i>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
+                           (ngModelChange)="page=1; getPageData()">
+                </th>
+                <th>
+                    <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
+                           (ngModelChange)="page=1; getPageData()">
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let data of nzTable.data;let i =  index ">
+                <td>
+                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
+                               [nzIcon]="'user'">
+                    </nz-avatar>
+                </td>
+                <td>
+                    {{data.total_sub_categories}}
+                </td>
+
+                <td>{{data.name}}</td>
+                <td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow">
+                    <nz-tag>{{data.code}}</nz-tag>
+                </td>
+                <ng-template #notShow>
+                    <td>
+                        <nz-tag>N/A</nz-tag>
+                    </td>
+                </ng-template>
+                <td>
+                    <nz-tag>{{data.slug}}</nz-tag>
+                </td>
+                <td>
+                    <nz-button-group>
+                        <button *ngIf="'productcategory-read'|accessControl"
+                                [routerLink]="['/dashboard/category/product/details/', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <button *ngIf="'productcategory-edit'|accessControl"
+                                [routerLink]="['/dashboard/category/product/edit', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                    </nz-button-group>
+                    <ng-container *ngIf="'productcategory-delete'|accessControl">
+                        <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
+                            <a nz-popconfirm>
+                                <button nz-button [nzSize]="'default'">
+                                    <i class="anticon anticon-delete"></i>
                                 </button>
-                                <button *ngIf="'productcategory-edit'|accessControl"
-                                        [routerLink]="['/dashboard/category/product/edit', data.id]"
-                                        nz-button [nzSize]="'default'">
-                                    <i class="anticon anticon-edit"></i>
-                                </button>
-                            </nz-button-group>
-                            <ng-container *ngIf="'productcategory-delete'|accessControl">
-                                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                               [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(data.id)">
-                                    <a nz-popconfirm>
-                                        <button nz-button [nzSize]="'default'">
-                                            <i class="anticon anticon-delete"></i>
-                                        </button>
-                                    </a>
-                                </nz-popconfirm>
-                            </ng-container>
-                        </td>
-                    </tr>
-                    </tbody>
-                </nz-table>
-            </nz-spin>
-        </ng-template>
-        <!--  <div class="row">
-              <div class="col-md-offset-5" style="margin-top: 10px">
-                  <span nz-table-title class="col-md-6">
-                      <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
-                                     (nzPageSizeChange)="changePage(1,$event)"
-                                     nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
-                                     [nzPageSize]="limit">
-                      </nz-pagination>
-                  </span>
-                  <span nz-table-title class="pull-right col-md-6">
-                          <button nz-button (click)="resetAllFilter()">Clear filter</button>
-                      </span>
-              </div>
-          </div>-->
+                            </a>
+                        </nz-popconfirm>
+                    </ng-container>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
     </nz-card>
 </section>
-
-
-<ng-template #firstSubCategoryTemplate let-sub>
-    <tr>
-        <td>
-            {{sub?.subCategories?.length}}
-        </td>
-        <td>
-            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +sub.image" [nzSize]="'large'"
-                       [nzIcon]="'user'"></nz-avatar>
-        </td>
-        <td>{{sub.name}}</td>
-        <td *ngIf="sub.code && sub.code!=='undefined'; else notShow; else notShow">
-            <nz-tag>{{sub.code}}</nz-tag>
-        </td>
-        <ng-template #notShow>
-            <td>
-                <nz-tag>N/A</nz-tag>
-            </td>
-        </ng-template>
-        <td>
-            <nz-tag>{{sub.slug}}</nz-tag>
-        </td>
-        <td>
-            <button *ngIf="'productcategory-read'|accessControl"
-                    [routerLink]="['/dashboard/category/product/details/', sub.id]"
-                    nz-button [nzSize]="'default'">
-                <i class="anticon anticon-info-circle"></i>
-            </button>
-            <button *ngIf="'productcategory-edit'|accessControl"
-                    [routerLink]="['/dashboard/category/product/edit', sub.id]"
-                    nz-button [nzSize]="'default'">
-                <i class="anticon anticon-edit"></i>
-            </button>
-            <ng-container *ngIf="'productcategory-delete'|accessControl">
-                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                               [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(sub.id)">
-                    <a nz-popconfirm>
-                        <button nz-button [nzSize]="'default'">
-                            <i class="anticon anticon-delete"></i>
-                        </button>
-                    </a>
-                </nz-popconfirm>
-            </ng-container>
-        </td>
-    </tr>
-</ng-template>
-
-
-<ng-template #secondSubCategoryTemplate let-sub>
-    <div *ngIf="sub.loading">
-        Loading...
-    </div>
-    <tr *ngFor="let sub of sub?.subCategories">
-        <td></td>
-
-        <td>
-            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT +sub.image"
-                       [nzSize]="'large'"
-                       [nzIcon]="'user'"></nz-avatar>
-        </td>
-        <td>{{sub.name}}</td>
-        <td
-                *ngIf="sub.code && sub.code!=='undefined'; else notShow; else notShow">
-            <nz-tag>{{sub.code}}</nz-tag>
-        </td>
-        <ng-template #notShow>
-            <td>
-                <nz-tag>N/A</nz-tag>
-            </td>
-        </ng-template>
-        <td>
-            <nz-tag>{{sub.slug}}</nz-tag>
-        </td>
-        <td>
-            <button *ngIf="'productcategory-read'|accessControl"
-                    [routerLink]="['/dashboard/category/product/details/', sub.id]"
-                    nz-button [nzSize]="'default'">
-                <i class="anticon anticon-info-circle"></i>
-            </button>
-            <button *ngIf="'productcategory-edit'|accessControl"
-                    [routerLink]="['/dashboard/category/product/edit', sub.id]"
-                    nz-button [nzSize]="'default'">
-                <i class="anticon anticon-edit"></i>
-            </button>
-            <ng-container *ngIf="'productcategory-delete'|accessControl">
-                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
-                               [nzOkText]="'Delete'"
-                               [nzCancelText]="'Cancel'"
-                               (nzOnConfirm)="deleteConfirm(sub.id)">
-                    <a nz-popconfirm>
-                        <button nz-button [nzSize]="'default'">
-                            <i class="anticon anticon-delete"></i>
-                        </button>
-                    </a>
-                </nz-popconfirm>
-            </ng-container>
-        </td>
-    </tr>
-    <tr *ngIf="!sub.loading && sub.subCategories.length == 0">
-        <td></td>
-        <td colspan="4">
-            No Sub Categories data found!
-        </td>
-    </tr>
-</ng-template>
