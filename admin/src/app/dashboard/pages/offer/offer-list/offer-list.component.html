@@ -1,18 +1,15 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Offer list
-        </ng-template>
+    <nz-card class="card-height" nzTitle="Offer list" [nzExtra]="extra">
         <ng-template #extra>
             <button *ngIf="'offer-create'|accessControl" routerLink="/dashboard/offer/create" nz-button
                     [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-download"></i><span>Add New</span>
             </button>
         </ng-template>
-        <ng-template #body>
+        <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-tabset>
-                    <nz-tab>
+                    <nz-tab [nzTitle]="nzTabHeading">
                         <ng-template #nzTabHeading>
                             Parent Offer
                         </ng-template>
@@ -99,12 +96,12 @@
                             </nz-table>
                         </div>
                     </nz-tab>
-                    <nz-tab>
+                    <nz-tab [nzTitle]="nzTabHeading">
                         <ng-template #nzTabHeading>
                             Child Offer
                         </ng-template>
                         <div>
-                            <nz-table #nzTableHomeChild
+                            <nz-table #nzTable1
                                       nzShowSizeChanger
                                       [nzFrontPagination]="false"
                                       [nzData]="homeChildOfferData"
@@ -181,7 +178,7 @@
                 </nz-tabset>
 
             </nz-spin>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>
 
@@ -191,7 +188,7 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalOfferContent>
 
-        <nz-table #nzTableOffer1
+        <nz-table #nzTable2
                   nzShowSizeChanger
                   [nzFrontPagination]="false"
                   [nzData]="offers"
@@ -250,7 +247,7 @@
               (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
 
             <div>
-                <nz-table #nzTableOffer
+                <nz-table #nzTable3
                           nzShowSizeChanger
                           [nzFrontPagination]="false"
                           [nzData]="alloffers"
