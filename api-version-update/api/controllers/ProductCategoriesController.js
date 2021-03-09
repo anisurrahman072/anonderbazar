@@ -86,12 +86,13 @@ module.exports = {
             categories.name as name,
             categories.parent_id as parent_id,
             categories.image as image,
-            categories.slug as slug
-
+            categories.slug as slug,
+            parent.name as parent_name
       `;
 
       let fromSQL = ' FROM categories as categories  ';
       fromSQL += ' LEFT JOIN categories as subCategory ON subCategory.parent_id = categories.id   ';
+      fromSQL += ' LEFT JOIN categories as parent ON parent.id = categories.parent_id   ';
       let _where = ` WHERE categories.deleted_at IS NULL AND categories.type_id = 2 `;
 
       let _groupBy = ' GROUP By categories.id ';
