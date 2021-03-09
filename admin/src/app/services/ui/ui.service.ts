@@ -18,8 +18,10 @@ export class UIService {
   constructor(private authService: AuthService) {}
 
   selectedWarehouseUpdate(message: any) {
-    this.authService.setCurrentWarehouse(message);
-    this.selectedWarehouseInfo.next(message);
+    if(!isNaN(message)){
+      this.authService.setCurrentWarehouse(message);
+      this.selectedWarehouseInfo.next(message);
+    }
   }
 
   loginInfoUpdate(message: any) {

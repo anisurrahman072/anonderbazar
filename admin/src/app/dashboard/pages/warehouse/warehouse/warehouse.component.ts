@@ -3,6 +3,7 @@ import {WarehouseService} from '../../../../services/warehouse.service';
 import {UIService} from "../../../../services/ui/ui.service";
 import {environment} from "../../../../../environments/environment";
 import {NzNotificationService} from "ng-zorro-antd";
+import {distinctUntilChanged} from 'rxjs/operators';
 
 @Component({
     selector: 'app-warehouse',
@@ -13,12 +14,14 @@ export class WarehouseComponent implements OnInit {
     data = [];
     _isSpinning = true;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     limit: number = 10;
     page: number = 1;
     total: number;
     private currentWarehouseSubscriprtion: any;
     private currentWarehouseId: any | string;
     loading: boolean = false;
+    warehouseName: string = '';
 
     constructor(private warehouseService: WarehouseService,
                 private _notification: NzNotificationService,
@@ -27,14 +30,18 @@ export class WarehouseComponent implements OnInit {
 
     // init the component
     ngOnInit(): void {
-        // this.getAllData();
-
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-            warehouseId => {
-                this.currentWarehouseId = warehouseId || '';
-                this.getAllData();
-            }
-        );
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo
+            .pipe(
+                distinctUntilChanged((prev, curr) => {
+                    return prev == curr;
+                })
+            ).subscribe(
+                warehouseId => {
+                    this.currentWarehouseId = warehouseId || '';
+                    console.log('his.currentWarehouseId', warehouseId);
+                    this.getAllData();
+                }
+            );
     }
 
     //Event method for getting all the data for the page
@@ -45,13 +52,13 @@ export class WarehouseComponent implements OnInit {
             this.page,
             this.limit,
             this.currentWarehouseId,
+            this.warehouseName
         )
             .subscribe(result => {
                     console.log('result.data', result.data);
                     this.data = result.data;
                     this.loading = false;
                     this.total = result.total;
-                    console.log(this.data);
                     this._isSpinning = false;
                 },
                 result => {
@@ -80,6 +87,7 @@ export class WarehouseComponent implements OnInit {
                 this.getAllData();
             });
     }
+
 
     //Method for status change
 
