@@ -22,19 +22,19 @@
                         <div class="clr"></div>
                         <nz-spin [nzSpinning]="_isSpinning">
                             <nz-table #nzTable [nzPageSize]="5" [nzData]="subOrderData">
-                                <thead  >
+                                <thead>
                                 <tr>
-                                    <th   ><span> Order number </span></th>
-                                    <th   ><span> Buyer </span></th>
-                                    <th   ><span> Quantity </span></th>
-                                    <th   ><span> Total Amount </span></th>
-                                    <th   ><span> Status </span></th>
-                                    <th   ></th>
+                                    <th><span> Order number </span></th>
+                                    <th><span> Buyer </span></th>
+                                    <th><span> Quantity </span></th>
+                                    <th><span> Total Amount </span></th>
+                                    <th><span> Status </span></th>
+                                    <th></th>
                                 </tr>
                                 </thead>
-                                <tbody   >
-                                <tr    #dataFor *ngFor="let subOrder of nzTable.data; let i = index">
-                                    <td   >
+                                <tbody>
+                                <tr #dataFor *ngFor="let subOrder of nzTable.data; let i = index">
+                                    <td>
                                         <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
                                             {{ subOrder.product_order_id }}
                                         </ng-container>
@@ -42,20 +42,17 @@
                                             {{ subOrder.product_order_id }} / {{ subOrder.id }}
                                         </ng-template>
                                     </td>
-                                    <td   >
+                                    <td>
                                         <nz-tag>{{ subOrder.customer_name }}</nz-tag>
                                     </td>
-                                    <td   >{{ subOrder.total_quantity }}</td>
-                                    <td   >{{ subOrder.total_price }}</td>
-                                    <!-- trying -->
-                                    <td   >
+                                    <td>{{ subOrder.total_quantity }}</td>
+                                    <td>{{ subOrder.total_price }}</td>
+                                    <td>
                                         <span>{{ options[subOrder.status - 1].label }}</span>
                                     </td>
-                                    <!-- trying -->
                                     <td>
                                         <button [routerLink]="['/dashboard/suborder/invoice/', subOrder.id]"
-                                                nz-button [nzType]="'info'"
-                                                [nzSize]="'default'">
+                                                nz-button [nzSize]="'default'">
                                             <i class="anticon anticon-file-text"> </i>
                                         </button>
                                     </td>
@@ -69,16 +66,20 @@
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="col-md-11" style="background-color: white;height: 660px;">
                     <div class="running-order">
-                        <ngx-charts-pie-chart [view]="view" [scheme]="colorScheme" [results]="single"
-                                              [legend]="showLegend"
-                                              [explodeSlices]="explodeSlices" [labels]="showLabels"
-                                              [customColors]="customColors" [doughnut]="doughnut"
-                                              (select)="onSelect($event)">
+                        <ngx-charts-pie-chart
+                                [view]="view" [scheme]="colorScheme" [results]="single"
+                                [legend]="showLegend"
+                                [explodeSlices]="explodeSlices" [labels]="showLabels"
+                                [customColors]="customColors" [doughnut]="doughnut"
+                                (select)="onSelect($event)"
+                        >
                         </ngx-charts-pie-chart>
 
-                        <ngx-charts-pie-grid [view]="view" [scheme]="colorScheme" [customColors]="customColors"
-                                             [label]="'Total'"
-                                             [results]="single" [minWidth]="100" (select)="onSelect($event)">
+                        <ngx-charts-pie-grid
+                                [view]="view" [scheme]="colorScheme" [customColors]="customColors"
+                                [label]="'Total'"
+                                [results]="single" [minWidth]="100" (select)="onSelect($event)"
+                        >
                         </ngx-charts-pie-grid>
                     </div>
                 </div>
@@ -87,25 +88,25 @@
     </div>
 </div>
 <nz-modal [nzFooter]="null" [nzVisible]="isVisibleRunning" [nzTitle]="'All Ongoing order'" nzWidth="80%"
-          [nzStyle]="style" nzOkText="Done"
-          nzCancelText="Cancel" [nzContent]="modalContent" (nzOnCancel)="handleCancel($event)"
+          [nzStyle]="style" nzOkText="Done"  nzCancelText="Cancel"
+          [nzContent]="modalContent" (nzOnCancel)="handleCancel($event)"
           (nzOnOk)="handleOk($event)">
     <ng-template #modalContent>
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table #nzTable [nzData]="allData">
-                <thead  >
+                <thead>
                 <tr>
-                    <th   ><span> Order number </span></th>
-                    <th   ><span> Buyer </span></th>
-                    <th   ><span> Quantity </span></th>
-                    <th   ><span> Total Amount </span></th>
-                    <th   ><span> Status </span></th>
-                    <th   ></th>
+                    <th><span> Order number </span></th>
+                    <th><span> Buyer </span></th>
+                    <th><span> Quantity </span></th>
+                    <th><span> Total Amount </span></th>
+                    <th><span> Status </span></th>
+                    <th></th>
                 </tr>
                 </thead>
-                <tbody   >
-                <tr    #dataFor *ngFor="let modalSubOrderData of nzTable.data; let i = index">
-                    <td   >
+                <tbody>
+                <tr #dataFor *ngFor="let modalSubOrderData of nzTable.data; let i = index">
+                    <td>
                         <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
                             {{ modalSubOrderData.product_order_id }}
                         </ng-container>
@@ -113,19 +114,19 @@
                             {{ modalSubOrderData.product_order_id }} / {{ modalSubOrderData.id }}
                         </ng-template>
                     </td>
-                    <td   >
+                    <td>
                         <nz-tag>{{ modalSubOrderData.customer_name }}</nz-tag>
                     </td>
-                    <td   >{{ modalSubOrderData.total_quantity }}</td>
-                    <td   >{{ modalSubOrderData.total_price }}</td>
+                    <td>{{ modalSubOrderData.total_quantity }}</td>
+                    <td>{{ modalSubOrderData.total_price }}</td>
                     <!-- trying -->
-                    <td   >
+                    <td>
                         <span>{{ options[modalSubOrderData.status - 1].label }}</span>
                     </td>
                     <!-- trying -->
                     <td>
                         <button [routerLink]="['/dashboard/suborder/invoice/', modalSubOrderData.id]" nz-button
-                                [nzType]="'info'" [nzSize]="'default'">
+                                [nzSize]="'default'">
                             <i class="anticon anticon-file-text"> </i>
                         </button>
                     </td>

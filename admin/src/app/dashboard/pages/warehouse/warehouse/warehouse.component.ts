@@ -27,7 +27,7 @@ export class WarehouseComponent implements OnInit {
 
     // init the component
     ngOnInit(): void {
-        this.getAllData();
+        // this.getAllData();
 
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
@@ -40,12 +40,14 @@ export class WarehouseComponent implements OnInit {
     //Event method for getting all the data for the page
     getAllData() {
         this.loading = true;
+        this._isSpinning = true;
         this.warehouseService.getAllIndex(
             this.page,
             this.limit,
             this.currentWarehouseId,
         )
             .subscribe(result => {
+                    console.log('result.data', result.data);
                     this.data = result.data;
                     this.loading = false;
                     this.total = result.total;

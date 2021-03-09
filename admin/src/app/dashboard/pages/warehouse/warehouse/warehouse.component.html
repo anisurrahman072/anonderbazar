@@ -1,123 +1,122 @@
 <section>
     <nz-card class="card-height">
-        <ng-template #title>
+        <ng-template>
             Shop list
         </ng-template>
-        <ng-template #extra>
-            <button *ngIf="'warehouse-create'|accessControl" routerLink="/dashboard/warehouse/create" nz-button
+        <ng-template *ngIf="'warehouse-create'|accessControl">
+            <button routerLink="/dashboard/warehouse/create" nz-button
                     [nzSize]="'large'">
                 <i class="anticon anticon-download"></i><span>Add New</span>
             </button>
         </ng-template>
-        <ng-template #body>
-            <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable
-                          nzShowSizeChanger
-                          [nzFrontPagination]="false"
-                          [nzData]="data"
-                          [nzLoading]="loading"
-                          [nzTotal]="total"
-                          [(nzPageIndex)]="page"
-                          [(nzPageSize)]="limit"
-                          (nzPageIndexChange)="getAllData()"
-                >
-                    <thead>
-                    <tr>
-                        <th>
-                            <span>Logo</span>
-                        </th>
-                        <th>
-                            <span>Name</span>
-                        </th>
-                        <th>
-                            <span>Buffer time</span>
-                        </th>
-                        <th>
-                            <span>Phone</span>
-                        </th>
-                        <th>
-                            <span>Email</span>
-                        </th>
-                        <th>
-                            <span>Owner</span>
-                        </th>
-                        <th>
 
-                        </th>
+        <nz-table #nzTable
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="data"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="total"
+                  [(nzPageIndex)]="page"
+                  [(nzPageSize)]="limit"
+                  (nzPageIndexChange)="getAllData()"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <span>Logo</span>
+                </th>
+                <th>
+                    <span>Name</span>
+                </th>
+                <th>
+                    <span>Buffer time</span>
+                </th>
+                <th>
+                    <span>Phone</span>
+                </th>
+                <th>
+                    <span>Email</span>
+                </th>
+                <th>
+                    <span>Owner</span>
+                </th>
+                <th>
 
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let data of nzTable.data">
-                        <td>
-                            <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.logo" [nzSize]="'large'"
-                                       [nzIcon]="'user'"></nz-avatar>
-                        </td>
-                        <td>{{data.name}}</td>
-                        <td>
-                            <ng-container *ngIf="data.buffer_time; then thenTemplate; else elseTemplate"></ng-container>
-                            <ng-template #thenTemplate>
-                                {{data.buffer_time}} Day
-                            </ng-template>
-                            <ng-template #elseTemplate>
-                                0 Day
-                            </ng-template>
-                        </td>
-                        <td>
-                            {{data.phone}}
-                        </td>
-                        <td>
-                            {{data.email}}
-                        </td>
-                        <td>
-                            {{data.user[0]?.first_name}} {{data.user[0]?.last_name}}, {{data.user[0]?.phone}},
-                            {{data.user[0]?.email}}
-                        </td>
-                        <td>
-                            <nz-popconfirm [nzTitle]="'Do you want to confirm?'" [nzOkText]="'Yes'"
-                                           [nzCancelText]="'No'" (nzOnConfirm)="changeStatus(data.id, data.status)">
-                                <a nz-popconfirm>
-                                    <button nz-button  [nzSize]="'default'" *ngIf="data.status != 2">
-                                        <i class="anticon anticon-check"></i>
-                                    </button>
-                                </a>
-                            </nz-popconfirm>
-                            <nz-popconfirm [nzTitle]="'Do you want to refuse?'" [nzOkText]="'Yes'"
-                                           [nzCancelText]="'No'" (nzOnConfirm)="changeStatus(data.id, data.status)">
-                                <a nz-popconfirm>
-                                    <button nz-button  [nzSize]="'default'" *ngIf="data.status == 2">
-                                        <i class="anticon anticon-close"></i>
-                                    </button>
-                                </a>
-                            </nz-popconfirm>
-                            <nz-button-group>
+                </th>
 
-                                <button *ngIf="'warehouse-read'|accessControl" [routerLink]="['/dashboard/warehouse/details/', data.id]"
-                                        nz-button  [nzSize]="'default'">
-                                    <i class="anticon anticon-info-circle"></i>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of nzTable.data">
+                <td>
+                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.logo" [nzSize]="'large'"
+                               [nzIcon]="'user'"></nz-avatar>
+                </td>
+                <td>{{data.name}}</td>
+                <td>
+                    <ng-container *ngIf="data.buffer_time; then thenTemplate; else elseTemplate"></ng-container>
+                    <ng-template #thenTemplate>
+                        {{data.buffer_time}} Day
+                    </ng-template>
+                    <ng-template #elseTemplate>
+                        0 Day
+                    </ng-template>
+                </td>
+                <td>
+                    {{data.phone}}
+                </td>
+                <td>
+                    {{data.email}}
+                </td>
+                <td>
+                    {{data.user[0]?.first_name}} {{data.user[0]?.last_name}}, {{data.user[0]?.phone}},
+                    {{data.user[0]?.email}}
+                </td>
+                <td>
+                    <nz-popconfirm [nzTitle]="'Do you want to confirm?'" [nzOkText]="'Yes'"
+                                   [nzCancelText]="'No'" (nzOnConfirm)="changeStatus(data.id, data.status)">
+                        <a nz-popconfirm>
+                            <button nz-button [nzSize]="'default'" *ngIf="data.status != 2">
+                                <i class="anticon anticon-check"></i>
+                            </button>
+                        </a>
+                    </nz-popconfirm>
+                    <nz-popconfirm [nzTitle]="'Do you want to refuse?'" [nzOkText]="'Yes'"
+                                   [nzCancelText]="'No'" (nzOnConfirm)="changeStatus(data.id, data.status)">
+                        <a nz-popconfirm>
+                            <button nz-button [nzSize]="'default'" *ngIf="data.status == 2">
+                                <i class="anticon anticon-close"></i>
+                            </button>
+                        </a>
+                    </nz-popconfirm>
+                    <nz-button-group>
+
+                        <button *ngIf="'warehouse-read'|accessControl"
+                                [routerLink]="['/dashboard/warehouse/details/', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <button *ngIf="'warehouse-edit'|accessControl"
+                                [routerLink]="['/dashboard/warehouse/edit', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                    </nz-button-group>
+
+                    <ng-container *ngIf="'warehouse-delete'|accessControl">
+
+                        <nz-popconfirm [nzTitle]="'Do you want to delete?'" [nzOkText]="'Yes'"
+                                       [nzCancelText]="'No'" (nzOnConfirm)="deleteConfirm(data.id)">
+                            <a nz-popconfirm>
+                                <button nz-button [nzSize]="'default'">
+                                    <i class="anticon anticon-delete"></i>
                                 </button>
-                                <button *ngIf="'warehouse-edit'|accessControl" [routerLink]="['/dashboard/warehouse/edit', data.id]"
-                                        nz-button  [nzSize]="'default'">
-                                    <i class="anticon anticon-edit"></i>
-                                </button>
-                            </nz-button-group>
-
-                            <ng-container *ngIf="'warehouse-delete'|accessControl">
-
-                                <nz-popconfirm [nzTitle]="'Do you want to delete?'" [nzOkText]="'Yes'"
-                                               [nzCancelText]="'No'" (nzOnConfirm)="deleteConfirm(data.id)">
-                                    <a nz-popconfirm>
-                                        <button nz-button  [nzSize]="'default'">
-                                            <i class="anticon anticon-delete"></i>
-                                        </button>
-                                    </a>
-                                </nz-popconfirm>
-                            </ng-container>
-                        </td>
-                    </tr>
-                    </tbody>
-                </nz-table>
-            </nz-spin>
-        </ng-template>
+                            </a>
+                        </nz-popconfirm>
+                    </ng-container>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
     </nz-card>
 </section>
