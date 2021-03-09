@@ -8,6 +8,7 @@ import {NzNotificationService} from "ng-zorro-antd";
 import {Subscription} from "rxjs";
 import {UIService} from "../../../services/ui/ui.service";
 import moment from "moment";
+import {distinctUntilChanged} from "rxjs/operators";
 
 @Component({
     selector: "app-todo-list",
@@ -46,6 +47,7 @@ export class TodoListComponent implements OnInit {
 
     //Event method for getting all the data for the page
     ngOnInit() {
+        this.currentUser = this.authService.getCurrentUser();
         let now2 = new Date();
         this.currentDate = now2.getFullYear() + "-" + (now2.getMonth() + 1) + "-" + now2.getDate();
 
@@ -54,11 +56,15 @@ export class TodoListComponent implements OnInit {
 
         this.now = moment().format("MMMM DD YYYY");
 
-        this.currentUser = this.authService.getCurrentUser();
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(warehouseId => {
-            this.currentWarehouseId = warehouseId || '';
-            this.getPageData();
-        });
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo
+            .pipe(
+                distinctUntilChanged((prev, curr) => {
+                    return prev == curr;
+                })
+            ).subscribe(warehouseId => {
+                this.currentWarehouseId = warehouseId || '';
+                this.getPageData();
+            });
 
     }
 
@@ -112,7 +118,7 @@ export class TodoListComponent implements OnInit {
             .getSuborderItems(this.currentWarehouseId, 2, this.currentDate, null)
             .subscribe(result => {
                 this.allDataTodayTodo = result.data;
-            }, (error)=> {
+            }, (error) => {
                 console.log(error);
             });
     };

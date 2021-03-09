@@ -3,6 +3,7 @@ import {AuthService} from '../../../services/auth.service';
 import {UIService} from "../../../services/ui/ui.service";
 import {Subscription} from "rxjs";
 import {SuborderService} from "../../../services/suborder.service";
+import {distinctUntilChanged} from "rxjs/operators";
 
 @Component({
     selector: 'app-home',
@@ -13,7 +14,7 @@ export class DashboardHomeComponent implements OnInit {
     currentUser: any;
     currentWarehouseSubscriprtion: Subscription;
     currentWarehouseId: any;
-    data: any ;
+    data: any;
     _isSpinning: boolean = true;
 
     constructor(private authService: AuthService, private subOrderService: SuborderService, private uiService: UIService) {
@@ -23,16 +24,18 @@ export class DashboardHomeComponent implements OnInit {
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
 
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-            warehouseId => {
-
-                this.currentWarehouseId = warehouseId || '';
-                if (!isNaN(this.currentWarehouseId)) {
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo
+            .pipe(
+                distinctUntilChanged((prev, curr) => {
+                    return prev == curr;
+                })
+            )
+            .subscribe(
+                warehouseId => {
+                    this.currentWarehouseId = warehouseId || '';
                     this.getPageData();
                 }
-
-            }
-        );
+            );
     }
 
     //Event method for getting all the data for the page
