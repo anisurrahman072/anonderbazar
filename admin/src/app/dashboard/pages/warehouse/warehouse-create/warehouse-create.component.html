@@ -1,8 +1,5 @@
-<nz-card>
-    <ng-template >
-        Shop registration
-    </ng-template>
-    <ng-template >
+<nz-card nzTitle="Shop registration" [nzExtra]="extraItem">
+    <ng-template #extraItem>
         <button routerLink="/dashboard/warehouse" nz-button [nzType]="'primary'" [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>
             <span> List </span>
