@@ -1,10 +1,10 @@
 <section>
     <nz-card class="card-height" nzTitle="Brand list" [nzExtra]="extra">
         <ng-template #extra>
-            <button *ngIf="'brand-create'|accessControl" routerLink="/dashboard/brand/create" nz-button
-                    [nzSize]="'large'">
+            <button *ngIf="'brand-create'|accessControl" routerLink="/dashboard/brand/create" nz-button >
                 <i class="anticon anticon-download"></i><span> Add New </span>
             </button>
+            <button (click)="resetAllFilter()" nz-button>Clear filter</button>
         </ng-template>
         <nz-table #nzTable
                   nzShowSizeChanger
@@ -14,7 +14,7 @@
                   [nzTotal]="total"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
-                  (nzPageIndexChange)="getAllData()"
+                  (nzPageIndexChange)="getAllData($event)"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
@@ -32,8 +32,6 @@
                 </th>
                 <th>&nbsp;</th>
             </tr>
-            </thead>
-            <thead>
             <tr>
                 <th></th>
                 <th>
@@ -47,8 +45,13 @@
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
                 <td>
-                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
+                    <ng-container *ngIf="data.customer_avatar; else noImage">
+                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
                                [nzIcon]="'user'"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noImage>
+                        <nz-tag>No Image</nz-tag>
+                    </ng-template>
                 </td>
                 <td>{{data.name}}</td>
                 <td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow">
