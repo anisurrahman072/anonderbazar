@@ -7,7 +7,6 @@ import {CraftmanPriceService} from '../../../../services/craftman-price.service'
 import {environment} from "../../../../../environments/environment";
 import {NzNotificationService} from "ng-zorro-antd";
 
-
 @Component({
     selector: 'app-brand-read',
     templateUrl: './craftsman-read.component.html',

@@ -315,6 +315,7 @@ module.exports.policies = {
     'findOne': ['isAuthorized'],
     'find': ['isAuthorized', 'isOwnerOrAdmin'],
     'getAllCustomers': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getAllShopUsers': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
     'getAuthCustomerData': ['isAuthorized'],

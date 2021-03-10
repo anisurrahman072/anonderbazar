@@ -33,12 +33,11 @@ export class UserComponent implements OnInit, OnDestroy {
     nameSearchValue: string = '';
     emailSearchValue: string = '';
     phoneSearchValue: string = '';
-    genderSearchValue: string = '';
+    usernameSearchValue: string = '';
 
-    sortValue = {
-        name: null,
-        price: null
-    };
+    sortKey: string = '';
+    sortValue: string = '';
+
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
     loading: boolean = false;
@@ -69,8 +68,8 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     //Event method for getting all the data for the page
-    getPageData(event?:any) {
-        if(event){
+    getPageData(event?: any) {
+        if (event) {
             this.page = event;
         }
         this._isSpinning = true;
@@ -82,11 +81,9 @@ export class UserComponent implements OnInit, OnDestroy {
                 this.emailSearchValue || '',
                 this.nameSearchValue || '',
                 this.phoneSearchValue || '',
-                this.genderSearchValue || '',
-                this.categoryId ? this.categoryId : '',
-                this.subcategoryId ? this.subcategoryId : '',
-                this.filterTerm(this.sortValue.name),
-                this.filterTerm(this.sortValue.price)
+                this.usernameSearchValue || '',
+                this.sortKey,
+                this.filterTerm(this.sortValue)
             )
             .subscribe(
                 result => {
@@ -115,7 +112,8 @@ export class UserComponent implements OnInit, OnDestroy {
     //Event method for setting up filter data
     sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sort.key] = sort.value;
+        this.sortKey = sort.key;
+        this.sortValue = sort.value;
         this.getPageData();
     }
 
@@ -126,11 +124,9 @@ export class UserComponent implements OnInit, OnDestroy {
         this.nameSearchValue = '';
         this.emailSearchValue = '';
         this.phoneSearchValue = '';
-        this.genderSearchValue = null;
-        this.sortValue = {
-            name: null,
-            price: null
-        };
+        this.usernameSearchValue = null;
+        this.sortKey = ""
+        this.sortValue = ""
         this.categoryId = null;
         this.subcategoryId = null;
         this.subcategorySearchOptions = [];

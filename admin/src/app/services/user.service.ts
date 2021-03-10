@@ -22,11 +22,9 @@ export class UserService {
                     emailSearchValue: string,
                     searchTermName: string,
                     searchTermPhone: string,
-                    gender: string,
-                    categoryId: number,
-                    subcategoryId: number,
-                    sortName: string,
-                    sortPrice: String): Observable<any> {
+                    usernameSearchValue: string,
+                    sortKey: string,
+                    sortValue: string): Observable<any> {
 
 
         return this.http.get(`${this.EndPoint
@@ -36,11 +34,9 @@ export class UserService {
             }&searchTermEmail=${emailSearchValue
             }&searchTermName=${searchTermName
             }&searchTermPhone=${searchTermPhone
-            }&gender=${gender
-            }&category_id=${categoryId
-            }&subcategory_id=${subcategoryId
-            }&sortName=${sortName
-            }&sortPrice=${sortPrice}`
+            }&searchTermUsername=${usernameSearchValue
+            }&sortKey=${sortKey
+            }&sortValue=${sortValue}`
         );
     }
 
