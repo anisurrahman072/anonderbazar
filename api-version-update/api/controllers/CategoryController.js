@@ -169,7 +169,8 @@ module.exports = {
       const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
       return res.status(200).json(updateCategory);
     } catch (error) {
-      return res.status(error.status).json({message: '', error, success: false});
+      console.log(error);
+      return res.status(500).json({message: '', error, success: false});
     }
   },
   //Method called for updating category type
