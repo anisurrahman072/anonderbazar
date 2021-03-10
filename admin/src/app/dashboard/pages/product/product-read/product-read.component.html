@@ -1,18 +1,18 @@
-<nz-card nzTitle="Product Details">
+<nz-card nzTitle="Product Details" [nzExtra]="extra">
     <ng-template #extra>
         <nz-button-group>
             <button *ngIf="'product-edit'|accessControl" [routerLink]="['/dashboard/product/edit', id]" [queryParams]="{status: status}" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
                 <i class="anticon anticon-edit"></i><span>Edit</span>
-            </button>
+            </button>&nbsp;
 
             <button routerLink="/dashboard/product" [queryParams]="{status: status}" nz-button [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
         </nz-button-group>
     </ng-template>
-    <ng-template #body>
-        <div class="row" *ngIf="data">
+    <ng-template [ngIf]="data">
+        <div class="row">
             <div class="col-md-4">
                 <div class="col-md-12">
                     <div class="images kt-images">
