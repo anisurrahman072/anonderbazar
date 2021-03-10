@@ -1,10 +1,10 @@
 <section>
     <div class="row" style="display: flex; justify-content: center;">
-        <nz-card class="card-height" style="width: 50%;">
+        <nz-card class="card-height" style="width: 50%;" [nzTitle]="title">
             <ng-template #title>
                 {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product Bulk Upload
             </ng-template>
-            <ng-template #body>
+            <ng-container #body>
                 <div class="form-group">
                     <button [disabled]="isLoading" type="button" id="download_bulk_excel" (click)="downloadExcel()">
                         <span>Download Product Upload Excel File</span>
@@ -26,7 +26,7 @@
                         </button>
                     </div>
                 </div>
-            </ng-template>
+            </ng-container>
         </nz-card>
 
     </div>
