@@ -156,7 +156,7 @@ module.exports = {
       let body = req.body;
 
       if (body.hasImage === 'true') {
-        const uploaded = await uploadImages.upload(req.file('image0'));
+        const uploaded = await uploadImages(req.file('image0'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
