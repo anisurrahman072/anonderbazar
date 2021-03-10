@@ -14,7 +14,7 @@ import {distinctUntilChanged} from "rxjs/operators";
 })
 export class BrandComponent implements OnInit, OnDestroy {
     data = [];
-    _isSpinning = true;
+    _isSpinning = false;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     currentUser: any;

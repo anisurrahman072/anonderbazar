@@ -1,4 +1,4 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {OrderService} from '../../../../services/order.service';
 import {AuthService} from '../../../../services/auth.service';
 import {NzNotificationService} from "ng-zorro-antd";
@@ -12,6 +12,7 @@ import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
+import {Subscription} from "rxjs";
 
 const moment = _rollupMoment || _moment;
 
@@ -20,55 +21,42 @@ const moment = _rollupMoment || _moment;
     templateUrl: './Order.component.html',
     styleUrls: ['./Order.component.css']
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
-    validateFormORDER: FormGroup;
+    @ViewChild('csvSelectAll') csvSelectAll;
+    private orderDataSubscription: Subscription;
+    private subOrderTimeSub: Subscription;
+    private subOrderUpdateSub: Subscription;
+    private currentUser: any;
     validateProductForm: FormGroup;
     viewNotRendered: boolean = true;
-    maxSearchDate: string = '';
-    minSearchDate: string = '';
     orderNumberFilter: string = '';
     customerNameFilter: string = '';
-    searchStartDate: any;
-    searchEndDate: any;
+    statusSearchValue: string = '';
 
+    private searchStartDate: any;
+
+    private searchEndDate: any;
     orderData = [];
     orderTotal: number = 0;
     orderLimit: number = 25;
     orderPage: number = 1;
-    _isSpinning = true;
-    currentUser: any;
-    selectedOption: any[] = [];
+    _isSpinning = false;
 
     orderCsvTotal: number = 0;
     csvPage: number = 1;
 
-    statusSearchValue: string = '';
-    dateSearchValue: any;
-
-    page: any;
-    statusData: any;
+    private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
-    statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
+    private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
-    currentWarehouseId: any;
     isProductVisible = false;
 
-    allOders: any = [];
-    products = [];
-    addNew: boolean;
-    currentProduct: any = {};
-    storeOrderIds: any = [];
-    orderStatus: any;
-    maxDate: any;
+    csvOrders: any = [];
+    private csvPageSelectAll = [];
+    private storedCsvOrders: any = [];
 
-    pageOrder: number = 1;
-    pageAllCheckedStatusOrder: any = {};
-    dataORDER = [];
-    storeOrderIdsORDER: any = [];
-    warehouse: any;
     submitting: boolean = false;
-
 
     constructor(private orderService: OrderService,
                 private suborderItemService: SuborderItemService,
@@ -79,15 +67,22 @@ export class OrderComponent implements OnInit {
                 private statusChangeService: StatusChangeService,
                 private exportService: ExportService,
                 private authService: AuthService) {
+
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
-        this.maxSearchDate = moment().format('YYYY-MM-DD');
-        this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');
+/*        this.maxSearchDate = moment().format('YYYY-MM-DD');
+        this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');*/
+    }
+    ngOnDestroy(): void {
+        this.orderDataSubscription
+            ? this.orderDataSubscription.unsubscribe()
+            : '';
 
+        this.subOrderTimeSub ? this.subOrderTimeSub.unsubscribe() : '';
+        this.subOrderUpdateSub ? this.subOrderUpdateSub.unsubscribe() : '';
 
     }
-
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
@@ -103,13 +98,20 @@ export class OrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getData(forCsv: boolean = false) {
+    getData(event?: any, forCsv?: boolean) {
+
+        if (event) {
+            if (forCsv) {
+                this.csvPage = event;
+            } else {
+                this.orderPage = event;
+            }
+        }
 
         let dateSearchValue = {
             from: null,
             to: null,
         };
-
 
         if (this.searchStartDate) {
             if (this.searchStartDate.constructor.name === 'Moment') {
@@ -139,7 +141,7 @@ export class OrderComponent implements OnInit {
         }
 
         this._isSpinning = true;
-        this.orderService.getAllOrdersGrid({
+        this.orderDataSubscription = this.orderService.getAllOrdersGrid({
             date: JSON.stringify(dateSearchValue),
             status: this.statusSearchValue,
             customerName: this.customerNameFilter,
@@ -151,7 +153,7 @@ export class OrderComponent implements OnInit {
                     this.orderData = result.data;
                     this.orderTotal = result.total;
                 } else {
-                    this.allOders = result.data.map((item) => {
+                    this.csvOrders = result.data.map((item) => {
                         return {
                             ...item,
                             checked: false
@@ -159,18 +161,28 @@ export class OrderComponent implements OnInit {
                     });
 
                     this.orderCsvTotal = result.total;
-                    const thisTotal = this.allOders.length;
+                    const thisTotal = this.csvOrders.length;
 
-                    if (this.storeOrderIds && this.storeOrderIds.length) {
+                    if(typeof this.storedCsvOrders[page - 1] === 'undefined'){
+                        this.storedCsvOrders[page - 1] = [];
+                    }
+                    if(typeof this.csvPageSelectAll[page - 1] === 'undefined'){
+                        this.csvPageSelectAll[page - 1] = false;
+                    }
+
+                    this.csvSelectAll.nativeElement.checked = !!this.csvPageSelectAll[page - 1];
+
+
+                    if (this.storedCsvOrders[page - 1].length) {
                         for (let index = 0; index < thisTotal; index++) {
-                            const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                                return storedOder.id == this.allOders[index].id;
+                            const foundIndex = this.storedCsvOrders[page - 1].findIndex((storedOder) => {
+                                return storedOder.id == this.csvOrders[index].id;
                             });
-                            this.allOders[index].checked = foundIndex !== -1;
+                            this.csvOrders[index].checked = foundIndex !== -1;
                         }
                     } else {
                         for (let index = 0; index < thisTotal; index++) {
-                            this.allOders[index].checked = false;
+                            this.csvOrders[index].checked = false;
                         }
                     }
                 }
@@ -184,13 +196,54 @@ export class OrderComponent implements OnInit {
             });
     }
 
+    selectAllCsv($event) {
+
+        const isChecked = !!$event.target.checked;
+        console.log('selectAllCsv', isChecked);
+        if (!isChecked) {
+            this.storedCsvOrders[this.csvPage - 1] = [];
+        }
+        this.csvPageSelectAll[this.csvPage - 1] = isChecked;
+        const len = this.csvOrders.length;
+        for (let i = 0; i < len; i++) {
+            this.csvOrders[i].checked = isChecked;
+            if (isChecked) {
+                const foundIndex = this.storedCsvOrders[this.csvPage - 1].findIndex((storedOder) => {
+                    return storedOder.id == this.csvOrders[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.storedCsvOrders[this.csvPage - 1].push(this.csvOrders[i]);
+                }
+            }
+        }
+        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
+    }
+
+
+    //Method for status checkbox
+
+    _refreshStatus($event, value) {
+        if ($event && $event.currentTarget.checked) {
+            this.storedCsvOrders[this.csvPage - 1].push(value);
+        } else {
+            let findValue = this.storedCsvOrders[this.csvPage - 1].findIndex((item) => {
+                return item.id == value.id
+            });
+            if (findValue !== -1) {
+                this.storedCsvOrders[this.csvPage - 1].splice(findValue, 1);
+            }
+        }
+    }
+
     // Method for showing the modal
     showProductModal = () => {
 
+        this.csvSelectAll.nativeElement.checked = false;
         this.isProductVisible = true;
-        this.storeOrderIds = [];
+        this.storedCsvOrders = [];
+        this.csvPageSelectAll = [];
 
-        this.getData(true);
+        this.getData(null, true);
     };
 
 
@@ -205,64 +258,9 @@ export class OrderComponent implements OnInit {
         this.getData();
     }
 
-
     //Method for status change
-    selectAllOrder($event) {
-        const isChecked = !!$event.target.checked;
-        this.pageAllCheckedStatusOrder[this.pageOrder] = isChecked;
-        const len = this.dataORDER.length;
-        for (let i = 0; i < len; i++) {
-            this.dataORDER[i].checked = isChecked;
-            this._refreshStatusORDER(isChecked, this.dataORDER[i])
-        }
-    }
-
-    _refreshStatusORDER($event, value) {
-
-        if ($event) {
-            this.storeOrderIdsORDER.push(value);
-        } else {
-            let findValue = this.storeOrderIdsORDER.indexOf(value);
-            if (findValue !== -1) {
-                this.storeOrderIdsORDER.splice(findValue, 1);
-                this.warehouse = value;
-                this.validateFormORDER.patchValue({
-                    seller_name: this.warehouse.name,
-                });
-            }
-        }
-
-        let itemCount = 0;
-        if (this.storeOrderIdsORDER.length > 0) {
-            this.storeOrderIdsORDER.forEach(element => {
-                itemCount += element.total_quantity;
-            });
-        }
-
-        if (this.storeOrderIdsORDER[0]) {
-            this.warehouse = this.storeOrderIdsORDER[0].warehouse_id;
-            this.validateFormORDER.patchValue({
-                total_order: itemCount,
-                seller_name: this.warehouse.name,
-                seller_phone: this.warehouse.phone,
-                seller_address: this.warehouse.address,
-                k_a_m: this.warehouse.name,
-            });
-        } else {
-            this.validateFormORDER.patchValue({
-                total_order: '',
-                seller_name: '',
-                seller_phone: '',
-                seller_address: '',
-                k_a_m: '',
-            });
-        }
-    };
-
-    //Method for status change
-
     changeStatusConfirm($event, id, oldStatus) {
-        this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
+        this.subOrderUpdateSub = this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
@@ -282,7 +280,6 @@ export class OrderComponent implements OnInit {
     }
 
     //Method for csv download
-
     dowonloadCSV(data) {
 
         if (!(Array.isArray(data) && data.length > 0)) {
@@ -353,13 +350,16 @@ export class OrderComponent implements OnInit {
     //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
-        let orderIds = this.storeOrderIds.map(item => {
+        let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
             return item.id;
         });
+        if(orderIds.length === 0){
+            return false;
+        }
 
         this.isProductVisible = false;
         this._isSpinning = true;
-        this.suborderItemService.allOrderItemsByOrderIds(orderIds)
+        this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
             .subscribe((result: any) => {
                 console.log('submitForm', result);
                 this._isSpinning = false;
@@ -375,8 +375,9 @@ export class OrderComponent implements OnInit {
     //Method for set status
 
     setStatus(index, status) {
-        if (!this.viewNotRendered) return;
-        this.selectedOption[index] = status;
+        if (!this.viewNotRendered) {
+            return;
+        }
     }
 
     ngAfterViewInit() {
@@ -394,14 +395,6 @@ export class OrderComponent implements OnInit {
             });
     }
 
-    //Event called for daterange change
-    daterangeChange() {
-        if (this.dateSearchValue.from && this.dateSearchValue.to) {
-            this.page = 1;
-            this.getData()
-        }
-
-    }
 
     handleOk = e => {
         this.isProductVisible = false;
@@ -412,42 +405,4 @@ export class OrderComponent implements OnInit {
     };
 
 
-    selectAllCsv($event) {
-
-        const isChecked = !!$event.target.checked;
-        console.log('selectAllCsv', isChecked);
-        if (!isChecked) {
-            this.storeOrderIds = [];
-        }
-
-        const len = this.allOders.length;
-        for (let i = 0; i < len; i++) {
-            this.allOders[i].checked = isChecked;
-            if (isChecked) {
-                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                    return storedOder.id == this.allOders[i].id;
-                });
-                if (foundIndex === -1) {
-                    this.storeOrderIds.push(this.allOders[i]);
-                }
-            }
-        }
-        console.log('this.storeOrderIds', this.storeOrderIds);
-    }
-
-
-    //Method for status checkbox
-
-    _refreshStatus($event, value) {
-        if ($event && $event.currentTarget.checked) {
-            this.storeOrderIds.push(value);
-        } else {
-            let findValue = this.storeOrderIds.findIndex((item) => {
-                return item.id == value.id
-            });
-            if (findValue !== -1) {
-                this.storeOrderIds.splice(findValue, 1);
-            }
-        }
-    };
 }
