@@ -1,7 +1,4 @@
-<nz-card>
-    <ng-template #title>
-        Product Details
-    </ng-template>
+<nz-card nzTitle="Product Details">
     <ng-template #extra>
         <nz-button-group>
             <button *ngIf="'product-edit'|accessControl" [routerLink]="['/dashboard/product/edit', id]" [queryParams]="{status: status}" nz-button [nzType]="'primary'"
