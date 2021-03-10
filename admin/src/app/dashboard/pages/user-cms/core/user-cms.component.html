@@ -1,11 +1,7 @@
 <div class="row">
     <div class="col-md-12">
 
-        <nz-card>
-            <ng-template #title>
-                Vendor Post
-            </ng-template>
-
+        <nz-card nzTitle="Vendor Post" [nzExtra]="extra">
             <ng-template #extra>
                 <button (click)="showCreateModal()" nz-button [nzType]="'primary'" [nzSize]="'large'">
                     <i class="anticon anticon-download"></i>
@@ -13,9 +9,7 @@
                 </button>
             </ng-template>
 
-            <ng-template #body>
-                <router-outlet></router-outlet>
-            </ng-template>
+            <router-outlet></router-outlet>
         </nz-card>
 
     </div>
