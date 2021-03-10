@@ -164,7 +164,10 @@ export class SuborderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getPageData() {
+    getPageData(event?: any) {
+        if (event) {
+            this.page = event;
+        }
         this.loading = true;
         this._isSpinning = true;
         this.suborderService.getAllsuborder(

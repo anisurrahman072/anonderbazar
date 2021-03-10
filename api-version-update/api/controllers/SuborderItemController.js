@@ -31,9 +31,9 @@ module.exports = {
        suborder_item.warehouse_id, suborder_item.product_quantity, suborder_item.product_total_price,
        suborder_item.status, suborder_item.\`date\`,  suborder_item.created_at,
        p_order.status as order_status, p_order.user_id, suborder.status as sub_order_status,
-       CONCAT(customer.first_name, ' ',customer.first_name) as customer_name,
-       CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.first_name) as order_changed_by_name,
-       CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.first_name) as suborder_changed_by_name,
+       CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+       CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
+       CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
        customer.phone as customer_phone, vendor.name as vendor_name, vendor.phone as vendor_phone,
        GROUP_CONCAT(coupon.id) as all_coupons
       `;
@@ -100,7 +100,7 @@ module.exports = {
       rawSelect += ' suborder_item.warehouse_id, suborder_item.product_quantity, suborder_item.product_total_price, ';
       rawSelect += ' suborder_item.status, suborder_item.`date`,  suborder_item.`created_at`, ';
       rawSelect += ' p_order.status as order_status, p_order.user_id, suborder.status as sub_order_status, ';
-      rawSelect += ' CONCAT(customer.first_name, \' \',customer.first_name) as customer_name,  ';
+      rawSelect += ' CONCAT(customer.first_name, \' \',customer.last_name) as customer_name,  ';
       rawSelect += ' products.name as product_name, customer.phone as customer_phone ';
 
       let fromSQL = ' FROM product_suborder_items as suborder_item  ';

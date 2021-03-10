@@ -51,11 +51,11 @@ module.exports = {
       let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
       rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ';
       rawSelect += ' suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ';
-      rawSelect += ' CONCAT(userOrder.first_name, \' \',userOrder.first_name) as orderChangedBy,  ';
-      rawSelect += ' CONCAT(userSuborder.first_name, \' \',userSuborder.first_name) as subOrderChangedBy,  ';
+      rawSelect += ' CONCAT(userOrder.first_name, \' \',userOrder.last_name) as orderChangedBy,  ';
+      rawSelect += ' CONCAT(userSuborder.first_name, \' \',userSuborder.last_name) as subOrderChangedBy,  ';
       rawSelect += ' warehouses.name as warehouse_name,  warehouses.phone as warehouse_phone,  ';
       rawSelect += ' warehouses.address as warehouse_address,  ';
-      rawSelect += ' CONCAT(customer.first_name, \' \',customer.first_name) as customer_name,  ';
+      rawSelect += ' CONCAT(customer.first_name, \' \',customer.last_name) as customer_name,  ';
       rawSelect += ' customer.phone as customer_phone , ';
       rawSelect += ' product_orders.status as order_status  ';
 
@@ -269,7 +269,7 @@ module.exports = {
       let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
       rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ';
       rawSelect += ' suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ';
-      rawSelect += ' warehouses.name as name,  CONCAT(users.first_name, \' \',users.first_name) as changedBy  ';
+      rawSelect += ' warehouses.name as name,  CONCAT(users.first_name, \' \', users.last_name) as changedBy  ';
 
       let fromSQL = ' FROM product_suborders as suborder  ';
       fromSQL += ' LEFT JOIN warehouses ON warehouses.id = suborder.warehouse_id   LEFT JOIN users ON users.id = suborder.changed_by  ';

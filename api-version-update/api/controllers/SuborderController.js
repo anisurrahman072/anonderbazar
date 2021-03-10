@@ -67,7 +67,7 @@ module.exports = {
       rawSelect += ' suborder.courier_status, suborder.changed_by, suborder.PR_status, ';
       rawSelect += ' suborder.status, suborder.`date`,  ';
       rawSelect += ' orders.status as order_status, orders.user_id,  ';
-      rawSelect += ' CONCAT(customer.first_name, \' \',customer.first_name) as customer_name,  ';
+      rawSelect += ' CONCAT(customer.first_name, \' \',customer.last_name) as customer_name,  ';
       rawSelect += ' customer.phone as customer_phone ';
 
       let fromSQL = ' FROM product_suborders as suborder  ';

@@ -926,7 +926,7 @@ module.exports = {
       let d = Object.assign({}, order);
       d.suborders = subordersTemp;
       res.writeHead(301,
-        {Location: webURL + '/checkout?order=' + order.id}
+        {Location: sslWebUrl + '/checkout?order=' + order.id}
       );
       res.end();
     } catch (finalError) {
@@ -938,14 +938,14 @@ module.exports = {
   //Method called when sslcommerz fails sends redirectory route
   sslcommerzfail: function (req, res) {
     res.writeHead(301,
-      {Location: webURL + '/checkout'}
+      {Location: sslWebUrl + '/checkout'}
     );
     res.end();
   },
   //Method called when sslcommerz error sends redirectory route
   sslcommerzerror: function (req, res) {
     res.writeHead(301,
-      {Location: webURL + '/checkout'}
+      {Location: sslWebUrl + '/checkout'}
     );
     res.end();
   },
@@ -957,7 +957,7 @@ module.exports = {
 
       let rawSelect = 'SELECT orders.id as id,';
       rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, ';
-      rawSelect += ' CONCAT(users.first_name, \' \',users.first_name) as  full_name,  CONCAT(changedBy.first_name, \' \',changedBy.first_name) as changedByName  ';
+      rawSelect += ' CONCAT(users.first_name, \' \', users.last_name) as  full_name,  CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName  ';
 
       let fromSQL = ' FROM product_orders as orders  ';
       fromSQL += '  LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id  ';
