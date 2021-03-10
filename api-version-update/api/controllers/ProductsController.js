@@ -70,36 +70,28 @@ module.exports = {
         _where += ` AND product.status = ${req.query.status}`;
       }
       if (req.query.warehouse_id) {
-        // _where.warehouse_id = req.query.warehouse_id;
         _where += ` AND product.warehouse_id = ${req.query.warehouse_id}`;
       } else if (req.token && req.token.userInfo.warehouse_id) {
-        // _where.warehouse_id = req.token.userInfo.warehouse_id.id;
         _where += ` AND product.approval_status = ${req.token.userInfo.warehouse_id.id}`;
       }
 
       if (req.query.approval_status) {
-        // _where.approval_status = req.query.approval_status;
         _where += ` AND product.approval_status = ${req.query.approval_status}`;
       }
 
       if (req.query.type_id) {
-        // _where.type_id = req.query.type_id;
         _where += ` AND product.type_id = ${req.query.type_id}`;
       }
       if (req.query.category_id) {
-        // _where.category_id = req.query.category_id;
         _where += ` AND product.category_id = ${req.query.category_id}`;
       }
       if (req.query.subcategory_id) {
-        // _where.subcategory_id = req.query.subcategory_id;
         _where += ` AND product.subcategory_id = ${req.query.subcategory_id}`;
       }
       if (req.query.brand_id) {
-        // _where.brand_id = req.query.brand_id;
         _where += ` AND product.brand_id = ${req.query.brand_id}`;
       }
       if (req.query.price) {
-        // _where.price = req.query.price;
         _where += ` AND product.price = ${req.query.price}`;
       }
 
@@ -109,29 +101,14 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      let _sort = [];
-      if (req.query.sortCode) {
-        _sort.push(` product.code ${req.query.sortCode} `);
-      }
-      if (req.query.sortName) {
-        _sort.push(` product.name ${req.query.sortName} `);
-      }
-      if (req.query.sortPrice) {
-        __sort.push(` product.price  ${req.query.sortPrice} `);
-      }
-      if (req.query.sortQuantity) {
-        _sort.push(` product.quantity  ${req.query.sortQuantity} `);
+      let _sort = '';
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort += ` ORDER BY product.${req.query.sortKey} ${req.query.sortValue} `;
+      } else {
+        _sort += ` ORDER BY product.created_at DESC `;
       }
 
-      if (req.query.sortUpdatedAt) {
-        _sort.push(` product.updated_at  ${req.query.sortUpdatedAt} `);
-      }
-
-      if (_sort.length === 0) {
-        _sort.push(` product.created_at DESC `);
-      }
       const totalProductRaw = await productQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
-      //let totalProduct = await Product.count().where(_where);
       let totalProducts = 0;
       let products = [];
       if (totalProductRaw && totalProductRaw.rows && totalProductRaw.rows.length > 0) {
@@ -139,25 +116,12 @@ module.exports = {
         _pagination.limit = _pagination.limit ? _pagination.limit : totalProducts;
 
         let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        let orderSql = ' ORDER BY ' + _sort.join(',');
-        const rawResult = await productQuery(rawSelect + fromSQL + _where + orderSql + limitSQL, []);
+
+        const rawResult = await productQuery(rawSelect + fromSQL + _where + _sort + limitSQL, []);
 
         products = rawResult.rows;
       }
-      /*      _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
-      products = await Product.find({
-        where: _where,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        sort: _sort
-      }).populate('product_images', {deletedAt: null})
-        .populate('product_variants', {deletedAt: null})
-        .populate('category_id')
-        .populate('subcategory_id')
-        .populate('type_id')
-        .populate('warehouse_id')
-        .populate('craftsman_id')
-        .populate('brand_id');*/
+
       res.status(200).json({
         success: true,
         total: totalProducts,

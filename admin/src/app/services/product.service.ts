@@ -32,32 +32,25 @@ export class ProductService {
         );
     }
 
-    getAllProductsByStatus(status: number,
-                           page: number,
-                           limit: number,
-                           searchCode: string,
-                           searchTerm: string,
-                           brandId: number,
-                           typeId: number,
-                           categoryId: number,
-                           subcategoryId: number,
-                           warehouseId: string,
-                           sortCode: string,
-                           sortName: string,
-                           sortPrice: String,
-                           sortQuantity: string,
-                           sortUpdatedAt: string = '',
-                           approvalStatus: string = '',
-                           priceSearchValue: string = ''
+    getAllProductsByStatus(
+        status: number,
+        page: number,
+        limit: number,
+        searchCode: string,
+        searchTerm: string,
+        approvalStatus: string = '',
+        priceSearchValue: string = '',
+        brandId: number,
+        typeId: number,
+        categoryId: number,
+        subcategoryId: number,
+        warehouseId: string,
+        sortKey: string,
+        sortValue: string,
     ): Observable<any> {
         return this.http.get(
-            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortCode=${sortCode}&sortName=${sortName}&sortPrice=${sortPrice}&sortQuantity=${sortQuantity}&sortUpdatedAt=${sortUpdatedAt}&approval_status=${approvalStatus}`
+            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortKey=${sortKey}&sortValue=${sortValue}&approval_status=${approvalStatus}`
         );
-    }
-
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + `?where={"deletedAt":null}`);
     }
 
     getAllWithPagination(page = 1, limit = 30): Observable<any> {

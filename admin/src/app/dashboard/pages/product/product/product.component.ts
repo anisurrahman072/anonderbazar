@@ -13,7 +13,6 @@ import {UIService} from '../../../../services/ui/ui.service';
 import {Subscription} from 'rxjs';
 import {DesignImagesService} from '../../../../services/design-images.service';
 import {environment} from "../../../../../environments/environment";
-import {formatDate} from "@angular/common";
 import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
@@ -25,12 +24,6 @@ export class ProductComponent implements OnInit, OnDestroy {
     private currentWarehouseSubscriprtion: Subscription;
     status: any = 1;
     type: any;
-
-    ngOnDestroy(): void {
-        this.currentWarehouseSubscriprtion
-            ? this.currentWarehouseSubscriprtion.unsubscribe()
-            : '';
-    }
 
     showList: boolean = true;
     showAddPart: boolean = false;
@@ -66,13 +59,8 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     approvalStatus: any = null;
 
-    sortValue = {
-        code: null,
-        name: null,
-        price: null,
-        quantity: null,
-        updatedAt: null
-    };
+    sortKey: string = '';
+    sortValue: string = '';
 
     sortName: any;
     TypeSearchOptions: any[] = [];
@@ -97,6 +85,12 @@ export class ProductComponent implements OnInit, OnDestroy {
         private productVariantService: ProductVariantService
     ) {
 
+    }
+
+    ngOnDestroy(): void {
+        this.currentWarehouseSubscriprtion
+            ? this.currentWarehouseSubscriprtion.unsubscribe()
+            : '';
     }
 
     // For initiating the section element with data
@@ -163,7 +157,8 @@ export class ProductComponent implements OnInit, OnDestroy {
     // Event method for setting up filter data
     sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sort.key] = sort.value;
+        this.sortKey = sort.key;
+        this.sortValue = sort.value;
         this.getProductData();
     }
 
@@ -427,7 +422,11 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     // Method called in brand option change
-    getProductData() {
+    getProductData(event?: any) {
+        if (event) {
+            this.page = event;
+        }
+
         this.productService
             .getAllProductsByStatus(
                 this.status,
@@ -435,18 +434,15 @@ export class ProductComponent implements OnInit, OnDestroy {
                 this.limit,
                 this.codeSearchValue,
                 this.nameSearchValue,
+                this.approvalStatus || '',
+                this.priceSearchValue,
                 this.brandId || '',
                 this.typeId || '',
                 this.categoryId || '',
                 this.subcategoryId || '',
                 this.currentWarehouseId,
-                this.filterTerm(this.sortValue.code),
-                this.filterTerm(this.sortValue.name),
-                this.filterTerm(this.sortValue.price),
-                this.filterTerm(this.sortValue.quantity),
-                this.filterTerm(this.sortValue.updatedAt),
-                this.approvalStatus || '',
-                this.priceSearchValue
+                 this.sortKey,
+                this.filterTerm(this.sortValue)
             )
             .subscribe(
                 result => {
@@ -459,12 +455,6 @@ export class ProductComponent implements OnInit, OnDestroy {
                     this._isSpinning = false;
                 }
             );
-    }
-
-    formattedDate(dateVal) {
-        const format = 'dd/MM/yyyy hh:mm a';
-        const locale = 'en-US';
-        return formatDate(dateVal, format, locale);
     }
 
     // Event method for setting up filter data
@@ -485,13 +475,8 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.codeSearchValue = '';
         this.nameSearchValue = '';
-        this.sortValue = {
-            code: null,
-            name: null,
-            price: null,
-            quantity: null,
-            updatedAt: null
-        };
+        this.sortKey = "";
+        this.sortValue = "";
         this.typeId = null;
         this.categoryId = null;
         this.subcategoryId = null;
