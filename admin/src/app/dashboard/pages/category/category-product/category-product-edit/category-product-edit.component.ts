@@ -50,8 +50,10 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
-        formData.append('parent_id', value.parent_id);
-        formData.append('offer_id', value.offer_id);
+        if(value.parent_id)
+            formData.append('parent_id', value.parent_id);
+        if(value.offer_id)
+            formData.append('offer_id', value.offer_id);
         if (this.ImageFile.length.toString() != "0") {
             formData.append('hasImage', 'true');
             formData.append('imageCounter', this.ImageFile.length.toString());
