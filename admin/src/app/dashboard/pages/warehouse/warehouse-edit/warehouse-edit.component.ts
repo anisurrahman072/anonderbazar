@@ -183,7 +183,7 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
             formData.append('haslogo', 'false');
         }
         this.warehouseService.update(this.id, formData).subscribe(result => {
-            this.updateUser(value, result[0]);
+            this.updateUser(value, result);
         });
     };
 
