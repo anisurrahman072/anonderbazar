@@ -22,8 +22,10 @@ module.exports = {
       }
 
       let _sort = [];
-      if (req.query.sortName) {
-        _sort.push({name : req.query.sortName});
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort.push({ [req.query.sortKey] : req.query.sortValue});
+      } else {
+        _sort.push({ createdAt : 'DESC'});
       }
 
       let totalVariant = await  Variant.count().where(_where);

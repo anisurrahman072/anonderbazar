@@ -16,10 +16,9 @@ export class VariantComponent implements OnInit {
   total: number;
   nameSearchValue: string = '';
 
-  sortValue = {
-    name: null,
-    price: null
-  };
+  sortValue = '';
+  sortKey = '';
+
   categoryId: any = null;
   subcategoryId: any = null;
 
@@ -38,23 +37,28 @@ export class VariantComponent implements OnInit {
   }
 
   //Event method for getting all the data for the page
-  getPageData() {
-    this.loading = true;
+  getPageData(event?: any) {
+    if (event) {
+      this.page = event;
+    }
+
+    this._isSpinning = true;
     this.variantService
         .getAllvariant(
             this.page,
             this.limit,
             this.nameSearchValue || '',
-            this.categoryId ? this.categoryId : '',
-            this.subcategoryId ? this.subcategoryId : '',
-            this.filterTerm(this.sortValue.name)
+            this.sortKey,
+            this.filterTerm(this.sortValue),
         )
         .subscribe(
             result => {
               this.loading = false;
+
               this.data = result.data;
+
               this.total = result.total;
-              console.log(result);
+
               this._isSpinning = false;
             },
             error => {
@@ -79,7 +83,8 @@ export class VariantComponent implements OnInit {
   //Event method for setting up filter data
   sort(sort: { key: string, value: string }) {
     this.page = 1;
-    this.sortValue[sort.key] = sort.value;
+    this.sortKey = sort.key;
+    this.sortValue = sort.value;
     this.getPageData();
   }
 
@@ -88,10 +93,8 @@ export class VariantComponent implements OnInit {
     this.limit = 5;
     this.page = 1;
     this.nameSearchValue = '';
-    this.sortValue = {
-      name: null,
-      price: null
-    };
+    this.sortKey = '';
+    this.sortValue = '';
     this.categoryId = null;
     this.subcategoryId = null;
     this.subcategorySearchOptions = [];

@@ -1,9 +1,8 @@
 /**
  * WarehouseVariantsController
- *
  * @description :: Server-side logic for managing warehousevariants
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
+ **/
 
 const {pagination} = require('../../libs/pagination');
 module.exports = {
@@ -25,8 +24,10 @@ module.exports = {
       }
 
       let _sort = [];
-      if (req.query.sortName) {
-        _sort.push({name : req.query.sortName});
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort.push({[req.query.sortKey]: req.query.sortValue});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
 
       let totalWarehouseVariant = await WarehouseVariant.count().where(_where);
@@ -39,7 +40,6 @@ module.exports = {
           sort: _sort,
         })
         .populate('variant_id')
-        .populate('warehouse_id')
         .populate('brand_id');
 
 
@@ -54,7 +54,7 @@ module.exports = {
       });
     } catch (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
-
+      console.log('error', error);
       res.status(400).json({
         success: false,
         message,

@@ -21,6 +21,7 @@ export class UserComponent implements OnInit, OnDestroy {
     data = [];
     _isSpinning = true;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     currentUser: any;
     private currentWarehouseSubscriprtion: any;
 

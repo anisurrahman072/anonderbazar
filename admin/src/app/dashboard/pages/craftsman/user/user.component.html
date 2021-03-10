@@ -73,7 +73,7 @@
                 <td>
                     <ng-container *ngIf="data.customer_avatar; else noAvatar">
                     <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
-                               [nzSrc]="IMAGE_ENDPOINT + data.customer_avatar"></nz-avatar>
+                               [nzSrc]="IMAGE_THUMB_ENDPOINT + data.customer_avatar"></nz-avatar>
                     </ng-container>
                     <ng-template #noAvatar>
                         <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"

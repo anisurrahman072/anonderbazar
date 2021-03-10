@@ -11,123 +11,121 @@
             </div>
         </ng-template>
         <ng-container>
-            <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable
-                          (nzPageIndexChange)="getPageData($event)"
-                          [(nzPageIndex)]="page"
-                          [(nzPageSize)]="limit"
-                          [nzData]="data"
-                          [nzFrontPagination]="false"
-                          [nzLoading]="loading"
-                          [nzTotal]="total"
-                          nzShowSizeChanger
-                >
-                    <thead [nzSingleSort]="true" (nzSortChange)="sort($event)">
-                    <tr>
-                        <th>
-                            <span> Picture </span>
-                        </th>
-                        <th nzShowSort nzSortKey="username">
-                            <span> UserName </span>
-                        </th>
-                        <th>
-                            <span> Email </span>
-                        </th>
-                        <th nzShowSort nzSortKey="name">
-                            <span>Name</span>
-                        </th>
+            <nz-table #nzTable
+                      (nzPageIndexChange)="getPageData($event)"
+                      [(nzPageIndex)]="page"
+                      [(nzPageSize)]="limit"
+                      [nzData]="data"
+                      [nzFrontPagination]="false"
+                      [nzLoading]="_isSpinning"
+                      [nzTotal]="total"
+                      nzShowSizeChanger
+            >
+                <thead [nzSingleSort]="true" (nzSortChange)="sort($event)">
+                <tr>
+                    <th>
+                        <span> Picture </span>
+                    </th>
+                    <th nzShowSort nzSortKey="username">
+                        <span> UserName </span>
+                    </th>
+                    <th>
+                        <span> Email </span>
+                    </th>
+                    <th nzShowSort nzSortKey="name">
+                        <span>Name</span>
+                    </th>
 
-                        <th nzShowSort nzSortKey="phone">
-                            <span> Phone Number </span>
-                        </th>
+                    <th nzShowSort nzSortKey="phone">
+                        <span> Phone Number </span>
+                    </th>
 
-                        <th>
-                            <span> Location </span>
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
+                    <th>
+                        <span> Location </span>
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
 
-                        </th>
-                        <th>
-                            <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="usernameSearchValue" nz-input
-                                   placeholder="Username">
+                    </th>
+                    <th>
+                        <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="usernameSearchValue" nz-input
+                               placeholder="Username">
 
-                        </th>
-                        <th>
-                            <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="emailSearchValue" nz-input
-                                   placeholder="Email">
-                        </th>
-                        <th>
-                            <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="nameSearchValue" nz-input
-                                   placeholder="Name">
-                        </th>
-                        <th>
-                            <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="phoneSearchValue" nz-input
-                                   placeholder="Phone">
-                        </th>
-                        <th>
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let data of nzTable.data">
-                        <td>
-                            <ng-container *ngIf="data.customer_avatar; else noAvatar">
-                                <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
-                                           [nzSrc]="IMAGE_ENDPOINT + data.customer_avatar"></nz-avatar>
-                            </ng-container>
-                            <ng-template #noAvatar>
-                                <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
-                                           [nzSrc]="'./assets/images/default-avatar.jpg'"></nz-avatar>
-                            </ng-template>
-                        </td>
-                        <td>
-                            {{data.username}}
-                        </td>
-                        <td>
-                            <nz-tag>{{data.email}}</nz-tag>
-                        </td>
-                        <td>
-                            <nz-tag>{{data.customer_name}}</nz-tag>
-                        </td>
-                        <td>
-                            {{data.phone}}
-                        </td>
-                        <td>
-                            {{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}
-                        </td>
-                        <td>
-                            <button *ngIf="'craftsman-read'|accessControl"
-                                    [nzSize]="'default'"
-                                    [routerLink]="['/dashboard/craftsman/details/', data.id]" nz-button>
-                                <i class="anticon anticon-info-circle"> </i>
-                            </button>
-                            <button *ngIf="'craftsman-edit'|accessControl"
-                                    [nzSize]="'default'"
-                                    [routerLink]="['/dashboard/craftsman/edit', data.id]" nz-button>
-                                <i class="anticon anticon-edit"> </i>
-                            </button>
+                    </th>
+                    <th>
+                        <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="emailSearchValue" nz-input
+                               placeholder="Email">
+                    </th>
+                    <th>
+                        <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="nameSearchValue" nz-input
+                               placeholder="Name">
+                    </th>
+                    <th>
+                        <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="phoneSearchValue" nz-input
+                               placeholder="Phone">
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of nzTable.data">
+                    <td>
+                        <ng-container *ngIf="data.customer_avatar; else noAvatar">
+                            <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                       [nzSrc]="IMAGE_ENDPOINT + data.customer_avatar"></nz-avatar>
+                        </ng-container>
+                        <ng-template #noAvatar>
+                            <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                       [nzSrc]="'./assets/images/default-avatar.jpg'"></nz-avatar>
+                        </ng-template>
+                    </td>
+                    <td>
+                        {{data.username}}
+                    </td>
+                    <td>
+                        <nz-tag>{{data.email}}</nz-tag>
+                    </td>
+                    <td>
+                        <nz-tag>{{data.customer_name}}</nz-tag>
+                    </td>
+                    <td>
+                        {{data.phone}}
+                    </td>
+                    <td>
+                        {{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}
+                    </td>
+                    <td>
+                        <button *ngIf="'craftsman-read'|accessControl"
+                                [nzSize]="'default'"
+                                [routerLink]="['/dashboard/craftsman/details/', data.id]" nz-button>
+                            <i class="anticon anticon-info-circle"> </i>
+                        </button>
+                        <button *ngIf="'craftsman-edit'|accessControl"
+                                [nzSize]="'default'"
+                                [routerLink]="['/dashboard/craftsman/edit', data.id]" nz-button>
+                            <i class="anticon anticon-edit"> </i>
+                        </button>
 
-                            <ng-container *ngIf="'craftsman-delete'|accessControl">
-                                <nz-popconfirm (nzOnConfirm)="deleteConfirm(data.id)" [nzCancelText]="'Cancel'"
-                                               [nzOkText]="'Delete'" [nzTitle]="'Are you sure you want to delete?'">
-                                    <a nz-popconfirm>
-                                        <button [nzSize]="'default'" nz-button>
-                                            <i class="anticon anticon-delete"> </i>
-                                        </button>
-                                    </a>
-                                </nz-popconfirm>
-                            </ng-container>
-                        </td>
-                    </tr>
-                    </tbody>
-                </nz-table>
-            </nz-spin>
+                        <ng-container *ngIf="'craftsman-delete'|accessControl">
+                            <nz-popconfirm (nzOnConfirm)="deleteConfirm(data.id)" [nzCancelText]="'Cancel'"
+                                           [nzOkText]="'Delete'" [nzTitle]="'Are you sure you want to delete?'">
+                                <a nz-popconfirm>
+                                    <button [nzSize]="'default'" nz-button>
+                                        <i class="anticon anticon-delete"> </i>
+                                    </button>
+                                </a>
+                            </nz-popconfirm>
+                        </ng-container>
+                    </td>
+                </tr>
+                </tbody>
+            </nz-table>
         </ng-container>
     </nz-card>
 </section>

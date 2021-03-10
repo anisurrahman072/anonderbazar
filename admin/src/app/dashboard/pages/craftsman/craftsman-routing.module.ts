@@ -16,22 +16,26 @@ const routes: Routes = [
                 canActivate: [AccessControl],
                 data: {accessData: 'craftsman-read'},
                 component: CraftsmanComponent,
-            }, {
+            },
+            {
                 path: 'details/:id',
                 canActivate: [AccessControl],
                 data: {accessData: 'craftsman-read'},
                 component: CraftsmanReadComponent,
-            }, {
+            },
+            {
                 path: 'create',
                 canActivate: [AccessControl],
                 data: {accessData: 'craftsman-create'},
                 component: CraftsmanCreateComponent,
-            }, {
+            },
+            {
                 path: 'edit/:id',
                 canActivate: [AccessControl],
                 data: {accessData: 'craftsman-edit'},
                 component: CraftsmanEditComponent,
-            }, {
+            },
+            {
                 path: '**',
                 redirectTo: '',
                 pathMatch: 'full'
