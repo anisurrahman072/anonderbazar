@@ -23,8 +23,8 @@ exports.getAllUsers = async (req, groupId) => {
 
   let _where = ` WHERE customer.deleted_at IS NULL AND customer.group_id = '${groupId}' `;
 
-  if (query.username) {
-    _where += ` AND customer.username LIKE '%${query.username}%' `;
+  if (query.searchTermUsername) {
+    _where += ` AND customer.username LIKE '%${query.searchTermUsername}%' `;
   }
 
   if (query.searchTermPhone && query.searchTermEmail) {
@@ -44,8 +44,14 @@ exports.getAllUsers = async (req, groupId) => {
   }
 
   let _sort = ``;
-  if (req.query.sortName) {
-    _sort += ` ORDER BY CONCAT(customer.first_name, ' ',customer.first_name) ${req.query.sortName} `;
+  if (query.sortKey && query.sortValue) {
+    let key = ` customer.${query.sortKey} `;
+    if (query.sortKey === 'name') {
+      key = ' CONCAT(customer.first_name, \' \',customer.first_name) ';
+    }
+    _sort += ` ORDER BY ${key} ${query.sortValue} `;
+  } else {
+    _sort += ` ORDER BY customer.created_at DESC `;
   }
 
   let totalCustomers = 0;
