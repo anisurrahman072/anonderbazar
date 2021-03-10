@@ -1,7 +1,6 @@
-const {asyncForEach} = require('./index');
 const {devEnv} = require('../config/softbd');
 
-exports.asyncForEach = async (array, callback) => {
+const asyncForEach = async (array, callback) => {
   if(array && Array.isArray(array) && array.length > 0){
     for (let index = 0; index < array.length; index++) {
       // eslint-disable-next-line callback-return
@@ -9,6 +8,7 @@ exports.asyncForEach = async (array, callback) => {
     }
   }
 };
+exports.asyncForEach = asyncForEach;
 
 exports.initLogPlaceholder = (req, funcName) => {
   sails.log(`call from ${funcName}`);

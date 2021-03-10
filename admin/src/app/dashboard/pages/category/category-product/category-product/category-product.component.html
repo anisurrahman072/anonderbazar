@@ -42,11 +42,11 @@
                 <th></th>
                 <th></th>
                 <th>
-                    <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
+                    <input nz-input placeholder="Name" [(ngModel)]="nameSearchValue"
                            (ngModelChange)="page=1; getPageData(); ">
                 </th>
                 <th>
-                    <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue"
+                    <input nz-input placeholder="Code" [(ngModel)]="codeSearchValue"
                            (ngModelChange)="page=1; getPageData(); ">
                 </th>
                 <th></th>
@@ -57,12 +57,14 @@
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
                 <td>
-                    <ng-container *ngIf="data.image">
+                    <ng-container *ngIf="data.image; else noAvatar">
                         <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
                                    [nzIcon]="'user'">
                         </nz-avatar>
                     </ng-container>
-
+                    <ng-template #noAvatar>
+                       <nz-tag>No Image</nz-tag>
+                    </ng-template>
                 </td>
                 <td>
                     {{data.total_sub_categories}}

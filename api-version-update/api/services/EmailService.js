@@ -1,4 +1,4 @@
-const commonUrl = 'https://web.bitspeek.com';
+const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
 module.exports = {
   sendPasswordResetMailUpdated: function (obj, password) {

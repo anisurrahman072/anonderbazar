@@ -3,7 +3,7 @@ const fs = require('fs');
 
 exports.Helper = {
   deleteImages: async (imageList, path) => {
-    asyncForEach(imageList, (item) => {
+    await asyncForEach(imageList, (item) => {
       console.log(item);
       const dir = __dirname.split('/libs');
       const assestsdir = `${dir[0]}/assets`;

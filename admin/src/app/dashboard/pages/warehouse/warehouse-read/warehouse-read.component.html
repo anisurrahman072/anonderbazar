@@ -1,7 +1,4 @@
-<nz-card>
-    <ng-template #title>
-        Shop details
-    </ng-template>
+<nz-card nzTitle="Shop details" [nzExtra]="extra">
     <ng-template #extra>
         <button routerLink="/dashboard/warehouse" nz-button [nzType]="'primary'" [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>

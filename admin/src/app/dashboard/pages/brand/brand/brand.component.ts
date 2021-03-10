@@ -13,15 +13,10 @@ import {distinctUntilChanged} from "rxjs/operators";
     styleUrls: ['./brand.component.css']
 })
 export class BrandComponent implements OnInit, OnDestroy {
-    ngOnDestroy(): void {
-        this.currentWarehouseSubscriprtion
-            ? this.currentWarehouseSubscriprtion.unsubscribe()
-            : '';
-    }
-
     data = [];
     _isSpinning = true;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     currentUser: any;
 
     limit: number = 10;
@@ -30,12 +25,9 @@ export class BrandComponent implements OnInit, OnDestroy {
     nameSearchValue: string = '';
     loading: boolean = false;
 
+    sortKey: string = '';
+    sortValue: string = '';
 
-    sortValue = {
-        name: null,
-        code: null,
-        slug: null
-    };
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
 
@@ -64,28 +56,34 @@ export class BrandComponent implements OnInit, OnDestroy {
             );
     }
 
+    ngOnDestroy(): void {
+        this.currentWarehouseSubscriprtion
+            ? this.currentWarehouseSubscriprtion.unsubscribe()
+            : '';
+    }
+
     //Event method for getting all the data for the page
-    getAllData() {
-        this.loading = true;
+    getAllData(event?: any) {
+        if (event) {
+            this.page = event;
+        }
+        this._isSpinning = true;
         this.brandService
             .getAllBrands(
                 this.page,
                 this.limit,
                 this.nameSearchValue,
                 this.currentWarehouseId,
-                this.filterTerm(this.sortValue.name),
-                this.filterTerm(this.sortValue.code),
-                this.filterTerm(this.sortValue.slug)
+                this.sortKey,
+                this.filterTerm(this.sortValue)
             )
             .subscribe(
                 result => {
-                    this.loading = false;
                     this.data = result.data;
                     this.total = result.total;
                     this._isSpinning = false;
                 },
                 result => {
-                    this.loading = false;
                     this._isSpinning = false;
                 }
             );
@@ -106,7 +104,8 @@ export class BrandComponent implements OnInit, OnDestroy {
     //Event method for setting up filter data
     sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sort.key] = sort.value;
+        this.sortKey = sort.key;
+        this.sortValue = sort.value;
         this.getAllData();
     }
 
@@ -123,11 +122,8 @@ export class BrandComponent implements OnInit, OnDestroy {
         this.limit = 5;
         this.page = 1;
         this.nameSearchValue = '';
-        this.sortValue = {
-            name: null,
-            code: null,
-            slug: null
-        };
+        this.sortKey = '';
+        this.sortValue = '';
         this.getAllData();
     }
 

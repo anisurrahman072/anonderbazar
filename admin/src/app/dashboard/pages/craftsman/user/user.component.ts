@@ -12,12 +12,6 @@ import {environment} from "../../../../../environments/environment";
 export class UserComponent implements OnInit, OnDestroy {
     private currentWarehouseId: any | string;
 
-    ngOnDestroy(): void {
-        this.currentWarehouseSubscriprtion
-            ? this.currentWarehouseSubscriprtion.unsubscribe()
-            : '';
-    }
-
     data = [];
     _isSpinning = true;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -61,7 +55,11 @@ export class UserComponent implements OnInit, OnDestroy {
             }
         );
     }
-
+    ngOnDestroy(): void {
+        this.currentWarehouseSubscriprtion
+            ? this.currentWarehouseSubscriprtion.unsubscribe()
+            : '';
+    }
     //Event method for deleting user
     deleteConfirm(id) {
         this.userService.delete(id).subscribe(result => {

@@ -57,14 +57,12 @@ module.exports = {
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
 
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
-      }
-      if (req.token && req.token.userInfo.warehouse_id) {
+      } else if (req.token && req.token.userInfo.warehouse_id) {
         _where.warehouse_id = req.token.userInfo.warehouse_id.id;
       }
 
@@ -78,20 +76,13 @@ module.exports = {
           }
         ];
       }
-
-      /* Sort................*/
       let _sort = [];
-      if (req.query.sortName) {
-        _sort.push({name: req.query.sortName});
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort.push({[req.query.sortKey]: req.query.sortValue});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
 
-      if (req.query.sortCode) {
-        _sort.push({code: req.query.sortCode});
-      }
-
-      if (req.query.sortSlug) {
-        _sort.push({slug: req.query.sortSlug});
-      }
       /*.....SORT END..............................*/
 
       let totalBrand = await Brand.count().where(_where);
