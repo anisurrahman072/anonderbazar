@@ -10,10 +10,13 @@ import {AuthService} from '../../../../services/auth.service';
 import {CategoryProductService} from '../../../../services/category-product.service';
 import {BrandService} from '../../../../services/brand.service';
 import {UIService} from '../../../../services/ui/ui.service';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {DesignImagesService} from '../../../../services/design-images.service';
 import {environment} from "../../../../../environments/environment";
 import {NzNotificationService} from "ng-zorro-antd";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+
+type SearchSubject = { field: string, query: string };
 
 @Component({
     selector: 'app-product',
@@ -32,6 +35,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     isPromotionVisible = false;
     currentProduct: any = {};
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
     data = [];
     _isSpinning = true;
     currentProduct_variants: any = [];
@@ -48,10 +52,14 @@ export class ProductComponent implements OnInit, OnDestroy {
     currentProductForAddPart: any;
     limit: number = 10;
     page: number = 1;
-    total: number;
+    total: number = 0;
+
+    private searchChangeSub: Subject<SearchSubject> = new Subject<SearchSubject>();
     codeSearchValue: string = '';
     nameSearchValue: string = '';
     priceSearchValue: string = '';
+    qtySearchValue: string = '';
+
     typeId: any = null;
     brandId: any = null;
     categoryId: any = null;
@@ -87,9 +95,61 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     }
 
+    onSearchChange(query: string, field: string) {
+        this.searchChangeSub.next({
+            field,
+            query
+        });
+    }
+
+    // Method called in brand option change
+    getProductData(event?: any, type?: string) {
+        if (event && type) {
+            console.log('getProductData', event, type);
+            if (type === 'page') {
+                this.page = event;
+            } else if (type === 'size') {
+                this.page = 1;
+                this.limit = event;
+            }
+        }
+
+        this.productService
+            .getAllProductsByStatus(
+                this.status,
+                this.page,
+                this.limit,
+                this.codeSearchValue,
+                this.nameSearchValue,
+                this.approvalStatus || '',
+                this.priceSearchValue,
+                this.brandId || '',
+                this.typeId || '',
+                this.categoryId || '',
+                this.subcategoryId || '',
+                this.currentWarehouseId,
+                this.sortKey,
+                this.filterTerm(this.sortValue)
+            )
+            .subscribe(
+                result => {
+                    this.data = result.data;
+                    console.log('getProductData', result);
+                    this.total = result.total;
+                    this._isSpinning = false;
+                },
+                result => {
+                    this._isSpinning = false;
+                }
+            );
+    }
+
     ngOnDestroy(): void {
         this.currentWarehouseSubscriprtion
             ? this.currentWarehouseSubscriprtion.unsubscribe()
+            : '';
+        this.searchChangeSub
+            ? this.searchChangeSub.unsubscribe()
             : '';
     }
 
@@ -119,6 +179,8 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
+                console.log('currentSelectedWarehouseInfo', warehouseId);
+                this.page = 1;
                 this.getProductData();
             }
         );
@@ -133,7 +195,19 @@ export class ProductComponent implements OnInit, OnDestroy {
 
         this.categoryProductService.getAll().subscribe((result: any) => {
             this.categorySearchOptions = result;
-        })
+        });
+
+        this.searchChangeSub
+            .pipe(debounceTime(200), distinctUntilChanged((prev: SearchSubject, next: SearchSubject) => {
+                return JSON.stringify(prev) === JSON.stringify(next);
+            }))
+            .subscribe((model: SearchSubject) => {
+                console.log('model', model);
+                this[model.field] = model.query;
+                this.page = 1;
+                this.getProductData();
+            });
+
     }
 
     // Method for close modals
@@ -421,41 +495,6 @@ export class ProductComponent implements OnInit, OnDestroy {
         return false;
     }
 
-    // Method called in brand option change
-    getProductData(event?: any) {
-        if (event) {
-            this.page = event;
-        }
-
-        this.productService
-            .getAllProductsByStatus(
-                this.status,
-                this.page,
-                this.limit,
-                this.codeSearchValue,
-                this.nameSearchValue,
-                this.approvalStatus || '',
-                this.priceSearchValue,
-                this.brandId || '',
-                this.typeId || '',
-                this.categoryId || '',
-                this.subcategoryId || '',
-                this.currentWarehouseId,
-                 this.sortKey,
-                this.filterTerm(this.sortValue)
-            )
-            .subscribe(
-                result => {
-                    this.data = result.data;
-                    console.log('getProductData', this.data)
-                    this.total = result.total;
-                    this._isSpinning = false;
-                },
-                result => {
-                    this._isSpinning = false;
-                }
-            );
-    }
 
     // Event method for setting up filter data
     private filterTerm(sortValue: string): string {
