@@ -67,6 +67,8 @@ export class BrandComponent implements OnInit, OnDestroy {
         if (event) {
             this.page = event;
         }
+        console.log('getAllData');
+
         this._isSpinning = true;
         this.brandService
             .getAllBrands(
@@ -80,6 +82,7 @@ export class BrandComponent implements OnInit, OnDestroy {
             .subscribe(
                 result => {
                     this.data = result.data;
+                    console.log('getAllData', result.data);
                     this.total = result.total;
                     this._isSpinning = false;
                 },

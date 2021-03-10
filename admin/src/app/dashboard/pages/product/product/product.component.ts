@@ -58,6 +58,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     codeSearchValue: string = '';
     nameSearchValue: string = '';
     priceSearchValue: string = '';
+    qtySearchValue: string = '';
 
     typeId: any = null;
     brandId: any = null;
@@ -102,10 +103,15 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     // Method called in brand option change
-    getProductData(event?: any) {
-        if (event) {
-            console.log('getProductData', event);
-            this.page = event;
+    getProductData(event?: any, type?: string) {
+        if (event && type) {
+            console.log('getProductData', event, type);
+            if (type === 'page') {
+                this.page = event;
+            } else if (type === 'size') {
+                this.page = 1;
+                this.limit = event;
+            }
         }
 
         this.productService
@@ -128,7 +134,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             .subscribe(
                 result => {
                     this.data = result.data;
-                    console.log('getProductData', this.data)
+                    console.log('getProductData', result);
                     this.total = result.total;
                     this._isSpinning = false;
                 },
