@@ -54,10 +54,10 @@ module.exports = {
         try {
           const orderIds = JSON.parse(req.query.order_ids);
           if (Array.isArray(orderIds) && orderIds.length > 0) {
-            _where += ` AND suborder.product_order_id IN  (${orderIds.json(',')}) `;
+            _where += ` AND suborder.product_order_id IN  (${orderIds.join(',')}) `;
           }
         } catch (errorr) {
-
+          console.log(errorr);
         }
       }
       _where += ' GROUP BY coupon.suborder_item_id ORDER BY suborder_item.created_at DESC ';
