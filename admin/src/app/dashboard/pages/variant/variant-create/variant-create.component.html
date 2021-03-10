@@ -1,70 +1,65 @@
-<nz-card>
-    <ng-template #title>
-        Add Product Attribute
-    </ng-template>
+<nz-card nzTitle="Add Product Attribute" [nzExtra]="extra">
     <ng-template #extra>
         <button routerLink="/dashboard/variant" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
         </button>
     </ng-template>
-    <ng-template #body>
-        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+    <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-            <div    nz-row><!--name start-->
-                <div    nz-col [nzSpan]="7">
-                    <label> Name </label>
+        <div    nz-row><!--name start-->
+            <div    nz-col [nzSpan]="7">
+                <label> Name </label>
+            </div>
+            <div nz-col [nzSpan]="12"      >
+                <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
+                       [nzSize]="'large'">
+
+                <div
+                        *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                    Name is required!
                 </div>
-                <div nz-col [nzSpan]="12"      >
-                       <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
-                              [nzSize]="'large'">
-
-                    <div
-                         *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
-                         Name is required!
-                    </div>
-                    <div
-                         *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
-                        Name already exists!
-                    </div>
-                    <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
-                        Validating...
-                    </div>
+                <div
+                        *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                    Name already exists!
                 </div>
-            </div><!--name -->
-
-            <div    nz-row>
-                <div nz-col [nzSpan]="7"   >
-                    <label>  Price Variation Status </label>
-                </div>
-                <div nz-col [nzSpan]="12"      >
-
-                    <nz-select
-                            formControlName="type"
-                            nzAllowClear
-                            [nzPlaceHolder]="'Select Price Variation Status'"
-                            [nzNotFoundContent]="'Not found'"
-                            nzShowSearch>
-                        <nz-option
-                                *ngFor="let option of typeSearchOptions"
-                                [nzLabel]="option.label"
-                                [nzValue]="option.value">
-                        </nz-option>
-                    </nz-select>
-                    <div
-                         *ngIf="getFormControl('type').dirty&&getFormControl('type').hasError('required')">
-                        Please write something here!
-                    </div>
-                </div>
-            </div><!--type-->
-
-            <div    nz-row>
-                <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Save
-                    </button>
-                    <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                    Validating...
                 </div>
             </div>
-        </form>
-    </ng-template>
+        </div><!--name -->
+
+        <div    nz-row>
+            <div nz-col [nzSpan]="7"   >
+                <label>  Price Variation Status </label>
+            </div>
+            <div nz-col [nzSpan]="12"      >
+
+                <nz-select
+                        formControlName="type"
+                        nzAllowClear
+                        [nzPlaceHolder]="'Select Price Variation Status'"
+                        [nzNotFoundContent]="'Not found'"
+                        nzShowSearch>
+                    <nz-option
+                            *ngFor="let option of typeSearchOptions"
+                            [nzLabel]="option.label"
+                            [nzValue]="option.value">
+                    </nz-option>
+                </nz-select>
+                <div
+                        *ngIf="getFormControl('type').dirty&&getFormControl('type').hasError('required')">
+                    Please write something here!
+                </div>
+            </div>
+        </div><!--type-->
+
+        <div    nz-row>
+            <div nz-col [nzOffset]="7" [nzSpan]="12"   >
+                <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Save
+                </button>
+                <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+            </div>
+        </div>
+    </form>
 </nz-card>
