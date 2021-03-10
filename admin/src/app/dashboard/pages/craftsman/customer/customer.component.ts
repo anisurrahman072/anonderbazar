@@ -84,6 +84,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
                 result => {
                     this.loading = false;
                     this.data = result.data;
+                    console.log(result.data);
                     this.total = result.total;
                     this._isSpinning = false;
                 },
