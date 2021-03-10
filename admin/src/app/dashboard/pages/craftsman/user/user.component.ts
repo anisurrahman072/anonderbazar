@@ -125,8 +125,8 @@ export class UserComponent implements OnInit, OnDestroy {
         this.emailSearchValue = '';
         this.phoneSearchValue = '';
         this.usernameSearchValue = null;
-        this.sortKey = ""
-        this.sortValue = ""
+        this.sortKey = "";
+        this.sortValue = "";
         this.categoryId = null;
         this.subcategoryId = null;
         this.subcategorySearchOptions = [];
