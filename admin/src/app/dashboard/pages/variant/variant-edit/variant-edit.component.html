@@ -9,21 +9,18 @@
 
         <div    nz-row>
             <div    nz-col [nzSpan]="7">
-                <label   -required> Name </label>
+                <label required> Name </label>
             </div>
-            <div nz-col [nzSpan]="12"      >
-                <input nz-input  formControlName="name"  [placeholder]="'Enter Name'"
-                       [nzSize]="'large'">
+            <div nz-col [nzSpan]="12">
+                <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
 
-                <div
-                        *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                     Name is required!
                 </div>
-                <div
-                        *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                     Name already exists!
                 </div>
-                <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                     Validating...
                 </div>
             </div>
