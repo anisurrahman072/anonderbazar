@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../../../../services/user.service";
 import {UIService} from "../../../../services/ui/ui.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -12,12 +11,6 @@ import {environment} from "../../../../../environments/environment";
 })
 export class CustomerComponent implements OnInit, OnDestroy {
     private currentWarehouseId: any | string;
-
-    ngOnDestroy(): void {
-        this.currentWarehouseSubscriprtion
-            ? this.currentWarehouseSubscriprtion.unsubscribe()
-            : '';
-    }
 
     data = [];
     _isSpinning = true;
@@ -34,12 +27,11 @@ export class CustomerComponent implements OnInit, OnDestroy {
     nameSearchValue: string = '';
     emailSearchValue: string = '';
     phoneSearchValue: string = '';
-    genderSearchValue: string = '';
+    usernameSearchValue: string = '';
 
-    sortValue = {
-        name: null,
-        price: null
-    };
+    sortKey: string = '';
+    sortValue: string = '';
+
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
     loading: boolean = false;
@@ -48,7 +40,9 @@ export class CustomerComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private uiService: UIService,
         private authService: AuthService
-    ) {}
+    ) {
+    }
+
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
@@ -60,13 +54,25 @@ export class CustomerComponent implements OnInit, OnDestroy {
             }
         );
     }
+
+    ngOnDestroy(): void {
+        this.currentWarehouseSubscriprtion
+            ? this.currentWarehouseSubscriprtion.unsubscribe()
+            : '';
+    }
+
     //Event method for deleting customer
     deleteConfirm(id) {
-        this.userService.delete(id).subscribe(result => {});
+        this.userService.delete(id).subscribe(result => {
+        });
     }
+
     //Event method for getting all the data for the page
-    getPageData() {
-        this.loading = true;
+    getPageData(event?: any) {
+        if (event) {
+            this.page = event;
+        }
+        this._isSpinning = true;
         this.userService.getAllCustomer(
             this.page,
             this.currentWarehouseId,
@@ -74,25 +80,23 @@ export class CustomerComponent implements OnInit, OnDestroy {
             this.emailSearchValue || '',
             this.nameSearchValue || '',
             this.phoneSearchValue || '',
-            this.genderSearchValue || '',
-            this.categoryId ? this.categoryId : '',
-            this.subcategoryId ? this.subcategoryId : '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price)
+            this.usernameSearchValue || '',
+            this.sortKey,
+            this.filterTerm(this.sortValue)
         )
             .subscribe(
                 result => {
-                    this.loading = false;
                     this.data = result.data;
+                    console.log(result.data);
                     this.total = result.total;
                     this._isSpinning = false;
                 },
                 error => {
                     this._isSpinning = false;
-                    this.loading = false;
                 }
             );
     }
+
     //Event method for getting all the data for the page
     private filterTerm(sortValue: string): string {
         switch (sortValue) {
@@ -104,12 +108,15 @@ export class CustomerComponent implements OnInit, OnDestroy {
                 return '';
         }
     }
+
     //Event method for setting up filter data
     sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sort.key] = sort.value;
+        this.sortKey = sort.key;
+        this.sortValue = sort.value;
         this.getPageData();
     }
+
     //Event method for resetting all filters
     resetAllFilter() {
         this.limit = 5;
@@ -117,16 +124,15 @@ export class CustomerComponent implements OnInit, OnDestroy {
         this.nameSearchValue = '';
         this.emailSearchValue = '';
         this.phoneSearchValue = '';
-        this.genderSearchValue = null;
-        this.sortValue = {
-            name: null,
-            price: null
-        };
+        this.usernameSearchValue = null;
+        this.sortKey = "";
+        this.sortValue = "";
         this.categoryId = null;
         this.subcategoryId = null;
         this.subcategorySearchOptions = [];
         this.getPageData();
     }
+
     //Event method for pagination change
     changePage(page: number, limit: number) {
         this.page = page;
@@ -134,11 +140,13 @@ export class CustomerComponent implements OnInit, OnDestroy {
         this.getPageData();
         return false;
     }
+
     //Method for subcategory id change
     subcategoryIdChange($event) {
         this.page = 1;
         this.getPageData();
     }
 
-    subcategoryIdSearchChange($event) {}
+    subcategoryIdSearchChange($event) {
+    }
 }

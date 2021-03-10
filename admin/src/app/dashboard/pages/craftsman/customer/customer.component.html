@@ -1,16 +1,19 @@
 <section>
-    <nz-card class="card-height" nzTitle="Buyer List" [nzExtra]="extraTemplate">
+    <nz-card class="card-height" nzTitle="Customer List" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
             <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
+            <div class="pull-right col-md-6">
+                <button (click)="resetAllFilter()" nz-button>Clear filter</button>
+            </div>
         </ng-template>
         <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable
-                          (nzPageIndexChange)="getPageData()"
+                          (nzPageIndexChange)="getPageData($event)"
                           [(nzPageIndex)]="page"
                           [(nzPageSize)]="limit"
                           [nzData]="data"
@@ -24,7 +27,7 @@
                         <th>
                             <span> Picture </span>
                         </th>
-                        <th>
+                        <th nzShowSort nzSortKey="username">
                             <span> UserName </span>
                         </th>
                         <th>
@@ -34,7 +37,7 @@
                             <span>Name</span>
                         </th>
 
-                        <th>
+                        <th nzShowSort nzSortKey="phone">
                             <span> Phone Number </span>
                         </th>
 
@@ -42,32 +45,28 @@
                             <span> Location </span>
                         </th>
                         <th>
-
                         </th>
                     </tr>
-                    </thead>
-                    <thead>
-                    <!--search bar.....................-->
                     <tr>
                         <th>
 
                         </th>
                         <th>
-
+                            <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="usernameSearchValue" nz-input
+                                   placeholder="Username">
 
                         </th>
                         <th>
                             <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="emailSearchValue" nz-input
-                                   placeholder="Email Search">
+                                   placeholder="Email">
                         </th>
                         <th>
                             <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="nameSearchValue" nz-input
-                                   placeholder="Name Search">
-
+                                   placeholder="Name">
                         </th>
                         <th>
                             <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="phoneSearchValue" nz-input
-                                   placeholder="Phone Number Search">
+                                   placeholder="Phone">
                         </th>
                         <th>
                         </th>
@@ -78,24 +77,29 @@
                     <tbody>
                     <tr *ngFor="let data of nzTable.data">
                         <td>
-                            <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
-                                       [nzSrc]="IMAGE_ENDPOINT + data.avatar"></nz-avatar>
+                            <ng-container *ngIf="data.customer_avatar; else noAvatar">
+                                <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                           [nzSrc]="IMAGE_ENDPOINT + data.customer_avatar"></nz-avatar>
+                            </ng-container>
+                            <ng-template #noAvatar>
+                                <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                           [nzSrc]="'./assets/images/default-avatar.jpg'"></nz-avatar>
+                            </ng-template>
                         </td>
-                        <td>{{data.username}}
+                        <td>
+                            {{data.username}}
                         </td>
                         <td>
                             <nz-tag>{{data.email}}</nz-tag>
                         </td>
                         <td>
-                            <nz-tag>{{data.first_name}} {{data.last_name}}</nz-tag>
+                            <nz-tag>{{data.customer_name}}</nz-tag>
                         </td>
-
                         <td>
                             {{data.phone}}
                         </td>
-
                         <td>
-                            {{data.upazila_id?.name}}, {{data.zila_id?.name}}, {{data.division_id?.name}}
+                            {{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}
                         </td>
                         <td>
                             <button *ngIf="'craftsman-read'|accessControl"
@@ -124,13 +128,6 @@
                     </tbody>
                 </nz-table>
             </nz-spin>
-            <div class="row">
-                <div class="col-md-offset-5" style="margin-top: 10px">
-                    <div class="pull-right col-md-6">
-                        <button (click)="resetAllFilter()" nz-button>Clear filter</button>
-                    </div>
-                </div>
-            </div>
         </ng-container>
     </nz-card>
 </section>
