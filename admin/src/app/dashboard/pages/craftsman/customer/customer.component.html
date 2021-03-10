@@ -1,16 +1,13 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Buyer List
-        </ng-template>
-        <ng-template #extra>
+    <nz-card class="card-height" nzTitle="Buyer List" [nzExtra]="extraTemplate">
+        <ng-template #extraTemplate>
             <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
         </ng-template>
-        <ng-template #body>
+        <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable
                           (nzPageIndexChange)="getPageData()"
@@ -129,18 +126,11 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span class="col-md-6" nz-table-title>
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
-                                       (nzPageSizeChange)="changePage(1,$event)"
-                                       [nzPageIndex]="page" [nzPageSize]="limit" [nzTotal]="total" nzShowSizeChanger
-                                       nzShowTotal>
-                        </nz-pagination>
-                    </span>
-                    <div class="pull-right col-md-6" nz-table-title>
+                    <div class="pull-right col-md-6">
                         <button (click)="resetAllFilter()" nz-button>Clear filter</button>
                     </div>
                 </div>
             </div>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>

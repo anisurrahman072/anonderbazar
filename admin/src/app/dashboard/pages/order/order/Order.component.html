@@ -1,8 +1,5 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Order list
-        </ng-template>
+    <nz-card class="card-height" nzTitle="Order list" [nzExtra]="extra">
         <ng-template #extra>
             <button nz-button [nzType]="'primary'"
                     [nzSize]="'large'" (click)='showProductModal()'>
@@ -10,12 +7,12 @@
             </button>
         </ng-template>
 
-        [nzLoading]="_isSpinning" [nzShowSizeChanger]="true"
-        [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
-        [nzTotal]="orderCsvTotal"
-        (nzPageIndexChange)="getData(true)"
-        (nzPageSizeChange)="csvPage = 1; getData(true)"
-        <ng-template #body>
+<!--        [nzLoading]="_isSpinning" [nzShowSizeChanger]="true"-->
+<!--        [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"-->
+<!--        [nzTotal]="orderCsvTotal"-->
+<!--        (nzPageIndexChange)="getData(true)"-->
+<!--        (nzPageSizeChange)="csvPage = 1; getData(true)"-->
+        <ng-container>
 
                 <nz-table #nzTable [nzTotal]="orderTotal" [nzData]="orderData" [nzShowSizeChanger]="true"  [nzLoading]="_isSpinning"
                           [nzFrontPagination]="false" [nzPageSize]="orderLimit"  [(nzPageIndex)]="orderPage" [nzHideOnSinglePage]="true"
@@ -122,7 +119,7 @@
                     </span>
                 </div>
             </div>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>
 
@@ -135,7 +132,7 @@
           (nzOnCancel)="handleCancel($event)"
           (nzOnOk)="handleOk($event)"
 >
-    <ng-template #modalProductContent>
+    <ng-container #modalProductContent>
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="submitForm($event, validateProductForm.value)">
 
@@ -202,5 +199,5 @@
                 </div>
             </div>
         </form>
-    </ng-template>
+    </ng-container>
 </nz-modal>

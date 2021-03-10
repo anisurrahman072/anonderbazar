@@ -1,10 +1,7 @@
 <nz-spin [nzSpinning]="_isSpinning">
-    <nz-card>
-        <ng-template>
-            Add Brand
-        </ng-template>
-        <ng-template [ngIf] = "'brand-read'|accessControl">
-            <button  routerLink="/dashboard/brand" nz-button
+    <nz-card nzTitle="Add Brand" [nzExtra]="extraTemplate">
+        <ng-template #extraTemplate>
+            <button *ngIf = "'brand-read'|accessControl" routerLink="/dashboard/brand" nz-button
                     [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
