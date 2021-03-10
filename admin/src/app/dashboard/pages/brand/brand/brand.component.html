@@ -11,7 +11,7 @@
                   [nzFrontPagination]="false"
                   [nzShowPagination]="true"
                   [nzData]="data"
-                  [nzLoading]="loading"
+                  [nzLoading]="_isSpinning"
                   [nzTotal]="total"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
@@ -93,6 +93,5 @@
             </tr>
             </tbody>
         </nz-table>
-
     </nz-card>
 </section>
