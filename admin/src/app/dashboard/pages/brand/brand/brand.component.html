@@ -46,7 +46,7 @@
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
                 <td>
-                    <ng-container *ngIf="data.customer_avatar; else noImage">
+                    <ng-container *ngIf="data.image; else noImage">
                     <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
                                [nzIcon]="'user'"></nz-avatar>
                     </ng-container>
