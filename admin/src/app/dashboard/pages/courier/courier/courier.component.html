@@ -1,14 +1,11 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Courier Company List
-        </ng-template>
+    <nz-card class="card-height" nzTitle="Courier Company List" [nzExtra]="extra">
         <ng-template #extra>
             <button (click)="showModal()" *ngIf="'courier-list'|accessControl" [nzSize]="'large'" nz-button>
                 <i class="anticon anticon-download"><span> Add New </span></i>
             </button>
         </ng-template>
-        <ng-template #body>
+        <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations">
                 </div>
@@ -68,7 +65,7 @@
                     </tbody>
                 </nz-table>
             </nz-spin>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>
 
