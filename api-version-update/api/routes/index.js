@@ -18,6 +18,7 @@ const {favouriteproductRoute} = require('./favouriteProduct');
 const {userRoutes} = require('./user');
 const {brandRoute} = require('./brands');
 const {orderRoutes}=require('./orders');
+const {courierPricesRoute}=require('./courierprices');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -39,5 +40,6 @@ exports.allRouter = {
   ...userRoutes,
   ...eventsRoutes,
   ...brandRoute,
-  ...orderRoutes
+  ...orderRoutes,
+  ...courierPricesRoute
 };
