@@ -49,7 +49,7 @@ export class SuborderService {
         warehouseId: string,
         status: number,
         date: string,
-        sortPrice: String
+        sortPrice: string
     ): Observable<any> {
         return this.http.get(
             `${this.EndPoint +
@@ -62,68 +62,40 @@ export class SuborderService {
         page: number,
         limit: number,
         suborderNumberSearchValue: number,
-        orderNumberSearchValue: string,
         suborderIdValue: string,
         quantitySearchValue: string,
         totalPriceSearchValue: string,
         dateSearchValue: any,
         statusSearchValue: string,
-        categoryId: number,
-        subcategoryId: number,
-        sortName: string,
-        sortPrice: String
+        sortKey: string,
+        sortValue: string
     ): Observable<any> {
         return this.http.get(
             `${
                 this.EndPoint2
-            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&orderNumberSearchValue=${orderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&category_id=${categoryId}&subcategory_id=${subcategoryId}&sortName=${sortName}&sortPrice=${sortPrice}`
+            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
     }
 
-    getAllsuborderForCsv(
-        warehouseId: number,
-        page: number,
-        limit: number,
-        suborderNumberSearchValue: number,
-        orderNumberSearchValue: string,
-        suborderIdValue: string,
-        quantitySearchValue: string,
-        totalPriceSearchValue: string,
-        dateSearchValue: any,
-        statusSearchValue: string,
-        categoryId: number,
-        subcategoryId: number,
-        sortName: string,
-        sortPrice: String
-    ): Observable<any> {
-        return this.http.get(
-            `${
-                this.EndPoint2
-            }/forCsv?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&orderNumberSearchValue=${orderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&category_id=${categoryId}&subcategory_id=${subcategoryId}&sortName=${sortName}&sortPrice=${sortPrice}`
-        );
-    }
 
     getAllSuborderWithPR(
         warehouseId: number,
         page: number,
         limit: number,
         suborderNumberSearchValue: number,
-        orderNumberSearchValue: string,
         suborderIdValue: string,
         quantitySearchValue: string,
         totalPriceSearchValue: string,
         dateSearchValue: any,
         statusSearchValue: string,
-        categoryId: number,
-        subcategoryId: number,
-        sortName: string,
-        sortPrice: String
+        sortKey: string,
+        sortValue: string
     ): Observable<any> {
 
         return this.http.get(
             `${
                 this.EndPoint2
-            }/forCsv?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&orderNumberSearchValue=${orderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&category_id=${categoryId}&subcategory_id=${subcategoryId}&sortName=${sortName}&sortPrice=${sortPrice}`
+            }/forCsv?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
 
     }

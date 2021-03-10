@@ -29,26 +29,13 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export class SuborderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
 
-    basicDemoValue = '2017-01-01';
-    modelValueAsDate: Date = new Date();
-    dateTimeValue: Date = new Date();
-    multiDates: Date[] = [new Date(), (new Date() as any)['fp_incr'](10)];
-    rangeValue: { from: Date; to: Date } = {
-        from: new Date(),
-        to: (new Date() as any)['fp_incr'](10)
-    };
-    inlineDatePicker: Date = new Date();
-
-
     data = [];
     dataPR = [];
     _isSpinning = true;
     _isSpinningCsv = true;
     _isSpinningPr = true;
     currentUser: any;
-    selectedOption: any[] = [];
-    viewNotRendered: boolean = true;
-
+    private viewNotRendered: boolean = true;
 
     limit: number = 10;
     page: number = 1;
@@ -64,45 +51,34 @@ export class SuborderComponent implements OnInit {
     totalPr: number;
     pageAllCheckedStatusPr: any = {};
 
-    nameSearchValue: string = '';
-
-    sortValue = {
-        name: null,
-        price: null,
-    };
-    categoryId: any = null;
-    subcategoryId: any = null;
-
-    subcategorySearchOptions: any;
-    categorySearchOptions: any[] = [];
+    private sortKey: string = '';
+    private sortValue: string = '';
 
     suborderNumberSearchValue: any = '';
-    orderNumberSearchValue: string = '';
+
     suborderIdValue: string = '';
     quantitySearchValue: string = '';
     totalPriceSearchValue: string = '';
     dateSearchValue: any;
-    dateSearchValue1: any;
+
     statusSearchValue: string = '';
     statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
     statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
-    _dateRange: any;
+
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
     isProductVisible = false;
     validateProductForm: FormGroup;
     allOders: any = [];
-    products = [];
-    addNew: boolean;
-    currentProduct: any = {};
+
     storeOrderIds: any = [];
 
     isProductVisiblePR = false;
     validateFormPR: FormGroup;
     storeOrderIdsPR: any = [];
     warehouse: any;
-    isCsvCheckedStatus: any = {};
+
     loading: boolean = false;
 
 
@@ -116,9 +92,16 @@ export class SuborderComponent implements OnInit {
                 private uiService: UIService,
                 private authService: AuthService) {
 
+        this.options = GLOBAL_CONFIGS.SUB_ORDER_STATUSES;
+    }
+
+    // init the component
+    ngOnInit(): void {
+
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
+
         this.validateFormPR = this.fb.group({
             productCheckedPR: ['', []],
             total_order: ['', []],
@@ -132,27 +115,8 @@ export class SuborderComponent implements OnInit {
             pickup_rider_name: ['', []],
             pickup_rider_contact_number: ['', []],
         });
-    }
 
-    // init the component
-    ngOnInit(): void {
 
-        this.options = [
-            {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
-            {value: 13, label: 'Confirmed', icon: 'anticon-spin anticon-loading'},
-            {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
-            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
-            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
-            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
-            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
-            {value: 7, label: 'Landed', icon: 'anticon-spin anticon-loading'},
-            {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
-            {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
-            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
-            {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
-            {value: 12, label: 'Canceled', icon: 'anticon-close-circle'},
-
-        ];
         this.currentUser = this.authService.getCurrentUser();
 
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
@@ -175,16 +139,13 @@ export class SuborderComponent implements OnInit {
             this.page,
             this.limit,
             this.suborderNumberSearchValue || '',
-            this.orderNumberSearchValue || '',
             this.suborderIdValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
             this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
             this.statusSearchValue || '',
-            this.categoryId || '',
-            this.subcategoryId || '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price))
+            this.sortKey,
+            this.filterTerm(this.sortValue))
             .subscribe(result => {
                     this.loading = false;
                     this.data = result.data;
@@ -210,19 +171,16 @@ export class SuborderComponent implements OnInit {
             this.pageCsv,
             this.limitCsv,
             this.suborderNumberSearchValue || '',
-            this.orderNumberSearchValue || '',
             this.suborderIdValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
             this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
             this.statusSearchValue || '',
-            this.categoryId || '',
-            this.subcategoryId || '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price))
+            this.sortKey,
+            this.filterTerm(this.sortValue))
             .subscribe(result => {
 
-                    console.log('showProductModal', result);
+                    console.log('csv showProductModal', result);
 
                     this.totalCsv = result.total;
                     this.allOders = result.data;
@@ -266,16 +224,14 @@ export class SuborderComponent implements OnInit {
             this.pagePr,
             this.limitPr,
             this.suborderNumberSearchValue || '',
-            this.orderNumberSearchValue || '',
             this.suborderIdValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
             this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
             this.statusSearchValue || '',
-            this.categoryId || '',
-            this.subcategoryId || '',
-            this.filterTerm(this.sortValue.name),
-            this.filterTerm(this.sortValue.price))
+            this.sortKey,
+            this.filterTerm(this.sortValue)
+        )
             .subscribe(result => {
 
                     console.log('getAllSuborderWithPR', result)
@@ -308,7 +264,6 @@ export class SuborderComponent implements OnInit {
     };
 
     //Event method for resetting all filters
-
     selectAllCsv($event) {
 
         const isChecked = !!$event.target.checked;
@@ -388,9 +343,10 @@ export class SuborderComponent implements OnInit {
     };
 
     //Event method for setting up filter data
-    sort(sortName, sortValue) {
+    sort(sort: { key: string, value: string }) {
         this.page = 1;
-        this.sortValue[sortName] = sortValue;
+        this.sortKey = sort.key;
+        this.sortValue = sort.value;
         this.getPageData()
     }
 
@@ -403,36 +359,20 @@ export class SuborderComponent implements OnInit {
         return false;
     }
 
-    changePageCsv(page: number, limit: number) {
+    changePageCsv(page: number) {
 
         this.pageCsv = page;
-        this.limitCsv = limit;
-
         this.showProductModal();
         return false;
     }
 
-    changePagePr(page: number, limit: number) {
+    changePagePr(page: number) {
         this.pagePr = page;
-        this.limitPr = limit;
-
         this.showPRModal();
         return false;
     }
 
-
-    categoryIdChange($event) {
-        this.page = 1;
-        const query = encodeURI($event);
-
-        this.subcategorySearchOptions = [];
-        this.subcategoryId = null;
-        this.getPageData();
-    }
-
     //Method for download csv
-
-
     changeStatusConfirm($event, id, oldStatus) {
 
         this.suborderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
@@ -460,7 +400,6 @@ export class SuborderComponent implements OnInit {
 
     setStatus(index, status) {
         if (!this.viewNotRendered) return;
-        this.selectedOption[index] = status;
     }
 
     ngAfterViewInit() {
@@ -483,13 +422,42 @@ export class SuborderComponent implements OnInit {
 
     }
 
-    daterange1Change() {
-        console.log('called');
+    getStatusLabel(statusCode) {
 
-        if (this.dateSearchValue1.from && this.dateSearchValue1.to) {
-            this.page = 1;
-            this.allOders = this.getPageData();
+        if (typeof this.statusOptions[statusCode] !== 'undefined') {
+            return this.statusOptions[statusCode];
         }
+        return 'Unrecognized Status';
+    }
+
+    //Event method for setting up form in validation
+    getFormControl(name) {
+        return this.validateFormPR.controls[name];
+    }
+
+    //Event method for setting up filter data
+    private filterTerm(sortValue: string): string {
+
+        switch (sortValue) {
+            case ('ascend'):
+                return 'ASC';
+            case ('descend'):
+                return 'DESC';
+            default:
+                return '';
+        }
+    }
+
+
+    resetAllFilter() {
+        this.limit = 5;
+        this.page = 1;
+        this.dateSearchValue = '';
+
+        this.sortValue = '';
+        this.sortKey = '';
+        this.getPageData();
+
     }
 
     handleOk = e => {
@@ -578,7 +546,7 @@ export class SuborderComponent implements OnInit {
                 return [p.SL, p.Vendor, p.Title, p.SKU, p.Size, p.Count, p.Rate, (p.Amount).toFixed(2)];
             });
 
-            console.log('pdfDataFormattedMine',pdfDataMine, pdfDataFormattedMine)
+            console.log('pdfDataFormattedMine', pdfDataMine, pdfDataFormattedMine)
 
             forkJoin(allApiCalls).subscribe((res) => {
 
@@ -600,8 +568,8 @@ export class SuborderComponent implements OnInit {
                                 widths: ['auto', 'auto'],
                                 body: [
                                     ['Total Orders', value.total_order ? value.total_order : ''],
-                                    ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name :''],
-                                    ['Seller Name', value.seller_name ? value.seller_name : '' ],
+                                    ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name : ''],
+                                    ['Seller Name', value.seller_name ? value.seller_name : ''],
                                     ['Seller Phone', value.seller_phone ? value.seller_phone : ''],
                                     ['Seller Address', value.seller_address ? value.seller_address : ''],
                                     ['Seller Address', value.k_a_m ? value.k_a_m : ''],
@@ -670,6 +638,8 @@ export class SuborderComponent implements OnInit {
     dowonloadCSV(data) {
 
         let csvData = [];
+
+        console.log('data',data);
 
         data.forEach(suborder => {
             suborder.items.forEach(item => {
@@ -744,59 +714,5 @@ export class SuborderComponent implements OnInit {
         this.exportService.downloadFile(csvData, header);
     }
 
-    getStatusLabel(statusCode) {
-
-        if (typeof this.statusOptions[statusCode] !== 'undefined') {
-            return this.statusOptions[statusCode];
-        }
-        return 'Unrecognized Status';
-    }
-
-    //Event method for setting up form in validation
-    getFormControl(name) {
-        return this.validateFormPR.controls[name];
-    }
-
-    //Event method for setting up filter data
-    private filterTerm(sortValue: string): string {
-
-        switch (sortValue) {
-            case ('ascend'):
-                return 'ASC';
-            case ('descend'):
-                return 'DESC';
-            default:
-                return '';
-        }
-    }
-
-    categoryIdSearchChange($event) {
-
-    }
-
-    subcategoryIdChange($event) {
-        this.page = 1;
-        this.getPageData();
-
-    }
-
-    subcategoryIdSearchChange($event) {
-
-    }
-    resetAllFilter() {
-        this.limit = 5;
-        this.page = 1;
-        this.dateSearchValue = '';
-        this.nameSearchValue = '';
-        this.sortValue = {
-            name: null,
-            price: null
-        };
-        this.categoryId = null;
-        this.subcategoryId = null;
-        this.subcategorySearchOptions = [];
-        this.getPageData();
-
-    }
 
 }
