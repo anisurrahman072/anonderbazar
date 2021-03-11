@@ -3,7 +3,7 @@
         <ng-template #extra>
             <nz-button-group>
                 <button nz-button
-                         (click)='showProductModal()' *ngIf="currentUser.group_id === 'admin'">
+                         (click)='showCsvModal()' *ngIf="currentUser.group_id === 'admin'">
                     <i class="anticon anticon-download"></i><span> Download CSV </span>
                 </button>
                 <button nz-button
@@ -173,7 +173,7 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="submitForm($event,validateProductForm.value)">
             <nz-spin [nzSpinning]="_isSpinningCsv">
-                <nz-table #nzTableCsv [nzBordered]="true" [nzData]="allOders"
+                <nz-table #nzTableCsv [nzBordered]="true" [nzData]="subOrdersForCsv"
                           [nzFrontPagination]="false"
                           [nzLoading]="_isSpinningCsv"
                           [nzTotal]="totalCsv"
@@ -214,7 +214,7 @@
                     <tbody>
                     <tr *ngFor="let datum of nzTableCsv.data;let i=index;">
                         <td>
-                            <input type="checkbox" id="{{'order_'+datum.id}}" (change)="_refreshStatus($event, datum)"
+                            <input type="checkbox" id="{{'order_'+datum.id}}" (change)="_refreshStatus($event, datum.id)"
                                    [checked]="datum.checked">
                         </td>
                         <td>{{datum.product_order_id}} / {{datum.id}}</td>
