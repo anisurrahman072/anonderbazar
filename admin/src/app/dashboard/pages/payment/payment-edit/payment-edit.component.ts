@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -35,7 +35,9 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     paymentTypeOptions = [
         {label: 'Cash', value: 'cash'},
         {label: 'Card Payment', value: 'card_payment'},
-        {label: 'Direct Bank Transfer', value: 'direct_bank_transfer'},
+        {label: 'SSL Commerz', value: 'SSLCommerce'},
+        {label: 'BKash', value: 'BKash'},
+        {label: 'Nagad', value: 'Nagad'},
     ];
     order_id: any;
     suborder_id: any;
@@ -61,16 +63,29 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
             payment_date: ['', [Validators.required]],
         });
 
-        this.orderService.getAll().subscribe(result => {
+/*        this.orderService.getAll().subscribe(result => {
             this.orderSearchOptions = result;
-        });
+        });*/
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
-            this.paymentService.getById(this.id)
+            this.paymentService.getByIdNoPop(this.id)
                 .subscribe(result => {
                     this.data = result;
-                    this.validateForm.patchValue(this.data);
-                    this.order_id = this.data.order_id.id;
+                    console.log('payment', this.data);
+
+                    this.validateForm.patchValue({
+                        order_id: this.data.suborder_id,
+                        suborder_id: this.data.suborder_id,
+                        payment_type: this.data.payment_type,
+                        payment_amount: this.data.payment_amount,
+                        status: this.data.status,
+                        receiver_id: this.data.receiver_id ? this.data.receiver_id.id : '',
+                        user_id: this.data.user_id.id,
+                        payment_date: this.data.payment_date,
+                    });
+
+                    this.order_id = this.data.order_id;
+                    console.log(' this.order_id' ,  this.order_id);
                     this.customer = this.data.user_id;
                     this.currentUser = this.data.receiver_id;
                 });
@@ -113,18 +128,23 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     }
 
     orderChange($event) {
-        const query = encodeURI($event);
-        this.suborder_id = null;
-        this.suborderService.getAllByOrderId(query).subscribe(result => {
-            this.suborderSearchOptions = result;
-            const d = this.suborderSearchOptions.filter(c => c.id === this.data.suborder_id.id);
+        console.log('orderchange', $event);
 
-            if (d[0]) {
-                this.suborder_id = d[0].id;
-            } else {
-                this.suborder_id = null;
-            }
-        });
+        if($event){
+            const query = encodeURI($event);
+            this.suborder_id = null;
+            this.suborderService.getAllByOrderId(query).subscribe(result => {
+                this.suborderSearchOptions = result;
+                const d = this.suborderSearchOptions.filter(c => c.id === this.data.suborder_id.id);
+
+                if (d[0]) {
+                    this.suborder_id = d[0].id;
+                } else {
+                    this.suborder_id = null;
+                }
+            });
+        }
+
     }
 
 

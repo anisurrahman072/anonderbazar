@@ -36,7 +36,6 @@ module.exports = {
           products.price as price,
           products.code as product_code,
           p_order.ssl_transaction_id,
-          suborder_item.warehouse_id,
           suborder_item.product_quantity,
           suborder_item.product_total_price,
           suborder_item.status,
