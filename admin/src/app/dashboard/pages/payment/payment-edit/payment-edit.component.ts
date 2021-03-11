@@ -6,6 +6,11 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {PaymentService} from "../../../../services/payment.service";
 import {SuborderService} from "../../../../services/suborder.service";
 import {OrderService} from "../../../../services/order.service";
+import * as _moment from 'moment';
+import {default as _rollupMoment} from 'moment';
+
+const moment = _rollupMoment || _moment;
+
 
 @Component({
     selector: 'app-payment-edit',
@@ -80,8 +85,10 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
         }
 
         value.user_id = this.customer.id;
-        value.receiver_id = this.currentUser.id;
+        value.receiver_id = this.currentUser;
+
         let paymentInsertPayload = value;
+        paymentInsertPayload.payment_date = moment(paymentInsertPayload.payment_date ).format('YYYY-MM-DD HH:mm:ss');
 
 
         this.paymentService.insert(paymentInsertPayload)

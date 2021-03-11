@@ -7,12 +7,12 @@
     </ng-template>
     <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-        <div    nz-row>
-            <div    nz-col [nzSpan]="7">
-                <label required> Name </label>
+        <div nz-row>
+            <div nz-col [nzSpan]="7">
+                <label> Name </label>
             </div>
             <div nz-col [nzSpan]="12">
-                <input nz-input  formControlName="name"  [placeholder]="'Enter Name'" [nzSize]="'large'">
+                <input nz-input formControlName="name" [placeholder]="'Enter Name'" [nzSize]="'large'" [required]="true">
 
                 <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                     Name is required!
@@ -24,13 +24,13 @@
                     Validating...
                 </div>
             </div>
-        </div>
+        </div>&nbsp;
 
-        <div    nz-row>
-            <div nz-col [nzSpan]="7"   >
+        <div nz-row>
+            <div nz-col [nzSpan]="7">
                 <label> Price Variation Status </label>
             </div>
-            <div nz-col [nzSpan]="12"      >
+            <div nz-col [nzSpan]="12">
 
                 <nz-select
                         formControlName="type"
@@ -49,14 +49,14 @@
                     Please write something here!
                 </div>
             </div>
-        </div><!--type-->
+        </div><!--type-->&nbsp;
 
 
-        <div    nz-row>
-            <div nz-col [nzOffset]="7" [nzSpan]="12"   >
+        <div nz-row>
+            <div nz-col [nzOffset]="7" [nzSpan]="12">
                 <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid"> Save
-                </button>
-                <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+                </button>&nbsp;
+                <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
             </div>
         </div>
     </form>

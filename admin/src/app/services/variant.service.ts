@@ -41,7 +41,7 @@ export class VariantService {
             }?page=${page
             }&limit=${limit
             }&searchTermName=${searchTermName
-            }&sortKey=${sortKey}
+            }&sortKey=${sortKey
             }&sortValue=${sortValue}`
         )
     }
