@@ -1,9 +1,6 @@
 <section class="invoice">
     <nz-spin [nzSpinning]="_isSpinning">
-        <nz-card>
-            <ng-template #title>
-                INVOICE
-            </ng-template>
+        <nz-card nzTitle="INVOICE" [nzExtra]="extra">
             <ng-template #extra>
                 <button nz-button [nzType]="'primary'"
                         [nzSize]="'large'" (click)="getPDF()">
@@ -20,7 +17,7 @@
                 </button>
             </ng-template>
 
-            <ng-template #body *ngIf="data && order">
+            <ng-template [ngIf]="data && order">
                 <div id="print-section">
                     <div class="row">
                         <div class="col-md-6">

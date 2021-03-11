@@ -33,62 +33,62 @@
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
-                <th nzWidth="150px" nzShowSort nzSortKey="updatedAt">
+                <th nzShowSort nzSortKey="updatedAt" style="text-align: center">
                     <span>Last Updated</span>
                 </th>
-                <th nzWidth="250px" nzShowSort nzSortKey="code">
+                <th nzShowSort nzSortKey="code" style="text-align: center">
                     <span>Code</span>
                 </th>
-                <th nzWidth="300px" nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span> Name </span>
                 </th>
-                <th nzWidth="50px" nzShowSort nzSortKey="price">
+                <th nzShowSort nzSortKey="price" style="text-align: center">
                     <span> Price </span>
                 </th>
-                <th nzWidth="5px" nzShowSort nzSortKey="quantity">
+                <th nzShowSort nzSortKey="quantity" style="text-align: center">
                     <span> Quantity </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> Approved ? </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> Type </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> Category </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> S-category </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> Brand </span>
                 </th>
-                <th nzWidth="100px">
+                <th style="text-align: center">
                     <span> Image </span>
                 </th>
-                <th nzWidth="200px">
+                <th style="text-align: center">
                     <span> Action </span>
                 </th>
             </tr>
             <tr>
                 <th>&nbsp;</th>
                 <th>
-                    <input nz-input style="width: 50px;" placeholder="Code"
+                    <input nz-input style="width: 250px;" placeholder="Code"
                            [(ngModel)]="codeSearchValue"
                            (ngModelChange)="onSearchChange($event, 'codeSearchValue')">
                 </th>
                 <th>
-                    <input nz-input style="width: 150px;" placeholder="Name"
+                    <input nz-input style="width: 300px;" placeholder="Name"
                            [(ngModel)]="nameSearchValue"
                            (ngModelChange)="onSearchChange($event, 'nameSearchValue')">
                 </th>
                 <th>
-                    <input nz-input style="width: 60px;" placeholder="Price"
+                    <input nz-input style="width: 100px;" placeholder="Price"
                            [(ngModel)]="priceSearchValue"
                            (ngModelChange)="onSearchChange($event, 'priceSearchValue')">
                 </th>
                 <th>
-                    <input nz-input style="width: 60px;" placeholder="Quantity"
+                    <input nz-input style="width: 100px;" placeholder="Quantity"
                            [(ngModel)]="qtySearchValue"
                            (ngModelChange)="onSearchChange($event, 'qtySearchValue')">
                 </th>
@@ -145,8 +145,8 @@
                         </nz-option>
                     </nz-select>
                 </th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
+                <th nzWidth="100px">&nbsp;</th>
+                <th nzWidth="200px">&nbsp;</th>
             </tr>
             </thead>
 
@@ -154,42 +154,42 @@
 
             <tr *ngFor="let data of nzTable.data">
 
-                <td>
-                    <span>{{data.updatedAt|date:'dd/MM/yyyy hh:mm a'}}</span>
+                <td style="width: 136px">
+                    {{data.updatedAt|date:'dd/MM/yyyy hh:mm a'}}
                 </td>
-                <td>
+                <td style="text-align: center; width: 295px">
                     <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.code}}</a>
                 </td>
-                <td>
+                <td style="text-align: center; width: 347px">
                     <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</a>
                 </td>
-                <td>
+                <td style="text-align: center; width: 137px">
                     <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
                     <nz-tag *ngIf="data.promotion == 1">
                         <del style="color: red">{{data.price}}</del>
                         {{data.promo_price}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center; width: 137.5px">
                     <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
                         {{data.quantity}}
                     </nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center; width: 139px">
                     <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center; width: 138px">
                     <span>{{data.type_name}}</span>
                 </td>
-                <td>
+                <td style="text-align: center; width: 138px">
                     <span>{{data.category_name}}</span>
                 </td>
-                <td>
+                <td style="text-align: center; width: 139px">
                     <span> {{data.subcategory_name}}</span>
                 </td>
-                <td>
+                <td style="text-align: center; width: 139px">
                     <span>{{data.brand_name}}</span>
                 </td>
-                <td>
+                <td style="text-align: center; width: 75px">
                     <ng-container *ngIf="data.image; else noImage">
                         <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
                                    [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
@@ -199,7 +199,7 @@
                         <nz-tag>No Image</nz-tag>
                     </ng-template>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-button-group>
                         <button *ngIf="'product-read'|accessControl"
                                 [routerLink]="['/dashboard/product/details/', data.id]"
