@@ -28,6 +28,7 @@ module.exports = {
       let rawSelect = `
       SELECT
           suborder_item.id as id,
+          suborder.warehouse_i as warehouse_id,
           suborder_item.product_suborder_id as suborder_id,
           p_order.id as order_id,
           suborder_item.product_id,
@@ -82,12 +83,14 @@ module.exports = {
       const totalSuborderItemRaw = await SuborderItemQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
       if (totalSuborderItemRaw && totalSuborderItemRaw.rows && totalSuborderItemRaw.rows.length > 0) {
         totalSuborderItems = totalSuborderItemRaw.rows[0].totalCount;
-        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where , []);
+        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where, []);
 
         allSubOrderItems = rawResult.rows;
       }
 
-      let rawSelectStatuses = `
+      let subOrderStatuses = [];
+      if (req.query.withStatuses) {
+        let rawSelectStatuses = `
           SELECT
             st.suborder_id as suborder_id,
             st.status as suborder_status,
@@ -95,17 +98,19 @@ module.exports = {
             CONCAT(changedBy.first_name, ' ', changedBy.last_name) as changed_by_name
       `;
 
-      let fromSQLStatues = ' FROM orders_status as st ';
-      fromSQLStatues += ' LEFT JOIN users as changedBy ON changedBy.id = st.changed_by ';
+        let fromSQLStatues = ' FROM orders_status as st ';
+        fromSQLStatues += ' LEFT JOIN users as changedBy ON changedBy.id = st.changed_by ';
 
-      const rawResultStatuses = await StatusChangeQuery(rawSelectStatuses + fromSQLStatues + _whereStatuses , []);
+        let rawResultStatuses = await StatusChangeQuery(rawSelectStatuses + fromSQLStatues + _whereStatuses, []);
+        subOrderStatuses = rawResultStatuses.rows;
+      }
 
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
         message: 'Get all SubOrderItem Lists with pagination',
         data: allSubOrderItems,
-        subOrderStatuses: rawResultStatuses.rows
+        subOrderStatuses
       });
     } catch (error) {
       console.log(error);
@@ -154,6 +159,7 @@ module.exports = {
           }
         } catch (errorr) {
           console.log(errorr);
+          return res.badRequest('Invalid Data');
         }
       }
       _where += ' GROUP BY coupon.suborder_item_id ORDER BY suborder_item.created_at DESC ';
@@ -208,38 +214,32 @@ module.exports = {
       let _where = ' WHERE suborder.deleted_at IS NULL AND suborder_item.deleted_at IS NULL ';
 
       if (req.query.product_suborder_id) {
-        // _where.product_suborder_id = req.query.product_suborder_id;
         _where += ` AND suborder_item.product_id = ${req.query.product_suborder_id} `;
       }
       if (req.query.product_order_ids) {
-        // _where.product_suborder_id = req.query.product_suborder_id;
         try {
           const orderIds = JSON.parse(req.query.product_order_ids);
           if (Array.isArray(orderIds) && orderIds.length > 0) {
             _where += ` AND suborder.product_order_id IN  (${orderIds.json(',')}) `;
           }
         } catch (errorr) {
-
+          console.log(errorr);
+          return res.badRequest('Invalid Data');
         }
       }
       if (req.query.warehouse_id) {
-        // _where.warehouse_id = req.query.warehouse_id;
         _where += ` AND suborder.warehouse_id = ${req.query.warehouse_id} `;
       }
       if (req.query.product_id) {
-        // _where.product_id = req.query.product_id;
         _where += ` AND suborder_item.product_id = ${req.query.product_id} `;
       }
       if (req.query.product_quantity) {
-        // _where.product_quantity = req.query.product_quantity;
         _where += ` AND suborder_item.product_quantity = ${req.query.product_quantity} `;
       }
       if (req.query.status) {
-        // _suborder_where.status = req.query.status;
         _where += ` AND suborder.status = ${req.query.status} `;
       }
       if (req.query.date) {
-        // _where.date = req.query.date;
         const date = moment(req.query.date).format('YYYY-MM-DD');
         _where += ' AND suborder_item.`date` = "' + date + '" ';
       }

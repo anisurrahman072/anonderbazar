@@ -281,6 +281,7 @@ module.exports = {
           suborder.\`date\`,
           suborder.created_at,
           warehouses.name as warehouse_name,
+          warehouses.phone as warehouse_phone,
           CONCAT(users.first_name, ' ', users.last_name) as changedBy
       `;
 
@@ -293,8 +294,12 @@ module.exports = {
         _where += ` AND suborder.warehouse_id = ${req.query.warehouse_id}`;
       }
 
+      if (req.query.orderNumberSearchValue) {
+        _where += ` AND suborder.product_order_id = '${req.query.orderNumberSearchValue}' `;
+      }
+
       if (req.query.suborderNumberSearchValue) {
-        _where += ` AND suborder.id LIKE '%${req.query.suborderNumberSearchValue}%' `;
+        _where += ` AND suborder.id = '${req.query.suborderNumberSearchValue}' `;
       }
 
       if (req.query.orderNumberSearchValue) {
@@ -336,9 +341,12 @@ module.exports = {
       }
 
       let sort = '';
-      if (req.query.sortName) {
-        // _sort.name = req.query.sortName
-        sort += ' ORDER BY suborder.created_at DESC ';
+      if (req.query.sortKey && req.query.sortValue) {
+        if (req.query.sortKey === 'order_date') {
+          sort += ' ORDER BY suborder.created_at ' + req.query.sortValue;
+        } else {
+          sort += ' ORDER BY suborder.created_at ' + req.query.sortValue;
+        }
       } else {
         sort += ' ORDER BY suborder.created_at DESC ';
       }
@@ -347,6 +355,7 @@ module.exports = {
 
       let totalSuborder = 0;
       let suborders = [];
+
       if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
         totalSuborder = totalSuborderRaw.rows[0].totalCount;
 
@@ -356,9 +365,6 @@ module.exports = {
         const rawResult = await SuborderQuery(rawSelect + fromSQL + _where + sort + limitSQL, []);
 
         suborders = rawResult.rows;
-
-        console.log('totalCount', totalSuborderRaw, totalSuborder);
-
       }
 
       res.status(200).json({

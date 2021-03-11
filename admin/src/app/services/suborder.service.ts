@@ -61,6 +61,7 @@ export class SuborderService {
         warehouseId: number,
         page: number,
         limit: number,
+        orderNumberSearchValue: number,
         suborderNumberSearchValue: number,
         vendorNameValue: string,
         quantitySearchValue: string,
@@ -73,7 +74,7 @@ export class SuborderService {
         return this.http.get(
             `${
                 this.EndPoint2
-            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateRangeValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
+            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&orderNumberSearchValue=${orderNumberSearchValue}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateRangeValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
     }
 
@@ -96,7 +97,7 @@ export class SuborderService {
         return this.http.get(
             `${
                 this.EndPoint2
-            }/forCsv?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
+            }?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
 
     }

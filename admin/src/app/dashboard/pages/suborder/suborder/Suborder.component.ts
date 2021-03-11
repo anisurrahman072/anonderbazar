@@ -87,6 +87,7 @@ export class SuborderComponent implements OnInit {
     totalPr: number;
     pageAllCheckedStatusPr: any = {};
 
+
     private sortKey: string = '';
     private sortValue: string = '';
 
@@ -94,11 +95,11 @@ export class SuborderComponent implements OnInit {
         to: null,
         from: null
     };
+    orderNumberSearchValue: any = '';
     suborderNumberSearchValue: any = '';
     vendorNameValue: string = '';
     quantitySearchValue: string = '';
     totalPriceSearchValue: string = '';
-
 
     statusSearchValue: string = '';
     statusData: any;
@@ -114,10 +115,10 @@ export class SuborderComponent implements OnInit {
     subOrdersForCsv: any = [];
 
     private selectedSubOrderIds: any = [];
-
+    private selectedSubOrderIdsPr: any = [];
     isProductVisiblePR = false;
     validateFormPR: FormGroup;
-    storeOrderIdsPR: any = [];
+
     warehouse: any;
 
     loading: boolean = false;
@@ -167,13 +168,13 @@ export class SuborderComponent implements OnInit {
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
-                this.getPageData();
+                this.getSubOrderData();
             }
         );
     }
 
     //Event method for getting all the data for the page
-    getPageData(event?: any) {
+    getSubOrderData(event?: any) {
         if (event) {
             this.page = event;
         }
@@ -183,6 +184,7 @@ export class SuborderComponent implements OnInit {
             this.currentWarehouseId,
             this.page,
             this.limit,
+            this.orderNumberSearchValue || '',
             this.suborderNumberSearchValue || '',
             this.vendorNameValue || '',
             this.quantitySearchValue || '',
@@ -211,6 +213,12 @@ export class SuborderComponent implements OnInit {
         this.getDataForCsv();
     }
 
+    showPRModal() {
+        this.isProductVisible = false;
+        this.isProductVisiblePR = true;
+        this.getDataForPr();
+    }
+
     //Method for showing the modal
     getDataForCsv = () => {
         this._isSpinningCsv = true;
@@ -221,6 +229,7 @@ export class SuborderComponent implements OnInit {
             this.currentWarehouseId,
             this.pageCsv,
             this.limitCsv,
+            this.orderNumberSearchValue || '',
             this.suborderNumberSearchValue || '',
             this.vendorNameValue || '',
             this.quantitySearchValue || '',
@@ -257,7 +266,7 @@ export class SuborderComponent implements OnInit {
 
     };
     //Method for showing the modal
-    showPRModal = () => {
+    getDataForPr = () => {
 
         if (typeof this.pageAllCheckedStatusPr[this.pagePr] === 'undefined') {
             this.pageAllCheckedStatusPr[this.pagePr] = false;
@@ -285,9 +294,9 @@ export class SuborderComponent implements OnInit {
                     this.totalPr = result.total;
                     const thisTotal = this.dataPR.length;
 
-                    if (this.storeOrderIdsPR && this.storeOrderIdsPR.length) {
+                    if (this.selectedSubOrderIdsPr && this.selectedSubOrderIdsPr.length) {
                         for (let index = 0; index < thisTotal; index++) {
-                            const foundIndex = this.storeOrderIdsPR.findIndex((storedOder) => {
+                            const foundIndex = this.selectedSubOrderIdsPr.findIndex((storedOder) => {
                                 return storedOder.id == this.dataPR[index].id;
                             });
 
@@ -305,7 +314,7 @@ export class SuborderComponent implements OnInit {
 
                     this._isSpinningPr = false;
                 });
-        this.isProductVisiblePR = true;
+
     };
 
     //Event method for resetting all filters
@@ -331,8 +340,6 @@ export class SuborderComponent implements OnInit {
                 this.selectedSubOrderIds.splice(findValue, 1);
             }
         }
-
-        // console.log('this.selectedSubOrderIds', this.selectedSubOrderIds)
     };
 
     selectAllPr($event) {
@@ -341,41 +348,36 @@ export class SuborderComponent implements OnInit {
         const len = this.dataPR.length;
         for (let i = 0; i < len; i++) {
             this.dataPR[i].checked = isChecked;
-            this._refreshStatusPR(isChecked, this.dataPR[i])
+            this.onPrSelectionChange(isChecked, this.dataPR[i])
         }
     }
 
-
-    _refreshStatusPR($event, value) {
+    onPrSelectionChange($event, value) {
 
         if ($event) {
-            this.storeOrderIdsPR.push(value);
+            this.selectedSubOrderIdsPr.push(value);
         } else {
-            let findValue = this.storeOrderIdsPR.indexOf(value);
+            let findValue = this.selectedSubOrderIdsPr.indexOf(value);
             if (findValue !== -1) {
-                this.storeOrderIdsPR.splice(findValue, 1);
-                this.warehouse = value;
-                this.validateFormPR.patchValue({
-                    seller_name: this.warehouse.name,
-                });
+                this.selectedSubOrderIdsPr.splice(findValue, 1);
             }
         }
 
         let itemCount = 0;
-        if (this.storeOrderIdsPR.length > 0) {
-            this.storeOrderIdsPR.forEach(element => {
-                itemCount += element.total_quantity;
+        if (this.selectedSubOrderIdsPr.length > 0) {
+            this.selectedSubOrderIdsPr.forEach(element => {
+                itemCount += parseFloat(element.total_quantity);
             });
         }
 
-        if (this.storeOrderIdsPR[0]) {
-            this.warehouse = this.storeOrderIdsPR[0].warehouse_id;
+        if (this.selectedSubOrderIdsPr.length > 0) {
+            this.warehouse = this.selectedSubOrderIdsPr[0].warehouse_id;
             this.validateFormPR.patchValue({
                 total_order: itemCount,
-                seller_name: this.warehouse.name,
-                seller_phone: this.warehouse.phone,
-                seller_address: this.warehouse.address,
-                k_a_m: this.warehouse.name,
+                seller_name: this.selectedSubOrderIdsPr[0].warehouse_name,
+                seller_phone: this.selectedSubOrderIdsPr[0].warehouse_phone,
+                seller_address: this.selectedSubOrderIdsPr[0].warehouse_address,
+                k_a_m: this.selectedSubOrderIdsPr[0].warehouse_name,
             });
         } else {
             this.validateFormPR.patchValue({
@@ -393,7 +395,7 @@ export class SuborderComponent implements OnInit {
         this.page = 1;
         this.sortKey = sort.key;
         this.sortValue = sort.value;
-        this.getPageData()
+        this.getSubOrderData()
     }
 
     //Event method for pagination change
@@ -401,7 +403,7 @@ export class SuborderComponent implements OnInit {
 
         this.page = page;
         this.limit = limit;
-        this.getPageData();
+        this.getSubOrderData();
         return false;
     }
 
@@ -414,7 +416,7 @@ export class SuborderComponent implements OnInit {
 
     changePagePr(page: number) {
         this.pagePr = page;
-        this.showPRModal();
+        this.getDataForPr();
         return false;
     }
 
@@ -429,7 +431,7 @@ export class SuborderComponent implements OnInit {
                             });
             */
 
-            this.getPageData();
+            this.getSubOrderData();
         }, (err) => {
             this._notification.create('error', 'Error', 'suborder has not been updated successfully');
             $event = oldStatus;
@@ -494,7 +496,7 @@ export class SuborderComponent implements OnInit {
 
         this.sortValue = '';
         this.sortKey = '';
-        this.getPageData();
+        this.getSubOrderData();
 
     }
 
@@ -525,23 +527,164 @@ export class SuborderComponent implements OnInit {
     submitFormPR = ($event, value) => {
         this._isSpinningPr = true;
         try {
-            const newlist = this.storeOrderIdsPR;
 
-            const allApiCalls = newlist.map((suborder) => {
-                return this.suborderService.update(suborder.id, {PR_status: 1});
+            const allSelectedSubOrderIds = this.selectedSubOrderIdsPr.map((suborder) => {
+                return suborder.id;
             })
+            this._isSpinningPr = true;
+            this.suborderItemService.allSubOrderItemsBySubOrderIds(allSelectedSubOrderIds, false)
+                .subscribe((res: any)=> {
+                    const subOrders = __.groupBy(res.data, 'suborder_id');
+                    let pdfDataAll = [];  let allPayloads = []; let count = 1;
+                    __.forEach(subOrders, (items, subOrderId) => {
+                        let pdfDataMine = [];
+                        items.forEach( (item, i) => {
+                            let varients = "";
 
-            let pdfDataMine = [];
-            let i = 0;
+/*                          item.suborderItemVariants.forEach(element => {
+                                varients += element.product_variant_id.name + ','
+                            });
+*/
+                            const itemData = {
+                                'SL': i + 1,
+                                'Vendor': item.vendor_name,
+                                'Title': item.product_name,
+                                'SKU': item.product_code,
+                                'Size': varients,
+                                'Count': item.product_quantity,
+                                'Rate': item.price,
+                                'Amount': item.product_total_price,
+                            };
+                            pdfDataMine.push(itemData);
+                            pdfDataAll.push({
+                                ...itemData,
+                                SL: count++
+                            });
+
+                            allPayloads.push({
+                                warehouse_id: item.warehouse_id,
+                                total_quantity: pdfDataMine.reduce(function (total, currentValue) {
+                                    return total + currentValue.Count;
+                                }, 0),
+                                total_amount: pdfDataMine.reduce(function (total, currentValue) {
+                                    return total + currentValue.Amount;
+                                }, 0),
+                                info: JSON.stringify({
+                                    total_order: value.total_order,
+                                    pickup_carrier_name: value.pickup_carrier_name,
+                                    payment_method: value.payment_method,
+                                    pickup_slot: value.pickup_slot,
+                                    pickup_rider_name: value.pickup_rider_name,
+                                    pickup_rider_contact_number: value.pickup_rider_contact_number
+                                }),
+                                items: JSON.stringify(pdfDataMine),
+                                created_by: this.currentUser.id,
+                                date: new Date()
+                            });
+
+                        });
+                    });
+
+                    const pdfDataFormattedMine = pdfDataAll.map(p => {
+                        return [p.SL, p.Vendor, p.Title, p.SKU, p.Size, p.Count, p.Rate, (p.Amount).toFixed(2)];
+                    });
+
+                    console.log('pdfDataFormattedMine', pdfDataAll, pdfDataFormattedMine)
+
+                   this.requisitionService.insertMass({
+                      suborder_ids: allSelectedSubOrderIds,
+                       allPayloads
+                   }).subscribe((res) => {
+
+                       console.log('Mass PR Status', res);
+
+                         let docDefinition = {
+                            content: [
+                                {
+                                    text: 'Product Requisition',
+                                    fontSize: 16,
+                                    alignment: 'center',
+                                    color: '#000000'
+                                },
+                                {
+                                    text: `Date: ${new Date().toDateString()}`,
+                                    alignment: 'left'
+                                },
+                                {
+                                    table: {
+                                        headerRows: 1,
+                                        widths: ['auto', 'auto'],
+                                        body: [
+                                            ['Total Orders', value.total_order ? value.total_order : ''],
+                                            ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name : ''],
+                                            ['Seller Name', value.seller_name ? value.seller_name : ''],
+                                            ['Seller Phone', value.seller_phone ? value.seller_phone : ''],
+                                            ['Seller Address', value.seller_address ? value.seller_address : ''],
+                                            ['Seller Address', value.k_a_m ? value.k_a_m : ''],
+                                            ['Payment Method', value.payment_method ? value.payment_method : ''],
+                                            ['Pickup Slot', value.pickup_slot ? value.pickup_slot : ''],
+                                            ['Pickup Rider Name', value.pickup_rider_name ? value.pickup_rider_name : ''],
+                                            ['Pickup Rider Contact Number', value.pickup_rider_contact_number ? value.pickup_rider_contact_number : ''],
+                                            ['Signature', ''],
+                                        ]
+                                    },
+                                    style: 'sections'
+
+                                },
+                                {
+                                    table: {
+                                        headerRows: 1,
+                                        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                                        body: [
+                                            ['SL', 'Vendor Name', 'Title', 'SKU', 'SIZE', 'COUNT', 'RATE', 'AMOUNT'],
+
+                                            ...pdfDataFormattedMine,
+                                            [{
+                                                text: 'Total Amount',
+                                                colSpan: 7
+                                            }, {}, {}, {}, {}, {}, {}, pdfDataAll.reduce((sum, p) => sum + (p.Amount), 0).toFixed(2)]
+                                        ]
+                                    },
+                                    style: 'sections'
+
+                                }
+                            ],
+                            styles: {
+                                sectionHeader: {
+                                    bold: true,
+                                    decoration: 'underline',
+                                    fontSize: 14,
+                                    margin: [0, 15, 0, 15]
+                                },
+                                sections: {
+                                    fontSize: 14,
+                                    margin: [0, 15, 0, 15]
+                                }
+                            }
+                        };
+                        this._isSpinningPr = false;
+                        pdfMake.createPdf(docDefinition).download();
+                        this.isProductVisiblePR = false;
+                        this.validateFormPR.reset();
+
+                    }, (err) => {
+                        console.error(err);
+                        this._isSpinningPr = false;
+                    });
+                }, () => {
+
+                })
+           /* let i = 0;
 
             newlist.forEach(suborder => {
-
-                suborder.items.forEach(item => {
+                let pdfDataMine = [];
+                items.forEach(item => {
                     let varients = "";
 
                     item.suborderItemVariants.forEach(element => {
                         varients += element.product_variant_id.name + ','
                     });
+
                     pdfDataMine.push({
                         'SL': ++i,
                         'Vendor': item.warehouse_id.name,
@@ -577,88 +720,8 @@ export class SuborderComponent implements OnInit {
                 allApiCalls.push(this.requisitionService.insert(payload))
 
             });
+*/
 
-            const pdfDataFormattedMine = pdfDataMine.map(p => {
-                return [p.SL, p.Vendor, p.Title, p.SKU, p.Size, p.Count, p.Rate, (p.Amount).toFixed(2)];
-            });
-
-            console.log('pdfDataFormattedMine', pdfDataMine, pdfDataFormattedMine)
-
-            forkJoin(allApiCalls).subscribe((res) => {
-
-                let docDefinition = {
-                    content: [
-                        {
-                            text: 'Product Requisition',
-                            fontSize: 16,
-                            alignment: 'center',
-                            color: '#000000'
-                        },
-                        {
-                            text: `Date: ${new Date().toDateString()}`,
-                            alignment: 'left'
-                        },
-                        {
-                            table: {
-                                headerRows: 1,
-                                widths: ['auto', 'auto'],
-                                body: [
-                                    ['Total Orders', value.total_order ? value.total_order : ''],
-                                    ['Pickup Carrier Name', value.pickup_carrier_name ? value.pickup_carrier_name : ''],
-                                    ['Seller Name', value.seller_name ? value.seller_name : ''],
-                                    ['Seller Phone', value.seller_phone ? value.seller_phone : ''],
-                                    ['Seller Address', value.seller_address ? value.seller_address : ''],
-                                    ['Seller Address', value.k_a_m ? value.k_a_m : ''],
-                                    ['Payment Method', value.payment_method ? value.payment_method : ''],
-                                    ['Pickup Slot', value.pickup_slot ? value.pickup_slot : ''],
-                                    ['Pickup Rider Name', value.pickup_rider_name ? value.pickup_rider_name : ''],
-                                    ['Pickup Rider Contact Number', value.pickup_rider_contact_number ? value.pickup_rider_contact_number : ''],
-                                    ['Signature', ''],
-                                ]
-                            },
-                            style: 'sections'
-
-                        },
-                        {
-                            table: {
-                                headerRows: 1,
-                                widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
-                                body: [
-                                    ['SL', 'Vendor Name', 'Title', 'SKU', 'SIZE', 'COUNT', 'RATE', 'AMOUNT'],
-
-                                    ...pdfDataFormattedMine,
-                                    [{
-                                        text: 'Total Amount',
-                                        colSpan: 7
-                                    }, {}, {}, {}, {}, {}, {}, pdfDataMine.reduce((sum, p) => sum + (p.Amount), 0).toFixed(2)]
-                                ]
-                            },
-                            style: 'sections'
-
-                        }
-                    ],
-                    styles: {
-                        sectionHeader: {
-                            bold: true,
-                            decoration: 'underline',
-                            fontSize: 14,
-                            margin: [0, 15, 0, 15]
-                        },
-                        sections: {
-                            fontSize: 14,
-                            margin: [0, 15, 0, 15]
-                        }
-                    }
-                };
-                this._isSpinningPr = false;
-                pdfMake.createPdf(docDefinition).download();
-                this.isProductVisiblePR = false;
-                this.validateFormPR.reset();
-
-            }, (err) => {
-                console.error(err);
-                this._isSpinningPr = false;
-            });
         } catch (er) {
             this._isSpinningPr = false;
         }
@@ -755,6 +818,6 @@ export class SuborderComponent implements OnInit {
             to: result[1],
         }
         this.page = 1;
-        this.getPageData();
+        this.getSubOrderData();
     }
 }

@@ -39,8 +39,12 @@ export class SuborderItemService {
         return this.http.get(url)
     }
 
-    allSubOrderItemsBySubOrderIds(orderIds: number[]) {
-        const url = `${this.EndPoint}/getBySubOrderIds?sub_order_ids=${JSON.stringify(orderIds)}`;
+    allSubOrderItemsBySubOrderIds(orderIds: number[], withStatuses = true) {
+        let url = `${this.EndPoint}/getBySubOrderIds?sub_order_ids=${JSON.stringify(orderIds)}`;
+        if(withStatuses){
+            url += '&withStatuses=1';
+        }
+
         return this.http.get(url)
     }
 

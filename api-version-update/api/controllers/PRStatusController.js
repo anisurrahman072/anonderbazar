@@ -8,11 +8,16 @@
 const moment = require('moment');
 
 module.exports = {
+
   massInsert: async (req, res) => {
 
-    try {
-      if (req.body.dataToInsert && req.body.dataToInsert.length > 0) {
+    console.log(req.body);
+    return res.status(200).json({
+      success: false
+    });
 
+    try {
+      if (req.body.dataToInsert && req.body.dataToInsert.length > 0 && req.body.suborder_ids && req.body.suborder_ids.length > 0) {
         const dataToInsert = req.body.dataToInsert.map((prReq) => {
           const date = moment(req.body.date).format('YYYY-MM-DD HH:mm:ss');
           return {
@@ -21,7 +26,15 @@ module.exports = {
           };
         });
 
-        await PRStatus.createEach(dataToInsert);
+        await sails.getDatastore()
+          .transaction(async (db) => {
+
+            await PRStatus.createEach(dataToInsert).usingConnection(db);
+            await Suborder.update({
+              id: req.body.suborder_ids,
+            }).set({PR_status: req.body.status}).usingConnection(db);
+
+          });
 
         return res.status(201).json({
           success: true,
@@ -31,7 +44,7 @@ module.exports = {
 
       return res.status(422).json({
         success: false,
-        'message': 'Operation successful'
+        'message': 'Operation Failed (Validation Error)'
       });
 
     } catch (error) {
