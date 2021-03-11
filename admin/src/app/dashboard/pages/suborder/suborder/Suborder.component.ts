@@ -70,9 +70,9 @@ export class SuborderComponent implements OnInit {
     private currentWarehouseId: any;
     isProductVisible = false;
     validateProductForm: FormGroup;
-    allOders: any = [];
+    subOrdersForCsv: any = [];
 
-    storeOrderIds: any = [];
+    private selectedSubOrderIds: any = [];
 
     isProductVisiblePR = false;
     validateFormPR: FormGroup;
@@ -160,8 +160,13 @@ export class SuborderComponent implements OnInit {
                 });
     }
 
+    showCsvModal(){
+        this.isProductVisible = true;
+        this.isProductVisiblePR = false;
+        this.getDataForCsv();
+    }
     //Method for showing the modal
-    showProductModal = () => {
+    getDataForCsv = () => {
         this._isSpinningCsv = true;
         if (typeof this.pageAllCheckedStatusCsv[this.pageCsv] === 'undefined') {
             this.pageAllCheckedStatusCsv[this.pageCsv] = false;
@@ -180,24 +185,24 @@ export class SuborderComponent implements OnInit {
             this.filterTerm(this.sortValue))
             .subscribe(result => {
 
-                    console.log('csv showProductModal', result);
+                    console.log('csv getDataForCsv', result);
 
                     this.totalCsv = result.total;
-                    this.allOders = result.data;
-                    const thisTotal = this.allOders.length;
+                    this.subOrdersForCsv = result.data;
+                    const thisTotal = this.subOrdersForCsv.length;
 
-                    if (this.storeOrderIds && this.storeOrderIds.length) {
+                    if (this.selectedSubOrderIds && this.selectedSubOrderIds.length) {
                         for (let index = 0; index < thisTotal; index++) {
-                            const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                                return storedOder.id == this.allOders[index].id;
+                            const foundIndex = this.selectedSubOrderIds.findIndex((subOrderId) => {
+                                return subOrderId == this.subOrdersForCsv[index].id;
                             });
 
-                            this.allOders[index].checked = foundIndex !== -1;
+                            this.subOrdersForCsv[index].checked = foundIndex !== -1;
                         }
 
                     } else {
                         for (let index = 0; index < thisTotal; index++) {
-                            this.allOders[index].checked = false;
+                            this.subOrdersForCsv[index].checked = false;
                         }
                     }
 
@@ -208,8 +213,7 @@ export class SuborderComponent implements OnInit {
                     this._isSpinningCsv = false;
                 });
 
-        this.isProductVisible = true;
-        this.isProductVisiblePR = false;
+
     };
     //Method for showing the modal
     showPRModal = () => {
@@ -268,12 +272,27 @@ export class SuborderComponent implements OnInit {
 
         const isChecked = !!$event.target.checked;
         this.pageAllCheckedStatusCsv[this.pageCsv] = isChecked;
-        const len = this.allOders.length;
+        const len = this.subOrdersForCsv.length;
         for (let i = 0; i < len; i++) {
-            this.allOders[i].checked = isChecked;
-            this._refreshStatus(isChecked, this.allOders[i])
+            this.subOrdersForCsv[i].checked = isChecked;
+            this._refreshStatus(isChecked, this.subOrdersForCsv[i])
         }
     }
+
+    _refreshStatus($event, value) {
+
+        if ($event) {
+            this.selectedSubOrderIds.push(value);
+        } else {
+            let findValue = this.selectedSubOrderIds.indexOf(value);
+
+            if (findValue !== -1) {
+                this.selectedSubOrderIds.splice(findValue, 1);
+            }
+        }
+
+        // console.log('this.selectedSubOrderIds', this.selectedSubOrderIds)
+    };
 
     selectAllPr($event) {
         const isChecked = !!$event.target.checked;
@@ -285,20 +304,7 @@ export class SuborderComponent implements OnInit {
         }
     }
 
-    _refreshStatus($event, value) {
 
-        if ($event) {
-            this.storeOrderIds.push(value);
-        } else {
-            let findValue = this.storeOrderIds.indexOf(value);
-
-            if (findValue !== -1) {
-                this.storeOrderIds.splice(findValue, 1);
-            }
-        }
-
-        // console.log('this.storeOrderIds', this.storeOrderIds)
-    };
 
     _refreshStatusPR($event, value) {
 
@@ -362,7 +368,7 @@ export class SuborderComponent implements OnInit {
     changePageCsv(page: number) {
 
         this.pageCsv = page;
-        this.showProductModal();
+        this.getDataForCsv();
         return false;
     }
 
@@ -470,10 +476,8 @@ export class SuborderComponent implements OnInit {
 
     //Event method for submitting the form
     submitForm = ($event, value) => {
-        let newlist = this.storeOrderIds;
-
         this.isProductVisible = false;
-        this.dowonloadCSV(newlist);
+        this.dowonloadCSV(this.selectedSubOrderIds);
     }
 
     handleOkPR = e => {
@@ -630,16 +634,17 @@ export class SuborderComponent implements OnInit {
 
 
     isCsvChecked(data: any) {
-        return this.storeOrderIds.findIndex((oder) => {
-            return oder.id == data.id
+        return this.selectedSubOrderIds.findIndex((subOrderId) => {
+            return subOrderId == data.id
+
         }) !== -1
     }
 
-    dowonloadCSV(data) {
+    dowonloadCSV(selectedSubOrderIds) {
 
         let csvData = [];
 
-        console.log('data',data);
+        console.log('data',selectedSubOrderIds);
 
         data.forEach(suborder => {
             suborder.items.forEach(item => {
