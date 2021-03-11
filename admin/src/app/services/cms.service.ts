@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
-import {AuthService} from './auth.service';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 
@@ -11,8 +10,7 @@ import {HttpClient} from '@angular/common/http';
 export class CmsService {
     private EndPoint = `${environment.API_ENDPOINT}/cms`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient) {
     }
 
     getAll(): Observable<any> {

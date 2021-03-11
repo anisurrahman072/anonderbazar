@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
@@ -519,57 +520,68 @@ module.exports = {
     try {
       console.log('customUpdate', req.body);
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
+      console.log('cms.data_value', cms.data_value);
+
       if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-          cms.data_value[req.body.dataValueId] = {
-            title: req.body.title,
-            description: req.body.description,
-            image: '/' + newPath
-          };
-
-          let data = await CMS.updateOne({id: cms.id}).set(cms);
-          if (data) {
-            return res.json({
-              success: true,
-              message: 'cms updated successfully',
-              data: cms.data_value[req.body.dataValueId]
-            });
-          } else {
-            return res.json(400, {
-              success: false,
-              message: 'cms updated failed'
-            });
-          }
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
         }
-        );
-      } else {
-        cms.data_value[req.body.dataValueId] = {
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        const dataValueIndex = parseInt(req.body.dataValueId);
+
+        let dataValue = cms.data_value;
+        if (!dataValue) {
+          dataValue = [];
+        }
+        dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: cms.data_value[req.body.dataValueId].image
+          image: '/' + newPath
         };
 
-        let data = await CMS.updateOne({id: cms.id}).set(cms);
+        // cms.data_value = JSON.stringify(cms.data_value);
+        let data = await CMS.updateOne({id: cms.id}).set({
+          data_value: dataValue
+        });
         if (data) {
           return res.json({
             success: true,
             message: 'cms updated successfully',
-            data: cms.data_value[req.body.dataValueId]
+            data: cms.data_value[dataValueIndex]
           });
         } else {
-          return res.json(400, {success: false, message: 'cms updated failed'});
+          return res.json(400, {
+            success: false,
+            message: 'cms updated failed'
+          });
+        }
+
+      } else {
+        const dataValueIndex = parseInt(req.body.dataValueId);
+        if (!cms.data_value) {
+          cms.data_value = [];
+        }
+        cms.data_value[dataValueIndex] = {
+          title: req.body.title,
+          description: req.body.description,
+          image: cms.data_value[dataValueIndex].image
+        };
+        cms.data_value = JSON.stringify(cms.data_value);
+        let data = await CMS.updateOne({id: cms.id}).set(cms);
+        if (data) {
+          return res.status(201).json({
+            success: true,
+            message: 'cms updated successfully',
+            data: cms.data_value[dataValueIndex]
+          });
+        } else {
+          return res.status(400).json({success: false, message: 'cms updated failed'});
         }
       }
     } catch (error) {
-      res.json(400, {
+      console.log(error);
+      res.status(400).json({
         success: false,
         message: 'Error Occurred',
         error
