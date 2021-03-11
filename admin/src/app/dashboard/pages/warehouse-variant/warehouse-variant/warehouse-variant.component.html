@@ -43,6 +43,9 @@
                 <th>
                     <span>Shelf</span>
                 </th>
+                <th>
+                    <span>Read</span>
+                </th>
             </tr>
             <tr>
                 <th></th>
@@ -56,13 +59,20 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let data of nzTable.data">
                 <td>
-                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
-                               [nzIcon]="'user'"></nz-avatar>
+                    <ng-container *ngIf="data.image; else noAvatar">
+                        <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
+                                   [nzIcon]="'user'"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noAvatar>
+                        <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                   [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image"></nz-avatar>
+                    </ng-template>
                 </td>
                 <td>
                     {{data.name}}
