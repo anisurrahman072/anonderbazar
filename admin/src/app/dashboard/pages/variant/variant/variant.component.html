@@ -19,7 +19,7 @@
                   (nzPageIndexChange)="getPageData($event)"
         >
 
-            <thead (nzSortChange)="sort($event)" nzSingleSort>
+            <thead (nzSortChange)="sort($event)" [nzSingleSort]="true">
             <tr>
                 <th nzShowSort nzSortKey="name">
                     <span> Name </span>
@@ -42,11 +42,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let datum of nzTable.data">
-                <td>{{datum.name}}</td>
+            <tr *ngFor="let data of nzTable.data">
+                <td>{{data.name}}</td>
                 <td>
                     <nz-tag [nzColor]="'orange'">
-                        <label *ngIf=" datum?.type === 0 ; else elseBlock"> No </label>
+                        <label *ngIf=" data?.type === 0 ; else elseBlock"> No </label>
                         <ng-template #elseBlock>
                             <label> Yes </label>
                         </ng-template>
@@ -55,12 +55,12 @@
                 <td>
 
                     <button *ngIf="'variant-read'|accessControl"
-                            [routerLink]="['/dashboard/variant/details/', datum.id]"
+                            [routerLink]="['/dashboard/variant/details/', data.id]"
                             nz-button [nzSize]="'default'">
                         <i class="anticon anticon-info-circle"></i>
                     </button>
                     <button *ngIf="'variant-edit'|accessControl"
-                            [routerLink]="['/dashboard/variant/edit', datum.id]"
+                            [routerLink]="['/dashboard/variant/edit', data.id]"
                             nz-button [nzSize]="'default'">
                         <i class="anticon anticon-edit"></i>
                     </button>

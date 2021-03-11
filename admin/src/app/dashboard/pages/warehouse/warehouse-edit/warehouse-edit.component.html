@@ -294,14 +294,14 @@
                         <button nz-button nzType="default" type="button" [nzSize]="'large'" (click)="current=0"
                                 *ngIf="current > 0">
                             <span>Previous</span>
-                        </button>
+                        </button>&nbsp;
                         <button nz-button nzType="default" type="button" [nzSize]="'large'" (click)="current=1"
                                 *ngIf="current < 1">
                             <span>Next</span>
-                        </button>
+                        </button>&nbsp;
                         <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                             Save
-                        </button>
+                        </button>&nbsp;
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                     </div>
                 </div>
