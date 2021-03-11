@@ -1,9 +1,6 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            Product Requisition List
-        </ng-template>
-        <ng-template #body>
+    <nz-card class="card-height" nzTitle="Product Requisition List">
+        <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable
                           nzShowSizeChanger
@@ -72,6 +69,6 @@
                     </span>
                 </div>
             </div>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>
