@@ -44,6 +44,21 @@
                                (input)=" orderPage = 1; getData(); ">
                     </th>
                     <th>
+                        <nz-date-picker
+                                nzShowTime
+                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                [(ngModel)]="searchStartDate"
+                                nzPlaceHolder="Start"
+                                (ngModelChange)="orderPage = 1; getData();">
+
+                        </nz-date-picker>
+                        <nz-date-picker
+                                nzShowTime
+                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                [(ngModel)]="searchEndDate"
+                                nzPlaceHolder="End"
+                                (ngModelChange)="orderPage = 1; getData();">
+                        </nz-date-picker>
                     </th>
                     <th>
                         <input nz-input style="width: 140px;" [(ngModel)]="customerNameFilter"

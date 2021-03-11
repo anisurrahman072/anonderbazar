@@ -65,7 +65,7 @@ module.exports = {
           skip: _pagination.skip,
           sort: _sort,
         })
-        .populate('user_id', {where: _where2,})
+        .populate('user_id')
         .populate('order_id')
         .populate('suborder_id')
         .populate('receiver_id');
