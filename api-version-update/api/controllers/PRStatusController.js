@@ -12,14 +12,18 @@ module.exports = {
   massInsert: async (req, res) => {
 
     console.log(req.body);
-    return res.status(200).json({
-      success: false
-    });
 
+    if(!req.body.dataToInsert){
+      return res.status(422).json({
+        success: false,
+        'message': 'Operation Failed (Validation Error)'
+      });
+    }
+    const dataToInsert = req.body.dataToInsert;
     try {
-      if (req.body.dataToInsert && req.body.dataToInsert.length > 0 && req.body.suborder_ids && req.body.suborder_ids.length > 0) {
-        const dataToInsert = req.body.dataToInsert.map((prReq) => {
-          const date = moment(req.body.date).format('YYYY-MM-DD HH:mm:ss');
+      if (  dataToInsert.suborder_ids && dataToInsert.suborder_ids.length > 0 && dataToInsert.allPayloads && dataToInsert.allPayloads.length > 0) {
+        const data = dataToInsert.allPayloads.map((prReq) => {
+          const date = moment(prReq.date).format('YYYY-MM-DD HH:mm:ss');
           return {
             ...prReq,
             date
@@ -29,10 +33,10 @@ module.exports = {
         await sails.getDatastore()
           .transaction(async (db) => {
 
-            await PRStatus.createEach(dataToInsert).usingConnection(db);
+            await PRStatus.createEach(data).usingConnection(db);
             await Suborder.update({
-              id: req.body.suborder_ids,
-            }).set({PR_status: req.body.status}).usingConnection(db);
+              id: dataToInsert.suborder_ids,
+            }).set({PR_status: 1}).usingConnection(db);
 
           });
 

@@ -235,12 +235,17 @@ export class SuborderComponent implements OnInit {
     showCsvModal() {
         this.isProductVisible = true;
         this.isProductVisiblePR = false;
+        this.pageAllCheckedStatusCsv = [];
+        this.selectedSubOrderIds = [];
         this.getDataForCsv();
     }
 
     showPRModal() {
         this.isProductVisible = false;
         this.isProductVisiblePR = true;
+        this.pageAllCheckedStatusPr = [];
+        this.selectedSubOrderIdsPr = [];
+
         this.getDataForPr();
     }
 
