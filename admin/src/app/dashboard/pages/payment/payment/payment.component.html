@@ -139,7 +139,7 @@
                                            [nzCancelText]="'cancel'"
                                            (nzOnConfirm)="changeStatusConfirm(i,data.id,data.status)">
                                 <a nz-popconfirm *ngIf="selectedOption[i]!=data.status">
-                                    <button nz-button [nzSize]="'default'">
+                                    <button nz-button [nzSize]="'default'" style="margin-top: 10px">
                                         <i class="anticon anticon-edit"> Save </i>
                                     </button>
                                 </a>
@@ -176,7 +176,7 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span  class="pull-right col-md-6">
+                    <span class="pull-right col-md-6">
                                 <button nz-button (click)="resetAllFilter()">Clear filter</button>
                             </span>
                 </div>
