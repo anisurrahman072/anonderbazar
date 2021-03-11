@@ -2,7 +2,6 @@ import {
     Component,
     OnInit, QueryList, ViewChildren, ViewEncapsulation
 } from '@angular/core';
-import {forkJoin} from "rxjs/observable/forkJoin";
 import {SuborderService} from '../../../../services/suborder.service';
 import {AuthService} from '../../../../services/auth.service';
 import {RequisitionService} from '../../../../services/requisition.service';
@@ -20,7 +19,16 @@ import differenceInCalendarDays from 'date-fns/difference_in_calendar_days';
 import moment from "moment";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import __ from "lodash";
+import {environment} from "../../../../../environments/environment";
 
+pdfMake.fonts = {
+    solaimanlipi: {
+        normal: environment.ADMIN_DOMAIN + '/assets/fonts/solaiman-lipi/solaiman-lipi.ttf',
+        bold: environment.ADMIN_DOMAIN + '/assets/fonts/solaiman-lipi/solaiman-lipi.ttf',
+        italics: environment.ADMIN_DOMAIN + '/assets/fonts/solaiman-lipi/solaiman-lipi.ttf',
+        bolditalics: environment.ADMIN_DOMAIN + '/assets/fonts/solaiman-lipi/solaiman-lipi.ttf',
+    },
+}
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const csvHeaders = [
     'SL',
@@ -348,8 +356,9 @@ export class SuborderComponent implements OnInit {
         const len = this.dataPR.length;
         for (let i = 0; i < len; i++) {
             this.dataPR[i].checked = isChecked;
-            this.onPrSelectionChange(isChecked, this.dataPR[i])
+            this.onPrSelectionChange(isChecked, this.dataPR[i]);
         }
+        console.log('selectAllPr', this.selectedSubOrderIdsPr);
     }
 
     onPrSelectionChange($event, value) {
@@ -357,9 +366,14 @@ export class SuborderComponent implements OnInit {
         if ($event) {
             this.selectedSubOrderIdsPr.push(value);
         } else {
-            let findValue = this.selectedSubOrderIdsPr.indexOf(value);
-            if (findValue !== -1) {
-                this.selectedSubOrderIdsPr.splice(findValue, 1);
+
+            const foundIndex = this.selectedSubOrderIdsPr.findIndex((storedOder) => {
+                return storedOder.id == value.id;
+            });
+
+            console.log('onPrSelectionChange', value.id, foundIndex);
+            if (foundIndex !== -1) {
+                this.selectedSubOrderIdsPr.splice(foundIndex, 1);
             }
         }
 
@@ -426,9 +440,9 @@ export class SuborderComponent implements OnInit {
         this.suborderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             this._notification.create('success', 'Successful Message', 'suborder has been updated successfully');
             /*
-                        this.courierService.updateSuborder($event, id)
-                            .subscribe(arg => {
-                            });
+                this.courierService.updateSuborder($event, id)
+                    .subscribe(arg => {
+                });
             */
 
             this.getSubOrderData();
@@ -533,18 +547,20 @@ export class SuborderComponent implements OnInit {
             })
             this._isSpinningPr = true;
             this.suborderItemService.allSubOrderItemsBySubOrderIds(allSelectedSubOrderIds, false)
-                .subscribe((res: any)=> {
+                .subscribe((res: any) => {
                     const subOrders = __.groupBy(res.data, 'suborder_id');
-                    let pdfDataAll = [];  let allPayloads = []; let count = 1;
+                    let pdfDataAll = [];
+                    let allPayloads = [];
+                    let count = 1;
                     __.forEach(subOrders, (items, subOrderId) => {
                         let pdfDataMine = [];
-                        items.forEach( (item, i) => {
+                        items.forEach((item, i) => {
                             let varients = "";
 
-/*                          item.suborderItemVariants.forEach(element => {
-                                varients += element.product_variant_id.name + ','
-                            });
-*/
+                            /*                          item.suborderItemVariants.forEach(element => {
+                                                            varients += element.product_variant_id.name + ','
+                                                        });
+                            */
                             const itemData = {
                                 'SL': i + 1,
                                 'Vendor': item.vendor_name,
@@ -591,14 +607,17 @@ export class SuborderComponent implements OnInit {
 
                     console.log('pdfDataFormattedMine', pdfDataAll, pdfDataFormattedMine)
 
-                   this.requisitionService.insertMass({
-                      suborder_ids: allSelectedSubOrderIds,
-                       allPayloads
-                   }).subscribe((res) => {
+                    this.requisitionService.insertMass({
+                        suborder_ids: allSelectedSubOrderIds,
+                        allPayloads
+                    }).subscribe((res) => {
 
-                       console.log('Mass PR Status', res);
+                        console.log('Mass PR Status', res);
 
-                         let docDefinition = {
+                        let docDefinition = {
+                            pageSize: 'TABLOID',
+                            pageOrientation: 'landscape',
+                            pageMargins: [40, 60, 40, 60],
                             content: [
                                 {
                                     text: 'Product Requisition',
@@ -659,6 +678,31 @@ export class SuborderComponent implements OnInit {
                                 sections: {
                                     fontSize: 14,
                                     margin: [0, 15, 0, 15]
+                                },
+                            },
+                            defaultStyle: {
+                                font: 'solaimanlipi'
+                            }
+                        };
+                        pdfMake.tableLayouts = {
+                            exampleLayout: {
+                                hLineWidth: function (i, node) {
+                                    if (i === 0 || i === node.table.body.length) {
+                                        return 0;
+                                    }
+                                    return (i === node.table.headerRows) ? 2 : 1;
+                                },
+                                vLineWidth: function (i) {
+                                    return 0;
+                                },
+                                hLineColor: function (i) {
+                                    return i === 1 ? 'black' : '#aaa';
+                                },
+                                paddingLeft: function (i) {
+                                    return i === 0 ? 0 : 8;
+                                },
+                                paddingRight: function (i, node) {
+                                    return (i === node.table.widths.length - 1) ? 0 : 8;
                                 }
                             }
                         };
@@ -672,56 +716,8 @@ export class SuborderComponent implements OnInit {
                         this._isSpinningPr = false;
                     });
                 }, () => {
-
+                    this._isSpinningPr = false;
                 })
-           /* let i = 0;
-
-            newlist.forEach(suborder => {
-                let pdfDataMine = [];
-                items.forEach(item => {
-                    let varients = "";
-
-                    item.suborderItemVariants.forEach(element => {
-                        varients += element.product_variant_id.name + ','
-                    });
-
-                    pdfDataMine.push({
-                        'SL': ++i,
-                        'Vendor': item.warehouse_id.name,
-                        'Title': item.product_id.name,
-                        'SKU': item.product_id.code,
-                        'Size': varients,
-                        'Count': item.product_quantity,
-                        'Rate': item.product_id.price,
-                        'Amount': item.product_total_price,
-                    });
-                });
-                let payload = {
-                    warehouse_id: suborder.items[0].warehouse_id.id,
-                    total_quantity: pdfDataMine.reduce(function (total, currentValue) {
-                        return total + currentValue.Count;
-                    }, 0),
-                    total_amount: pdfDataMine.reduce(function (total, currentValue) {
-                        return total + currentValue.Amount;
-                    }, 0),
-                    info: JSON.stringify({
-                        total_order: value.total_order,
-                        pickup_carrier_name: value.pickup_carrier_name,
-                        payment_method: value.payment_method,
-                        pickup_slot: value.pickup_slot,
-                        pickup_rider_name: value.pickup_rider_name,
-                        pickup_rider_contact_number: value.pickup_rider_contact_number
-                    }),
-                    items: JSON.stringify(pdfDataMine),
-                    created_by: this.currentUser.id,
-                    date: new Date()
-                };
-
-                allApiCalls.push(this.requisitionService.insert(payload))
-
-            });
-*/
-
         } catch (er) {
             this._isSpinningPr = false;
         }

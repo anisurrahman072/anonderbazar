@@ -28,7 +28,7 @@ module.exports = {
       let rawSelect = `
       SELECT
           suborder_item.id as id,
-          suborder.warehouse_i as warehouse_id,
+          suborder.warehouse_id as warehouse_id,
           suborder_item.product_suborder_id as suborder_id,
           p_order.id as order_id,
           suborder_item.product_id,
