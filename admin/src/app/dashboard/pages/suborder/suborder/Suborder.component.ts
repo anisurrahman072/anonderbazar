@@ -81,7 +81,7 @@ export class SuborderComponent implements OnInit {
     currentUser: any;
     private viewNotRendered: boolean = true;
 
-    limit: number = 10;
+    limit: number = 15;
     page: number = 1;
     total: number;
 
@@ -170,7 +170,6 @@ export class SuborderComponent implements OnInit {
             pickup_rider_contact_number: ['', []],
         });
 
-
         this.currentUser = this.authService.getCurrentUser();
 
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
@@ -180,7 +179,25 @@ export class SuborderComponent implements OnInit {
             }
         );
     }
+    resetAllFilter() {
+        this.limit = 15;
+        this.page = 1;
+        this.orderNumberSearchValue = '';
+        this.suborderNumberSearchValue = '';
+        this.vendorNameValue = '';
+        this.quantitySearchValue = '';
+        this.totalPriceSearchValue = '';
+        this.dateRangeFilter = {
+            to: null,
+            from: null
+        };
+        this.dateRangeModel = [];
+        this.statusSearchValue = '';
+        this.sortValue = '';
+        this.sortKey = '';
+        this.getSubOrderData();
 
+    }
     //Event method for getting all the data for the page
     getSubOrderData(event?: any) {
         if (event) {
@@ -218,12 +235,17 @@ export class SuborderComponent implements OnInit {
     showCsvModal() {
         this.isProductVisible = true;
         this.isProductVisiblePR = false;
+        this.pageAllCheckedStatusCsv = [];
+        this.selectedSubOrderIds = [];
         this.getDataForCsv();
     }
 
     showPRModal() {
         this.isProductVisible = false;
         this.isProductVisiblePR = true;
+        this.pageAllCheckedStatusPr = [];
+        this.selectedSubOrderIdsPr = [];
+
         this.getDataForPr();
     }
 
@@ -439,12 +461,6 @@ export class SuborderComponent implements OnInit {
 
         this.suborderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             this._notification.create('success', 'Successful Message', 'suborder has been updated successfully');
-            /*
-                this.courierService.updateSuborder($event, id)
-                    .subscribe(arg => {
-                });
-            */
-
             this.getSubOrderData();
         }, (err) => {
             this._notification.create('error', 'Error', 'suborder has not been updated successfully');
@@ -502,19 +518,7 @@ export class SuborderComponent implements OnInit {
         }
     }
 
-
-    resetAllFilter() {
-        this.limit = 5;
-        this.page = 1;
-
-
-        this.sortValue = '';
-        this.sortKey = '';
-        this.getSubOrderData();
-
-    }
-
-    handleOk = e => {
+   handleOk = e => {
         this.isProductVisible = false;
     };
 
