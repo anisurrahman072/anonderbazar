@@ -11,7 +11,7 @@
         </button>
     </ng-template>
 
-    <ng-template #body>
+    <ng-container>
         <form *ngIf="data" nz-form [formGroup]="validateForm" id="validateForm"
               (ngSubmit)="submitForm($event,validateForm.value)">
             <div class="row">
@@ -401,18 +401,18 @@
                     </div>
                     <!--product_details-->
                 </div>
-            </div>
+            </div>&nbsp;
             <div    nz-row>
                 <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                     <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                             [disabled]="!validateForm.valid || isSubmit==false">Save
-                    </button>
+                    </button>&nbsp;
                     <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
                 </div>
             </div>
         </form>
 
-    </ng-template>
+    </ng-container>
 </nz-card>
 <nz-modal nzWidth="70%"
           [nzFooter]="null"
