@@ -10,7 +10,7 @@
                 <i class="anticon anticon-download"></i><span> Add New </span>
             </button>
         </ng-template>
-        <ng-template #body>
+        <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable
                           nzShowSizeChanger
@@ -181,6 +181,6 @@
                             </span>
                 </div>
             </div>
-        </ng-template>
+        </ng-container>
     </nz-card>
 </section>
