@@ -23,8 +23,8 @@ module.exports = {
   },
   getBySubOrderIds: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
+    const StatusChangeQuery = Promise.promisify(StatusChange.getDatastore().sendNativeQuery);
     try {
-      let _pagination = pagination(req.query);
       let rawSelect = `
       SELECT
           suborder_item.id as id,
@@ -39,16 +39,16 @@ module.exports = {
           suborder_item.product_quantity,
           suborder_item.product_total_price,
           suborder_item.status,
-          suborder_item.\`date\`,  suborder_item.created_at,
+          suborder_item.\`date\` as suborder_item_date,
+          suborder_item.created_at,
           p_order.status as order_status,
           p_order.user_id, suborder.status as sub_order_status,
-          CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+          CONCAT(customer.first_name, ' ', customer.last_name) as customer_name,
           CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
           CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
           customer.phone as customer_phone,
           vendor.name as vendor_name,
-          vendor.phone as vendor_phone,
-          GROUP_CONCAT(coupon.id) as all_coupons
+          vendor.phone as vendor_phone
       `;
 
       let fromSQL = ' FROM product_suborder_items as suborder_item  ';
@@ -59,42 +59,56 @@ module.exports = {
       fromSQL += ' LEFT JOIN users as orderChangedBy ON orderChangedBy.id = p_order.changed_by   ';
       fromSQL += ' LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = suborder.changed_by   ';
       fromSQL += ' LEFT JOIN warehouses as vendor ON vendor.id = suborder.warehouse_id   ';
-      fromSQL += ' LEFT JOIN product_purchased_coupon_codes as coupon ON coupon.suborder_item_id = suborder_item.id   ';
 
       let _where = ' WHERE p_order.deleted_at IS NULL AND suborder.deleted_at IS NULL AND suborder_item.deleted_at IS NULL ';
+      let _whereStatuses = ' WHERE st.deleted_at IS NULL ';
 
-      if (req.query.order_ids) {
+      if (req.query.sub_order_ids) {
         try {
-          const orderIds = JSON.parse(req.query.order_ids);
-          if (Array.isArray(orderIds) && orderIds.length > 0) {
-            _where += ` AND suborder.product_order_id IN  (${orderIds.join(',')}) `;
+          const sub_order_ids = JSON.parse(req.query.sub_order_ids);
+          if (Array.isArray(sub_order_ids) && sub_order_ids.length > 0) {
+            _where += ` AND suborder.id IN  (${sub_order_ids.join(',')}) `;
+            _whereStatuses += ` AND st.suborder_id IN  (${sub_order_ids.join(',')}) `;
           }
         } catch (errorr) {
           console.log(errorr);
+          return res.badRequest('Invalid Data');
         }
       }
-      _where += ' GROUP BY coupon.suborder_item_id ORDER BY suborder_item.created_at DESC ';
+      _where += '  ORDER BY suborder_item.created_at ASC ';
 
       let totalSuborderItems = 0;
       let allSubOrderItems = [];
       const totalSuborderItemRaw = await SuborderItemQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
       if (totalSuborderItemRaw && totalSuborderItemRaw.rows && totalSuborderItemRaw.rows.length > 0) {
         totalSuborderItems = totalSuborderItemRaw.rows[0].totalCount;
-        _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborderItems;
-
-        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where + limitSQL, []);
+        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where , []);
 
         allSubOrderItems = rawResult.rows;
       }
+
+      let rawSelectStatuses = `
+          SELECT
+            st.suborder_id as suborder_id,
+            st.status as suborder_status,
+            st.date as status_date,
+            CONCAT(changedBy.first_name, ' ', changedBy.last_name) as changed_by_name
+      `;
+
+      let fromSQLStatues = ' FROM orders_status as st ';
+      fromSQLStatues += ' LEFT JOIN users as changedBy ON changedBy.id = st.changed_by ';
+
+      const rawResultStatuses = await StatusChangeQuery(rawSelectStatuses + fromSQLStatues + _whereStatuses , []);
 
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
         message: 'Get all SubOrderItem Lists with pagination',
-        data: allSubOrderItems
+        data: allSubOrderItems,
+        subOrderStatuses: rawResultStatuses.rows
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,

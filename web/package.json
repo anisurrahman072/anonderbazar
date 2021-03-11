@@ -7,13 +7,7 @@
     "url": "git@gitlab.com:softbdltd/anonderbazar.git"
   },
   "contributors": [
-    "AngularClass <hello@angularclass.com>",
-    "PatrickJS <patrick@angularclass.com>",
-    "Jeff Whelpley <jeff@gethuman.com>",
-    "Jeff Cross <crossj@google.com>",
-    "Mark Pieszak <mpieszak84@gmail.com>",
-    "Jason Jean <jasonjean1993@gmail.com>",
-    "Fabian Wiles <fabian.wiles@gmail.com>"
+    "ASM Mahmudul Hasan <asmmahmud@gmail.com>",
   ],
   "scripts": {
     "ng": "ng",

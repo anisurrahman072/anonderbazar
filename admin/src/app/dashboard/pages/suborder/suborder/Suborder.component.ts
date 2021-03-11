@@ -11,14 +11,48 @@ import {UIService} from '../../../../services/ui/ui.service';
 import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import * as moment from 'moment';
 import {CourierService} from '../../../../services/courier.service';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {NzNotificationService} from "ng-zorro-antd";
+import differenceInCalendarDays from 'date-fns/difference_in_calendar_days';
+import moment from "moment";
+import {SuborderItemService} from "../../../../services/suborder-item.service";
+import __ from "lodash";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+const csvHeaders = [
+    'SL',
+    'Order Id',
+    'SubOrder Id',
+    'Vandor Name',
+    'Vandor Phone',
+    'Customer Name',
+    'Customer Phone',
+    'Product Description',
+    'Price',
+    'Quantity',
+    'Total',
+    'Suborder Status',
+    'Suborder Status Changer',
+    'Order Status',
+    'Order Status Changer',
+    'Date',
+    'Pending',
+    'Confirmed',
+    'Processing',
+    'Prepared',
+    'Departure',
+    'Pickup',
+    'In the Air',
+    'Landed',
+    'Arrived At Warehouse',
+    'Shipped',
+    'Out For Delivery',
+    'Delivered',
+    'Canceled'
+];
 
 @Component({
     selector: 'app-warehouse',
@@ -29,6 +63,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export class SuborderComponent implements OnInit {
     @ViewChildren('dataFor') dataFor: QueryList<any>;
 
+    private readonly today: any = null;
+    dateRangeModel: any = [];
     data = [];
     dataPR = [];
     _isSpinning = true;
@@ -54,17 +90,22 @@ export class SuborderComponent implements OnInit {
     private sortKey: string = '';
     private sortValue: string = '';
 
+    private dateRangeFilter: any = {
+        to: null,
+        from: null
+    };
     suborderNumberSearchValue: any = '';
-
-    suborderIdValue: string = '';
+    vendorNameValue: string = '';
     quantitySearchValue: string = '';
     totalPriceSearchValue: string = '';
-    dateSearchValue: any;
+
 
     statusSearchValue: string = '';
     statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
-    statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
+    private statusOptions = GLOBAL_CONFIGS.SUB_ORDER_STATUSES_KEY_VALUE;
+    private statusOptionsMapping = GLOBAL_CONFIGS.SUB_ORDER_STATUSES_MAPPING;
+    private OrderStatusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
@@ -82,17 +123,21 @@ export class SuborderComponent implements OnInit {
     loading: boolean = false;
 
 
-    constructor(private suborderService: SuborderService,
-                private _notification: NzNotificationService,
-                private fb: FormBuilder,
-                private exportService: ExportService,
-                private requisitionService: RequisitionService,
-                private courierService: CourierService,
-                private statusChangeService: StatusChangeService,
-                private uiService: UIService,
-                private authService: AuthService) {
+    constructor(
+        private suborderService: SuborderService,
+        private suborderItemService: SuborderItemService,
+        private _notification: NzNotificationService,
+        private fb: FormBuilder,
+        private exportService: ExportService,
+        private requisitionService: RequisitionService,
+        private courierService: CourierService,
+        private statusChangeService: StatusChangeService,
+        private uiService: UIService,
+        private authService: AuthService
+    ) {
 
         this.options = GLOBAL_CONFIGS.SUB_ORDER_STATUSES;
+        this.today = moment();
     }
 
     // init the component
@@ -139,10 +184,10 @@ export class SuborderComponent implements OnInit {
             this.page,
             this.limit,
             this.suborderNumberSearchValue || '',
-            this.suborderIdValue || '',
+            this.vendorNameValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
-            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
+            JSON.stringify(this.dateRangeFilter),
             this.statusSearchValue || '',
             this.sortKey,
             this.filterTerm(this.sortValue))
@@ -160,11 +205,12 @@ export class SuborderComponent implements OnInit {
                 });
     }
 
-    showCsvModal(){
+    showCsvModal() {
         this.isProductVisible = true;
         this.isProductVisiblePR = false;
         this.getDataForCsv();
     }
+
     //Method for showing the modal
     getDataForCsv = () => {
         this._isSpinningCsv = true;
@@ -176,17 +222,14 @@ export class SuborderComponent implements OnInit {
             this.pageCsv,
             this.limitCsv,
             this.suborderNumberSearchValue || '',
-            this.suborderIdValue || '',
+            this.vendorNameValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
-            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
+            JSON.stringify(this.dateRangeFilter),
             this.statusSearchValue || '',
             this.sortKey,
             this.filterTerm(this.sortValue))
             .subscribe(result => {
-
-                    console.log('csv getDataForCsv', result);
-
                     this.totalCsv = result.total;
                     this.subOrdersForCsv = result.data;
                     const thisTotal = this.subOrdersForCsv.length;
@@ -196,10 +239,8 @@ export class SuborderComponent implements OnInit {
                             const foundIndex = this.selectedSubOrderIds.findIndex((subOrderId) => {
                                 return subOrderId == this.subOrdersForCsv[index].id;
                             });
-
                             this.subOrdersForCsv[index].checked = foundIndex !== -1;
                         }
-
                     } else {
                         for (let index = 0; index < thisTotal; index++) {
                             this.subOrdersForCsv[index].checked = false;
@@ -228,10 +269,10 @@ export class SuborderComponent implements OnInit {
             this.pagePr,
             this.limitPr,
             this.suborderNumberSearchValue || '',
-            this.suborderIdValue || '',
+            this.vendorNameValue || '',
             this.quantitySearchValue || '',
             this.totalPriceSearchValue || '',
-            this.dateSearchValue ? JSON.stringify(this.dateSearchValue) : '',
+            JSON.stringify(this.dateRangeFilter),
             this.statusSearchValue || '',
             this.sortKey,
             this.filterTerm(this.sortValue)
@@ -275,11 +316,11 @@ export class SuborderComponent implements OnInit {
         const len = this.subOrdersForCsv.length;
         for (let i = 0; i < len; i++) {
             this.subOrdersForCsv[i].checked = isChecked;
-            this._refreshStatus(isChecked, this.subOrdersForCsv[i])
+            this.onCsvSelectionChange(isChecked, this.subOrdersForCsv[i].id)
         }
     }
 
-    _refreshStatus($event, value) {
+    onCsvSelectionChange($event, value) {
 
         if ($event) {
             this.selectedSubOrderIds.push(value);
@@ -303,7 +344,6 @@ export class SuborderComponent implements OnInit {
             this._refreshStatusPR(isChecked, this.dataPR[i])
         }
     }
-
 
 
     _refreshStatusPR($event, value) {
@@ -420,14 +460,6 @@ export class SuborderComponent implements OnInit {
             });
     }
 
-    daterangeChange() {
-        if (this.dateSearchValue.from && this.dateSearchValue.to) {
-            this.page = 1;
-            this.getPageData()
-        }
-
-    }
-
     getStatusLabel(statusCode) {
 
         if (typeof this.statusOptions[statusCode] !== 'undefined') {
@@ -458,7 +490,7 @@ export class SuborderComponent implements OnInit {
     resetAllFilter() {
         this.limit = 5;
         this.page = 1;
-        this.dateSearchValue = '';
+
 
         this.sortValue = '';
         this.sortKey = '';
@@ -475,8 +507,8 @@ export class SuborderComponent implements OnInit {
     };
 
     //Event method for submitting the form
-    submitForm = ($event, value) => {
-        this.isProductVisible = false;
+    submitFormCSV = ($event, value) => {
+        // this.isProductVisible = false;
         this.dowonloadCSV(this.selectedSubOrderIds);
     }
 
@@ -640,84 +672,89 @@ export class SuborderComponent implements OnInit {
         }) !== -1
     }
 
-    dowonloadCSV(selectedSubOrderIds) {
+    private dowonloadCSV(selectedSubOrderIds) {
 
-        let csvData = [];
+        const getSubOrderStatuses = (allStatuses, subOrderId, status) => {
+            if (!__.isEmpty(allStatuses) && !__.isNil(allStatuses[subOrderId]) && !__.isNil(allStatuses[subOrderId][status])) {
+                return moment(allStatuses[subOrderId][status].status_date).format('DD/MM/YYYY h:m a') + '-' + allStatuses[subOrderId][status].changed_by_name;
+            }
+            return 'N/A';
+        }
+        this._isSpinning = true;
+        this.suborderItemService.allSubOrderItemsBySubOrderIds(selectedSubOrderIds)
+            .subscribe((result: any) => {
+                console.log('dowonloadCSV', result);
 
-        console.log('data',selectedSubOrderIds);
+                let allStatuses = null;
+                if (result.subOrderStatuses && result.subOrderStatuses.length > 0) {
+                    allStatuses = __.groupBy(result.subOrderStatuses, 'suborder_id');
+                    __.forEach(allStatuses, (value, key) => {
+                        console.log('value', value);
+                        allStatuses[key] = __.keyBy(value, 'suborder_status');
+                    });
 
-        data.forEach(suborder => {
-            suborder.items.forEach(item => {
-                let i = 0, varients = "";
-                item.suborderItemVariants.forEach(element => {
-                    varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
-                });
+                }
+                if (result.data && result.data.length > 0) {
+                    const csvData = result.data.map((item, i) => {
 
-                csvData.push({
-                    'SL': ++i,
-                    'Order Id': suborder.product_order_id.id,
-                    'SubOrder Id': suborder.id,
-                    'Vandor Name': (item.warehouse_id) ? item.warehouse_id.name : 'N/a',
-                    'Vandor Phone': (item.warehouse_id) ? item.warehouse_id.phone : 'N/a',
-                    'Customer Name': suborder.order.user_id.first_name + ' ' + suborder.order.user_id.last_name,
-                    'Customer Phone': (suborder.order.user_id) ? suborder.order.user_id.phone : 'N/a',
-                    'Product Description': item.product_id.name + ' | ' + varients,
-                    'Price': item.product_id.price,
-                    'Quantity': item.product_quantity,
-                    'Total': item.product_total_price,
-                    'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
-                    'Suborder Changed By': ((suborder.changed_by) ? suborder.changed_by.first_name : '') + ' ' + ((suborder.changed_by) ? suborder.changed_by.last_name : ''),
-                    'Order Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.order.status] : 'Unrecognized Status',
-                    'Order Status Changed By': ((suborder.order.changed_by) ? suborder.order.changed_by.first_name : '') + ' ' + ((suborder.order.changed_by) ? suborder.order.changed_by.last_name : ''),
-                    'Date': (item.date) ? item.date : 'N/a',
-                    'Pending': (item.pending) ? moment(item.pending.date).format('YYYY-MM-DD') + '-' + item.pending.changed_by.first_name + ' ' + item.pending.changed_by.last_name : 'N/a',
-                    'Processing': (item.processing) ? moment(item.processing.date).format('YYYY-MM-DD') + '-' + item.processing.changed_by.first_name + ' ' + item.processing.changed_by.last_name : 'N/a',
-                    'Prepared': (item.prepared) ? moment(item.prepared.date).format('YYYY-MM-DD') + '-' + item.prepared.changed_by.first_name + ' ' + item.prepared.changed_by.last_name : 'N/a',
-                    'Departure': (item.departure) ? moment(item.departure.date).format('YYYY-MM-DD') + '-' + item.departure.changed_by.first_name + ' ' + item.departure.changed_by.last_name : 'N/a',
-                    'Pickup': (item.pickup) ? moment(item.pickup.date).format('YYYY-MM-DD') + '-' + item.pickup.changed_by.first_name + ' ' + item.pickup.changed_by.last_name : 'N/a',
-                    'In the Air': (item.in_the_air) ? moment(item.in_the_air.date).format('YYYY-MM-DD') + '-' + item.in_the_air.changed_by.first_name + ' ' + item.in_the_air.changed_by.last_name : 'N/a',
-                    'Landed': (item.landed) ? moment(item.landed.date).format('YYYY-MM-DD') + '-' + item.landed.changed_by.first_name + ' ' + item.landed.changed_by.last_name : 'N/a',
-                    'Arrived At Warehouse': (item.arrival_at_warehouse) ? moment(item.arrival_at_warehouse.date).format('YYYY-MM-DD') + '-' + item.arrival_at_warehouse.changed_by.first_name + ' ' + item.arrival_at_warehouse.changed_by.last_name : 'N/a',
-                    'Shipped': (item.shipped) ? moment(item.shipped.date).format('YYYY-MM-DD') + '-' + item.shipped.changed_by.first_name + ' ' + item.shipped.changed_by.last_name : 'N/a',
-                    'Out For Delivery': (item.out_for_delivery) ? moment(item.out_for_delivery.date).format('YYYY-MM-DD') + '-' + item.out_for_delivery.changed_by.first_name + ' ' + item.out_for_delivery.changed_by.last_name : 'N/a',
-                    'Delivered': (item.delivered) ? moment(item.delivered.date).format('YYYY-MM-DD') + '-' + item.delivered.changed_by.first_name + ' ' + item.delivered.changed_by.last_name : 'N/a',
-                    'Canceled': (item.canceled) ? moment(item.canceled.date).format('YYYY-MM-DD') + '-' + item.canceled.changed_by.first_name + ' ' + item.canceled.changed_by.last_name : 'N/a',
-                });
+                        let varients = '';
+
+                        return {
+                            'SL': i + 1,
+                            'Order Id': item.order_id,
+                            'SubOrder Id': item.suborder_id,
+                            'Vandor Name': (item.vendor_name) ? item.vendor_name : 'N/A',
+                            'Vandor Phone': (item.vendor_phone) ? item.vendor_phone : 'N/A',
+                            'Customer Name': item.customer_name,
+                            'Customer Phone': (item.customer_phone) ? item.customer_phone : 'N/A',
+                            'Product Description': item.product_name + ' | ' + varients,
+                            'Price': item.price,
+                            'Quantity': item.product_quantity,
+                            'Total': item.product_total_price,
+                            'Suborder Status': typeof this.statusOptions[item.sub_order_status] !== 'undefined' ? this.statusOptions[item.sub_order_status] : 'Unrecognized Status',
+                            'Suborder Status Changer': item.suborder_changed_by_name ? item.suborder_changed_by_name : '',
+                            'Order Status': typeof this.OrderStatusOptions[item.order_status] !== 'undefined' ? this.OrderStatusOptions[item.order_status] : 'Unrecognized Status',
+                            'Order Status Changer': item.order_changed_by_name ? item.order_changed_by_name : '',
+                            'Date': item.suborder_item_date ? moment(item.suborder_item_date).format('DD/MM/YYYY h:m a') : 'N/A',
+
+                            'Pending': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.pending),
+                            'Confirmed': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.confirmed),
+                            'Processing': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.processing),
+                            'Prepared': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.prepared),
+                            'Departure': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.departure),
+                            'Pickup': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.pickup),
+                            'In the Air': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.in_the_air),
+                            'Landed': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.landed),
+                            'Arrived At Warehouse': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.arrived_at_warehouse),
+                            'Shipped': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.shipped),
+                            'Out For Delivery': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.out_for_delivery),
+                            'Delivered': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.delivered),
+                            'Canceled': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.canceled),
+                        };
+                    });
+
+
+                    this.exportService.downloadFile(csvData, csvHeaders);
+                }
+                this._isSpinning = false;
+            }, (error) => {
+                this._isSpinning = false;
             });
-        });
 
-        const header = [
-            'SL',
-            'Order Id',
-            'SubOrder Id',
-            'Vandor Name',
-            'Vandor Phone',
-            'Customer Name',
-            'Customer Phone',
-            'Product Description',
-            'Price',
-            'Quantity',
-            'Total',
-            'Suborder Status',
-            'Suborder Changed By',
-            'Order Status',
-            'Order Status Changed By',
-            'Date',
-            'Pending',
-            'Processing',
-            'Prepared',
-            'Departure',
-            'Pickup',
-            'In the Air',
-            'Landed',
-            'Arrived At Warehouse',
-            'Shipped',
-            'Out For Delivery',
-            'Delivered',
-            'Canceled'
-        ];
-        this.exportService.downloadFile(csvData, header);
+
     }
 
+    disabledDate = (current: Date): boolean => {
+        // Can not select days before today and today
+        return differenceInCalendarDays(current, this.today.valueOf()) > 0;
+    };
 
+    onDateRangeChange(result: any) {
+        this.dateRangeFilter = {
+            from: result[0],
+            to: result[1],
+        }
+        this.page = 1;
+        this.getPageData();
+    }
 }

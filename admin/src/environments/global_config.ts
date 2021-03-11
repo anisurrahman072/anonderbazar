@@ -36,6 +36,21 @@ export const GLOBAL_CONFIGS = {
         12: 'Canceled',
         13: 'Confirmed'
     },
+    ORDER_STATUSES_MAPPING: {
+        pending: 1,
+        processing: 2,
+        prepared: 3,
+        departure: 4,
+        pickup: 5,
+        in_the_air: 6,
+        landed: 7,
+        arrived_at_warehouse: 8,
+        shipped: 9,
+        out_for_delivery: 10,
+        delivered: 11,
+        canceled: 12,
+        confirmed: 13
+    },
     SUB_ORDER_STATUSES: [
         {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
         {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
@@ -65,5 +80,20 @@ export const GLOBAL_CONFIGS = {
         11: 'Delivered',
         12: 'Canceled',
         13: 'Confirmed'
+    },
+    SUB_ORDER_STATUSES_MAPPING: {
+        pending: 1,
+        processing: 2,
+        prepared: 3,
+        departure: 4,
+        pickup: 5,
+        in_the_air: 6,
+        landed: 7,
+        arrived_at_warehouse: 8,
+        shipped: 9,
+        out_for_delivery: 10,
+        delivered: 11,
+        canceled: 12,
+        confirmed: 13
     }
 };

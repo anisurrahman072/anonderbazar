@@ -39,6 +39,11 @@ export class SuborderItemService {
         return this.http.get(url)
     }
 
+    allSubOrderItemsBySubOrderIds(orderIds: number[]) {
+        const url = `${this.EndPoint}/getBySubOrderIds?sub_order_ids=${JSON.stringify(orderIds)}`;
+        return this.http.get(url)
+    }
+
     getById(id): Observable<any> {
         return this.http.get(this.EndPoint + "/" + id);
     }

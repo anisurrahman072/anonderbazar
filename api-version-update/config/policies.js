@@ -301,6 +301,7 @@ module.exports.policies = {
     'findOne': true,
     'getSuborderItems': true,
     'getByOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getBySubOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],

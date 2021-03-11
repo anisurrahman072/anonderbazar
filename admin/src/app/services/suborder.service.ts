@@ -62,7 +62,7 @@ export class SuborderService {
         page: number,
         limit: number,
         suborderNumberSearchValue: number,
-        suborderIdValue: string,
+        vendorNameValue: string,
         quantitySearchValue: string,
         totalPriceSearchValue: string,
         dateSearchValue: any,
@@ -73,9 +73,10 @@ export class SuborderService {
         return this.http.get(
             `${
                 this.EndPoint2
-            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
+            }?warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateRangeValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
     }
+
 
 
     getAllSuborderWithPR(
@@ -83,7 +84,7 @@ export class SuborderService {
         page: number,
         limit: number,
         suborderNumberSearchValue: number,
-        suborderIdValue: string,
+        vendorNameValue: string,
         quantitySearchValue: string,
         totalPriceSearchValue: string,
         dateSearchValue: any,
@@ -95,7 +96,7 @@ export class SuborderService {
         return this.http.get(
             `${
                 this.EndPoint2
-            }/forCsv?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&suborderIdValue=${suborderIdValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
+            }/forCsv?PR_status=0&warehouse_id=${warehouseId}&page=${page}&limit=${limit}&suborderNumberSearchValue=${suborderNumberSearchValue}&vendorNameValue=${vendorNameValue}&quantitySearchValue=${quantitySearchValue}&totalPriceSearchValue=${totalPriceSearchValue}&dateSearchValue=${dateSearchValue}&statusSearchValue=${statusSearchValue}&sortKey=${sortKey}&sortValue=${sortValue}`
         );
 
     }

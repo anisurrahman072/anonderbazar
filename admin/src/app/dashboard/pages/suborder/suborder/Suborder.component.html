@@ -63,19 +63,15 @@
                                (ngModelChange)="page=1; getPageData()" [ngStyle]="{'width': '100px'}">
                     </th>
                     <th class="suborder-daterange">
-
-                        <!--   <input class="form-control" placeholder="Select Order Date" type="text"-->
-                        <!--   mwlFlatpickr [(ngModel)]="dateSearchValue" (ngModelChange)="daterangeChange()"-->
-                        <!--         [altInput]="true" [convertModelValue]="true" mode="range"> -->
+                        <nz-range-picker [(ngModel)]="dateRangeModel" (ngModelChange)="onDateRangeChange($event)" nzFormat="dd/MM/yyyy"  [nzDisabledDate]="disabledDate"></nz-range-picker>
                     </th>
                     <th>
 
                     </th>
                     <th>
-                        <input nz-input placeholder="Vendor Name" [(ngModel)]="suborderIdValue"
+                        <input nz-input placeholder="Vendor Name" [(ngModel)]="vendorNameValue"
                                *ngIf="currentUser.group_id=='admin'"
                                (ngModelChange)="page=1; getPageData()">
-
                     </th>
                     <th>
                         <input nz-input placeholder="Quantity" [(ngModel)]="quantitySearchValue"
@@ -85,10 +81,7 @@
                         <input nz-input placeholder="Total Price" [(ngModel)]="totalPriceSearchValue"
                                (ngModelChange)="page=1;getPageData()">
                     </th>
-
-
                     <th>
-
                         <nz-select style="width: 180px;" [(ngModel)]="statusSearchValue"
                                    nzAllowClear (ngModelChange)="page=1; getPageData()"
                                    nzPlaceHolder="Select Status"
@@ -112,9 +105,9 @@
                 <tbody>
                 <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
                     <td>{{data.product_order_id}} / {{data.id}}</td>
-                    <td>{{data.created_at|date:'yyyy-MM-dd'}}</td>
+                    <td>{{data.created_at|date:'yyyy-MM-dd hh:mm a'}}</td>
                     <td>{{data.warehouse_id}}</td>
-                    <td>{{data.name}}</td>
+                    <td>{{data.warehouse_name}}</td>
                     <td>{{data.total_quantity}}</td>
                     <td>{{data.total_price}}</td>
                     <td>
@@ -171,7 +164,7 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalProductContent>
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
-              (ngSubmit)="submitForm($event,validateProductForm.value)">
+              (ngSubmit)="submitFormCSV($event,validateProductForm.value)">
             <nz-spin [nzSpinning]="_isSpinningCsv">
                 <nz-table #nzTableCsv [nzBordered]="true" [nzData]="subOrdersForCsv"
                           [nzFrontPagination]="false"
@@ -214,12 +207,12 @@
                     <tbody>
                     <tr *ngFor="let datum of nzTableCsv.data;let i=index;">
                         <td>
-                            <input type="checkbox" id="{{'order_'+datum.id}}" (change)="_refreshStatus($event, datum.id)"
+                            <input type="checkbox" id="{{'order_'+datum.id}}" (change)="onCsvSelectionChange($event, datum.id)"
                                    [checked]="datum.checked">
                         </td>
                         <td>{{datum.product_order_id}} / {{datum.id}}</td>
-                        <td>{{datum.created_at|date}}</td>
-                        <td>{{datum.name}}</td>
+                        <td>{{datum.created_at|date:'yyyy-MM-dd hh:mm a'}}</td>
+                        <td>{{datum.warehouse_name}}</td>
                         <td>{{datum.total_quantity}}</td>
                         <td>{{datum.total_price}}</td>
                         <td>{{getStatusLabel(datum.status)}}</td>

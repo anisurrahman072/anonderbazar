@@ -266,10 +266,23 @@ module.exports = {
 
       const SuborderQuery = Promise.promisify(Suborder.getDatastore().sendNativeQuery);
 
-      let rawSelect = 'SELECT suborder.id, suborder.product_order_id, suborder.warehouse_id,';
-      rawSelect += ' suborder.total_quantity, suborder.total_price, suborder.delivery_date, suborder.courier_status, ';
-      rawSelect += ' suborder.PR_status, suborder.status, suborder.changed_by, suborder.`date`, suborder.created_at, ';
-      rawSelect += ' warehouses.name as name,  CONCAT(users.first_name, \' \', users.last_name) as changedBy  ';
+      let rawSelect = `
+        SELECT
+          suborder.id as id,
+          suborder.product_order_id,
+          suborder.warehouse_id,
+          suborder.total_quantity,
+          suborder.total_price,
+          suborder.delivery_date,
+          suborder.courier_status,
+          suborder.PR_status,
+          suborder.status,
+          suborder.changed_by,
+          suborder.\`date\`,
+          suborder.created_at,
+          warehouses.name as warehouse_name,
+          CONCAT(users.first_name, ' ', users.last_name) as changedBy
+      `;
 
       let fromSQL = ' FROM product_suborders as suborder  ';
       fromSQL += ' LEFT JOIN warehouses ON warehouses.id = suborder.warehouse_id   LEFT JOIN users ON users.id = suborder.changed_by  ';
@@ -277,58 +290,61 @@ module.exports = {
       let _where = ' WHERE suborder.deleted_at IS NULL ';
 
       if (req.query.warehouse_id) {
-
-        // _where.warehouse_id = req.query.warehouse_id;
         _where += ` AND suborder.warehouse_id = ${req.query.warehouse_id}`;
       }
 
       if (req.query.suborderNumberSearchValue) {
-        // _where.id = {'like': `%${req.query.suborderNumberSearchValue}%`}
         _where += ` AND suborder.id LIKE '%${req.query.suborderNumberSearchValue}%' `;
       }
 
       if (req.query.orderNumberSearchValue) {
-        // _where.product_order_id = {'like': `%${req.query.orderNumberSearchValue}%`}
         _where += ` AND suborder.product_order_id LIKE '%${req.query.orderNumberSearchValue}%' `;
       }
 
       if (req.query.quantitySearchValue) {
-        // _where.total_quantity = {'like': `%${req.query.quantitySearchValue}%`}
         _where += ` AND suborder.total_quantity LIKE '%${req.query.quantitySearchValue}%' `;
       }
       if (req.query.totalPriceSearchValue) {
-        // _where.total_price = {'like': `%${req.query.totalPriceSearchValue}%`}
         _where += ` AND suborder.total_price LIKE '%${req.query.totalPriceSearchValue}%' `;
       }
 
-      if (req.query.dateSearchValue) {
-        let dateSearchValue = JSON.parse(req.query.dateSearchValue);
-        let from = moment(dateSearchValue.from).format('YYYY-MM-DD');
-        let to = moment(dateSearchValue.to).format('YYYY-MM-DD');
-        // _where.created_at = {'>=': from, '<=': to};
-        _where += ` AND ( suborder.created_at >= '${from}' AND suborder.created_at <= '${to}') `;
+      if (req.query.dateRangeValue) {
+        try {
+          let dateSearchValue = JSON.parse(req.query.dateRangeValue);
+          console.log(dateSearchValue);
+          if (dateSearchValue.from && dateSearchValue.to) {
+            let from = moment(dateSearchValue.from).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            let to = moment(dateSearchValue.to).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            _where += ` AND ( suborder.created_at >= '${from}' AND suborder.created_at <= '${to}') `;
+          }
+
+        } catch (er) {
+          console.log(er);
+        }
+
       }
       if (req.query.statusSearchValue) {
         // _where.status = {'like': `%${req.query.statusSearchValue}%`}
         _where += ` AND suborder.status = '${req.query.statusSearchValue}' `;
       }
-      if (req.query.suborderIdValue) {
-        _where += ` AND warehouses.name LIKE '%${req.query.suborderIdValue}%' `;
+      if (req.query.vendorNameValue) {
+        _where += ` AND warehouses.name LIKE '%${req.query.vendorNameValue}%' `;
       }
 
       if (req.query.PR_status) {
         _where += ` AND suborder.PR_status = '${req.query.PR_status}' `;
       }
 
+      let sort = '';
       if (req.query.sortName) {
         // _sort.name = req.query.sortName
-        _where += ' ORDER BY suborder.created_at DESC ';
+        sort += ' ORDER BY suborder.created_at DESC ';
       } else {
-        _where += ' ORDER BY suborder.created_at DESC ';
+        sort += ' ORDER BY suborder.created_at DESC ';
       }
 
       const totalSuborderRaw = await SuborderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
-      console.log('totalSuborderRaw', totalSuborderRaw);
+
       let totalSuborder = 0;
       let suborders = [];
       if (totalSuborderRaw && totalSuborderRaw.rows && totalSuborderRaw.rows.length > 0) {
@@ -337,7 +353,7 @@ module.exports = {
         _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborder;
 
         let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        const rawResult = await SuborderQuery(rawSelect + fromSQL + _where + limitSQL, []);
+        const rawResult = await SuborderQuery(rawSelect + fromSQL + _where + sort + limitSQL, []);
 
         suborders = rawResult.rows;
 
