@@ -100,15 +100,15 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
         }
 
         value.user_id = this.customer.id;
-        value.receiver_id = this.currentUser;
+        value.receiver_id = this.currentUser.id;
 
         let paymentInsertPayload = value;
         paymentInsertPayload.payment_date = moment(paymentInsertPayload.payment_date ).format('YYYY-MM-DD HH:mm:ss');
 
 
-        this.paymentService.insert(paymentInsertPayload)
+        this.paymentService.update(this.id, paymentInsertPayload)
             .subscribe(result => {
-                if (result.id) {
+                if (result) {
                     this._notification.create('success', 'Payment Update Succeeded for:', this.data.id);
                     this.router.navigate(['/dashboard/payment/details/', this.id]);
                 }
