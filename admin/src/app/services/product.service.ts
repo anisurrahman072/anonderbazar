@@ -58,6 +58,10 @@ export class ProductService {
         return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&page=${page}&skip=${skip}&limit=${limit}`);
     }
 
+    getByIdsWithJoin(ids): Observable<any> {
+        return this.http.get(this.EndPoint + '/byIdsWithPopulate?product_ids=' + JSON.stringify(ids));
+    }
+
     getById(id): Observable<any> {
         // get users from api
         return this.http.get(this.EndPoint + '/' + id);

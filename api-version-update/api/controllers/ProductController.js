@@ -96,7 +96,61 @@ module.exports = {
         error
       });
     }
+  },
 
+  byIdsWithPopulate: async (req, res) => {
+
+    try {
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+          products.id as id,
+          products.code  as code,
+          products.name as name,
+          products.price,
+          products.vendor_price as vendor_price,
+          products.image as image,
+          products.category_id  as category_id ,
+          products.subcategory_id  as subcategory_id ,
+          products.type_id   as type_id  ,
+          products.brand_id    as brand_id   ,
+          products.quantity as quantity,
+          products.promotion as promotion,
+          products.promo_price as promo_price,
+          products.warehouse_id,
+          types.name as type_name,
+          category.name as category_name,
+          subCategory.name as subcategory_name,
+          brands.name as brand_name
+      `;
+      let fromSQL = ' FROM products  ';
+      fromSQL += ' LEFT JOIN categories as types ON types.id = products.type_id   ';
+      fromSQL += ' LEFT JOIN categories as category ON category.id = products.category_id   ';
+      fromSQL += ' LEFT JOIN categories as subCategory ON subCategory.id = products.subcategory_id   ';
+      fromSQL += ' LEFT JOIN brands ON brands.id = products.brand_id   ';
+      let _where = ' WHERE products.approval_status  = 2  ';
+
+      if (req.query.product_ids) {
+        try {
+          const productIds = JSON.parse(req.query.product_ids);
+          if (Array.isArray(productIds) && productIds.length > 0) {
+            _where += ` AND products.id IN  (${productIds.join(',')}) `;
+          }
+        } catch (errorr) {
+          console.log(errorr);
+          return res.badRequest('Invalid Data');
+        }
+      }
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      const allProducts = rawResult.rows;
+
+      res.status(200).json(allProducts);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
   },
   //Method called for deleting a product data
   //Model models/Product.js

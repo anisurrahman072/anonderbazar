@@ -25,6 +25,16 @@ type SearchSubject = { field: string, query: string };
 })
 export class ProductComponent implements OnInit, OnDestroy {
     private currentWarehouseSubscriprtion: Subscription;
+    private allProductSub: Subscription;
+    private searchChangeSubs: Subscription;
+    private categoryProductSubs1: Subscription;
+    private categoryProductSubs2: Subscription;
+    private brandSubs: Subscription;
+    private variantSubs: Subscription;
+    private deleteSubs: Subscription;
+    private addPropSubs: Subscription;
+    private categoryChangeSubs: Subscription;
+    private getProdVariantSubs: Subscription;
     status: any = 1;
     type: any;
 
@@ -114,7 +124,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.productService
+        this.allProductSub = this.productService
             .getAllProductsByStatus(
                 this.status,
                 this.page,
@@ -148,9 +158,37 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.currentWarehouseSubscriprtion
             ? this.currentWarehouseSubscriprtion.unsubscribe()
             : '';
-        this.searchChangeSub
-            ? this.searchChangeSub.unsubscribe()
+        this.searchChangeSubs
+            ? this.searchChangeSubs.unsubscribe()
             : '';
+        this.allProductSub
+            ? this.allProductSub.unsubscribe()
+            : '';
+        this.categoryProductSubs1
+            ? this.categoryProductSubs1.unsubscribe()
+            : '';
+        this.categoryProductSubs2
+            ? this.categoryProductSubs2.unsubscribe()
+            : '';
+        this.brandSubs
+            ? this.brandSubs.unsubscribe()
+            : '';
+        this.variantSubs
+            ? this.variantSubs.unsubscribe()
+            : '';
+        this.deleteSubs
+            ? this.deleteSubs.unsubscribe()
+            : '';
+        this.categoryChangeSubs
+            ? this.categoryChangeSubs.unsubscribe()
+            : '';
+        this.categoryChangeSubs
+            ? this.categoryChangeSubs.unsubscribe()
+            : '';
+        this.getProdVariantSubs
+            ? this.getProdVariantSubs.unsubscribe()
+            : '';
+
     }
 
     // For initiating the section element with data
@@ -185,19 +223,19 @@ export class ProductComponent implements OnInit, OnDestroy {
             }
         );
 
-        this.categoryProductService.getAllCategory().subscribe((result: any) => {
+        this.categoryProductSubs1 = this.categoryProductService.getAllCategory().subscribe((result: any) => {
             this.TypeSearchOptions = result;
         });
 
-        this.brandService.getAll().subscribe((result: any) => {
+        this.brandSubs = this.brandService.getAll().subscribe((result: any) => {
             this.brandSearchOptions = result;
         });
 
-        this.categoryProductService.getAll().subscribe((result: any) => {
+        this.categoryProductSubs2 = this.categoryProductService.getAll().subscribe((result: any) => {
             this.categorySearchOptions = result;
         });
 
-        this.searchChangeSub
+        this.searchChangeSubs = this.searchChangeSub
             .pipe(debounceTime(200), distinctUntilChanged((prev: SearchSubject, next: SearchSubject) => {
                 return JSON.stringify(prev) === JSON.stringify(next);
             }))
@@ -277,7 +315,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             product_id: this.currentProduct.id
         };
 
-        this.productVariantService.insert(formValue).subscribe(result => {
+        this.variantSubs = this.productVariantService.insert(formValue).subscribe(result => {
             if (result) {
                 this._notification.create(
                     'success',
@@ -292,7 +330,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     // Event method for deleting product
     deleteConfirm(index, id) {
-        this.productService.delete(id).subscribe(result => {
+        this.deleteSubs = this.productService.delete(id).subscribe(result => {
 
             this.getProductData();
             this._notification.create(
@@ -305,7 +343,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     // Event method for deleting product
     approveConfirm(index, id) {
-        console.log('approveConfirm', id)
+
         this.productService.approveByAdmin(id).subscribe(result => {
 
             this.getProductData();
@@ -332,7 +370,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     // Method for getting product variant
     getProductVariants(data) {
-        this.productVariantService
+        this.getProdVariantSubs = this.productVariantService
             .getAllVariantByProductId(data.id)
             .subscribe(result => {
                 this.currentProduct_variants = result;
@@ -448,7 +486,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             sale_unit: value.sale_unit
         };
 
-        this.productService.update(this.currentProduct.id, formValue).subscribe(
+        this.addPropSubs = this.productService.update(this.currentProduct.id, formValue).subscribe(
             result => {
                 this.currentProduct.promotion = value.promotion;
                 this.currentProduct.promo_price = value.promo_price;
@@ -547,7 +585,6 @@ export class ProductComponent implements OnInit, OnDestroy {
     // Method called in brand option change
     brandIdChange($event) {
         this.page = 1;
-        const query = encodeURI($event);
         this.getProductData();
     }
 
@@ -569,7 +606,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.getProductData();
 
         if (query !== 'null') {
-            this.categoryProductService
+            this.categoryChangeSubs = this.categoryProductService
                 .getSubcategoryByCategoryId(query)
                 .subscribe(result => {
                     this.subcategorySearchOptions = result;

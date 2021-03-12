@@ -34,9 +34,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     customerNameFilter: string = '';
     statusSearchValue: string = '';
 
-    private searchStartDate: any;
+    searchStartDate: any;
+    searchEndDate: any;
 
-    private searchEndDate: any;
     orderData = [];
     orderTotal: number = 0;
     orderLimit: number = 25;
@@ -71,8 +71,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
-/*        this.maxSearchDate = moment().format('YYYY-MM-DD');
-        this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');*/
     }
     ngOnDestroy(): void {
         this.orderDataSubscription
@@ -171,7 +169,6 @@ export class OrderComponent implements OnInit, OnDestroy {
                     }
 
                     this.csvSelectAll.nativeElement.checked = !!this.csvPageSelectAll[page - 1];
-
 
                     if (this.storedCsvOrders[page - 1].length) {
                         for (let index = 0; index < thisTotal; index++) {

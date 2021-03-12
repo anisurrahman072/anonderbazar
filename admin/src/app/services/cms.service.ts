@@ -20,21 +20,12 @@ export class CmsService {
     }
 
     getAllSearch(option: {
-        page?: String;
-        section?: String;
-        subsection?: String;
+        page?: String,
+        section?: String,
+        subsection?: String
     } = {}, homeOfferLimit = 10, homeOfferPage = 1): Observable<any> {
         return this.http
-            .get(
-                this.EndPoint +
-                `?where={"deletedAt":null
-      ${option.page ? ',"page":"' + option.page + '"' : ''}
-      ${option.section ? ',"section":"' + option.section + '"' : ''}
-      ${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}
-  
-      }&limit=${homeOfferLimit}
-      &page=${homeOfferPage}`
-            )
+            .get(this.EndPoint + `?where={"deletedAt":null${option.page ? ',"page":"' + option.page + '"' : ''}${option.section ? ',"section":"' + option.section + '"' : ''}${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}}&limit=${homeOfferLimit}&page=${homeOfferPage}`)
             .map(response => response);
     }
 
@@ -68,7 +59,7 @@ export class CmsService {
     }
 
     getById(id, homeOfferPage = 1, homeOfferLimit = 10): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id+`?limit=${homeOfferLimit}&page=${homeOfferPage}`).map(response => response);
+        return this.http.get(this.EndPoint + '/' + id + `?limit=${homeOfferLimit}&page=${homeOfferPage}`).map(response => response);
     }
 
     insert(data): Observable<any> {

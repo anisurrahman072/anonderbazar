@@ -7,7 +7,7 @@
     "url": "git@gitlab.com:softbdltd/anonderbazar.git"
   },
   "contributors": [
-    "ASM Mahmudul Hasan <asmmahmud@gmail.com>",
+    "ASM Mahmudul Hasan <asmmahmud@gmail.com>"
   ],
   "scripts": {
     "ng": "ng",

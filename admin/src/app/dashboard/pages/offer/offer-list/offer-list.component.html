@@ -41,24 +41,24 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr *ngFor="let data of nzTable.data;let i=index">
-                                    <td>{{data.id}}</td>
+                                <tr *ngFor="let datum of nzTable.data;let i=index">
+                                    <td>{{datum.id}}</td>
                                     <td>
-                                        <nz-tag>{{data.data_value[0].title}}</nz-tag>
+                                        <nz-tag>{{datum.data_value[0].title}}</nz-tag>
                                     </td>
-                                    <td [innerHTML]="data.data_value[0].description"></td>
+                                    <td [innerHTML]="datum.data_value[0].description"></td>
                                     <td>
                                         <nz-button-group>
 
                                             <button *ngIf="'offer-edit'|accessControl"
-                                                    [routerLink]="['/dashboard/offer/edit', data.id]" nz-button
+                                                    [routerLink]="['/dashboard/offer/edit', datum.id]" nz-button
                                                     [nzType]="'primary'" [nzSize]="'default'">
                                                 <i class="anticon anticon-edit"></i>
                                             </button>
                                             <ng-container>
                                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                                [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
-                                                               (nzOnConfirm)="deleteOffer(i,data.id)">
+                                                               (nzOnConfirm)="deleteOffer(i,datum.id)">
                                                     <a nz-popconfirm>
                                                         <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                             <i class="anticon anticon-delete "></i>
@@ -77,13 +77,13 @@
                                                     <li nz-menu-item>
 
                                                         <button style="width: 100%" nz-button [nzType]="'primary'"
-                                                                (click)="showOfferModal(data)">
+                                                                (click)="showOfferModal(datum)">
                                                             <span> Add Related Offer </span>
                                                         </button>
                                                     </li>
                                                     <li nz-menu-item>
                                                         <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                                (click)="showProductModal(data)">
+                                                                (click)="showProductModal(datum)">
                                                             <span> Add Related Product </span>
                                                         </button>
                                                     </li>
@@ -196,7 +196,7 @@
                   [nzTotal]="homeOfferTotal"
                   [(nzPageIndex)]="homeOfferPage"
                   [(nzPageSize)]="homeOfferLimit"
-                  (nzPageIndexChange)="getOfferData(homeOfferData)"
+                  (nzPageIndexChange)="getOfferData($event, homeOfferData)"
         >
             <thead>
             <tr>
@@ -215,16 +215,16 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let data of nzTable2.data;let i=index;">
-                <td>{{data.id}}</td>
+            <tr *ngFor="let datum of nzTable2.data;let i=index;">
+                <td>{{datum.id}}</td>
                 <td>
-                    <nz-tag>{{data.data_value[0].title}}</nz-tag>
+                    <nz-tag>{{datum.data_value[0].title}}</nz-tag>
                 </td>
-                <td [innerHTML]="data.data_value[0].description"></td>
+                <td [innerHTML]="datum.data_value[0].description"></td>
                 <td>
                     <ng-container>
                         <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirmOffer(i,data.id)">
+                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirmOffer(i,datum.id)">
                             <a nz-popconfirm>
                                 <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                     <i class="anticon anticon-delete "></i>
@@ -238,7 +238,7 @@
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" (click)="addNew=!addNew;">
+        <button nz-button [nzSize]="'large'" (click)="addNew=!addNew;">
             <span *ngIf="!addNew"> Add New </span>
             <span *ngIf="addNew">Cancel</span>
         </button>
@@ -255,8 +255,9 @@
                           [nzTotal]="homeOfferTotal"
                           [(nzPageIndex)]="homeOfferPage"
                           [(nzPageSize)]="homeOfferLimit"
-                          (nzPageIndexChange)="getOfferData(homeOfferData)"
-                ><thead>
+                          (nzPageIndexChange)="getOfferData($event, homeOfferData)"
+                >
+                    <thead>
                     <tr>
                         <th>
 
@@ -271,16 +272,16 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let data of nzTable3.data;let i=index;">
+                    <tr *ngFor="let datum of nzTable3.data;let i=index;">
                         <td [nzShowCheckbox]="true">
-                            <label nz-checkbox [(ngModel)]="data.checked" formControlName='offerChecked'
-                                   (ngModelChange)="_refreshStatusOffer($event, data.id)">
+                            <label nz-checkbox [(ngModel)]="datum.checked" formControlName='offerChecked'
+                                   (ngModelChange)="_refreshStatusOffer($event, datum.id)">
                             </label>
                         </td>
                         <td>
-                            <nz-tag>{{data.data_value[0].title}}</nz-tag>
+                            <nz-tag>{{datum.data_value[0].title}}</nz-tag>
                         </td>
-                        <td [innerHTML]="data.data_value[0].description"></td>
+                        <td [innerHTML]="datum.data_value[0].description"></td>
                     </tr>
                     </tbody>
                 </nz-table>
@@ -302,15 +303,14 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalProductContent>
 
-        <nz-table #nzTable
+        <nz-table #nzTableProd
                   nzShowSizeChanger
-                  [nzFrontPagination]="false"
+                  [nzFrontPagination]="true"
                   [nzData]="products"
                   [nzLoading]="loading"
                   [nzTotal]="homeOfferTotal"
                   [(nzPageIndex)]="homeOfferPage"
                   [(nzPageSize)]="homeOfferLimit"
-                  (nzPageIndexChange)="getProduct(homeOfferData)"
         >
             <thead>
             <tr>
@@ -337,17 +337,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let data of nzTable.data;let i=index;">
-                <td>{{data.name}}</td>
-                <td>{{data.brand_id?.name}}</td>
-                <td>{{data.type_id?.name}}</td>
-                <td>{{data.category_id?.name}}</td>
-                <td>{{data.subcategory_id?.name}}</td>
-                <td>{{data.price}}</td>
+            <tr *ngFor="let datum of nzTableProd.data;let i=index;">
+                <td>{{datum.name}}</td>
+                <td>{{datum.brand_name}}</td>
+                <td>{{datum.type_name}}</td>
+                <td>{{datum.category_name}}</td>
+                <td>{{datum.subcategory_name}}</td>
+                <td>{{datum.price}}</td>
                 <td>
                     <ng-container>
                         <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,data.id)">
+                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,datum.id)">
                             <a nz-popconfirm>
                                 <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                     <i class="anticon anticon-delete "></i>
@@ -361,14 +361,14 @@
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" (click)="addNew=!addNew;">
+        <button nz-button [nzSize]="'large'" (click)="addNew=!addNew;">
             <span *ngIf="!addNew"> Add New </span>
             <span *ngIf="addNew">Cancel</span>
         </button>
 
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="submitForm($event,validateProductForm.value)">
-            <nz-table #nzTable
+            <nz-table #nzTableProd1
                       nzShowSizeChanger
                       [nzFrontPagination]="false"
                       [nzData]="allProduct"
@@ -403,18 +403,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let data of nzTable.data;let i=index;">
+                <tr *ngFor="let datum of nzTableProd1.data;let i=index;">
                     <td [nzShowCheckbox]="true">
-                        <label nz-checkbox [(ngModel)]="data.checked" formControlName='productChecked'
-                               (ngModelChange)="_refreshStatus($event, data.id)">
+                        <label nz-checkbox [(ngModel)]="datum.checked" formControlName='productChecked'
+                               (ngModelChange)="_refreshStatus($event, datum.id)">
                         </label>
                     </td>
-                    <td>{{data.name}}</td>
-                    <td>{{data.brand_id?.name}}</td>
-                    <td>{{data.type_id?.name}}</td>
-                    <td>{{data.category_id?.name}}</td>
-                    <td>{{data.subcategory_id?.name}}</td>
-                    <td>{{data.price}}</td>
+                    <td>{{datum.name}}</td>
+                    <td>{{datum.brand_id?.name}}</td>
+                    <td>{{datum.type_id?.name}}</td>
+                    <td>{{datum.category_id?.name}}</td>
+                    <td>{{datum.subcategory_id?.name}}</td>
+                    <td>{{datum.price}}</td>
                 </tr>
                 </tbody>
             </nz-table>

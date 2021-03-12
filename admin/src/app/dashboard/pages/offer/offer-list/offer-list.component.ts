@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectorRef, AfterViewInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
@@ -12,6 +12,7 @@ import {ProductService} from '../../../../services/product.service';
 
 export class OfferListComponent implements OnInit, AfterViewInit {
     homeOfferData: any = [];
+    offerProductIds: any = [];
     homeChildOfferData: any = [];
     addNew: boolean;
     currentProduct: any = {};
@@ -32,13 +33,9 @@ export class OfferListComponent implements OnInit, AfterViewInit {
     allProduct2: any = [];
     storeProductIds: any = [];
     storeOfferIds: any = [];
-    _allChecked = false;
-    _indeterminate = false;
     _displayData = [];
     products = [];
     offers = [];
-    _disabledButton = true;
-    _checkedNumber = 0;
     checked = 'true';
 
     allProductPage = 1;
@@ -56,6 +53,11 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         private _notification: NzNotificationService,
         private cdr: ChangeDetectorRef,
         private cmsService: CmsService) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', []],
             quantity: ['', []],
@@ -68,34 +70,34 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.validateFormOffer = this.fb.group({
             offerChecked: ['', []],
         });
-    }
 
-    // init the component
-    ngOnInit() {
         this.getData();
         this.getChildData();
     };
 
     // Event method for getting all the data for the page
     getData() {
-        this.loading = true;
+        this._isSpinning = true;
         this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'PARENTOFFER'},
+            .getAllSearch(
+                {page: 'POST', section: 'HOME', subsection: 'PARENTOFFER'},
                 this.homeOfferLimit,
-                this.homeOfferPage)
+                this.homeOfferPage
+            )
             .subscribe(result => {
                 this.loading = false;
+                console.log('result-getAllSearch', result);
                 this.homeOfferData = result;
                 this.homeOfferTotal = result.total;
                 this._isSpinning = false;
             }, error => {
-                this.loading = false;
+                this._isSpinning = false;
             });
     };
 
     // Event method for getting all child data for the page
     getChildData() {
-        this.loading = true;
+        this._isSpinning = true;
         this.cmsService
             .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'},
                 this.homeOfferLimit,
@@ -105,12 +107,15 @@ export class OfferListComponent implements OnInit, AfterViewInit {
                 this.homeChildOfferData = result1;
                 this._isSpinning = false;
             }, error => {
-                this.loading = false;
+                this._isSpinning = false;
             });
     };
 
     //Event method for getting all offer data for the page
-    getOfferData(data) {
+    getOfferData(event: any, data: any) {
+        if (event) {
+            this.homeOfferPage = event;
+        }
         this.loading = true;
         this.offers = [];
         this.cmsService.getById(data.id, this.homeOfferPage, this.homeOfferLimit)
@@ -120,7 +125,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
                 console.log(this.childOffers);
                 if (this.childOffers.length > 0) {
                     this.childOffers.forEach(element => {
-                        this.cmsService.getById(element,  this.homeOfferPage, this.homeOfferLimit)
+                        this.cmsService.getById(element, this.homeOfferPage, this.homeOfferLimit)
                             .subscribe(result => {
                                 this.offers.push(result);
                             });
@@ -145,7 +150,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
                 });
 
                 this.alloffers2.forEach(element => {
-                    this.cmsService.getById(element,  this.homeOfferPage, this.homeOfferLimit)
+                    this.cmsService.getById(element, this.homeOfferPage, this.homeOfferLimit)
                         .subscribe(result => {
                             this.alloffers.push(result);
                         });
@@ -167,7 +172,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.alloffers = [];
         this.alloffers2 = [];
 
-        this.getOfferData(data);
+        this.getOfferData(null, data);
         if (this.status == 1) {
             this.type = 0;
         } else {
@@ -192,7 +197,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.currentProduct = data;
         this.isProductVisible = true;
         this.products = [];
-        this.getProduct(data);
+        this.getProduct(null, data);
         if (this.status == 1) {
             this.type = 0;
         } else {
@@ -217,30 +222,32 @@ export class OfferListComponent implements OnInit, AfterViewInit {
         this.isOfferVisible = false;
         this.isProductVisible = false;
     };
-    // Event method for pagination change
-    // changePage(page: number, limit: number) {
-    //     this.allProductPage = page;
-    //     this.allProductLimit = limit;
-    //     console.log('changePage', page, limit)
-    //     this.getAllProducts(page, limit);
-    //     return false;
-    // }
-    getProduct(data) {
-        this.cmsService.getById(data.id,  this.homeOfferPage, this.homeOfferLimit)
-            .subscribe(arg => {
-                this.productOffers = arg.data_value[0].products;
-                console.log('getProduct', this.productOffers);
-                this.products = [];
-                this.productOffers.forEach(element => {
-                    this.productservice.getById(element)
-                        .subscribe(result => {
-                            this.products.push(result);
-                        });
-                });
-                this.getAllProducts();
+
+    getProduct(event: any, data?: any) {
+        if (event) {
+            this.homeOfferPage = event;
+        }
+        if (data) {
+            this.offerProductIds = data.data_value[0].products;
+        }
+        console.log('getProduct', data);
+
+        this.productOffers = this.offerProductIds;
+
+        this._isSpinning = true;
+
+        this.productservice.getByIdsWithJoin(this.offerProductIds)
+            .subscribe(result => {
+                this.products = result;
+                this._isSpinning = false;
+            }, (error) => {
+                this._isSpinning = false;
             });
+        this.allProduct = [];
+        // this.getAllProducts();
 
     };
+
     getAllProducts() {
         this.productservice.getAllWithPagination(this.homeOfferPage, this.homeOfferLimit)
             .subscribe(result => {
@@ -275,23 +282,11 @@ export class OfferListComponent implements OnInit, AfterViewInit {
 
     }
 
-    _checkAll(value) {
-        if (value) {
-            this._displayData.forEach(data => {
-                data.checked = true;
-            });
-        } else {
-            this._displayData.forEach(data => {
-                data.checked = false;
-            });
-        }
-    };
 
     // Event method for submitting the offer form
     submitFormOffer = ($event, value) => {
 
-        let newlist = this.currentOffer.data_value[0].offers.concat(this.storeOfferIds);
-        this.currentOffer.data_value[0].offers = newlist;
+        this.currentOffer.data_value[0].offers = this.currentOffer.data_value[0].offers.concat(this.storeOfferIds);
 
         this.cmsService.updateOffer(this.currentOffer).subscribe(result => {
             this._notification.success('Offer Added', "Feature Title: ");
@@ -308,8 +303,7 @@ export class OfferListComponent implements OnInit, AfterViewInit {
 
     // Event method for submitting the product form
     submitForm = ($event, value) => {
-        let newlist = this.currentProduct.data_value[0].products.concat(this.storeProductIds);
-        this.currentProduct.data_value[0].products = newlist;
+        this.currentProduct.data_value[0].products = this.currentProduct.data_value[0].products.concat(this.storeProductIds);
 
         this.cmsService.offerProductUpdate(this.currentProduct).subscribe(result => {
             this._notification.success('Offer Added', "Feature Title: ");

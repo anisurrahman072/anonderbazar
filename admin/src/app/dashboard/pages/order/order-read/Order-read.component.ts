@@ -16,6 +16,7 @@ import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 })
 export class OrderReadComponent implements OnInit, OnDestroy {
     sub: Subscription;
+    orderSub: Subscription;
     id: number;
     data: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -43,7 +44,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
-            this.orderService.getById(this.id)
+           this.orderSub = this.orderService.getById(this.id)
                 .subscribe(order => {
 
                     this.data = order;
@@ -84,6 +85,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
+        this.orderSub ? this.orderSub.unsubscribe() : '';
 
     }
 
