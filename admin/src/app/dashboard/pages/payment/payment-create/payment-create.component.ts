@@ -11,6 +11,11 @@ import {AuthService} from '../../../../services/auth.service';
 import {OrderService} from "../../../../services/order.service";
 import {SuborderService} from "../../../../services/suborder.service";
 
+import * as _moment from 'moment';
+import {default as _rollupMoment} from 'moment';
+
+const moment = _rollupMoment || _moment;
+
 @Component({
     selector: 'app-payment-create',
     templateUrl: './payment-create.component.html',
@@ -80,6 +85,7 @@ export class PaymentCreateComponent implements OnInit {
         value.user_id = this.customer.id;
         value.receiver_id = this.currentUser.id;
         let paymentInsertPayload = value;
+        paymentInsertPayload.payment_date = moment(paymentInsertPayload.payment_date ).format('YYYY-MM-DD HH:mm:ss');
 
         this.paymentService.insert(paymentInsertPayload)
             .subscribe(result => {
