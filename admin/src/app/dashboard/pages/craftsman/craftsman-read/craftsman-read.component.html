@@ -1,4 +1,4 @@
-<nz-card *ngIf="data">
+<nz-card *ngIf="data" [nzTitle]="title" [nzExtra]="extra">
     <ng-template #title>
         <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
         <ng-template #thenTemplate>
