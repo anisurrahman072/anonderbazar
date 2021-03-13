@@ -59,7 +59,7 @@
                 </div>
                 <!--parent_id-->
 
-                <div nz-row *ngIf='data.parent_id==0'>
+                <div nz-row *ngIf='data != null && data.parent_id==0'>
                     <div nz-col [nzSpan]="2">
                         <label> Add Offer </label>
                     </div>
