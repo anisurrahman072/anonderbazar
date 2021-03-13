@@ -63,6 +63,7 @@ module.exports = {
           LEFT JOIN warehouses as warehouse ON warehouse.id = product.warehouse_id
       `;
 
+      console.log(req.query);
       let _where = ' WHERE product.deleted_at IS NULL ';
 
       if (req.query.status) {
@@ -79,18 +80,34 @@ module.exports = {
         _where += ` AND product.approval_status = ${req.query.approval_status}`;
       }
 
+      if (req.query.excludedProductIds) {
+        try {
+          const excludedProductIds = JSON.parse(req.query.excludedProductIds);
+          if (excludedProductIds.length > 0) {
+            _where += ` AND product.id NOT IN (${excludedProductIds.join(',')}) `;
+          }
+        } catch (er) {
+          console.log(er);
+
+        }
+      }
+
       if (req.query.type_id) {
         _where += ` AND product.type_id = ${req.query.type_id}`;
       }
+
       if (req.query.category_id) {
         _where += ` AND product.category_id = ${req.query.category_id}`;
       }
+
       if (req.query.subcategory_id) {
         _where += ` AND product.subcategory_id = ${req.query.subcategory_id}`;
       }
+
       if (req.query.brand_id) {
         _where += ` AND product.brand_id = ${req.query.brand_id}`;
       }
+
       if (req.query.price) {
         _where += ` AND product.price = ${req.query.price}`;
       }
@@ -99,6 +116,10 @@ module.exports = {
         _where += ` AND (product.name LIKE '%${req.query.search_term}%' OR product.code LIKE '%${req.query.search_term}%' ) `;
       } else if (req.query.search_code) {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
+      }
+
+      if (req.query.nameSearchValue) {
+        _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
 
       let _sort = '';

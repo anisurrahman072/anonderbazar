@@ -22,8 +22,10 @@ const moment = _rollupMoment || _moment;
     styleUrls: ['./Order.component.css']
 })
 export class OrderComponent implements OnInit, OnDestroy {
+
     @ViewChildren('dataFor') dataFor: QueryList<any>;
     @ViewChild('csvSelectAll') csvSelectAll;
+
     private orderDataSubscription: Subscription;
     private subOrderTimeSub: Subscription;
     private subOrderUpdateSub: Subscription;
@@ -295,9 +297,10 @@ export class OrderComponent implements OnInit, OnDestroy {
             }
 
             let varients = "";
-            /*                    item.suborderItemVariants.forEach(element => {
-                                    varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
-                                });
+            /*
+            item.suborderItemVariants.forEach(element => {
+                varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
+            });
            */
 
             csvData.push({
