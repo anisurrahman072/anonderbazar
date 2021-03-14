@@ -69,13 +69,13 @@ export class UserCmsComponent implements OnInit {
         private _notification: NzNotificationService,
         private fb: FormBuilder
     ) {
+    }
+
+    ngOnInit() {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             description: ['', [Validators.required]]
         });
-    }
-
-    ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
     }
 
