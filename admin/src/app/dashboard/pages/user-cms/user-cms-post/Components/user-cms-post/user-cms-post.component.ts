@@ -70,6 +70,10 @@ export class UserCmsPostComponent implements OnInit {
     private _notification: NzNotificationService,
     private fb: FormBuilder
   ) {
+
+  }
+  // For initiating the section element with data
+  ngOnInit() {
     this.validateForm = this.fb.group({
       title: ['', [Validators.required]],
       description: ['', [Validators.required]]
@@ -79,9 +83,7 @@ export class UserCmsPostComponent implements OnInit {
       title: ['', [Validators.required]],
       description: ['', [Validators.required]]
     });
-  }
-  // For initiating the section element with data
-  ngOnInit() {
+    
     this.currentUser = this.authService.getCurrentUser();
 
     this.getData();

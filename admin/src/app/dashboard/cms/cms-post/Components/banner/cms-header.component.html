@@ -119,14 +119,14 @@
                 <div class="pull-right">
                     <button nz-button [nzType]="'primary'" (click)="showEditModal(header.id,i)">
                         <span>
-                            <i class="anticon anticon-edit">Edit</i>
+                            <i class="anticon anticon-edit"></i>Edit
                         </span>
                     </button>
                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
                         (nzOnConfirm)="deleteConfirm(i,header.id)">
                         <a nz-popconfirm>
                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                <i class="anticon anticon-delete "> Delete </i>
+                                <i class="anticon anticon-delete "></i>Delete
                             </button>
                         </a>
                     </nz-popconfirm>

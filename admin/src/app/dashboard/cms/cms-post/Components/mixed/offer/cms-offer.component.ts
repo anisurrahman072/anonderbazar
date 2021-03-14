@@ -2,8 +2,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {CmsService} from '../../../../../../services/cms.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {FileHolder, UploadMetadata} from 'angular2-image-upload';
-
 import {environment} from "../../../../../../../environments/environment";
 import {CategoryProductService} from '../../../../../../services/category-product.service';
 
@@ -13,6 +11,7 @@ import {CategoryProductService} from '../../../../../../services/category-produc
     styleUrls: ['./cms-offer.component.css']
 })
 export class CmsOfferComponent implements OnInit {
+    @ViewChild('Image')
     options = [
         {value: 'android', label: 'android'},
         {value: 'apple', label: 'apple'},
@@ -72,7 +71,7 @@ export class CmsOfferComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-    @ViewChild('Image')
+
     Image: any;
     imageIndex: any;
     _isSpinning: any = false;
@@ -85,6 +84,11 @@ export class CmsOfferComponent implements OnInit {
                 private _notification: NzNotificationService,
                 private categoryProductService: CategoryProductService,
                 private fb: FormBuilder) {
+
+    }
+
+    //Event method for getting all the data for the page
+    ngOnInit() {
         this.editValidateForm = this.fb.group({
             section: ['', [Validators.required]],
             sub_section: ['', [Validators.required]],
@@ -95,6 +99,7 @@ export class CmsOfferComponent implements OnInit {
             // images: ['', ''],
             description: ['', '']
         });
+        this.getData();
     }
 
     sectionChange(value) {
@@ -109,14 +114,8 @@ export class CmsOfferComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-
-    ngOnInit() {
-        this.getData();
-    }
-
-    //Event method for getting all the data for the page
-
     getData() {
+        this._isSpinning = true;
         this.cmsService
             .getBySubSectionName('CATEGORY')
             .subscribe(result => {
@@ -127,14 +126,19 @@ export class CmsOfferComponent implements OnInit {
                     });
 
                 });
+                this._isSpinning = false;
+            }, (err)=> {
+                this._isSpinning = false;
             });
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.allcategories = result;
+            this._isSpinning = false;
+        }, (err)=> {
+            this._isSpinning = false;
         });
     }
 
     //Method for showing the modal
-
     showEditModal = (id, i) => {
         if (typeof this.cmsFeatureData[i] !== 'undefined') {
             this.currentFeatureId = i;
@@ -143,7 +147,7 @@ export class CmsOfferComponent implements OnInit {
             let editValue = this.cmsFeatureData[i].data_value[0];
             editValue.section = this.cmsFeatureData[i].section;
             editValue.sub_section = this.cmsFeatureData[i].sub_section;
-            editValue.category_id = this.cmsFeatureData[i].data_value[0].category_id;
+            editValue.category_id = this.cmsFeatureData[i].data_value[0].category_id.id;
             editValue.images = this.cmsFeatureData[i].image;
             this.editValidateForm.patchValue(editValue);
 
@@ -159,8 +163,8 @@ export class CmsOfferComponent implements OnInit {
         this.resetForm(e);
         this.isEditModalVisible = false;
     };
-//Event method for submitting the edit form
 
+    //Event method for submitting the edit form
     submitEditForm = ($event, value) => {
         $event.preventDefault();
 
@@ -180,15 +184,18 @@ export class CmsOfferComponent implements OnInit {
         formData.append('id', this.id.toString());
         formData.append('dataValueId', this.currentFeatureId.toString());
 
+
         this.cmsService.customPostUpdate(formData).subscribe(result => {
             this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);
+        }, (err)=> {
+            this._isSpinning = false;
         });
     };
 
-//Event method for resetting the form
+    //Event method for resetting the form
     resetForm($event: MouseEvent) {
         this.ImageFile = null;
         $event ? $event.preventDefault() : null;
@@ -198,13 +205,12 @@ export class CmsOfferComponent implements OnInit {
         }
     }
 
-//Event method for setting up form in validation
-
+    //Event method for setting up form in validation
     getEditFormControl(title) {
         return this.editValidateForm.controls[title];
     }
 
-//Event method for deleting category offer
+    //Event method for deleting category offer
     deleteConfirm(index, id) {
         this.cmsService.delete(id).subscribe(result => {
             this.getData();

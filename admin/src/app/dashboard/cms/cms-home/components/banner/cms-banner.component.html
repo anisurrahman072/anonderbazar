@@ -1,62 +1,59 @@
-<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Banner'" [nzContent]="editmodalContent" (nzOnCancel)="handleModalCancel($event)"
-    (nzOnOk)="handleModalOk($event)">
+<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible"
+          [nzTitle]="'Edit Banner'"
+          [nzContent]="editmodalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
-                    <div    nz-row>
-                        <!--title start-->
-                        <div    nz-col [nzSpan]="7">
+                <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
+                      (ngSubmit)="submitEditForm($event,editValidateForm.value)">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12"      >
-                               <input nz-input  formControlName="title"  [placeholder]="'insert title'" [nzSize]="'large'">
-
-                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="title" [placeholder]="'insert title'" [nzSize]="'large'">
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div    *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').pending">
                                 Validating...
                             </div>
                         </div>
                     </div>
-                    <!--Title -->
-
-                    <div    nz-row>
-                        <div nz-col [nzSpan]="7"   >
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Description</label>
                         </div>
-                        <div nz-col [nzSpan]="12"      >
-                            <textarea  nz-input  formControlName="description"   [placeholder]="'insert description'" [nzSize]="'large'"></textarea>
+                        <div nz-col [nzSpan]="12">
+                            <textarea nz-input formControlName="description" placeholder="Insert Description" [nzSize]="'large'"></textarea>
 
-                            <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            <div *ngIf="getEditFormControl('description').dirty && getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-
-
-                    <div    nz-row>
-                        <div nz-col [nzSpan]="7"   >
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Image</label>
                         </div>
-                        <div nz-col [nzSpan]="12"      >
-                            <image-upload [max]="1" (removed)="onRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div    *ngIf="!ImageFile">
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onRemoved($event)"
+                                          (uploadStateChanged)="onUploadStateChanged($event)"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
-                    <!--image-->
-
-
-                    <div    nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                    [disabled]="!editValidateForm.valid">
 
                                 Submit
                             </button>
@@ -81,20 +78,16 @@
                 <div style="text-align: right">
                     <button nz-button [nzType]="'primary'" (click)="showEditModal(i)">
                         <span>
-                            <i class="anticon anticon-edit"></i> Edit </span>
+                            <i class="anticon anticon-edit"></i>Edit</span>
                     </button>
                 </div>
             </ng-template>
-
             <ng-template #body>
-
                 <div class="col-md-6"> Description: {{banner.description}}</div>
-
                 <div class="col-md-6">
-                    <img class="img img-responsive " alt="{{banner.image}}" src="{{ IMAGE_ENDPOINT + banner.image}}" />
+                    <img class="img img-responsive " alt="{{banner.image}}" src="{{ IMAGE_ENDPOINT + banner.image}}"/>
                 </div>
             </ng-template>
         </nz-card>
     </div>
-
 </div>

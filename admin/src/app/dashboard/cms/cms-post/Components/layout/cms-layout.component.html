@@ -1,158 +1,145 @@
-<div>
-    <nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Create Post'" [nzContent]="modalContent"
-              (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)" footer={null}
-              class="create-modal">
-        <ng-template #modalContent>
-
-            <div class=" spinning">
-                <nz-spin [nzSpinning]="_isSpinning">
-                    <form nz-form [formGroup]="validateForm" id="validateForm"
-                          (ngSubmit)="submitForm($event,validateForm.value)">
-                        <div    nz-row *ngIf="sectionoptionsData">
-                            <!--title start-->
-                            <div    nz-col [nzSpan]="7">
-                                <label>Section</label>
-                            </div>
-                            <div nz-col [nzSpan]="12"      >
-                                <nz-select formControlName="section"
-                                           [nzPlaceHolder]=" 'input search text'" [(ngModel)]="selectedSection"
-                                           (ngModelChange)="sectionChange($event)">
-                                    <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section"
-                                               [nzValue]="option.section">
-                                    </nz-option>
-                                </nz-select>
-                            </div>
-                        </div>
-                        <div    nz-row *ngIf="subsectionOptions !== null">
-                            <!--title start-->
-                            <div    nz-col [nzSpan]="7">
-                                <label>SubSection</label>
-                            </div>
-
-                            <div nz-col [nzSpan]="12"      >
-                                <nz-select [(ngModel)]="selectedSubSection" formControlName="sub_section" [nzPlaceHolder]=" 'input search text'">
-
-                                    <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option" [nzValue]="option">
-                                    </nz-option>
-                                </nz-select>
-                            </div>
-                        </div>
-
-                        <div    nz-row>
-                            <!--title start-->
-                            <div    nz-col [nzSpan]="7">
-                                <label>Title</label>
-                            </div>
-                            <div nz-col [nzSpan]="12"      >
-
-                                   <input nz-input  formControlName="title"  [placeholder]=" 'insert title'" [nzSize]=" 'large'">
-
-                                <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'required')">
-                                    Please input title !
-                                </div>
-                                <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'duplicated')">
-                                    Name already exists!
-                                </div>
-                                <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').pending">
-                                    Validating...
-                                </div>
-                            </div>
-                        </div>
-                        <!--Title -->
-
-                        <div    nz-row>
-                            <div nz-col [nzSpan]="7"   >
-                                <label>Description</label>
-                            </div>
-                            <div nz-col [nzSpan]="17"      >
-
-                                <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
-                                          debounce="500">
-
-                                </ckeditor>
-                                <div    *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
-                                    Please input description !
-                                </div>
-                            </div>
-                        </div>
-                        <!--description-->
-                        <div    nz-row>
-                            <div nz-col [nzSpan]="7"   >
-                                <label>Image</label>
-                            </div>
-                            <div nz-col [nzSpan]="12"      >
-                                <image-upload [max]="1" (removed)="onRemoved($event)" #Image (imageSelected)="selected($event)" (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                                <div    *ngIf="!ImageFile">
-                                    Please upload an image here!
-                                </div>
-                            </div>
-                        </div>
-                        <!--image-->
-                        <div    nz-row>
-                            <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-                                <button nz-button [nzType]=" 'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || !ImageFile">
-                                    Submit
-                                </button>
-                                <button nz-button [nzSize]=" 'large'" (click)="resetForm($event)">Reset</button>
-                                <button nz-button [nzSize]=" 'large'" (click)="handleModalCancel($event)">Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </nz-spin>
-            </div>
+<nz-tabset>
+    <nz-tab [nzTitle]="titleTemplateMiddle">
+        <ng-template #titleTemplateMiddle>
+            <i [ngClass]=" 'anticon anticon-copyright'"></i>Middle
         </ng-template>
-    </nz-modal>
-
-
-    <nz-tabset>
-        <nz-tab>
-            <div class="col-md-12">
-                <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom: 10px;">
+                <button class="btn btn-info pull-right " (click)="showCreateModal()">Add New</button>
             </div>
-            <ng-template #nzTabHeading>
-                <i [ngClass]=" 'anticon anticon-copyright'"></i>Middle
-
-            </ng-template>
-
-
-            <span>
-                <!--footer....................-->
+            <div class="col-md-12">
                 <app-cms-feature-footer></app-cms-feature-footer>
+            </div>
+        </div>
 
-
-            </span>
-
-
-        </nz-tab>
-        <nz-tab>
-            <div class="col-md-12">
+    </nz-tab>
+    <nz-tab [nzTitle]="titleTemplateNone">
+        <ng-template #titleTemplateNone>
+            <i [ngClass]=" 'anticon anticon-apple'"></i>NONE
+        </ng-template>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom: 10px;">
                 <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
             </div>
-            <ng-template #nzTabHeading>
-                <i [ngClass]=" 'anticon anticon-apple'"></i>NONE
-
-            </ng-template>
-
-
-            <span>
+            <div class="col-md-12">
                 <app-cms-post></app-cms-post>
-            </span>
+            </div>
+        </div>
+    </nz-tab>
+    <nz-tab [nzTitle]="titleTemplateCategory">
+        <ng-template #titleTemplateCategory>
+            <i [ngClass]=" 'anticon anticon-gift'"></i>Category
+        </ng-template>
+        <app-cms-offer></app-cms-offer>
+    </nz-tab>
+</nz-tabset>
+<nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Create Post'" [nzContent]="modalContent"
+          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)"
+          class="create-modal">
+    <ng-template #modalContent>
 
+        <div class=" spinning">
+            <nz-spin [nzSpinning]="_isSpinning">
+                <form nz-form [formGroup]="validateForm" id="validateForm"
+                      (ngSubmit)="submitForm($event,validateForm.value)">
+                    <div nz-row *ngIf="sectionoptionsData">
+                        <!--title start-->
+                        <div nz-col [nzSpan]="7">
+                            <label>Section</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <nz-select formControlName="section"
+                                       [nzPlaceHolder]=" 'input search text'" [(ngModel)]="selectedSection"
+                                       (ngModelChange)="sectionChange($event)">
+                                <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section"
+                                           [nzValue]="option.section">
+                                </nz-option>
+                            </nz-select>
+                        </div>
+                    </div>
+                    <div nz-row *ngIf="subsectionOptions !== null">
+                        <!--title start-->
+                        <div nz-col [nzSpan]="7">
+                            <label>SubSection</label>
+                        </div>
 
-        </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
-                <i [ngClass]=" 'anticon anticon-gift'"></i>Category
-            </ng-template>
-            <span>
-                <app-cms-offer></app-cms-offer>
-            </span>
-        </nz-tab>
+                        <div nz-col [nzSpan]="12">
+                            <nz-select [(ngModel)]="selectedSubSection" formControlName="sub_section"
+                                       [nzPlaceHolder]=" 'input search text'">
 
-        <nz-tab>
+                                <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option"
+                                           [nzValue]="option">
+                                </nz-option>
+                            </nz-select>
+                        </div>
+                    </div>
 
-        </nz-tab>
-    </nz-tabset>
+                    <div nz-row>
+                        <!--title start-->
+                        <div nz-col [nzSpan]="7">
+                            <label>Title</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
 
-</div>
+                            <input nz-input formControlName="title" [placeholder]=" 'insert title'" [nzSize]=" 'large'">
+
+                            <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'required')">
+                                Please input title !
+                            </div>
+                            <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'duplicated')">
+                                Name already exists!
+                            </div>
+                            <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').pending">
+                                Validating...
+                            </div>
+                        </div>
+                    </div>
+                    <!--Title -->
+
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
+                            <label>Description</label>
+                        </div>
+                        <div nz-col [nzSpan]="17">
+
+                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
+                                      debounce="500">
+
+                            </ckeditor>
+                            <div *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
+                                Please input description !
+                            </div>
+                        </div>
+                    </div>
+                    <!--description-->
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
+                            <label>Image</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onRemoved($event)" #Image
+                                          (uploadStateChanged)="onUploadStateChanged($event)"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div *ngIf="!ImageFile">
+                                Please upload an image here!
+                            </div>
+                        </div>
+                    </div>
+                    <!--image-->
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <button nz-button [nzType]=" 'primary'" [nzSize]="'large'"
+                                    [disabled]="!validateForm.valid || !ImageFile">
+                                Submit
+                            </button>
+                            <button nz-button [nzSize]=" 'large'" (click)="resetForm($event)">Reset</button>
+                            <button nz-button [nzSize]=" 'large'" (click)="handleModalCancel($event)">Cancel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </nz-spin>
+        </div>
+    </ng-template>
+</nz-modal>
+

@@ -1,36 +1,28 @@
 <div>
     <nz-tabset>
-        <nz-tab>
-            <ng-template #nzTabHeading>
+        <nz-tab [nzTitle]="nzTabHeader">
+            <ng-template #nzTabHeader>
                 <i [ngClass]="'anticon anticon-select'"></i>Header
             </ng-template>
-            <span>
-                <app-cms-header></app-cms-header>
-            </span>
+            <app-cms-header></app-cms-header>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
+        <nz-tab [nzTitle]="nzTabFooterFeature">
+            <ng-template #nzTabFooterFeature>
                 <i [ngClass]="'anticon anticon-copyright'"></i>Footer feature
             </ng-template>
-            <span><!--footer....................-->
-                    <app-cms-feature-footer></app-cms-feature-footer>
-            </span>
+            <app-cms-feature-footer></app-cms-feature-footer>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
+        <nz-tab [nzTitle]="nzTabFooter">
+            <ng-template #nzTabFooter>
                 <i [ngClass]="'anticon anticon-copyright'"></i>Footer
             </ng-template>
-            <span><!--footer....................-->
-                <app-cms-footer></app-cms-footer>
-            </span>
+            <app-cms-footer></app-cms-footer>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
+        <nz-tab [nzTitle]="nzTabLogo">
+            <ng-template #nzTabLogo>
                 <i [ngClass]="'anticon anticon-apple'"></i>Logo
             </ng-template>
-            <span>
-                <app-cms-logo></app-cms-logo>
-            </span>
+            <app-cms-logo></app-cms-logo>
         </nz-tab>
     </nz-tabset>
 </div>
