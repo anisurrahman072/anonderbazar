@@ -119,21 +119,23 @@ export class CmsOfferComponent implements OnInit {
         this.cmsService
             .getBySubSectionName('CATEGORY')
             .subscribe(result => {
+                console.log('getBySubSectionName', result);
                 this.cmsFeatureData = result;
                 this.cmsFeatureData.forEach(element => {
-                    this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => {
-                        element.data_value[0].category_id = category;
-                    });
-
+                    if (element.data_value[0].category_id) {
+                        this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => {
+                            element.data_value[0].category_id = category;
+                        });
+                    }
                 });
                 this._isSpinning = false;
-            }, (err)=> {
+            }, (err) => {
                 this._isSpinning = false;
             });
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.allcategories = result;
             this._isSpinning = false;
-        }, (err)=> {
+        }, (err) => {
             this._isSpinning = false;
         });
     }
@@ -190,7 +192,7 @@ export class CmsOfferComponent implements OnInit {
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);
-        }, (err)=> {
+        }, (err) => {
             this._isSpinning = false;
         });
     };

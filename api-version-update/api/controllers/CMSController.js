@@ -405,6 +405,15 @@ module.exports = {
         }
       } else {
 
+        const payload = {};
+
+        if (req.body.section) {
+          payload.section = req.body.section;
+        }
+        if (req.body.sub_section) {
+          payload.sub_section = req.body.sub_section;
+        }
+
         const dataValueIndex = parseInt(req.body.dataValueId);
 
         let dataValue = cms.data_value;
@@ -418,9 +427,24 @@ module.exports = {
           image: ''
         };
 
+        if (req.body.category_id) {
+          dataValue[dataValueIndex].category_id = req.body.category_id;
+        }
+
+        if (req.body.lowerlimit) {
+          dataValue[dataValueIndex].lowerlimit = req.body.lowerlimit;
+        }
+
+        if (req.body.upperlimit) {
+          dataValue[dataValueIndex].upperlimit = req.body.upperlimit;
+        }
+
+        payload.data_value = dataValue;
+
         console.log('dataValue', dataValue);
 
-        let data = await CMS.updateOne({id: cms.id}).set({data_value: dataValue});
+        let data = await CMS.updateOne({id: cms.id}).set(payload);
+
         return res.json({
           success: true,
           message: 'cms updated successfully',

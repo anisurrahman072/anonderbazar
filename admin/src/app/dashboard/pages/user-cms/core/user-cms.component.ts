@@ -55,13 +55,10 @@ export class UserCmsComponent implements OnInit {
     };
 
     Image: any;
-
-    _isSpinning: any = false;
-
     id: any;
-
     currentPostId: any;
     submitting: boolean = false;
+    _isSpinning: any = false;
 
     constructor(
         private cmsService: CmsService,

@@ -162,14 +162,14 @@
 
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-6 col-pro" style="padding-right: 0;height: 547px;">
-                            <div class="product-details">
+                            <div class="product-details" *ngIf="cmsFeatureData[0]?.data_value[0].category_id">
                                 <h2 class="proh1first">{{cmsFeatureData[0]?.data_value[0].category_id.name}}</h2>
                                 <h2 class="proh12nd">{{(cmsFeatureData[0]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[0]?.data_value[0].lowerlimit}}
                                     - ৳{{cmsFeatureData[0]?.data_value[0].upperlimit}}</h2>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-6" style="padding-left: 0;">
-                            <div class="product-img" >
+                            <div class="product-img" *ngIf="cmsFeatureData[0]?.data_value[0].category_id">
                                 <img src="{{IMAGE_ENDPOINT + cmsFeatureData[0]?.data_value[0].category_id.image}}"
                                      alt="Image">
                             </div>
@@ -204,14 +204,14 @@
                             </ng-template>
                             <div class="row">
                                 <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0;height: 266px;">
-                                    <div class="productsub-details">
+                                    <div class="productsub-details" *ngIf="cmsFeatureData[1]?.data_value[0].category_id">
                                         <h4 class="proh1first">{{cmsFeatureData[1]?.data_value[0].category_id.name}}</h4>
                                         <h4 class="proh12nd">{{(cmsFeatureData[1]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[1]?.data_value[0].lowerlimit}}
                                             - ৳{{cmsFeatureData[1]?.data_value[0].upperlimit}}</h4>
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-6 pl-0" style="padding-left:0;">
-                                    <div class="productsub-img">
+                                    <div class="productsub-img" *ngIf="cmsFeatureData[1]?.data_value[0].category_id">
                                         <img src="{{IMAGE_ENDPOINT + cmsFeatureData[1]?.data_value[0].category_id.image}}"
                                              alt="Image">
                                     </div>
@@ -245,14 +245,14 @@
 
                             <div class="row">
                                 <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0px;height: 266px;">
-                                    <div class="productsub-details">
+                                    <div class="productsub-details" *ngIf="cmsFeatureData[2]?.data_value[0].category_id">
                                         <h4 class="proh1first">{{cmsFeatureData[2]?.data_value[0].category_id.name}}</h4>
                                         <h4 class="proh12nd">{{(cmsFeatureData[2]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[2]?.data_value[0].lowerlimit}}
                                             - ৳{{cmsFeatureData[2]?.data_value[0].upperlimit}}</h4>
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-6 pl-0" style="padding-left: 0px;">
-                                    <div class="productsub-img">
+                                    <div class="productsub-img" *ngIf="cmsFeatureData[2]?.data_value[0].category_id">
                                         <img src="{{IMAGE_ENDPOINT + cmsFeatureData[2]?.data_value[0].category_id.image}}"
                                              alt="Image">
                                     </div>
