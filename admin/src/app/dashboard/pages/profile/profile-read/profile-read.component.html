@@ -1,21 +1,21 @@
-<nz-card>
+<nz-card [nzTitle]="title" [nzExtra]="extra">
     <ng-template #title>
         প্রোফাইলের Description
     </ng-template>
     <ng-template #extra>
-
-        <button *ngIf="data" [routerLink]="['/dashboard/profile/edit']" nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button *ngIf="data" [routerLink]="['/dashboard/profile/edit']" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
             <i class="fa fa-edit"></i>
             <span>Edit </span>
         </button>
     </ng-template>
-    <ng-template #body>
-
+    <ng-container>
         <div class="row" *ngIf="data">
             <div class="col-md-4">
                 <div class="custom-image">
-                    <img height="250px" width="250px" class="img  img-responsive" alt="example.jpg" style="height:250px;margin: auto;border-radius: 50%;"
-                        src="{{  IMAGE_ENDPOINT + data.avatar}}" />
+                    <img height="250px" width="250px" class="img  img-responsive" alt="example.jpg"
+                         style="height:250px;margin: auto;border-radius: 50%;"
+                         src="{{  IMAGE_ENDPOINT + data.avatar}}"/>
                 </div>
             </div>
             <div class="col-md-8">
@@ -141,11 +141,8 @@
                             </div>
                         </div>
                     </li>
-
                 </ul>
             </div>
         </div>
-
-
-    </ng-template>
+    </ng-container>
 </nz-card>
