@@ -1,7 +1,9 @@
-import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {NzNotificationService} from "ng-zorro-antd";
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {ProductService} from "../../../../../services/product.service";
+import * as ___ from 'lodash';
+import {CmsService} from "../../../../../services/cms.service";
 
 @Component({
     selector: 'all-products-for-offer',
@@ -9,6 +11,11 @@ import {ProductService} from "../../../../../services/product.service";
     styleUrls: ['./all-product-modal.component.css']
 })
 export class AllProductModalComponent implements OnInit, OnDestroy {
+
+    @Input() cmsRow: any;
+    @Output() onNewProductsAdded = new EventEmitter<boolean>();
+
+    validateProductForm: FormGroup;
 
     allProducts: any = [];
     offerProductIds: any = [];
@@ -21,16 +28,31 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
     allProductNameSearch: string = '';
 
     _isSpinning: boolean = false;
+    _submitting: boolean = false;
 
-    constructor(private _notification: NzNotificationService, private fb: FormBuilder, private productservice: ProductService) {
-
+    constructor(
+        private cmsService: CmsService,
+        private _notification: NzNotificationService,
+        private fb: FormBuilder,
+        private productservice: ProductService
+    ) {
     }
 
     ngOnDestroy(): void {
-
     }
 
     ngOnInit(): void {
+
+        this.validateProductForm = this.fb.group({
+            productChecked: ['', []],
+        });
+
+        if (this.cmsRow && this.cmsRow.data_value && this.cmsRow.data_value.length && Array.isArray(this.cmsRow.data_value[0].products)) {
+            this.offerProductIds = this.cmsRow.data_value[0].products.filter(prod => prod);
+        } else {
+            this.offerProductIds = [];
+        }
+
         this.getAllProducts(1);
     }
 
@@ -39,6 +61,7 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
         if (event) {
             this.allProductPage = event;
         }
+
         this._isSpinning = true;
         this.productservice.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch)
             .subscribe(result => {
@@ -89,7 +112,7 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
     }
 
     selectAllProducts($event: any) {
-        const isChecked = !!$event.target.checked;
+        const isChecked = !!$event;
         if (!isChecked) {
             this.selectedAllProductIds[this.allProductPage - 1] = [];
         }
@@ -130,5 +153,41 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
     allProductNameChangeHandler(event: any) {
         this.allProductNameSearch = event;
         this.getAllProducts(1);
+    }
+
+
+    // Event method for submitting the product form
+    submitForm = () => {
+
+        let selectedProductIds = ___.flatten(this.selectedAllProductIds);
+        if (selectedProductIds.length === 0) {
+            return false;
+        }
+
+        this._submitting = true;
+        this._isSpinning = true;
+
+        if (this.cmsRow) {
+            this.cmsRow.data_value[0].products = this.cmsRow.data_value[0].products.concat(selectedProductIds);
+            this._isSpinning = true;
+            this.cmsService.offerProductUpdate(this.cmsRow)
+                .subscribe(result => {
+                    this._notification.success('Offer Product(s) Added Successfully', "");
+                    this._isSpinning = false;
+                    this._submitting = false;
+                    this.selectedAllProductIds = [];
+                    this.allProducts = [];
+                    this.offerProductIds = [];
+                    this.onNewProductsAdded.emit(true);
+
+                }, (err) => {
+                    this._notification.error('Problem in adding new offer product(s)', "");
+                    this._isSpinning = false;
+                    this._submitting = false;
+                });
+        } else {
+            this._isSpinning = false;
+            this._submitting = false;
+        }
     }
 }

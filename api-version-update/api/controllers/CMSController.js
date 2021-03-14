@@ -11,7 +11,12 @@ const {imageUploadConfig} = require('../../libs/helper');
 module.exports = {
   byIds: async (req, res) => {
     try {
-      req.query.ids = JSON.parse(req.query.ids);
+      try {
+        req.query.ids = JSON.parse(req.query.ids);
+      } catch (_) {
+
+      }
+
       console.log(req.query);
 
       if (req.query.ids && Array.isArray(req.query.ids) && req.query.ids.length > 0) {
@@ -148,7 +153,11 @@ module.exports = {
   //Model models/CMS.js
   offerProductUpdate: async (req, res) => {
     try {
-      let data = await CMS.updateOne({id: req.body.id}).set(req.body);
+
+      let data = await CMS.updateOne({id: req.body.id}).set({
+        data_value: req.body.data_value
+      });
+
       return res.json({
         success: true,
         message: 'cms updated successfully',

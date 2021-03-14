@@ -183,19 +183,19 @@
 </section>
 
 <!--offer modal-->
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isOfferVisible" [nzTitle]="'Add Offer'"
+<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isOfferVisible" nzTitle="Add Offer(s)"
           [nzContent]="modalOfferContent"
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalOfferContent>
 
-        <nz-table #nzTable2
+        <nz-table #nzTableOfferList
                   nzShowSizeChanger
                   [nzFrontPagination]="false"
                   [nzData]="offers"
-                  [nzLoading]="loading"
-                  [nzTotal]="homeOfferTotal"
-                  [(nzPageIndex)]="homeOfferPage"
-                  [(nzPageSize)]="homeOfferLimit"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="offerModalTotal"
+                  [(nzPageIndex)]="offerModalPage"
+                  [(nzPageSize)]="offerModalLimit"
                   (nzPageIndexChange)="getOfferData($event, homeOfferData)"
         >
             <thead>
@@ -215,7 +215,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let datum of nzTable2.data;let i=index;">
+            <tr *ngFor="let datum of nzTableOfferList.data;let i=index;">
                 <td>{{datum.id}}</td>
                 <td>
                     <nz-tag>{{datum.data_value[0].title}}</nz-tag>
@@ -247,20 +247,18 @@
               (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
 
             <div>
-                <nz-table #nzTable3
+                <nz-table #nzTableAllOfferList
                           nzShowSizeChanger
-                          [nzFrontPagination]="false"
-                          [nzData]="alloffers"
-                          [nzLoading]="loading"
-                          [nzTotal]="homeOfferTotal"
-                          [(nzPageIndex)]="homeOfferPage"
-                          [(nzPageSize)]="homeOfferLimit"
-                          (nzPageIndexChange)="getOfferData($event, homeOfferData)"
+                          [nzFrontPagination]="true"
+                          [nzData]="allOffers"
+                          [nzLoading]="_isSpinning"
+                          [nzTotal]="modalAllOfferTotal"
+                          [(nzPageIndex)]="modalAllOfferPage"
+                          [(nzPageSize)]="modalAllOfferLimit"
                 >
                     <thead>
                     <tr>
                         <th>
-
                         </th>
                         <th>
                             <span> Title </span>
@@ -268,12 +266,11 @@
                         <th>
                             <span> Description </span>
                         </th>
-
                     </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let datum of nzTable3.data;let i=index;">
-                        <td [nzShowCheckbox]="true">
+                    <tr *ngFor="let datum of nzTableAllOfferList.data;let i=index;">
+                        <td>
                             <label nz-checkbox [(ngModel)]="datum.checked" formControlName='offerChecked'
                                    (ngModelChange)="_refreshStatusOffer($event, datum.id)">
                             </label>
@@ -298,16 +295,16 @@
 
 
 <!--product modal-->
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" [nzTitle]="'Add Product'"
+<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isProductVisible" nzTitle="Add New Products to offer"
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <nz-table #nzTableProd
               nzShowSizeChanger
               [nzFrontPagination]="true"
-              [nzData]="products"
-              [nzLoading]="loading"
-              [nzTotal]="homeOfferTotal"
-              [(nzPageIndex)]="homeOfferPage"
-              [(nzPageSize)]="homeOfferLimit"
+              [nzData]="productsOffered"
+              [nzLoading]="_isSpinning"
+              [nzTotal]="productOfferedTotal"
+              [(nzPageIndex)]="productOfferedPage"
+              [(nzPageSize)]="productOfferedLimit"
     >
         <thead>
         <tr>
@@ -352,7 +349,6 @@
                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                 <i class="anticon anticon-delete "></i>
                             </button>
-
                         </a>
                     </nz-popconfirm>
                 </ng-container>
@@ -366,6 +362,6 @@
         <span *ngIf="addNew"> Cancel </span>
     </button>
 
-    <all-products-for-offer *ngIf="addNew"></all-products-for-offer>
+    <all-products-for-offer *ngIf="addNew" [cmsRow]="currentProduct"  (onNewProductsAdded)="onNewProductAdded()"></all-products-for-offer>
 
 </nz-modal>

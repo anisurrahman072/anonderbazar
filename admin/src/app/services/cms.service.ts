@@ -13,12 +13,6 @@ export class CmsService {
     constructor(private http: HttpClient) {
     }
 
-    getAll(): Observable<any> {
-        return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null}')
-            .map(response => response);
-    }
-
     getAllSearch(option: {
         page?: String,
         section?: String,
@@ -52,14 +46,12 @@ export class CmsService {
             .map(response => response);
     }
 
-    getValueById(id): Observable<any> {
-        return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "id":${id}}`)
-            .map(response => response);
+    getById(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id ).map(response => response);
     }
 
-    getById(id, homeOfferPage = 1, homeOfferLimit = 10): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id + `?limit=${homeOfferLimit}&page=${homeOfferPage}`).map(response => response);
+    getByIds(ids: any){
+        return this.http.get(this.EndPoint + '/byIds?ids=' + JSON.stringify(ids) ).map(response => response);
     }
 
     insert(data): Observable<any> {

@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
@@ -12,39 +12,51 @@ import {ProductService} from '../../../../services/product.service';
 
 export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    homeOfferData: any = [];
     private offerProductIds: any = [];
+    homeOfferData: any = [];
     homeChildOfferData: any = [];
     addNew: boolean;
     currentProduct: any = {};
     currentOffer: any = {};
     status: any = 1;
     type: any;
-    _isSpinning: boolean = true;
+
     validateForm: FormGroup;
-    validateProductForm: FormGroup;
     validateFormOffer: FormGroup;
+
     isOfferVisible: boolean = false;
     isProductVisible: boolean = false;
     childOffers: any = [];
-    alloffers: any = [];
-    alloffers2: any = [];
+    allOffers: any = [];
     allProducts: any = [];
-    allProduct2: any = [];
+
     storeProductIds: any = [];
     storeOfferIds: any = [];
-    products = [];
+    productsOffered = [];
     offers = [];
     checked = 'true';
-
 
     private selectedAllProductIds: any = [];
     private allProductSelectAll: any = [];
 
     homeOfferLimit: number = 10;
     homeOfferPage: number = 1;
-    homeOfferTotal: number = 1;
+    homeOfferTotal: number = 0;
+
     loading: boolean = false;
+    _isSpinning: boolean = true;
+
+    productOfferedLimit: number = 10;
+    productOfferedPage: number = 1;
+    productOfferedTotal: number = 0;
+
+    offerModalLimit: number = 10;
+    offerModalPage: number = 1;
+    offerModalTotal: number = 0;
+
+    modalAllOfferLimit: number = 15;
+    modalAllOfferPage: number = 1;
+    modalAllOfferTotal: number = 0;
 
     constructor(
         private fb: FormBuilder,
@@ -71,9 +83,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             variant_id: ['', [Validators.required]],
             warehouses_variant_id: ['', [Validators.required]]
         });
-        this.validateProductForm = this.fb.group({
-            productChecked: ['', []],
-        });
+
         this.validateFormOffer = this.fb.group({
             offerChecked: ['', []],
         });
@@ -118,57 +128,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     };
 
-    //Event method for getting all offer data for the page
-    getOfferData(event: any, data: any) {
-        if (event) {
-            this.homeOfferPage = event;
-        }
-        this.loading = true;
-        this.offers = [];
-        this.cmsService.getById(data.id, this.homeOfferPage, this.homeOfferLimit)
-            .subscribe(arg => {
-
-                this.childOffers = arg.data_value[0].offers;
-                console.log(this.childOffers);
-                if (this.childOffers.length > 0) {
-                    this.childOffers.forEach(element => {
-                        this.cmsService.getById(element, this.homeOfferPage, this.homeOfferLimit)
-                            .subscribe(result => {
-                                this.offers.push(result);
-                            });
-                    });
-                }
-
-            });
-
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
-            .subscribe(result => {
-                this.loading = false;
-                console.log(result);
-
-                result.forEach(element => {
-                    this.alloffers2.push(element.id);
-                });
-
-                this.childOffers.forEach(element => {
-                    let findValue = this.alloffers2.indexOf(element);
-                    this.alloffers2.splice(findValue, 1);
-                });
-
-                this.alloffers2.forEach(element => {
-                    this.cmsService.getById(element, this.homeOfferPage, this.homeOfferLimit)
-                        .subscribe(result => {
-                            this.alloffers.push(result);
-                        });
-                });
-
-            }, error => {
-                this.loading = false;
-            });
-    }
-
-
     // Method for showing the offer modal
     showOfferModal = data => {
         // this.formReset();
@@ -176,16 +135,62 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.currentOffer = data;
         this.isOfferVisible = true;
         this.offers = [];
-        this.alloffers = [];
-        this.alloffers2 = [];
+        this.allOffers = [];
 
-        this.getOfferData(null, data);
+        this.getOfferData(1, data);
         if (this.status == 1) {
             this.type = 0;
         } else {
             this.type = 1;
         }
     };
+
+    //Event method for getting all offer data for the page
+    getOfferData(event: any, data: any) {
+        if (event) {
+            this.homeOfferPage = event;
+        }
+        this.loading = true;
+        this.offers = [];
+        this.cmsService.getById(data.id)
+            .subscribe(arg => {
+
+                this.childOffers = arg.data_value[0].offers;
+                console.log('this.childOffers', this.childOffers);
+                if (this.childOffers.length > 0) {
+                    this.cmsService.getByIds(this.childOffers)
+                        .subscribe((result: any) => {
+                            this.offers = result;
+                        });
+
+                }
+                this.cmsService
+                    .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
+                    .subscribe(result => {
+                        this.loading = false;
+                        console.log(result);
+
+                        const tmpOfferIds = result.map(elem => elem.id);
+
+                        this.childOffers.forEach(element => {
+                            let findValue = tmpOfferIds.indexOf(element);
+                            tmpOfferIds.splice(findValue, 1);
+                        });
+                        if (tmpOfferIds && tmpOfferIds.length > 0) {
+                            this.cmsService.getByIds(tmpOfferIds)
+                                .subscribe((result: any) => {
+                                    this.allOffers = result;
+                                });
+                        }
+                    }, error => {
+                        this.loading = false;
+                    });
+                this.loading = false;
+            }, (err) => {
+                this.loading = false;
+            });
+
+    }
 
     // Method for refresh offer checkbox data in the offer modal
     _refreshStatusOffer($event, value) {
@@ -204,13 +209,37 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.currentProduct = data;
         this.isProductVisible = true;
 
-        this.products = [];
+        this.productsOffered = [];
         this.getProduct(null, data);
         if (this.status == 1) {
             this.type = 0;
         } else {
             this.type = 1;
         }
+    };
+
+    getProduct(event: any, data?: any) {
+        if (event) {
+            this.homeOfferPage = event;
+        }
+
+        if (data && data.data_value && data.data_value.length && Array.isArray(data.data_value[0].products)) {
+            this.offerProductIds = data.data_value[0].products.filter(prod => prod);
+        } else {
+            this.offerProductIds = [];
+        }
+
+        this._isSpinning = true;
+
+        this.productservice.getByIdsWithJoin(this.offerProductIds)
+            .subscribe(result => {
+                this.productsOffered = result;
+                console.log('getProduct-result', result);
+                this._isSpinning = false;
+
+            }, (error) => {
+                this._isSpinning = false;
+            });
     };
 
     //Event method for resetting the form
@@ -231,28 +260,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isProductVisible = false;
     };
 
-    getProduct(event: any, data?: any) {
-        if (event) {
-            this.homeOfferPage = event;
-        }
-        if (data) {
-            this.offerProductIds = data.data_value[0].products;
-        } else {
-            this.offerProductIds = [];
-        }
-
-        this._isSpinning = true;
-
-        this.productservice.getByIdsWithJoin(this.offerProductIds)
-            .subscribe(result => {
-                this.products = result;
-                this._isSpinning = false;
-
-            }, (error) => {
-                this._isSpinning = false;
-            });
-    };
-
     addNewProducts() {
         this.selectedAllProductIds = [];
         this.allProductSelectAll = [];
@@ -262,6 +269,10 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     // Event method for submitting the offer form
     submitFormOffer = ($event, value) => {
 
+        if( !(this.storeOfferIds && this.storeOfferIds.length > 0) ){
+            return false;
+        }
+
         this.currentOffer.data_value[0].offers = this.currentOffer.data_value[0].offers.concat(this.storeOfferIds);
         this._isSpinning = true;
         this.cmsService.updateOffer(this.currentOffer)
@@ -270,33 +281,14 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._isSpinning = false;
                 this.isOfferVisible = false;
                 this.storeOfferIds = [];
-                this.alloffers = [];
+                this.allOffers = [];
                 this.offers = [];
-                this.alloffers2 = [];
+
             }, (er) => {
                 this._isSpinning = false;
             });
     }
 
-    // Event method for submitting the product form
-    submitForm = ($event, value) => {
-        this.currentProduct.data_value[0].products = this.currentProduct.data_value[0].products.concat(this.storeProductIds);
-        this._isSpinning = true;
-        this.cmsService.offerProductUpdate(this.currentProduct)
-            .subscribe(result => {
-                this._notification.success('Offer Added', "Feature Title: ");
-                this._isSpinning = false;
-                this.isProductVisible = false;
-                this.storeProductIds = [];
-                this.allProducts = [];
-                this.offerProductIds = [];
-                this.allProduct2 = [];
-                console.log(this.currentProduct);
-            }, (err) => {
-                this._isSpinning = false;
-            });
-
-    }
 
     //Event method for deleting offer product
     deleteConfirm(index, id) {
@@ -312,7 +304,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.storeProductIds = [];
             this.allProducts = [];
             this.offerProductIds = [];
-            this.allProduct2 = [];
+
         }, (err) => {
             this._isSpinning = false;
         });
@@ -332,7 +324,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isOfferVisible = false;
             this.storeOfferIds = [];
             this.offers = [];
-            this.alloffers2 = [];
+            // this.alloffers2 = [];
         }, (err) => {
             this._isSpinning = false;
         });
@@ -350,6 +342,12 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     };
 
+    onNewProductAdded() {
+        this.addNew = false;
+        this.isProductVisible = false;
+        this.getData();
+        // this.getProduct(1, this.currentProduct);
+    }
 }
 
 
