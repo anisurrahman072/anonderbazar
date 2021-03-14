@@ -152,6 +152,11 @@ export class UserCmsPostComponent implements OnInit {
       this._isSpinning = false;
       this.isEditModalVisible = false;
       this.resetForm(null);
+      this.getData();
+    },(error) => {
+      console.log(error);
+      this._isSpinning = false;
+      this._notification.error('Problems!', 'Post Update Failed');
     });
   };
   // Method for removing the image
@@ -194,6 +199,11 @@ export class UserCmsPostComponent implements OnInit {
     console.log(id);
     this.cmsService.delete(id).subscribe(result => {
       console.log('deleted', result);
+      this.getData();
+    }, (error) => {
+      console.log(error);
+      this._isSpinning = false;
+      this._notification.error('Problems!', 'Post Delete Failed');
     });
   }
 }
