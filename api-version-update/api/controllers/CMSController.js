@@ -354,44 +354,70 @@ module.exports = {
   //Method called for updating post data
   //Model models/CMS.js
 
+
   customPostUpdate: async (req, res) => {
     try {
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
       if (req.body.hasImage === 'true') {
         const uploaded = await uploadImages(req.file('image'));
+
         if (uploaded.length === 0) {
-          return res.badRequest('No file was uploaded');
+          return res.badRequest('No image was uploaded');
         }
+
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        req.body.image = '/' + newPath;
-      }
-      let data_value = [
-        {
+        const dataValueIndex = parseInt(req.body.dataValueId);
+
+        let dataValue = cms.data_value;
+        if (!dataValue) {
+          dataValue = [];
+        }
+
+        dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          category_id: req.body.category_id,
-          lowerlimit: req.body.lowerlimit,
-          upperlimit: req.body.upperlimit,
-          image: req.body.image
+          image: '/' + newPath
+        };
+
+        let data = await CMS.updateOne({id: cms.id}).set({data_value: dataValue});
+
+        if (data) {
+          return res.json({
+            success: true,
+            message: 'cms updated successfully',
+            data: data
+          });
+        } else {
+          return res.json(400, {
+            success: false,
+            message: 'cms updated failed'
+          });
         }
-      ];
+      } else {
 
-      cms.section = req.body.section;
-      cms.sub_section = req.body.sub_section;
-      cms.data_value = data_value;
+        const dataValueIndex = parseInt(req.body.dataValueId);
 
-      if (req.body.user_id) {
-        cms.user_id = req.body.user_id;
+        let dataValue = cms.data_value;
+        if (!dataValue) {
+          dataValue = [];
+        }
+
+        dataValue[dataValueIndex] = {
+          title: req.body.title,
+          description: req.body.description,
+          image: req.body.image
+        };
+
+        let data = await CMS.updateOne({id: cms.id}).set({data_value: dataValue});
+        return res.json({
+          success: true,
+          message: 'cms updated successfully',
+          data
+        });
       }
-      const customPostUpdated = await CMS.updateOne({id: cms.id}).set(cms);
-      return res.status(200).json({
-        success: true,
-        message: 'Post data updated successfully',
-        data: customPostUpdated,
-      });
     } catch (error) {
-      console.log(error);
+      console.log('customPostUpdate-error: ', error);
       res.status(error.status).json({
         success: false,
         message: 'Error Occurred',
@@ -399,92 +425,6 @@ module.exports = {
       });
     }
   },
-
-  /*  customPostUpdate: async (req, res) => {
-      try {
-        let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
-
-        if (req.body.hasImage === 'true') {
-          req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (uploaded.length === 0) {
-              return res.badRequest('No image was uploaded');
-            }
-
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-            let data_value = [
-              {
-                title: req.body.title,
-                description: req.body.description,
-                category_id: req.body.category_id,
-                lowerlimit: req.body.lowerlimit,
-                upperlimit: req.body.upperlimit,
-                image: '/' + newPath
-              }
-            ];
-
-            cms.section = req.body.section;
-            cms.sub_section = req.body.sub_section;
-            cms.data_value = data_value;
-
-            if (req.body.user_id) {
-              cms.user_id = req.body.user_id;
-            }
-
-            let data = await CMS.updateOne({id: cms.id}).set(cms);
-
-            if (data) {
-              return res.json({
-                success: true,
-                message: 'cms updated successfully',
-                data: data
-              });
-            } else {
-              return res.json(400, {
-                success: false,
-                message: 'cms updated failed'
-              });
-            }
-          }
-          );
-        } else {
-          let data_value = [
-            {
-              title: req.body.title,
-              description: req.body.description,
-              category_id: req.body.category_id,
-              lowerlimit: req.body.lowerlimit,
-              upperlimit: req.body.upperlimit,
-              image: req.body.image
-            }
-          ];
-
-          cms.section = req.body.section;
-          cms.sub_section = req.body.sub_section;
-          cms.data_value = data_value;
-          if (req.body.user_id) {
-            cms.user_id = req.body.user_id;
-          }
-
-          let data = await CMS.updateOne({id: cms.id}).set(cms);
-          return res.json({
-            success: true,
-            message: 'cms updated successfully',
-            data
-          });
-        }
-      } catch (error) {
-        console.log('customPostUpdate-error: ', error);
-        res.status(error.status).json({
-          success: false,
-          message: 'Error Occurred',
-          error: error
-        });
-      }
-    },*/
 
   //Method called for creating cms post data
   //Model models/CMS.js
