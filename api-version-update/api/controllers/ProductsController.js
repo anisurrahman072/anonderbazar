@@ -112,6 +112,10 @@ module.exports = {
         _where += ` AND product.price = ${req.query.price}`;
       }
 
+      if (req.query.searchqty) {
+        _where += ` AND product.quantity  LIKE '%${req.query.searchqty}%'  `;
+      }
+
       if (req.query.search_term) {
         _where += ` AND (product.name LIKE '%${req.query.search_term}%' OR product.code LIKE '%${req.query.search_term}%' ) `;
       } else if (req.query.search_code) {
