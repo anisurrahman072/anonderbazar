@@ -179,14 +179,15 @@ module.exports = {
         }
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'read single product',
         data: product ? product : {}
       });
     } catch (error) {
+      console.log(error);
       let message = 'error in read product';
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message,
         error
