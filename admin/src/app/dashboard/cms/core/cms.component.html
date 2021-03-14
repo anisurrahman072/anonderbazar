@@ -1,9 +1,8 @@
 <div class="row">
     <div class="col-md-12">
-        <h3 style="margin-left: 10px"> CMS</h3>
+        <h3 style="margin-left: 10px"> CMS </h3>
         <br>
         <section>
-
             <ul nz-menu [nzMode]="'horizontal'">
                 <li nz-menu-item routerLink="/dashboard/cms/home">
                     <i class="anticon anticon-home"></i> Home
@@ -12,16 +11,14 @@
                     <i class="anticon anticon-appstore"></i> Layout
                 </li>
                 <li nz-menu-item routerLink="/dashboard/cms/post">
-                    <i class="anticon anticon-global"></i>Post
+                    <i class="anticon anticon-global"></i> Post
                 </li>
             </ul>
-
             <nz-card>
                 <ng-container>
                     <router-outlet></router-outlet>
                 </ng-container>
             </nz-card>
-
         </section>
     </div>
 </div>

@@ -1,9 +1,8 @@
 <div>
     <nz-tabset>
-        <nz-tab>
-            <span>
-                <app-cms-carousel></app-cms-carousel>
-            </span>
+        <nz-tab [nzTitle]="couroselTitle">
+            <ng-template #couroselTitle><i class='anticon anticon-apple'></i>Carousel</ng-template>
+             <app-cms-carousel></app-cms-carousel>
         </nz-tab>
     </nz-tabset>
 </div>

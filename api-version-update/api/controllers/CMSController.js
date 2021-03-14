@@ -415,8 +415,10 @@ module.exports = {
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: req.body.image
+          image: ''
         };
+
+        console.log('dataValue', dataValue);
 
         let data = await CMS.updateOne({id: cms.id}).set({data_value: dataValue});
         return res.json({

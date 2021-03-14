@@ -36,8 +36,7 @@ export class CmsService {
             .get(
                 this.EndPoint +
                 `?where={"sub_section":"${subSectionName}","deletedAt":null}`
-            )
-            .map(response => response);
+            );
     }
 
     getByUserId(userID: any): Observable<any> {

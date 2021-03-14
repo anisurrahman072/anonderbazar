@@ -36,7 +36,6 @@ export class CategoryProductService {
     }
 
     getById(id) {
-
         return this.http.get(this.EndPoint + '/' + id);
     }
 

@@ -1,6 +1,5 @@
 <div class="row">
     <div class="col-md-12">
-
         <nz-card nzTitle="Vendor Post" [nzExtra]="extra">
             <ng-template #extra>
                 <button (click)="showCreateModal()" nz-button [nzType]="'primary'" [nzSize]="'large'">
@@ -8,89 +7,84 @@
                     <span> Add New </span>
                 </button>
             </ng-template>
-
             <router-outlet></router-outlet>
         </nz-card>
-
     </div>
 </div>
 
-<nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Add New'" [nzContent]="modalContent" (nzOnCancel)="handleModalCancel($event)"
-    (nzOnOk)="handleModalOk($event)" footer={null} class="create-modal">
+<nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Add New'" [nzContent]="modalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)" class="create-modal">
     <ng-template #modalContent>
+        <nz-spin [nzSpinning]="_isSpinning">
+            <form nz-form [formGroup]="validateForm" id="validateForm"
+                  (ngSubmit)="submitForm($event,validateForm.value)">
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Title</label>
+                    </div>
 
-        <div class=" spinning">
-            <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+                    <div nz-col [nzSpan]="12">
 
-                    <div    nz-row>
-                        <!--title start-->
-                        <div    nz-col [nzSpan]="7">
-                            <label>Title</label>
+                        <input nz-input formControlName="title" [placeholder]=" 'Enter Title'"
+                               [nzSize]=" 'large'">
+
+                        <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'required')">
+                            Please input title !
                         </div>
-
-                        <div nz-col [nzSpan]="12"      >
-
-                               <input nz-input  formControlName="title"  [placeholder]=" 'Enter Title'"
-                                [nzSize]=" 'large'">
-
-                            <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'required')">
-                                Please input title !
-                            </div>
-                            <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'duplicated')">
-                                Name already exists!
-                            </div>
-                            <div    *ngIf="getFormControl( 'title').dirty&&getFormControl('title').pending">
-                                Validating...
-                            </div>
+                        <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').hasError( 'duplicated')">
+                            Name already exists!
+                        </div>
+                        <div *ngIf="getFormControl( 'title').dirty&&getFormControl('title').pending">
+                            Validating...
                         </div>
                     </div>
-                    <!--Title -->
+                </div>
+                <!--Title -->
 
-                    <div    nz-row>
-                        <div nz-col [nzSpan]="7"   >
-                            <label>Details</label>
-                        </div>
-                        <div nz-col [nzSpan]="17"      >
-
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false" debounce="500">
-
-                            </ckeditor>
-
-                            <div    *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
-                                Please input description !
-                            </div>
-                        </div>
-
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Details</label>
                     </div>
-                    <!--description-->
+                    <div nz-col [nzSpan]="17">
 
+                        <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
+                                  debounce="500">
 
-                    <div    nz-row>
-                        <div nz-col [nzSpan]="7"   >
-                            <label>Picture</label>
-                        </div>
-                        <div nz-col [nzSpan]="12"      >
-                            <image-upload [max]="1" buttonCaption="Select picture" dropBoxMessage="Drop Picture here"
-                                clearButtonCaption="Clear" (removed)="onRemoved($event)" #Image (imageSelected)="selected($event)"
-                                (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
+                        </ckeditor>
+
+                        <div *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
+                            Please input description !
                         </div>
                     </div>
-                    <!--image-->
 
-
-                    <div    nz-row>
-
-                        <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-                            <nz-button-group>
-                                <button nz-button [nzType]=" 'primary'" [nzSize]="'large'" [disabled]="submitting">Save</button>
-                                <button nz-button [nzSize]=" 'large'" (click)="resetForm($event)">Reset</button>
-                                <button nz-button [nzSize]=" 'large'" (click)="handleModalCancel($event)">Cancel</button>
-                            </nz-button-group>
-                        </div>
+                </div>
+                <!--description-->
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Picture</label>
                     </div>
-                </form>
-            </nz-spin>
-        </div>
+                    <div nz-col [nzSpan]="12">
+                        <image-upload [max]="1" buttonCaption="Select picture" dropBoxMessage="Drop Picture here"
+                                      clearButtonCaption="Clear" (removed)="onRemoved($event)" #Image
+                                      (uploadStateChanged)="onUploadStateChanged($event)"
+                                      [beforeUpload]="onBeforeUpload"></image-upload>
+                    </div>
+                </div>
+                <!--image-->
+                <div nz-row>
+                    <div nz-col [nzOffset]="7" [nzSpan]="12">
+                        <nz-button-group>
+                            <button nz-button [nzType]=" 'primary'" [nzSize]="'large'" [disabled]="submitting">
+                                Save
+                            </button>
+                            <button nz-button [nzSize]=" 'large'" (click)="resetForm($event)">Reset</button>
+                            <button nz-button [nzSize]=" 'large'" (click)="handleModalCancel($event)">Cancel
+                            </button>
+                        </nz-button-group>
+                    </div>
+                </div>
+            </form>
+        </nz-spin>
     </ng-template>
 </nz-modal>
