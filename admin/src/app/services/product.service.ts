@@ -36,6 +36,7 @@ export class ProductService {
         status: number,
         page: number,
         limit: number,
+        searchqty: string,
         searchCode: string,
         searchTerm: string,
         approvalStatus: string = '',
@@ -49,7 +50,7 @@ export class ProductService {
         sortValue: string,
     ): Observable<any> {
         return this.http.get(
-            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortKey=${sortKey}&sortValue=${sortValue}&approval_status=${approvalStatus}`
+            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&searchqty=${searchqty}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortKey=${sortKey}&sortValue=${sortValue}&approval_status=${approvalStatus}`
         );
     }
 

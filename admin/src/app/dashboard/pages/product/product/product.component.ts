@@ -129,6 +129,7 @@ export class ProductComponent implements OnInit, OnDestroy {
                 this.status,
                 this.page,
                 this.limit,
+                this.qtySearchValue,
                 this.codeSearchValue,
                 this.nameSearchValue,
                 this.approvalStatus || '',
