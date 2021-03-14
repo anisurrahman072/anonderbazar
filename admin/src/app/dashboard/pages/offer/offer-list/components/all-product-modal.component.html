@@ -1,0 +1,81 @@
+<nz-table #nzTableProd1
+          nzShowSizeChanger
+          [nzFrontPagination]="false"
+          [nzData]="allProducts"
+          [nzLoading]="_isSpinning"
+          [nzTotal]="allProductTotal"
+          [(nzPageIndex)]="allProductPage"
+          [(nzPageSize)]="allProductLimit"
+          (nzPageIndexChange)="getAllProducts($event)"
+>
+    <thead>
+    <tr>
+        <th>
+            <label nz-checkbox [(ngModel)]="allProductSelectAll[allProductPage - 1]" (ngModelChange)="selectAllProducts($event)"></label>
+        </th>
+        <th>
+            <span> Product Name </span>
+        </th>
+        <th>
+            <span> Brand </span>
+        </th>
+        <th>
+            <span> Category </span>
+        </th>
+        <th>
+            <span> Sub-Category </span>
+        </th>
+        <th>
+            <span> Sub-Sub-Category </span>
+        </th>
+        <th>
+            <span> Price </span>
+        </th>
+    </tr>
+    <tr>
+        <th>
+        </th>
+        <th>
+            <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
+                   (ngModelChange)="allProductNameChangeHandler($event)">
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+
+        </th>
+        <th>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let datum of nzTableProd1.data;let i=index;">
+        <td>
+            <label nz-checkbox [(ngModel)]="datum.checked"
+                   (ngModelChange)="_refreshStatus($event, datum.id)">
+            </label>
+        </td>
+        <td>{{datum.name}}</td>
+        <td>{{datum.brand_name}}</td>
+        <td>{{datum.type_name}}</td>
+        <td>{{datum.category_name}}</td>
+        <td>{{datum.subcategory_name}}</td>
+        <td>{{datum.price}}</td>
+    </tr>
+    </tbody>
+</nz-table>
+<div>
+    <div>
+        <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'">
+            Add Product(s)
+        </button>
+    </div>
+</div>

@@ -11,7 +11,6 @@ import {ProductService} from '../../../../services/product.service';
 })
 
 export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild('allProductSelectAll') allProductSelectAllElem;
 
     homeOfferData: any = [];
     private offerProductIds: any = [];
@@ -34,15 +33,11 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     allProduct2: any = [];
     storeProductIds: any = [];
     storeOfferIds: any = [];
-    _displayData = [];
     products = [];
     offers = [];
     checked = 'true';
 
-    allProductPage = 1;
-    allProductLimit = 20;
-    allProductTotal = 0;
-    allProductNameSearch: string = '';
+
     private selectedAllProductIds: any = [];
     private allProductSelectAll: any = [];
 
@@ -59,9 +54,15 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         private cmsService: CmsService) {
 
     }
+
     ngOnDestroy(): void {
 
     }
+
+    ngAfterViewInit() {
+
+    }
+
     // init the component
     ngOnInit() {
         this.validateForm = this.fb.group({
@@ -202,7 +203,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addNew = false;
         this.currentProduct = data;
         this.isProductVisible = true;
-        this.allProductSelectAllElem.nativeElement.checked = false;
+
         this.products = [];
         this.getProduct(null, data);
         if (this.status == 1) {
@@ -239,7 +240,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
             this.offerProductIds = [];
         }
-        console.log('getProduct', data);
 
         this._isSpinning = true;
 
@@ -247,135 +247,16 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(result => {
                 this.products = result;
                 this._isSpinning = false;
-                this.getAllProducts(1);
+
             }, (error) => {
                 this._isSpinning = false;
             });
-
-
     };
 
-    selectAllProducts($event: any) {
-        const isChecked = !!$event.target.checked;
-        if (!isChecked) {
-            this.selectedAllProductIds[this.allProductPage - 1] = [];
-        }
-
-        this.allProductSelectAll[this.allProductPage - 1] = isChecked;
-        const len = this.allProducts.length;
-        for (let i = 0; i < len; i++) {
-            this.allProducts[i].checked = isChecked;
-            if (isChecked) {
-                const foundIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
-                    return prodId == this.allProducts[i].id;
-                });
-                if (foundIndex === -1) {
-                    this.selectedAllProductIds[this.allProductPage - 1].push(this.allProducts[i].id);
-                }
-            }
-        }
-    }
-
-    // Method for refresh offer checkbox data in the offer modal
-    _refreshStatus($event, value) {
-
-        if ($event && $event.currentTarget.checked) {
-            this.selectedAllProductIds[this.allProductPage - 1].push(value);
-        } else {
-            let findIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
-                return prodId == value.id
-            });
-            if (findIndex !== -1) {
-                this.selectedAllProductIds[this.allProductPage - 1].splice(findIndex, 1);
-            }
-        }
-    }
-
     addNewProducts() {
-
-        this.allProductPage = 1;
         this.selectedAllProductIds = [];
         this.allProductSelectAll = [];
         this.addNew = !this.addNew;
-    }
-
-    getAllProducts(event: any) {
-
-        if (this.allProductPage != event || !(this.allProducts && this.allProducts.length > 0)) {
-            if (event) {
-                this.allProductPage = event;
-            }
-            this._isSpinning = true;
-            this.productservice.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch)
-                .subscribe(result => {
-
-                    console.log(' this.product service.get all ', result);
-
-                    if (typeof result.data !== 'undefined') {
-                        this.allProducts = result.data;
-                        this.allProductTotal = result.total;
-                        this.allProducts = result.data.map((item) => {
-                            return {
-                                ...item,
-                                checked: false
-                            }
-                        });
-
-                        const thisTotal = this.allProducts.length;
-
-                        if (typeof this.selectedAllProductIds[this.allProductPage - 1] === 'undefined') {
-                            this.selectedAllProductIds[this.allProductPage - 1] = [];
-                        }
-                        if (typeof this.allProductSelectAll[this.allProductPage - 1] === 'undefined') {
-                            this.allProductSelectAll[this.allProductPage - 1] = false;
-                        }
-
-                        this.allProductSelectAllElem.nativeElement.checked = !!this.allProductSelectAll[this.allProductPage - 1];
-
-                        if (this.selectedAllProductIds[this.allProductPage - 1].length) {
-                            for (let index = 0; index < thisTotal; index++) {
-                                const foundIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
-                                    return prodId == this.allProducts[index].id;
-                                });
-                                this.allProducts[index].checked = foundIndex !== -1;
-                            }
-                        } else {
-                            for (let index = 0; index < thisTotal; index++) {
-                                this.allProducts[index].checked = false;
-                            }
-                        }
-                    } else {
-                        this.allProducts = [];
-                        this.allProductTotal = 0;
-                    }
-                    this._isSpinning = false;
-                    /*                    this.offerProductIds.forEach(element => {
-                                            let findValue = this.allProduct2.indexOf(element);
-                                            this.allProduct2.splice(findValue, 1);
-                                        });
-
-                                        result.forEach(element => {
-                                            this.productservice.getById(element)
-                                                .subscribe(result2 => {
-                                                    this.allProducts.push(result2);
-                                                });
-                                        });*/
-
-                }, err => {
-                    this._isSpinning = false;
-                });
-        }
-
-    }
-
-    allProductNameChangeHandler(event: any) {
-        this.allProductNameSearch = event;
-        this.getAllProducts(1);
-    }
-
-    ngAfterViewInit() {
-
-
     }
 
     // Event method for submitting the offer form
@@ -395,8 +276,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             }, (er) => {
                 this._isSpinning = false;
             });
-
-
     }
 
     // Event method for submitting the product form

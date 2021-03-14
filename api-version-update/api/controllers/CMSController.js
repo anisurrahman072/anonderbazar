@@ -558,9 +558,8 @@ module.exports = {
   //Model models/CMS.js
   customUpdate: async (req, res) => {
     try {
-      console.log('customUpdate', req.body);
+
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
-      console.log('cms.data_value', cms.data_value);
 
       if (req.body.hasImage === 'true') {
         const uploaded = await uploadImages(req.file('image'));
@@ -584,6 +583,7 @@ module.exports = {
         let data = await CMS.updateOne({id: cms.id}).set({
           data_value: dataValue
         });
+
         if (data) {
           return res.json({
             success: true,
