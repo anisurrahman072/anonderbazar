@@ -82,7 +82,7 @@
 
 <div class="row">
     <div class="col-md-12" *ngFor="let footer of cmsFooterData; let i = index" [attr.data-index]="i">
-        <nz-card style="max-height: 260px;margin-bottom: 5px;">
+        <nz-card style="max-height: 260px;margin-bottom: 5px;" [nzTitle]="title" [nzExtra]="extra">
             <ng-template #title>
                 {{footer.title}}
             </ng-template>
@@ -91,14 +91,14 @@
                     <span><i class="anticon anticon-edit"></i> Edit </span>
                 </button>
             </ng-template>
-            <ng-template #body>
+            <ng-container>
 
                 <div [innerHTML]="footer.description"></div>
                 <br>
                 <div class="fa"> Image:
                     <i class="{{footer.image}}"></i>
                 </div>
-            </ng-template>
+            </ng-container>
         </nz-card>
     </div>
 </div>
