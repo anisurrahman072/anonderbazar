@@ -132,7 +132,7 @@ export class UserCmsComponent implements OnInit {
       this._isSpinning = false;
       this.isAddModalVisible = false;
       this.resetForm(null);
-      setInterval(() => {  location.reload();  }, 10000);
+      setInterval(() => {  location.reload();  }, 2000);
     }, error => {
       this.submitting = false;
       this._notification.create('error', 'Error Occurred!', "Error occurred while adding user CMS!");
