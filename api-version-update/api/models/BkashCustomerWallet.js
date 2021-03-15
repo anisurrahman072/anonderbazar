@@ -20,18 +20,19 @@ module.exports = {
     agreement_id: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
+      allowNull: true,
     },
     payment_id: {
       type: 'string',
       columnType: 'varchar',
-      required: true,
+      required: false,
+      allowNull: true,
     },
     full_response: {
       type: 'json',
       columnType: 'text',
-      required: false,
-      allowNull: true,
+      required: false
     },
     /* pending = 1, create_success = 2, execute_success = 3, rejected = 99	 */
     row_status: {

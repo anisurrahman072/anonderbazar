@@ -147,7 +147,7 @@ module.exports = {
       allRoutes: true,
       allowOrigins: '*',
       allowCredentials: false,
-      allowRequestHeaders: 'Content-Type, Authorization'
+      allowRequestHeaders: 'Content-Type,Authorization,id_token'
     },
 
   },

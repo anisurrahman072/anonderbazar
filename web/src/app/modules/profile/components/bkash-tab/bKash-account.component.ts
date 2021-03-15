@@ -54,17 +54,18 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
         this.isSubmitting = true;
         this._spinning = true;
         const bkashToken = this.localStorageService.getBkashToken();
-        this.bkashService.createAgreementRequest(bkashToken).subscribe((res: any) => {
-            console.log('createBKashAgreement', res);
-            this._spinning = false;
-            this.isSubmitting = false;
-            if (res.tokenRes && res.tokenRes.bkashURL) {
-                window.location.href = res.tokenRes.bkashURL;
-            }
-        }, (err) => {
-            console.log(err);
-            this._spinning = false;
-            this.isSubmitting = false;
-        })
+        this.bkashService.createAgreementRequest(bkashToken, this.bKashWalletNoToAdd)
+            .subscribe((res: any) => {
+                console.log('createBKashAgreement', res);
+                this._spinning = false;
+                this.isSubmitting = false;
+                if (res.tokenRes && res.tokenRes.bkashURL) {
+                    window.location.href = res.tokenRes.bkashURL;
+                }
+            }, (err) => {
+                console.log(err);
+                this._spinning = false;
+                this.isSubmitting = false;
+            })
     }
 }
