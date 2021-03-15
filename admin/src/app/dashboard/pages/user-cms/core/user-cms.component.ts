@@ -88,10 +88,11 @@ export class UserCmsComponent implements OnInit {
 
     // Method for getting all page data
 
-    getData(returnValue) {
-        this.cmsService.getByUserId(this.currentUser.id).subscribe(result => {
-            return returnValue(result);
-        });
+    getData() {
+        this.cmsService.getByUserId(this.currentUser.id)
+            .subscribe(result => {
+                this._addNewCmsService.sendUserCMSData(result);
+            });
     }
 
 
@@ -140,9 +141,7 @@ export class UserCmsComponent implements OnInit {
             this.isAddModalVisible = false;
             this.resetForm(null);
 
-            this.getData(userCMSData => {
-                this._addNewCmsService.sendUserCMSData(userCMSData);
-            })
+            this.getData();
 
         }, error => {
             this.submitting = false;

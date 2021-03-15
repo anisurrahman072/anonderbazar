@@ -90,7 +90,6 @@ export class UserCmsPostComponent implements OnInit {
         this.currentUser = this.authService.getCurrentUser();
         this.getData();
         this._addNewCmsService.userCMSData$.subscribe(data => {
-            console.log("rouzex: ", data);
             this.id = data[0].id;
             this.cmsPostData = data;
         })
