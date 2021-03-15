@@ -1,8 +1,8 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import * as fromStore from "../../../state-management";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {User, FavouriteProduct} from "../../../models/";
+import {User} from "../../../models/";
 import {AuthService, FavouriteProductService, UserService} from "../../../services";
 import {Router} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
@@ -18,7 +18,7 @@ import {ToastrService} from "ngx-toastr";
     templateUrl: "./profile.component.html",
     styleUrls: ["./profile.component.scss"]
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy  {
     currentUser$: Observable<User>;
     user: any;
     id: any;
@@ -36,12 +36,12 @@ export class ProfileComponent implements OnInit {
     isWishlist: boolean;
     isProfile: boolean;
     isAddress: boolean;
-    favouriteProducts$: Observable<FavouriteProduct[]>;
+/*    favouriteProducts$: Observable<FavouriteProduct[]>;
     favouriteProducts: FavouriteProduct[];
     profileRouterLink = [
         {label: "Favourites", path: "/profile/favourites"},
         {label: "Orders", path: "/profile/orders"}
-    ];
+    ];*/
     options: { value: number; label: string; icon: string }[];
     view: any[] = [700, 400];
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
@@ -117,7 +117,8 @@ export class ProfileComponent implements OnInit {
         ];
 
     }
-
+    ngOnDestroy() {
+    }
     //init the component
     ngOnInit(): void {
         this.isDisabled = true;

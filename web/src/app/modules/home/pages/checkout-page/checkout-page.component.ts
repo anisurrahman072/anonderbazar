@@ -12,6 +12,7 @@ import {AppSettings} from '../../../../config/app.config';
 import {PaymentAddressService} from '../../../../services/payment-address.service';
 import {LoaderService} from "../../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 const defaultAddress = {}
 
@@ -28,11 +29,11 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shippingUpazilaSearchOptions: any = [];
     upazilaSearchOptions: any = [];
     prevoius_address: any;
-    prevoius_address_id: any;
     checkoutForm: FormGroup;
+/*    prevoius_address_id: any;
     help1Show: boolean = false;
     help2Show: boolean = false;
-    isAddNew = false;
+    isAddNew = false;*/
     isDelivery = true;
     isPickup = false;
     cart$: Observable<Cart>;
@@ -52,14 +53,14 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shipping_upazila_id: string;
     shippingAddress: string;
     shippingPostCode: string;
-    billshippingFirstName: string;
+/*    billshippingFirstName: string;
     billshippingLastName: string;
     billshippingPhone: string;
     billdivision_id: string;
     billzila_id: string;
     billupazila_id: string;
     billaddress: string;
-    billpostCode: string;
+    billpostCode: string;*/
     private currentUser: User;
     private currentUserSub: Subscription;
     newShippingAddress: boolean = false;
@@ -288,6 +289,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
                 if (AppSettings.IS_PRODUCTION) {
                     this.hideCashonDelivery = foundCouponProduct;
+                    if (!this.hideCashonDelivery) {
+                        // TODO: Temporary Solution
+                        console.log('this.cartData.data.cart_items', this.cartData.data.cart_items);
+                        this.hideCashonDelivery = this.cartData.data.cart_items.find((item) => {
+                            return item.product_id && item.product_id.subcategory_id == GLOBAL_CONFIGS.cashPaymentOffFor;
+                        });
+                    }
                 }
             }
 

@@ -23,4 +23,31 @@ module.exports = {
     'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
     'sid': 'SOFTBDNONAPI',
   },
+  bKash: {
+    isSandboxMode: true,
+    'production': {
+      'app_key': '',
+      'app_secret': '',
+      'username': '',
+      'password': '',
+      'script': 'https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js',
+      'token_grant_url': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/token/grant',
+      'agreement_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
+      'agreement_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
+      'agreement_status': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/status',
+      'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
+    },
+    'sandbox': {
+      'app_key': '7epj60ddf7id0chhcm3vkejtab',
+      'app_secret': '18mvi27h9l38dtdv110rq5g603blk0fhh5hg46gfb27cp2rbs66f',
+      'username': 'sandboxTokenizedUser01',
+      'password': 'sandboxTokenizedUser12345',
+      'script': 'https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js',
+      'token_grant_url': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/token/grant',
+      'agreement_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
+      'agreement_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
+      'agreement_status': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/status',
+      'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
+    }
+  }
 };

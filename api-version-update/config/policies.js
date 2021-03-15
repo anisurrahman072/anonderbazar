@@ -352,5 +352,10 @@ module.exports.policies = {
   WarehouseVariantsController: {
     '*': false,
     'getAll': true
+  },
+  BkashPaymentController: {
+    'grandToken': ['isAuthorized', 'isCustomer'],
+    'createAgreement': ['isAuthorized', 'isCustomer'],
+    'agreementCallback': true,
   }
 };

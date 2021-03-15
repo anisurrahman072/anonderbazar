@@ -18,6 +18,7 @@ import {AddressTabComponent} from './components/address-tab/address-tab.componen
 import {MessagingTabComponent} from './components/messaging-tab/messaging-tab.component';
 import {ImageUploadModule} from "angular2-image-upload";
 import {NgxPaginationModule} from "ngx-pagination";
+import {BKashAccountComponent} from "./components/bkash-tab/bKash-account.component";
 
 //init route path for profile module
 const routes: Routes = [
@@ -27,14 +28,17 @@ const routes: Routes = [
         children: [
             {
                 path: 'orders', component: OrderTabComponent, data: {
-                    title: 'orders'
+                    title: 'My Orders'
                 }
             },
-
-
             {
                 path: 'favourites', component: FavouriteProductTabComponent, data: {
-                    title: 'favourites'
+                    title: 'My Favourites'
+                }
+            },
+            {
+                path: 'bkash-accounts', component: BKashAccountComponent, data: {
+                    title: 'My Bkash Accounts'
                 }
             },
             {
@@ -44,34 +48,34 @@ const routes: Routes = [
             },
             {
                 path: 'address-tab', component: AddressTabComponent, data: {
-                    title: 'My Address'
+                    title: 'My Addresses'
                 }
             },
             {
                 path: 'messaging-tab', component: MessagingTabComponent, data: {
-                    title: 'Message'
+                    title: 'My Messages'
                 }
             },
         ]
     },
     {
         path: 'orders/invoice/:id', component: OrderInvoiceComponent, data: {
-            title: 'orders invoice'
+            title: 'Orders Invoice'
         }
     },
     {
         path: 'suborders/invoice/:id', component: SuborderInvoiceComponent, data: {
-            title: 'suborders invoice'
+            title: 'Suborders Invoice'
         }
     },
     {
         path: 'suborders/details/:id', component: SuborderComponent, data: {
-            title: 'suborders details'
+            title: 'Suborders Details'
         }
     },
     {
         path: 'orders/details/:id', component: OrderComponent, data: {
-            title: 'orders details'
+            title: 'Orders Details'
         }
     },
 ];
@@ -85,11 +89,13 @@ const routes: Routes = [
         MaterialModule,
         SharedModule,
         ImageUploadModule.forRoot(),
-        TabsModule.forRoot(), NgxChartsModule, NgxPaginationModule
+        TabsModule.forRoot(),
+        NgxChartsModule,
+        NgxPaginationModule
     ],
     declarations: [
         ProfileComponent, FavouriteProductTabComponent, OrderTabComponent, SuborderComponent, OrderComponent,
-        ProfileTabComponent, AddressTabComponent, MessagingTabComponent
+        ProfileTabComponent, AddressTabComponent, MessagingTabComponent, BKashAccountComponent
     ],
 
 })
