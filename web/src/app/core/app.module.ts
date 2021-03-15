@@ -49,8 +49,11 @@ import {FormValidatorService} from "../services/validator/form-validator.service
 import {environment} from "../../environments/environment";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
-// import {UiModule} from "../ui/ui.module";
+
 import {JwtHelper} from "angular2-jwt";
+import {LocalStorageService} from "../services/local-storage.service";
+import {BkashService} from "../services/bkash.service";
+// import {UiModule} from "../ui/ui.module";
 
 let imports = [];
 if (environment.production) {
@@ -62,6 +65,7 @@ if (environment.production) {
 } else {
     imports = [];
 }
+
 
 @NgModule({
     declarations: [
@@ -92,10 +96,8 @@ if (environment.production) {
         SimpleNotificationsModule.forRoot(),
         StoreModule.forRoot({}, {metaReducers}),
         EffectsModule.forRoot(effects),
-
         StoreModule.forFeature('home', reducers),
         EffectsModule.forFeature(effects),
-
         StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
@@ -149,6 +151,8 @@ if (environment.production) {
         LoaderService,
         BrandService,
         FormValidatorService,
+        LocalStorageService,
+        BkashService
     ],
     bootstrap: [AppComponent]
 })

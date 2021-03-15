@@ -17,8 +17,9 @@ const {designImageRoute} = require('./designImage');
 const {favouriteproductRoute} = require('./favouriteProduct');
 const {userRoutes} = require('./user');
 const {brandRoute} = require('./brands');
-const {orderRoutes}=require('./orders');
-const {courierPricesRoute}=require('./courierprices');
+const {orderRoutes} = require('./orders');
+const {courierPricesRoute} = require('./courierprices');
+const {paymentGatewayRoutes} = require('./payment_gateway');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -41,5 +42,6 @@ exports.allRouter = {
   ...eventsRoutes,
   ...brandRoute,
   ...orderRoutes,
-  ...courierPricesRoute
+  ...courierPricesRoute,
+  ...paymentGatewayRoutes
 };

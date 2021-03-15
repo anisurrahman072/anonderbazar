@@ -1,0 +1,21 @@
+<div class="row justify-content-center" *ngIf="canAddAgreement">
+    <div class="col-md-6">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Add bKash Account</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <mat-form-field>
+                    <mat-label>Telephone</mat-label>
+                    <input matInput placeholder="bKash Wallet Number" [(ngModel)]="bKashWalletNoToAdd"/>
+                </mat-form-field>
+            </mat-card-content>
+            <mat-card-actions>
+                <button *ngIf="!isSubmitting; else spinningBlock" mat-button color="primary" (click)="createBKashAgreement()">Add</button>
+                <ng-template #spinningBlock>
+                    <mat-spinner></mat-spinner>
+                </ng-template>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>
