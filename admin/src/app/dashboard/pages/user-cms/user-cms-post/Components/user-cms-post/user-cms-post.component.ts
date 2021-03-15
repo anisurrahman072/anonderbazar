@@ -6,6 +6,7 @@ import { FileHolder, UploadMetadata } from 'angular2-image-upload';
 
 import { AuthService } from '../../../../../../services/auth.service';
 import { environment } from "../../../../../../../environments/environment";
+import { AddNewCmsService } from "../../../../../../services/add-new-cms.service";
 
 @Component({
   selector: 'app-cms-post',
@@ -68,7 +69,8 @@ export class UserCmsPostComponent implements OnInit {
     private cmsService: CmsService,
     private authService: AuthService,
     private _notification: NzNotificationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private _addNewCmsService: AddNewCmsService
   ) {
 
   }
@@ -83,14 +85,20 @@ export class UserCmsPostComponent implements OnInit {
       title: ['', [Validators.required]],
       description: ['', [Validators.required]]
     });
-    
+
     this.currentUser = this.authService.getCurrentUser();
 
+    this._addNewCmsService.userCMSData$.subscribe(data => {
+      console.log("rouzex: ", data);
+      this.id = data[0].id;
+      this.cmsPostData = data;
+    })
     this.getData();
   }
   // Method for getting all page data
   getData() {
     this.cmsService.getByUserId(this.currentUser.id).subscribe(result => {
+      console.log("result: ", result);
       this.id = result[0].id;
       this.cmsPostData = result;
     });

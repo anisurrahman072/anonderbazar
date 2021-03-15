@@ -6,6 +6,7 @@ import {CmsService} from '../../../../services/cms.service';
 
 import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
+import {AddNewCmsService} from "../../../../services/add-new-cms.service";
 
 @Component({
     selector: 'app-cms',
@@ -13,9 +14,17 @@ import {environment} from "../../../../../environments/environment";
     styleUrls: ['./user-cms.component.css']
 })
 export class UserCmsComponent implements OnInit {
-    @ViewChild('Image')
     currentUser: any;
+    cmsData: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+
+    ngOnInit() {
+        this.currentUser = this.authService.getCurrentUser();
+
+        this.cmsService.getBySectionName('HOME').subscribe(result => {
+            this.cmsData = result;
+        });
+    }
 
     cmsPostData: any;
     isAddModalVisible = false;
@@ -53,27 +62,43 @@ export class UserCmsComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-
+    @ViewChild('Image')
     Image: any;
+
+    _isSpinning: any = false;
+
     id: any;
+
     currentPostId: any;
     submitting: boolean = false;
-    _isSpinning: any = false;
 
     constructor(
         private cmsService: CmsService,
         private authService: AuthService,
         private _notification: NzNotificationService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private _addNewCmsService: AddNewCmsService
     ) {
-    }
-
-    ngOnInit() {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             description: ['', [Validators.required]]
         });
-        this.currentUser = this.authService.getCurrentUser();
+    }
+
+    /*    getData() {
+            this.cmsService.getBySectionName('POST').subscribe(result => {
+                this.cmsPostData = result;
+            });
+        }*/
+
+    // Method for getting all page data
+
+    getData() {
+        return this.cmsService.getByUserId(this.currentUser.id).subscribe(result => {
+            console.log("parent: ", result);
+            this.id = result[0].id;
+            this.cmsPostData = result;
+        });
     }
 
     // Method for showing the modal
@@ -120,7 +145,9 @@ export class UserCmsComponent implements OnInit {
             this._isSpinning = false;
             this.isAddModalVisible = false;
             this.resetForm(null);
-
+            // setInterval(() => {  location.reload();  }, 2000);
+            this._addNewCmsService.sendUserCMSData(this.getData());
+            // this.getData();
         }, error => {
             this.submitting = false;
             this._notification.create('error', 'Error Occurred!', "Error occurred while adding user CMS!");
