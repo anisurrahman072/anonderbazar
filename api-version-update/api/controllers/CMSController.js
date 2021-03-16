@@ -465,64 +465,55 @@ module.exports = {
   //Model models/CMS.js
   customInsert: async (req, res) => {
     try {
-      let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      let cms = await CMS.findOne({id: req.body.id});
 
-          cms.data_value[req.body.dataValueId] = {
-            title: req.body.title,
-            description: req.body.description,
-            image: '/' + newPath
-          };
-
-          let _payload = {
-            title: req.body.title,
-            description: req.body.description,
-            image: '/' + newPath
-          };
-
-          cms.data_value.push(_payload);
-
-          let data = await CMS.updateOne({id: cms.id}).set(req.body);
-
-          if (data) {
-            return res.json({
-              success: true,
-              message: 'cms updated successfully',
-              data: _payload
-            });
-          } else {
-            return res.json(400, {
-              success: false,
-              message: 'cms updated failed'
-            });
-          }
-        }
-        );
-      } else {
-        cms.data_value.push({
-          title: req.body.title,
-          description: req.body.description,
-          image: null
-        });
-
-        let data = await CMS.updateOne({id: cms.id}).set(cms);
-        return res.json({
-          success: true,
-          message: 'cms updated successfully',
-          data
-        });
+      // const dataValueIndex = parseInt(req.body.dataValueId, 10);
+      let _payload = {};
+      if (req.body.page) {
+        _payload.page = req.body.page;
       }
+
+      if (req.body.section) {
+        _payload.section = req.body.section;
+      }
+
+      if (req.body.sub_section) {
+        _payload.sub_section = req.body.sub_section;
+      }
+
+      let newImagePath = '';
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        newImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      }
+
+      let existingDataValue = cms.data_value;
+      if (!existingDataValue) {
+        existingDataValue = [];
+      }
+      existingDataValue.push({
+        title: req.body.title,
+        description: req.body.description,
+        image: newImagePath
+      });
+
+      _payload.data_value = existingDataValue;
+
+      let data = await CMS.updateOne({id: cms.id}).set(_payload);
+
+      return res.json({
+        success: true,
+        message: 'cms updated successfully',
+        data: data
+      });
+
     } catch (error) {
-      res.json(400, {
+      console.log(error);
+      return res.status(400).json({
         success: false,
         message: 'Error Occurred',
         error
