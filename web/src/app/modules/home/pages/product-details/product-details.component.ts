@@ -182,7 +182,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.getRecentlyViewedProducts();
     }
 
-    buyCouponProduct(product) {
+/*    buyCouponProduct(product) {
         if (this.currentUserId) {
             this.addProductToCart(product, () => {
                 this.router.navigate([`/checkout`]);
@@ -192,7 +192,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             this.couponProductModalRef.hide();
             this.loginModalService.showLoginModal(true);
         }
-    }
+    }*/
 
     defaultVariantSelection() {
         for (let v of this.productVariants) {
@@ -357,13 +357,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     //Method for direct buy
-    buyNow(product, template: TemplateRef<any>) {
-        if (this.data.is_coupon_product) {
-            this.showCouponProductModal(template);
-        } else {
+    buyNow(product) {
+        if (this.currentUserId) {
             this.addProductToCart(product, () => {
                 this.router.navigate([`/checkout`]);
             });
+        } else {
+            this.loginModalService.showLoginModal(true);
         }
     }
 
