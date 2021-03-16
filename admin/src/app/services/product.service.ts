@@ -134,4 +134,13 @@ export class ProductService {
 
         return this.http.post(this.EndPoint2 + '/bulk-upload?isApproved=' + isApproved, data);
     }
+
+    productExcel(value):Observable<any>{
+        console.log('Anis',value);
+        return this.http.get(this.EndPoint2 +`/product-excel?type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
+    }
+
+    submitDataForBulkUpdate(data): Observable<any> {
+        return this.http.put(this.EndPoint2 + '/bulk-update', data);
+    }
 }

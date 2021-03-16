@@ -191,6 +191,8 @@ module.exports.policies = {
     'designCombination': true,
     'search': true,
     'getBySearchTerm': true,
+    'productExcel': ['isAuthorized', 'isOwnerOrAdmin'],
+    'bulkUpdate': ['isAuthorized', 'isOwnerOrAdmin'],
     'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
     'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
   },

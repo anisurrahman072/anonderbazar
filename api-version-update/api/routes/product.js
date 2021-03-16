@@ -6,5 +6,7 @@ exports.productRoute = {
   'GET /api/v1/products/search': 'ProductsController.search',
   'GET /api/v1/products/:_id/designcombination': 'ProductsController.designCombination',
   'GET /api/v1/products/generate-excel': 'ProductsController.generateExcel',
-  'POST /api/v1/products/bulk-upload': 'ProductsController.bulkUpload'
+  'GET /api/v1/products/product-excel': 'ProductsController.productExcel',
+  'POST /api/v1/products/bulk-upload': 'ProductsController.bulkUpload',
+  'PUT /api/v1/products/bulk-update': 'ProductsController.bulkUpdate'
 };
