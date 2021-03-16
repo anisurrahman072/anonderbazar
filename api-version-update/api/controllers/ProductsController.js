@@ -1042,10 +1042,12 @@ module.exports = {
         ws.cell(row, column++).string(escapeExcel(products[i].code));
         ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
         if(products[i].brand_id){
-          brandList.forEach((item) => {
-            ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(item.name));
-            return;
-          });
+          for(let index = 0; index < brandList.length; index++){
+            if(brandList[index].id === products[i].brand_id){
+              ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(brandList[index].name));
+              break;
+            }
+          }
         }else{
           ws.cell(row, column++).string('null');
         }
