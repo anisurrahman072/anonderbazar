@@ -848,8 +848,9 @@ module.exports = {
       });
 
       /* Fetch Warehouse List */
+      let wareHouseList;
       if(isAdmin){
-        let wareHouseList = await Warehouse.find({
+        wareHouseList = await Warehouse.find({
           where: {deletedAt: null},
           sort: 'name ASC'
         });
