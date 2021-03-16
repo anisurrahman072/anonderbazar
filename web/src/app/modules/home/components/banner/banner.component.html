@@ -5,7 +5,7 @@
                 <slide *ngFor="let slide of carousalList; let index=index">
                     <a href="{{slide.description.link}}" title="{{slide.description.linktext}}">
                         <img [src]="IMAGE_ENDPOINT + slide?.image + IMAGE_EXT" alt="Anonder Bazar Banner Image"
-                             style="width: 93.5%; height: auto; text-align: center; display: block; margin: auto;"/>
+                             style="width: 100%; height: auto; text-align: center;"/>
                     </a>
                 </slide>
             </carousel>
