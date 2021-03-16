@@ -3,7 +3,7 @@
 
         <div class="productimage-wrapper">
             <span *ngIf="product.promotion" class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
-            <img class="product-image" src="{{IMAGE_LIST_ENDPOINT + product.image}}" alt="Product Image">
+            <img class="product-image" src="{{IMAGE_LIST_ENDPOINT + product.image + IMAGE_EXT}}" alt="Product Image">
         </div>
         <div class="productlist-icon" style="position: absolute; top: 5%; right: 8%;">
             <ul class="button1">
@@ -89,15 +89,6 @@
         </div>
     </div>
     <p><a routerLink="/product-details/{{product.id}}">{{product.name}}</a></p>
-    <!-- Rating view goes here -->
-    <!-- <ul class="d-flex">
-        <li class="mr-1 star-no">4.5</li>
-        <li class="mr-1"><i class="fa fa-star"></i></li>
-        <li class="mr-1"><i class="fa fa-star"></i></li>
-        <li class="mr-1"><i class="fa fa-star"></i></li>
-        <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
-        <li class="mr-1"><i class="fa fa-star-half-o"></i></li>
-    </ul> -->
     <span *ngIf="!product.promotion">৳. {{product.price}}</span>
     <span *ngIf="product.promotion">৳. <del>{{product.price}}</del>
         {{product.promo_price}}</span>

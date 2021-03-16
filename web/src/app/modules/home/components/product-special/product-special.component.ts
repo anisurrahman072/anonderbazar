@@ -21,6 +21,7 @@ import {
 } from "../../../../services";
 import * as fromStore from "../../../../state-management";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 
 @Component({
@@ -31,6 +32,7 @@ import {LoginModalService} from "../../../../services/ui/loginModal.service";
 export class ProductSpecialComponent implements OnInit {
     data: Product;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     id: any;
     private sub: Subscription;

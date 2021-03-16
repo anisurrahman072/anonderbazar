@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {ProductService} from '../../../../services';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-section-offers',
@@ -13,6 +14,8 @@ export class OfferComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
+
     products: any = [];
     offers: any = [];
 

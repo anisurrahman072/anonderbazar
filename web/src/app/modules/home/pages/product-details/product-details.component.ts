@@ -28,6 +28,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DesignimageService} from "../../../../services/designimage.service";
 import {LoaderService} from "../../../../services/ui/loader.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: "page-product-details",
@@ -44,6 +45,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     private sub1: Subscription;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     RESIZED_IMAGE_ENDPOINT = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     discountBadgeIcon: any;
     cart$: Observable<any>;
     cartId: any;
@@ -227,7 +229,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             if (result) {
                 let allImages = [];
 
-                this.primaryPicture = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT + this.data.image;
+                this.primaryPicture = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT + this.data.image + this.IMAGE_EXT;
 
                 if (this.data.image) {
                     allImages.push({'image_path': this.data.image});
