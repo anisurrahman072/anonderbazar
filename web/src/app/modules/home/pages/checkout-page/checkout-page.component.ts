@@ -386,7 +386,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         // this._progress.start("mainLoader");
         this.loaderService.showLoader();
         if (value.paymentType == "SSLCommerce") {
-            this.orderService.sslcommerzInsert(requestPayload).subscribe(result => {
+            this.orderService.placeOrder(requestPayload).subscribe(result => {
                 // this._progress.complete("mainLoader");
                 this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
@@ -405,7 +405,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 }
             });
         } else {
-            this.orderService.customInsert(requestPayload).subscribe(result => {
+            this.orderService.placeCashOnDeliveryOrder(requestPayload).subscribe(result => {
                 // this._progress.complete("mainLoader");
                 this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());

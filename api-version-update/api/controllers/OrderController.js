@@ -90,8 +90,7 @@ module.exports = {
   //Method called for creating a custom order data from frontend
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
-  customInsert: async function (req, res) {
-
+  placeOrderForCashOnDelivery: async function (req, res) {
 
     const authUser = req.token.userInfo;
 
@@ -406,7 +405,7 @@ module.exports = {
   //Method called for creating a custom order data from frontend with sslcommerz
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
-  sslcommerz: async function (req, res) {
+  placeOrder: async function (req, res) {
 
     const authUser = req.token.userInfo;
 
