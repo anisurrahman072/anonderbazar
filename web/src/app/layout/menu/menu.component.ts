@@ -13,7 +13,7 @@ import {BrandService} from "../../services";
 import {FavouriteProduct} from '../../models';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {LoginModalService} from '../../services/ui/loginModal.service';
-
+import {GLOBAL_CONFIGS} from "../../../environments/global_config";
 
 @Component({
     selector: "app-menu",
@@ -32,6 +32,7 @@ export class MenuComponent implements OnInit {
     isCollapsed: boolean;
     isDisplay: boolean;
     isMobileMenuOpen: boolean = false;
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
 
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
