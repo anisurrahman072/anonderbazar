@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../../environments/environment";
+import { CmsFeatureFooterService} from "../../../../../../services/cms-feature-footer.service";
 
 @Component({
     selector: 'app-cms-feature-footer',
@@ -82,7 +83,9 @@ export class CmsFeatureFooterComponent implements OnInit {
 
     constructor(private cmsService: CmsService,
                 private _notification: NzNotificationService,
-                private fb: FormBuilder) {
+                private fb: FormBuilder,
+                private _cmsFeatureFooterService: CmsFeatureFooterService
+    ) {
 
     }
 
@@ -110,12 +113,14 @@ export class CmsFeatureFooterComponent implements OnInit {
         });
 
         this.getData();
+        this._cmsFeatureFooterService.cmsLayoutData$.subscribe(data => {
+            this.cmsFeatureData = data;
+        })
     }
 
     //Event method for getting all the data for the page
     getData() {
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
+        this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
             .subscribe(result => {
                 console.log('getData', result)
                 this.cmsFeatureData = result;
