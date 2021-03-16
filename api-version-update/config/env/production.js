@@ -47,7 +47,7 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     default: {
-      url: 'mysql://master:duY1L8rwof!@localhost:3306/anonderbazaar',
+      url: 'mysql://abmaster:duY1L8rwof!@localhost:3306/anonderbazaar',
       connectTimeout: 20000,
       //--------------------------------------------------------------------------
       //  /\   To avoid checking it in to version control, you might opt to set
