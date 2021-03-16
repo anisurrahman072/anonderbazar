@@ -354,7 +354,7 @@ module.exports = {
 
   },
   //Method called when sslCommerzFail fails sends redirectory route
-  sslCommerzFail: function (req, res) {
+  sslCommerzFailure: function (req, res) {
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );

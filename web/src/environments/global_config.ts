@@ -6,6 +6,6 @@ export class GLOBAL_CONFIGS {
     public static activePaymentMethods = {
         Cash: true,
         SSLCommerce: true,
-        bKash: true
+        bKash: false
     };
 }

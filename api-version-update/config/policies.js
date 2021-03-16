@@ -148,7 +148,7 @@ module.exports.policies = {
     'findOne': true,
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
-    'destroy':['isAuthorized'],
+    'destroy': ['isAuthorized'],
     'deleteAll': ['isAuthorized'],
     'byAuthUser': ['isAuthorized', 'isCustomer'],
     'byUser': ['isAuthorized'],
@@ -228,7 +228,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'massInsert': ['isAuthorized', 'isAdmin'],
   },
-  ProductDesignController:{
+  ProductDesignController: {
     '*': false,
     'find': true,
     'findOne': true,

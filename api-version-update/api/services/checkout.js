@@ -53,9 +53,9 @@ module.exports = {
     post_body['currency'] = 'BDT';
     post_body['tran_id'] = randomstring;
 
-    post_body['success_url'] = sslApiUrl + '/sslCommerz/sslCommerzSuccess/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-    post_body['fail_url'] = sslApiUrl + '/sslCommerz/sslCommerzFail/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-    post_body['cancel_url'] = sslApiUrl + '/sslCommerz/sslCommerzError/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+    post_body['success_url'] = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+    post_body['fail_url'] = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+    post_body['cancel_url'] = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
 
     post_body['emi_option'] = 0;
     post_body['cus_name'] = authUser.first_name + ' ' + authUser.last_name;
@@ -90,7 +90,7 @@ module.exports = {
       payment_id: req.query.paymentID,
       row_status: 1
     });*/
-    const {
+    /* const {
       payerReference,
       agreement_id,
       grandOrderTotal,
@@ -105,7 +105,8 @@ module.exports = {
       } catch (error){
 
       }
-    }
+    }*/
+    return false;
   },
   calcCartTotal: function (cart, cartItems) {
     let grandOrderTotal = 0;
