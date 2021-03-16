@@ -762,5 +762,464 @@ module.exports = {
         error
       });
     }
+  },
+
+  productExcel: async(req, res) => {
+    try {
+      const authUser = req.token.userInfo;
+      const isAdmin = authUser.group_id.name === 'admin' ? true : false;
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Product List', options);
+      const categorySheet = wb.addWorksheet('Category', options);
+      const brandSheet = wb.addWorksheet('Brand', options);
+      let wareHouseSheet;
+      if(isAdmin){
+        wareHouseSheet = wb.addWorksheet('Warehouse', options);
+      }
+
+      /* Fetch Category List */
+      let categoryList = await Category.find({
+        where: {type_id: 2, deletedAt: null, parent_id: 0},
+        sort: 'name ASC'
+      });
+
+      if (categoryList && categoryList.length > 0) {
+        const categoryLen = categoryList.length;
+        let categoryRowIndex = 1;
+
+        for (let cat = 0; cat < categoryLen; cat++) {
+          let categoryLabel = categoryList[cat].name;
+          categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + '|' + escapeExcel(categoryLabel));
+          categoryRowIndex++;
+          let subCategoryList = await Category.find({
+            where: {type_id: 2, deletedAt: null, parent_id: categoryList[cat].id},
+            sort: 'name ASC'
+          });
+          if (subCategoryList && subCategoryList.length > 0) {
+            const subCategoryLen = subCategoryList.length;
+            for (let subCat = 0; subCat < subCategoryLen; subCat++) {
+              let subCategoryLabel = categoryLabel + '=>' + subCategoryList[subCat].name;
+              categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + '|' + escapeExcel(subCategoryLabel));
+              categoryRowIndex++;
+              let subSubCategoryList = await Category.find({
+                where: {type_id: 2, deletedAt: null, parent_id: subCategoryList[subCat].id},
+                sort: 'name ASC'
+              });
+
+              if (subSubCategoryList && subSubCategoryList.length > 0) {
+                const subSubCategoryLen = subSubCategoryList.length;
+                for (let subSubCat = 0; subSubCat < subSubCategoryLen; subSubCat++) {
+                  let subSubCategoryLabel = subCategoryLabel + '=>' + subSubCategoryList[subSubCat].name;
+                  categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id + '|' + escapeExcel(subSubCategoryLabel));
+                  categoryRowIndex++;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      /* Fetch Brand List */
+      let brandList = await Brand.find({
+        where: {deletedAt: null},
+        sort: 'name ASC'
+      });
+
+      brandList.forEach((item, i) => {
+        brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+      });
+
+      /* Fetch Warehouse List */
+      let wareHouseList = await Warehouse.find({
+        where: {deletedAt: null},
+        sort: 'name ASC'
+      });
+
+      wareHouseList.forEach((item, i) => {
+        wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+
+      var myStyle = wb.createStyle({
+        alignment: {
+          wrapText: true
+        }
+      });
+
+      let columnNamesObject = {
+        'Category': {
+          width: 50,
+          validation: 'list',
+          sheetName: 'Category'
+        }
+      };
+      if(isAdmin){
+        columnNamesObject = {
+          ...columnNamesObject,
+          'Vendor Code': {
+            width: 20,
+            validation: 'list',
+            sheetName: 'Warehouse'
+          }
+        };
+      }
+      columnNamesObject = {
+        ...columnNamesObject,
+        'Product Name': {width: 30},
+        'SKU(code)': {width: 15},
+        'Description': {width: 60},
+        'Brand': {
+          width: 15,
+          validation: 'list',
+          sheetName: 'Brand'
+        },
+        'Price': {
+          width: 10,
+          validation: 'decimal'
+        },
+        'Discount Price': {
+          width: 15,
+          validation: 'decimal'
+        },
+        'Vendor Price': {
+          width: 15,
+          validation: 'decimal'
+        },
+        'Quantity': {
+          width: 10,
+          validation: 'decimal'
+        },
+        'Weight': {
+          width: 10,
+          validation: 'decimal'
+        },
+        'Tags': {width: 15}
+      };
+
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      let _where = {};
+      _where.deletedAt = null;
+      if (req.query.type_id !== 'null') {
+        _where.type_id = req.query.type_id;
+      }
+      if (req.query.category_id !== 'null') {
+        _where.category_id = req.query.category_id;
+      }
+      if (req.query.subcategory_id !== 'null') {
+        _where.subcategory_id = req.query.subcategory_id;
+      }
+
+      console.log(_where);
+      if(req.query.type_id === 'null' && req.query.category_id === 'null' && req.query.subcategory_id === 'null'){
+        console.log('No Records');
+        return res.status(200).json({
+          message: 'No data Found'
+        });
+      }
+
+      let products = await Product.find(
+        {
+          where: _where
+        });
+      console.log(products.length);
+
+      let row = 2;
+      const type = await Category.find({
+        where: {type_id:2,parent_id:0}
+      });
+      const category = await Category.find({
+        where: {type_id:2}
+      });
+
+      for (let i = 0; i< products.length; i++){
+        let Category = '';
+        let label = '';
+
+        let flag = true;
+        categoryList.forEach(item => {
+          if(item.id === products[i].type_id && flag){
+            Category += item.id;
+            label += item.name;
+            flag = false;
+          }
+        });
+
+        flag = true;
+        category.forEach(item => {
+          if(item.id === products[i].category_id && flag){
+            if(Category){
+              Category += ',';
+              label += '=>';
+            }
+            Category += item.id;
+            label += item.name;
+            flag = false;
+          }
+        });
+
+        flag = true;
+        category.forEach(item => {
+          if(item.id === products[i].subcategory_id && flag){
+            if(Category){
+              Category += ',';
+              label += '=>';
+            }
+            Category += item.id;
+            label += item.name;
+            flag = false;
+          }
+        });
+
+        let column = 1;
+        Category = Category+ '|' +escapeExcel(label);
+        ws.cell(row, column++).string(Category).style(myStyle);
+
+        if(isAdmin){
+          wareHouseList.forEach((item) => {
+            if(item.id === products[i].warehouse_id){
+              ws.cell(row, column++).string(products[i].warehouse_id + '|' + escapeExcel(item.name));
+              return;
+            }
+          });
+        }
+
+
+        ws.cell(row, column++).string(escapeExcel(products[i].name));
+        ws.cell(row, column++).string(escapeExcel(products[i].code));
+        ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
+        if(products[i].brand_id){
+          brandList.forEach((item) => {
+            ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(item.name));
+            return;
+          });
+        }else{
+          ws.cell(row, column++).string('null');
+        }
+        ws.cell(row, column++).number(products[i].price);
+
+        if(products[i].promo_price){
+          ws.cell(row, column++).number(products[i].promo_price);
+        }
+        else{
+          ws.cell(row, column++).number(0);
+        }
+
+        if(products[i].vendor_price){
+          ws.cell(row, column++).number(products[i].vendor_price);
+        }
+        else{
+          ws.cell(row, column++).number(0);
+        }
+
+        if(products[i].quantity){
+          ws.cell(row, column++).number(products[i].quantity);
+        }
+        else{
+          ws.cell(row, column++).number(0);
+        }
+
+        if(products[i].weight){
+          ws.cell(row, column++).number(products[i].weight);
+        }
+        else{
+          ws.cell(row, column++).number(0);
+        }
+
+        {ws.cell(row, column++).string(products[i].tag).style(myStyle);}
+
+        row++;
+      }
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+    }
+    catch (error) {
+      let message = 'Error in Get All products with excel';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  bulkUpdate: async(req, res) => {
+    try{
+      console.log('I am');
+      const authUser = req.token.userInfo;
+      const len = req.body.length;
+      let problematicRow = 0;
+      let message = '';
+      for (let i = 0; i < len; i++) {
+        if (
+          !(req.body[i].name !== '' && req.body[i].code !== '' && req.body[i].price !== '' && req.body[i].quantity !== '' &&
+            req.body[i].category && req.body[i].category.indexOf('|') !== -1 && req.body[i].product_details !== '')
+        ) {
+          problematicRow = i + 1;
+          message = 'There is a problem in row ' + problematicRow;
+          break;
+        } else if (authUser.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
+          problematicRow = i + 1;
+          message = 'There is a problem in row ' + problematicRow;
+          break;
+        }
+        const product = await Product.findOne(
+          {
+            code: req.body[i].code
+          });
+
+        if(authUser.group_id.name === 'owner' && authUser.warehouse_id !== product.warehouse_id){
+          problematicRow = i + 1;
+          message = 'You are not owner of the product of row: ' + problematicRow;
+          break;
+        }
+      }
+      if (problematicRow > 0) {
+        console.log(message);
+        return res.status(400).json({
+          success: false,
+          message,
+          error: null
+        });
+      }
+
+      const dataToSave = req.body.map((item) => {
+        const newItem = {
+          ...item,
+          weight: item.weight ? parseFloat(item.weight) : 0
+        };
+
+        let parts = item.category.split('|');
+        const allCategoryIds = parts[0].trim();
+        let categoryIdParts = allCategoryIds.split(',');
+        const categoryColumns = ['type_id', 'category_id', 'subcategory_id'];
+        for (let j = 0; j < categoryIdParts.length; j++) {
+          newItem[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
+        }
+
+        if (item.product_details) {
+          newItem.product_details = item.product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
+        }
+
+        if (item.tag) {
+          const tagArr = item.tag.split(',').map((t) => {
+            return t.trim();
+          });
+          newItem.tag = JSON.stringify(tagArr);
+        }
+
+        if (item.brand_id && item.brand_id.indexOf('|') !== -1) {
+          parts = item.brand_id.split('|');
+          newItem.brand_id = parseInt(parts[0].trim());
+        }
+
+        newItem.price = parseFloat(item.price);
+        newItem.vendor_price = parseFloat(item.vendor_price);
+
+        if (item.promo_price > 0) {
+          newItem.promo_price = parseFloat(item.promo_price);
+        } else {
+          newItem.promo_price = 0;
+        }
+
+        if (authUser.group_id.name === 'admin') {
+          parts = item.warehouse_id.split('|');
+          if (parts[0]) {
+            newItem.warehouse_id = parseInt(parts[0].trim(), 10);
+          }
+        }
+
+        return newItem;
+      });
+      delete  dataToSave[0].category;
+
+      let count = 0;
+      for (const item of dataToSave) {
+        let _where = {};
+        _where.code = item.code;
+        const foundProduct = await Product.findOne(
+          {
+            where: _where
+          });
+        if(foundProduct){
+          await Product.updateOne({ code: item.code}).set(dataToSave[0]);
+          count++;
+        }
+        else{
+          res.status(400).json({
+            success: false,
+            message: 'Some product is not found in database!',
+            error
+          });
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Number of Products successfully updated: ' + count,
+
+      });
+    }
+    catch (error){
+      let message = 'Error in Update products with excel';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
   }
 };
