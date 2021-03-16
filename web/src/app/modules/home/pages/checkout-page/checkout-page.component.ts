@@ -42,6 +42,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     user_id: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
+
     shippingFirstName: string;
     shippingLastName: string;
     shippingPhone: string;
