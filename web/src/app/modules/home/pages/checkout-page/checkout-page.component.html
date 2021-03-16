@@ -358,7 +358,7 @@
                             <div class="bag-item col-12" *ngFor="let cartItem of cartData?.data.cart_items">
                                 <div class="bagitem-1">
                                     <div class="productimage-wrapper">
-                                        <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
+                                        <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image + IMAGE_EXT}}"
                                              alt="product image">
                                     </div>
                                     <div style="width:95%" class="text">
@@ -447,8 +447,14 @@
                                 <br>
                                 <mat-radio-button value="SSLCommerce"  [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
-                                        <img src="./assets/images/final_sslcommerz.webp" style="height: auto; width: 100%;"
+                                        <img src="./assets/images/final_sslcommerz.webp" style="height: auto; width: 80%;"
                                              alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
+                                <mat-radio-button value="bKash" >
+                                    <div class="payment-icon-container">
+                                        <img src="./assets/images/bkash.gif" style="height: auto; width: 70%;"
+                                             alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
                             </div>
