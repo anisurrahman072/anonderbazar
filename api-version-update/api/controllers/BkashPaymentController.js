@@ -6,34 +6,27 @@
  */
 const {bKash} = require('../../config/softbd');
 const fetch = require('node-fetch');
+const {bKashGrandToken, bKashCreateAgreement} = require('../services/bKash');
 const {bKashModeConfigKey} = require('../../libs/helper');
 module.exports = {
 
+  authUserWallets: async (req, res) => {
+    try {
+      const authUser = req.token.userInfo;
+      const userWallets = await BkashCustomerWallet.find({
+        user_id: authUser.id,
+        row_status: 3
+      });
+      return res.status(200).json(userWallets);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  },
   grandToken: async (req, res) => {
-    let modeConfigKey = bKashModeConfigKey();
-
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      username: bKash[modeConfigKey].username,
-      password: bKash[modeConfigKey].password,
-    };
-
-    const postBody = {
-      app_key: bKash[modeConfigKey].app_key,
-      app_secret: bKash[modeConfigKey].app_secret,
-    };
-
-    const url = bKash[modeConfigKey].token_grant_url;
-
-    const options = {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(postBody)
-    };
 
     try {
-      let tokenRes = await fetch(url, options);
+      let tokenRes = await bKashGrandToken();
       tokenRes = await tokenRes.json();
       console.log(tokenRes);
       return res.status(200).json(tokenRes);
@@ -51,30 +44,10 @@ module.exports = {
         message: 'Invalid Request'
       });
     }
-    let modeConfigKey = bKashModeConfigKey();
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: req.query.id_token,
-      'X-APP-Key': bKash[modeConfigKey].app_key,
-    };
 
-    const postBody = {
-      mode: '0000',
-      'payerReference': req.query.wallet_no,
-      'callbackURL': 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/' + req.token.userInfo.id,
-    };
-
-    const url = bKash[modeConfigKey].agreement_create;
     try {
-      const options = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(postBody)
-      };
 
-      let tokenRes = await fetch(url, options);
-      tokenRes = await tokenRes.json();
+      let tokenRes = await bKashCreateAgreement(req.query.id_token, req.token.userInfo.id, req.query.wallet_no);
 
       if (tokenRes.statusMessage === 'Successful' && tokenRes.agreementStatus === 'Initiated') {
         const bkashCustomerWallet = await BkashCustomerWallet.create({

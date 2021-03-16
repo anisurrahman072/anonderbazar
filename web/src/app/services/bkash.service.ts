@@ -17,4 +17,8 @@ export class BkashService {
     createAgreementRequest(bkashToken: string, bKashWalletNoToAdd: string) {
         return this.http.get(this.EndPoint + '/create-agreement?id_token=' + bkashToken + '&wallet_no=' + bKashWalletNoToAdd);
     }
+
+    getAuthUserWallets() {
+        return this.http.get(this.EndPoint + '/customer-wallets');
+    }
 }

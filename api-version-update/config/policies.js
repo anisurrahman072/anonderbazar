@@ -354,8 +354,12 @@ module.exports.policies = {
     'getAll': true
   },
   BkashPaymentController: {
+    'authUserWallets': ['isAuthorized', 'isCustomer'],
     'grandToken': ['isAuthorized', 'isCustomer'],
     'createAgreement': ['isAuthorized', 'isCustomer'],
     'agreementCallback': true,
+  },
+  SslCommerzController: {
+    '*': true
   }
 };
