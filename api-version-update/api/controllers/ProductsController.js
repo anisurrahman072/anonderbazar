@@ -1033,7 +1033,7 @@ module.exports = {
         }
 
         ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
-        ws.cell(row, column++).string(escapeExcel(products[i].code)).style(myStyle);
+        ws.cell(row, column++).string(products[i].code);
         ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
 
         if(products[i].brand_id){
@@ -1098,7 +1098,6 @@ module.exports = {
 
   bulkUpdate: async(req, res) => {
     try{
-      console.log('I am');
       const authUser = req.token.userInfo;
       const len = req.body.length;
       let problematicRow = 0;
@@ -1184,7 +1183,10 @@ module.exports = {
 
         return newItem;
       });
-      delete  dataToSave[0].category;
+      dataToSave.forEach(item => {
+        delete  item.category;
+        return item;
+      });
 
       let count = 0;
       for (const item of dataToSave) {
@@ -1195,7 +1197,7 @@ module.exports = {
             where: _where
           });
         if(foundProduct){
-          await Product.updateOne({ code: item.code}).set(dataToSave[0]);
+          await Product.updateOne({ code: item.code}).set(item);
           count++;
         }
         else{
