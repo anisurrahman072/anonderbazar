@@ -166,7 +166,7 @@
                                 Add to cart
                             </a>
                             <a class="addto2"
-                               (click)="data.quantity > 0 ? buyNow(data, couponProductModalTemplate): false"
+                               (click)="data.quantity > 0 ? buyNow(data): false"
                                [class.empty]="data.quantity <= 0">
                                 <span *ngIf="!data.is_coupon_product">Buy Now</span>
                                 <span *ngIf="data.is_coupon_product">Buy Coupon</span>
@@ -183,7 +183,7 @@
 <app-similar-item [products]="similarProducts"></app-similar-item>
 <app-recently-viewes [dataProductList]="recentlyViewedProducts"></app-recently-viewes>
 
-<ng-template #couponProductModalTemplate>
+<!--<ng-template #couponProductModalTemplate>
     <div class="modal-header">
         <h4 class="modal-title pull-left">Terms & Conditions</h4>
         <button type="button" class="close pull-right" aria-label="Close" (click)="couponProductModalRef.hide()">
@@ -258,4 +258,4 @@
             <button type="button" autofocus  class="addto2" (click)="buyCouponProduct(data)">I Accept</button>
         </p>
     </div>
-</ng-template>
+</ng-template>-->
