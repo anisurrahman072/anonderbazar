@@ -50,6 +50,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
+    enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
 
     shippingFirstName: string;
     shippingLastName: string;
@@ -84,6 +85,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     authUserWallets: any;
     bKashWalletNumber: string;
+
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
