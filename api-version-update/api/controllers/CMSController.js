@@ -596,20 +596,24 @@ module.exports = {
   },
   //Method called for deleting cms post data
   //Model models/CMS.js
+
   customDelete: async (req, res) => {
     try {
+      console.log('body: ', req.body);
+
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      cms.data_value.splice(req.body.carouselId, 1);
+      let dataValueIndex = parseInt(req.body.carouselId);
+      cms.data_value.splice(dataValueIndex, 1);
 
-      let data = await CMS.updateOne({id: cms.id}).set(cms);
-
-      return res.json({
+      let data = await CMS.updateOne({id: cms.id}).set({data_value: cms.data_value});
+      return res.status(200).json({
         success: true,
         message: 'cms element deleted successfully',
         data
       });
     } catch (error) {
+      console.log('error: ', error);
       res.json(400, {
         success: false,
         message: 'Error Occurred',
