@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CmsService, ProductService} from '../../../../services';
 import {AppSettings} from '../../../../config/app.config';
 import {ActivatedRoute, Router} from '@angular/router';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-page-cms',
@@ -20,6 +21,7 @@ export class CmsPageComponent implements OnInit {
     offerpage = false;
     cmspage = false;
     p: any;
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
 
     constructor(
         private cmsService: CmsService,
