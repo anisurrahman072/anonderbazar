@@ -12,7 +12,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve ",
-    "build": "ng build --named-chunks",
+    "build": "ng build --sourcemaps",
     "pwa": "ng add @angular/pwa --project softbd-commerce-web",
     "build:prod": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build  --prod --aot --build-optimizer --output-hashing=all",
     "build:prod-map": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng  build  --prod --aot --sourcemaps",

@@ -11,6 +11,7 @@ import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item-newarrival',
@@ -23,6 +24,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     newItem: Product;
     compare$: Observable<any>;

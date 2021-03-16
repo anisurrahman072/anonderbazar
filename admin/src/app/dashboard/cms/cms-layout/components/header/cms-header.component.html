@@ -73,7 +73,7 @@
 
 <div class="row">
     <div class="col-md-6" *ngFor="let header of cmsHeaderData; let i = index" [attr.data-index]="i">
-        <nz-card>
+        <nz-card [nzTitle]="title" [nzExtra]="extra">
             <ng-template #title>
                 Title: {{header.title}}
             </ng-template>
@@ -81,18 +81,18 @@
                 <div style="text-align: right">
                     <button nz-button [nzType]="'primary'" (click)="showEditModal(i)">
                         <span>
-                            <i class="anticon anticon-edit"> Edit </i>
+                            <i class="anticon anticon-edit"></i>Edit
                         </span>
                     </button>
                 </div>
             </ng-template>
 
-            <ng-template #body>
+            <ng-container>
                 <div class="col-md-6"> Description: {{header.description}} </div>
                 <div class="col-md-6">
                     <img class="img img-responsive " alt="{{header.image}}" src="{{ IMAGE_ENDPOINT + header.image}}" />
                 </div>
-            </ng-template>
+            </ng-container>
         </nz-card>
     </div>
 </div>

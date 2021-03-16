@@ -128,7 +128,7 @@ module.exports = {
       fromSQL += ' LEFT JOIN categories as category ON category.id = products.category_id   ';
       fromSQL += ' LEFT JOIN categories as subCategory ON subCategory.id = products.subcategory_id   ';
       fromSQL += ' LEFT JOIN brands ON brands.id = products.brand_id   ';
-      let _where = ' WHERE products.approval_status  = 2  ';
+      let _where = ' WHERE products.approval_status  = 2 AND products.deleted_at IS NULL ';
 
       if (req.query.product_ids) {
         try {

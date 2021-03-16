@@ -1,7 +1,11 @@
 <!--Update Carousel Modal-->
-<nz-modal [nzFooter]="null" class="create-modal-2" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Carousel'"
+<nz-modal [nzFooter]="null"
+          class="create-modal-2"
+          [nzVisible]="isEditModalVisible"
+          [nzTitle]="'Edit Carousel'"
           [nzContent]="editmodalContent"
-          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
@@ -28,6 +32,7 @@
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--Title -->
 
 
@@ -45,6 +50,7 @@
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--image-->
                     <div nz-row>
                         <div nz-col [nzSpan]="7">
@@ -62,6 +68,7 @@
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--description-->
 
                     <div nz-row>
@@ -70,8 +77,8 @@
                                 <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                                         [disabled]="!editValidateForm.valid">
                                     Save
-                                </button>
-                                <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
+                                </button>&nbsp;
+                                <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>&nbsp;
                                 <button nz-button [nzSize]="'large'" (click)="handleModalCancel($event)">Cancel</button>
                             </nz-button-group>
                         </div>

@@ -3,8 +3,8 @@ import {CmsService} from '../../../../../../services/cms.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
-
 import {environment} from "../../../../../../../environments/environment";
+import { CmsFeatureFooterService} from "../../../../../../services/cms-feature-footer.service";
 
 @Component({
     selector: 'app-cms-feature-footer',
@@ -12,6 +12,7 @@ import {environment} from "../../../../../../../environments/environment";
     styleUrls: ['./cms-feature-footer.component.css']
 })
 export class CmsFeatureFooterComponent implements OnInit {
+    @ViewChild('Image')
     options = [
         {value: 'android', label: 'android'},
         {value: 'apple', label: 'apple'},
@@ -35,6 +36,7 @@ export class CmsFeatureFooterComponent implements OnInit {
             sub_section: ['NONE']
         }
     ];
+    editUploadedImages: any = [];
     selectedSection = this.sectionoptionsData[0];
     cmsFeatureData: any[];
     isEditModalVisible = false;
@@ -71,7 +73,7 @@ export class CmsFeatureFooterComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-    @ViewChild('Image')
+
     Image: any;
     imageIndex: any;
     _isSpinning: any = false;
@@ -81,7 +83,9 @@ export class CmsFeatureFooterComponent implements OnInit {
 
     constructor(private cmsService: CmsService,
                 private _notification: NzNotificationService,
-                private fb: FormBuilder) {
+                private fb: FormBuilder,
+                private _cmsFeatureFooterService: CmsFeatureFooterService
+    ) {
 
     }
 
@@ -109,12 +113,14 @@ export class CmsFeatureFooterComponent implements OnInit {
         });
 
         this.getData();
+        this._cmsFeatureFooterService.cmsLayoutData$.subscribe(data => {
+            this.cmsFeatureData = data;
+        })
     }
 
     //Event method for getting all the data for the page
     getData() {
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
+        this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
             .subscribe(result => {
                 console.log('getData', result)
                 this.cmsFeatureData = result;
@@ -122,16 +128,19 @@ export class CmsFeatureFooterComponent implements OnInit {
     }
 
     //Method for showing the modal
-    showEditModal = (id, i) => {
+    showEditModal = (cmsFeature, i) => {
         this.currentFeatureId = i;
-        this.id = id;
+        this.id = cmsFeature.id;
         this.imageIndex = i;
-        let editValue = this.cmsFeatureData[i].data_value[0];
-        editValue.section = this.cmsFeatureData[i].section;
-        editValue.sub_section = this.cmsFeatureData[i].sub_section;
+        console.log('showEditModal', cmsFeature);
+        let editValue = cmsFeature.data_value[0];
+        editValue.section = cmsFeature.section;
+        editValue.sub_section = cmsFeature.sub_section;
 
-        this.selectedSubSection = this.cmsFeatureData[i].sub_section;
+        this.selectedSubSection = cmsFeature.sub_section;
         this.editValidateForm.patchValue(editValue);
+        this.editUploadedImages = [cmsFeature.data_value[0].image];
+
         this.isEditModalVisible = true;
     };
 

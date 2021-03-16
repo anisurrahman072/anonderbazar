@@ -1,38 +1,30 @@
-<div> 
+<div>
     <nz-tabset>
-        <nz-tab>
-            <ng-template #nzTabHeading>
-                <i [ngClass]="'anticon anticon-select'"></i>Header 
-            </ng-template> 
-            <span>
-                <app-cms-header></app-cms-header>
-            </span> 
+        <nz-tab [nzTitle]="nzTabHeader">
+            <ng-template #nzTabHeader>
+                <i [ngClass]="'anticon anticon-select'"></i>Header
+            </ng-template>
+            <app-cms-header></app-cms-header>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
-                <i [ngClass]="'anticon anticon-copyright'"></i>Footer feature 
-            </ng-template> 
-            <span><!--footer....................-->
-                    <app-cms-feature-footer></app-cms-feature-footer> 
-            </span> 
+        <nz-tab [nzTitle]="nzTabFooterFeature">
+            <ng-template #nzTabFooterFeature>
+                <i [ngClass]="'anticon anticon-copyright'"></i>Footer feature
+            </ng-template>
+            <app-cms-feature-footer></app-cms-feature-footer>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
-                <i [ngClass]="'anticon anticon-copyright'"></i>Footer 
-            </ng-template> 
-            <span><!--footer....................-->
-                <app-cms-footer></app-cms-footer> 
-            </span> 
+        <nz-tab [nzTitle]="nzTabFooter">
+            <ng-template #nzTabFooter>
+                <i [ngClass]="'anticon anticon-copyright'"></i>Footer
+            </ng-template>
+            <app-cms-footer></app-cms-footer>
         </nz-tab>
-        <nz-tab>
-            <ng-template #nzTabHeading>
-                <i [ngClass]="'anticon anticon-apple'"></i>Logo 
-            </ng-template> 
-            <span>
-                <app-cms-logo></app-cms-logo>
-            </span> 
+        <nz-tab [nzTitle]="nzTabLogo">
+            <ng-template #nzTabLogo>
+                <i [ngClass]="'anticon anticon-apple'"></i>Logo
+            </ng-template>
+            <app-cms-logo></app-cms-logo>
         </nz-tab>
-    </nz-tabset> 
+    </nz-tabset>
 </div>
 
 

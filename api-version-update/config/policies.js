@@ -79,6 +79,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'byIds': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'offerInsert': ['isAuthorized', 'isAdmin'],
     'offerProductUpdate': ['isAuthorized', 'isAdmin'],
@@ -353,5 +354,14 @@ module.exports.policies = {
   WarehouseVariantsController: {
     '*': false,
     'getAll': true
+  },
+  BkashPaymentController: {
+    'authUserWallets': ['isAuthorized', 'isCustomer'],
+    'grandToken': ['isAuthorized', 'isCustomer'],
+    'createAgreement': ['isAuthorized', 'isCustomer'],
+    'agreementCallback': true,
+  },
+  SslCommerzController: {
+    '*': true
   }
 };

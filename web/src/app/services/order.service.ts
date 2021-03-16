@@ -38,32 +38,19 @@ export class OrderService {
             .map((response) => response);
     }
 
-    getAllFeatuerProducts(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
-            .map((response) => response);
-    }
-
-    getByCategory(id: number): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"category_id":${id}}`)
-            .map((response) => response);
-    }
-
     getByUserId(user_id: any): Observable<any> {
         // return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"user_id":${user_id}}`)
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"user_id":${user_id}}&limit=500&sort="createdAt%20DESC"`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 
-    getCourierCharge(): Observable<any> {
-        return this.http.get(`${AppSettings.API_ENDPOINT}/courier-charges`).pipe(catchError((error: any) => Observable.throw(error.json())));
-    }
-    customInsert(data): Observable<any> {
-        return this.http.post(`${this.EndPoint}/customInsert`, data)
+    placeCashOnDeliveryOrder(data): Observable<any> {
+        return this.http.post(`${this.EndPoint}/placeOrderForCashOnDelivery`, data)
             .map((response) => response);
     }
 
-    sslcommerzInsert(data): Observable<any> {
-        return this.http.post(`${this.EndPoint}/sslcommerz`, data)
+    placeOrder(data): Observable<any> {
+        return this.http.post(`${this.EndPoint}/placeOrder`, data)
             .map((response) => response);
     }
 }

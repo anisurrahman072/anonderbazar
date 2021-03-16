@@ -1,3 +1,4 @@
+const {bKash} = require('../config/softbd');
 const {devEnv} = require('../config/softbd');
 
 const asyncForEach = async (array, callback) => {
@@ -123,6 +124,14 @@ exports.comparePasswords = (passwordProvided, userPassword) => {
       }
     });
   });
+};
+
+exports.bKashModeConfigKey = function(){
+  let bKashModeConfigKey = 'production';
+  if (bKash.isSandboxMode) {
+    bKashModeConfigKey = 'sandbox';
+  }
+  return bKashModeConfigKey;
 };
 
 exports.getContentTypeByFile = function (fileName) {

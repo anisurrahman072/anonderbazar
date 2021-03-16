@@ -7,6 +7,7 @@ import {FormGroup} from '@angular/forms';
 import {Component, OnInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {CmsService} from '../../../../../services/cms.service';
 import {environment} from "../../../../../../environments/environment";
+import { CmsFeatureFooterService } from "../../../../../services/cms-feature-footer.service";
 
 @Component({
     selector: 'app-cms-layout',
@@ -74,7 +75,9 @@ export class CmsLayoutComponent implements OnInit {
 
     constructor(private cdr: ChangeDetectorRef, private cmsService: CmsService,
                 private _notification: NzNotificationService,
-                private fb: FormBuilder) {
+                private fb: FormBuilder,
+                private _cmsFeatureFooterService: CmsFeatureFooterService
+    ) {
     }
 
     ngOnInit() {
@@ -112,6 +115,14 @@ export class CmsLayoutComponent implements OnInit {
         this.resetForm(e);
         this.isAddModalVisible = false;
     };
+
+    //Event method for getting all the data for the page
+    getData() {
+        this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
+            .subscribe(result => {
+                this._cmsFeatureFooterService.sendCMSLayoutData(result);
+            });
+    }
 //Event method for submitting the form
 
     submitForm = ($event, value) => {
@@ -139,9 +150,11 @@ export class CmsLayoutComponent implements OnInit {
             this._isSpinning = false;
             this.isAddModalVisible = false;
             this.resetForm(null);
-            setInterval(() => {
+
+            this.getData();
+/*            setInterval(() => {
                 location.reload();
-            }, 10000);
+            }, 1000);*/
         });
     };
   //Method for removing the image

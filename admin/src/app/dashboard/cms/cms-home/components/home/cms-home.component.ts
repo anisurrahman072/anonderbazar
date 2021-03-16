@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {CmsService} from '../../../../../services/cms.service';
 
 @Component({
     selector: 'app-cms-home',
@@ -9,14 +8,9 @@ import {CmsService} from '../../../../../services/cms.service';
 export class CmsHomeComponent implements OnInit {
     cmsData: any;
 
-    constructor(private cmsService: CmsService) {
+    constructor() {
     }
 
-    //Event method for getting all the data for the page
     ngOnInit() {
-/*        this.cmsService.getBySectionName('HOME').subscribe(result => {
-            this.cmsData = result;
-            console.log('this.cmsData', this.cmsData);
-        });*/
     }
 }

@@ -75,34 +75,26 @@
 
 <div class="row">
     <div class="col-md-6" *ngFor="let logo of cmsLogoData; let i = index" [attr.data-index]="i">
-        <nz-card>
+        <nz-card [nzExtra]="extra" [nzTitle]="title">
             <ng-template #title>
                 Title: {{logo.title}}
             </ng-template>
-
                 <ng-template #extra>
-
-
                         <div style="text-align: right">
                                 <button nz-button [nzType]="'primary'" (click)="showEditModal(i)">
                                     <span>
-                                        <i class="anticon anticon-edit"> Edit </i>
+                                        <i class="anticon anticon-edit"></i> Edit
                                     </span>
                                 </button>
                             </div>
-
-
                 </ng-template>
-
-                <ng-template #body>
-
-
+                <ng-container>
                         <div class="col-md-6">  Description: {{logo.description}} </div>
                 <div class="col-md-6">
                     <img class="img img-responsive " alt="{{logo.image}}" src="{{ IMAGE_ENDPOINT + logo.image}}"
                     />
                 </div>
-            </ng-template>
+            </ng-container>
         </nz-card>
     </div>
 </div>
