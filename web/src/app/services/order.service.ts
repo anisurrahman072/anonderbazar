@@ -39,7 +39,6 @@ export class OrderService {
     }
 
     getByUserId(user_id: any): Observable<any> {
-        // return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"user_id":${user_id}}`)
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"user_id":${user_id}}&limit=500&sort="createdAt%20DESC"`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
