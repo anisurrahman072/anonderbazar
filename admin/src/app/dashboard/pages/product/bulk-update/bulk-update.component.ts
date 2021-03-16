@@ -66,18 +66,35 @@ export class BulkUpdateComponent implements OnInit {
       this.categoryProductService.getAllCategory().subscribe((result: any) => {
           this.productsType = result;
       });
+    }
 
-      this.categoryProductService.getAll().subscribe((result: any) => {
-          this.productCategories = result;
-      });
+    typeIdChange($event){
+        this.productCategories = [];
+        this.category_id = null;
+        this.productSubCategory = [];
+        this.subcategoryId = null;
+        const query = encodeURI($event);
+        if (query !== 'null') {
+            this.categoryProductService
+                .getSubcategoryByCategoryId(query)
+                .subscribe(result => {
+                    this.productCategories = result;
+                });
+        }
+
     }
 
     onCategoryChange($event) {
+        this.productSubCategory = [];
         this.subcategoryId = null;
         const query = encodeURI($event);
-        this.categoryProductService.getSubcategoryByCategoryId(query).subscribe((result: any) => {
-            this.productSubCategory = result;
-        });
+        if (query !== 'null') {
+            this.categoryProductService
+                .getSubcategoryByCategoryId(query)
+                .subscribe(result => {
+                    this.productSubCategory = result;
+                });
+        }
     }
 
     submitForm($event: any, value: any) {

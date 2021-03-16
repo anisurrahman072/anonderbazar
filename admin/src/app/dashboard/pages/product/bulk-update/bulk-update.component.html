@@ -13,8 +13,10 @@
                     <label> Type_id </label>
                 </div>
                 <div nz-col [nzSpan]="12">
-                    <nz-select formControlName="type_id" nzAllowClear nzPlaceHolder="Select Type Id"
-                               [nzNotFoundContent]="'Not found'" [(ngModel)]="type_id"
+                    <nz-select formControlName="type_id" nzAllowClear [(ngModel)]="type_id"
+                               (ngModelChange)="typeIdChange($event)"
+                               nzPlaceHolder="Select Type Id"
+                               [nzNotFoundContent]="'Not found'"
                                nzShowSearch>
                         <nz-option *ngFor="let option of productsType" [nzLabel]="option.name"
                                    [nzValue]="option.id">
@@ -28,9 +30,11 @@
                 </div>
                 <div nz-col [nzSpan]="12">
 
-                    <nz-select formControlName="category" nzAllowClear nzPlaceHolder="Select Product Category"
-                                [nzNotFoundContent]="'Not found'" nzShowSearch [(ngModel)]="category_id"
-                               (ngModelChange)="onCategoryChange($event)">
+                    <nz-select formControlName="category" nzAllowClear [(ngModel)]="category_id"
+                               (ngModelChange)="onCategoryChange($event)"
+                               nzPlaceHolder="Select Product Category"
+                                [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
                         <nz-option *ngFor="let option of productCategories" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>
@@ -45,8 +49,9 @@
                 </div>
                 <div nz-col [nzSpan]="12">
 
-                    <nz-select formControlName="subcategory" nzAllowClear nzPlaceHolder="Select Sub Category"
-                               [nzNotFoundContent]="'Not found'" [(ngModel)]="subcategoryId"
+                    <nz-select formControlName="subcategory" nzAllowClear [(ngModel)]="subcategoryId"
+                               nzPlaceHolder="Select Sub Category"
+                               [nzNotFoundContent]="'Not found'"
                                nzShowSearch>
                         <nz-option *ngFor="let option of productSubCategory" [nzLabel]="option.name"
                                    [nzValue]="option.id">

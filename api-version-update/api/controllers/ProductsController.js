@@ -843,7 +843,6 @@ module.exports = {
         where: {deletedAt: null},
         sort: 'name ASC'
       });
-
       brandList.forEach((item, i) => {
         brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
@@ -853,7 +852,6 @@ module.exports = {
         where: {deletedAt: null},
         sort: 'name ASC'
       });
-
       wareHouseList.forEach((item, i) => {
         wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
@@ -865,7 +863,6 @@ module.exports = {
           size: 14,
         },
       });
-
       var myStyle = wb.createStyle({
         alignment: {
           wrapText: true
@@ -978,11 +975,8 @@ module.exports = {
       console.log(products.length);
 
       let row = 2;
-      const type = await Category.find({
-        where: {type_id:2,parent_id:0}
-      });
       const category = await Category.find({
-        where: {type_id:2}
+        where: {type_id:2, deletedAt: null}
       });
 
       for (let i = 0; i< products.length; i++){
@@ -1026,21 +1020,22 @@ module.exports = {
 
         let column = 1;
         Category = Category+ '|' +escapeExcel(label);
-        ws.cell(row, column++).string(Category).style(myStyle);
+        ws.cell(row, column++).string(Category).style(myStyle).style(myStyle);
 
+        flag = true;
         if(isAdmin){
           wareHouseList.forEach((item) => {
-            if(item.id === products[i].warehouse_id){
+            if(item.id === products[i].warehouse_id && flag){
               ws.cell(row, column++).string(products[i].warehouse_id + '|' + escapeExcel(item.name));
-              return;
+              flag = false;
             }
           });
         }
 
-
-        ws.cell(row, column++).string(escapeExcel(products[i].name));
-        ws.cell(row, column++).string(escapeExcel(products[i].code));
+        ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
+        ws.cell(row, column++).string(escapeExcel(products[i].code)).style(myStyle);
         ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
+
         if(products[i].brand_id){
           for(let index = 0; index < brandList.length; index++){
             if(brandList[index].id === products[i].brand_id){
@@ -1081,11 +1076,14 @@ module.exports = {
           ws.cell(row, column++).number(0);
         }
 
-        {ws.cell(row, column++).string(products[i].tag).style(myStyle);}
-
+        if(products[i].tag){
+          ws.cell(row, column).string(products[i].tag).style(myStyle);
+        }
+        else{
+          ws.cell(row, column).string('null');
+        }
         row++;
       }
-
       wb.write('Excel-' + Date.now() + '.xlsx', res);
     }
     catch (error) {
