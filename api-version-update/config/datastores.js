@@ -49,7 +49,8 @@ module.exports.datastores = {
      *                                                                          *
      ***************************************************************************/
     adapter: require('sails-mysql'),
-    url: 'mysql://root@localhost:3306/anonderbazaar',
+    url: 'mysql://abmaster:duY1L8rwof!@localhost:3306/anonderbazaar',
+    connectTimeout: 20000,
   },
   cache: {
     adapter: 'sails-redis',
