@@ -33,7 +33,7 @@ export class BannerComponent implements OnInit {
 
     carousalList: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    IMAGE_EXT = GLOBAL_CONFIGS.bannerImageExtension;
+    IMAGE_EXT = ''; //GLOBAL_CONFIGS.bannerImageExtension;
 
     constructor(private cmsService: CmsService) {
     }
