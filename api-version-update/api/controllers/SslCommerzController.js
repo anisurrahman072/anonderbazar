@@ -1,5 +1,5 @@
 /**
- * SslCommerzController
+ * SslCommerzController.js
  * @help :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
