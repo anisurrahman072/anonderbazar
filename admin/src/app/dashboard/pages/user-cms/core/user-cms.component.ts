@@ -85,21 +85,16 @@ export class UserCmsComponent implements OnInit {
         });
     }
 
-    /*    getData() {
-            this.cmsService.getBySectionName('POST').subscribe(result => {
-                this.cmsPostData = result;
-            });
-        }*/
 
     // Method for getting all page data
 
     getData() {
-        return this.cmsService.getByUserId(this.currentUser.id).subscribe(result => {
-            console.log("parent: ", result);
-            this.id = result[0].id;
-            this.cmsPostData = result;
-        });
+        this.cmsService.getByUserId(this.currentUser.id)
+            .subscribe(result => {
+                this._addNewCmsService.sendUserCMSData(result);
+            });
     }
+
 
     // Method for showing the modal
     showCreateModal = () => {
@@ -145,9 +140,9 @@ export class UserCmsComponent implements OnInit {
             this._isSpinning = false;
             this.isAddModalVisible = false;
             this.resetForm(null);
-            // setInterval(() => {  location.reload();  }, 2000);
-            this._addNewCmsService.sendUserCMSData(this.getData());
-            // this.getData();
+
+            this.getData();
+
         }, error => {
             this.submitting = false;
             this._notification.create('error', 'Error Occurred!', "Error occurred while adding user CMS!");
