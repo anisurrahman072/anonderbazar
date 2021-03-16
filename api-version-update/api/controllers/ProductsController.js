@@ -848,13 +848,15 @@ module.exports = {
       });
 
       /* Fetch Warehouse List */
-      let wareHouseList = await Warehouse.find({
-        where: {deletedAt: null},
-        sort: 'name ASC'
-      });
-      wareHouseList.forEach((item, i) => {
-        wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
-      });
+      if(isAdmin){
+        let wareHouseList = await Warehouse.find({
+          where: {deletedAt: null},
+          sort: 'name ASC'
+        });
+        wareHouseList.forEach((item, i) => {
+          wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+        });
+      }
 
       // Create a reusable style
       const headerStyle = wb.createStyle({
@@ -1120,7 +1122,7 @@ module.exports = {
             code: req.body[i].code
           });
 
-        if(authUser.group_id.name === 'owner' && authUser.warehouse_id !== product.warehouse_id){
+        if(authUser.group_id.name === 'owner' && authUser.warehouse_id.id !== product.warehouse_id){
           problematicRow = i + 1;
           message = 'You are not owner of the product of row: ' + problematicRow;
           break;
@@ -1128,7 +1130,7 @@ module.exports = {
       }
       if (problematicRow > 0) {
         console.log(message);
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
           message,
           error: null
@@ -1201,7 +1203,7 @@ module.exports = {
           count++;
         }
         else{
-          res.status(400).json({
+          res.status(200).json({
             success: false,
             message: 'Some product is not found in database!',
             error
