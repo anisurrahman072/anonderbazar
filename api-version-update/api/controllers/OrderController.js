@@ -376,7 +376,7 @@ module.exports = {
         });
 
       try {
-        const smsPhone = user.phone;
+        const smsPhone = authUser.phone;
         let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       } catch (err) {
