@@ -14,6 +14,7 @@ const {bKashPayment} = require('../services/checkout');
 const {placeSSlCommerzOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
+
 const {adminPaymentAddressId, dhakaZilaId, sslWebUrl} = require('../../config/softbd');
 
 module.exports = {
@@ -375,7 +376,7 @@ module.exports = {
         });
 
       try {
-        const smsPhone = user.phone;
+        const smsPhone = authUser.phone;
         let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       } catch (err) {

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CmsService} from '../../../../services/cms.service';
 import {AppSettings} from "../../../../config/app.config";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'home-procedure',
@@ -11,6 +12,7 @@ export class Promo1Component implements OnInit {
 
     cmsCarouselData: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.bannerImageExtension;
 
     constructor(private cmsService: CmsService) {
     }

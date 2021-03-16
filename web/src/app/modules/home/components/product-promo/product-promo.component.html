@@ -6,7 +6,7 @@
             <div class="thumbs">
                 <a class="thumb-object border-full-1"
                    *ngFor="let promotionalProduct of (promotionalProducts$|async)">
-                    <a (click)="selectProduct(promotionalProduct);"><img style="width: 138px; height: 160px;" src="{{  IMAGE_ENDPOINT + promotionalProduct.image}}" alt=""></a>
+                    <a (click)="selectProduct(promotionalProduct);"><img style="width: 138px; height: 160px;" src="{{  IMAGE_ENDPOINT + promotionalProduct.image + IMAGE_EXT}}" alt=""></a>
                 </a>
             </div>
 
