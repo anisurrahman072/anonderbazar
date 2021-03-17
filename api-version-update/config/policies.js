@@ -80,6 +80,7 @@ module.exports.policies = {
     'find': true,
     'findOne': true,
     'byIds': true,
+    'getAll': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'offerInsert': ['isAuthorized', 'isAdmin'],
     'offerProductUpdate': ['isAuthorized', 'isAdmin'],

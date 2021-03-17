@@ -9,6 +9,11 @@ const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
+
+  getAll: async (req, res) => {
+    console.log('cms offer: ', req.query);
+    return res.status(200).json({ success: true});
+  },
   byIds: async (req, res) => {
     try {
       try {
