@@ -104,7 +104,8 @@ module.exports = {
 
     let tokenRes = await bKashGrandToken();
 
-    console.log('tokenRes', tokenRes);
+    console.log('billingAddress', billingAddress);
+    console.log('shippingAddress', shippingAddress);
 
     let finalBillingAddressId = null;
     let finalShippingAddressId = null;

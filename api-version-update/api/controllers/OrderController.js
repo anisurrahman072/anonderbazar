@@ -444,6 +444,8 @@ module.exports = {
       let courierCharge = 0;
       let adminPaymentAddress = null;
 
+
+
       /** .................Shipping Address.................... */
 
       if (!noShippingCharge) {
@@ -504,6 +506,10 @@ module.exports = {
           req.param('billing_address').id = req.param('shipping_address').id;
         }
       }
+
+      console.log('Place Order - body: ', req.body);
+      console.log('Place Order - shipping_address: ', req.param('shipping_address'));
+      console.log('Place Order - billing_address: ', req.param('billing_address'));
 
       if (req.param('paymentType') === 'SSLCommerce') {
 
