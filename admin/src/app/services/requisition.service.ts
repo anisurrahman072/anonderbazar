@@ -15,8 +15,8 @@ export class RequisitionService {
     ) {
     }
 
-    getAll(page, limit): Observable<any> {
-        return this.http.get(this.EndPoint + `?where={"deletedAt":null}&page=${page}&limit=${limit}`);
+    getAll(page: number = 1, limit: number = 10): Observable<any> {
+        return this.http.get(this.EndPoint + `/getall?where={"deletedAt":null}&page=${page}&limit=${limit}`);
     }
 
     getAllByOrderId(id): Observable<any> {
