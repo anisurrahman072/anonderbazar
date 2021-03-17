@@ -184,17 +184,17 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.getRecentlyViewedProducts();
     }
 
-/*    buyCouponProduct(product) {
-        if (this.currentUserId) {
-            this.addProductToCart(product, () => {
-                this.router.navigate([`/checkout`]);
+    /*    buyCouponProduct(product) {
+            if (this.currentUserId) {
+                this.addProductToCart(product, () => {
+                    this.router.navigate([`/checkout`]);
+                    this.couponProductModalRef.hide();
+                });
+            } else {
                 this.couponProductModalRef.hide();
-            });
-        } else {
-            this.couponProductModalRef.hide();
-            this.loginModalService.showLoginModal(true);
-        }
-    }*/
+                this.loginModalService.showLoginModal(true);
+            }
+        }*/
 
     defaultVariantSelection() {
         for (let v of this.productVariants) {
@@ -293,69 +293,73 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
             this.toastr.error('Please select all variant!', 'Note');
             return false;
         }
-        if (this.authService.getCurrentUserId()) {
-            this._progress.start("mainLoader");
-            let product_total_price: number =
-                (this.unitPrice +
-                    this.variantCalculatedTotalPrice) *
-                this.product_quantity;
-
-            let variants = [];
-            let data = {};
-            this.variantCalculatedPrice.forEach(v => {
-                variants.push({
-                    warehouse_variant_id: v.warehouse_variant_id,
-                    variant_id: v.variant_id,
-                    product_variant_id: v.product_variant_id
-                })
-            });
-            let qty = this.product_quantity;
-
-            if (variants.length == 0) {
-                data = {
-                    cart_id: this.cartId,
-                    product_id: this.data.id,
-                    product_quantity: qty,
-                    product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
-                    product_total_price: product_total_price,
-                };
-            } else {
-                data = {
-                    cart_id: this.cartId,
-                    product_id: this.data.id,
-                    product_quantity: qty,
-                    product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
-                    product_total_price: product_total_price,
-                    cartItemVariants: variants
-                };
-            }
-            this.cartItemService
-                .insert(data)
-                .subscribe(
-                    result => {
-                        this.store.dispatch(new fromStore.LoadCart());
-
-                        this.addToCartSuccessProduct = product;
-                        setTimeout(() => {
-                            this.addToCartSuccessProduct = undefined;
-                        }, 5000);
-
-                        this._progress.complete("mainLoader");
-                        this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
-
-                        if (callback) {
-                            callback();
-                        }
-                    },
-                    error => {
-                        this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
-                    }
-                );
-        } else {
+        if (!this.authService.getCurrentUserId()) {
             this.toastr.success("warning", "Please Login First");
             this.loginModalService.showLoginModal(true);
+            return false;
         }
+
+
+        this._progress.start("mainLoader");
+        let product_total_price: number =
+            (this.unitPrice +
+                this.variantCalculatedTotalPrice) *
+            this.product_quantity;
+
+        let variants = [];
+        let dataPayload = {};
+        this.variantCalculatedPrice.forEach(v => {
+            variants.push({
+                warehouse_variant_id: v.warehouse_variant_id,
+                variant_id: v.variant_id,
+                product_variant_id: v.product_variant_id
+            })
+        });
+
+        let qty = this.product_quantity;
+
+        if (variants.length == 0) {
+            dataPayload = {
+                cart_id: this.cartId,
+                product_id: this.data.id,
+                product_quantity: qty,
+                product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
+                product_total_price: product_total_price,
+            };
+        } else {
+            dataPayload = {
+                cart_id: this.cartId,
+                product_id: this.data.id,
+                product_quantity: qty,
+                product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
+                product_total_price: product_total_price,
+                cartItemVariants: variants
+            };
+        }
+        this.cartItemService
+            .insert(dataPayload)
+            .subscribe(
+                result => {
+                    this.store.dispatch(new fromStore.LoadCart());
+
+                    this.addToCartSuccessProduct = product;
+                    setTimeout(() => {
+                        this.addToCartSuccessProduct = undefined;
+                    }, 5000);
+
+                    this._progress.complete("mainLoader");
+                    this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
+
+                    if (callback) {
+                        callback();
+                    }
+                },
+                error => {
+                    this._progress.complete("mainLoader");
+                    this._notify.error("something went wrong");
+                }
+            );
+
     }
 
     //Method for direct buy
@@ -508,10 +512,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     showCouponProductModal(template: TemplateRef<any>) {
         this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
-        document.getElementById('scroll').scrollIntoView({ behavior: 'smooth', block: 'end' });
-/*        setTimeout(() => {
-            this.scrollToBottom();
-        }, 2000);*/
+        document.getElementById('scroll').scrollIntoView({behavior: 'smooth', block: 'end'});
+        /*        setTimeout(() => {
+                    this.scrollToBottom();
+                }, 2000);*/
     }
 
     //Method for scroll to bottom
