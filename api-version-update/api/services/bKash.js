@@ -25,7 +25,8 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    return await fetch(url, options);
+    const tokenResponse = await fetch(url, options);
+    return await tokenResponse.json();
   },
   bKashCreateAgreement: async (idToken, userId, payerReference) => {
     if (!idToken) {
