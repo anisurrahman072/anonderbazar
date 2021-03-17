@@ -974,65 +974,35 @@ module.exports = {
       let products = await Product.find(
         {
           where: _where
-        });
-      console.log(products.length);
+        })
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('brand_id')
+        .populate('warehouse_id');
 
       let row = 2;
-      const category = await Category.find({
+      /*const category = await Category.find({
         where: {type_id:2, deletedAt: null}
-      });
+      });*/
 
       for (let i = 0; i< products.length; i++){
-        let Category = '';
-        let label = '';
-
-        let flag = true;
-        categoryList.forEach(item => {
-          if(item.id === products[i].type_id && flag){
-            Category += item.id;
-            label += item.name;
-            flag = false;
-          }
-        });
-
-        flag = true;
-        category.forEach(item => {
-          if(item.id === products[i].category_id && flag){
-            if(Category){
-              Category += ',';
-              label += '=>';
-            }
-            Category += item.id;
-            label += item.name;
-            flag = false;
-          }
-        });
-
-        flag = true;
-        category.forEach(item => {
-          if(item.id === products[i].subcategory_id && flag){
-            if(Category){
-              Category += ',';
-              label += '=>';
-            }
-            Category += item.id;
-            label += item.name;
-            flag = false;
-          }
-        });
-
         let column = 1;
-        Category = Category+ '|' +escapeExcel(label);
-        ws.cell(row, column++).string(Category).style(myStyle).style(myStyle);
+        let Category = ''+products[i].type_id.id;
+        let label = ''+products[i].type_id.name;
+        if(products[i].category_id !== null){
+          Category += (','+products[i].category_id.id);
+          label = label+'=>'+products[i].category_id.name;
+          if(products[i].subcategory_id !== null){
+            Category += (','+products[i].subcategory_id.id);
+            label += ('=>'+products[i].subcategory_id.name);
+          }
+        }
+        Category = Category +'|'+label;
+        ws.cell(row, column++).string(Category);
 
-        flag = true;
         if(isAdmin){
-          wareHouseList.forEach((item) => {
-            if(item.id === products[i].warehouse_id && flag){
-              ws.cell(row, column++).string(products[i].warehouse_id + '|' + escapeExcel(item.name));
-              flag = false;
-            }
-          });
+          ws.cell(row, column++).string(products[i].warehouse_id.id + '|' + escapeExcel(products[i].warehouse_id.name));
         }
 
         ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
@@ -1040,12 +1010,7 @@ module.exports = {
         ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
 
         if(products[i].brand_id){
-          for(let index = 0; index < brandList.length; index++){
-            if(brandList[index].id === products[i].brand_id){
-              ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(brandList[index].name));
-              break;
-            }
-          }
+          ws.cell(row, column++).string(products[i].brand_id.id+ '|' + escapeExcel(products[i].brand_id.name));
         }else{
           ws.cell(row, column++).string('null');
         }
