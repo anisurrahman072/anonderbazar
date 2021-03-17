@@ -14,13 +14,11 @@ module.exports = {
     },
     order_id: {
       model: 'order',
-      required: false,
-      allowNull: true
+      required: true,
     },
     suborder_id: {
       model: 'suborder',
-      required: false,
-      allowNull: true
+      required: true
     },
     receiver_id: {
       model: 'user',
