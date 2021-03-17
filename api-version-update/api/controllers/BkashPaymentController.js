@@ -164,6 +164,9 @@ module.exports = {
   },
   paymentCallback: async (req, res) => {
 
+    console.log('paymentCallback');
+    console.log(req.query);
+
     if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
       return res.badRequest('Invalid order request');
     }
@@ -189,12 +192,16 @@ module.exports = {
         deletedAt: null
       });
 
+      console.log('transactionLog', transactionLog);
+
       // eslint-disable-next-line eqeqeq
       if (!(transactionLog && transactionLog.id && transactionLog.status == 2)) {
         return res.status(422).json({message: 'Invalid order request!'});
       }
 
       const transactionDetails = JSON.parse(transactionLog.details);
+
+      console.log('transactionDetails', transactionDetails);
 
       if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference && transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
         return res.status(422).json({message: 'Invalid order request!'});
@@ -348,12 +355,12 @@ module.exports = {
 
   },
   agreementCallbackCheckout: async (req, res) => {
-    // return res.status(422).json({message: 'There was a problem in processing the order.'});
 
     console.log('agreementCallbackCheckout');
     console.log(req.query);
 
     try {
+
       let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
 
       if (!customer) {
@@ -437,7 +444,7 @@ module.exports = {
           });
 
           res.writeHead(301, {
-            Location: 'http://test.anonderbazar.com/checkout?bkashURL='+ encodeURIComponent(bKashPaymentResponse.bkashURL)
+            Location: 'http://test.anonderbazar.com/checkout?bkashURL=' + encodeURIComponent(bKashPaymentResponse.bkashURL)
           });
 
           res.end();
