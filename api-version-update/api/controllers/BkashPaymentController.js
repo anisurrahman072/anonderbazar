@@ -437,7 +437,7 @@ module.exports = {
           });
 
           res.writeHead(301, {
-            Location: 'http://test.anonderbazar.com/checkout?bkashURL='+ bKashPaymentResponse.bkashURL
+            Location: 'http://test.anonderbazar.com/checkout?bkashURL='+ encodeURIComponent(bKashPaymentResponse.bkashURL)
           });
 
           res.end();
