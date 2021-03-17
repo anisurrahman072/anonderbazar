@@ -101,7 +101,7 @@ module.exports = {
     } = addresses;
 
     const userWallets = await BkashCustomerWallet.find({
-      user_id: authUser, id,
+      user_id: authUser.id,
       agreement_id: agreement_id,
       row_status: 3,
       deletedAt: null
