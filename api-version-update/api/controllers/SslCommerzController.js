@@ -2,13 +2,10 @@
  * SslCommerzController.js
  * @help :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {createOrder} = require('../services/checkout');
-const {dhakaZilaId} = require('../../config/softbd');
 const {sslWebUrl} = require('../../config/softbd');
-const {calcCartTotal} = require('../services/checkout');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
 module.exports = {

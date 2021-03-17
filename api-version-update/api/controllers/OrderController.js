@@ -9,11 +9,10 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {calcCartTotal, createBKashPayment, placeSSlCommerzOrder} = require('../services/checkout');
+const {createBKashPayment, placeSSlCommerzOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
-const {asyncForEach} = require('../../libs/helper');
-
-const {adminPaymentAddressId, dhakaZilaId, sslWebUrl} = require('../../config/softbd');
+const {asyncForEach, calcCartTotal} = require('../../libs/helper');
+const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
   index: (req, res) => {

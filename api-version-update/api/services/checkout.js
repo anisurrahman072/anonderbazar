@@ -1,10 +1,10 @@
 const moment = require('moment');
 const _ = require('lodash');
-const {dhakaZilaId} = require('../../config/softbd');
-const {bKashCreatePayment} = require('./bKash');
-const {bKashGrandToken} = require('./bKash');
-const {sslApiUrl} = require('../../config/softbd');
+const {calcCartTotal} = require('../../libs/helper');
+const {bKashCreatePayment, bKashGrandToken} = require('./bKash');
+const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
+
 module.exports = {
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
@@ -199,21 +199,6 @@ module.exports = {
     throw new Error('Problem in creating bKash payment');
 
   },
-  calcCartTotal: function (cart, cartItems) {
-    let grandOrderTotal = 0;
-    let totalQty = 0;
-    cartItems.forEach((cartItem) => {
-      if (cartItem.product_id && cartItem.product_id.id && cartItem.product_quantity > 0) {
-        grandOrderTotal += cartItem.product_total_price;
-        totalQty += cartItem.product_quantity;
-      }
-    });
-    return {
-      grandOrderTotal,
-      totalQty
-    };
-  },
-
   createOrder: async (db, customer, transDetails, addressIds, globalConfigs) => {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
@@ -243,7 +228,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = this.calcCartTotal(cart, cartItems);
+    } = calcCartTotal(cart, cartItems);
 
     let noShippingCharge = false;
 

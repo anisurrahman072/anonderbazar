@@ -1,8 +1,7 @@
-const {bKash} = require('../config/softbd');
-const {devEnv} = require('../config/softbd');
+const {devEnv, bKash} = require('../config/softbd');
 
 const asyncForEach = async (array, callback) => {
-  if(array && Array.isArray(array) && array.length > 0){
+  if (array && Array.isArray(array) && array.length > 0) {
     for (let index = 0; index < array.length; index++) {
       // eslint-disable-next-line callback-return
       await callback(array[index], index, array);
@@ -32,6 +31,20 @@ exports.baseFilter = (reqBody, Model, localWhere) => {
   return where;
 };
 
+exports.calcCartTotal = function (cart, cartItems) {
+  let grandOrderTotal = 0;
+  let totalQty = 0;
+  cartItems.forEach((cartItem) => {
+    if (cartItem.product_id && cartItem.product_id.id && cartItem.product_quantity > 0) {
+      grandOrderTotal += cartItem.product_total_price;
+      totalQty += cartItem.product_quantity;
+    }
+  });
+  return {
+    grandOrderTotal,
+    totalQty
+  };
+};
 
 exports.escapeExcel = function (str) {
   return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
@@ -115,9 +128,9 @@ exports.uploadImagesWithConfig = (imageFile, customConfig) => {
   });
 };
 exports.comparePasswords = (passwordProvided, userPassword) => {
-  return new Promise((resolve, reject)=> {
+  return new Promise((resolve, reject) => {
     User.comparePassword(passwordProvided, userPassword, (err, valid) => {
-      if(err){
+      if (err) {
         reject(err);
       } else {
         resolve(valid);
@@ -126,7 +139,7 @@ exports.comparePasswords = (passwordProvided, userPassword) => {
   });
 };
 
-exports.bKashModeConfigKey = function(){
+exports.bKashModeConfigKey = function () {
   let bKashModeConfigKey = 'production';
   if (bKash.isSandboxMode) {
     bKashModeConfigKey = 'sandbox';
