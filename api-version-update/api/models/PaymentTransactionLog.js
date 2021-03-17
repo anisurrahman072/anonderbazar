@@ -14,8 +14,7 @@ module.exports = {
     },
     order_id: {
       model: 'order',
-      required: false,
-      allowNull: true
+      required: false
     },
     details: {
       type: 'string',
