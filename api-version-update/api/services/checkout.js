@@ -143,6 +143,8 @@ module.exports = {
 
       const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
 
+      console.log('bKashResponse', bKashResponse);
+
       if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
         await PaymentTransactionLog.updateOne({
           id: paymentTransactionLog.id
