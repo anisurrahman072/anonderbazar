@@ -9,13 +9,10 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {calcCartTotal} = require('../services/checkout');
-const {bKashPayment} = require('../services/checkout');
-const {placeSSlCommerzOrder} = require('../services/checkout');
+const {createBKashPayment, placeSSlCommerzOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
-const {asyncForEach} = require('../../libs/helper');
-
-const {adminPaymentAddressId, dhakaZilaId, sslWebUrl} = require('../../config/softbd');
+const {asyncForEach, calcCartTotal} = require('../../libs/helper');
+const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
   index: (req, res) => {
@@ -67,15 +64,13 @@ module.exports = {
             status: 1
           }).fetch().usingConnection(db);
 
-          let suborderitem = SuborderItem.create({
+          return SuborderItem.create({
             product_suborder_id: suborder.id,
             product_id: req.body.product_id,
             warehouse_id: req.body.warehouse_id,
             product_quantity: req.body.quantity,
             product_total_price: req.body.price
           }).fetch().usingConnection(db);
-
-          return suborderitem;
         });
 
       if (suborderitem) {
@@ -511,52 +506,41 @@ module.exports = {
       }
 
       if (req.param('paymentType') === 'SSLCommerce') {
-        try {
-          const sslResponse = await placeSSlCommerzOrder(
-            authUser,
-            {grandOrderTotal, totalQuantity: totalQty},
-            {
-              adminPaymentAddress,
-              billingAddress: req.param('billing_address'),
-              shippingAddress: req.param('shipping_address')
-            },
-            globalConfigs
-          );
-          return res.json(sslResponse);
-        } catch (error) {
-          console.log('sslcommerz.init_transaction error', error);
-          res.writeHead(301,
-            {Location: sslWebUrl + '/checkout'}
-          );
-          res.end();
-        }
-      } else if (req.param('paymentType') === 'bKash') {
-        console.log(req.body);
-        try {
-          const bKashResponse = await bKashPayment(authUser, {
-            payerReference: req.body.payerReference,
-            agreement_id: req.body.agreement_id,
-            grandOrderTotal,
-            totalQuantity: totalQty
-          }, {
+
+        const sslResponse = await placeSSlCommerzOrder(
+          authUser,
+          {grandOrderTotal, totalQuantity: totalQty},
+          {
             adminPaymentAddress,
             billingAddress: req.param('billing_address'),
             shippingAddress: req.param('shipping_address')
-          }, globalConfigs);
+          },
+          globalConfigs
+        );
+        return res.status(200).json(sslResponse);
 
-          return res.status(200).json(bKashResponse);
-        } catch (error) {
-          console.log('bkash error', error);
-          res.writeHead(301,
-            {Location: sslWebUrl + '/checkout'}
-          );
-          res.end();
-        }
+      }
+
+      if (req.param('paymentType') === 'bKash') {
+        console.log(req.body);
+
+        const bKashResponse = await createBKashPayment(authUser, {
+          payerReference: req.body.payerReference,
+          agreement_id: req.body.agreement_id,
+          grandOrderTotal,
+          totalQuantity: totalQty
+        }, {
+          adminPaymentAddress,
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
+        });
+
+        return res.status(200).json(bKashResponse);
       }
 
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.badRequest('There was a problem in processing the order.');
+      return res.status(400).json({message: 'There was a problem in processing the order.'});
     }
   },
 

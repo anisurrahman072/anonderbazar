@@ -1,6 +1,7 @@
+const fetch = require('node-fetch');
 const {bKash} = require('../../config/softbd');
 const {bKashModeConfigKey} = require('../../libs/helper');
-const fetch = require('node-fetch');
+
 module.exports = {
 
   bKashGrandToken: async () => {
@@ -95,7 +96,7 @@ module.exports = {
     };
     const url = bKash[modeConfigKey].payment_create;
 
-    console.log('headers-postBody',headers, postBody);
+    console.log('headers-postBody', headers, postBody);
 
     const options = {
       method: 'POST',
@@ -104,5 +105,28 @@ module.exports = {
     };
     let bKashResponse = await fetch(url, options);
     return await bKashResponse.json();
+  },
+  bKashExecutePayment: async (idToken, postBody) => {
+    let modeConfigKey = bKashModeConfigKey();
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+
+    const url = bKash[modeConfigKey].payment_execute;
+
+    console.log('headers-postBody', headers, postBody);
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(postBody)
+    };
+    let bKashResponse = await fetch(url, options);
+    return await bKashResponse.json();
+
   }
 };
