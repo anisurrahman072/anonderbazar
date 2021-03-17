@@ -108,7 +108,9 @@ export class BulkUpdateComponent implements OnInit {
     }
 
     downloadExcel(value) {
+      this._isSpinning = true;
         return this.productService.productExcel(value).subscribe((result: any) => {
+            this._isSpinning = false;
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
             const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
@@ -135,6 +137,10 @@ export class BulkUpdateComponent implements OnInit {
                 window.URL.revokeObjectURL(data)
                 link.remove();
             }, 100);
+            this._notification.create('success', 'Operation Completed!', 'Successfully fetched all data to Excel file.');
+        }, error => {
+            this._isSpinning = false;
+            this._notification.create('error', 'Operation Failed', 'Something Went wrong!');
         });
     }
 
