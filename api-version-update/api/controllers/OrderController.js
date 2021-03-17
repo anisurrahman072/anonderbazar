@@ -540,7 +540,7 @@ module.exports = {
 
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.status(400).json({message: 'There was a problem in processing the order.'});
+      return res.status(400).json({message: 'There was a problem in processing the order.', finalError});
     }
   },
 

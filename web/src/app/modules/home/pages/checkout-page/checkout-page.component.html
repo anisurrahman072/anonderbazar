@@ -449,11 +449,13 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="!hideCashonDelivery && enabledPaymentMethods['Cash']" value="Cash">
+                                <mat-radio-button *ngIf="!hideCashonDelivery && enabledPaymentMethods['Cash']"
+                                                  value="Cash">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
                                 <br>
-                                <mat-radio-button *ngIf="enabledPaymentMethods['SSLCommerce']" value="SSLCommerce" [checked]="hideCashonDelivery">
+                                <mat-radio-button *ngIf="enabledPaymentMethods['SSLCommerce']" value="SSLCommerce"
+                                                  [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
                                         <img src="./assets/images/final_sslcommerz.webp"
                                              style="height: auto; width: 80%;"
@@ -542,11 +544,11 @@
     <div class="modal-body">
         <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
             <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
-                <a (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)">{{authUserWallet.wallet_no}}</a>
+                <a (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)"
+                   style="color: #444444;">{{authUserWallet.wallet_no}}</a>
             </li>
         </ul>
         <ng-template #noWalletTemplate>
-
             <div class="row">
                 <div class="col-md-12">
                     <p class="text-center">Enter your bKash Wallet Number and Proceed with Payment</p>
@@ -554,11 +556,15 @@
                 <div class="col-md-8">
                     <div class="form-group">
                         <label for="bKashWalletNumber">bKash Wallet Number</label>
-                        <input placeholder="bKash Wallet Number" id="bKashWalletNumber" class="form-control" [(ngModel)]="bKashWalletNumber">
+                        <input placeholder="bKash Wallet Number" id="bKashWalletNumber" class="form-control"
+                               [(ngModel)]="bKashWalletNumber">
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <button style="position: relative; top: 36px;" type="button" (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">Proceed with bKash</button>
+                    <button style="position: relative; top: 36px;" type="button"
+                            (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">
+                        Proceed with bKash
+                    </button>
                 </div>
             </div>
         </ng-template>
