@@ -104,7 +104,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(result => {
                 this.loading = false;
                 console.log('result-getAllSearch', result);
-                this.homeOfferData = result;
+                this.homeOfferData = result.data;
                 this.homeOfferTotal = result.total;
                 this._isSpinning = false;
             }, error => {
@@ -121,7 +121,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.homeOfferPage)
             .subscribe(result1 => {
                 this.loading = false;
-                this.homeChildOfferData = result1;
+                this.homeChildOfferData = result1.data;
                 this._isSpinning = false;
             }, error => {
                 this._isSpinning = false;

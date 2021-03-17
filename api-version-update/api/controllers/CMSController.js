@@ -5,15 +5,56 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
 
+  // Method for getting all the parent offer and child offer
   getAll: async (req, res) => {
-    console.log('cms offer: ', req.query);
-    return res.status(200).json({ success: true});
+
+    try {
+
+      let queryData = JSON.parse(req.query.where);
+
+      let _pagination = pagination(req.query);
+
+      let _where = {};
+      _where.deletedAt = null;
+      _where.page = queryData.page;
+      _where.section = queryData.section;
+      _where.sub_section = queryData.sub_section;
+
+      let allOffers = await CMS.find({
+        where: _where,
+        limit: _pagination.limit,
+        skip: _pagination.skip
+      });
+
+      let totalOffer = await CMS.count().where(_where);
+
+      res.status(200).json({
+        success: true,
+        total: totalOffer,
+        limit: _pagination.limit,
+        skip: _pagination.skip,
+        page: _pagination.page,
+        message: 'Get All Offers with pagination',
+        data: allOffers
+      });
+
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in getting all the offers parent and child offers with pagination';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
   },
+
   byIds: async (req, res) => {
     try {
       try {
