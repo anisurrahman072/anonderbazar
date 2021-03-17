@@ -273,7 +273,7 @@ module.exports = {
             });
 
           try {
-            let smsPhone = user.phone;
+            let smsPhone = customer.phone;
 
             if (!noShippingCharge && shippingAddress.phone) {
               smsPhone = shippingAddress.phone;
