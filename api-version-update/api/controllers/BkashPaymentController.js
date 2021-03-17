@@ -7,6 +7,8 @@
 
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {calcCartTotal} = require('../../libs/helper');
+const {createBKashPayment} = require('../services/checkout');
 const {sslWebUrl} = require('../../config/softbd');
 const {createOrder} = require('../services/checkout');
 const {
@@ -55,7 +57,10 @@ module.exports = {
 
     try {
 
-      let tokenRes = await bKashCreateAgreement(req.query.id_token, req.token.userInfo.id, req.query.wallet_no);
+      const authUser = req.token.userInfo;
+      const callbackURL = 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/' + authUser.id;
+
+      let tokenRes = await bKashCreateAgreement(req.query.id_token, authUser.id, req.query.wallet_no, callbackURL);
 
       if (tokenRes.statusMessage === 'Successful' && tokenRes.agreementStatus === 'Initiated') {
         const bkashCustomerWallet = await BkashCustomerWallet.create({
@@ -82,9 +87,15 @@ module.exports = {
     console.log('agreementCallback');
     console.log(req.query);
 
+    let customer = await User.findOne({id: req.param('id'), deletedAt: null});
+
+    if (!customer) {
+      return res.status(422).json({message: 'Customer was not found!'});
+    }
+
     try {
       const userWallets = await BkashCustomerWallet.find({
-        user_id: req.param('id'),
+        user_id: customer.id,
         payment_id: req.query.paymentID,
         row_status: 1
       });
@@ -335,5 +346,137 @@ module.exports = {
       return res.status(400).json({message: 'There was a problem in processing the order.'});
     }
 
+  },
+  agreementCallbackCheckout: async (req, res) => {
+    // return res.status(422).json({message: 'There was a problem in processing the order.'});
+
+    console.log('agreementCallbackCheckout');
+    console.log(req.query);
+
+    try {
+      let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
+
+      if (!customer) {
+        return res.status(422).json({message: 'Customer was not found!'});
+      }
+
+      let cart = await Cart.findOne({
+        user_id: customer.id,
+        deletedAt: null
+      });
+
+      let cartItems = await CartItem.find({
+        cart_id: cart.id,
+        deletedAt: null
+      })
+        .populate('cart_item_variants')
+        .populate('product_id');
+
+      let {
+        grandOrderTotal,
+        totalQty
+      } = calcCartTotal(cart, cartItems);
+
+      const userWallets = await BkashCustomerWallet.find({
+        user_id: customer.id,
+        payment_id: req.query.paymentID,
+        row_status: 1,
+        deletedAt: null
+      });
+
+      if (!(userWallets && userWallets.length === 1)) {
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
+
+      const userWallet = userWallets[0];
+
+      userWallet.full_response = JSON.parse(userWallet.full_response);
+
+      if (!(userWallet.full_response.id_token && userWallet.full_response.billingAddressId && userWallet.full_response.shippingAddressId)) {
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
+
+      if (req.query.status === 'success') {
+
+        await BkashCustomerWallet.updateOne({
+          id: userWallet.id
+        })
+          .set({
+            row_status: 2
+          });
+
+        const bKashExecAgreementResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
+
+        console.log('bKashExeAgreementResponse', bKashExecAgreementResponse);
+
+        if (bKashExecAgreementResponse.agreementStatus === 'Completed' && bKashExecAgreementResponse.statusMessage === 'Successful') {
+          await BkashCustomerWallet.updateOne({
+            id: userWallet.id
+          }).set({
+            row_status: 3,
+            payment_id: bKashExecAgreementResponse.paymentID,
+            agreement_id: bKashExecAgreementResponse.agreementID,
+            full_response: JSON.stringify({
+              ...userWallet.full_response,
+              bKashExecAgreementResponse
+            })
+          });
+          const bKashPaymentResponse = await createBKashPayment(customer, {
+            payerReference: bKashExecAgreementResponse.payerReference,
+            agreement_id: bKashExecAgreementResponse.agreementID,
+            grandOrderTotal,
+            totalQuantity: totalQty
+          }, {
+            adminPaymentAddress: null,
+            billingAddress: userWallet.full_response.billingAddressId,
+            shippingAddress: userWallet.full_response.shippingAddressId
+          });
+
+          res.writeHead(301, {
+            Location: 'http://test.anonderbazar.com/checkout?bkashURL='+ bKashPaymentResponse.bkashURL
+          });
+
+          res.end();
+          return;
+        }
+
+        await BkashCustomerWallet.updateOne({
+          id: userWallet.id
+        }).set({
+          row_status: 99,
+          full_response: JSON.stringify({
+            ...userWallet.full_response,
+            bKashExecAgreementResponse
+          })
+        });
+      } else {
+        await BkashCustomerWallet.updateOne({
+          id: userWallet.id
+        }).set({
+          row_status: 99,
+          full_response: JSON.stringify({
+            ...userWallet.full_response,
+            callbackResponse: req.query
+          })
+        });
+      }
+
+      res.writeHead(301, {
+        Location: 'http://test.anonderbazar.com/checkout?bKashError=1'
+      });
+
+      res.end();
+
+    } catch (error) {
+      console.log(error);
+      res.writeHead(301, {
+        Location: 'http://test.anonderbazar.com/checkout?bKashError=1'
+      });
+      res.end();
+    }
   }
 };

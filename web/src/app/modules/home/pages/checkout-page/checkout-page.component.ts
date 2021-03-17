@@ -107,6 +107,16 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     // init the component
     ngOnInit() {
 
+        let queryParams = this.route.snapshot.queryParams;
+
+        if (queryParams['order']) {
+            this.successOrderId = queryParams['order'];
+        } else if(queryParams['bKashError']){
+            this.toastr.error('Problem in processing the bKash Payment', 'Oppss!');
+        }  else if(queryParams['bkashURL']){
+            window.location.href = queryParams['bkashURL'];
+        }
+
         this.checkoutForm = this.fb.group({
             // Billing
             billing_id: ['', []],
@@ -136,11 +146,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             paymentType: ['SSLCommerce', []]
         });
 
-        let queryParams = this.route.snapshot.queryParams;
 
-        if (queryParams['order']) {
-            this.successOrderId = queryParams['order'];
-        }
 
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
 

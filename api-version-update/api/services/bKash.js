@@ -29,7 +29,7 @@ module.exports = {
     const tokenResponse = await fetch(url, options);
     return await tokenResponse.json();
   },
-  bKashCreateAgreement: async (idToken, userId, payerReference) => {
+  bKashCreateAgreement: async (idToken, userId, payerReference, callbackURL) => {
     if (!idToken) {
       return false;
     }
@@ -44,8 +44,8 @@ module.exports = {
 
     const postBody = {
       mode: '0000',
-      payerReference: payerReference,
-      callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback-checkout/' + userId,
+      payerReference,
+      callbackURL
     };
 
     const url = bKash[modeConfigKey].agreement_create;

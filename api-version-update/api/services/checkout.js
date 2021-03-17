@@ -1,5 +1,6 @@
 const moment = require('moment');
 const _ = require('lodash');
+const {bKashCreateAgreement} = require('./bKash');
 const {calcCartTotal} = require('../../libs/helper');
 const {bKashCreatePayment, bKashGrandToken} = require('./bKash');
 const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
@@ -131,45 +132,62 @@ module.exports = {
       finalShippingAddressId = adminPaymentAddress.id;
     }
 
-    if (!(agreement_id && payerReference)) {
+    if (!(payerReference)) {
       throw new Error('Invalid Request');
     }
 
-    const paymentTransactionLog = await PaymentTransactionLog.create({
-      user_id: authUser.id,
-      payment_type: 'bKash',
-      payment_amount: grandOrderTotal,
-      payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status: '1',
-      details: JSON.stringify({
-        id_token: tokenRes.id_token,
-        payerReference,
-        agreement_id,
-        billingAddressId: finalBillingAddressId,
-        shippingAddressId: finalShippingAddressId
-      })
-    }).fetch();
+    if(agreement_id){
+      const paymentTransactionLog = await PaymentTransactionLog.create({
+        user_id: authUser.id,
+        payment_type: 'bKash',
+        payment_amount: grandOrderTotal,
+        payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+        status: '1',
+        details: JSON.stringify({
+          id_token: tokenRes.id_token,
+          payerReference,
+          agreement_id,
+          billingAddressId: finalBillingAddressId,
+          shippingAddressId: finalShippingAddressId
+        })
+      }).fetch();
 
-    const payloadData = {
-      'agreementID': agreement_id,
-      'mode': '0001',
-      'payerReference': payerReference,
-      'callbackURL': 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
-      'amount': grandOrderTotal,
-      'currency': 'BDT',
-      'intent': 'sale',
-      'merchantInvoiceNumber': paymentTransactionLog.id
-    };
+      const payloadData = {
+        'agreementID': agreement_id,
+        'mode': '0001',
+        'payerReference': payerReference,
+        'callbackURL': 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
+        'amount': grandOrderTotal,
+        'currency': 'BDT',
+        'intent': 'sale',
+        'merchantInvoiceNumber': paymentTransactionLog.id
+      };
 
-    const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+      const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
 
-    console.log('bKashResponse', bKashResponse);
+      console.log('bKashResponse', bKashResponse);
 
-    if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
+      if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
+        await PaymentTransactionLog.updateOne({
+          id: paymentTransactionLog.id
+        }).set({
+          status: '2',
+          details: JSON.stringify({
+            id_token: tokenRes.id_token,
+            payerReference,
+            agreement_id,
+            billingAddressId: finalBillingAddressId,
+            shippingAddressId: finalShippingAddressId,
+            bKashResponse
+          })
+        });
+        return bKashResponse;
+      }
+
       await PaymentTransactionLog.updateOne({
         id: paymentTransactionLog.id
       }).set({
-        status: '2',
+        status: '99',
         details: JSON.stringify({
           id_token: tokenRes.id_token,
           payerReference,
@@ -179,25 +197,42 @@ module.exports = {
           bKashResponse
         })
       });
-      return bKashResponse;
+
+      throw new Error('Problem in creating bKash payment');
     }
 
-    await PaymentTransactionLog.updateOne({
-      id: paymentTransactionLog.id
-    }).set({
-      status: '99',
-      details: JSON.stringify({
-        id_token: tokenRes.id_token,
-        payerReference,
-        agreement_id,
-        billingAddressId: finalBillingAddressId,
-        shippingAddressId: finalShippingAddressId,
-        bKashResponse
-      })
+    const foundAgreements = await BkashCustomerWallet.find({
+      user_id: authUser.id,
+      wallet_no: payerReference,
+      row_status: 3,
+      deletedAt: null
     });
 
-    throw new Error('Problem in creating bKash payment');
+    if(foundAgreements && foundAgreements.length > 0){
+      throw new Error('Invalid Payment Reference');
+    }
 
+    const callbackURL = 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback-checkout/' + authUser.id;
+
+    let bKashAgreementCreateResponse = await bKashCreateAgreement(tokenRes.id_token, authUser.id, payerReference, callbackURL);
+
+    console.log('bKashAgreementResponse', bKashAgreementCreateResponse);
+
+    if (bKashAgreementCreateResponse.statusMessage === 'Successful' && bKashAgreementCreateResponse.agreementStatus === 'Initiated') {
+      await BkashCustomerWallet.create({
+        user_id: authUser.id,
+        wallet_no: bKashAgreementCreateResponse.payerReference,
+        payment_id: bKashAgreementCreateResponse.paymentID,
+        full_response: JSON.stringify({
+          id_token: tokenRes.id_token,
+          billingAddressId: finalBillingAddressId,
+          shippingAddressId: finalShippingAddressId,
+          bKashAgreementCreateResponse,
+        })
+      });
+      return bKashAgreementCreateResponse;
+    }
+    throw new Error(JSON.stringify(bKashAgreementCreateResponse));
   },
   createOrder: async (db, customer, transDetails, addressIds, globalConfigs) => {
 
