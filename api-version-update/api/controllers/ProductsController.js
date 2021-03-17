@@ -982,75 +982,75 @@ module.exports = {
         .populate('warehouse_id');
       console.log(products.length);
       let row = 2;
-      /*const category = await Category.find({
-        where: {type_id:2, deletedAt: null}
-      });*/
 
       for (let i = 0; i< products.length; i++){
-        let column = 1;
-        let Category = ''+products[i].type_id.id;
-        let label = ''+products[i].type_id.name;
-        if(products[i].category_id !== null){
-          Category += (','+products[i].category_id.id);
-          label = label+'=>'+products[i].category_id.name;
-          if(products[i].subcategory_id !== null){
-            Category += (','+products[i].subcategory_id.id);
-            label += ('=>'+products[i].subcategory_id.name);
+        if(products[i].warehouse_id.deletedAt === null){
+          let column = 1;
+          let Category = ''+products[i].type_id.id;
+          let label = ''+products[i].type_id.name;
+          if(products[i].category_id !== null){
+            Category += (','+products[i].category_id.id);
+            label = label+'=>'+products[i].category_id.name;
+            if(products[i].subcategory_id !== null){
+              Category += (','+products[i].subcategory_id.id);
+              label += ('=>'+products[i].subcategory_id.name);
+            }
           }
-        }
-        Category = Category +'|'+label;
-        ws.cell(row, column++).string(Category);
+          Category = Category +'|'+label;
+          ws.cell(row, column++).string(Category);
 
-        if(isAdmin){
-          ws.cell(row, column++).string(products[i].warehouse_id.id + '|' + escapeExcel(products[i].warehouse_id.name));
+          if(isAdmin){
+            ws.cell(row, column++).string(products[i].warehouse_id.id + '|' + escapeExcel(products[i].warehouse_id.name));
+          }
+
+          ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
+          ws.cell(row, column++).string(products[i].code);
+          ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
+
+          if(products[i].brand_id){
+            ws.cell(row, column++).string(products[i].brand_id.id+ '|' + escapeExcel(products[i].brand_id.name));
+          }else{
+            ws.cell(row, column++).string('null');
+          }
+          ws.cell(row, column++).number(products[i].price);
+
+          if(products[i].promo_price){
+            ws.cell(row, column++).number(products[i].promo_price);
+          }
+          else{
+            ws.cell(row, column++).number(0);
+          }
+
+          if(products[i].vendor_price){
+            ws.cell(row, column++).number(products[i].vendor_price);
+          }
+          else{
+            ws.cell(row, column++).number(0);
+          }
+
+          if(products[i].quantity){
+            ws.cell(row, column++).number(products[i].quantity);
+          }
+          else{
+            ws.cell(row, column++).number(0);
+          }
+
+          if(products[i].weight){
+            ws.cell(row, column++).number(products[i].weight);
+          }
+          else{
+            ws.cell(row, column++).number(0);
+          }
+
+          if(products[i].tag){
+            ws.cell(row, column).string(products[i].tag).style(myStyle);
+          }
+          else{
+            ws.cell(row, column).string('null');
+          }
+          row++;
         }
 
-        ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
-        ws.cell(row, column++).string(products[i].code);
-        ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
-
-        if(products[i].brand_id){
-          ws.cell(row, column++).string(products[i].brand_id.id+ '|' + escapeExcel(products[i].brand_id.name));
-        }else{
-          ws.cell(row, column++).string('null');
-        }
-        ws.cell(row, column++).number(products[i].price);
-
-        if(products[i].promo_price){
-          ws.cell(row, column++).number(products[i].promo_price);
-        }
-        else{
-          ws.cell(row, column++).number(0);
-        }
-
-        if(products[i].vendor_price){
-          ws.cell(row, column++).number(products[i].vendor_price);
-        }
-        else{
-          ws.cell(row, column++).number(0);
-        }
-
-        if(products[i].quantity){
-          ws.cell(row, column++).number(products[i].quantity);
-        }
-        else{
-          ws.cell(row, column++).number(0);
-        }
-
-        if(products[i].weight){
-          ws.cell(row, column++).number(products[i].weight);
-        }
-        else{
-          ws.cell(row, column++).number(0);
-        }
-
-        if(products[i].tag){
-          ws.cell(row, column).string(products[i].tag).style(myStyle);
-        }
-        else{
-          ws.cell(row, column).string('null');
-        }
-        row++;
       }
       wb.write('Excel-' + Date.now() + '.xlsx', res);
     }
@@ -1095,7 +1095,6 @@ module.exports = {
         }
       }
       if (problematicRow > 0) {
-        console.log(message);
         return res.status(200).json({
           success: false,
           message,
