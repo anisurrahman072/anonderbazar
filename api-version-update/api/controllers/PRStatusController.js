@@ -81,7 +81,6 @@ module.exports = {
 
   getAll: async (req, res) => {
     try{
-      console.log('Anisss');
       let _pagination = pagination(req.query);
       let _where = {};
       _where.deletedAt = null;
