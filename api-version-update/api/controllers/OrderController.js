@@ -544,11 +544,7 @@ module.exports = {
             shippingAddress: req.param('shipping_address')
           }, globalConfigs);
 
-          res.writeHead(301,
-            {Location: bKashResponse.bkashURL}
-          );
-          res.end();
-          return;
+          return res.status(200).json(bKashResponse);
         } catch (error) {
           console.log('bkash error', error);
           res.writeHead(301,
