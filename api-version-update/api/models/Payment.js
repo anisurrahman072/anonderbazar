@@ -22,8 +22,7 @@ module.exports = {
     },
     receiver_id: {
       model: 'user',
-      required: false,
-      allowNull: true
+      required: false
     },
     transection_key: {
       type: 'string',
