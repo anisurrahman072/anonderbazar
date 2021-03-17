@@ -843,20 +843,21 @@ module.exports = {
         where: {deletedAt: null},
         sort: 'name ASC'
       });
-
       brandList.forEach((item, i) => {
         brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
 
       /* Fetch Warehouse List */
-      let wareHouseList = await Warehouse.find({
-        where: {deletedAt: null},
-        sort: 'name ASC'
-      });
-
-      wareHouseList.forEach((item, i) => {
-        wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
-      });
+      let wareHouseList;
+      if(isAdmin){
+        wareHouseList = await Warehouse.find({
+          where: {deletedAt: null},
+          sort: 'name ASC'
+        });
+        wareHouseList.forEach((item, i) => {
+          wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+        });
+      }
 
       // Create a reusable style
       const headerStyle = wb.createStyle({
@@ -865,7 +866,6 @@ module.exports = {
           size: 14,
         },
       });
-
       var myStyle = wb.createStyle({
         alignment: {
           wrapText: true
@@ -978,11 +978,8 @@ module.exports = {
       console.log(products.length);
 
       let row = 2;
-      const type = await Category.find({
-        where: {type_id:2,parent_id:0}
-      });
       const category = await Category.find({
-        where: {type_id:2}
+        where: {type_id:2, deletedAt: null}
       });
 
       for (let i = 0; i< products.length; i++){
@@ -1026,26 +1023,29 @@ module.exports = {
 
         let column = 1;
         Category = Category+ '|' +escapeExcel(label);
-        ws.cell(row, column++).string(Category).style(myStyle);
+        ws.cell(row, column++).string(Category).style(myStyle).style(myStyle);
 
+        flag = true;
         if(isAdmin){
           wareHouseList.forEach((item) => {
-            if(item.id === products[i].warehouse_id){
+            if(item.id === products[i].warehouse_id && flag){
               ws.cell(row, column++).string(products[i].warehouse_id + '|' + escapeExcel(item.name));
-              return;
+              flag = false;
             }
           });
         }
 
-
-        ws.cell(row, column++).string(escapeExcel(products[i].name));
-        ws.cell(row, column++).string(escapeExcel(products[i].code));
+        ws.cell(row, column++).string(escapeExcel(products[i].name)).style(myStyle);
+        ws.cell(row, column++).string(products[i].code);
         ws.cell(row, column++).string(escapeExcel(products[i].product_details)).style(myStyle);
+
         if(products[i].brand_id){
-          brandList.forEach((item) => {
-            ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(item.name));
-            return;
-          });
+          for(let index = 0; index < brandList.length; index++){
+            if(brandList[index].id === products[i].brand_id){
+              ws.cell(row, column++).string(products[i].brand_id+ '|' + escapeExcel(brandList[index].name));
+              break;
+            }
+          }
         }else{
           ws.cell(row, column++).string('null');
         }
@@ -1079,11 +1079,14 @@ module.exports = {
           ws.cell(row, column++).number(0);
         }
 
-        {ws.cell(row, column++).string(products[i].tag).style(myStyle);}
-
+        if(products[i].tag){
+          ws.cell(row, column).string(products[i].tag).style(myStyle);
+        }
+        else{
+          ws.cell(row, column).string('null');
+        }
         row++;
       }
-
       wb.write('Excel-' + Date.now() + '.xlsx', res);
     }
     catch (error) {
@@ -1098,7 +1101,6 @@ module.exports = {
 
   bulkUpdate: async(req, res) => {
     try{
-      console.log('I am');
       const authUser = req.token.userInfo;
       const len = req.body.length;
       let problematicRow = 0;
@@ -1121,7 +1123,7 @@ module.exports = {
             code: req.body[i].code
           });
 
-        if(authUser.group_id.name === 'owner' && authUser.warehouse_id !== product.warehouse_id){
+        if(authUser.group_id.name === 'owner' && authUser.warehouse_id.id !== product.warehouse_id){
           problematicRow = i + 1;
           message = 'You are not owner of the product of row: ' + problematicRow;
           break;
@@ -1129,7 +1131,7 @@ module.exports = {
       }
       if (problematicRow > 0) {
         console.log(message);
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
           message,
           error: null
@@ -1184,7 +1186,10 @@ module.exports = {
 
         return newItem;
       });
-      delete  dataToSave[0].category;
+      dataToSave.forEach(item => {
+        delete  item.category;
+        return item;
+      });
 
       let count = 0;
       for (const item of dataToSave) {
@@ -1195,11 +1200,11 @@ module.exports = {
             where: _where
           });
         if(foundProduct){
-          await Product.updateOne({ code: item.code}).set(dataToSave[0]);
+          await Product.updateOne({ code: item.code}).set(item);
           count++;
         }
         else{
-          res.status(400).json({
+          res.status(200).json({
             success: false,
             message: 'Some product is not found in database!',
             error
