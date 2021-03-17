@@ -94,6 +94,8 @@ module.exports = {
     };
     const url = bKash[modeConfigKey].payment_create;
 
+    console.log('headers-postBody',headers, postBody);
+
     const options = {
       method: 'POST',
       headers: headers,

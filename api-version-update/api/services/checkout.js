@@ -113,6 +113,7 @@ module.exports = {
 
     let tokenRes = await bKashGrandToken();
 
+    console.log('tokenRes', tokenRes);
     if (agreement_id) {
 
       const paymentTransactionLog = await PaymentTransactionLog.create({
