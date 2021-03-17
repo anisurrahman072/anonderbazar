@@ -120,7 +120,7 @@ export class PrRequisitionComponent implements OnInit {
             .subscribe(arg => {
                 this.loading = false;
                 this.total = arg.total;
-                this.data = arg;
+                this.data = arg.data;
                 console.log(this.data);
                 this._isSpinning = false;
             }, error => {

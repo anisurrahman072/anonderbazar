@@ -337,6 +337,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             this._notification.warning('Parent Offer Delete', "Deleted Successfully");
             this._isSpinning = false;
             this.getData();
+            this.getChildData();
         }, (err) => {
             this._isSpinning = false;
         });
