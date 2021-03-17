@@ -4,11 +4,10 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {bKash} = require('../../config/softbd');
-const fetch = require('node-fetch');
+
 const {bKashExecuteAgreement} = require('../services/bKash');
 const {bKashGrandToken, bKashCreateAgreement} = require('../services/bKash');
-const {bKashModeConfigKey} = require('../../libs/helper');
+
 module.exports = {
 
   authUserWallets: async (req, res) => {
