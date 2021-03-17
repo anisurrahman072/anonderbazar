@@ -146,6 +146,7 @@ module.exports = {
   paymentCallback: async (req, res) => {
 
     console.log(req.query);
+    console.log(req.body);
     console.log('userId', req.param('userId'));
     console.log('paymentTransId', req.param('paymentTransId'));
     res.writeHead(301, {

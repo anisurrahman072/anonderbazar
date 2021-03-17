@@ -533,7 +533,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                     positionClass: 'toast-bottom-right'
                 });
             }
-
         }, (error) => {
             this.loaderService.hideLoader();
             console.log('bKash place order ', error);
