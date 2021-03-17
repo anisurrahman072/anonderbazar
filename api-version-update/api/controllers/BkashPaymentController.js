@@ -407,6 +407,15 @@ module.exports = {
         });
       }
 
+      const billingAddress = await PaymentAddress.findOne({id: userWallet.full_response.billingAddressId});
+      const shippingAddress = await PaymentAddress.findOne({id: userWallet.full_response.shippingAddressId});
+
+      if( !(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id) ){
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
+
       if (req.query.status === 'success') {
 
         await BkashCustomerWallet.updateOne({
@@ -439,8 +448,8 @@ module.exports = {
             totalQuantity: totalQty
           }, {
             adminPaymentAddress: null,
-            billingAddress: userWallet.full_response.billingAddressId,
-            shippingAddress: userWallet.full_response.shippingAddressId
+            billingAddress: billingAddress,
+            shippingAddress: shippingAddress
           });
 
           res.writeHead(301, {
