@@ -362,6 +362,7 @@ module.exports.policies = {
     'grandToken': ['isAuthorized', 'isCustomer'],
     'createAgreement': ['isAuthorized', 'isCustomer'],
     'agreementCallback': true,
+    'paymentCallback': true,
   },
   SslCommerzController: {
     '*': true

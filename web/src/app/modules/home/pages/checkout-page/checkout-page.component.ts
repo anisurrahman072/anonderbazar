@@ -466,6 +466,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         if (authUserWallet) {
             requestPayload.agreement_id = authUserWallet.agreement_id;
+            requestPayload.payerReference = authUserWallet.wallet_no;
+
         } else if (this.bKashWalletNumber) {
             requestPayload.payerReference = this.bKashWalletNumber;
         } else {

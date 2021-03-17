@@ -36,6 +36,7 @@ module.exports = {
       'agreement_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
       'agreement_status': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/status',
       'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
+      'payment_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
     },
     'sandbox': {
       'app_key': '7epj60ddf7id0chhcm3vkejtab',
@@ -48,6 +49,7 @@ module.exports = {
       'agreement_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
       'agreement_status': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/status',
       'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
+      'payment_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
     }
   }
 };

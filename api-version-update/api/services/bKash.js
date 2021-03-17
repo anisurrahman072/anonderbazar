@@ -57,5 +57,49 @@ module.exports = {
     let agreementResponse = await fetch(url, options);
     agreementResponse = await agreementResponse.json();
     return agreementResponse;
+  },
+  bKashExecuteAgreement: async (idToken, paymentID) => {
+
+    let modeConfigKey = bKashModeConfigKey();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+
+    const postBody = {
+      'paymentID': paymentID,
+    };
+
+    const url = bKash[modeConfigKey].agreement_execute;
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(postBody)
+    };
+
+    let tokenRes = await fetch(url, options);
+    return await tokenRes.json();
+
+  },
+  bKashCreatePayment: async (idToken, postBody) => {
+    let modeConfigKey = bKashModeConfigKey();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+    const url = bKash[modeConfigKey].payment_create;
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(postBody)
+    };
+    let bKashResponse = await fetch(url, options);
+    return await bKashResponse.json();
   }
 };
