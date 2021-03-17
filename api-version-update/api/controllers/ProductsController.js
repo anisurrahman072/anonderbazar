@@ -980,7 +980,7 @@ module.exports = {
         .populate('subcategory_id')
         .populate('brand_id')
         .populate('warehouse_id');
-
+      console.log(products.length);
       let row = 2;
       /*const category = await Category.find({
         where: {type_id:2, deletedAt: null}
