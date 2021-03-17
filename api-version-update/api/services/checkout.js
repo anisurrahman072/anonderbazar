@@ -1,3 +1,6 @@
+const moment = require('moment');
+const {bKashCreatePayment} = require('./bKash');
+const {bKashGrandToken} = require('./bKash');
 const {sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 module.exports = {
@@ -83,29 +86,81 @@ module.exports = {
     console.log('sslcommerz.init_transaction success', sslResponse);
     return sslResponse;
   },
-  bKashPayment: async (authUser, orderDetails, globalConfigs) => {
-
-    /*const userWallets = await BkashCustomerWallet.find({
-      user_id: authUser,id,
-      payment_id: req.query.paymentID,
-      row_status: 1
-    });*/
-    /* const {
+  bKashPayment: async (authUser, orderDetails, addresses, globalConfigs) => {
+    const {
       payerReference,
       agreement_id,
       grandOrderTotal,
-      totalQuantity: totalQty
+      totalQuantity
     } = orderDetails;
 
-    let tokenRes = await this.bKashGrandToken();
+    const {
+      adminPaymentAddress,
+      billingAddress,
+      shippingAddress
+    } = addresses;
 
-    if (payerReference){
-      try {
+    const userWallets = await BkashCustomerWallet.find({
+      user_id: authUser, id,
+      agreement_id: agreement_id,
+      row_status: 3,
+      deletedAt: null
+    });
 
-      } catch (error){
+    if (!(userWallets && userWallets.length > 0)) {
+      throw new Error('Invalid Request');
+    }
 
+    let tokenRes = await bKashGrandToken();
+
+    if (agreement_id) {
+
+      const paymentTransactionLog = await PaymentTransactionLog.create({
+        user_id: authUser.id,
+        payment_type: 'bKash',
+        payment_amount: grandOrderTotal,
+        payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+        status: '1',
+        details: JSON.stringify({
+          payerReference,
+          agreement_id,
+          adminPaymentAddressId: adminPaymentAddress.id,
+          billingAddressId: billingAddress.id,
+          shippingAddressId: shippingAddress.id
+        })
+      }).fetch();
+
+      const payloadData = {
+        'agreementID': agreement_id,
+        'mode': '0001',
+        'payerReference': payerReference,
+        'callbackURL': 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
+        'amount': grandOrderTotal,
+        'currency': 'BDT',
+        'intent': 'sale',
+        'merchantInvoiceNumber': paymentTransactionLog.id
+      };
+
+      const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+
+      if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
+        await PaymentTransactionLog.updateOne({
+          id: paymentTransactionLog.id
+        }).set({
+          status: '2',
+          details: JSON.stringify({
+            bKashResponse,
+            payerReference,
+            adminPaymentAddressId: adminPaymentAddress.id,
+            billingAddressId: billingAddress.id,
+            shippingAddressId: shippingAddress.id,
+          })
+        });
+        return bKashResponse;
       }
-    }*/
+
+      throw new Error('Problem in creating bKash payment');
+    }
     return false;
   },
   calcCartTotal: function (cart, cartItems) {

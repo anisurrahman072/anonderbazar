@@ -1,5 +1,5 @@
 /**
- * Payment.js
+ * PaymentTransactionLog.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
@@ -14,22 +14,6 @@ module.exports = {
     },
     order_id: {
       model: 'order',
-      required: false,
-      allowNull: true
-    },
-    suborder_id: {
-      model: 'suborder',
-      required: false,
-      allowNull: true
-    },
-    receiver_id: {
-      model: 'user',
-      required: false,
-      allowNull: true
-    },
-    transection_key: {
-      type: 'string',
-      columnType: 'varchar',
       required: false,
       allowNull: true
     },
@@ -60,24 +44,6 @@ module.exports = {
       required: true
     },
   },
-  tableName: 'payments',
-  customToJSON: function () {
-    return this;
-  },
-
-  // generating transection key before creating a row
-  beforeCreate: function (req, next) {
-
-    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-    let string_length = 16;
-    let randomstring = '';
-    for (let i = 0; i < string_length; i++) {
-      let rnum = Math.floor(Math.random() * chars.length);
-      randomstring += chars.substring(rnum, rnum + 1);
-    }
-    req.transection_key = randomstring;
-
-    next();
-  },
+  tableName: 'payment_transaction_logs'
 };
 

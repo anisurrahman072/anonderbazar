@@ -274,7 +274,6 @@ module.exports = {
           }
 
           // Start/Delete Cart after submitting the order
-
           let orderForMail = await Order.findOne({id: order.id}).populate('user_id')
             .populate('shipping_address').usingConnection(db);
           let allOrderedProducts = [];
@@ -309,7 +308,6 @@ module.exports = {
             subordersTemp
           };
         });
-
 
       try {
         let smsPhone = user.phone;

@@ -6,6 +6,7 @@
  */
 const {bKash} = require('../../config/softbd');
 const fetch = require('node-fetch');
+const {bKashExecuteAgreement} = require('../services/bKash');
 const {bKashGrandToken, bKashCreateAgreement} = require('../services/bKash');
 const {bKashModeConfigKey} = require('../../libs/helper');
 module.exports = {
@@ -73,12 +74,6 @@ module.exports = {
   agreementCallback: async (req, res) => {
     console.log('agreementCallback');
     console.log(req.query);
-    let modeConfigKey = bKashModeConfigKey();
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'X-APP-Key': bKash[modeConfigKey].app_key,
-    };
 
     try {
       const userWallets = await BkashCustomerWallet.find({
@@ -94,53 +89,30 @@ module.exports = {
       }
 
       const userWallet = userWallets[0];
-      console.log(userWallet.full_response);
 
       if (req.query.status === 'success') {
 
-        try {
-          userWallet.full_response = JSON.parse(userWallet.full_response);
-        } catch (eee) {
-          res.writeHead(301, {
-            Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
-          });
+        userWallet.full_response = JSON.parse(userWallet.full_response);
 
-          // res.write(JSON.stringify(tokenRes));
-          res.end();
-          return;
-        }
         await BkashCustomerWallet.updateOne({
           id: userWallet.id
-        }).set({
-          row_status: 2
-        });
+        })
+          .set({
+            row_status: 2
+          });
 
-        const postBody = {
-          'paymentID': req.query.paymentID,
-        };
+        const bKashResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
 
-        const url = bKash[modeConfigKey].agreement_execute;
-        headers.Authorization = userWallet.full_response.id_token;
+        console.log('bKashResponse', bKashResponse);
 
-        const options = {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify(postBody)
-        };
-
-        let tokenRes = await fetch(url, options);
-        tokenRes = await tokenRes.json();
-
-        console.log('tokenRes', tokenRes);
-
-        if (tokenRes.agreementStatus === 'Completed' && tokenRes.statusMessage === 'Successful') {
+        if (bKashResponse.agreementStatus === 'Completed' && bKashResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
             id: userWallet.id
           }).set({
             row_status: 3,
-            payment_id: tokenRes.paymentID,
-            agreement_id: tokenRes.agreementID,
-            full_response: JSON.stringify({id_token: userWallet.full_response.id_token, ...tokenRes})
+            payment_id: bKashResponse.paymentID,
+            agreement_id: bKashResponse.agreementID,
+            full_response: JSON.stringify({id_token: userWallet.full_response.id_token, ...bKashResponse})
           });
         }
 
@@ -148,7 +120,6 @@ module.exports = {
           Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
         });
 
-        // res.write(JSON.stringify(tokenRes));
         res.end();
         return;
       }
@@ -163,7 +134,6 @@ module.exports = {
         Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
       });
 
-      // res.write(JSON.stringify(tokenRes));
       res.end();
 
     } catch (error) {
@@ -171,8 +141,18 @@ module.exports = {
       res.writeHead(301, {
         Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
       });
-      // res.write(JSON.stringify(tokenRes));
       res.end();
     }
+  },
+  paymentCallback: async (req, res) => {
+
+    console.log(req.query);
+    console.log('userId', req.param('userId'));
+    console.log('paymentTransId', req.param('paymentTransId'));
+    res.writeHead(301, {
+      Location: 'http://test.anonderbazar.com/checkout'
+    });
+
+    res.end();
   }
 };
