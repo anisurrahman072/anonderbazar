@@ -168,8 +168,6 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 return <ProductBulk>obj;
             });
-            console.log('Anis82',this.importProducts);
-
             console.log('this.importProducts', this.importProducts)
             this.total = this.importProducts.length;
         };
@@ -178,7 +176,9 @@ export class BulkUpdateComponent implements OnInit {
 
     saveImportedProducts() {
         this.fileInputVariable.nativeElement.value = "";
+        this._isSpinning = true;
         return this.productService.submitDataForBulkUpdate(this.importProducts).subscribe((result: any) => {
+            this._isSpinning = false;
             if (result.success) {
                 this._notification.create('success', 'Operation Completed', result.message);
             } else {
@@ -186,6 +186,7 @@ export class BulkUpdateComponent implements OnInit {
             }
 
         }, (error) => {
+            this._isSpinning = false;
             this._notification.create('error', 'Operation Failed', 'Something wrong happened!');
         });
     }
