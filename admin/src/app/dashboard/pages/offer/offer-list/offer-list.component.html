@@ -9,10 +9,7 @@
         <ng-container>
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-tabset>
-                    <nz-tab [nzTitle]="nzTabHeading">
-                        <ng-template #nzTabHeading>
-                            Parent Offer
-                        </ng-template>
+                    <nz-tab nzTitle="Parent Offer">
                         <div>
                             <nz-table #nzTable
                                       nzShowSizeChanger
@@ -96,10 +93,7 @@
                             </nz-table>
                         </div>
                     </nz-tab>
-                    <nz-tab [nzTitle]="nzTabHeading">
-                        <ng-template #nzTabHeading>
-                            Child Offer
-                        </ng-template>
+                    <nz-tab nzTitle="Child Offer">
                         <div>
                             <nz-table #nzTable1
                                       nzShowSizeChanger
