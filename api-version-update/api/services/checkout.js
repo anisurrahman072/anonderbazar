@@ -151,7 +151,7 @@ module.exports = {
           details: JSON.stringify({
             bKashResponse,
             payerReference,
-            adminPaymentAddressId: adminPaymentAddress.id,
+            adminPaymentAddressId: adminPaymentAddress ? adminPaymentAddress.id : null,
             billingAddressId: billingAddress.id,
             shippingAddressId: shippingAddress.id,
           })
