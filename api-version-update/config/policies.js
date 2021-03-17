@@ -226,6 +226,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'getall': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],

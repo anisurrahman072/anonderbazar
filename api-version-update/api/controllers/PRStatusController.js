@@ -6,6 +6,7 @@
  */
 
 const moment = require('moment');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
 
@@ -76,6 +77,42 @@ module.exports = {
       return res.status(400).json({success: false, error});
     }
 
-  }
+  },
+
+  getAll: async (req, res) => {
+    try{
+      let _pagination = pagination(req.query);
+      let _where = {};
+      _where.deletedAt = null;
+
+      let allPrStatus = await PRStatus.find({
+        where: _where,
+        limit: _pagination.limit,
+        skip: _pagination.skip
+      });
+
+      let totalPrStatus = await PRStatus.count().where(_where);
+
+      res.status(200).json({
+        success: true,
+        total: totalPrStatus,
+        limit: _pagination.limit,
+        skip: _pagination.skip,
+        page: _pagination.page,
+        message: 'Get All PRstatus with pagination.',
+        data: allPrStatus
+      });
+
+    }
+    catch (error){
+      let message = 'Error in Get All PRstatus with pagination.';
+
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
 };
 
