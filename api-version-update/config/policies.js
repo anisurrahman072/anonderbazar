@@ -80,6 +80,7 @@ module.exports.policies = {
     'find': true,
     'findOne': true,
     'byIds': true,
+    'getAll': true,
     'destroy': ['isAuthorized', 'isAdmin'],
     'offerInsert': ['isAuthorized', 'isAdmin'],
     'offerProductUpdate': ['isAuthorized', 'isAdmin'],
@@ -361,6 +362,7 @@ module.exports.policies = {
     'grandToken': ['isAuthorized', 'isCustomer'],
     'createAgreement': ['isAuthorized', 'isCustomer'],
     'agreementCallback': true,
+    'paymentCallback': true,
   },
   SslCommerzController: {
     '*': true

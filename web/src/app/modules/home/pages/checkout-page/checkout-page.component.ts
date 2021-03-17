@@ -466,6 +466,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         if (authUserWallet) {
             requestPayload.agreement_id = authUserWallet.agreement_id;
+            requestPayload.payerReference = authUserWallet.wallet_no;
+
         } else if (this.bKashWalletNumber) {
             requestPayload.payerReference = this.bKashWalletNumber;
         } else {
@@ -523,8 +525,14 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.loaderService.showLoader();
         this.orderService.placeOrder(requestPayload).subscribe(result => {
             this.loaderService.hideLoader();
-            this.store.dispatch(new fromStore.LoadCart());
-            window.location.href = result.GatewayPageURL;
+            // this.store.dispatch(new fromStore.LoadCart());
+            if(result && result.bkashURL){
+                window.location.href = result.bkashURL;
+            } else {
+                this.toastr.error("Problem in placing your order.", "Problem", {
+                    positionClass: 'toast-bottom-right'
+                });
+            }
         }, (error) => {
             this.loaderService.hideLoader();
             console.log('bKash place order ', error);

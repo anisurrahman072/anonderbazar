@@ -538,7 +538,13 @@ module.exports = {
             agreement_id: req.body.agreement_id,
             grandOrderTotal,
             totalQuantity: totalQty
+          }, {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
           }, globalConfigs);
+
+          return res.status(200).json(bKashResponse);
         } catch (error) {
           console.log('bkash error', error);
           res.writeHead(301,

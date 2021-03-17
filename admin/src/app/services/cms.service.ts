@@ -19,7 +19,7 @@ export class CmsService {
         subsection?: String
     } = {}, homeOfferLimit = 10, homeOfferPage = 1): Observable<any> {
         return this.http
-            .get(this.EndPoint + `?where={"deletedAt":null${option.page ? ',"page":"' + option.page + '"' : ''}${option.section ? ',"section":"' + option.section + '"' : ''}${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}}&limit=${homeOfferLimit}&page=${homeOfferPage}`)
+            .get(this.EndPoint + `/getAll?where={"deletedAt":null${option.page ? ',"page":"' + option.page + '"' : ''}${option.section ? ',"section":"' + option.section + '"' : ''}${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}}&limit=${homeOfferLimit}&page=${homeOfferPage}`)
             .map(response => response);
     }
 

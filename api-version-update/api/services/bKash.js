@@ -1,6 +1,6 @@
 const {bKash} = require('../../config/softbd');
 const {bKashModeConfigKey} = require('../../libs/helper');
-
+const fetch = require('node-fetch');
 module.exports = {
 
   bKashGrandToken: async () => {
@@ -25,7 +25,8 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    return await fetch(url, options);
+    const tokenResponse = await fetch(url, options);
+    return await tokenResponse.json();
   },
   bKashCreateAgreement: async (idToken, userId, payerReference) => {
     if (!idToken) {
@@ -57,5 +58,51 @@ module.exports = {
     let agreementResponse = await fetch(url, options);
     agreementResponse = await agreementResponse.json();
     return agreementResponse;
+  },
+  bKashExecuteAgreement: async (idToken, paymentID) => {
+
+    let modeConfigKey = bKashModeConfigKey();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+
+    const postBody = {
+      'paymentID': paymentID,
+    };
+
+    const url = bKash[modeConfigKey].agreement_execute;
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(postBody)
+    };
+
+    let tokenRes = await fetch(url, options);
+    return await tokenRes.json();
+
+  },
+  bKashCreatePayment: async (idToken, postBody) => {
+    let modeConfigKey = bKashModeConfigKey();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+    const url = bKash[modeConfigKey].payment_create;
+
+    console.log('headers-postBody',headers, postBody);
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(postBody)
+    };
+    let bKashResponse = await fetch(url, options);
+    return await bKashResponse.json();
   }
 };
