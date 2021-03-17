@@ -296,7 +296,10 @@ module.exports = {
     }
     grandOrderTotal += courierCharge;
 
-    if (paidAmount !== grandOrderTotal) {
+    console.log('paidAmount', paidAmount);
+    console.log('grandOrderTotal', grandOrderTotal);
+
+    if (paidAmount != grandOrderTotal) {
       throw new Error('Paid amount and order amount are different.');
     }
 
