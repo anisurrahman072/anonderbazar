@@ -102,17 +102,6 @@ module.exports = {
       shippingAddress
     } = addresses;
 
-    const userWallets = await BkashCustomerWallet.find({
-      user_id: authUser.id,
-      agreement_id: agreement_id,
-      row_status: 3,
-      deletedAt: null
-    });
-
-    if (!(userWallets && userWallets.length > 0)) {
-      throw new Error('Invalid Request');
-    }
-
     let tokenRes = await bKashGrandToken();
 
     console.log('tokenRes', tokenRes);
@@ -136,7 +125,19 @@ module.exports = {
       throw new Error('Invalid Request');
     }
 
-    if(agreement_id){
+    if (agreement_id) {
+      const userWallets = await BkashCustomerWallet.find({
+        user_id: authUser.id,
+        agreement_id: agreement_id,
+        wallet_no: payerReference,
+        row_status: 3,
+        deletedAt: null
+      });
+
+      if (!(userWallets && userWallets.length > 0)) {
+        throw new Error('Invalid Request');
+      }
+
       const paymentTransactionLog = await PaymentTransactionLog.create({
         user_id: authUser.id,
         payment_type: 'bKash',
@@ -208,7 +209,7 @@ module.exports = {
       deletedAt: null
     });
 
-    if(foundAgreements && foundAgreements.length > 0){
+    if (foundAgreements && foundAgreements.length > 0) {
       throw new Error('Invalid Payment Reference');
     }
 
