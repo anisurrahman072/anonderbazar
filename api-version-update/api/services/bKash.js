@@ -18,9 +18,6 @@ module.exports = {
       app_secret: bKash[modeConfigKey].app_secret,
     };
 
-    console.log('bKashGrandToken-headers', headers);
-    console.log('bKashGrandToken-postBody', postBody);
-
     const url = bKash[modeConfigKey].token_grant_url;
 
     const options = {
@@ -29,10 +26,14 @@ module.exports = {
       body: JSON.stringify(postBody)
     };
 
+    console.log('bKashGrandToken-headers', headers);
+    console.log('bKashGrandToken-postBody', postBody);
+
     let tokenResponse = await fetchWithTimeout(url, options);
     tokenResponse = await tokenResponse.json();
 
     console.log('bKashGrandToken-response', tokenResponse);
+    return tokenResponse;
   },
   bKashCreateAgreement: async (idToken, userId, payerReference, callbackURL) => {
     if (!idToken) {
@@ -115,9 +116,12 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-
+    console.log('bKashQueryAgreement-headers', headers);
+    console.log('bKashQueryAgreement-postBody', postBody);
     let agreementQueryResponse = await fetchWithTimeout(url, options);
-    return await agreementQueryResponse.json();
+    agreementQueryResponse = await agreementQueryResponse.json();
+    console.log('bKashQueryAgreement-response', agreementQueryResponse);
+    return agreementQueryResponse;
   },
   bKashCancelAgreement: async (idToken, agreementID) => {
     let modeConfigKey = bKashModeConfigKey();
@@ -217,7 +221,7 @@ module.exports = {
       })
     };
     console.log('bKasQueryPayment-headers', headers);
-    console.log('bKasQueryPayment-postBody', postBody);
+    console.log('bKasQueryPayment-postBody', {paymentID});
 
     let bKashPaymentQueryResponse = await fetchWithTimeout(url, options);
     bKashPaymentQueryResponse = await bKashPaymentQueryResponse.json();
@@ -244,8 +248,12 @@ module.exports = {
         trxID: trxID
       })
     };
+    console.log('bKasSearchTransaction-headers', headers);
+    console.log('bKasSearchTransaction-postBody', {trxID});
     let bKashSearchTranxResponse = await fetchWithTimeout(url, options);
-    return await bKashSearchTranxResponse.json();
+    bKashSearchTranxResponse = await bKashSearchTranxResponse.json();
+    console.log('bKasSearchTransaction-response', bKashSearchTranxResponse);
 
+    return bKashSearchTranxResponse;
   }
 };
