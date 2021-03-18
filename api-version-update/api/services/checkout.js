@@ -65,7 +65,7 @@ module.exports = {
 
     post_body['emi_option'] = 0;
     post_body['cus_name'] = authUser.first_name + ' ' + authUser.last_name;
-    post_body['cus_email'] = authUser.email ? authUser.email : '';
+    post_body['cus_email'] = authUser.email ? authUser.email : 'anonderbazar@gmail.com';
     post_body['cus_phone'] = authUser.phone;
     post_body['cus_postcode'] = finalPostalCode ? finalPostalCode : '1212';
     post_body['cus_add1'] = finalAddress ? finalAddress : 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1';

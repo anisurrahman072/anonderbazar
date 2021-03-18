@@ -418,11 +418,11 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 this.loaderService.hideLoader();
                 console.log('sslcommerz error', error);
                 if (error && error.error) {
-                    this.toastr.error(error.error, "Problem", {
+                    this.toastr.error(error.error.message, "Oppppps!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
-                    this.toastr.error("Problem in placing your order.", "Problem", {
+                    this.toastr.error("Problem in placing your order.", "Oppppps!", {
                         positionClass: 'toast-bottom-right'
                     });
                 }
