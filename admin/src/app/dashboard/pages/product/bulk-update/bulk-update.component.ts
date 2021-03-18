@@ -5,6 +5,7 @@ import {ProductService} from "../../../../services/product.service";
 import {ExcelService} from "../../../../services/excel.service";
 import {AuthService} from "../../../../services/auth.service";
 import {NzNotificationService} from "ng-zorro-antd";
+import {Subscription} from "rxjs";
 
 class ProductBulk {
     category: string = "";
@@ -31,7 +32,6 @@ export class BulkUpdateComponent implements OnInit {
     productsType = null;
     productCategories = null;
     productSubCategory = null;
-    parentChecked: boolean = true;
     _isSpinning: boolean = false;
     subcategoryId = null;
     type_id = null;
@@ -43,6 +43,11 @@ export class BulkUpdateComponent implements OnInit {
 
     @ViewChild('uploadFileInputField')
     fileInputVariable: ElementRef;
+    private catSub: Subscription;
+    private subCatSub: Subscription;
+    private excelSub: Subscription;
+    private typeSub: Subscription;
+    private updateSub: Subscription;
 
   constructor(private categoryProductService: CategoryProductService,
               private fb: FormBuilder,
@@ -51,7 +56,7 @@ export class BulkUpdateComponent implements OnInit {
               private authService: AuthService,
               private _notification: NzNotificationService,) {
       this.validateForm = this.fb.group({
-          type_id: ['', []],
+          type_id: ['', [Validators.required]],
           category: ['', []],
           subcategory: ['', []]
       });
@@ -63,9 +68,20 @@ export class BulkUpdateComponent implements OnInit {
       if (this.currentUser.group_id === 'admin') {
           this.isAdminUser = true;
       }
-      this.categoryProductService.getAllCategory().subscribe((result: any) => {
+      this.typeSub = this.categoryProductService.getAllCategory().subscribe((result: any) => {
           this.productsType = result;
       });
+    }
+    ngOnDestroy(): void {
+        this.catSub ? this.catSub.unsubscribe() : '';
+        this.subCatSub ? this.subCatSub.unsubscribe() : '';
+        this.excelSub ? this.excelSub.unsubscribe() : '';
+        this.typeSub ? this.typeSub.unsubscribe() : '';
+        this.updateSub ? this.updateSub.unsubscribe() : '';
+    }
+
+    getFormControl(name) {
+        return this.validateForm.controls[name];
     }
 
     typeIdChange($event){
@@ -75,7 +91,7 @@ export class BulkUpdateComponent implements OnInit {
         this.subcategoryId = null;
         const query = encodeURI($event);
         if (query !== 'null') {
-            this.categoryProductService
+            this.catSub = this.categoryProductService
                 .getSubcategoryByCategoryId(query)
                 .subscribe(result => {
                     this.productCategories = result;
@@ -89,7 +105,7 @@ export class BulkUpdateComponent implements OnInit {
         this.subcategoryId = null;
         const query = encodeURI($event);
         if (query !== 'null') {
-            this.categoryProductService
+            this.subCatSub = this.categoryProductService
                 .getSubcategoryByCategoryId(query)
                 .subscribe(result => {
                     this.productSubCategory = result;
@@ -99,16 +115,13 @@ export class BulkUpdateComponent implements OnInit {
 
     submitForm($event: any, value: any) {
         $event.preventDefault();
-
-        /*for (const key in this.validateForm.controls) {
-            this.validateForm.controls[key].markAsDirty();
-        }*/
-
         this.downloadExcel(value);
     }
 
     downloadExcel(value) {
-        return this.productService.productExcel(value).subscribe((result: any) => {
+      this._isSpinning = true;
+        return this.excelSub = this.productService.productExcel(value).subscribe((result: any) => {
+            this._isSpinning = false;
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
             const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
@@ -135,6 +148,10 @@ export class BulkUpdateComponent implements OnInit {
                 window.URL.revokeObjectURL(data)
                 link.remove();
             }, 100);
+            this._notification.create('success', 'Operation Completed!', 'Successfully fetched all data to Excel file.');
+        }, error => {
+            this._isSpinning = false;
+            this._notification.create('error', 'Operation Failed', 'Something Went wrong!');
         });
     }
 
@@ -177,7 +194,7 @@ export class BulkUpdateComponent implements OnInit {
     saveImportedProducts() {
         this.fileInputVariable.nativeElement.value = "";
         this._isSpinning = true;
-        return this.productService.submitDataForBulkUpdate(this.importProducts).subscribe((result: any) => {
+        return this.updateSub = this.productService.submitDataForBulkUpdate(this.importProducts).subscribe((result: any) => {
             this._isSpinning = false;
             if (result.success) {
                 this._notification.create('success', 'Operation Completed', result.message);
