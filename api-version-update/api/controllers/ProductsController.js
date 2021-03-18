@@ -970,7 +970,6 @@ module.exports = {
           _where.subcategory_id = req.query.subcategory_id;
         }
 
-        console.log(_where);
         let products = await Product.find(
           {
             where: _where
@@ -980,7 +979,6 @@ module.exports = {
           .populate('subcategory_id')
           .populate('brand_id')
           .populate('warehouse_id');
-        console.log(products.length);
         let row = 2;
 
         products.forEach(item => {
@@ -996,8 +994,8 @@ module.exports = {
                 label += ('=>'+item.subcategory_id.name);
               }
             }
-            Category = Category +'|'+label;
-            ws.cell(row, column++).string(Category);
+            Category = Category +'|'+escapeExcel(label);
+            ws.cell(row, column++).string(Category).style(myStyle);
 
             if(isAdmin){
               ws.cell(row, column++).string(item.warehouse_id.id + '|' + escapeExcel(item.warehouse_id.name));
@@ -1147,7 +1145,6 @@ module.exports = {
             newItem.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
-
         return newItem;
       });
       dataToSave.forEach(item => {
@@ -1157,11 +1154,9 @@ module.exports = {
 
       let count = 0;
       for (const item of dataToSave) {
-        let _where = {};
-        _where.code = item.code;
         const foundProduct = await Product.findOne(
           {
-            where: _where
+            where: {code: item.code}
           });
         if(foundProduct){
           await Product.updateOne({ code: item.code}).set(item);
@@ -1170,12 +1165,10 @@ module.exports = {
         else{
           res.status(200).json({
             success: false,
-            message: 'Some product is not found in database!',
-            error
+            message: 'Some products not found in database!'
           });
         }
       }
-
       res.status(200).json({
         success: true,
         message: 'Number of Products successfully updated: ' + count,
