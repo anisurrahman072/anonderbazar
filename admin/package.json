@@ -7,7 +7,7 @@
     "start": "ng serve --port 4000",
     "prebuild": "ng lint --fix",
     "build": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build  --source-map",
-    "build:prod": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --prod --aot",
+    "build:prod": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --prod --aot --build-optimizer --output-hashing=all",
     "build:prod-map": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --prod --source-map",
     "test": "ng test",
     "lint": "ng lint",

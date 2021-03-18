@@ -74,9 +74,9 @@ module.exports = {
     post_body['shipping_method'] = 'NO';
 
     post_body['num_of_item'] = totalQuantity;
-    post_body['product_name'] = 'Test';
+    post_body['product_name'] = 'Product Name';
     post_body['product_category'] = 'Anonder Bazar';
-    post_body['product_profile'] = 'general';
+    post_body['product_profile'] = 'General';
 
     /*
     console.log('sslcommerz.init_transaction error', error);
