@@ -409,6 +409,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.loaderService.showLoader();
             this.orderService.placeOrder(requestPayload).subscribe(result => {
                 // this._progress.complete("mainLoader");
+                console.log('result-SSLCommerce', result);
                 this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
                 window.location.href = result.GatewayPageURL;
