@@ -64,7 +64,8 @@
 
                 <div nz-row style="margin-top: 10px;">
                     <div nz-col [nzOffset]="7" [nzSpan]="12">
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'"> Download Excel File
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                            Download Excel File
                         </button>&nbsp;
                     </div>
                 </div>
