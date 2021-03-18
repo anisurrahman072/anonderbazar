@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, TemplateRef} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
@@ -22,7 +22,7 @@ import {BkashService} from "../../../../services/bkash.service";
     templateUrl: './checkout-page.component.html',
     styleUrls: ['./checkout-page.component.scss']
 })
-export class CheckoutPageComponent implements OnInit, AfterViewInit {
+export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     bKashWalletModalRef: BsModalRef;
     currentUser$: Observable<User>;
@@ -108,16 +108,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     // init the component
     ngOnInit() {
-
-        let queryParams = this.route.snapshot.queryParams;
-
-        if (queryParams['order']) {
-            this.successOrderId = queryParams['order'];
-        } else if (queryParams['bKashError']) {
-            this.toastr.error(queryParams['bKashError'], 'Oppss!');
-        } else if (queryParams['bkashURL']) {
-            window.location.href = queryParams['bkashURL'];
-        }
 
         this.checkoutForm = this.fb.group({
             // Billing
@@ -222,11 +212,28 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         */
     }
 
-    onAgreedToBKashTerms(event: any){
+    ngOnDestroy() {
+    }
+
+    ngAfterViewInit() {
+        this.loaderService.hideLoader();
+        let queryParams = this.route.snapshot.queryParams;
+
+        if (queryParams['order']) {
+            this.successOrderId = queryParams['order'];
+        } else if (queryParams['bKashError']) {
+            this.toastr.error(queryParams['bKashError'], 'Oppss!');
+        } else if (queryParams['bkashURL']) {
+            window.location.href = queryParams['bkashURL'];
+        }
+    }
+
+    onAgreedToBKashTerms(event: any) {
         console.log('onAgreedToBKashTerms', event);
         this.agreedToBKashTermsConditions = event;
 
     }
+
     // Method for update cart
     updateCartItem(cartItem, action) {
 
@@ -340,10 +347,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         }
     }
 
-    //Method for loader hide
-    ngAfterViewInit() {
-        this.loaderService.hideLoader();
-    }
 
     //Event method for resetting the form
     resetForm($event: MouseEvent) {

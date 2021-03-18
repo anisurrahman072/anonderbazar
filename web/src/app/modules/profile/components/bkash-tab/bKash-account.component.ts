@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {AfterViewInit, Component, OnDestroy, OnInit} from "@angular/core";
 import {UserService} from "../../../../services";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
@@ -11,7 +11,7 @@ import {LocalStorageService} from "../../../../services/local-storage.service";
     templateUrl: "./bKash-account.component.html",
     styleUrls: ["./bKash-account.component.scss"]
 })
-export class BKashAccountComponent implements OnInit, OnDestroy {
+export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
     bKashWalletNoToAdd: string = '';
 
@@ -32,12 +32,6 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        let queryParams = this.route.snapshot.queryParams;
-        if (queryParams['bKashError']) {
-            this.toastService.error(queryParams['bKashError'], 'Oppss!');
-        } else if(queryParams['bKashSuccess']){
-            this.toastService.success(queryParams['bKashSuccess'], 'Success');
-        }
 
         this._spinning = true;
         this.bkashService.generateGrandToken().subscribe((res: any) => {
@@ -53,7 +47,14 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
             this._spinning = false;
         })
     }
-
+    ngAfterViewInit() {
+        let queryParams = this.route.snapshot.queryParams;
+        if (queryParams['bKashError']) {
+            this.toastService.error(queryParams['bKashError'], 'Oppss!');
+        } else if(queryParams['bKashSuccess']){
+            this.toastService.success(queryParams['bKashSuccess'], 'Success');
+        }
+    }
     ngOnDestroy() {
     }
 
