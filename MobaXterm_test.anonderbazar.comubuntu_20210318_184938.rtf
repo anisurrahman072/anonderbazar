@@ -1,0 +1,249 @@
+
+createAgreement {
+  id_token: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiYTA0ZWQxODUtM2RmOS00MWI3LWI3ZTAtNTRlODA1NDIxYjkwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzAzNDgsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3Mzk0OCwiaWF0IjoxNjE2MDcwMzQ4fQ.sxDAh060EcKEKpx3Wwebw-X11aDPOYYo-4lLeTyJklVvkD-d8KLCwhFoDLhaziRkJkRywJOx9AlYyRXepCQrs1wL57ikG0qkuVfdlWwS0fFf2AMzj0afREz9L2LufeOhxEfVwcH_0g-5RhZFEhFGcDjWeHteW8Gn87fqbJP5svXiAYW5gQo3xwClcQ131B5NRHXwZyov8w8w1K87jWbqjaSz_jRqcVll121BtGQjo1FAVypKCTvCKCVgee7DSDti6kN6N6uEFBcwoBHc7qtt3GLOjEZHChacyEbqsKqihP-6-lp-cDJUaygZcb846IKGcuPOfvpjfV8PklmlqlE9uQ',
+  wallet_no: '01770618575'
+}
+bKashCreateAgreement-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiYTA0ZWQxODUtM2RmOS00MWI3LWI3ZTAtNTRlODA1NDIxYjkwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzAzNDgsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3Mzk0OCwiaWF0IjoxNjE2MDcwMzQ4fQ.sxDAh060EcKEKpx3Wwebw-X11aDPOYYo-4lLeTyJklVvkD-d8KLCwhFoDLhaziRkJkRywJOx9AlYyRXepCQrs1wL57ikG0qkuVfdlWwS0fFf2AMzj0afREz9L2LufeOhxEfVwcH_0g-5RhZFEhFGcDjWeHteW8Gn87fqbJP5svXiAYW5gQo3xwClcQ131B5NRHXwZyov8w8w1K87jWbqjaSz_jRqcVll121BtGQjo1FAVypKCTvCKCVgee7DSDti6kN6N6uEFBcwoBHc7qtt3GLOjEZHChacyEbqsKqihP-6-lp-cDJUaygZcb846IKGcuPOfvpjfV8PklmlqlE9uQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+}
+bKashCreateAgreement-postBody {
+  mode: '0000',
+  payerReference: '01770618575',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797'
+}
+bKashCreateAgreement-response {
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  paymentID: 'TR0000M71616070439218',
+  bkashURL: 'https://sandbox.payment.bkash.com/redirect/tokenized/?paymentID=TR0000M71616070439218&hash=jFmky3bnEBB2FwOaRU7J6E73tsiLyj20yVdjz(.GBhBdvEEJVMGJj7NLBrgjH7ZArLyfliSJNMnI4_bkKmph2jQJ39nMHIEa.yOB1616070439268&mode=0000&apiVersion=v1.2.0-beta',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797',
+  successCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=success',
+  failureCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=failure',
+  cancelledCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=cancel',
+  payerReference: '01770618575',
+  agreementStatus: 'Initiated',
+  agreementCreateTime: '2021-03-18T18:27:19:267 GMT+0600'
+}
+{
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  paymentID: 'TR0000M71616070439218',
+  bkashURL: 'https://sandbox.payment.bkash.com/redirect/tokenized/?paymentID=TR0000M71616070439218&hash=jFmky3bnEBB2FwOaRU7J6E73tsiLyj20yVdjz(.GBhBdvEEJVMGJj7NLBrgjH7ZArLyfliSJNMnI4_bkKmph2jQJ39nMHIEa.yOB1616070439268&mode=0000&apiVersion=v1.2.0-beta',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797',
+  successCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=success',
+  failureCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=failure',
+  cancelledCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/1797?paymentID=TR0000M71616070439218&status=cancel',
+  payerReference: '01770618575',
+  agreementStatus: 'Initiated',
+  agreementCreateTime: '2021-03-18T18:27:19:267 GMT+0600'
+}
+agreementCallback
+{
+  paymentID: 'TR0000M71616070439218',
+  status: 'success',
+  apiVersion: '1.2.0-beta'
+}
+bKashExecuteAgreement-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiYTA0ZWQxODUtM2RmOS00MWI3LWI3ZTAtNTRlODA1NDIxYjkwIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzAzNDgsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3Mzk0OCwiaWF0IjoxNjE2MDcwMzQ4fQ.sxDAh060EcKEKpx3Wwebw-X11aDPOYYo-4lLeTyJklVvkD-d8KLCwhFoDLhaziRkJkRywJOx9AlYyRXepCQrs1wL57ikG0qkuVfdlWwS0fFf2AMzj0afREz9L2LufeOhxEfVwcH_0g-5RhZFEhFGcDjWeHteW8Gn87fqbJP5svXiAYW5gQo3xwClcQ131B5NRHXwZyov8w8w1K87jWbqjaSz_jRqcVll121BtGQjo1FAVypKCTvCKCVgee7DSDti6kN6N6uEFBcwoBHc7qtt3GLOjEZHChacyEbqsKqihP-6-lp-cDJUaygZcb846IKGcuPOfvpjfV8PklmlqlE9uQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+}
+bKashExecuteAgreement-postBody { paymentID: 'TR0000M71616070439218' }
+bKashExecuteAgreement-response {
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  paymentID: 'TR0000M71616070439218',
+  agreementID: 'TokenizedMerchant02KN68S5E1616070460585',
+  payerReference: '01770618575',
+  agreementExecuteTime: '2021-03-18T18:27:40:585 GMT+0600',
+  agreementStatus: 'Completed',
+  customerMsisdn: '01770618575'
+}
+
+bKashGrandToken-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  username: 'sandboxTokenizedUser02',
+  password: 'sandboxTokenizedUser02@12345'
+}
+bKashGrandToken-postBody {
+  app_key: '4f6o0cjiki2rfm34kfdadl1eqq',
+  app_secret: '2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b'
+}
+debug: ***********************************************************************************
+debug: `res.jsonx()` is deprecated in Sails v1.0 and will be removed in a future release.
+debug: Any files in `api/responses/` that haven't been customized can simply be removed.
+debug: Otherwise see http://sailsjs.com/upgrading for options to replace `res.jsonx()`.
+debug: (jsonx was called from `sendOK`)
+debug: ***********************************************************************************
+bKashGrandToken-response {
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  id_token: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiNzcxNDY2NDItMWU2MC00NmYxLWEzM2MtMWQxM2E3NzNlMjA1IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzA0NzMsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NDA3MywiaWF0IjoxNjE2MDcwNDczfQ.MJKvbWKP9IU0gggXjnvrXdSK3xyNUequc7-xJ5RliXDiXyKVejqdZFfQpPbOc2Jo0jrhXwOPnMIjHlb_mBBdJ0Oum75dfLBUbtQOpKgnMnV6S7XSihDdxyAexPTO09roeEs9cNdkzGevXf01B2RkkNidMWL6f9ZGi5l6EVafqqhrLQmqtiQ9vOCXZXSuC9aSCL6OTDyzVhrnnx7QXA89iFaJ3MbV07n9A17Yxg_gyjU8TYVLC1zTyWrIWsIEzcON6lDWaLv2xMkYIX8owLuUKedd6FwYKJVMa4lnu81CGooL-m4jWhK4UEmsJivtZbHU7-U2MiJ2AmwdDQGP_lhKEg',
+  token_type: 'Bearer',
+  expires_in: 3600,
+  refresh_token: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.d9kNfXsOlQcXuseBVieKYolOuuRkR7L1yaLy_jj64i0lOKim8a6eoaG5xvpMtDFgBtpsmWJuuaC_WI9aypnIM5l5VQc1InJ0NLTOZF9XEg4zcgcQ7v_ndyBEYEk_IbncyAb2WuF2Tyov2oKjkg-CgNlk5Zyk9uF22pC4LnX0d2ZoYlWjVBXzgfUdLiAgbY4nMhQHVVtSAoVsNOUhF_vGOQrddl79IM4LTMZZOYTXUWxv0i3HSFSynZgipUxSnsVU0YvFikoWWAwOMjcNOep2QWPz_4I_KWgKpOyQ70nc4ZDjg0zOwn6gI_eFCd92LU-_z1pzhGbmmhS8gQ-6L8HsFw.xC9f-6NP7-VDpO5q.YE2Wjc9d2BwgRMAAZCv7S4YN6-VKH_QfJF__R9ujd_yUnRAAnUd2J46iAv1AL_3jY147MvEQ_LSGLkvj8ZaZszQdWGtTJNTR2zMDnf5XdvMNRO66GKFfRL1ggUhEp83m32kUvti_yvWz1Ji3Xla7_rRNRUVey5Cb1p7j1PDTBtE2Prv5WHieZOw_eutjmMhOgZv2nB0yBK2scvAzmnRMTTBW38UISzLgy25Haq-wHcEqmV47-WAZXVNtEXJQ__K-OIk6vs7qlL0Y8PlEctRIUw5Y6ncreqEaAZdV8mRdRaXwso9GbW7knzTHW4eGr5AUeckcEPEBH3tO91b4pJ9ofeEtRHxtnrJEZgGFhFjg8Ir4CtwIquCgqumKiC5QKhlxNVwSdttPY1UVUmlDR9FpSu_9Tz7FfCx-qQ1lwbbkClBZjbhQh-brbBGTZnQlXi4BrIpyYy7FYxi8f9LaoqS5soiqYMrR7PjzgjUzrX0WEDfKmWb725JmPVIYeW9ABnhGFglo-FvFMETMwg6d4coI1n0daKi7TahDZvcEOnY7FhhyZP5Xjm4wpZ-VCnDplq5ncgRewxdRnqRlWpAcrqTGeo6IuoyVOANjwPxuFPCuQF_vV8cu8F0F7sX_rpVYuw2T8algOnPXlC9wETOZIUqo3S3I55BTDDD7K8V72f4KwBRSgFXXlKSb7yjOzSlX6iNGxOlYnrVKugUCnbmrBx8snH1ZkH7b5FSIGmY9EX4kYDg9LJm79CAFAWSVpuDS3mHXxCXImB_-oxSNnQSaBXPRaAr8RcokiZa-WYBIZ8z_LgonAB3lrs1J_6opmsCYsSHUUr-kMFm_TWk4rpu7T2rjmk_0CY480qG6J2v282t6lhWUrGtu-Lmv7IPIYiwRi2i3gMO1eGUDWAlzWREKelNKd0H9NFYUNLkZRanrj8rpploBgaANRhgAqYPMVbGpxgn1ic2MFjcq3t-PQTYFwg19fnOxZ93w2yu627-jGPvrzUOKG_dYwJNr296dCH6H3i2ZHI0njGYd9HucLEY4dd7SkvBw_3QeiI9o9k4JKmKN55t7gzrAT6OoMxw4K6yelBNqwtO_A8fe57jdktGhOfv7xLatQyRYBaMjJ7QjA2nHxvts-xLaPOryEpjN328lT5WFdlg92jwB5hk1iqMSi4CoSp43IyKHndpYqQzwsBNHbCLPg3Z4QgkoIk1Q4rl6bA2dqJKHEb8y9fvgJ5-Y0dzrqEM34lyzaUlAPC1tASHSyQRPVyDNXzkFYh8crdsAEzvMPRlqAoZ0kyVc-aXbgLz9by5YH9O8_QgySye3OekYtPryi_n6rXM.EDbdt9bQnpLvPkBuIyHXJA'
+}
+
+################# createBKashPayment #####################
+bKashGrandToken-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  username: 'sandboxTokenizedUser02',
+  password: 'sandboxTokenizedUser02@12345'
+}
+bKashGrandToken-postBody {
+  app_key: '4f6o0cjiki2rfm34kfdadl1eqq',
+  app_secret: '2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b'
+}
+bKashGrandToken-response {
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  id_token: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  token_type: 'Bearer',
+  expires_in: 3600,
+  refresh_token: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.Pgcv6I2dg7qtAIqoD8EStuibAHnDkQ9yzrsycS2kGMZ3AbPwjv8-eL4azy-8AzVFTREMLQZI5lclY45mmw6Nnlbue-sjjI5ph1sxrM-7vOnobxiFBaXgXUvfdMbrY0NFLNf8dRi6g4FrkUlXwVTQGAXZS9bv55AQue31Hi2d7YCdszsrdBuwuG4yx7OBZhKznuD_ycx75ufoRXi8oVG7oUjGUhGongiZt90KtYgnuhLWoHiNO6eDjdHfbtZTTDVxspNEUTt1okC1MdeneatOcYHDB11_cjLIfcPkV1_ryYgAdksGUQEbeDD-8DvlHmBFmrXyygz3FWgV71_ftQ0jgw.kX0MTrLwlN-GYjm0.zVUJJUSQC85_U89KkkQFzfKvLMfKwDQGz_44t8fTofPeaKrIl1X5xnSe5b961VFL0khj0ZS261vhQ1XL03b51wLQEdJt6PZ_WztWVvuxHiHN2l5usAYdqnQmCs3cpaXRoks-2SeJ9O_NUgq0W79SV8rg6LpEZzNLbXDagsejHqSgUX_RUyYu8-EJOsIR2Jrwu8xcSIqJvg_vX-UkQOjcTetMo4Yi7xgsKsDtn6luUSKwj_iqTJQORZHnrRJyb7dHiROdr6s-xuaBLzKnJPpAZq9_VDxDMxEJ2fMcLuPZ0Wy5aUr3BIxKG39iMnZ8VFNJWio_sCEh1dLGFDlLM8Cx_qZGBQ4KVgVPO-ARwZdRHO_aM4aojsFYsIgQr7H2VT_GILjbKaNVuscmb0y6l_scFF_PEWUbzW10OepbwNIYsqNglLaQe5Xu5ehLNdk-dVk9jYEXz-YhRKhC_Jju3xv4Jy-kiEFSW9ZFzO3TxSPrPrGVEPywxsDiE9jBms3KS62r4QBjztN0uli3Bp2Gv4hulp6yZFuED2ZkFR3NcaUhW1bknQxDowDnFU2gCKS3L0WArfg5gJBeWQOvBveyNj9o3W7oyU8dyZrB7cYNDaTAGvcNnxwd9utQt8_5ESIisoTxzwQadTH-73PeFEYRgmsrFomraPv1hh4yYHzF_aiekY6EAhXbWOCYWxI28lZOywuYLNtH1_DZCZZMI6MLVGM1_K6aDGsRxZ2I5GwxV5GlcvIA3iyF-bjPt2kQZdLUfdFpC8x7JfsyuLq6enOO5g2nJSrYzchSqGePuRfjlTC_D_jy9vRHjPzHZXu6I9J4RqTUw1EB_8amNj_nbFl5MO4za6ASqkcTR0_WkH7z8vTx4l38wMIH-30FUxis-b0bNiBSJmtM5S9wi-YUFgYLhJf-kgbjskug7h5wUkxVuhrqTWpI_JTzeXJ_MMh5V5rNGGQ4ceWZ97WLFzuIYkrNRpZzL5zIAmV5fVLX7umbx48aZx24mLCzI6HA2SA3XBMIDf_5M1TRaPKFZNYp3wKZ7edBO0JJDV5yMF-p3j-YFjGSTyLyw2ZhELwpzse2D8E46guyIZ4KS93lsaHvkVyEy3Kc2YCgDoc1WBFCrSIqIUHIiKATFCupMVG-e-Oc0zRiuhGi4UdxI-7stEgClh_lGQT9bTt5bu9iso5bel46sb8EQAZn7dGKcjdFfMAqCYYgNRv_uHjVnxhGeLr04F2MBYg0560TmsLdfrtI8JIz_sCC5e6U1Od-zQy0bJak3PZuCkEdtJSAaHyOF6lStfApSBHYxvFCqbj630HVJu4nA1AFzgmQEdP-gWs.Yxay5tzonQJbXNa3JK40xQ'
+}
+orderDetails {
+  payerReference: '01770618575',
+  agreement_id: 'TokenizedMerchant02KN68S5E1616070460585',
+  grandOrderTotal: 298280,
+  totalQuantity: 3
+}
+addresses {
+  adminPaymentAddress: null,
+  billingAddress: {
+    id: '221',
+    firstName: 'bKash',
+    lastName: 'Dummy',
+    address: 'Dhaka',
+    country: 'Bangladesh',
+    phone: '01733341663',
+    postCode: '1212',
+    upazila_id: 6559,
+    zila_id: 2942,
+    division_id: 68
+  },
+  shippingAddress: {
+    id: '221',
+    firstName: 'bKash',
+    lastName: 'Dhaka',
+    address: 'Dhaka',
+    country: 'Bangladesh',
+    phone: '01733341663',
+    postCode: '1212',
+    upazila_id: 6559,
+    zila_id: 2942,
+    division_id: 68
+  }
+}
+headers-postBody {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+} {
+  agreementID: 'TokenizedMerchant02KN68S5E1616070460585',
+  mode: '0001',
+  payerReference: '01770618575',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20',
+  amount: 298280,
+  currency: 'BDT',
+  intent: 'sale',
+  merchantInvoiceNumber: 20
+}
+bKashCreatePayment-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+}
+bKashCreatePayment-postBody {
+  agreementID: 'TokenizedMerchant02KN68S5E1616070460585',
+  mode: '0001',
+  payerReference: '01770618575',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20',
+  amount: 298280,
+  currency: 'BDT',
+  intent: 'sale',
+  merchantInvoiceNumber: 20
+}
+bKashCreatePayment-response {
+  statusCode: '0000',
+  statusMessage: 'Successful',
+  paymentID: 'TR0001PZ1616071661408',
+  bkashURL: 'https://sandbox.payment.bkash.com/redirect/tokenized/?paymentID=TR0001PZ1616071661408&hash=lghpKFrk(o_R84EUZn3IfruDMu3e_nhYYz2)*giQ-k7GDGKiJE9N.QbnAcfJqmdLvlTth.4V4d.Q5MmB.76NU760)GP3srYADO9U1616071661477&mode=0001&apiVersion=v1.2.0-beta',
+  callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20',
+  successCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=success',
+  failureCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=failure',
+  cancelledCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=cancel',
+  amount: '298280',
+  intent: 'sale',
+  currency: 'BDT',
+  agreementID: 'TokenizedMerchant02KN68S5E1616070460585',
+  paymentCreateTime: '2021-03-18T18:47:41:477 GMT+0600',
+  transactionStatus: 'Initiated',
+  merchantInvoiceNumber: '20'
+}
+paymentCallback
+{
+  paymentID: 'TR0001PZ1616071661408',
+  status: 'success',
+  apiVersion: '1.2.0-beta'
+}
+transactionLog RowDataPacket {
+  createdAt: 2021-03-18T12:47:41.000Z,
+  updatedAt: 2021-03-18T12:47:42.000Z,
+  deletedAt: null,
+  id: 20,
+  details: '{"id_token":"eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ","payerReference":"01770618575","agreement_id":"TokenizedMerchant02KN68S5E1616070460585","billingAddressId":"221","shippingAddressId":"221","bKashResponse":{"statusCode":"0000","statusMessage":"Successful","paymentID":"TR0001PZ1616071661408","bkashURL":"https://sandbox.payment.bkash.com/redirect/tokenized/?paymentID=TR0001PZ1616071661408&hash=lghpKFrk(o_R84EUZn3IfruDMu3e_nhYYz2)*giQ-k7GDGKiJE9N.QbnAcfJqmdLvlTth.4V4d.Q5MmB.76NU760)GP3srYADO9U1616071661477&mode=0001&apiVersion=v1.2.0-beta","callbackURL":"http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20","successCallbackURL":"http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=success","failureCallbackURL":"http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=failure","cancelledCallbackURL":"http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=cancel","amount":"298280","intent":"sale","currency":"BDT","agreementID":"TokenizedMerchant02KN68S5E1616070460585","paymentCreateTime":"2021-03-18T18:47:41:477 GMT+0600","transactionStatus":"Initiated","merchantInvoiceNumber":"20"}}',
+  payment_type: 'bKash',
+  payment_amount: 298280,
+  payment_date: 2021-03-18T12:47:41.000Z,
+  status: 2,
+  user_id: 1797,
+  order_id: null
+}
+transactionDetails {
+  id_token: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  payerReference: '01770618575',
+  agreement_id: 'TokenizedMerchant02KN68S5E1616070460585',
+  billingAddressId: '221',
+  shippingAddressId: '221',
+  bKashResponse: {
+    statusCode: '0000',
+    statusMessage: 'Successful',
+    paymentID: 'TR0001PZ1616071661408',
+    bkashURL: 'https://sandbox.payment.bkash.com/redirect/tokenized/?paymentID=TR0001PZ1616071661408&hash=lghpKFrk(o_R84EUZn3IfruDMu3e_nhYYz2)*giQ-k7GDGKiJE9N.QbnAcfJqmdLvlTth.4V4d.Q5MmB.76NU760)GP3srYADO9U1616071661477&mode=0001&apiVersion=v1.2.0-beta',
+    callbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20',
+    successCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=success',
+    failureCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=failure',
+    cancelledCallbackURL: 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/1797/20?paymentID=TR0001PZ1616071661408&status=cancel',
+    amount: '298280',
+    intent: 'sale',
+    currency: 'BDT',
+    agreementID: 'TokenizedMerchant02KN68S5E1616070460585',
+    paymentCreateTime: '2021-03-18T18:47:41:477 GMT+0600',
+    transactionStatus: 'Initiated',
+    merchantInvoiceNumber: '20'
+  }
+}
+headers-postBody {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+} { paymentID: 'TR0001PZ1616071661408' }
+bKashExecutePayment-headers {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  Authorization: 'eyJraWQiOiJvTVJzNU9ZY0wrUnRXQ2o3ZEJtdlc5VDBEcytrckw5M1NzY0VqUzlERXVzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJlODNlMDkwMC1jY2ZmLTQzYTctODhiNy0wNjE5NDJkMTVmOTYiLCJhdWQiOiI0ZjZvMGNqaWtpMnJmbTM0a2ZkYWRsMWVxcSIsImV2ZW50X2lkIjoiMDI4YTllMmEtNDU2Zi00MWJiLWE0NTAtYjE1Y2RlZjA0MzM4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MTYwNzE2NjEsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMS5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMV9yYTNuUFkzSlMiLCJjb2duaXRvOnVzZXJuYW1lIjoic2FuZGJveFRva2VuaXplZFVzZXIwMiIsImV4cCI6MTYxNjA3NTI2MSwiaWF0IjoxNjE2MDcxNjYxfQ.uPfL3fhDJ7m0rjm3wyqfhHD4jcco6Sp8S5ZQI1s67anK05TQWJpSJ5JSsU218wJHkl2K5akCq7PNxxefHrv9tess-kOVOsn8aAcBi2Ij7LPb0KWaNFyYtfpBlSvxj5DEClK_w0_0-BUW8AEo0BSvi03QP7fLFGJ_eigC5lYFUyjrN3ChDIqY9SIxrWdMiweSJaM_lysp9C9dwmNAg16rDO5lC1Da2asAZshdpmHHBpDXaPP88S13xKTrdTAv5qm_0LlhETp4nC6PTDEMjEgsLfHnuRp74JRKlBfidRlQZtoVwDL-SjVKzCEWj0KxH5ODb5mQc8YfL05f5skTOtGmpQ',
+  'X-APP-Key': '4f6o0cjiki2rfm34kfdadl1eqq'
+}
+bKashExecutePayment-postBody { paymentID: 'TR0001PZ1616071661408' }
+bKashExecutePayment-response { statusCode: '2023', statusMessage: 'Insufficient Balance' }
+{ populate: 'false' }
