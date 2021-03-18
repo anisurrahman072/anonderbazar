@@ -85,6 +85,8 @@ module.exports = {
       );
       res.end();
    */
+    console.log('post_body', post_body);
+
     const sslResponse = await sslcommerz.init_transaction(post_body);
     console.log('sslcommerz.init_transaction success', sslResponse);
     /**
