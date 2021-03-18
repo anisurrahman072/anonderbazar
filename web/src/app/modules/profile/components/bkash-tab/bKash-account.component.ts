@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from "@angular/core";
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {UserService} from "../../../../services";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
@@ -21,6 +21,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     canAddAgreement: boolean = false;
 
     constructor(
+        private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
         private bkashService: BkashService,
         private router: Router,
@@ -47,14 +48,19 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
             this._spinning = false;
         })
     }
+
     ngAfterViewInit() {
-        let queryParams = this.route.snapshot.queryParams;
-        if (queryParams['bKashError']) {
-            this.toastService.error(queryParams['bKashError'], 'Oppss!');
-        } else if(queryParams['bKashSuccess']){
-            this.toastService.success(queryParams['bKashSuccess'], 'Success');
-        }
+        setTimeout(() => {
+            let queryParams = this.route.snapshot.queryParams;
+            if (queryParams['bKashError']) {
+                this.toastService.error(queryParams['bKashError'], 'Oppss!');
+            } else if (queryParams['bKashSuccess']) {
+                this.toastService.success(queryParams['bKashSuccess'], 'Success');
+            }
+            this.cdr.detectChanges();
+        }, 500);
     }
+
     ngOnDestroy() {
     }
 

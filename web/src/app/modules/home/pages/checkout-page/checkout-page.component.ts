@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
@@ -89,20 +89,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     showBKashAgreementTerm: boolean = false;
     agreedToBKashTermsConditions: boolean = false;
 
-    constructor(private route: ActivatedRoute,
-                private router: Router,
-                private areaService: AreaService,
-                private authService: AuthService,
-                private fb: FormBuilder,
-                private orderService: OrderService,
-                private PaymentAddressService: PaymentAddressService,
-                private store: Store<fromStore.HomeState>,
-                private cartItemService: CartItemService,
-                private cartService: CartService,
-                private toastr: ToastrService,
-                private modalService: BsModalService,
-                private bKashService: BkashService,
-                public loaderService: LoaderService) {
+    constructor(
+        private cdr: ChangeDetectorRef,
+        private route: ActivatedRoute,
+        private router: Router,
+        private areaService: AreaService,
+        private authService: AuthService,
+        private fb: FormBuilder,
+        private orderService: OrderService,
+        private PaymentAddressService: PaymentAddressService,
+        private store: Store<fromStore.HomeState>,
+        private cartItemService: CartItemService,
+        private cartService: CartService,
+        private toastr: ToastrService,
+        private modalService: BsModalService,
+        private bKashService: BkashService,
+        public loaderService: LoaderService) {
 
     }
 
@@ -217,12 +219,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ngAfterViewInit() {
         this.loaderService.hideLoader();
+
         let queryParams = this.route.snapshot.queryParams;
 
         if (queryParams['order']) {
             this.successOrderId = queryParams['order'];
         } else if (queryParams['bKashError']) {
-            this.toastr.error(queryParams['bKashError'], 'Oppss!');
+            setTimeout(() => {
+                this.toastr.error(queryParams['bKashError'], 'Oppss!');
+                this.cdr.detectChanges();
+            }, 500);
         } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
