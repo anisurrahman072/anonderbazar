@@ -65,14 +65,14 @@ module.exports = {
 
     post_body['emi_option'] = 0;
     post_body['cus_name'] = authUser.first_name + ' ' + authUser.last_name;
-    post_body['cus_email'] = authUser.email;
+    post_body['cus_email'] = authUser.email ? authUser.email : '';
     post_body['cus_phone'] = authUser.phone;
     post_body['cus_postcode'] = finalPostalCode ? finalPostalCode : '1212';
     post_body['cus_add1'] = finalAddress ? finalAddress : 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1';
     post_body['cus_city'] = 'Dhaka';
     post_body['cus_country'] = 'Bangladesh';
     post_body['shipping_method'] = 'NO';
-    // post_body['multi_card_name'] = ""
+
     post_body['num_of_item'] = totalQuantity;
     post_body['product_name'] = 'Test';
     post_body['product_category'] = 'Anonder Bazar';
@@ -87,6 +87,14 @@ module.exports = {
    */
     const sslResponse = await sslcommerz.init_transaction(post_body);
     console.log('sslcommerz.init_transaction success', sslResponse);
+    /**
+     * status: 'FAILED',
+     failedreason: "Invalid Information! 'cus_email' is missing or empty.",
+
+     */
+    if(sslResponse && sslResponse.status === 'FAILED'){
+      throw new Error(sslResponse.failedreason);
+    }
     return sslResponse;
   },
   createBKashPayment: async (authUser, orderDetails, addresses) => {

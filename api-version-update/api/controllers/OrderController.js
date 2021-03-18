@@ -445,7 +445,6 @@ module.exports = {
       let adminPaymentAddress = null;
 
 
-
       /** .................Shipping Address.................... */
 
       if (!noShippingCharge) {
@@ -546,7 +545,10 @@ module.exports = {
 
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.status(400).json({message: 'There was a problem in processing the order.', finalError});
+      return res.status(400).json({
+        message: 'There was a problem in processing the order.',
+        additionalMessage: finalError.message
+      });
     }
   },
 

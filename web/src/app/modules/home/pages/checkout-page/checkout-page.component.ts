@@ -111,9 +111,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         if (queryParams['order']) {
             this.successOrderId = queryParams['order'];
-        } else if(queryParams['bKashError']){
+        } else if (queryParams['bKashError']) {
             this.toastr.error('Problem in processing the bKash Payment', 'Oppss!');
-        }  else if(queryParams['bkashURL']){
+        } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
 
@@ -145,7 +145,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             //PaymentType
             paymentType: ['SSLCommerce', []]
         });
-
 
 
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
@@ -411,11 +410,13 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 // this._progress.complete("mainLoader");
                 console.log('result-SSLCommerce', result);
                 this.loaderService.hideLoader();
-                this.store.dispatch(new fromStore.LoadCart());
-                window.location.href = result.GatewayPageURL;
+                if (result && result.GatewayPageURL) {
+                    this.store.dispatch(new fromStore.LoadCart());
+                    window.location.href = result.GatewayPageURL;
+                }
             }, (error) => {
                 this.loaderService.hideLoader();
-                console.log('sslcommerzInsert', error);
+                console.log('sslcommerz error', error);
                 if (error && error.error) {
                     this.toastr.error(error.error, "Problem", {
                         positionClass: 'toast-bottom-right'
@@ -533,7 +534,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         this.orderService.placeOrder(requestPayload).subscribe(result => {
             this.loaderService.hideLoader();
             // this.store.dispatch(new fromStore.LoadCart());
-            if(result && result.bkashURL){
+            if (result && result.bkashURL) {
                 window.location.href = result.bkashURL;
             } else {
                 this.toastr.error("Problem in placing your order.", "Problem", {
