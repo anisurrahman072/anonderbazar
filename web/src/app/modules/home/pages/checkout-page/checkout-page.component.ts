@@ -86,6 +86,8 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     authUserWallets: any;
     bKashWalletNumber: string;
 
+    showBKashAgreementTerm: boolean = false;
+    agreedToBKashTermsConditions: boolean = false;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -112,7 +114,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         if (queryParams['order']) {
             this.successOrderId = queryParams['order'];
         } else if (queryParams['bKashError']) {
-            this.toastr.error('Problem in processing the bKash Payment', 'Oppss!');
+            this.toastr.error(queryParams['bKashError'], 'Oppss!');
         } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
@@ -220,6 +222,11 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         */
     }
 
+    onAgreedToBKashTerms(event: any){
+        console.log('onAgreedToBKashTerms', event);
+        this.agreedToBKashTermsConditions = event;
+
+    }
     // Method for update cart
     updateCartItem(cartItem, action) {
 

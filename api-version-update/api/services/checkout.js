@@ -1,8 +1,7 @@
 const moment = require('moment');
 const _ = require('lodash');
-const {bKashCreateAgreement} = require('./bKash');
 const {calcCartTotal} = require('../../libs/helper');
-const {bKashCreatePayment, bKashGrandToken} = require('./bKash');
+const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
 const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
@@ -171,7 +170,7 @@ module.exports = {
         'agreementID': agreement_id,
         'mode': '0001',
         'payerReference': payerReference,
-        'callbackURL': 'http://api.test.anonderbazar.com/api/v1/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
+        'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
         'amount': grandOrderTotal,
         'currency': 'BDT',
         'intent': 'sale',
@@ -227,7 +226,7 @@ module.exports = {
       throw new Error('Invalid Payment Reference');
     }
 
-    const callbackURL = 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback-checkout/' + authUser.id;
+    const callbackURL = sslApiUrl + '/bkash-payment/agreement-callback-checkout/' + authUser.id;
 
     let bKashAgreementCreateResponse = await bKashCreateAgreement(tokenRes.id_token, authUser.id, payerReference, callbackURL);
 

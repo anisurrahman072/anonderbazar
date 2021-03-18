@@ -8,9 +8,8 @@
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {calcCartTotal} = require('../../libs/helper');
-const {createBKashPayment} = require('../services/checkout');
-const {sslWebUrl, dhakaZilaId} = require('../../config/softbd');
-const {createOrder} = require('../services/checkout');
+const {sslWebUrl, sslApiUrl, dhakaZilaId} = require('../../config/softbd');
+const {createOrder, createBKashPayment} = require('../services/checkout');
 const {
   bKashGrandToken,
   bKashCreateAgreement,
@@ -58,7 +57,7 @@ module.exports = {
     try {
 
       const authUser = req.token.userInfo;
-      const callbackURL = 'http://api.test.anonderbazar.com/api/v1/bkash-payment/agreement-callback/' + authUser.id;
+      const callbackURL = sslApiUrl + '/bkash-payment/agreement-callback/' + authUser.id;
 
       let tokenRes = await bKashCreateAgreement(req.query.id_token, authUser.id, req.query.wallet_no, callbackURL);
 
@@ -90,7 +89,14 @@ module.exports = {
     let customer = await User.findOne({id: req.param('id'), deletedAt: null});
 
     if (!customer) {
-      return res.status(422).json({message: 'Customer was not found!'});
+
+      res.writeHead(301, {
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Invalid Request! Customer was not found!')
+      });
+
+      res.end();
+
+      return;
     }
 
     try {
@@ -101,9 +107,14 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length === 1)) {
-        return res.status(422).json({
-          message: 'Invalid Request'
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Invalid Request!')
         });
+
+        res.end();
+
+        return;
       }
 
       const userWallet = userWallets[0];
@@ -121,7 +132,7 @@ module.exports = {
 
         const bKashResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
 
-        console.log('bKashResponse', bKashResponse);
+        console.log('bKashExecuteAgreement-bKashResponse', bKashResponse);
 
         if (bKashResponse.agreementStatus === 'Completed' && bKashResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
@@ -135,7 +146,7 @@ module.exports = {
         }
 
         res.writeHead(301, {
-          Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
+          Location: sslWebUrl + '/profile/bkash-accounts?bKashSuccess=' + encodeURIComponent('bKash Payment Agreement Successfully Created!')
         });
 
         res.end();
@@ -149,7 +160,7 @@ module.exports = {
       });
 
       res.writeHead(301, {
-        Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Problem in generating bKash Payment Agreement')
       });
 
       res.end();
@@ -157,7 +168,7 @@ module.exports = {
     } catch (error) {
       console.log(error);
       res.writeHead(301, {
-        Location: 'http://test.anonderbazar.com/profile/bkash-accounts'
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Problem in generating bKash Payment Agreement')
       });
       res.end();
     }
@@ -168,7 +179,12 @@ module.exports = {
     console.log(req.query);
 
     if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
-      return res.badRequest('Invalid order request');
+
+      res.writeHead(301, {
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid request')
+      });
+      res.end();
+      return;
     }
 
     try {
@@ -178,13 +194,22 @@ module.exports = {
       });
 
       if (!globalConfigs) {
-        return res.status(422).json({message: 'Global config was not found!'});
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
+        });
+        res.end();
+        return;
       }
 
       let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
 
       if (!customer) {
-        return res.status(422).json({message: 'Customer was not found!'});
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Customer was not found!')
+        });
+        res.end();
+        return;
       }
 
       const transactionLog = await PaymentTransactionLog.findOne({
@@ -197,7 +222,11 @@ module.exports = {
 
       // eslint-disable-next-line eqeqeq
       if (!(transactionLog && transactionLog.id && transactionLog.status == 2)) {
-        return res.status(422).json({message: 'Invalid order request!'});
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid order request!')
+        });
+        res.end();
+        return;
       }
 
       const transactionDetails = JSON.parse(transactionLog.details);
@@ -206,7 +235,11 @@ module.exports = {
 
       if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference &&
         transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
-        return res.status(422).json({message: 'Invalid order request!'});
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid order request!')
+        });
+        res.end();
+        return;
       }
 
       if (req.query.status === 'success') {
@@ -331,8 +364,11 @@ module.exports = {
           })
         });
 
-        return res.status(422).json({message: 'There was a problem in processing the order.'});
-
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+        });
+        res.end();
+        return;
       }
 
       await PaymentTransactionLog.updateOne({
@@ -348,11 +384,18 @@ module.exports = {
         })
       });
 
-      return res.status(422).json({message: 'There was a problem in processing the order.'});
+      res.writeHead(301, {
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+      });
+      res.end();
 
     } catch (error) {
       console.log(error);
-      return res.status(400).json({message: 'There was a problem in processing the order.'});
+
+      res.writeHead(301, {
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+      });
+      res.end();
     }
 
   },
@@ -368,13 +411,23 @@ module.exports = {
       });
 
       if (!globalConfigs) {
-        return res.status(422).json({message: 'Global config was not found!'});
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
+        });
+        res.end();
+        return;
       }
 
       let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
 
       if (!customer) {
-        return res.status(422).json({message: 'Customer was not found!'});
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Customer was not found!')
+        });
+        res.end();
+        return;
       }
 
       let cart = await Cart.findOne({
@@ -402,9 +455,12 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length === 1)) {
-        return res.status(422).json({
-          message: 'Invalid Request'
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
         });
+        res.end();
+        return;
       }
 
       const userWallet = userWallets[0];
@@ -412,18 +468,23 @@ module.exports = {
       userWallet.full_response = JSON.parse(userWallet.full_response);
 
       if (!(userWallet.full_response.id_token && userWallet.full_response.billingAddressId && userWallet.full_response.shippingAddressId)) {
-        return res.status(422).json({
-          message: 'Invalid Request'
+
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
         });
+        res.end();
+        return;
       }
 
       const billingAddress = await PaymentAddress.findOne({id: userWallet.full_response.billingAddressId});
       const shippingAddress = await PaymentAddress.findOne({id: userWallet.full_response.shippingAddressId});
 
       if (!(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id)) {
-        return res.status(422).json({
-          message: 'Invalid Request'
+        res.writeHead(301, {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
         });
+        res.end();
+        return;
       }
 
       let noShippingCharge = false;
@@ -477,7 +538,7 @@ module.exports = {
           });
 
           res.writeHead(301, {
-            Location: 'http://test.anonderbazar.com/checkout?bkashURL=' + encodeURIComponent(bKashPaymentResponse.bkashURL)
+            Location: sslWebUrl + '/checkout?bkashURL=' + encodeURIComponent(bKashPaymentResponse.bkashURL)
           });
 
           res.end();
@@ -506,15 +567,14 @@ module.exports = {
       }
 
       res.writeHead(301, {
-        Location: 'http://test.anonderbazar.com/checkout?bKashError=1'
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')
       });
-
       res.end();
 
     } catch (error) {
       console.log(error);
       res.writeHead(301, {
-        Location: 'http://test.anonderbazar.com/checkout?bKashError=1'
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')
       });
       res.end();
     }

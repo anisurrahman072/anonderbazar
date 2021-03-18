@@ -541,7 +541,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" style="color: #444444;">
         <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
             <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
                 <a (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)"
@@ -549,7 +549,7 @@
             </li>
         </ul>
         <ng-template #noWalletTemplate>
-            <div class="row">
+            <div class="row" *ngIf="!showBKashAgreementTerm; else bKashTermsTemplate">
                 <div class="col-md-12">
                     <p class="text-center">Enter your bKash Wallet Number and Proceed with Payment</p>
                 </div>
@@ -562,14 +562,53 @@
                 </div>
                 <div class="col-md-4">
                     <button style="position: relative; top: 36px;" type="button"
-                            (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">
-                        Proceed with bKash
+                            (click)="showBKashAgreementTerm = true" class="btn btn-primary">
+                        Add
                     </button>
                 </div>
             </div>
+            <ng-template #bKashTermsTemplate>
+                <div class="col-md-12">
+                    <h4>Terms & Conditions</h4>
+                    <ul class="termsList">
+                        <li>
+                            By enabling this option, you are allowing bKash to remember your bKash Account against your
+                            customer account maintained with this merchant.
+                        </li>
+                        <li>
+                            During your subsequent transactions from your customer account maintained with this
+                            merchant, you will not be required to enter your bKash Account Number. Your bKash Account
+                            Number will be automatically set by bKash. You only need to enter PIN to authorize the
+                            transaction.
+                        </li>
+                        <li>
+                            Through this process merchant is not receiving your bKash Account information.
+                        </li>
+                        <li>
+                            If you experience any problem, please contact the customer support of bKash on 16247.
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-check" style="margin-top: 20px; margin-bottom: 20px;">
+                        <input id="bKash_terms_condition_checkbox" type="checkbox" class="form-check-input"
+                               [(ngModel)]="agreedToBKashTermsConditions"
+                               (ngModelChange)="onAgreedToBKashTerms($event)">
+                        <label class="form-check-label" for="bKash_terms_condition_checkbox">I agree to the above
+                            mentioned Terms & Conditions</label>
+                    </div>
+                </div>
+            </ng-template>
         </ng-template>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" (click)="bKashWalletModalRef.hide()">Cancel</button>
+        <div class="btn-group pull-right" role="group" aria-label="First group">
+            <button type="button" [disabled]="!agreedToBKashTermsConditions"
+                    (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">
+                Proceed with bKash
+            </button>
+            <button type="button" class="btn btn-default" (click)="bKashWalletModalRef.hide()">Cancel
+            </button>
+        </div>
     </div>
 </ng-template>

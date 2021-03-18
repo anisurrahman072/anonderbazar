@@ -12,10 +12,17 @@ module.exports = {
   //Method called when sslCommerzSuccess from frontend
   sslCommerzSuccess: async function (req, res) {
 
-    console.log('sslcommerzsuccess', req.body);
+    console.log('################ sslcommerz success', req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
-      return res.badRequest('Invalid order request');
+
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
+        }
+      );
+      res.end();
+      return;
     }
 
     let globalConfigs = await GlobalConfigs.findOne({
@@ -23,7 +30,13 @@ module.exports = {
     });
 
     if (!globalConfigs) {
-      return res.badRequest('Global config was not found!');
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
+        }
+      );
+      res.end();
+      return;
     }
 
     try {
@@ -33,7 +46,14 @@ module.exports = {
       console.log('validationResponse', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
-        return res.badRequest('Invalid order request');
+
+        res.writeHead(301,
+          {
+            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('SSL Commerz Payment Validation Failed!')
+          }
+        );
+        res.end();
+        return;
       }
 
       const numberOfOrderFound = await Order.count().where({
@@ -41,7 +61,13 @@ module.exports = {
       });
 
       if (numberOfOrderFound > 0) {
-        return res.badRequest('Invalid request');
+        res.writeHead(301,
+          {
+            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('SSL Commerz Payment Validation Failed!')
+          }
+        );
+        res.end();
+        return;
       }
 
       const paidAmount = parseFloat(validationResponse.amount);
@@ -49,7 +75,14 @@ module.exports = {
       let user = await User.findOne({id: req.query.user_id, deletedAt: null});
 
       if (!user) {
-        return res.badRequest('User was not found!');
+
+        res.writeHead(301,
+          {
+            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request! Customer was not found!')
+          }
+        );
+        res.end();
+        return;
       }
 
       const {
@@ -93,8 +126,8 @@ module.exports = {
           };
         });
 
-
       try {
+
         let smsPhone = user.phone;
 
         if (!noShippingCharge && shippingAddress.phone) {
@@ -128,14 +161,21 @@ module.exports = {
       let d = Object.assign({}, order);
       d.suborders = subordersTemp;
       res.writeHead(301,
-        {Location: sslWebUrl + '/checkout?order=' + order.id}
+        {
+          Location: sslWebUrl + '/checkout?order=' + order.id
+        }
       );
       res.end();
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.status(400).json({message: 'There was a problem in processing the order.'});
-    }
 
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Sorry! There was a problem in processing the order.')
+        }
+      );
+      res.end();
+    }
   },
   //Method called when sslCommerzFail fails sends redirectory route
   sslCommerzFailure: function (req, res) {

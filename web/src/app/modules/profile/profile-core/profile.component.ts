@@ -4,7 +4,7 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {User} from "../../../models/";
 import {AuthService, FavouriteProductService, UserService} from "../../../services";
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
 import {NotificationsService} from "angular2-notifications";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
@@ -61,10 +61,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
     ImageFileEdit: any[] = [];
     ImageFile: File;
 
-    /*
-    * constructor for ProfileComponent
-    */
     constructor(
+        private route: ActivatedRoute,
         private store: Store<fromStore.HomeState>,
         private authService: AuthService,
         private paymentAddressService: PaymentAddressService,
@@ -74,6 +72,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         private favouriteProductService: FavouriteProductService,
         public loaderService: LoaderService,
         private toastService: ToastrService,
+
     ) {
         this.options = [
             {
@@ -121,6 +120,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
     }
     //init the component
     ngOnInit(): void {
+
         this.isDisabled = true;
         this.isDashboard = true;
         this.isOrder = false;

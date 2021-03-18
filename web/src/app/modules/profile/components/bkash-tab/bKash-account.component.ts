@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {UserService} from "../../../../services";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
 import {ToastrService} from "ngx-toastr";
 import {BkashService} from "../../../../services/bkash.service";
@@ -21,6 +21,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
     canAddAgreement: boolean = false;
 
     constructor(
+        private route: ActivatedRoute,
         private bkashService: BkashService,
         private router: Router,
         private userService: UserService,
@@ -31,6 +32,12 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        let queryParams = this.route.snapshot.queryParams;
+        if (queryParams['bKashError']) {
+            this.toastService.error(queryParams['bKashError'], 'Oppss!');
+        } else if(queryParams['bKashSuccess']){
+            this.toastService.success(queryParams['bKashSuccess'], 'Success');
+        }
 
         this._spinning = true;
         this.bkashService.generateGrandToken().subscribe((res: any) => {
@@ -42,6 +49,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
             this._spinning = false;
         }, (err) => {
             console.log(err);
+            this.toastService.error('Problem in generating bKash Grand Token', 'Oppss!');
             this._spinning = false;
         })
     }
@@ -66,6 +74,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy {
                 console.log(err);
                 this._spinning = false;
                 this.isSubmitting = false;
+                this.toastService.error('Problem in generating bKash Payment Agreement', 'Oppss!');
             })
     }
 }
