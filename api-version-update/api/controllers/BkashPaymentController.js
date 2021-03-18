@@ -9,7 +9,7 @@ const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {calcCartTotal} = require('../../libs/helper');
 const {createBKashPayment} = require('../services/checkout');
-const {sslWebUrl} = require('../../config/softbd');
+const {sslWebUrl, dhakaZilaId} = require('../../config/softbd');
 const {createOrder} = require('../services/checkout');
 const {
   bKashGrandToken,
@@ -172,6 +172,7 @@ module.exports = {
     }
 
     try {
+
       let globalConfigs = await GlobalConfigs.findOne({
         deletedAt: null
       });
@@ -203,7 +204,8 @@ module.exports = {
 
       console.log('transactionDetails', transactionDetails);
 
-      if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference && transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
+      if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference &&
+        transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
         return res.status(422).json({message: 'Invalid order request!'});
       }
 
@@ -212,7 +214,7 @@ module.exports = {
           paymentID: req.query.paymentID
         });
 
-        console.log('bKashResponse', bKashResponse);
+        console.log('bKashExecutePayment-bKashResponse', bKashResponse);
 
         if (bKashResponse && bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Completed') {
 
@@ -356,10 +358,18 @@ module.exports = {
   },
   agreementCallbackCheckout: async (req, res) => {
 
-    console.log('agreementCallbackCheckout');
+    console.log('############################## agreementCallbackCheckout ################################ ');
     console.log(req.query);
 
     try {
+
+      let globalConfigs = await GlobalConfigs.findOne({
+        deletedAt: null
+      });
+
+      if (!globalConfigs) {
+        return res.status(422).json({message: 'Global config was not found!'});
+      }
 
       let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
 
@@ -410,10 +420,24 @@ module.exports = {
       const billingAddress = await PaymentAddress.findOne({id: userWallet.full_response.billingAddressId});
       const shippingAddress = await PaymentAddress.findOne({id: userWallet.full_response.shippingAddressId});
 
-      if( !(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id) ){
+      if (!(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id)) {
         return res.status(422).json({
           message: 'Invalid Request'
         });
+      }
+
+      let noShippingCharge = false;
+      if (cartItems && cartItems.length > 0) {
+        const couponProductFound = cartItems.filter((cartItem) => {
+          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+        });
+        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
+      }
+
+      if (!noShippingCharge) {
+        // eslint-disable-next-line eqeqeq
+        let shippingCharge = shippingAddress.zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+        grandOrderTotal += shippingCharge;
       }
 
       if (req.query.status === 'success') {
@@ -427,7 +451,7 @@ module.exports = {
 
         const bKashExecAgreementResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
 
-        console.log('bKashExeAgreementResponse', bKashExecAgreementResponse);
+        console.log('bKashExecuteAgreement - response', bKashExecAgreementResponse);
 
         if (bKashExecAgreementResponse.agreementStatus === 'Completed' && bKashExecAgreementResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({

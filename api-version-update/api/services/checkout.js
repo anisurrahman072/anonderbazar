@@ -9,6 +9,7 @@ const {sslcommerzInstance} = require('../../libs/sslcommerz');
 module.exports = {
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
+    console.log('################# placeSSlCommerzOrder ##################### ');
     const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
     const {grandOrderTotal, totalQuantity} = orderDetails;
     const sslcommerz = sslcommerzInstance(globalConfigs);
@@ -94,12 +95,14 @@ module.exports = {
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
 
      */
-    if(sslResponse && sslResponse.status === 'FAILED'){
+    if (sslResponse && sslResponse.status === 'FAILED') {
       throw new Error(sslResponse.failedreason);
     }
     return sslResponse;
   },
   createBKashPayment: async (authUser, orderDetails, addresses) => {
+    console.log('################# createBKashPayment ##################### ');
+
     const {
       payerReference,
       agreement_id,
@@ -113,9 +116,6 @@ module.exports = {
     } = addresses;
 
     let tokenRes = await bKashGrandToken();
-
-    console.log('billingAddress', billingAddress);
-    console.log('shippingAddress', shippingAddress);
 
     let finalBillingAddressId = null;
     let finalShippingAddressId = null;
@@ -136,6 +136,9 @@ module.exports = {
       throw new Error('Invalid Request');
     }
 
+    console.log('orderDetails', orderDetails);
+    console.log('addresses', addresses);
+
     if (agreement_id) {
       const userWallets = await BkashCustomerWallet.find({
         user_id: authUser.id,
@@ -146,7 +149,7 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length > 0)) {
-        throw new Error('Invalid Request');
+        throw new Error('No bKash Wallet found with the provided agreementID');
       }
 
       const paymentTransactionLog = await PaymentTransactionLog.create({
@@ -177,7 +180,7 @@ module.exports = {
 
       const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
 
-      console.log('bKashResponse', bKashResponse);
+      console.log('bKashCreatePayment-response', bKashResponse);
 
       if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
         await PaymentTransactionLog.updateOne({
@@ -228,7 +231,7 @@ module.exports = {
 
     let bKashAgreementCreateResponse = await bKashCreateAgreement(tokenRes.id_token, authUser.id, payerReference, callbackURL);
 
-    console.log('bKashAgreementResponse', bKashAgreementCreateResponse);
+    console.log('bKashAgreementCreateResponse', bKashAgreementCreateResponse);
 
     if (bKashAgreementCreateResponse.statusMessage === 'Successful' && bKashAgreementCreateResponse.agreementStatus === 'Initiated') {
       await BkashCustomerWallet.create({
@@ -309,7 +312,7 @@ module.exports = {
     console.log('paidAmount', paidAmount);
     console.log('grandOrderTotal', grandOrderTotal);
 
-    if (paidAmount != grandOrderTotal) {
+    if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
       throw new Error('Paid amount and order amount are different.');
     }
 
