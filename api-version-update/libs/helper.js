@@ -1,4 +1,28 @@
+const fetch = require('node-fetch');
 const {devEnv, bKash} = require('../config/softbd');
+
+exports.bKashModeConfigKey = function () {
+  let bKashModeConfigKey = 'production';
+  if (bKash.isSandboxMode) {
+    bKashModeConfigKey = 'sandbox';
+  }
+  return bKashModeConfigKey;
+};
+
+exports.fetchWithTimeout = async function (resource, options) {
+  const {timeout = 30000} = options;
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal
+  });
+  clearTimeout(id);
+
+  return response;
+};
 
 const asyncForEach = async (array, callback) => {
   if (array && Array.isArray(array) && array.length > 0) {
@@ -137,14 +161,6 @@ exports.comparePasswords = (passwordProvided, userPassword) => {
       }
     });
   });
-};
-
-exports.bKashModeConfigKey = function () {
-  let bKashModeConfigKey = 'production';
-  if (bKash.isSandboxMode) {
-    bKashModeConfigKey = 'sandbox';
-  }
-  return bKashModeConfigKey;
 };
 
 exports.getContentTypeByFile = function (fileName) {

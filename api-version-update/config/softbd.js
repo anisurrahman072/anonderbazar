@@ -38,12 +38,14 @@ module.exports = {
       'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
       'payment_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
       'payment_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
+      'payment_query': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/payment/status',
+      'transaction_search': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/general/searchTransaction',
     },
     'sandbox': {
-      'app_key': '7epj60ddf7id0chhcm3vkejtab',
-      'app_secret': '18mvi27h9l38dtdv110rq5g603blk0fhh5hg46gfb27cp2rbs66f',
-      'username': 'sandboxTokenizedUser01',
-      'password': 'sandboxTokenizedUser12345',
+      'app_key': '4f6o0cjiki2rfm34kfdadl1eqq',
+      'app_secret': '2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b',
+      'username': 'sandboxTokenizedUser02',
+      'password': 'sandboxTokenizedUser02@12345',
       'script': 'https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js',
       'token_grant_url': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/token/grant',
       'agreement_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
@@ -52,6 +54,8 @@ module.exports = {
       'agreement_cancel': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/agreement/cancel',
       'payment_create': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/create',
       'payment_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
+      'payment_query': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/payment/status',
+      'transaction_search': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/general/searchTransaction',
     }
   }
 };

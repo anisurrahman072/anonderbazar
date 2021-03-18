@@ -1,5 +1,7 @@
 const moment = require('moment');
 const _ = require('lodash');
+const EmailService = require('./EmailService');
+const SmsService = require('./SmsService');
 const {calcCartTotal} = require('../../libs/helper');
 const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
 const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
@@ -179,8 +181,6 @@ module.exports = {
 
       const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
 
-      console.log('bKashCreatePayment-response', bKashResponse);
-
       if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
         await PaymentTransactionLog.updateOne({
           id: paymentTransactionLog.id
@@ -230,8 +230,6 @@ module.exports = {
 
     let bKashAgreementCreateResponse = await bKashCreateAgreement(tokenRes.id_token, authUser.id, payerReference, callbackURL);
 
-    console.log('bKashAgreementCreateResponse', bKashAgreementCreateResponse);
-
     if (bKashAgreementCreateResponse.statusMessage === 'Successful' && bKashAgreementCreateResponse.agreementStatus === 'Initiated') {
       await BkashCustomerWallet.create({
         user_id: authUser.id,
@@ -248,7 +246,7 @@ module.exports = {
     }
     throw new Error(JSON.stringify(bKashAgreementCreateResponse));
   },
-  createOrder: async (db, customer, transDetails, addressIds, globalConfigs) => {
+  createOrder: async function (db, customer, transDetails, addressIds, globalConfigs) {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
@@ -520,6 +518,119 @@ module.exports = {
       noShippingCharge,
       shippingAddress
     };
+
+  },
+  bKashSaveOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
+    if (!(bKashResponse && bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Completed')) {
+      await PaymentTransactionLog.updateOne({
+        id: transactionLogId
+      }).set({
+        details: JSON.stringify({
+          id_token: transactionDetails.id_token,
+          payerReference: transactionDetails.payerReference,
+          billingAddressId: transactionDetails.billingAddressId,
+          shippingAddressId: transactionDetails.shippingAddressId,
+          bKashResponse
+        })
+      });
+      return null;
+    }
+
+    await PaymentTransactionLog.updateOne({
+      id: transactionLogId
+    }).set({
+      status: 3,
+      details: JSON.stringify({
+        id_token: transactionDetails.id_token,
+        payerReference: bKashResponse.payerReference,
+        agreement_id: bKashResponse.agreementID,
+        billingAddressId: transactionDetails.billingAddressId,
+        shippingAddressId: transactionDetails.shippingAddressId,
+        bKashResponse
+      })
+    });
+
+    const {
+      orderForMail,
+      allCouponCodes,
+      order,
+      noShippingCharge,
+      shippingAddress
+    } = await sails.getDatastore()
+      .transaction(async (db) => {
+        /****** Finalize Order -------------------------- */
+
+        const {
+          orderForMail,
+          allCouponCodes,
+          order,
+          subordersTemp,
+          noShippingCharge,
+          shippingAddress
+        } = await this.createOrder(
+          db,
+          customer, {
+            paymentType: 'bKash',
+            paidAmount: parseFloat(bKashResponse.amount),
+            sslCommerztranId: null,
+            paymentResponse: bKashResponse
+          },
+          {
+            billingAddressId: transactionDetails.billingAddressId,
+            shippingAddressId: transactionDetails.shippingAddressId
+          },
+          globalConfigs
+        );
+
+        await PaymentTransactionLog.updateOne({
+          id: transactionLogId
+        }).set({
+          order_id: order.id,
+        }).usingConnection(db);
+
+        return {
+          orderForMail,
+          allCouponCodes,
+          order,
+          subordersTemp,
+          noShippingCharge,
+          shippingAddress
+        };
+
+      });
+
+    try {
+      let smsPhone = customer.phone;
+
+      if (!noShippingCharge && shippingAddress.phone) {
+        smsPhone = shippingAddress.phone;
+      }
+
+      if (smsPhone) {
+        let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
+        if (allCouponCodes && allCouponCodes.length > 0) {
+          if (allCouponCodes.length === 1) {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
+          } else {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
+          }
+        }
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+
+    } catch (err) {
+      console.log('order sms was not sent!');
+      console.log(err);
+    }
+
+    try {
+      EmailService.orderSubmitMail(orderForMail);
+    } catch (err) {
+      console.log('order email was not sent!');
+      console.log(err);
+    }
+
+    return order;
 
   }
 };

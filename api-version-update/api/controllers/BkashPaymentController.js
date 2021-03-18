@@ -5,16 +5,15 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const SmsService = require('../services/SmsService');
-const EmailService = require('../services/EmailService');
 const {calcCartTotal} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl, dhakaZilaId} = require('../../config/softbd');
-const {createOrder, createBKashPayment} = require('../services/checkout');
+const {createBKashPayment, bKashSaveOrder} = require('../services/checkout');
 const {
   bKashGrandToken,
   bKashCreateAgreement,
   bKashExecutePayment,
-  bKashExecuteAgreement
+  bKashExecuteAgreement,
+  bKasQueryPayment
 } = require('../services/bKash');
 
 module.exports = {
@@ -132,8 +131,6 @@ module.exports = {
 
         const bKashResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
 
-        console.log('bKashExecuteAgreement-bKashResponse', bKashResponse);
-
         if (bKashResponse.agreementStatus === 'Completed' && bKashResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
             id: userWallet.id
@@ -243,132 +240,51 @@ module.exports = {
       }
 
       if (req.query.status === 'success') {
-        const bKashResponse = await bKashExecutePayment(transactionDetails.id_token, {
-          paymentID: req.query.paymentID
-        });
-
-        console.log('bKashExecutePayment-bKashResponse', bKashResponse);
-
-        if (bKashResponse && bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Completed') {
-
-          await PaymentTransactionLog.updateOne({
-            id: transactionLog.id
-          }).set({
-            status: 3,
-            details: JSON.stringify({
-              id_token: transactionDetails.id_token,
-              payerReference: bKashResponse.payerReference,
-              agreement_id: bKashResponse.agreementID,
-              billingAddressId: transactionDetails.billingAddressId,
-              shippingAddressId: transactionDetails.shippingAddressId,
-              bKashResponse
-            })
+        try {
+          const bKashResponse = await bKashExecutePayment(transactionDetails.id_token, {
+            paymentID: req.query.paymentID
           });
 
-          const {
-            orderForMail,
-            allCouponCodes,
-            order,
-            noShippingCharge,
-            shippingAddress
-          } = await sails.getDatastore()
-            .transaction(async (db) => {
-              /****** Finalize Order -------------------------- */
+          const order = await bKashSaveOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
 
-              const {
-                orderForMail,
-                allCouponCodes,
-                order,
-                subordersTemp,
-                noShippingCharge,
-                shippingAddress
-              } = await createOrder(
-                db,
-                customer, {
-                  paymentType: 'bKash',
-                  paidAmount: parseFloat(bKashResponse.amount),
-                  sslCommerztranId: null,
-                  paymentResponse: bKashResponse
-                },
-                {
-                  billingAddressId: transactionDetails.billingAddressId,
-                  shippingAddressId: transactionDetails.shippingAddressId
-                },
-                globalConfigs
-              );
-
-              await PaymentTransactionLog.updateOne({
-                id: transactionLog.id
-              }).set({
-                order_id: order.id,
-              }).usingConnection(db);
-
-              return {
-                orderForMail,
-                allCouponCodes,
-                order,
-                subordersTemp,
-                noShippingCharge,
-                shippingAddress
-              };
-
-            });
-
-          try {
-            let smsPhone = customer.phone;
-
-            if (!noShippingCharge && shippingAddress.phone) {
-              smsPhone = shippingAddress.phone;
-            }
-
-            if (smsPhone) {
-              let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
-              if (allCouponCodes && allCouponCodes.length > 0) {
-                if (allCouponCodes.length === 1) {
-                  smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
-                } else {
-                  smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
-                }
-              }
-              SmsService.sendingOneSmsToOne([smsPhone], smsText);
-            }
-
-          } catch (err) {
-            console.log('order sms was not sent!');
-            console.log(err);
+          if (order && order.id) {
+            res.writeHead(301,
+              {Location: sslWebUrl + '/checkout?order=' + order.id}
+            );
+            res.end();
+            return;
           }
 
-          try {
-            EmailService.orderSubmitMail(orderForMail);
-          } catch (err) {
-            console.log('order email was not sent!');
-            console.log(err);
-          }
-
-          res.writeHead(301,
-            {Location: sslWebUrl + '/checkout?order=' + order.id}
-          );
+          res.writeHead(301, {
+            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+          });
           res.end();
           return;
+
+        } catch (bKashExecuteError) {
+          if (bKashExecuteError.name === 'AbortError') {
+            const bKashResponse = await bKasQueryPayment(transactionDetails.id_token, {
+              paymentID: req.query.paymentID
+            });
+
+            const order = await bKashSaveOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
+
+            if (order && order.id) {
+              res.writeHead(301,
+                {Location: sslWebUrl + '/checkout?order=' + order.id}
+              );
+              res.end();
+              return;
+            }
+            res.writeHead(301, {
+              Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+            });
+            res.end();
+            return;
+          }
+
+          throw bKashExecuteError;
         }
-
-        await PaymentTransactionLog.updateOne({
-          id: transactionLog.id
-        }).set({
-          details: JSON.stringify({
-            id_token: transactionDetails.id_token,
-            payerReference: transactionDetails.payerReference,
-            billingAddressId: transactionDetails.billingAddressId,
-            shippingAddressId: transactionDetails.shippingAddressId,
-            bKashResponse
-          })
-        });
-
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
-        });
-        res.end();
-        return;
       }
 
       await PaymentTransactionLog.updateOne({
@@ -512,8 +428,6 @@ module.exports = {
 
         const bKashExecAgreementResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
 
-        console.log('bKashExecuteAgreement - response', bKashExecAgreementResponse);
-
         if (bKashExecAgreementResponse.agreementStatus === 'Completed' && bKashExecAgreementResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
             id: userWallet.id
@@ -526,6 +440,7 @@ module.exports = {
               bKashExecAgreementResponse
             })
           });
+
           const bKashPaymentResponse = await createBKashPayment(customer, {
             payerReference: bKashExecAgreementResponse.payerReference,
             agreement_id: bKashExecAgreementResponse.agreementID,
