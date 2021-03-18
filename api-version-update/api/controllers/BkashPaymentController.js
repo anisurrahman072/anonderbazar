@@ -35,8 +35,7 @@ module.exports = {
 
     try {
       let tokenRes = await bKashGrandToken();
-      tokenRes = await tokenRes.json();
-      console.log(tokenRes);
+
       return res.status(200).json(tokenRes);
     } catch (error) {
       console.log(error);
