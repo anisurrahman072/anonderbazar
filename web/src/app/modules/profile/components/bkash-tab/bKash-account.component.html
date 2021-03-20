@@ -29,9 +29,9 @@
                 <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
                     <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
                         <span style="color: #444444;">{{authUserWallet.wallet_no}}</span>
-                        <button type="button" (click)="deleteAgreement(authUserWallet)" class="btn btn-danger">
+                        <a (click)="deleteAgreement($event, authUserWallet)" >
                         <mat-icon style="position: relative; top: 5px; color: red; left: 30px;">delete</mat-icon>
-                        </button>
+                        </a>
                     </li>
                 </ul>
                 <ng-template #noWalletTemplate>

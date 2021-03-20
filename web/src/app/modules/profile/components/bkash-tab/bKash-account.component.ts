@@ -71,7 +71,10 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnDestroy() {
     }
 
-    deleteAgreement(authUserWallet) {
+    deleteAgreement(event: any, authUserWallet) {
+        event.preventDefault();
+        event.stopPropagation();
+
         if (this.bKashGrandToken) {
             if (window.confirm("Are you sure you want to delete this wallet")) {
                 this.loaderService.showLoader();
