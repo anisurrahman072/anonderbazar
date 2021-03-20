@@ -6,15 +6,15 @@
  */
 
 let jwt = require('jsonwebtoken');
-let tokenSecret = '032Q8~kjhk!lsjdf8237';
+const {jwtTokenExpirationTime} = require('../../config/softbd');
+let tokenSecret = '03!2Q8~kjhk!lsjdf823-}7';
 
 // Generates a token from supplied payload
 exports.issue = function (payload) {
   return jwt.sign(
     payload,
     tokenSecret, {
-      // expiresIn: '1h',
-      expiresIn: 60 * 60 * 24,
+      expiresIn: jwtTokenExpirationTime,
       issuer: 'cccg',
       algorithm: 'HS256'
     });
