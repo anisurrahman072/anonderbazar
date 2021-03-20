@@ -544,8 +544,8 @@
     <div class="modal-body" style="color: #444444;">
         <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
             <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
-                <a (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)"
-                   style="color: #444444;">{{authUserWallet.wallet_no}}</a>
+                <span>{{authUserWallet.wallet_no}}</span>
+                <a class="btn btn-primary btn-sm" style="margin-left: 50px;" (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)">Proceed with bKash</a>
             </li>
         </ul>
         <ng-template #noWalletTemplate>
@@ -604,6 +604,7 @@
     <div class="modal-footer">
         <div class="btn-group pull-right" role="group" aria-label="First group">
             <button type="button" [disabled]="!agreedToBKashTermsConditions"
+                    *ngIf=" !(authUserWallets && authUserWallets.length > 0) "
                     (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">
                 Proceed with bKash
             </button>

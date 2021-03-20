@@ -52,7 +52,7 @@ export class AuthService {
         if (token) {
             return token;
         }
-        return false;
+        return '';
     }
 
 

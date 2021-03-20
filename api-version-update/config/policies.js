@@ -361,6 +361,7 @@ module.exports.policies = {
     'authUserWallets': ['isAuthorized', 'isCustomer'],
     'grandToken': ['isAuthorized', 'isCustomer'],
     'createAgreement': ['isAuthorized', 'isCustomer'],
+    'cancelAgreement': ['isAuthorized', 'isCustomer'],
     'agreementCallback': true,
     'paymentCallback': true,
   },

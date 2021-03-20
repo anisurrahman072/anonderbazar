@@ -1,6 +1,7 @@
 module.exports = {
   devEnv: false,
   radisEnabled: false,
+  jwtTokenExpirationTime: 60 * 60 * 24,
   couponCodePadCount: 6,
   adminPaymentAddressId: 75,
   dhakaZilaId: 2942,

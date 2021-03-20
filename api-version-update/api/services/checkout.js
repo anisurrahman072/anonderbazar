@@ -102,7 +102,6 @@ module.exports = {
     return sslResponse;
   },
   createBKashPayment: async (authUser, orderDetails, addresses) => {
-    console.log('################# createBKashPayment ##################### ');
 
     const {
       payerReference,

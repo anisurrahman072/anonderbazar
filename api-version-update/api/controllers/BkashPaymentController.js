@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {bKashCancelAgreement} = require('../services/bKash');
 const {calcCartTotal} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {createBKashPayment, bKashSaveOrder} = require('../services/checkout');
@@ -23,11 +24,12 @@ module.exports = {
       const authUser = req.token.userInfo;
       const userWallets = await BkashCustomerWallet.find({
         user_id: authUser.id,
-        row_status: 3
+        row_status: 3,
+        deletedAt: null
       });
       return res.status(200).json(userWallets);
     } catch (error) {
-      console.log(error);
+      sails.log(error);
       return res.status(400).json(error);
     }
   },
@@ -38,14 +40,14 @@ module.exports = {
 
       return res.status(200).json(tokenRes);
     } catch (error) {
-      console.log(error);
+      sails.log(error);
       return res.status(400).json(error);
     }
 
   },
   createAgreement: async (req, res) => {
 
-    console.log('createAgreement', req.query);
+    sails.log('createAgreement', req.query);
     if (!req.query.id_token) {
       return res.status(422).json({
         message: 'Invalid Request'
@@ -66,7 +68,7 @@ module.exports = {
           payment_id: tokenRes.paymentID,
           full_response: JSON.stringify({id_token: req.query.id_token, ...tokenRes})
         }).fetch();
-        console.log(tokenRes);
+        sails.log(tokenRes);
         return res.status(200).json({
           tokenRes,
           bkashCustomerWallet
@@ -76,13 +78,56 @@ module.exports = {
       return res.status(422).json(tokenRes);
 
     } catch (error) {
-      console.log(error);
+      sails.log(error);
+      return res.status(400).json(error);
+    }
+  },
+  cancelAgreement: async (req, res) => {
+    sails.log('cancelAgreement', req.body);
+    if (!(req.body.id_token && req.body.agreement_id)) {
+      return res.status(422).json({
+        message: 'Invalid Request'
+      });
+    }
+    try {
+
+      const authUser = req.token.userInfo;
+
+      const foundAgreements = await BkashCustomerWallet.find({
+        agreement_id: req.body.agreement_id,
+        user_id: authUser.id,
+        row_status: 3,
+        deletedAt: null
+      });
+
+      if (!(foundAgreements && foundAgreements.length > 0)) {
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
+
+      let cancelAgreementRes = await bKashCancelAgreement(req.body.id_token, req.body.agreement_id);
+
+      if (cancelAgreementRes.statusMessage === 'Successful' && cancelAgreementRes.agreementStatus === 'Cancelled') {
+        const bkashCustomerWallet = await BkashCustomerWallet.updateOne({
+          id: foundAgreements[0].id
+        }).set({
+          deletedAt: new Date()
+        });
+
+        return res.status(200).json(bkashCustomerWallet);
+      }
+
+      return res.status(422).json(cancelAgreementRes);
+
+    } catch (error) {
+      sails.log(error);
       return res.status(400).json(error);
     }
   },
   agreementCallback: async (req, res) => {
-    console.log('agreementCallback');
-    console.log(req.query);
+    sails.log('agreementCallback');
+    sails.log(req.query);
 
     let customer = await User.findOne({id: req.param('id'), deletedAt: null});
 
@@ -162,7 +207,7 @@ module.exports = {
       res.end();
 
     } catch (error) {
-      console.log(error);
+      sails.log(error);
       res.writeHead(301, {
         Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Problem in generating bKash Payment Agreement')
       });
@@ -171,8 +216,8 @@ module.exports = {
   },
   paymentCallback: async (req, res) => {
 
-    console.log('paymentCallback');
-    console.log(req.query);
+    sails.log('paymentCallback');
+    sails.log(req.query);
 
     if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
 
@@ -214,7 +259,7 @@ module.exports = {
         deletedAt: null
       });
 
-      console.log('transactionLog', transactionLog);
+      sails.log('transactionLog', transactionLog);
 
       // eslint-disable-next-line eqeqeq
       if (!(transactionLog && transactionLog.id && transactionLog.status == 2)) {
@@ -227,7 +272,7 @@ module.exports = {
 
       const transactionDetails = JSON.parse(transactionLog.details);
 
-      console.log('transactionDetails', transactionDetails);
+      sails.log('transactionDetails', transactionDetails);
 
       if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference &&
         transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
@@ -305,7 +350,7 @@ module.exports = {
       res.end();
 
     } catch (error) {
-      console.log(error);
+      sails.log(error);
 
       res.writeHead(301, {
         Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
@@ -316,8 +361,7 @@ module.exports = {
   },
   agreementCallbackCheckout: async (req, res) => {
 
-    console.log('############################## agreementCallbackCheckout ################################ ');
-    console.log(req.query);
+    sails.log(req.query);
 
     try {
 
@@ -486,7 +530,7 @@ module.exports = {
       res.end();
 
     } catch (error) {
-      console.log(error);
+      sails.log(error);
       res.writeHead(301, {
         Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in creating the bKash Payment Agreement')
       });

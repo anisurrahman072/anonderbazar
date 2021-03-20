@@ -1,21 +1,79 @@
-<div class="row justify-content-center" *ngIf="canAddAgreement">
-    <div class="col-md-6">
+<div class="row justify-content-center" >
+    <div class="col-md-8" >
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Add bKash Account</mat-card-title>
             </mat-card-header>
             <mat-card-content>
-                <mat-form-field>
-                    <mat-label>Telephone</mat-label>
+                <mat-form-field *ngIf="!showBKashAgreementTerm; else bKashTermsTemplate">
+                    <mat-label>Mobile Number</mat-label>
                     <input matInput placeholder="bKash Wallet Number" [(ngModel)]="bKashWalletNoToAdd"/>
                 </mat-form-field>
+                <ng-template #bKashTermsTemplate>
+                    <div class="col-md-8">
+                        <h4>Terms & Conditions</h4>
+                        <ul class="termsList">
+                            <li>
+                                By enabling this option, you are allowing bKash to remember your bKash Account against your
+                                customer account maintained with this merchant.
+                            </li>
+                            <li>
+                                During your subsequent transactions from your customer account maintained with this
+                                merchant, you will not be required to enter your bKash Account Number. Your bKash Account
+                                Number will be automatically set by bKash. You only need to enter PIN to authorize the
+                                transaction.
+                            </li>
+                            <li>
+                                Through this process merchant is not receiving your bKash Account information.
+                            </li>
+                            <li>
+                                If you experience any problem, please contact the customer support of bKash on 16247.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-check" style="margin-top: 20px; margin-bottom: 20px;">
+                            <input id="bKash_terms_condition_checkbox" type="checkbox" class="form-check-input"
+                                   [(ngModel)]="agreedToBKashTermsConditions"
+                                   (ngModelChange)="onAgreedToBKashTerms($event)">
+                            <label class="form-check-label" for="bKash_terms_condition_checkbox">I agree to the above
+                                mentioned Terms & Conditions</label>
+                        </div>
+                    </div>
+                </ng-template>
             </mat-card-content>
             <mat-card-actions>
-                <button *ngIf="!isSubmitting; else spinningBlock" mat-button color="primary" (click)="createBKashAgreement()">Add</button>
+                <button *ngIf="!isSubmitting; else spinningBlock" mat-button color="primary"
+                        (click)="createBKashAgreement()">Add
+                </button>
                 <ng-template #spinningBlock>
                     <mat-spinner></mat-spinner>
                 </ng-template>
             </mat-card-actions>
         </mat-card>
+    </div>
+
+    <div class="col-md-8">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>My bKash Wallets</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
+                    <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
+                        <span style="color: #444444;">{{authUserWallet.wallet_no}}</span>
+                        <a (click)="deleteAgreement($event, authUserWallet)" >
+                        <mat-icon style="position: relative; top: 5px; color: red; left: 30px;">delete</mat-icon>
+                        </a>
+                    </li>
+                </ul>
+                <ng-template #noWalletTemplate>
+                    <div class="alert alert-info">
+                        <p>No added bKash wallets</p>
+                    </div>
+                </ng-template>
+            </mat-card-content>
+        </mat-card>
+
     </div>
 </div>

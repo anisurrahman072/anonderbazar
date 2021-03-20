@@ -3,8 +3,8 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Rx";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../state-management";
-import {NotificationsService} from "angular2-notifications";
 import {JwtHelper} from "angular2-jwt";
+import {UIService} from "../services/ui/ui.service";
 
 @Injectable()
 export class JwtTokenInterceptor implements HttpInterceptor {
@@ -13,7 +13,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
     constructor(
         private store: Store<fromStore.HomeState>,
         private jwtHelper: JwtHelper,
-        private _notify: NotificationsService) {
+        private uiService: UIService) {
     }
 
     getToken() {
@@ -21,7 +21,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
         if (token) {
             return token;
         }
-        return false;
+        return '';
     }
 
 
@@ -36,7 +36,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
 
     logout(): void {
         // clear token remove user from local storage to log user out
-        this.token = null;
+        this.token = '';
         localStorage.removeItem('currentUser');
         localStorage.removeItem('token');
     }
@@ -61,10 +61,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
                     this.logout();
-                    this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
-                    this.store.dispatch(new fromStore.LoadCartSuccess(null));
-                    this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
-                    this._notify.error("Session Expired. Please login again.");
+                    this.uiService.showTokenExpiredNotification('Token has been expired. Please login again.');
                 }
             }
             //intercept the respons error and displace it to the console
