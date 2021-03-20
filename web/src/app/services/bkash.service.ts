@@ -18,6 +18,10 @@ export class BkashService {
         return this.http.get(this.EndPoint + '/create-agreement?id_token=' + bkashToken + '&wallet_no=' + bKashWalletNoToAdd);
     }
 
+    cancelAgreement(bKashToken: string, agreementId: string) {
+        return this.http.get(this.EndPoint + '/cancel-agreement?id_token=' + bKashToken + '&agreement_id=' + agreementId);
+    }
+
     getAuthUserWallets() {
         return this.http.get(this.EndPoint + '/customer-wallets');
     }

@@ -1,5 +1,5 @@
-<div class="row justify-content-center" *ngIf="canAddAgreement">
-    <div class="col-md-6">
+<div class="row justify-content-center" >
+    <div class="col-md-8">
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Add bKash Account</mat-card-title>
@@ -11,11 +11,36 @@
                 </mat-form-field>
             </mat-card-content>
             <mat-card-actions>
-                <button *ngIf="!isSubmitting; else spinningBlock" mat-button color="primary" (click)="createBKashAgreement()">Add</button>
+                <button *ngIf="!isSubmitting; else spinningBlock" mat-button color="primary"
+                        (click)="createBKashAgreement()">Add
+                </button>
                 <ng-template #spinningBlock>
                     <mat-spinner></mat-spinner>
                 </ng-template>
             </mat-card-actions>
         </mat-card>
+    </div>
+    <div class="col-md-8">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>My bKash Wallets</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
+                    <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
+                        <span style="color: #444444;">{{authUserWallet.wallet_no}}</span>
+                        <button type="button" (click)="deleteAgreement(authUserWallet)" class="btn btn-danger">
+                        <mat-icon style="position: relative; top: 5px; color: red; left: 30px;">delete</mat-icon>
+                        </button>
+                    </li>
+                </ul>
+                <ng-template #noWalletTemplate>
+                    <div class="alert alert-info">
+                        <p>No added bKash wallets</p>
+                    </div>
+                </ng-template>
+            </mat-card-content>
+        </mat-card>
+
     </div>
 </div>

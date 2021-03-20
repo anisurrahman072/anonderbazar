@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {bKashCancelAgreement} = require('../services/bKash');
 const {calcCartTotal} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {createBKashPayment, bKashSaveOrder} = require('../services/checkout');
@@ -74,6 +75,49 @@ module.exports = {
       }
 
       return res.status(422).json(tokenRes);
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  },
+  cancelAgreement: async (req, res) => {
+    console.log('createAgreement', req.query);
+    if (!(req.query.id_token && req.query.agreement_id)) {
+      return res.status(422).json({
+        message: 'Invalid Request'
+      });
+    }
+    try {
+
+      const authUser = req.token.userInfo;
+
+      const foundAgreements = await BkashCustomerWallet.find({
+        agreement_id: req.query.agreement_id,
+        user_id: authUser.id,
+        row_status: 3,
+        deletedAt: null
+      });
+
+      if (!(foundAgreements && foundAgreements.length > 0)) {
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
+
+      let cancelAgreementRes = await bKashCancelAgreement(req.query.id_token, req.query.agreement_id);
+
+      if (cancelAgreementRes.statusMessage === 'Successful' && cancelAgreementRes.agreementStatus === 'Cancelled') {
+        const bkashCustomerWallet = await BkashCustomerWallet.updateOne({
+          id: foundAgreements[0].id
+        }).set({
+          deletedAt: new Date()
+        });
+
+        return res.status(200).json(bkashCustomerWallet);
+      }
+
+      return res.status(422).json(cancelAgreementRes);
 
     } catch (error) {
       console.log(error);
