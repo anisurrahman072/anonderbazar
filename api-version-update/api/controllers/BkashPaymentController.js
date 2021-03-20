@@ -82,8 +82,8 @@ module.exports = {
     }
   },
   cancelAgreement: async (req, res) => {
-    console.log('createAgreement', req.query);
-    if (!(req.query.id_token && req.query.agreement_id)) {
+    console.log('cancelAgreement', req.body);
+    if (!(req.body.id_token && req.body.agreement_id)) {
       return res.status(422).json({
         message: 'Invalid Request'
       });
@@ -93,7 +93,7 @@ module.exports = {
       const authUser = req.token.userInfo;
 
       const foundAgreements = await BkashCustomerWallet.find({
-        agreement_id: req.query.agreement_id,
+        agreement_id: req.body.agreement_id,
         user_id: authUser.id,
         row_status: 3,
         deletedAt: null
@@ -105,7 +105,7 @@ module.exports = {
         });
       }
 
-      let cancelAgreementRes = await bKashCancelAgreement(req.query.id_token, req.query.agreement_id);
+      let cancelAgreementRes = await bKashCancelAgreement(req.body.id_token, req.body.agreement_id);
 
       if (cancelAgreementRes.statusMessage === 'Successful' && cancelAgreementRes.agreementStatus === 'Cancelled') {
         const bkashCustomerWallet = await BkashCustomerWallet.updateOne({

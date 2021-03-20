@@ -19,7 +19,10 @@ export class BkashService {
     }
 
     cancelAgreement(bKashToken: string, agreementId: string) {
-        return this.http.get(this.EndPoint + '/cancel-agreement?id_token=' + bKashToken + '&agreement_id=' + agreementId);
+        return this.http.put(this.EndPoint + '/cancel-agreement', {
+            id_token: bKashToken,
+            agreement_id: agreementId
+        });
     }
 
     getAuthUserWallets() {

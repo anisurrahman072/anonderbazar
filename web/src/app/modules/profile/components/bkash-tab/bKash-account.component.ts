@@ -86,6 +86,28 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                         this.toastService.error('Problem in generating bKash Payment Agreement.', 'Oppss!');
                     })
             }
+        } else {
+            if (window.confirm("Are you sure you want to delete this wallet")) {
+                this.loaderService.showLoader();
+                this.bkashService.generateGrandToken()
+                    .concatMap((res: any) => {
+                        console.log('generateGrandToken', res);
+                        if (res.id_token) {
+                            this.bKashGrandToken = res.id_token;
+                            return this.bkashService.cancelAgreement(res.id_token, authUserWallet.agreement_id)
+                        }
+                        return of(false);
+                    })
+                    .subscribe((res: any) => {
+                        this.loaderService.hideLoader();
+                        this.fetchbKashWallets();
+                        this.toastService.success('bKash Wallet has been successfully deleted.', 'Success');
+                    }, (err) => {
+                        console.log(err);
+                        this.loaderService.hideLoader();
+                        this.toastService.error('Problem in generating bKash Payment Agreement.', 'Oppss!');
+                    })
+            }
         }
     }
 
