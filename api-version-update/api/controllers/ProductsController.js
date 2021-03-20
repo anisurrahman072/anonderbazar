@@ -4,109 +4,162 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 const {escapeExcel} = require('../../libs/helper');
 const xl = require('excel4node');
+const Promise = require('bluebird');
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
   //Method called for getting all products
   //Model models/Product.js
   index: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'productList');
+      const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
-      let _where = {};
-      _where.deletedAt = null;
+      let rawSelect = `
+        SELECT
+            product.id as id,
+            product.code as code,
+            product.name as name,
+            product.price as price,
+            product.vendor_price as vendor_price,
+            product.min_unit as min_unit,
+            product.alert_quantity as alert_quantity,
+            product.image as image,
+            product.type_id as type_id,
+            product.category_id as category_id,
+            product.subcategory_id as subcategory_id,
+            product.brand_id as brand_id,
+            product.quantity as quantity,
+            product.warehouse_id as warehouse_id,
+            product.is_coupon_product as is_coupon_product,
+            product.promotion as promotion,
+            product.promo_price as promo_price,
+            product.start_date as start_date,
+            product.end_date as end_date,
+            product.sale_unit as sale_unit,
+            product.featured as featured,
+            product.weight as weight,
+            product.approval_status as approval_status,
+            product.status as status,
+            product.created_at as createdAt,
+            product.updated_at as updatedAt,
+            types.name as type_name,
+            category.name as category_name,
+            subcategory.name as subcategory_name,
+            warehouse.name as warehouse_name,
+            brand.name as brand_name
+        `;
+
+      let fromSQL = `
+          FROM products as product
+          LEFT JOIN categories as types ON types.id = product.type_id
+          LEFT JOIN categories as category ON category.id = product.category_id
+          LEFT JOIN categories as subcategory ON subcategory.id = product.subcategory_id
+          LEFT JOIN brands as brand ON brand.id = product.brand_id
+          LEFT JOIN warehouses as warehouse ON warehouse.id = product.warehouse_id
+      `;
+
+      console.log(req.query);
+      let _where = ' WHERE product.deleted_at IS NULL ';
 
       if (req.query.status) {
-        _where.status = req.query.status;
+        // _where.status = req.query.status;
+        _where += ` AND product.status = ${req.query.status}`;
       }
       if (req.query.warehouse_id) {
-        _where.warehouse_id = req.query.warehouse_id;
+        _where += ` AND product.warehouse_id = ${req.query.warehouse_id}`;
+      } else if (req.token && req.token.userInfo.warehouse_id) {
+        _where += ` AND product.approval_status = ${req.token.userInfo.warehouse_id.id}`;
       }
+
       if (req.query.approval_status) {
-        _where.approval_status = req.query.approval_status;
+        _where += ` AND product.approval_status = ${req.query.approval_status}`;
       }
-      if (req.token && req.token.userInfo.warehouse_id) {
-        _where.warehouse_id = req.token.userInfo.warehouse_id.id;
+
+      if (req.query.excludedProductIds) {
+        try {
+          const excludedProductIds = JSON.parse(req.query.excludedProductIds);
+          if (excludedProductIds.length > 0) {
+            _where += ` AND product.id NOT IN (${excludedProductIds.join(',')}) `;
+          }
+        } catch (er) {
+          console.log(er);
+
+        }
       }
+
       if (req.query.type_id) {
-        _where.type_id = req.query.type_id;
+        _where += ` AND product.type_id = ${req.query.type_id}`;
       }
+
       if (req.query.category_id) {
-        _where.category_id = req.query.category_id;
+        _where += ` AND product.category_id = ${req.query.category_id}`;
       }
-      if (req.query.brand_id) {
-        _where.brand_id = req.query.brand_id;
-      }
-      if (req.query.price) {
-        _where.price = req.query.price;
-      }
+
       if (req.query.subcategory_id) {
-        _where.subcategory_id = req.query.subcategory_id;
+        _where += ` AND product.subcategory_id = ${req.query.subcategory_id}`;
+      }
+
+      if (req.query.brand_id) {
+        _where += ` AND product.brand_id = ${req.query.brand_id}`;
+      }
+
+      if (req.query.price) {
+        _where += ` AND product.price = ${req.query.price}`;
+      }
+
+      if (req.query.searchqty) {
+        _where += ` AND product.quantity  LIKE '%${req.query.searchqty}%'  `;
       }
 
       if (req.query.search_term) {
-
-        _where.or = [
-          {name: {like: `%${req.query.search_term}%`}},
-          {code: {like: `%${req.query.search_term}%`}}
-        ];
+        _where += ` AND (product.name LIKE '%${req.query.search_term}%' OR product.code LIKE '%${req.query.search_term}%' ) `;
       } else if (req.query.search_code) {
-        // class: { 'like': '%history%' }})
-
-        _where.or = [
-          {code: {like: `%${req.query.search_code}%`}}
-        ];
+        _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      let _sort = [];
-      if (req.query.sortCode) {
-        _sort.push({code: req.query.sortCode});
-      }
-      if (req.query.sortName) {
-        _sort.push({name: req.query.sortName});
-      }
-      if (req.query.sortPrice) {
-        __sort.push({price: req.query.sortPrice});
-      }
-      if (req.query.sortQuantity) {
-        _sort.push({quantity: req.query.sortQuantity});
-      }
-      if (req.query.sortUpdatedAt) {
-        _sort.push({updatedAt: req.query.sortUpdatedAt});
+      if (req.query.nameSearchValue) {
+        _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
 
-      let totalProduct = await Product.count().where(_where);
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalProduct;
-      let products = await Product.find({
-        where: _where,
-        limit: _pagination.limit,
-        skip: _pagination.skip,
-        sort: _sort
-      }).populate('product_images', {deletedAt: null})
-        .populate('product_variants', {deletedAt: null})
-        .populate('category_id')
-        .populate('subcategory_id')
-        .populate('type_id')
-        .populate('warehouse_id')
-        .populate('craftsman_id')
-        .populate('brand_id');
+      let _sort = '';
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort += ` ORDER BY product.${req.query.sortKey} ${req.query.sortValue} `;
+      } else {
+        _sort += ` ORDER BY product.created_at DESC `;
+      }
+
+      const totalProductRaw = await productQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      let totalProducts = 0;
+      let products = [];
+      if (totalProductRaw && totalProductRaw.rows && totalProductRaw.rows.length > 0) {
+        totalProducts = totalProductRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalProducts;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+
+        const rawResult = await productQuery(rawSelect + fromSQL + _where + _sort + limitSQL, []);
+
+        products = rawResult.rows;
+      }
+
       res.status(200).json({
         success: true,
-        total: totalProduct,
+        total: totalProducts,
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
-        message: 'Get All products with pagination',
+        message: 'Get all products with pagination',
         data: products
       });
     } catch (error) {
-      let message = 'Error in Get All products with pagination';
+      console.log('error', error);
 
+      let message = 'Error in getting all products with pagination';
       res.status(400).json({
         success: false,
         message,
@@ -118,21 +171,23 @@ module.exports = {
   //Method called for getting a product
   //Model models/Product.js
   findOne: async (req, res) => {
+
     try {
       let product = await Product.findOne({
         where: {
-          id: req.params._idwms
+          id: req.params._id
         }
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: 'read single farmer',
+        message: 'read single product',
         data: product ? product : {}
       });
     } catch (error) {
-      let message = 'error in read single farmer';
-      res.status(400).json({
+      console.log(error);
+      let message = 'error in read product';
+      return res.status(400).json({
         success: false,
         message,
         error
@@ -143,8 +198,6 @@ module.exports = {
   //Model models/Product.js,models/ProductDesign.js,models/CraftmanPrice.js
   designCombination: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'designCombination');
-
       let productDesignData = await ProductDesign.find({
         where: {product_id: req.params._id, deletedAt: null}
       })
@@ -209,9 +262,8 @@ module.exports = {
       _where.deletedAt = null;
 
       if (req.query.filters) {
+        console.log('filter', req.query.filters);
         let filters = JSON.parse(req.query.filters);
-
-        console.log('filters', filters);
 
         if (filters.searchTerm) {
           _where.or = [
@@ -259,8 +311,6 @@ module.exports = {
         }
       }
 
-
-      /* Sort................ */
       let _sort = [];
       if (req.query.sortTitle) {
         _sort.push({[req.query.sortTitle]: parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC'});
@@ -310,20 +360,19 @@ module.exports = {
     try {
       let _pagination = pagination(req.query);
 
-      console.log('getBySearchTerm-req.query', req.query);
       let _where = {};
       _where.deletedAt = null;
 
       if (req.query.searchterm) {
         _where.or = [
-          {name: {contains: req.query.searchterm}}
+          {name: {contains: req.query.searchterm}},
+          {code: {contains: req.query.searchterm}}
         ];
       }
 
       let productTotal = await Product.count(_where);
       let products = await Product.find(
-        {where: _where},
-        {select: ['id', 'name', 'subcategory_id']}
+        {where: _where}
       )
         .populate('subcategory_id')
         .paginate({page: _pagination._page, limit: _pagination._limit});
@@ -355,6 +404,7 @@ module.exports = {
         data: _categories.concat(_products)
       });
     } catch (error) {
+      console.log(error);
       return res.status(400).json({
         success: false,
         message: 'error in search product',
@@ -365,22 +415,10 @@ module.exports = {
   //Method called for generating bulk product upload excel file
   //Model models/Product.js, models/Category.js
   generateExcel: async (req, res) => {
-    console.log(req.query);
-    if (!req.query.user_id) {
-      return res.badRequest('Invalid Request');
-    }
+
     try {
 
-      const user = await User.findOne({
-        id: req.query.user_id,
-        deletedAt: null
-      }).populate('group_id', {deletedAt: null});
-
-      if (!user || !user.group_id) {
-        return res.badRequest('Invalid Request');
-      }
-      //admin owner
-      console.log('user', user);
+      const authUser = req.token.userInfo;
 
       // Create a new instance of a Workbook class
       const wb = new xl.Workbook({
@@ -421,7 +459,7 @@ module.exports = {
         let categoryRowIndex = 1;
         for (let cat = 0; cat < categoryLen; cat++) {
           let categoryLabel = categoryList[cat].name;
-          categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(categoryLabel) + '|' + categoryList[cat].id);
+          categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + '|' + escapeExcel(categoryLabel));
           categoryRowIndex++;
           let subCategoryList = await Category.find({
             where: {type_id: 2, deletedAt: null, parent_id: categoryList[cat].id},
@@ -431,7 +469,7 @@ module.exports = {
             const subCategoryLen = subCategoryList.length;
             for (let subCat = 0; subCat < subCategoryLen; subCat++) {
               let subCategoryLabel = categoryLabel + '=>' + subCategoryList[subCat].name;
-              categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(subCategoryLabel) + '|' + categoryList[cat].id + ',' + subCategoryList[subCat].id);
+              categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + '|' + escapeExcel(subCategoryLabel));
               categoryRowIndex++;
               let subSubCategoryList = await Category.find({
                 where: {type_id: 2, deletedAt: null, parent_id: subCategoryList[subCat].id},
@@ -442,7 +480,7 @@ module.exports = {
                 const subSubCategoryLen = subSubCategoryList.length;
                 for (let subSubCat = 0; subSubCat < subSubCategoryLen; subSubCat++) {
                   let subSubCategoryLabel = subCategoryLabel + '=>' + subSubCategoryList[subSubCat].name;
-                  categorySheet.cell(categoryRowIndex, 1).string(escapeExcel(subSubCategoryLabel) + '|' + categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id);
+                  categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id + '|' + escapeExcel(subSubCategoryLabel));
                   categoryRowIndex++;
                 }
               }
@@ -458,7 +496,7 @@ module.exports = {
       });
 
       brandList.forEach((item, i) => {
-        brandSheet.cell(i + 1, 1).string(escapeExcel(item.name) + '|' + item.id);
+        brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
 
       /* Fetch Brand List */
@@ -468,7 +506,7 @@ module.exports = {
       });
 
       wareHouseList.forEach((item, i) => {
-        wareHouseSheet.cell(i + 1, 1).string(escapeExcel(item.name) + '|' + item.id);
+        wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
 
       // Create a reusable style
@@ -527,7 +565,7 @@ module.exports = {
         'Image 5': {width: 15}
       };
 
-      if (user.group_id.name === 'owner') {
+      if (authUser.group_id.name === 'owner') {
         delete columnNamesObject['Vendor Code'];
       }
 
@@ -573,19 +611,10 @@ module.exports = {
   //Method called for creating bulk products
   //Model models/Product.js ,models/Category.js
   bulkUpload: async (req, res) => {
-    if (!req.query.user_id) {
-      return res.badRequest('Invalid Request');
-    }
+
     try {
 
-      const user = await User.findOne({
-        id: req.query.user_id,
-        deletedAt: null
-      }).populate('group_id', {deletedAt: null});
-
-      if (!user || !user.group_id) {
-        return res.badRequest('Invalid Request');
-      }
+      const authUser = req.token.userInfo;
 
       const isApproved = parseInt(req.query.isApproved);
 
@@ -598,7 +627,7 @@ module.exports = {
         ) {
           problematicRow = i + 1;
           break;
-        } else if (user.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
+        } else if (authUser.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
           problematicRow = i + 1;
           break;
         }
@@ -618,7 +647,7 @@ module.exports = {
           ...item,
           min_unit: 1,
           alert_quantity: 1,
-          weight: item.weight ? parseFloat(item.weight) : null,
+          weight: item.weight ? parseFloat(item.weight) : 0,
           image: item.image ? item.image : null,
         };
         newItem.additional_images = [];
@@ -639,7 +668,7 @@ module.exports = {
         }
 
         let parts = item.category.split('|');
-        const allCategoryIds = parts[1].trim();
+        const allCategoryIds = parts[0].trim();
         let categoryIdParts = allCategoryIds.split(',');
 
         const categoryColumns = ['type_id', 'category_id', 'subcategory_id'];
@@ -659,7 +688,7 @@ module.exports = {
 
         if (item.brand_id && item.brand_id.indexOf('|') !== -1) {
           parts = item.brand_id.split('|');
-          newItem.brand_id = parseInt(parts[1].trim());
+          newItem.brand_id = parseInt(parts[0].trim());
         }
 
         newItem.price = parseFloat(item.price);
@@ -674,14 +703,14 @@ module.exports = {
           newItem.promo_price = 0;
         }
 
-        if (user.group_id.name === 'admin') {
+        if (authUser.group_id.name === 'admin') {
           parts = item.warehouse_id.split('|');
-          if (parts[1]) {
-            newItem.warehouse_id = parseInt(parts[1].trim(), 10);
+          if (parts[0]) {
+            newItem.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
 
-        if (isApproved !== 0 && user.group_id.name === 'admin') {
+        if (isApproved !== 0 && authUser.group_id.name === 'admin') {
           newItem.approval_status = 2;
           newItem.approval_status_updated_by = newItem.created_by;
         } else {
@@ -730,6 +759,427 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message: 'error in bulk product upload',
+        error
+      });
+    }
+  },
+
+  productExcel: async(req, res) => {
+    try {
+      if(req.query.type_id === 'null'){
+        res.status(404).json({
+          success: false,
+          message: 'Please insert product type & category!'
+        });
+      }
+      else{
+        const authUser = req.token.userInfo;
+        const isAdmin = authUser.group_id.name === 'admin' ? true : false;
+        const wb = new xl.Workbook({
+          jszip: {
+            compression: 'DEFLATE',
+          },
+          defaultFont: {
+            size: 12,
+            name: 'Calibri',
+            color: '#100f0f',
+          },
+          dateFormat: 'd/m/yyyy hh:mm:ss a',
+          author: 'Anonder Bazar', // Name for use in features such as comments
+        });
+
+        const options = {
+          margins: {
+            left: 1.5,
+            right: 1.5,
+          }
+        };
+
+        const ws = wb.addWorksheet('Product List', options);
+        const categorySheet = wb.addWorksheet('Category', options);
+        const brandSheet = wb.addWorksheet('Brand', options);
+        let wareHouseSheet;
+        if(isAdmin){
+          wareHouseSheet = wb.addWorksheet('Warehouse', options);
+        }
+
+        /* Fetch Category List */
+        let categoryList = await Category.find({
+          where: {type_id: 2, deletedAt: null, parent_id: 0},
+          sort: 'name ASC'
+        });
+
+        if (categoryList && categoryList.length > 0) {
+          const categoryLen = categoryList.length;
+          let categoryRowIndex = 1;
+
+          for (let cat = 0; cat < categoryLen; cat++) {
+            let categoryLabel = categoryList[cat].name;
+            categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + '|' + escapeExcel(categoryLabel));
+            categoryRowIndex++;
+            let subCategoryList = await Category.find({
+              where: {type_id: 2, deletedAt: null, parent_id: categoryList[cat].id},
+              sort: 'name ASC'
+            });
+            if (subCategoryList && subCategoryList.length > 0) {
+              const subCategoryLen = subCategoryList.length;
+              for (let subCat = 0; subCat < subCategoryLen; subCat++) {
+                let subCategoryLabel = categoryLabel + '=>' + subCategoryList[subCat].name;
+                categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + '|' + escapeExcel(subCategoryLabel));
+                categoryRowIndex++;
+                let subSubCategoryList = await Category.find({
+                  where: {type_id: 2, deletedAt: null, parent_id: subCategoryList[subCat].id},
+                  sort: 'name ASC'
+                });
+
+                if (subSubCategoryList && subSubCategoryList.length > 0) {
+                  const subSubCategoryLen = subSubCategoryList.length;
+                  for (let subSubCat = 0; subSubCat < subSubCategoryLen; subSubCat++) {
+                    let subSubCategoryLabel = subCategoryLabel + '=>' + subSubCategoryList[subSubCat].name;
+                    categorySheet.cell(categoryRowIndex, 1).string(categoryList[cat].id + ',' + subCategoryList[subCat].id + ',' + subSubCategoryList[subSubCat].id + '|' + escapeExcel(subSubCategoryLabel));
+                    categoryRowIndex++;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        /* Fetch Brand List */
+        let brandList = await Brand.find({
+          where: {deletedAt: null},
+          sort: 'name ASC'
+        });
+        brandList.forEach((item, i) => {
+          brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+        });
+
+        /* Fetch Warehouse List */
+        let wareHouseList;
+        if(isAdmin){
+          wareHouseList = await Warehouse.find({
+            where: {deletedAt: null},
+            sort: 'name ASC'
+          });
+          wareHouseList.forEach((item, i) => {
+            wareHouseSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
+          });
+        }
+
+        // Create a reusable style
+        const headerStyle = wb.createStyle({
+          font: {
+            color: '#070c02',
+            size: 14,
+          },
+        });
+        const myStyle = wb.createStyle({
+          alignment: {
+            wrapText: true
+          }
+        });
+
+        let columnNamesObject = {
+          'Category': {
+            width: 50,
+            validation: 'list',
+            sheetName: 'Category'
+          }
+        };
+        if(isAdmin){
+          columnNamesObject = {
+            ...columnNamesObject,
+            'Vendor Code': {
+              width: 20,
+              validation: 'list',
+              sheetName: 'Warehouse'
+            }
+          };
+        }
+        columnNamesObject = {
+          ...columnNamesObject,
+          'Product Name': {width: 30},
+          'SKU(code)': {width: 15},
+          'Description': {width: 60},
+          'Brand': {
+            width: 15,
+            validation: 'list',
+            sheetName: 'Brand'
+          },
+          'Price': {
+            width: 10,
+            validation: 'decimal'
+          },
+          'Discount Price': {
+            width: 15,
+            validation: 'decimal'
+          },
+          'Vendor Price': {
+            width: 15,
+            validation: 'decimal'
+          },
+          'Quantity': {
+            width: 10,
+            validation: 'decimal'
+          },
+          'Weight': {
+            width: 10,
+            validation: 'decimal'
+          },
+          'Tags': {width: 15}
+        };
+
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+        const columnNameKeys = Object.keys(columnNamesObject);
+
+        const cNLen = columnNameKeys.length;
+
+        for (let i = 0; i < cNLen; i++) {
+          ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+          ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+          if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+            if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+              ws.addDataValidation({
+                type: 'decimal',
+                allowBlank: false,
+                sqref: letters[i] + '2:' + letters[i] + '10000',
+              });
+            } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+              ws.addDataValidation({
+                type: 'list',
+                allowBlank: false,
+                prompt: 'Choose from Dropdown',
+                error: 'Invalid Choice was Chosen',
+                showDropDown: true,
+                sqref: letters[i] + '2:' + letters[i] + '10000',
+                formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+              });
+            }
+          }
+        }
+
+        let _where = {};
+        _where.deletedAt = null;
+        if (req.query.type_id !== 'null') {
+          _where.type_id = req.query.type_id;
+        }
+        if (req.query.category_id !== 'null') {
+          _where.category_id = req.query.category_id;
+        }
+        if (req.query.subcategory_id !== 'null') {
+          _where.subcategory_id = req.query.subcategory_id;
+        }
+
+        let products = await Product.find(
+          {
+            where: _where
+          })
+          .populate('type_id')
+          .populate('category_id')
+          .populate('subcategory_id')
+          .populate('brand_id')
+          .populate('warehouse_id');
+        let row = 2;
+
+        products.forEach(item => {
+          if(item.warehouse_id.deletedAt === null){
+            let column = 1;
+            let Category = ''+item.type_id.id;
+            let label = ''+item.type_id.name;
+            if(item.category_id !== null){
+              Category += (','+item.category_id.id);
+              label = label+'=>'+item.category_id.name;
+              if(item.subcategory_id !== null){
+                Category += (','+item.subcategory_id.id);
+                label += ('=>'+item.subcategory_id.name);
+              }
+            }
+            Category = Category +'|'+escapeExcel(label);
+            ws.cell(row, column++).string(Category).style(myStyle);
+
+            if(isAdmin){
+              ws.cell(row, column++).string(item.warehouse_id.id + '|' + escapeExcel(item.warehouse_id.name));
+            }
+
+            ws.cell(row, column++).string(escapeExcel(item.name)).style(myStyle);
+            ws.cell(row, column++).string(item.code);
+            ws.cell(row, column++).string(escapeExcel(item.product_details)).style(myStyle);
+
+            if(item.brand_id){
+              ws.cell(row, column++).string(item.brand_id.id+ '|' + escapeExcel(item.brand_id.name));
+            }else{
+              ws.cell(row, column++).string('null');
+            }
+            ws.cell(row, column++).number(item.price);
+
+            if(item.promo_price){
+              ws.cell(row, column++).number(item.promo_price);
+            }
+            else{
+              ws.cell(row, column++).number(0);
+            }
+
+            if(item.vendor_price){
+              ws.cell(row, column++).number(item.vendor_price);
+            }
+            else{
+              ws.cell(row, column++).number(0);
+            }
+
+            if(item.quantity){
+              ws.cell(row, column++).number(item.quantity);
+            }
+            else{
+              ws.cell(row, column++).number(0);
+            }
+
+            if(item.weight){
+              ws.cell(row, column++).number(item.weight);
+            }
+            else{
+              ws.cell(row, column++).number(0);
+            }
+
+            if(item.tag){
+              ws.cell(row, column).string(item.tag).style(myStyle);
+            }
+            else{
+              ws.cell(row, column).string('null');
+            }
+            row++;
+          }
+        });
+        wb.write('Excel-' + Date.now() + '.xlsx', res);
+      }
+    }
+    catch (error) {
+      let message = 'Error in Get All products with excel';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  bulkUpdate: async(req, res) => {
+    try{
+      const authUser = req.token.userInfo;
+      const len = req.body.length;
+      let problematicRow = 0;
+      let message = '';
+      for (let i = 0; i < len; i++) {
+        if (
+          !(req.body[i].name !== '' && req.body[i].code !== '' && req.body[i].price !== '' && req.body[i].quantity !== '' &&
+            req.body[i].category && req.body[i].category.indexOf('|') !== -1 && req.body[i].product_details !== '')
+        ) {
+          problematicRow = i + 1;
+          message = 'There is a problem in row ' + problematicRow;
+          break;
+        } else if (authUser.group_id.name === 'admin' && (!req.body[i].warehouse_id && req.body[i].warehouse_id.indexOf('|') === -1)) {
+          problematicRow = i + 1;
+          message = 'There is a problem in row ' + problematicRow;
+          break;
+        }
+        const product = await Product.findOne(
+          {
+            code: req.body[i].code
+          });
+
+        if(authUser.group_id.name === 'owner' && authUser.warehouse_id.id !== product.warehouse_id){
+          problematicRow = i + 1;
+          message = 'You are not owner of the product of row: ' + problematicRow;
+          break;
+        }
+      }
+      if (problematicRow > 0) {
+        return res.status(200).json({
+          success: false,
+          message,
+          error: null
+        });
+      }
+
+      const dataToSave = req.body.map((item) => {
+        const newItem = {
+          ...item,
+          weight: item.weight ? parseFloat(item.weight) : 0
+        };
+
+        let parts = item.category.split('|');
+        const allCategoryIds = parts[0].trim();
+        let categoryIdParts = allCategoryIds.split(',');
+        const categoryColumns = ['type_id', 'category_id', 'subcategory_id'];
+        for (let j = 0; j < categoryIdParts.length; j++) {
+          newItem[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
+        }
+
+        if (item.product_details) {
+          newItem.product_details = item.product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
+        }
+
+        if (item.tag) {
+          const tagArr = item.tag.split(',').map((t) => {
+            return t.trim();
+          });
+          newItem.tag = JSON.stringify(tagArr);
+        }
+
+        if (item.brand_id && item.brand_id.indexOf('|') !== -1) {
+          parts = item.brand_id.split('|');
+          newItem.brand_id = parseInt(parts[0].trim());
+        }
+
+        newItem.price = parseFloat(item.price);
+        newItem.vendor_price = parseFloat(item.vendor_price);
+
+        if (item.promo_price > 0) {
+          newItem.promo_price = parseFloat(item.promo_price);
+        } else {
+          newItem.promo_price = 0;
+        }
+
+        if (authUser.group_id.name === 'admin') {
+          parts = item.warehouse_id.split('|');
+          if (parts[0]) {
+            newItem.warehouse_id = parseInt(parts[0].trim(), 10);
+          }
+        }
+        return newItem;
+      });
+      dataToSave.forEach(item => {
+        delete  item.category;
+        return item;
+      });
+
+      let count = 0;
+      for (const item of dataToSave) {
+        const foundProduct = await Product.findOne(
+          {
+            where: {code: item.code}
+          });
+        if(foundProduct){
+          await Product.updateOne({ code: item.code}).set(item);
+          count++;
+        }
+        else{
+          res.status(200).json({
+            success: false,
+            message: 'Some products not found in database!'
+          });
+        }
+      }
+      res.status(200).json({
+        success: true,
+        message: 'Number of Products successfully updated: ' + count,
+
+      });
+    }
+    catch (error){
+      let message = 'Error in Update products with excel';
+      res.status(400).json({
+        success: false,
+        message,
         error
       });
     }

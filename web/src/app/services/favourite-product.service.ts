@@ -20,7 +20,17 @@ export class FavouriteProductService {
     }
 
     getByUserId(user_id: any): Observable<any> {
-        return this.http.get<Product[]>(`${this.EndPoint}/byuser?user_id=${user_id}`)
+        return this.http.get(`${this.EndPoint}/byuser?user_id=${user_id}`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
+    }
+
+    getByAuthUser(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/byAuthUser?populate=true`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
+    }
+
+    getByAuthUserNoPopulate(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/byAuthUser?populate=false`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 

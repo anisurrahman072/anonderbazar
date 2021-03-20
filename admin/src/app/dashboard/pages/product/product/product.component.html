@@ -1,317 +1,292 @@
 <section>
-    <nz-card [hidden]="!showList" class="card-height">
-        <ng-template #title>
-            {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product List
-        </ng-template>
-        <ng-template #extra>
+    <nz-card [hidden]="!showList" class="card-height"
+             [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
+             [nzExtra]="extraTemplate">
+        <ng-template #extraTemplate>
             <button *ngIf="'product-create'|accessControl" routerLink="/dashboard/product/create"
-                    [queryParams]="{status: status}" nz-button [nzType]="'primary'"
-                    [nzSize]="'large'">
+                    [queryParams]="{status: status}" nz-button
+            >
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
             <button routerLink="/dashboard/product/bulk-upload"
-                    [queryParams]="{status: status}" nz-button [nzType]="'primary'" style="margin-left: 10px;"
-                    [nzSize]="'large'">
+                    [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
+            >
                 <i class="anticon anticon-upload"></i>
                 <span> Bulk Upload Products </span>
-            </button>
+            </button>&nbsp;
+            <button routerLink="/dashboard/product/bulk-update"
+                    [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
+            >
+                <i class="anticon anticon-update"></i>
+                <span> Bulk Update Products </span>
+            </button>&nbsp;
+            <button nz-button (click)="resetAllFilter()">Clear filter</button>
         </ng-template>
-        <ng-template #body>
-            <nz-spin [nzSpinning]="_isSpinning">
-                <div class="table-operations"></div>
-                <nz-table class="product-grid" [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data"
-                          [nzPageSize]="limit"
-                          [nzSize]="'default'" [nzShowTitle]="true">
-                    <thead nz-thead>
-                    <tr>
-                        <th nz-th>
-                            <span> Picture </span>
-                        </th>
-                        <th nz-th>
-                            <span>Code</span>
-                            <nz-table-sort [(nzValue)]="sortValue.code"
-                                           (nzValueChange)="sort('code', $event)"></nz-table-sort>
-                        </th>
-                        <th nz-th>
-                            <span> Name </span>
-                            <nz-table-sort [(nzValue)]="sortValue.name"
-                                           (nzValueChange)="sort('name', $event)"></nz-table-sort>
-                        </th>
-                        <th nz-th>
-                            <span> Price </span>
-                            <nz-table-sort [(nzValue)]="sortValue.price"
-                                           (nzValueChange)="sort('price', $event)"></nz-table-sort>
-                        </th>
-                        <th nz-th>
-                            <span> Approved ? </span>
-                        </th>
-                        <th nz-th>
-                            <span> Product Type </span>
-                        </th>
-                        <th nz-th>
-                            <span> Brand </span>
-                        </th>
-                        <th nz-th>
-                            <span> Category </span>
-                        </th>
-                        <th nz-th>
-                            <span> S-category </span>
-                        </th>
-                        <th nz-th>
-                            <span> Quantity </span>
-                            <nz-table-sort [(nzValue)]="sortValue.quantity"
-                                           (nzValueChange)="sort('quantity', $event)"></nz-table-sort>
-                        </th>
-                        <th nz-th>
-                            <span>Last Updated</span>
-                            <nz-table-sort [(nzValue)]="sortValue.updatedAt"
-                                           (nzValueChange)="sort('updatedAt', $event)"></nz-table-sort>
-                        </th>
-                        <th nz-th>
-                            <span> Action </span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <thead nz-thead>
-                    <!--search bar.....................-->
-                    <tr>
-                        <th nz-th>
 
-                        </th>
-                        <th nz-th>
-                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Code'"
-                                      [(ngModel)]="codeSearchValue"
-                                      (ngModelChange)="page=1;getProductData()"></nz-input>
-                        </th>
+        <nz-table #nzTable
+                  [nzShowPagination]="true"
+                  [nzFrontPagination]="false"
+                  [nzData]="data"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="total"
+                  [nzPageIndex]="page"
+                  [nzPageSize]="limit"
+                  (nzPageIndexChange)="getProductData($event, 'page')"
+                  (nzPageSizeChange)="getProductData($event, 'size')"
+                  nzShowSizeChanger
+                  [nzScroll]="{ x:'1900px',y: '800px'  }"
+        >
+            <thead (nzSortChange)="sort($event)" nzSingleSort>
+            <tr>
+                <th nzShowSort nzSortKey="updated_at" style="text-align: center">
+                    <span>Last Updated</span>
+                </th>
+                <th nzShowSort nzSortKey="code" style="text-align: center">
+                    <span>Code</span>
+                </th>
+                <th nzShowSort nzSortKey="name" style="text-align: center">
+                    <span> Name </span>
+                </th>
+                <th nzShowSort nzSortKey="price" style="text-align: center">
+                    <span> Price </span>
+                </th>
+                <th nzShowSort nzSortKey="quantity" style="text-align: center">
+                    <span> Quantity </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Approved ? </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Type </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Category </span>
+                </th>
+                <th style="text-align: center">
+                    <span> S-category </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Brand </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Image </span>
+                </th>
+                <th style="text-align: center">
+                    <span> Action </span>
+                </th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>
+                    <input nz-input style="width: 250px;" placeholder="Code"
+                           [(ngModel)]="codeSearchValue"
+                           (ngModelChange)="onSearchChange($event, 'codeSearchValue')">
+                </th>
+                <th>
+                    <input nz-input style="width: 300px;" placeholder="Name"
+                           [(ngModel)]="nameSearchValue"
+                           (ngModelChange)="onSearchChange($event, 'nameSearchValue')">
+                </th>
+                <th>
+                    <input nz-input style="width: 100px;" placeholder="Price"
+                           [(ngModel)]="priceSearchValue"
+                           (ngModelChange)="onSearchChange($event, 'priceSearchValue')">
+                </th>
+                <th>
+                    <input nz-input style="width: 100px;" placeholder="Quantity"
+                           [(ngModel)]="qtySearchValue"
+                           (ngModelChange)="onSearchChange($event, 'qtySearchValue')">
+                </th>
+                <th>
+                    <nz-select style="width: 100px;" nzPlaceHolder="Select Approval Status"
+                               ngModel="approval_status" (ngModelChange)="approvalStatusChange($event)">
+                        <nz-option nzValue="1" nzLabel="Pending"></nz-option>
+                        <nz-option nzValue="2" nzLabel="Approved"></nz-option>
+                        <nz-option nzValue="99" nzLabel="Rejected"></nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="typeId"
+                               (ngModelChange)="typeIdChange($event)"
+                               nzPlaceHolder="Select Product Type"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of TypeSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
 
-                        <th nz-th>
-                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Name'"
-                                      [(ngModel)]="nameSearchValue"
-                                      (ngModelChange)="page=1;getProductData()"></nz-input>
-                        </th>
+                <th>
+                    <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="categoryId"
+                               (ngModelChange)="categoryIdChange($event)"
+                               nzPlaceHolder="Select Product category"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
 
-                        <th nz-th>
-                            <nz-input style="width: 150px;" [nzPlaceHolder]="'Price'"
-                                      [(ngModel)]="priceSearchValue"
-                                      (ngModelChange)="page=1;getProductData()"></nz-input>
-                        </th>
-                        <th nz-th>
-                            <nz-select style="width: 100px;" [nzPlaceHolder]="'Select Approval Status'"
-                                       ngModel="approval_status" (ngModelChange)="approvalStatusChange($event)">
-                                <nz-option nzValue="1" nzLabel="Pending"></nz-option>
-                                <nz-option nzValue="2" nzLabel="Approved"></nz-option>
-                                <nz-option nzValue="99" nzLabel="Rejected"></nz-option>
-                            </nz-select>
-                        </th>
-                        <th nz-th>
-                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="typeId"
-                                       (ngModelChange)="typeIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product Type'" [nzFilter]="true"
-                                       (nzSearch)="typeIdSearchChange($event)"
-                                       (nzSearchChange)="typeIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                                       nzShowSearch>
-                                <nz-option *ngFor="let option of TypeSearchOptions" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
-                        </th>
-                        <th nz-th>
+                </th>
+                <th>
+                    <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="subcategoryId"
+                               (ngModelChange)="subcategoryIdChange($event)"
+                               nzPlaceHolder="Select Product Subcategory"
+                               [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
+                               (ngModelChange)="brandIdChange($event)"
+                               nzPlaceHolder="Select Brand"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th nzWidth="100px">&nbsp;</th>
+                <th nzWidth="200px">&nbsp;</th>
+            </tr>
+            </thead>
 
-                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="brandId"
-                                       (ngModelChange)="brandIdChange($event)"
-                                       [nzPlaceHolder]="'Select Brand'" [nzFilter]="true"
-                                       (nzSearch)="brandIdSearchChange($event)"
-                                       (nzSearchChange)="brandIdSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                                       nzShowSearch>
-                                <nz-option *ngFor="let option of brandSearchOptions" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
-                        </th>
-                        <th nz-th>
-                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="categoryId"
-                                       (ngModelChange)="categoryIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product category'" [nzFilter]="true"
-                                       (nzSearch)="categoryIdSearchChange($event)"
-                                       (nzSearchChange)="categoryIdSearchChange($event)"
-                                       [nzNotFoundContent]="'Not found'"
-                                       nzShowSearch>
-                                <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
+            <tbody>
 
-                        </th>
-                        <th nz-th>
-                            <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="subcategoryId"
-                                       (ngModelChange)="subcategoryIdChange($event)"
-                                       [nzPlaceHolder]="'Select Product Subcategory'"
-                                       [nzFilter]="true" (nzSearch)="subcategoryIdSearchChange($event)"
-                                       (nzSearchChange)="subcategoryIdSearchChange($event)"
-                                       [nzNotFoundContent]="'Not found'" nzShowSearch>
-                                <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
-                        </th>
-                        <th nz-th>
+            <tr *ngFor="let data of nzTable.data">
 
-                        </th>
-                        <th nz-th>
-
-                        </th>
-                        <th nz-th>
-
-                        </th>
-                    </tr>
-                    </thead>
-
-                    <tbody nz-tbody>
-                    <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
-                        <tr nz-tbody-tr>
-
-                            <td nz-td>
-                                <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
-                                           [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'"
-                                           [nzIcon]="'user'"></nz-avatar>
-                            </td>
-                            <td nz-td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.code}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
-                                <nz-tag *ngIf="data.promotion == 1">
-                                    <del style="color: red">{{data.price}}</del>
-                                    {{data.promo_price}}</nz-tag>
-                            </td>
-
-                            <td nz-td>
-                                <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.type_id?.name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.category_id?.name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                {{data.subcategory_id?.name}}
-                            </td>
-                            <td nz-td>
-                                <nz-tag [nzColor]="data.quantity<data.alert_quantity? '#f50':''">
-                                    {{data.quantity}}
-                                </nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{formattedDate(data.updatedAt)}}</nz-tag>
-                            </td>
-                            <td>
-                                <nz-button-group>
-                                    <button *ngIf="'product-read'|accessControl"
-                                            [routerLink]="['/dashboard/product/details/', data.id]"
-                                            [queryParams]="{status: status}"
-                                            nz-button [nzType]="'info'" [nzSize]="'default'">
-                                        <i class="anticon anticon-info-circle"></i>
-                                    </button>
-                                    <button *ngIf="'product-edit'|accessControl"
-                                            [routerLink]="['/dashboard/product/edit', data.id]"
-                                            [queryParams]="{status: status}"
-                                            nz-button [nzType]="'primary'" [nzSize]="'default'">
-                                        <i class="anticon anticon-edit"></i>
-                                    </button>
-                                    <ng-container *ngIf="data.approval_status == 1 || data.approval_status == 99">
-                                        <ng-container *ngIf="'product-pending-approvals'|accessControl">
-                                            <nz-popconfirm [nzTitle]="'Are you sure you want to approve?'"
-                                                           [nzOkText]="'Approve'"
-                                                           [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="approveConfirm(i,data.id)">
-                                                <a nz-popconfirm [attr.title]="'Approve This Product: '+ data.id">
-                                                    <button nz-button [nzType]="'default'" [nzSize]="'default'">
-                                                        <i class="anticon anticon-check-circle"></i>
-                                                    </button>
-                                                </a>
-                                            </nz-popconfirm>
-                                        </ng-container>
-                                    </ng-container>
-                                    <ng-container *ngIf="data.approval_status == 2">
-                                        <ng-container *ngIf="'product-pending-approvals'|accessControl">
-                                            <nz-popconfirm [nzTitle]="'Are you sure you want to reject?'"
-                                                           [nzOkText]="'Reject'"
-                                                           [nzCancelText]="'Cancel'"
-                                                           (nzOnConfirm)="rejectConfirm(i,data.id)">
-                                                <a nz-popconfirm [attr.title]="'Reject This Product: ' + data.id">
-                                                    <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                        <i class="anticon anticon-close-circle"></i>
-                                                    </button>
-                                                </a>
-                                            </nz-popconfirm>
-                                        </ng-container>
-                                    </ng-container>
-                                    <ng-container *ngIf="'product-delete'|accessControl">
-                                        <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
-                                                       [nzOkText]="'Delete'"
-                                                       [nzCancelText]="'Cancel'"
-                                                       (nzOnConfirm)="deleteConfirm(i,data.id)">
-                                            <a nz-popconfirm>
-                                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                    <i class="anticon anticon-delete "></i>
-                                                </button>
-                                            </a>
-                                        </nz-popconfirm>
-                                    </ng-container>
-                                    <nz-dropdown nzTrigger="click" *ngIf="'product-discount'|accessControl"
-                                                 nzPlacement="topRight">
-                                        <button nz-button nz-dropdown>
-                                            <!-- <span> আরও </span> -->
-                                            <i class="anticon anticon-down"></i>
-                                        </button>
-                                        <ul nz-menu>
-                                            <li nz-menu-item *ngIf="status==2 || status==3">
-
-                                                <button style="width: 100%" nz-button [nzType]="'primary'"
-                                                        (click)="showVariantModal(data)">
-                                                    <span> Add Attribute </span>
-                                                </button>
-                                            </li>
-                                            <li nz-menu-item>
-                                                <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                        (click)="showPromotionModal(data)">
-                                                    <span> Add Discount </span>
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </nz-dropdown>
-                                </nz-button-group>
-                            </td>
-                        </tr>
+                <td style="width: 136px">
+                    {{data.updatedAt|date:'dd/MM/yyyy hh:mm a'}}
+                </td>
+                <td style="text-align: center; width: 295px">
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.code}}</a>
+                </td>
+                <td style="text-align: center; width: 347px">
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</a>
+                </td>
+                <td style="text-align: center; width: 137px">
+                    <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
+                    <nz-tag *ngIf="data.promotion == 1">
+                        <del style="color: red">{{data.price}}</del>
+                        {{data.promo_price}}</nz-tag>
+                </td>
+                <td style="text-align: center; width: 137.5px">
+                    <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
+                        {{data.quantity}}
+                    </nz-tag>
+                </td>
+                <td style="text-align: center; width: 139px">
+                    <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
+                </td>
+                <td style="text-align: center; width: 138px">
+                    <span>{{data.type_name}}</span>
+                </td>
+                <td style="text-align: center; width: 138px">
+                    <span>{{data.category_name}}</span>
+                </td>
+                <td style="text-align: center; width: 139px">
+                    <span> {{data.subcategory_name}}</span>
+                </td>
+                <td style="text-align: center; width: 139px">
+                    <span>{{data.brand_name}}</span>
+                </td>
+                <td style="text-align: center; width: 75px">
+                    <ng-container *ngIf="data.image; else noImage">
+                        <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
+                                   [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
+                                   [nzIcon]="'user'"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noImage>
+                        <nz-tag>No Image</nz-tag>
                     </ng-template>
-                    </tbody>
+                </td>
+                <td style="text-align: center">
+                    <nz-button-group>
+                        <button *ngIf="'product-read'|accessControl"
+                                [routerLink]="['/dashboard/product/details/', data.id]"
+                                [queryParams]="{status: status}"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <button *ngIf="'product-edit'|accessControl"
+                                [routerLink]="['/dashboard/product/edit', data.id]"
+                                [queryParams]="{status: status}"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                        <ng-container *ngIf="data.approval_status == 1 || data.approval_status == 99">
+                            <ng-container *ngIf="'product-pending-approvals'|accessControl">
+                                <nz-popconfirm [nzTitle]="'Are you sure you want to approve?'"
+                                               [nzOkText]="'Approve'"
+                                               [nzCancelText]="'Cancel'"
+                                               (nzOnConfirm)="approveConfirm(i,data.id)">
+                                    <a nz-popconfirm [attr.title]="'Approve This Product: '+ data.id">
+                                        <button nz-button [nzSize]="'default'">
+                                            <i class="anticon anticon-check-circle"></i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="data.approval_status == 2">
+                            <ng-container *ngIf="'product-pending-approvals'|accessControl">
+                                <nz-popconfirm [nzTitle]="'Are you sure you want to reject?'"
+                                               [nzOkText]="'Reject'"
+                                               [nzCancelText]="'Cancel'"
+                                               (nzOnConfirm)="rejectConfirm(i,data.id)">
+                                    <a nz-popconfirm [attr.title]="'Reject This Product: ' + data.id">
+                                        <button nz-button [nzSize]="'default'">
+                                            <i class="anticon anticon-close-circle"></i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="'product-delete'|accessControl">
+                            <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
+                                           [nzOkText]="'Delete'"
+                                           [nzCancelText]="'Cancel'"
+                                           (nzOnConfirm)="deleteConfirm(i,data.id)">
+                                <a nz-popconfirm>
+                                    <button nz-button [nzSize]="'default'">
+                                        <i class="anticon anticon-delete "></i>
+                                    </button>
+                                </a>
+                            </nz-popconfirm>
+                        </ng-container>
+                        <nz-dropdown nzTrigger="click" *ngIf="'product-discount'|accessControl"
+                                     nzPlacement="topRight">
+                            <button nz-button nz-dropdown>
+                                <!-- <span> আরও </span> -->
+                                <i class="anticon anticon-down"></i>
+                            </button>
+                            <ul nz-menu>
+                                <li nz-menu-item *ngIf="status==2 || status==3">
 
-                </nz-table>
-            </nz-spin>
-            <div class="row">
-                <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
-                        <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
-                                       (nzPageSizeChange)="changePage(1,$event)"
-                                       nzShowTotal [nzPageIndex]="page"
-                                       [nzTotal]="total"
-                                       [nzPageSize]="limit" nzShowSizeChanger>
-                        </nz-pagination>
-                    </span>
-                    <span nz-table-title class="pull-right col-md-6">
-                        <button nz-button (click)="resetAllFilter()">Clear filter</button>
-                    </span>
-                </div>
-            </div>
-        </ng-template>
+                                    <button style="width: 100%" nz-button
+                                            (click)="showVariantModal(data)">
+                                        <span> Add Attribute </span>
+                                    </button>
+                                </li>
+                                <li nz-menu-item>
+                                    <button nz-button style="width: 100%"
+                                            (click)="showPromotionModal(data)">
+                                        <span> Add Discount </span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nz-dropdown>
+                    </nz-button-group>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+
     </nz-card>
 
     <ng-container *ngIf="showAddPart">
@@ -327,42 +302,39 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalVariantContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="currentProduct_variants" [nzIsPagination]="false">
-            <thead nz-thead>
+        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false">
+            <thead>
             <tr>
-                <th nz-th>
+                <th>
                     <span> Attribute Name </span>
                 </th>
-                <th nz-th>
+                <th>
                     <span> Attribute's Variant Name </span>
                 </th>
-                <th nz-th>
+                <th>
                     <span> Product Variant's Level </span>
                 </th>
-                <th nz-th>
+                <th>
                     <span> Additional Price </span>
                 </th>
-                <th nz-th>
+                <th>
                     <span> Action </span>
                 </th>
             </tr>
             </thead>
-            <tbody nz-tbody>
-            <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;">
+            <tbody>
+            <tr *ngFor="let datum of nzTableVariant.data;let i=index;">
 
-                <td nz-td>{{data.variant_id?.name}}</td>
-                <td nz-td>{{data.warehouses_variant_id?.name}}</td>
-                <td nz-td>{{data.name}}</td>
-                <td nz-td>{{data.quantity}}</td>
+                <td>{{datum.variant_id?.name}}</td>
+                <td>{{datum.warehouses_variant_id?.name}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.quantity}}</td>
 
-                <td nz-td>
-
+                <td>
                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                   [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteProductVariantConfirm(i,data.id)">
-
-
+                                   [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteProductVariantConfirm(i,datum.id)">
                         <a nz-popconfirm>
-                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                            <button nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-delete "> Remove </i>
                             </button>
                         </a>
@@ -372,85 +344,82 @@
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" (click)="addNew=!addNew;">
+        <button nz-button [nzSize]="'large'" (click)="addNew=!addNew;">
             <span *ngIf="!addNew"> Add Product Variant </span>
             <span *ngIf="addNew">Cancel</span>
         </button>
 
         <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateForm"
               (ngSubmit)="submitFormAddVariantForm($event,validateForm.value)">
-            <div nz-form-item>
-                <div nz-form-control>
+            <div>
+                <div>
                     <nz-select style="width: 200px;" formControlName="variant_id" [(ngModel)]="selectedVariant_id"
                                nzAllowClear (ngModelChange)="variantOptionChange($event)"
-                               [nzPlaceHolder]="'Select Attribute'"
-                               [nzFilter]="true" (nzSearch)="variantSearchChange($event)"
-                               (nzSearchChange)="variantSearchChange($event)"
+                               nzPlaceHolder="Select Attribute"
                                [nzNotFoundContent]="'Not found'" nzShowSearch>
                         <nz-option *ngFor="let option of variantOptions" [nzLabel]="option.name" [nzValue]="option">
                         </nz-option>
                     </nz-select>
-                    <div nz-form-explain
-                         *ngIf="validateForm.controls.variant_id.dirty&&validateForm.controls.variant_id.hasError('required')">
+                    <div
+                            *ngIf="validateForm.controls.variant_id.dirty&&validateForm.controls.variant_id.hasError('required')">
                         Please select attribute!
                     </div>
                 </div>
             </div>
-            <div nz-form-item *ngIf="selectedVariant_id">
-                <div nz-form-control>
+            <div *ngIf="selectedVariant_id">
+                <div>
                     <!--{{selectedVariant_id | json}}-->
                     <nz-select style="width: 200px;" formControlName="warehouses_variant_id" nzAllowClear
                                [(ngModel)]="selectedWarehousesVariantOption"
-                               [nzPlaceHolder]="'Select Attribute\'s Variant'" [nzFilter]="true"
+                               nzPlaceHolder="Select Attribute\'s Variant"
                                [nzNotFoundContent]="'Not found'"
                                nzShowSearch>
                         <nz-option *ngFor="let option of warehouseVariantOptions" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
-                    <div nz-form-explain
-                         *ngIf="validateForm.controls.warehouses_variant_id.dirty&&validateForm.controls.warehouses_variant_id.hasError('required')">
+                    <div
+                            *ngIf="validateForm.controls.warehouses_variant_id.dirty&&validateForm.controls.warehouses_variant_id.hasError('required')">
                         Please select Attribute\'s Variant!
                     </div>
                 </div>
             </div>
 
             <!--Name-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Enter variant label'"
-                              [nzSize]="'large'">
-                        <ng-template #prefix>
-                            <i class="anticon anticon-unlock"></i>
-                        </ng-template>
-                    </nz-input>
-                    <div nz-form-explain
-                         *ngIf="validateForm.controls.name.dirty&&validateForm.controls.name.hasError('required')">
+            <div>
+                <div>
+                    <input nz-input formControlName="name" placeholder="Enter variant label"
+                           [nzSize]="'large'">
+                    <ng-template #prefix>
+                        <i class="anticon anticon-unlock"></i>
+                    </ng-template>
+
+                    <div
+                            *ngIf="validateForm.controls.name.dirty&&validateForm.controls.name.hasError('required')">
                         Product variant label is required!
                     </div>
                 </div>
             </div>
 
             <!--Quantity-->
-            <div nz-form-item *ngIf="selectedVariant_id?.type==1">
-                <div nz-form-control>
-                    <nz-input formControlName="quantity" [nzType]="'number'" [nzPlaceHolder]="'Additional price'"
-                              [nzSize]="'large'">
-                        <ng-template #prefix>
-                            <i class="anticon anticon-unlock"></i>
-                        </ng-template>
-                    </nz-input>
-                    <div nz-form-explain
-                         *ngIf="validateForm.controls.quantity.dirty&&validateForm.controls.quantity.hasError('required')">
+            <div *ngIf="selectedVariant_id?.type==1">
+                <div>
+                    <input nz-input formControlName="quantity" placeholder="Additional price"
+                           [nzSize]="'large'">
+                    <ng-template #prefix>
+                        <i class="anticon anticon-unlock"></i>
+                    </ng-template>
+
+                    <div
+                            *ngIf="validateForm.controls.quantity.dirty&&validateForm.controls.quantity.hasError('required')">
                         Please insert product variant additional price!
                     </div>
                 </div>
             </div>
-            <div nz-form-item>
-
+            <div>
                 <!--Add Button-->
-                <div nz-form-control>
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                <div>
+                    <button nz-button class="login-form-button" [nzSize]="'large'"
                             [disabled]="!validateForm.valid">
                         Add Product Variant
                     </button>
@@ -466,45 +435,45 @@
           [nzContent]="modalPromotionContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalPromotionContent>
 
-        <nz-table #nzTable [nzBordered]="true" [nzDataSource]="currentProduct" [nzIsPagination]="false">
-            <thead nz-thead>
+        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false">
+            <thead>
             <tr>
-                <th nz-th>
+                <th>
                     <span>Promotion (Yes/No)</span>
                 </th>
-                <th nz-th>
+                <th>
                     <span>Promotional Price</span>
                 </th>
-                <th nz-th>
+                <th>
                     <span>Start Date</span>
                 </th>
-                <th nz-th>
+                <th>
                     <span>End Date</span>
                 </th>
-                <th nz-th>
+                <th>
                     <span>Sale Unit</span>
                 </th>
             </tr>
             </thead>
-            <tbody nz-tbody>
-            <tr nz-tbody-tr *ngIf="currentProduct">
+            <tbody>
+            <tr *ngIf="currentProduct">
 
-                <td nz-td *ngIf="currentProduct.promotion==0">No</td>
-                <td nz-td *ngIf="currentProduct.promotion==1">Yes</td>
-                <td nz-td>{{currentProduct.promo_price}}</td>
-                <td nz-td>{{(currentProduct.start_date|date)}}</td>
-                <td nz-td>{{(currentProduct.end_date|date)}}</td>
-                <td nz-td>{{currentProduct.sale_unit}}</td>
+                <td *ngIf="currentProduct.promotion==0">No</td>
+                <td *ngIf="currentProduct.promotion==1">Yes</td>
+                <td>{{currentProduct.promo_price}}</td>
+                <td>{{(currentProduct.start_date|date)}}</td>
+                <td>{{(currentProduct.end_date|date)}}</td>
+                <td>{{currentProduct.sale_unit}}</td>
             </tr>
             </tbody>
         </nz-table>
 
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" *ngIf="currentProduct.promotion != 1"
+        <button nz-button [nzSize]="'large'" *ngIf="currentProduct.promotion != 1"
                 (click)="addNew=!addNew;">
             <span *ngIf="!addNew">Add Product Discount</span>
             <span *ngIf="addNew">Cancel</span>
         </button>
-        <button nz-button [nzType]="'info'" [nzSize]="'large'" *ngIf="currentProduct.promotion == 1"
+        <button nz-button [nzSize]="'large'" *ngIf="currentProduct.promotion == 1"
                 (click)="addNew=!addNew;">
             <span *ngIf="!addNew">Update Product Discount</span>
             <span *ngIf="addNew">Cancel</span>
@@ -514,77 +483,75 @@
               (ngSubmit)="submitAddPromotionForm($event,validatePromotionForm.value)">
 
             <!--Promotion-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-switch formControlName="promotion">
-                        <span checked>Yes</span>
-                        <span unchecked>No</span>
+            <div>
+                <div>
+                    <nz-switch formControlName="promotion" nzUnCheckedChildren="No" nzCheckedChildren="Yes">
                     </nz-switch>
-                    <div nz-form-explain
-                         *ngIf="validatePromotionForm.controls.promotion.dirty&&validatePromotionForm.controls.promotion.hasError('required')">
+                    <div
+                            *ngIf="validatePromotionForm.controls.promotion.dirty&&validatePromotionForm.controls.promotion.hasError('required')">
                         Please select promotion Status!
                     </div>
                 </div>
             </div>
 
             <!--Promotion Price-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-input formControlName="promo_price" [nzType]="'number'" [nzPlaceHolder]="'insert price'"
-                              [nzSize]="'large'">
-                        <ng-template #prefix>
-                            <i class="anticon anticon-unlock"></i>
-                        </ng-template>
-                    </nz-input>
-                    <div nz-form-explain
-                         *ngIf="validatePromotionForm.controls.promo_price.dirty&&validatePromotionForm.controls.promo_price.hasError('required')">
+            <div>
+                <div>
+                    <input nz-input formControlName="promo_price" placeholder="insert price"
+                           [nzSize]="'large'">
+                    <ng-template #prefix>
+                        <i class="anticon anticon-unlock"></i>
+                    </ng-template>
+
+                    <div
+                            *ngIf="validatePromotionForm.controls.promo_price.dirty&&validatePromotionForm.controls.promo_price.hasError('required')">
                         Please insert promotional price!
                     </div>
                 </div>
             </div>
 
             <!--Start Date-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-datepicker formControlName="start_date" [nzPlaceHolder]="'Select start date'"></nz-datepicker>
-                    <div nz-form-explain
-                         *ngIf="validatePromotionForm.controls.start_date.dirty&&validatePromotionForm.controls.start_date.hasError('required')">
+            <div>
+                <div>
+                    <nz-date-picker formControlName="start_date" [nzPlaceHolder]="'Select start date'"></nz-date-picker>
+                    <div
+                            *ngIf="validatePromotionForm.controls.start_date.dirty&&validatePromotionForm.controls.start_date.hasError('required')">
                         Please select your promotion Start date!
                     </div>
                 </div>
             </div>
 
             <!--End Date-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-datepicker formControlName="end_date" [nzPlaceHolder]="'Select end date'"></nz-datepicker>
-                    <div nz-form-explain
-                         *ngIf="validatePromotionForm.controls.end_date.dirty&&validatePromotionForm.controls.end_date.hasError('required')">
+            <div>
+                <div>
+                    <nz-date-picker formControlName="end_date" [nzPlaceHolder]="'Select end date'"></nz-date-picker>
+                    <div
+                            *ngIf="validatePromotionForm.controls.end_date.dirty&&validatePromotionForm.controls.end_date.hasError('required')">
                         Please select your promotion Start date!
                     </div>
                 </div>
             </div>
 
             <!--Sale Unit-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <nz-input formControlName="sale_unit" [nzType]="'number'" [nzPlaceHolder]="'Insert quantity'"
-                              [nzSize]="'large'">
-                        <ng-template #prefix>
-                            <i class="anticon anticon-unlock"></i>
-                        </ng-template>
-                    </nz-input>
-                    <div nz-form-explain
-                         *ngIf="validatePromotionForm.controls.sale_unit.dirty&&validatePromotionForm.controls.sale_unit.hasError('required')">
+            <div>
+                <div>
+                    <input nz-input formControlName="sale_unit" placeholder="Insert quantity"
+                           [nzSize]="'large'">
+                    <ng-template #prefix>
+                        <i class="anticon anticon-unlock"></i>
+                    </ng-template>
+
+                    <div
+                            *ngIf="validatePromotionForm.controls.sale_unit.dirty&&validatePromotionForm.controls.sale_unit.hasError('required')">
                         Please select your saleable Quantity!!
                     </div>
                 </div>
             </div>
 
             <!--Add Button-->
-            <div nz-form-item>
-                <div nz-form-control>
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+            <div>
+                <div>
+                    <button nz-button class="login-form-button" [nzSize]="'large'"
                             [disabled]="!validatePromotionForm.valid">Save
                     </button>
                 </div>

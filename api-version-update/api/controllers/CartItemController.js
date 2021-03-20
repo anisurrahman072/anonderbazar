@@ -10,25 +10,22 @@ module.exports = {
 
   //Method called for deleting cart item data
   //Model models/CartItem.js
-  destroy: async function (req, res) {
+  destroy: async (req, res) => {
     if (!req.param('id')) {
       return res.badRequest('Invalid data Provided');
     }
-    let cartItem = await CartItem.findOne({id: req.param('id')});
-    if (!cartItem) {
+    let cartItem = await CartItem.findOne({id: req.param('id')}).populate('cart_id');
+    if (!cartItem || !cartItem.cart_id) {
       return res.badRequest('Item does not exist in the cart');
     }
 
-    if (!isResourceOwner(req.token.userInfo, cartItem)) {
+    const cart = cartItem.cart_id;
+
+    console.log('req.token.userInfo', req.token.userInfo);
+    console.log('cartItem', cartItem);
+
+    if (!isResourceOwner(req.token.userInfo, cart)) {
       return res.forbidden();
-    }
-
-    let cart = await Cart.findOne({
-      id: cartItem.cart_id
-    });
-
-    if (!cart) {
-      return res.badRequest('Invalid data Provided');
     }
 
     try {
@@ -60,7 +57,7 @@ module.exports = {
             'total_quantity': totalQty,
           };
 
-          await Cart.update({id: cartItem.cart_id}).set(cartPayload)
+          await Cart.update({id: cart.id}).set(cartPayload)
             .usingConnection(db);
         });
 
@@ -81,7 +78,7 @@ module.exports = {
   },
   //Method called for deleting cart item data
   //Model models/CartItem.js
-  destroyFromController: async function (req) {
+  destroyFromController: async (req) => {
     try {
       return res.json({message: 'Not Authorized'});
     } catch (error) {
@@ -120,34 +117,37 @@ module.exports = {
   },
   //Method called for getting cart items data by cart id
   //Model models/CartItem.js
-  bycartid: function (req, res) {
-    CartItem.findOne({id: req.param('id')})
-      .populate('product_id')
-      .populate('cart_id')
-      .populate('cart_item_variants', {deletedAt: null})
-      .then((cartItem) => {
-        let cartItemVariantData = CartItemVariant.find({cart_item_id: cartItem.id})
-          .populate('warehouse_variant_id')
-          .populate('product_variant_id')
-          .populate('variant_id')
-          .then((cartItemVariant) => {
-            return cartItemVariant;
-          });
-        return [cartItem, cartItemVariantData];
-      })
-      .spread((cartItem, cartItemVariants) => {
-        let newJson = {};
-        newJson.cartItem = cartItem;
-        newJson.cartItem.cart_item_variants = cartItemVariants;
-        return res.json(newJson);
-      });
+  bycartid: async (req, res) => {
+    try {
+      const cartItem = await CartItem.findOne({id: req.param('id')})
+        .populate('product_id')
+        .populate('cart_id')
+        .populate('cart_item_variants', {deletedAt: null});
+
+      const cartItemVariantData = await CartItemVariant.find({cart_item_id: cartItem.id})
+        .populate('warehouse_variant_id')
+        .populate('product_variant_id')
+        .populate('variant_id');
+
+      let newJson = {};
+      newJson.cartItem = cartItem;
+      newJson.cartItem.cart_item_variants = cartItemVariantData;
+      return res.json(newJson);
+    } catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
+    }
   },
+
   //Method called for creating cart item data
   //Model models/CartItem.js
-  create: async function (req, res) {
+  create: async (req, res) => {
+
+    console.log(req.body);
+
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
+
     try {
       let cart = await Cart.findOne({
         id: req.body.cart_id
@@ -164,11 +164,18 @@ module.exports = {
       if (!product) {
         return res.badRequest('Invalid data Provided');
       }
+
       const quantityPassed = parseFloat(req.body.product_quantity);
 
+      if (quantityPassed <= 0) {
+        return res.badRequest('Invalid data Provided');
+      }
+
+      /*
       if (product.quantity < quantityPassed) {
         return res.badRequest('Product stock is not sufficient enough.');
       }
+*/
 
       let productUnitPrice = product.price;
       if (product.promotion) {
@@ -181,7 +188,7 @@ module.exports = {
         deletedAt: null
       });
 
-      let cartItem = null;
+
       let selectedCartItem = null;
       let cartItemVariantsLength = 0;
       if (cartItems && cartItems.length > 0) {
@@ -209,6 +216,7 @@ module.exports = {
           selectedCartItem = cartItems[0];
         }
       }
+      let cartItem = null;
       await sails.getDatastore()
         .transaction(async (db) => {
           if (selectedCartItem !== null && cartItemVariantsLength === 0) {
@@ -218,7 +226,7 @@ module.exports = {
               product_total_price: productUnitPrice * finalQuantity
             };
 
-            await CartItem.update({id: selectedCartItem.id}).set(cartItemBody)
+            cartItem = await CartItem.updateOne({id: selectedCartItem.id}).set(cartItemBody)
               .usingConnection(db);
 
           } else {
@@ -260,7 +268,7 @@ module.exports = {
             'total_price': totalPrice,
             'total_quantity': totalQty,
           };
-
+          console.log('cartItem', cartItem);
           await Cart.update({id: cartItem.cart_id}).set(cartPayload)
             .usingConnection(db);
         });
@@ -282,7 +290,7 @@ module.exports = {
   },
   //Method called for updating cart item data
   //Model models/CartItem.js
-  update: async function (req, res) {
+  update: async (req, res) => {
 
     if (!req.body.action_name) {
       return res.badRequest('Invalid Request!');
@@ -310,10 +318,14 @@ module.exports = {
         return res.status(401).json({err: 'You are not authorized to do it.'});
       }*/
 
+      let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
+
+      if (quantityToChange <= 0) {
+        return res.badRequest('Invalid quantity provided.');
+      }
+
       const response = await sails.getDatastore()
         .transaction(async (db) => {
-
-          let quantityToChange = req.body.quantity ? parseFloat(req.body.quantity) : 1.0;
 
           let itemCurrentQuantity = cartItem.product_quantity;
 

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { EventService } from '../../../services/event.service';
-
 import { AuthService } from '../../../services/auth.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms";
 import { AreaService } from '../../../services/area.service';
@@ -10,7 +9,6 @@ import { EventPriceService } from '../../../services/event-price.service';
 import { EventRegistrationService } from '../../../services/event-registration.service';
 import { Router } from '@angular/router';
 import {environment} from "../../../../environments/environment";
-
 
 @Component({
   selector: 'app-event-register',
@@ -55,6 +53,11 @@ export class EventRegisterComponent implements OnInit {
     private eventRegistrationService: EventRegistrationService,
     private fb: FormBuilder
   ) {
+
+  }
+
+  //Event method for getting all the data for the page
+  ngOnInit() {
     this.validateForm = this.fb.group({
       name: ["", [Validators.required]],
       father_name: ["", [Validators.required]],
@@ -78,10 +81,6 @@ export class EventRegisterComponent implements OnInit {
       permanent_division_id: ['', [Validators.required]],
       value: ['', [Validators.required]]
     });
-  }
-  //Event method for getting all the data for the page
-
-  ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
 
     this.loadEventListData(this.currentUser.userInfo.id, this.status, this.page, this.limit);
@@ -107,13 +106,7 @@ export class EventRegisterComponent implements OnInit {
   handleOk($event) {
 
   }
-  passwordConfirmationValidator = (control: FormControl): { [s: string]: boolean } => {
-    if (!control.value) {
-      return { required: true };
-    } else if (control.value !== this.validateForm.controls['password'].value) {
-      return { confirm: true, error: true };
-    }
-  };
+
 //Event method for submitting the form
 
   submitForm = ($event, value) => {
@@ -213,10 +206,7 @@ export class EventRegisterComponent implements OnInit {
   getFormControl(name) {
     return this.validateForm.controls[name];
   }
-  //Method for division search change
-  divisionSearchChange($event: string) {
-    const query = encodeURI($event);
-  }
+
   //Method for division change
   divisionChange($event) {
     this.validateForm.controls.zila_id.patchValue(null);
@@ -249,21 +239,7 @@ export class EventRegisterComponent implements OnInit {
       error => { }
     );
   }
-  //Method for zila search change
-  zilaSearchChange($event: string) {
 
-  }
-
-  //Method for upazila search change
-
-  upazilaSearchChange($event: string) {
-
-  }
-  //Method for get permanent division search address
-
-  permanent_divisionSearchChange($event: string) {
-    const query = encodeURI($event);
-  }
   //Method for get permanent division address
 
   permanent_divisionChange($event) {
@@ -284,16 +260,7 @@ export class EventRegisterComponent implements OnInit {
       // this.validateForm.controls.upazila_id.patchValue(query);
     });
   }
-  //Method for zila search change
 
-  permanent_zilaSearchChange($event: string) {
-
-  }
-
-
-  permanent_upazilaSearchChange($event: string) {
-
-  }
   //Method for delete registration
   deleteConfirm(index, id) {
     this.eventService.delete(id).subscribe(result => {

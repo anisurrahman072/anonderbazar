@@ -50,8 +50,8 @@ export class CategoryPageComponent implements OnInit {
 
     craftsmen = [];
     allCraftsman: any[];
-    min: number;
-    max: number;
+    min: number = 0;
+    max: number = 9999999999;
 
     changeStatusP = false;
     changeStatusR = false;

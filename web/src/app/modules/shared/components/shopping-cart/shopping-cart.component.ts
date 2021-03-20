@@ -15,6 +15,7 @@ import {Product} from '../../../../models';
 import {NotificationsService} from 'angular2-notifications';
 import {AppSettings} from '../../../../config/app.config';
 import {type} from "os";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-shopping-cart',
@@ -34,6 +35,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     grandTotal: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     cart$: Observable<any>;
     cartData: any = null;

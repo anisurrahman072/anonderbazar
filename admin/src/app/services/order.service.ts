@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -11,28 +10,25 @@ export class OrderService {
 
     private EndPoint = `${environment.API_ENDPOINT}/order`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient ) {
     }
 
-    getAllOrders(data): Observable<any> {
-        return this.http.get(`${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`);
-    }
-
-    getAllOrdersForFilter(data): Observable<any> {
-        let url = `${this.EndPoint}/getAllOrder?deletedAt=null&created_at= ${data.date}`;
+    getAllOrdersGrid(data, page: number = 1, limit: number = 25): Observable<any> {
+        let url = `${this.EndPoint}/allOrders?&page=${page}&limit=${limit}&created_at= ${data.date}`;
         if (data.status) {
-            url += `&status=${data.status}`
+            url += `&status=${data.status}`;
+        }
+        if(data.customerName){
+            url += `&customerName=${data.customerName}`;
+        }
+        if(data.orderNumber){
+            url += `&orderNumber=${data.orderNumber}`;
         }
         return this.http.get(url);
     }
 
     getAll(): Observable<any> {
         return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
-    }
-
-    getAllByWarehouseId(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`);
     }
 
     getById(id): Observable<any> {

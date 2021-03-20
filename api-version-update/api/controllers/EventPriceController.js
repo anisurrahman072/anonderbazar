@@ -14,22 +14,25 @@ module.exports = {
         await EventPrice.findOne(req.params.id)
       );
     } catch (error) {
-      let message = 'Error in Geting the product';
+      console.log(error);
+      let message = 'Error in Getting the event price';
       res.status(400).json({
-        success: false
+        success: false,
+        message,
+        error
       });
     }
   },
   //Method called for deleting a event price data
   //Model models/EventPrice.js
-  destroy: function(req, res) {
-    EventPrice.update({ id: req.param('id') }, { deletedAt: new Date() }).exec(
-      (err, EventManagement) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(EventManagement[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const eventPrice = await EventPrice.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(eventPrice);
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
   }
-
 };
 

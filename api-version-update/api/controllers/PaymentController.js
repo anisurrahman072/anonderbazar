@@ -9,7 +9,7 @@ module.exports = {
   destroy: async (req, res) => {
     try {
       const payment = await Payment.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.json(payment[0]);
+      return res.json(payment);
     } catch (error) {
       return res.status(400).json({
         success: false,

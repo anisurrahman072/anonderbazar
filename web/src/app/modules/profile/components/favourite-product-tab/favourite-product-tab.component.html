@@ -3,10 +3,12 @@
         <div class="titel">
             <h4>Favourite products</h4>
         </div>
-        <button *ngIf="favouriteProducts && favouriteProducts.data && favouriteProducts.data.length > 0" class="" (click)="onDeleteAll()"><a>Delete All<i class="fa fa-arrow-circle-o-right"></i></a></button>
+        <button *ngIf="favouriteProducts && favouriteProducts.length > 0" class="" (click)="onDeleteAll()">
+            <a>Delete All<i class="fa fa-arrow-circle-o-right"></i></a>
+        </button>
     </div>
-    <div class="row" *ngIf="favouriteProducts && favouriteProducts.data && favouriteProducts.data.length > 0 ; else noFavFound">
-        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4" *ngFor="let product of favouriteProducts?.data">
+    <div class="row" *ngIf="favouriteProducts && favouriteProducts.length > 0 ; else noFavFound">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-6 mb-4" *ngFor="let product of favouriteProducts">
             <app-product-item [dataProduct]="product.product_id"></app-product-item>
         </div>
     </div>

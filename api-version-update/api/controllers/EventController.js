@@ -15,6 +15,7 @@ module.exports = {
       const event = await EventManagement.findOne(req.params.id);
       res.status(200).json(event);
     } catch (error) {
+      console.log(error);
       let message = 'Error in Getting the events';
       res.status(400).json({
         success: false,

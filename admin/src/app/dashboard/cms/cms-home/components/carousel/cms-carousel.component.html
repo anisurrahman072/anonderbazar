@@ -1,121 +1,156 @@
-<div class="col-md-12">
-    <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
+<div class="row" style="margin-bottom: 10px;">
+    <div class="col-md-12">
+        <button class="btn btn-info pull-right" (click)="showCreateModal()">Add New</button>
+    </div>
 </div>
-<!--Create Carousel Modal-->
-<nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Create Carousel'" [nzContent]="modalContent" (nzOnCancel)="handleModalCancel($event)"
-    (nzOnOk)="handleModalOk($event)" footer={null}>
+<div class="row" *ngIf="cmsCarouselData && cmsCarouselData.length > 0">
+    <div class="col-md-6" *ngFor="let carousel of cmsCarouselData; let i = index" [attr.data-index]="i">
+        <nz-card style="max-height: 260px; margin-bottom: 5px;" [nzTitle]="carousel.title" [nzExtra]="extraTemplate">
+            <ng-template #extraTemplate>
+                <button nz-button [nzType]="'primary'" (click)="showEditModal(i)" style="margin-right: 10px;">
+                    <span>
+                        <i nz-icon type="edit" theme="outline"></i>
+                    </span>
+                </button>
+                <nz-popconfirm [nzTitle]="'Are you sure want to delete？'" [nzOkText]="'ok'"
+                               [nzCancelText]="'cancel'" (nzOnConfirm)="deleteCarousel(i)">
+                    <a nz-popconfirm>
+                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                            <i nz-icon type="delete" theme="outline"></i>
+                        </button>
+                    </a>
+                </nz-popconfirm>
+            </ng-template>
+            <div class="row">
+                <div class="col-md-6">
+                    <div> Short Text 1: {{carousel.description.short1}}</div>
+                    <div> Short Text 2: {{carousel.description.short2}}</div>
+                    <div> Short Text 3: {{carousel.description.short3}}</div>
+                </div>
+                <div class="col-md-6">
+                    <img class="img img-responsive " alt="{{carousel.title}}"
+                         src="{{ IMAGE_ENDPOINT + carousel.image}}"/>
+                </div>
+            </div>
+        </nz-card>
+    </div>
+</div>
+<nz-modal [nzFooter]="null"
+          [nzVisible]="isAddModalVisible"
+          [nzTitle]="'Create Modal'"
+          nzWidth="960"
+          [nzContent]="modalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
     <ng-template #modalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-                    <div nz-form-item nz-row>
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                <form nz-form [formGroup]="validateForm" id="validateForm"
+                      (ngSubmit)="submitForm($event,validateForm.value)">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'Insert title'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="title" [placeholder]="'Insert title'" [nzSize]="'large'">
+                            <div *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('duplicated')">
+                            <div *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('title').dirty&&getFormControl('title').pending">
+                            <div *ngIf="getFormControl('title').dirty&&getFormControl('title').pending">
                                 Validating...
                             </div>
                         </div>
                     </div>
-                    <!--Title -->
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 1</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short1" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 1'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short1').dirty&&getEditFormControl('short1').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short1" [placeholder]="'Insert Short text 1'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short1').dirty&&getEditFormControl('short1').hasError('required')">
                                 Please input Short text 1 !
                             </div>
                         </div>
                     </div>
-                    <!--Short text -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 2</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short2" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 2'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short2').dirty&&getEditFormControl('short2').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short2" [placeholder]="'Insert Short text 2'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short2').dirty&&getEditFormControl('short2').hasError('required')">
                                 Please input Short text 2 !
                             </div>
                         </div>
                     </div>
-                    <!--Short text -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 3</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short3" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 3'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short3').dirty&&getEditFormControl('short3').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short3" [placeholder]="'Insert Short text 3'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short3').dirty&&getEditFormControl('short3').hasError('required')">
                                 Please input Short text 3!
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Link Text</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="linktext" [nzType]="'text'" [nzPlaceHolder]="'Insert Link Text'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('linktext').dirty&&getEditFormControl('linktext').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="linktext" [placeholder]="'Insert Link Text'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('linktext').dirty&&getEditFormControl('linktext').hasError('required')">
                                 Please input Link Text !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Link</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="link" [nzType]="'text'" [nzPlaceHolder]="'Insert Product Link'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('link').dirty&&getEditFormControl('link').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="link" [placeholder]="'Insert Product Link'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('link').dirty&&getEditFormControl('link').hasError('required')">
                                 Please Link !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row style="margin-bottom: 20px;">
+                        <div nz-col [nzSpan]="7">
                             <label>Image</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <image-upload [max]="1" (removed)="onRemoved($event)" #Image (imageSelected)="selected($event)" (uploadStateChanged)="onUploadStateChanged($event)"
-                                [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div nz-form-explain *ngIf="!ImageFile">
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onRemoved($event)"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
-                    <!--image-->
-
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || !ImageFile">
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                    [disabled]="!validateForm.valid || !ImageFile || submitting"
+                                    style="margin-right: 5px;">
                                 Submit
                             </button>
-                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)" style="margin-right: 5px;">
+                                Reset
+                            </button>
                             <button nz-button [nzSize]="'large'" (click)="handleModalCancel($event)">Cancel</button>
                         </div>
                     </div>
@@ -124,123 +159,124 @@
         </div>
     </ng-template>
 </nz-modal>
-
-<!--Update Carousel Modal-->
-<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Carousel'" [nzContent]="editmodalContent" (nzOnCancel)="handleModalCancel($event)"
-    (nzOnOk)="handleModalOk($event)">
+<nz-modal [nzFooter]="null" nzWidth="960"
+          [nzVisible]="isEditModalVisible"
+          [nzTitle]="'Edit Modal'"
+          [nzContent]="editmodalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
-                    <div nz-form-item nz-row>
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
+                      (ngSubmit)="submitEditForm($event,editValidateForm.value)">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'Insert title'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="title" [placeholder]="'Insert title'" [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').pending">
                                 Validating...
                             </div>
                         </div>
                     </div>
-                    <!--Title -->
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 1</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short1" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 1'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short1').dirty&&getEditFormControl('short1').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short1" [placeholder]="'Insert Short text 1'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short1').dirty && getEditFormControl('short1').hasError('required')">
                                 Please input Short text 1 !
                             </div>
                         </div>
                     </div>
-                    <!--Short text 1-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 2</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short2" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 2'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short2').dirty&&getEditFormControl('short2').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short2" [placeholder]="'Insert Short text 2'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short2').dirty && getEditFormControl('short2').hasError('required')">
                                 Please input Short text 2 !
                             </div>
                         </div>
                     </div>
-                    <!--Short text 1-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Short text 3</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="short3" [nzType]="'text'" [nzPlaceHolder]="'Insert Short text 3'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('short3').dirty&&getEditFormControl('short3').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="short3" [placeholder]="'Insert Short text 3'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('short3').dirty && getEditFormControl('short3').hasError('required')">
                                 Please input Short text 3 !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Link Text</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="linktext" [nzType]="'text'" [nzPlaceHolder]="'Insert Link Text'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('linktext').dirty&&getEditFormControl('linktext').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="linktext" [placeholder]="'Insert Link Text'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('linktext').dirty && getEditFormControl('linktext').hasError('required')">
                                 Please input Link Text !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
-                            <label>Link</label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
+                            <label>Product Link</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="link" [nzType]="'text'" [nzPlaceHolder]="'Insert Product Link'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('link').dirty&&getEditFormControl('link').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="link" [placeholder]="'Insert Product Link'"
+                                   [nzSize]="'large'">
+                            <div *ngIf="getEditFormControl('link').dirty && getEditFormControl('link').hasError('required')">
                                 Please input Link !
                             </div>
                         </div>
                     </div>
-                    <!--description-->
-
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row style="margin-bottom: 20px;">
+                        <div nz-col [nzSpan]="7">
                             <label>Image</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <image-upload [max]="1" (removed)="onRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div nz-form-explain *ngIf="!ImageFile">
+                        <div nz-col [nzSpan]="12" *ngIf="editImage">
+                            <image-upload
+                                    [uploadedFiles]="[editImage]"
+                                    [max]="1" (removed)="onRemoved($event)"
+                                    [extensions]="['jpeg','png', 'jpg']"
+                                    [beforeUpload]="onBeforeUpload"
+                            ></image-upload>
+                            <div *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
-                    <!--image-->
-
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid || !ImageFile">
-
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" style="margin-right: 5px;"
+                                    [disabled]="!editValidateForm.valid || !ImageFile">
                                 Submit
                             </button>
-                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)" style="margin-right: 5px;">
+                                Reset
+                            </button>
                             <button nz-button [nzSize]="'large'" (click)="handleModalCancel($event)">Cancel</button>
                         </div>
                     </div>
@@ -248,45 +284,4 @@
             </nz-spin>
         </div>
     </ng-template>
-</nz-modal> 
-
-<div class="col-md-6" *ngFor="let carousel of cmsCarouselData; let i = index" [attr.data-index]="i">
-    <nz-card style="max-height: 260px;margin-bottom: 5px;">
-
-        <ng-template #title>
-            <h4>
-                Title: {{carousel.title}}
-            </h4>
-        </ng-template>
-        <ng-template #extra>
-            <div style="text-align: right">
-                <button nz-button [nzType]="'primary'" (click)="showEditModal(i)">
-                    <span>
-                        <i class="anticon anticon-edit"> Edit </i>
-                    </span>
-                </button>
-                <nz-popconfirm [nzTitle]="'Are you sure want to delete？'" [nzOkText]="'ok'" [nzCancelText]="'cancel'" (nzOnConfirm)="deleteCarousel(i)">
-                    <a nz-popconfirm>
-                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                            <i class="anticon anticon-delete">delete</i>
-                        </button>
-                    </a>
-                </nz-popconfirm>
-            </div>
-        </ng-template>
-
-        <ng-template #body>
-            <div class="row">
-                <div class="col-md-6">
-                    <div> Short Text 1: {{carousel.description.short1}}</div>
-                    <div> Short Text 2: {{carousel.description.short2}}</div>
-                    <div> Short Text 3: {{carousel.description.short3}}</div>
-                </div>
-                <div class="col-md-6">
-                    <img class="img img-responsive " alt="{{carousel.image}}" src="{{ IMAGE_ENDPOINT + carousel.image}}" />
-
-                </div>
-            </div> 
-        </ng-template>
-    </nz-card>
-</div>
+</nz-modal>

@@ -4,16 +4,15 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const { Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
 
 module.exports = {
   //Method called for creating chat user data
   //Model models/ChatUser.js
   create: async (req, res) => {
-    initLogPlaceholder(req, 'chat Service create');
+
     async function create(body) {
       try {
-        let data = await ChatUser.create(body);
+        let data = await ChatUser.create(body).fetch();
 
         if (data) {
           return res.json(200, data);
@@ -27,11 +26,11 @@ module.exports = {
     if (req.body) {
       req.body.status = 1;
     }
-    create(req.body);
+    await create(req.body);
   },
   //Method called for getting chat notification data
   //Model models/ChatUser.js
-  getNotification: async function (req, res) {
+  getNotification: async  (req, res) => {
     let total = 0;
     try {
 
@@ -46,8 +45,6 @@ module.exports = {
         .populate('product_id')
         .populate('user_id')
         .populate('warehouse_id');
-
-
 
       let allChats = await Promise.all(
         chats.map(async item => {

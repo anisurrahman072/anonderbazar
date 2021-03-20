@@ -14,6 +14,7 @@ import {UiModule} from '../../shared/ui.module';
 import {CustomProductCreateComponent} from './product-create/custom/custom-product-create.component';
 import {FixedProductCreateComponent} from './product-create/fixed/fixed-product-create.component';
 import {BulkUploadComponent} from "./bulk-upload/bulk-upload.component";
+import { BulkUpdateComponent } from './bulk-update/bulk-update.component';
 
 @NgModule({
     imports: [
@@ -33,7 +34,8 @@ import {BulkUploadComponent} from "./bulk-upload/bulk-upload.component";
         ProductEditComponent,
         AddProductDesignComponent,
         DesignCombinationComponent,
-        BulkUploadComponent
+        BulkUploadComponent,
+        BulkUpdateComponent
     ]
 })
 export class ProductModule {

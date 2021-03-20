@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {AuthService} from './auth.service';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from "../../environments/environment";
-
 
 @Injectable({
     providedIn: 'root'
@@ -13,8 +11,7 @@ export class ProductService {
     private EndPoint2 = `${environment.API_ENDPOINT}/products`;
     private EndPoint3 = `${environment.API_ENDPOINT}/productImage`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient) {
     }
 
     getAllProducts(page: number,
@@ -35,42 +32,45 @@ export class ProductService {
         );
     }
 
-    getAllProductsByStatus(status: number,
-                           page: number,
-                           limit: number,
-                           searchCode: string,
-                           searchTerm: string,
-                           brandId: number,
-                           typeId: number,
-                           categoryId: number,
-                           subcategoryId: number,
-                           warehouseId: string,
-                           sortCode: string,
-                           sortName: string,
-                           sortPrice: String,
-                           sortQuantity: string,
-                           sortUpdatedAt: string = '',
-                           approvalStatus: string = '',
-                           priceSearchValue: string = ''
+    getAllProductsByStatus(
+        status: number,
+        page: number,
+        limit: number,
+        searchqty: string,
+        searchCode: string,
+        searchTerm: string,
+        approvalStatus: string = '',
+        priceSearchValue: string = '',
+        brandId: number,
+        typeId: number,
+        categoryId: number,
+        subcategoryId: number,
+        warehouseId: string,
+        sortKey: string,
+        sortValue: string,
     ): Observable<any> {
         return this.http.get(
-            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortCode=${sortCode}&sortName=${sortName}&sortPrice=${sortPrice}&sortQuantity=${sortQuantity}&sortUpdatedAt=${sortUpdatedAt}&approval_status=${approvalStatus}`
+            `${this.EndPoint2}?status=${status}&page=${page}&limit=${limit}&searchqty=${searchqty}&search_term=${searchTerm}&search_code=${searchCode}&brand_id=${brandId}&price=${priceSearchValue}&type_id=${typeId}&category_id=${categoryId}&subcategory_id=${subcategoryId}&warehouse_id=${warehouseId}&sortKey=${sortKey}&sortValue=${sortValue}&approval_status=${approvalStatus}`
         );
     }
 
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + `?where={"deletedAt":null}`);
+    getAllWithPagination(page = 1, limit = 30, excludedProductIds = [], nameSearchValue = ''): Observable<any> {
+        const skip = (page - 1) * limit;
+        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&nameSearchValue=${nameSearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
     }
 
-    getAllWithPagination(page = 1, limit = 30): Observable<any> {
-        const skip = (page - 1) * limit;
-        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&page=${page}&skip=${skip}&limit=${limit}`);
+    getByIdsWithJoin(ids): Observable<any> {
+        return this.http.get(this.EndPoint + '/byIdsWithPopulate?product_ids=' + JSON.stringify(ids));
     }
 
     getById(id): Observable<any> {
         // get users from api
         return this.http.get(this.EndPoint + '/' + id);
+    }
+
+    getByIdWithPopulate(id): Observable<any> {
+        // get users from api
+        return this.http.get(this.EndPoint + '/details/' + id);
     }
 
     insert(data): Observable<any> {
@@ -126,17 +126,21 @@ export class ProductService {
         return this.http.post(this.EndPoint + '/uploadCouponBanners', data, {params, headers});
     }
 
-    getGeneratedExcelFile(userId = null): Observable<any> {
-        if (!userId) {
-            return of();
-        }
-        return this.http.get(this.EndPoint2 + '/generate-excel?user_id=' + userId, {responseType: 'blob'});
+    getGeneratedExcelFile(): Observable<any> {
+        return this.http.get(this.EndPoint2 + '/generate-excel', {responseType: 'blob'});
     }
 
-    submitDataForBulkUpload(data, userId = null, isApproved = 1): Observable<any> {
-        if (!userId) {
-            return of();
-        }
-        return this.http.post(this.EndPoint2 + '/bulk-upload?user_id='+userId+'&isApproved=' + isApproved, data);
+    submitDataForBulkUpload(data, isApproved = 1): Observable<any> {
+
+        return this.http.post(this.EndPoint2 + '/bulk-upload?isApproved=' + isApproved, data);
+    }
+
+    productExcel(value):Observable<any>{
+        console.log(value);
+        return this.http.get(this.EndPoint2 +`/product-excel?type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
+    }
+
+    submitDataForBulkUpdate(data): Observable<any> {
+        return this.http.put(this.EndPoint2 + '/bulk-update', data);
     }
 }

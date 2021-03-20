@@ -5,18 +5,16 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {uploadImages} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
+
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    Brand.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const brand = await Brand.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, brand);
+    } catch (error) {
+      return res.json(400, {message: 'wrong', error});
+    }
   },
   // create a row
   //Method called for creating product brand
@@ -24,7 +22,7 @@ module.exports = {
   create: async (req, res) => {
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
@@ -40,12 +38,16 @@ module.exports = {
         }
 
       }
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
       const returnBrand = await Brand.create(body).fetch();
 
       return res.json(200, returnBrand);
 
     } catch (err) {
-      res.json(400, {message: 'wrong', err});
+      res.json(400, {message: 'something wrong', err});
     }
   },
 
@@ -56,7 +58,7 @@ module.exports = {
 
     try {
       let body = req.body;
-      if (req.body.hasImage === 'true') {
+      if (body.hasImage === 'true') {
 
         try {
           const uploaded = await uploadImages(req.file('image'));
@@ -71,13 +73,16 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
+      const brand = await Brand.updateOne({id: req.param('id')}).set(body);
 
-      const brand = await Brand.updateOne({id: req.param('id')}).set(req.body);
-
-      return res.json(200, brand);
+      return res.status(200).json(brand);
 
     } catch (err) {
-      return res.json(400, {message: 'Something Went Wrong', err});
+      return res.status(400).json({message: 'Something Went Wrong', err});
     }
 
   },

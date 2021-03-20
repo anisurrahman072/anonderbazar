@@ -167,7 +167,7 @@
                                          *ngFor="let address of prevoius_address; let i = index">
                                         <mat-radio-button value="{{address.id}}">
                                             &nbsp;{{ address?.address }},{{ address?.division_id.name }},{{
-                                          address?.upazila_id.name
+                                            address?.upazila_id.name
                                             }},{{ address?.zila_id.name }}.
                                         </mat-radio-button>
                                     </div>
@@ -206,7 +206,7 @@
                             <div class="form-group col-md-6">
                                 <label>Phone Number</label>
                                 <input type="text" class="form-control" formControlName="phone"
-                                       placeholder="Enter your phone Number">
+                                       placeholder="Enter your phone number">
 
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('phone').dirty  || showFormError) && getSignUpFormControl('phone').hasError('required')">
@@ -349,31 +349,36 @@
                     </div>
                 </div>
 
-                <div [ngClass]="{'col-lg-12': noShippingCharge, 'col-lg-6': !noShippingCharge, 'col-md-12': true}" style="max-width: none;">
+                <div [ngClass]="{'col-lg-12': noShippingCharge, 'col-lg-6': !noShippingCharge, 'col-md-12': true}"
+                     style="max-width: none;">
                     <div class="bag-item">
                         <p>Your Cart {{cartData?.data.total_quantity}} items</p>
                     </div>
                     <div *ngIf="cartData?.data.total_quantity > 0; else message">
-                        <div [ngClass]="{'float:right d-flex col-md-12 col-sm-12 col-lg-12 ml-0 row': noShippingCharge}">
-                            <div class="bag-item col-lg-6" *ngFor="let cartItem of cartData?.data.cart_items">
+                        <div class="row">
+                            <div class="bag-item col-12" *ngFor="let cartItem of cartData?.data.cart_items">
                                 <div class="bagitem-1">
                                     <div class="productimage-wrapper">
-                                        <img class="product-image" src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image}}"
+                                        <img class="product-image"
+                                             src="{{LIST_IMAGE_ENDPOINT + cartItem.product_id.image + IMAGE_EXT}}"
                                              alt="product image">
                                     </div>
                                     <div style="width:95%" class="text">
-                                            <div class="sub-text" style="width:70%">
-                                                <a routerLink="/product-details/{{cartItem.product_id.id}}">
-                                                    <p>{{cartItem.product_id.name}}</p>
-                                                </a>
-                                                <ng-container *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
+                                        <div class="sub-text" style="width:70%">
+                                            <a routerLink="/product-details/{{cartItem.product_id.id}}">
+                                                <p>{{cartItem.product_id.name}}</p>
+                                            </a>
+                                            <ng-container
+                                                    *ngIf="cartItem.cartitemvariant && cartItem.cartitemvariant.length>0">
                                                 <span *ngFor="let variant of cartItem.cartitemvariant">
-                                                  {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
+                                                  {{variant.variant_id.name}}
+                                                    :<small>{{variant.warehouse_variant_id.name}}</small>
                                                 </span>
-                                                </ng-container>
-                                            </div>
+                                            </ng-container>
+                                        </div>
                                         <ul style="width:15%">
-                                            <li class="cursor-pointer" (click)="changeCartItemQuantity(cartItem, 'decrease')">
+                                            <li class="cursor-pointer"
+                                                (click)="changeCartItemQuantity(cartItem, 'decrease')">
                                                 -
                                             </li>
                                             <li>{{cartItem.product_quantity}}</li>
@@ -390,9 +395,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div [ngClass]="{'p-2 col-lg-6': noShippingCharge, 'col-lg-12': !noShippingCharge, 'col-md-12': true}">
-                                <div class="tag3" >
-                                    <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order Summary</h5>
+                            <div class="col-12">
+                                <div class="tag3">
+                                    <h5 [ngStyle]="{'text-align': noShippingCharge ? 'center': 'left'}">Order
+                                        Summary</h5>
                                     <table [ngStyle]="{'width': noShippingCharge ? '100%': '100%', 'margin': noShippingCharge ? 'auto': '0', 'max-width': noShippingCharge ? '500px': '600px'}">
                                         <tr>
                                             <td class="td1 pr-5">Subtotal</td>
@@ -413,14 +419,16 @@
                                     </table>
                                     <p class="alert alert-info text-info" *ngIf="!noShippingCharge">
                                         Delivery Charge: <br>
-                                        Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is heavier)<br>
-                                        Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is heavier)
+                                        Inside Dhaka Metro- 60/- (+Delivery charge will increase if product is
+                                        heavier)<br>
+                                        Outside Dhaka Metro- 150/- (+Delivery charge will increase if product is
+                                        heavier)
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div [ngClass]="{'send-btn1': true, 'text-center': noShippingCharge}">
-                            <button (click)="processToPay()" class="Summarybtn " >
+                            <button (click)="processToPay()" class="Summarybtn ">
                                 <a>Process to Pay</a>
                             </button>
                         </div>
@@ -441,21 +449,31 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="!hideCashonDelivery" value="Cash">
+                                <mat-radio-button *ngIf="!hideCashonDelivery && enabledPaymentMethods['Cash']"
+                                                  value="Cash">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
                                 <br>
-                                <mat-radio-button value="SSLCommerce"  [checked]="hideCashonDelivery">
+                                <mat-radio-button *ngIf="enabledPaymentMethods['SSLCommerce']" value="SSLCommerce"
+                                                  [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
-                                        <img src="./assets/images/final_sslcommerz.webp" style="height: auto; width: 100%;"
+                                        <img src="./assets/images/final_sslcommerz.webp"
+                                             style="height: auto; width: 80%;"
                                              alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods['bKash']" value="bKash">
+                                    <div class="payment-icon-container">
+                                        <img src="./assets/images/bkash.gif" style="height: auto; width: 70%;"
+                                             alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
                             </div>
                         </mat-radio-group>
                     </div>
                     <div class="send-btn1">
-                        <button type="submit" class="Summarybtn" (click)="formCheckout($event, checkoutForm.value)">
+                        <button type="submit" class="Summarybtn"
+                                (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">
                             <a>Process to Order</a>
                         </button>
                     </div>
@@ -515,3 +533,83 @@
         </div>
     </div>
 </section>
+
+<ng-template #bKashWalletModalTemplate>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">My bKash Wallets</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="bKashWalletModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="color: #444444;">
+        <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
+            <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
+                <span>{{authUserWallet.wallet_no}}</span>
+                <a class="btn btn-primary btn-sm" style="margin-left: 50px;" (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)">Proceed with bKash</a>
+            </li>
+        </ul>
+        <ng-template #noWalletTemplate>
+            <div class="row" *ngIf="!showBKashAgreementTerm; else bKashTermsTemplate">
+                <div class="col-md-12">
+                    <p class="text-center">Enter your bKash Wallet Number and Proceed with Payment</p>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="bKashWalletNumber">bKash Wallet Number</label>
+                        <input placeholder="bKash Wallet Number" id="bKashWalletNumber" class="form-control"
+                               [(ngModel)]="bKashWalletNumber">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button style="position: relative; top: 36px;" type="button"
+                            (click)="showBKashAgreementTerm = true" class="btn btn-primary">
+                        Add
+                    </button>
+                </div>
+            </div>
+            <ng-template #bKashTermsTemplate>
+                <div class="col-md-12">
+                    <h4>Terms & Conditions</h4>
+                    <ul class="termsList">
+                        <li>
+                            By enabling this option, you are allowing bKash to remember your bKash Account against your
+                            customer account maintained with this merchant.
+                        </li>
+                        <li>
+                            During your subsequent transactions from your customer account maintained with this
+                            merchant, you will not be required to enter your bKash Account Number. Your bKash Account
+                            Number will be automatically set by bKash. You only need to enter PIN to authorize the
+                            transaction.
+                        </li>
+                        <li>
+                            Through this process merchant is not receiving your bKash Account information.
+                        </li>
+                        <li>
+                            If you experience any problem, please contact the customer support of bKash on 16247.
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-check" style="margin-top: 20px; margin-bottom: 20px;">
+                        <input id="bKash_terms_condition_checkbox" type="checkbox" class="form-check-input"
+                               [(ngModel)]="agreedToBKashTermsConditions"
+                               (ngModelChange)="onAgreedToBKashTerms($event)">
+                        <label class="form-check-label" for="bKash_terms_condition_checkbox">I agree to the above
+                            mentioned Terms & Conditions</label>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-template>
+    </div>
+    <div class="modal-footer">
+        <div class="btn-group pull-right" role="group" aria-label="First group">
+            <button type="button" [disabled]="!agreedToBKashTermsConditions"
+                    *ngIf=" !(authUserWallets && authUserWallets.length > 0) "
+                    (click)="proceedWithBkash($event, checkoutForm.value)" class="btn btn-primary">
+                Proceed with bKash
+            </button>
+            <button type="button" class="btn btn-default" (click)="bKashWalletModalRef.hide()">Cancel
+            </button>
+        </div>
+    </div>
+</ng-template>

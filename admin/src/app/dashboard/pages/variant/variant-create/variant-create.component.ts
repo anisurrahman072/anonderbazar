@@ -16,6 +16,8 @@ export class VariantCreateComponent implements OnInit {
     { label: 'Yes', value: 1 },
     { label: 'No', value: 0 }
   ];
+  submitting: boolean = false;
+
 
   constructor(
     private router: Router,
@@ -31,6 +33,7 @@ export class VariantCreateComponent implements OnInit {
   }
 //Event method for submitting the form
   submitForm = ($event, value) => {
+    this.submitting = true;
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
@@ -40,6 +43,7 @@ export class VariantCreateComponent implements OnInit {
     formData.append('type', value.type);
     this.variantService.insert(formData).subscribe(result => {
       if (result) {
+        this.submitting = false;
         this._notification.create(
           'success',
           'New attribute has been successfully added.',
@@ -47,7 +51,15 @@ export class VariantCreateComponent implements OnInit {
         );
         this.router.navigate(['/dashboard/variant/details/', result.id]);
       }
-    });
+    },
+       error => {
+         this.submitting = false;
+         this._notification.create(
+             'error',
+             'Error Occurred!',
+             "Attribute didn't created!"
+         );
+       } );
   };
 //Event method for resetting the form
   resetForm($event: MouseEvent) {

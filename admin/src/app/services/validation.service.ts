@@ -37,30 +37,30 @@ export class ValidationService {
   userNameTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkUsername(control.value).map(res => {
-        if (res && res.length) {
-          return {taken: true};
+        if (res && res.success) {
+          return null;
         }
-        return null;
+        return {error: true, taken: true};
       });
     });
   };
   emailTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkEmail(control.value).map(res => {
-        if (res && res.length) {
-          return {taken: true};
+        if (res && res.success) {
+          return null;
         }
-        return null;
+        return {error: true, taken: true};
       });
     });
   };
   phoneTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkPhone(control.value).map(res => {
-        if (res && res.length) {
-          return {taken: true};
+        if (res && res.success) {
+          return null;
         }
-        return null;
+        return {error: true, taken: true};
       });
     });
   };

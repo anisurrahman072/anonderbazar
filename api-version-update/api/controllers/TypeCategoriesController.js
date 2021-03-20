@@ -4,7 +4,9 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach, pagination} = require('../../libs');
+
+const {asyncForEach} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all product type categories
   //Model models/Category.js

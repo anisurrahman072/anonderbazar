@@ -1,91 +1,67 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {OrderService} from '../../../../services/order.service';
 import {AuthService} from '../../../../services/auth.service';
 import {NzNotificationService} from "ng-zorro-antd";
-import {Subscription} from 'rxjs';
 import {UIService} from '../../../../services/ui/ui.service';
 import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
+import {Subscription} from "rxjs";
 
 const moment = _rollupMoment || _moment;
-import {MatDatepickerInputEvent} from "@angular/material/datepicker";
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
-
-export const MY_FORMATS = {
-    parse: {
-        dateInput: 'YYYY-MM-DD H:m:s',
-    },
-    display: {
-        dateInput: 'DD/MM/YYYY',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY',
-    },
-};
 
 @Component({
     selector: 'app-warehouse',
     templateUrl: './Order.component.html',
-    styleUrls: ['./Order.component.css'],
-    providers: [
-        // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
-        // application's root module. We provide it at the component level here, due to limitations of
-        // our example generation script.
-        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-
-        {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
-    ],
+    styleUrls: ['./Order.component.css']
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
+
     @ViewChildren('dataFor') dataFor: QueryList<any>;
-    validateFormORDER: FormGroup;
+    @ViewChild('csvSelectAll') csvSelectAll;
+
+    private orderDataSubscription: Subscription;
+    private subOrderTimeSub: Subscription;
+    private subOrderUpdateSub: Subscription;
+    private currentUser: any;
     validateProductForm: FormGroup;
-    private currentWarehouseSubscriprtion: Subscription;
     viewNotRendered: boolean = true;
-    maxSearchDate: string = '';
-    minSearchDate: string = '';
+    orderNumberFilter: string = '';
+    customerNameFilter: string = '';
+    statusSearchValue: string = '';
+
     searchStartDate: any;
     searchEndDate: any;
 
-    data = [];
-    _isSpinning = true;
-    currentUser: any;
-    selectedOption: any[] = [];
+    orderData = [];
+    orderTotal: number = 0;
+    orderLimit: number = 25;
+    orderPage: number = 1;
+    _isSpinning = false;
 
-    statusSearchValue: string = '';
-    dateSearchValue: any;
+    orderCsvTotal: number = 0;
+    csvPage: number = 1;
 
-    page: any;
-    statusData: any;
+    private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
-    statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
+    private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
-    currentWarehouseId: any;
     isProductVisible = false;
 
-    allOders: any = [];
-    products = [];
-    addNew: boolean;
-    currentProduct: any = {};
-    storeOrderIds: any = [];
-    orderStatus: any;
-    maxDate: any;
+    csvOrders: any = [];
+    private csvPageSelectAll = [];
+    private storedCsvOrders: any = [];
 
-    pageOrder: number = 1;
-    pageAllCheckedStatusOrder: any = {};
-    dataORDER = [];
-    storeOrderIdsORDER: any = [];
-    warehouse: any;
-
+    submitting: boolean = false;
 
     constructor(private orderService: OrderService,
+                private suborderItemService: SuborderItemService,
                 private fb: FormBuilder,
                 private _notification: NzNotificationService,
                 private uiService: UIService,
@@ -93,15 +69,20 @@ export class OrderComponent implements OnInit {
                 private statusChangeService: StatusChangeService,
                 private exportService: ExportService,
                 private authService: AuthService) {
+
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
-        this.maxSearchDate = moment().format('YYYY-MM-DD');
-        this.minSearchDate = moment().subtract(10, 'years').format('YYYY-MM-DD');
+    }
+    ngOnDestroy(): void {
+        this.orderDataSubscription
+            ? this.orderDataSubscription.unsubscribe()
+            : '';
 
+        this.subOrderTimeSub ? this.subOrderTimeSub.unsubscribe() : '';
+        this.subOrderUpdateSub ? this.subOrderUpdateSub.unsubscribe() : '';
 
     }
-
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
@@ -117,13 +98,20 @@ export class OrderComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getData() {
+    getData(event?: any, forCsv?: boolean) {
+
+        if (event) {
+            if (forCsv) {
+                this.csvPage = event;
+            } else {
+                this.orderPage = event;
+            }
+        }
 
         let dateSearchValue = {
             from: null,
             to: null,
         };
-
 
         if (this.searchStartDate) {
             if (this.searchStartDate.constructor.name === 'Moment') {
@@ -145,116 +133,152 @@ export class OrderComponent implements OnInit {
             dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
 
-        console.log('getData: ', dateSearchValue);
+        let page = this.orderPage;
+        let limit = this.orderLimit;
+        if (forCsv) {
+            page = this.csvPage;
+            limit = 20;
+        }
 
         this._isSpinning = true;
-        this.orderService.getAllOrdersForFilter({date: JSON.stringify(dateSearchValue), status: this.statusSearchValue})
+        this.orderDataSubscription = this.orderService.getAllOrdersGrid({
+            date: JSON.stringify(dateSearchValue),
+            status: this.statusSearchValue,
+            customerName: this.customerNameFilter,
+            orderNumber: this.orderNumberFilter
+        }, page, limit)
             .subscribe(result => {
-                this.data = result;
+                console.log('getallorders', result);
+                if (!forCsv) {
+                    this.orderData = result.data;
+                    this.orderTotal = result.total;
+                } else {
+                    this.csvOrders = result.data.map((item) => {
+                        return {
+                            ...item,
+                            checked: false
+                        }
+                    });
+
+                    this.orderCsvTotal = result.total;
+                    const thisTotal = this.csvOrders.length;
+
+                    if(typeof this.storedCsvOrders[page - 1] === 'undefined'){
+                        this.storedCsvOrders[page - 1] = [];
+                    }
+                    if(typeof this.csvPageSelectAll[page - 1] === 'undefined'){
+                        this.csvPageSelectAll[page - 1] = false;
+                    }
+
+                    this.csvSelectAll.nativeElement.checked = !!this.csvPageSelectAll[page - 1];
+
+                    if (this.storedCsvOrders[page - 1].length) {
+                        for (let index = 0; index < thisTotal; index++) {
+                            const foundIndex = this.storedCsvOrders[page - 1].findIndex((storedOder) => {
+                                return storedOder.id == this.csvOrders[index].id;
+                            });
+                            this.csvOrders[index].checked = foundIndex !== -1;
+                        }
+                    } else {
+                        for (let index = 0; index < thisTotal; index++) {
+                            this.csvOrders[index].checked = false;
+                        }
+                    }
+                }
+
                 this._isSpinning = false;
+
             }, (err) => {
+                console.log(err);
                 this._isSpinning = false;
+                this._notification.error('Problems!', 'Problems in loading the orders');
             });
     }
+
+    selectAllCsv($event) {
+
+        const isChecked = !!$event.target.checked;
+        console.log('selectAllCsv', isChecked);
+        if (!isChecked) {
+            this.storedCsvOrders[this.csvPage - 1] = [];
+        }
+        this.csvPageSelectAll[this.csvPage - 1] = isChecked;
+        const len = this.csvOrders.length;
+        for (let i = 0; i < len; i++) {
+            this.csvOrders[i].checked = isChecked;
+            if (isChecked) {
+                const foundIndex = this.storedCsvOrders[this.csvPage - 1].findIndex((storedOder) => {
+                    return storedOder.id == this.csvOrders[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.storedCsvOrders[this.csvPage - 1].push(this.csvOrders[i]);
+                }
+            }
+        }
+        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
+    }
+
+
+    //Method for status checkbox
+
+    _refreshStatus($event, value) {
+        if ($event && $event.currentTarget.checked) {
+            this.storedCsvOrders[this.csvPage - 1].push(value);
+        } else {
+            let findValue = this.storedCsvOrders[this.csvPage - 1].findIndex((item) => {
+                return item.id == value.id
+            });
+            if (findValue !== -1) {
+                this.storedCsvOrders[this.csvPage - 1].splice(findValue, 1);
+            }
+        }
+    }
+
+    // Method for showing the modal
+    showProductModal = () => {
+
+        this.csvSelectAll.nativeElement.checked = false;
+        this.isProductVisible = true;
+        this.storedCsvOrders = [];
+        this.csvPageSelectAll = [];
+
+        this.getData(null, true);
+    };
+
 
     //Event method for resetting all filters
     resetAllFilter() {
         this.searchStartDate = '';
         this.searchEndDate = '';
         this.statusSearchValue = '';
-        this.getData();
-    }
-
-    searchDateChangeHandler(type: string, event: MatDatepickerInputEvent<String>) {
-
-        /*
-        console.log('searchDateChangeHandler: ', event.value.toString());
-           if (type === 'startDate') {
-               this.searchStartDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-           } else if (type === 'endDate') {
-               this.searchEndDate = moment(event.value.toString()).format('YYYY-MM-DD HH:mm:ss');
-           }
-        */
+        this.customerNameFilter = '';
+        this.orderNumberFilter = '';
+        this.orderPage = 1;
         this.getData();
     }
 
     //Method for status change
-    selectAllOrder($event) {
-        const isChecked = !!$event.target.checked;
-        this.pageAllCheckedStatusOrder[this.pageOrder] = isChecked;
-        const len = this.dataORDER.length;
-        for (let i = 0; i < len; i++) {
-            this.dataORDER[i].checked = isChecked;
-            this._refreshStatusORDER(isChecked, this.dataORDER[i])
-        }
-    }
-
-    _refreshStatusORDER($event, value) {
-
-        if ($event) {
-            this.storeOrderIdsORDER.push(value);
-        } else {
-            let findValue = this.storeOrderIdsORDER.indexOf(value);
-            if (findValue !== -1) {
-                this.storeOrderIdsORDER.splice(findValue, 1);
-                this.warehouse = value;
-                this.validateFormORDER.patchValue({
-                    seller_name: this.warehouse.name,
-                });
-            }
-        }
-
-        let itemCount = 0;
-        if (this.storeOrderIdsORDER.length > 0) {
-            this.storeOrderIdsORDER.forEach(element => {
-                itemCount += element.total_quantity;
-            });
-        }
-
-        if (this.storeOrderIdsORDER[0]) {
-            this.warehouse = this.storeOrderIdsORDER[0].warehouse_id;
-            this.validateFormORDER.patchValue({
-                total_order: itemCount,
-                seller_name: this.warehouse.name,
-                seller_phone: this.warehouse.phone,
-                seller_address: this.warehouse.address,
-                k_a_m: this.warehouse.name,
-            });
-        } else {
-            this.validateFormORDER.patchValue({
-                total_order: '',
-                seller_name: '',
-                seller_phone: '',
-                seller_address: '',
-                k_a_m: '',
-            });
-        }
-    };
-
-    //Method for status change
-
     changeStatusConfirm($event, id, oldStatus) {
-        this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
+        this.subOrderUpdateSub = this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
-            // this.data[index].status = $event;
+            this.suborderService.updateByOrderId(id, {status: $event})
+                .subscribe(arg => {
+                });
+
+            this.statusChangeService.updateStatus({order_id: id, order_status: $event, changed_by: this.currentUser.id})
+                .subscribe(arg => this.statusData = arg);
+
             this.getData();
         }, (err) => {
             this._notification.create('error', 'Error', 'Something went wrong');
             $event = oldStatus;
         });
-        this.suborderService.updateByOrderId(id, {status: $event})
-            .subscribe(arg => {
 
-            });
-
-        this.statusChangeService.updateStatus({order_id: id, order_status: $event, changed_by: this.currentUser.id})
-            .subscribe(arg => this.statusData = arg);
 
     }
 
     //Method for csv download
-
     dowonloadCSV(data) {
 
         if (!(Array.isArray(data) && data.length > 0)) {
@@ -262,63 +286,46 @@ export class OrderComponent implements OnInit {
         }
 
         let csvData = [];
-        data.filter((element) => {
-            return (Array.isArray(element.suborders) && element.suborders.length > 0);
-        }).forEach(element => {
-            let sslTransactionId = '';
+        data.forEach(suborderItem => {
+
             let allCouponCodes = '';
 
-            if (element.couponProductCodes && element.couponProductCodes.length > 0) {
-                allCouponCodes = element.couponProductCodes.map((coupon) => {
-                    return '1' + ___.padStart(coupon.id, 6, '0');
-                }).join('|');
-            }
-
-            if (element.payment && element.payment.length > 0) {
-                if (element.payment[0].payment_type === 'SSLCommerce') {
-                    try {
-                        let details = JSON.parse(element.payment[0].details);
-                        sslTransactionId = details.tran_id;
-                    } catch (ee) {
-                    }
-                }
-            }
-
-            element.suborders.filter(suborder => {
-                return (Array.isArray(suborder.items) && suborder.items.length > 0);
-            }).forEach(suborder => {
-                suborder.items.forEach((item, j) => {
-                    let i = 0, varients = "";
-                    item.suborderItemVariants.forEach(element => {
-                        varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
-                    });
-
-                    csvData.push({
-                        'SL': i++,
-                        'Order Id': element.id,
-                        'SubOrder Id': suborder.id,
-                        'Vandor Name': (item.warehouse_id) ? item.warehouse_id.name : 'N/a',
-                        'Vandor Phone': (item.warehouse_id) ? item.warehouse_id.phone : 'N/a',
-                        'Customer Name': element.user_id.first_name + ' ' + element.user_id.last_name,
-                        'Customer Phone': (element.user_id) ? element.user_id.phone : 'N/a',
-                        'Product Description': '(' + item.product_id.code + ') | ' + item.product_id.name + ' | ' + varients,
-                        'Price': item.product_id.price,
-                        'Quantity': item.product_quantity,
-                        'Total': item.product_total_price,
-                        'Suborder Status': typeof this.statusOptions[suborder.status] !== 'undefined' ? this.statusOptions[suborder.status] : 'Unrecognized Status',
-                        'Suborder Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Order Status': typeof this.statusOptions[element.status] !== 'undefined' ? this.statusOptions[element.status] : 'Unrecognized Status',
-                        'Order Status Changed By': ((element.changed_by) ? element.changed_by.first_name : '') + ' ' + ((element.changed_by) ? element.changed_by.last_name : ''),
-                        'Date': (item.createdAt) ? moment(item.createdAt).format('DD/MM/YYYY h:m a') : 'N/a',
-                        'SSLCommerce Transaction Id': sslTransactionId,
-                        'Coupon Product Code': allCouponCodes,
-                    });
+            if (suborderItem.all_coupons) {
+                allCouponCodes = suborderItem.all_coupons.split('|').map((coupon) => {
+                    return '1' + ___.padStart(coupon, 6, '0')
                 });
+            }
+
+            let varients = "";
+            /*
+            item.suborderItemVariants.forEach(element => {
+                varients += element.variant_id.name + ': ' + element.product_variant_id.name + ' '
             });
+           */
+
+            csvData.push({
+                'Order Id': suborderItem.order_id,
+                'SubOrder Id': suborderItem.suborder_id,
+                'Vandor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                'Vandor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
+                'Customer Name': suborderItem.customer_name,
+                'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
+                'Product Description': '(' + suborderItem.product_code + ') | ' + suborderItem.product_id + ' | ' + varients,
+                'Price': suborderItem.price,
+                'Quantity': suborderItem.product_quantity,
+                'Total': suborderItem.product_total_price,
+                'Suborder Status': typeof this.statusOptions[suborderItem.sub_order_status] !== 'undefined' ? this.statusOptions[suborderItem.sub_order_status] : 'Unrecognized Status',
+                'Suborder Changed By': ((suborderItem.suborder_changed_by_name) ? suborderItem.suborder_changed_by_name : ''),
+                'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',
+                'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
+                'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
+                'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
+                'Coupon Product Code': allCouponCodes,
+            });
+
         });
 
         const header = [
-            'SL',
             'Order Id',
             'SubOrder Id',
             'Vandor Name',
@@ -340,11 +347,37 @@ export class OrderComponent implements OnInit {
         this.exportService.downloadFile(csvData, header);
     }
 
+    //Event method for submitting the form
+    submitForm = ($event, value) => {
+        this.submitting = true;
+        let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
+            return item.id;
+        });
+        if(orderIds.length === 0){
+            return false;
+        }
+
+        this.isProductVisible = false;
+        this._isSpinning = true;
+        this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
+            .subscribe((result: any) => {
+                console.log('submitForm', result);
+                this._isSpinning = false;
+                this.dowonloadCSV(result.data);
+                this.submitting = false;
+            }, (err) => {
+                console.log(err);
+                this._isSpinning = false;
+                this._notification.error('Problems!', 'Problems in loading the orders');
+            });
+    }
+
     //Method for set status
 
     setStatus(index, status) {
-        if (!this.viewNotRendered) return;
-        this.selectedOption[index] = status;
+        if (!this.viewNotRendered) {
+            return;
+        }
     }
 
     ngAfterViewInit() {
@@ -353,10 +386,6 @@ export class OrderComponent implements OnInit {
         })
     }
 
-    //Method for order status change
-    orderStatusChange($event) {
-        this.orderStatus = $event;
-    }
 
     //Event method for deleting order
     deleteConfirm(id) {
@@ -366,14 +395,6 @@ export class OrderComponent implements OnInit {
             });
     }
 
-    //Event called for daterange change
-    daterangeChange() {
-        if (this.dateSearchValue.from && this.dateSearchValue.to) {
-            this.page = 1;
-            this.getData()
-        }
-
-    }
 
     handleOk = e => {
         this.isProductVisible = false;
@@ -384,78 +405,4 @@ export class OrderComponent implements OnInit {
     };
 
 
-    // Method for showing the modal
-    showProductModal = data => {
-        console.log('showProductModal')
-        this.allOders = data.map((item) => {
-            return {
-                ...item,
-                checked: false
-            }
-        });
-        this.isProductVisible = true;
-        this.storeOrderIds = [];
-    };
-    //Event method for submitting the form
-    submitForm = ($event, value) => {
-        let newlist = this.storeOrderIds;
-        this.isProductVisible = false;
-        this.dowonloadCSV(newlist);
-    }
-
-    selectAllCsv($event) {
-
-        const isChecked = !!$event.target.checked;
-        console.log('selectAllCsv', isChecked);
-        if (!isChecked) {
-            this.storeOrderIds = [];
-        }
-
-        const len = this.allOders.length;
-        for (let i = 0; i < len; i++) {
-            this.allOders[i].checked = isChecked;
-            if (isChecked) {
-                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                    return storedOder.id == this.allOders[i].id;
-                });
-                if (foundIndex === -1) {
-                    this.storeOrderIds.push(this.allOders[i]);
-                }
-            }
-        }
-        console.log('this.storeOrderIds', this.storeOrderIds);
-    }
-
-    csvPageChangeHandler($event) {
-
-        const thisTotal = this.allOders.length;
-
-        if (this.storeOrderIds && this.storeOrderIds.length) {
-            for (let index = 0; index < thisTotal; index++) {
-                const foundIndex = this.storeOrderIds.findIndex((storedOder) => {
-                    return storedOder.id == this.allOders[index].id;
-                });
-                this.allOders[index].checked = foundIndex !== -1;
-            }
-        } else {
-            for (let index = 0; index < thisTotal; index++) {
-                this.allOders[index].checked = false;
-            }
-        }
-    }
-
-    //Method for status checkbox
-
-    _refreshStatus($event, value) {
-        if ($event && $event.currentTarget.checked) {
-            this.storeOrderIds.push(value);
-        } else {
-            let findValue = this.storeOrderIds.findIndex((item) => {
-                return item.id == value.id
-            });
-            if (findValue !== -1) {
-                this.storeOrderIds.splice(findValue, 1);
-            }
-        }
-    };
 }

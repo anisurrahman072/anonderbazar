@@ -47,7 +47,7 @@ module.exports = {
       }
 
       const paymentAddress = await PaymentAddress.update({id: req.param('id')})
-        .set({deletedAt: new Date()});
+        .set({deletedAt: new Date()}).fetch();
 
       return res.status(202).json(paymentAddress);
 

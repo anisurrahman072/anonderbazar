@@ -11,6 +11,7 @@ import {AuthService, CartItemService, FavouriteProductService} from "../../../..
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item',
@@ -24,6 +25,7 @@ export class ProductItemComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     product: Product;
     compare$: Observable<any>;
@@ -35,9 +37,6 @@ export class ProductItemComponent implements OnInit {
     cartTotalquantity: any;
     discountBadgeIcon: any;
     discountPercentage: number = 0;
-
-    productImageWidth: number = 0;
-    productImageHeight: number = 0;
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -72,33 +71,23 @@ export class ProductItemComponent implements OnInit {
         if (this.product.promotion) {
             this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
         }
-
-        // const img = new Image();
-
-        // img.onload = () => {
-        //     this.productImageHeight = img.height;
-        //     this.productImageWidth = img.width;
-        //
-        //     const expectedHeight = ((this.productImageHeight * this.productImageHeight * 1.267 ) /   this.productImageWidth);
-        //     console.log('Image Dimention: ', this.productImageWidth, this.productImageHeight);
-        //     // code here to use the dimensions
-        // }
-        //
-        // img.src = this.IMAGE_ENDPOINT + this.product.image;
     }
 
     //Method for add to cart
     clickToImage(event, productId) {
         this.router.navigate(['/product-details/', productId]);
     }
+
     //Method for add to cart
     addToCartClickHandler(event: any, product: any) {
         event.stopPropagation();
-        console.log('addToCartClickHandler');
         this.addToCart(product);
     }
 
     addToCart(product: any, callback?) {
+        if (!this.product) {
+            return false;
+        }
         if (this.product.product_variants) {
             for (let i = 0; i < this.product.product_variants.length; i++) {
                 let v = this.product.product_variants[i];
@@ -134,8 +123,13 @@ export class ProductItemComponent implements OnInit {
                         }
                     },
                     error => {
+                        console.log(error);
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if (error && error.error) {
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
                     }
                 );
             this.productname = this.product.name;
@@ -148,17 +142,17 @@ export class ProductItemComponent implements OnInit {
     }
 
     //Method for direct buy
-
-    buyNow(product) {
+    buyNow(event: any, product) {
+        event.stopPropagation();
         this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }
 
     //Method for add to favourite
+    addToFavourite(event: any, product: Product) {
 
-    addToFavourite(product: Product) {
-
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {
@@ -175,8 +169,8 @@ export class ProductItemComponent implements OnInit {
     }
 
     //Method for remove from favourite
-
-    removeFromFavourite(favouriteProduct) {
+    removeFromFavourite(event: any, favouriteProduct) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             if (favouriteProduct) {
@@ -192,9 +186,8 @@ export class ProductItemComponent implements OnInit {
     }
 
     //Method for add to compare
-
-    addToCompare(product: Product) {
-
+    addToCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
 
@@ -210,8 +203,8 @@ export class ProductItemComponent implements OnInit {
     }
 
     //Method for remove from compare
-
-    removeFromCompare(product: Product) {
+    removeFromCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));

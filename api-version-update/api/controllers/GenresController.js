@@ -1,5 +1,3 @@
-const {initLogPlaceholder, pagination} = require('../../libs');
-
 /**
  * GenresController
  *
@@ -7,12 +5,12 @@ const {initLogPlaceholder, pagination} = require('../../libs');
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all genre data
   //Model models/Genre.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'Genres');
 
       let _pagination = pagination(req.query);
 
@@ -25,19 +23,10 @@ module.exports = {
         _where.name = {'like': `%${req.query.searchTermName}%`};
       }
 
-
-
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
       let _sort = {};
       if (req.query.sortName) {
         _sort.name = req.query.sortName;
       }
-
-
-      /*.....SORT END..............................*/
-
 
       let totalGenre = await  Genre.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalGenre;
@@ -59,12 +48,13 @@ module.exports = {
         message: 'Get All design with pagination',
         data: genres
       });
-    } catch
-    (error) {
-      let message = 'Error in Get All Genres with pagination';
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in Getting All Genres with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

@@ -7,12 +7,12 @@
                 <div class="col-md-2">
                     <div class="row title">বার্তা</div>
                     <div class="row searchDiv">
-                        <nz-input [nzType]="'text'" class="searchInput" [nzSize]="'large'"
-                            [nzPlaceHolder]="'Search'">
+                          <input nz-input   class="searchInput" [nzSize]="'large'"
+                            [placeholder]="'Search'">
                             <ng-template #prefix>
                                 <i class="anticon anticon-search"></i>
                             </ng-template>
-                        </nz-input>
+
                     </div>
                     <div class="row clienlist">
                         <ul nz-menu>
@@ -78,14 +78,14 @@
                         <form nz-form [nzLayout]="'inline'" [formGroup]="chatForm" id="chatForm"
                             (ngSubmit)="submitForm($event,chatForm.value)">
                             <div class="col-md-10">
-                                <div nz-form-item style="width: 100%">
-                                    <div nz-form-control>
-                                        <nz-input class="messageinput" formControlName="message"
-                                            [nzPlaceHolder]="'বার্তা লিপিবদ্ধ করুন'" [nzSize]="'large'">
+                                <div    style="width: 100%">
+                                    <div   >
+                                         <input nz-input  class="messageinput" formControlName="message"
+                                            [placeholder]="'বার্তা লিপিবদ্ধ করুন'" [nzSize]="'large'">
                                             <ng-template #prefix>
                                                 <i class="fa fa-commenting-o fa-lg"></i>
                                             </ng-template>
-                                        </nz-input>
+
                                     </div>
                                 </div>
                             </div>
@@ -158,48 +158,48 @@
                                 <form nz-form [formGroup]="validateForm" class="clearfix" id="validateForm"
                                     (ngSubmit)="submitOrderForm($event,validateForm.value)">
                                     <div class="col-md-12">
-                                        <div nz-form-item nz-row>
-                                            <div nz-form-label nz-col [nzSpan]="3">
+                                        <div    nz-row>
+                                            <div    nz-col [nzSpan]="3">
                                                 <label> পণ্যের Name </label>
                                             </div>
-                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                                                <nz-input formControlName="product_name" [nzType]="'text'"
-                                                    [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'"
-                                                    [nzDisabled]="'true'">
-                                                </nz-input>
-                                                <div nz-form-explain
+                                            <div nz-col [nzSpan]="16"      >
+                                                  <input nz-input  formControlName="product_name"
+                                                    [placeholder]="'Enter Name'" [nzSize]="'large'"
+                                                    [disabled]="true">
+
+                                                <div
                                                     *ngIf="getFormControl('product_name').dirty&&getFormControl('product_name').hasError('required')">
                                                     Name is required!
                                                 </div>
                                             </div>
                                         </div>
                                         <!--name -->
-                                        <div nz-form-item nz-row>
-                                            <div nz-form-label nz-col [nzSpan]="3">
+                                        <div    nz-row>
+                                            <div    nz-col [nzSpan]="3">
                                                 <label> পণ্যের Price </label>
                                             </div>
-                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                                                <nz-input formControlName="product_price" [nzType]="'number'"
-                                                    [nzPlaceHolder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'"
-                                                    [nzDisabled]="'true'">
-                                                </nz-input>
-                                                <div nz-form-explain
+                                            <div nz-col [nzSpan]="16"      >
+                                                  <input nz-input  formControlName="product_price"
+                                                    [placeholder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'"
+                                                         [disabled] ="true">
+
+                                                <div
                                                     *ngIf="getFormControl('product_price').dirty&&getFormControl('product_price').hasError('required')">
                                                     দয়া করে Price লিপিবদ্ধ করুন!
                                                 </div>
                                             </div>
                                         </div>
                                         <!--price -->
-                                        <div nz-form-item nz-row>
-                                            <div nz-form-label nz-col [nzSpan]="3">
+                                        <div    nz-row>
+                                            <div    nz-col [nzSpan]="3">
                                                 <label> পণ্যের Amount </label>
                                             </div>
-                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                                                <nz-input formControlName="product_quantity"
-                                                    (change)="setTotalPrice($event)" [nzType]="'number'"
-                                                    [nzPlaceHolder]="'Amount লিপিবদ্ধ করুন'" [nzSize]="'large'">
-                                                </nz-input>
-                                                <div nz-form-explain
+                                            <div nz-col [nzSpan]="16"      >
+                                                 <input nz-input  formControlName="product_quantity"
+                                                    (change)="setTotalPrice($event)"
+                                                    [placeholder]="'Amount লিপিবদ্ধ করুন'" [nzSize]="'large'">
+
+                                                <div
                                                     *ngIf="getFormControl('product_quantity').dirty&&getFormControl('product_quantity').hasError('required')">
                                                     দয়া করে Amount লিপিবদ্ধ করুন!
                                                 </div>
@@ -207,41 +207,41 @@
                                         </div>
                                         <!--quantity -->
 
-                                        <div nz-form-item nz-row>
-                                            <div nz-form-label nz-col [nzSpan]="3">
+                                        <div    nz-row>
+                                            <div    nz-col [nzSpan]="3">
                                                 <label> ক্রেতার Name </label>
                                             </div>
-                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
-                                                <nz-input formControlName="user_name" [nzType]="'text'"
-                                                    [nzPlaceHolder]="'Enter Name'" [nzSize]="'large'"
-                                                    [nzDisabled]="'true'">
-                                                </nz-input>
-                                                <div nz-form-explain
+                                            <div nz-col [nzSpan]="16"      >
+                                                  <input nz-input  formControlName="user_name"
+                                                    [placeholder]="'Enter Name'" [nzSize]="'large'"
+                                                         [disabled] ="true">
+
+                                                <div
                                                     *ngIf="getFormControl('user_name').dirty&&getFormControl('user_name').hasError('required')">
                                                     Name is required!
                                                 </div>
                                             </div>
                                         </div>
                                         <!--user name -->
-                                        <div nz-form-item nz-row>
-                                            <div nz-form-label nz-col [nzSpan]="3">
+                                        <div    nz-row>
+                                            <div    nz-col [nzSpan]="3">
                                                 <label> পেমেন্ট Address </label>
                                             </div>
-                                            <div nz-col [nzSpan]="16" nz-form-control nzHasFeedback>
+                                            <div nz-col [nzSpan]="16"      >
                                                 <nz-select formControlName="payment_address_id" style="width: 100%"
                                                     nzPlaceHolder="Address নির্বাচন করুন">
                                                     <nz-option *ngFor="let option of listOfAddresses"
                                                         [nzLabel]="option.address" [nzValue]="option.id"></nz-option>
                                                 </nz-select>
-                                                <div nz-form-explain
+                                                <div
                                                     *ngIf="getFormControl('payment_address_id').dirty&&getFormControl('payment_address_id').hasError('required')">
                                                     দয়া করে Address নির্বাচন করুন !
                                                 </div>
                                             </div>
                                         </div>
                                         <!--user name -->
-                                        <div nz-form-item nz-row>
-                                            <div nz-col [nzOffset]="2" [nzSpan]="16" nz-form-control>
+                                        <div    nz-row>
+                                            <div nz-col [nzOffset]="2" [nzSpan]="16"   >
                                                 <nz-button-group>
                                                     <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                                                         [disabled]="!validateForm.valid">

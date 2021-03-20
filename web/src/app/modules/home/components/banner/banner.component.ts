@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 import {
     SwiperComponent,
@@ -24,7 +25,7 @@ export class BannerComponent implements OnInit {
     directiveRef: SwiperDirective;
 
     activeSlideIndex = 0;
-    myInterval = 5000;
+    myInterval = 2500;
     showNavigationArrows = false;
     showNavigationIndicators = false;
     cmsBANNERData: any;
@@ -32,6 +33,7 @@ export class BannerComponent implements OnInit {
 
     carousalList: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+    IMAGE_EXT = ''; //GLOBAL_CONFIGS.bannerImageExtension;
 
     constructor(private cmsService: CmsService) {
     }

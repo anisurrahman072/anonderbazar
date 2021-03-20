@@ -1,8 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-
 import {Store} from "@ngrx/store";
-import {Observable} from "rxjs/Observable";
-import {MatPaginator, MatTableDataSource} from "@angular/material";
+import {MatPaginator} from "@angular/material";
 import {AuthService, FavouriteProductService} from "../../../../services";
 import * as fromStore from "../../../../state-management";
 import {AppSettings} from "../../../../config/app.config";
@@ -34,7 +32,7 @@ export class FavouriteProductTabComponent implements OnInit {
 
         this.sub = this.store.select<any>(fromStore.getFavouriteProduct).subscribe((ss) => {
 
-            this.favouriteProductService.getByUserId(this.authService.getCurrentUserId())
+            this.favouriteProductService.getByAuthUser()
                 .subscribe((favProducts) => {
                     this.favouriteProducts = favProducts;
                     console.log(this.favouriteProducts);

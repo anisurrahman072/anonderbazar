@@ -1,21 +1,17 @@
-<nz-card>
-    <ng-template #title>
-        Transaction Details
-    </ng-template>
+<nz-card nzTitle="Transaction Details" [nzExtra]="extra">
     <ng-template #extra>
-
         <button *ngIf="data"
                 [routerLink]="['/dashboard/payment/edit', data.id]" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
             <i class="anticon anticon-edit"></i><span>Edit</span>
-        </button>
+        </button>&nbsp;
         <button routerLink="/dashboard/payment" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span>List</span>
         </button>
 
     </ng-template>
-    <ng-template #body>
+    <ng-container>
         <ul class="list-group list" *ngIf="data">
 
             <li class="list-group-item list-item">
@@ -119,6 +115,6 @@
             </li><!--transection_key-->
 
         </ul>
-    </ng-template>
+    </ng-container>
 </nz-card>
 

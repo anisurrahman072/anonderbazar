@@ -3,225 +3,230 @@
         কারিগরের Price List
     </ng-template>
     <ng-template #extra>
-        <button *ngIf="'craftsmanprice-create'|accessControl" routerLink="/dashboard/craftsmanprice/create" nz-button [nzType]="'primary'"
-            [nzSize]="'large'">
+        <button *ngIf="'craftsmanprice-create'|accessControl" routerLink="/dashboard/craftsmanprice/create" nz-button
+                [nzSize]="'large'">
             <i class="anticon anticon-download"></i><span> Add New </span>
         </button>
-    </ng-template> 
+    </ng-template>
     <ng-template #body>
-        <nz-table #nzTable [nzAjaxData]="craftmanPriceData" [nzTotal]="total" [nzIsPagination]="false" [nzDataSource]="craftmanPriceData"
-            [nzPageSize]="limit" [nzSize]="'default'" [nzShowTitle]="true">
-            <thead nz-thead>
-                <tr>
-                    <th nz-th>
-                        <span>Craftsman</span>
-                    </th>
-                    <th nz-th>
-                        <span>অংশ</span>
-                    </th>
-                    <th nz-th>
-                        <span>শৈলী</span>
-                    </th>
-                    <th nz-th>
-                        <span>নকশা</span>
-                    </th>
-                    <th nz-th>
-                        <span>Price</span>
-                    </th>
-                    <th nz-th>
-                        <span>সময়</span>
-                    </th> 
-                    <th nz-th *ngIf="'craftsmanprice-edit'|accessControl">
-                        <span> Action </span>
-                    </th>
-                </tr>
+        <nz-table #nzTable [nzData]="craftmanPriceData" [nzTotal]="total" [nzShowPagination]="false"
+                  [nzPageSize]="limit" [nzSize]="'default'">
+            <thead>
+            <tr>
+                <th>
+                    <span>Craftsman</span>
+                </th>
+                <th>
+                    <span>অংশ</span>
+                </th>
+                <th>
+                    <span>শৈলী</span>
+                </th>
+                <th>
+                    <span>নকশা</span>
+                </th>
+                <th>
+                    <span>Price</span>
+                </th>
+                <th>
+                    <span>সময়</span>
+                </th>
+                <th *ngIf="'craftsmanprice-edit'|accessControl">
+                    <span> Action </span>
+                </th>
+            </tr>
             </thead>
-            <thead nz-thead>
-                <!--search bar.....................-->
-                <tr>
-                    <th nz-th>
-                        <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()"
-                            [nzPlaceHolder]="'Craftsman নির্বাচন করুন'" [nzFilter]="true" (nzSearch)="crafmanSearchChange($event)"
-                            (nzSearchChange)="crafmanSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                            nzShowSearch>
-                            <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
-                                [nzValue]="option.id">
-                            </nz-option>
-                        </nz-select>
-                    </th>
-                    <th nz-th>
-                        <nz-select [(ngModel)]="partSearchValue" style="width: 100px;" nzAllowClear (ngModelChange)="page=1;getPageData()"
-                            [nzPlaceHolder]="'পণ্যের অংশ নির্বাচন করুন'" [nzFilter]="true" [nzNotFoundContent]="'Not found'"
-                            nzShowSearch>
-                            <nz-option *ngFor="let option of partsSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
-                            </nz-option>
-                        </nz-select>
-                    </th>
-                    <th nz-th>
-                        <nz-select [(ngModel)]="genreSearchValue" style="width: 100px;" nzAllowClear [nzPlaceHolder]="'শৈলী নির্বাচন করুন'"
-                            [nzFilter]="true" (ngModelChange)="page=1;getPageData()" [nzNotFoundContent]="'Not found'"
-                            nzShowSearch>
-                            <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name" [nzValue]="option.id">
-                            </nz-option>
-                        </nz-select>
-                    </th>
-                    <th nz-th>
-                        <nz-input [nzPlaceHolder]="'নকশা'" [(ngModel)]="designSearchValue" (ngModelChange)="page=1;getPageData()">
-                        </nz-input>
-                    </th>
-                    <th nz-th>
-                        <nz-input [nzPlaceHolder]="'Price'" [(ngModel)]="priceSearchValue" (ngModelChange)="page=1;getPageData()">
-                        </nz-input>
-                    </th>
-                    <th nz-th>
-                        <nz-input [nzPlaceHolder]="'সময়'" [(ngModel)]="timeSearchValue" (ngModelChange)="page=1;getPageData()">
-                        </nz-input>
-                    </th>
-                    <th nz-th>
-                    </th>
-                </tr>
+            <thead>
+            <!--search bar.....................-->
+            <tr>
+                <th>
+                    <nz-select style="width: 100px;" nzAllowClear [(ngModel)]="nameSearchValue"
+                               (ngModelChange)="page=1;getPageData()"
+                               nzPlaceHolder="Craftsman নির্বাচন করুন"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select [(ngModel)]="partSearchValue" style="width: 100px;" nzAllowClear
+                               (ngModelChange)="page=1;getPageData()"
+                               nzPlaceHolder="পণ্যের অংশ নির্বাচন করুন" [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of partsSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select [(ngModel)]="genreSearchValue" style="width: 100px;" nzAllowClear
+                               nzPlaceHolder="শৈলী নির্বাচন করুন"
+                               (ngModelChange)="page=1;getPageData()" [nzNotFoundContent]="'Not found'"
+                               nzShowSearch>
+                        <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <input nz-input placeholder="নকশা" [(ngModel)]="designSearchValue"
+                           (ngModelChange)="page=1;getPageData()">
+                </th>
+                <th>
+                    <input nz-input placeholder="Price" [(ngModel)]="priceSearchValue"
+                           (ngModelChange)="page=1;getPageData()">
+                </th>
+                <th>
+                    <input nz-input placeholder="সময়" [(ngModel)]="timeSearchValue"
+                           (ngModelChange)="page=1;getPageData()">
+                </th>
+                <th>
+                </th>
+            </tr>
             </thead>
-            <tbody nz-tbody>
-                <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
-                    <tr nz-tbody-tr>
-                        <td>
+            <tbody >
+            <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
+                <tr >
+                    <td>
                             <span *ngIf="editRow!==i">
                                 <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT + data.craftman_id?.avatar"
-                                    [nzSize]="'large'" [nzIcon]="'user'">
-                                </nz-avatar> {{data.craftman_id?.username}}
+                                           [nzSize]="'large'" [nzIcon]="'user'">
+                                </nz-avatar>
+                                {{data.craftman_id?.username}}
                             </span>
-                            <span *ngIf="editRow===i">
+                        <span *ngIf="editRow===i">
                                 <nz-select [(ngModel)]="tempEditObject.craftman_id" style="width: 100px;" nzAllowClear
-                                    (ngModelChange)="crafmanChange($event)" [nzPlaceHolder]="'Select picture'"
-                                    [nzFilter]="true" (nzSearch)="crafmanChange($event)" (nzSearchChange)="crafmanChange($event)"
-                                    [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                           nzPlaceHolder="Select picture"
+                                           [nzNotFoundContent]="'Not found'" nzShowSearch>
                                     <nz-option *ngFor="let option of craftmanSearchoptions" [nzLabel]="option.username"
-                                        [nzValue]="option.id">
+                                               [nzValue]="option.id">
                                     </nz-option>
 
                                 </nz-select>
                                 <p *ngIf="!tempEditObject.craftman_id" class="red">*required</p>
                             </span>
-                        </td>
+                    </td>
 
-                        <!--Part-->
-                        <td>
+                    <!--Part-->
+                    <td>
                             <span *ngIf="editRow!==i">
                                 {{data.part_id?.name}}
                             </span>
-                            <span *ngIf="editRow===i && partSearchOptions.length>0">
-                                <nz-select [(ngModel)]="tempEditObject.part_id" style="width: 100px;" nzAllowClear
-                                    (ngModelChange)="partSearchChange($event)" [nzPlaceHolder]="'Select picture'"
-                                    [nzFilter]="true" (nzSearch)="partSearchChange($event)" (nzSearchChange)="partSearchChange($event)"
-                                    [nzNotFoundContent]="'Not found'" nzShowSearch>
+                        <span *ngIf="editRow===i && partSearchOptions.length>0">
+                                <nz-select [(ngModel)]="tempEditObject.part_id" style="width: 100px;" nzAllowClear nzPlaceHolder="Select picture"
+                                           [nzNotFoundContent]="'Not found'" nzShowSearch>
                                     <nz-option *ngFor="let option of partSearchOptions" [nzLabel]="option.name"
-                                        [nzValue]="option.id">
+                                               [nzValue]="option.id">
                                     </nz-option>
 
                                 </nz-select>
                                 <p *ngIf="!tempEditObject.part_id" class="red">*required</p>
 
                             </span>
-                        </td>
+                    </td>
 
-                        <!--Genre-->
-                        <td>
-                            <div>
+                    <!--Genre-->
+                    <td>
+                        <div>
                                 <span *ngIf="editRow!==i">
                                     {{data.genre_id?.name}}
                                 </span>
-                                <span *ngIf="editRow===i">
+                            <span *ngIf="editRow===i">
                                     <nz-select [(ngModel)]="tempEditObject.genre_id" style="width: 100px;" nzAllowClear
-                                        [nzPlaceHolder]="'Select picture'" [nzFilter]="true" (nzModelChange)="genreSearchChange($event)"
-                                        (nzSearch)="genreSearchChange($event)" (nzSearchChange)="genreSearchChange($event)"
-                                        [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                               nzPlaceHolder="Select picture"
+                                               (ngModelChange)="genreSearchChange($event)"
+                                               [nzNotFoundContent]="'Not found'" nzShowSearch>
                                         <nz-option *ngFor="let option of genreSearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                                   [nzValue]="option.id">
                                         </nz-option>
                                     </nz-select>
                                     <p *ngIf="!tempEditObject.genre_id" class="red">*required</p>
                                 </span>
-                            </div>
-                        </td>
+                        </div>
+                    </td>
 
-                        <!--Design-->
-                        <td>
-                            <div>
+                    <!--Design-->
+                    <td>
+                        <div>
                                 <span *ngIf="editRow!==i">
                                     {{data.design_id?.name || 'n/a'}}
                                 </span>
-                                <span *ngIf="editRow===i && designSearchOptions.length>0">
+                            <span *ngIf="editRow===i && designSearchOptions.length>0">
                                     <nz-select [(ngModel)]="tempEditObject.design_id" style="width: 100px;"
-                                        nzAllowClear [nzPlaceHolder]="'Select picture'" [nzFilter]="true" (nzSearch)="designSearchChange($event)"
-                                        (nzSearchChange)="designSearchChange($event)" [nzNotFoundContent]="'Not found'"
-                                        nzShowSearch>
+                                               nzAllowClear nzPlaceHolder="Select picture"
+                                               [nzNotFoundContent]="'Not found'"
+                                               nzShowSearch>
                                         <nz-option *ngFor="let option of designSearchOptions" [nzLabel]="option.name"
-                                            [nzValue]="option.id">
+                                                   [nzValue]="option.id">
                                         </nz-option>
                                     </nz-select>
                                 </span>
-                            </div>
-                        </td>
-                        <!--Price-->
-                        <td>
-                            <span *ngIf="editRow!==i">{{data?.price}}</span>
-                            <span *ngIf="editRow===i">
-                                <nz-input [nzType]="'number'" [(ngModel)]="tempEditObject.price"></nz-input>
+                        </div>
+                    </td>
+                    <!--Price-->
+                    <td>
+                        <span *ngIf="editRow!==i">{{data?.price}}</span>
+                        <span *ngIf="editRow===i">
+                                <input nz-input [(ngModel)]="tempEditObject.price">
                                 <p *ngIf="!tempEditObject.price" class="red">*required</p>
                             </span>
-                        </td>
-                        <!--Price-->
-                        <td>
-                            <span *ngIf="editRow!==i">{{data?.time}}</span>
-                            <span *ngIf="editRow===i">
-                                <nz-input [nzType]="'number'" [(ngModel)]="tempEditObject.time"></nz-input>
+                    </td>
+                    <!--Price-->
+                    <td>
+                        <span *ngIf="editRow!==i">{{data?.time}}</span>
+                        <span *ngIf="editRow===i">
+                                <input nz-input [(ngModel)]="tempEditObject.time">
                                 <p *ngIf="!tempEditObject.time" class="red">*required</p>
                             </span>
-                        </td> 
-                        <!--procedure-->
-                        <td>
+                    </td>
+                    <!--procedure-->
+                    <td>
                             <span *ngIf="editRow!==i">
-                                <button *ngIf="'craftsmanprice-edit'|accessControl" nz-button [routerLink]="['/dashboard/craftsmanprice/edit/', data.id]"
-                                    [nzType]="'primary'" [nzSize]="'default'">
+                                <button *ngIf="'craftsmanprice-edit'|accessControl" nz-button
+                                        [routerLink]="['/dashboard/craftsmanprice/edit/', data.id]"
+                                        [nzSize]="'default'">
                                     <i class="anticon anticon-edit ">  </i>
                                 </button>
                             </span>
-                            <span *ngIf="editRow===i">
-                                <button nz-button (click)="saveThisRow(i,data)" [nzType]="'primary'" [nzSize]="'default'">
+                        <span *ngIf="editRow===i">
+                                <button nz-button (click)="saveThisRow(i,data)" [nzSize]="'default'">
                                     <i class="anticon anticon-save ">  </i>
                                 </button>
                             </span>
-                            <span *ngIf="editRow===i">
-                                <button nz-button (click)="cancelThisRow(i,data)" [nzType]="'primary'" [nzSize]="'default'">
+                        <span *ngIf="editRow===i">
+                                <button nz-button (click)="cancelThisRow(i,data)" [nzSize]="'default'">
                                     <i class="anticon anticon-close"></i>
                                 </button>
                             </span>
-                            <span *ngIf="editRow!==i">
+                        <span *ngIf="editRow!==i">
                                 <ng-container *ngIf="'craftsmanprice-delete'|accessControl">
                                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,data)">
+                                                   [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,data)">
                                         <a nz-popconfirm>
-                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <button nz-button [nzSize]="'default'">
                                                 <i class="anticon anticon-delete ">  </i>
                                             </button>
                                         </a>
                                     </nz-popconfirm>
                                 </ng-container>
                             </span>
-                        </td>
-                    </tr>
-                </ng-template>
+                    </td>
+                </tr>
+            </ng-template>
             </tbody>
-        </nz-table> 
+        </nz-table>
         <div class="row">
             <div class="col-md-offset-5" style="margin-top: 10px">
-                <span nz-table-title class="col-md-6">
+<!--                <span   class="col-md-6">
                     <nz-pagination *ngIf="!editRowActive" (nzPageIndexClickChange)="changePage($event,limit)"
-                        (nzPageSizeChange)="changePage(1,$event)" nzShowTotal [nzPageIndex]="page" [nzTotal]="total"
-                        nzShowSizeChanger [nzPageSize]="limit">
+                                   (nzPageSizeChange)="changePage(1,$event)" nzShowTotal [nzPageIndex]="page"
+                                   [nzTotal]="total"
+                                   nzShowSizeChanger [nzPageSize]="limit">
                     </nz-pagination>
-                </span>
-                <span nz-table-title class="pull-right col-md-6">
+                </span>-->
+                <span   class="pull-right col-md-6">
                     <button nz-button *ngIf="!editRowActive" (click)="resetAllFilter()">Clear filter</button>
                 </span>
             </div>

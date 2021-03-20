@@ -1,10 +1,10 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import * as fromStore from "../../../state-management";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {User, FavouriteProduct} from "../../../models/";
+import {User} from "../../../models/";
 import {AuthService, FavouriteProductService, UserService} from "../../../services";
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
 import {NotificationsService} from "angular2-notifications";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
@@ -18,7 +18,7 @@ import {ToastrService} from "ngx-toastr";
     templateUrl: "./profile.component.html",
     styleUrls: ["./profile.component.scss"]
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy  {
     currentUser$: Observable<User>;
     user: any;
     id: any;
@@ -36,12 +36,12 @@ export class ProfileComponent implements OnInit {
     isWishlist: boolean;
     isProfile: boolean;
     isAddress: boolean;
-    favouriteProducts$: Observable<FavouriteProduct[]>;
+/*    favouriteProducts$: Observable<FavouriteProduct[]>;
     favouriteProducts: FavouriteProduct[];
     profileRouterLink = [
         {label: "Favourites", path: "/profile/favourites"},
         {label: "Orders", path: "/profile/orders"}
-    ];
+    ];*/
     options: { value: number; label: string; icon: string }[];
     view: any[] = [700, 400];
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
@@ -50,9 +50,6 @@ export class ProfileComponent implements OnInit {
     style: any = {
         top: "10px"
     };
-    showLabels = true;
-    explodeSlices = false;
-    doughnut = false;
     single: any = [];
     customColors: any = [];
     isMessage: boolean;
@@ -64,10 +61,8 @@ export class ProfileComponent implements OnInit {
     ImageFileEdit: any[] = [];
     ImageFile: File;
 
-    /*
-    * constructor for ProfileComponent
-    */
     constructor(
+        private route: ActivatedRoute,
         private store: Store<fromStore.HomeState>,
         private authService: AuthService,
         private paymentAddressService: PaymentAddressService,
@@ -77,6 +72,7 @@ export class ProfileComponent implements OnInit {
         private favouriteProductService: FavouriteProductService,
         public loaderService: LoaderService,
         private toastService: ToastrService,
+
     ) {
         this.options = [
             {
@@ -120,9 +116,11 @@ export class ProfileComponent implements OnInit {
         ];
 
     }
-
+    ngOnDestroy() {
+    }
     //init the component
     ngOnInit(): void {
+
         this.isDisabled = true;
         this.isDashboard = true;
         this.isOrder = false;
@@ -139,8 +137,8 @@ export class ProfileComponent implements OnInit {
         this.loaderService.showLoader();
         this.userService.getByIdForDashBoard(this.authService.getCurrentUserId()).subscribe(result => {
             this.dashboardData = result;
-            this.user = result.data[0];
-            console.log(' this.user', this.user);
+            console.log(' this.user', result, this.user);
+            this.user = result.data;
             this.loaderService.hideLoader();
             this.pendingCount = this.dashboardData.pendingOrder;
             this.processingCount = this.dashboardData.processingOrder;
@@ -155,6 +153,13 @@ export class ProfileComponent implements OnInit {
         this.paymentAddressService.getPaymentaddressWithoutOrderid(this.authService.getCurrentUserId()).subscribe(result => {
             this.addresses = result;
         });
+
+        this.currentUser$.subscribe((res)=> {
+            console.log(' this.currentUser$.subscribe', res);
+            this.user = res;
+        }, (error)=>{
+            console.log(' this.currentUser$.subscribe', error);
+        })
     }
 
     // Event for showing the profile image

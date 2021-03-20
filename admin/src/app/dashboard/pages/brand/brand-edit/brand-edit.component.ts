@@ -2,11 +2,11 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {BrandService} from '../../../../services/brand.service';
 
 import {environment} from "../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-brand-edit',
@@ -14,6 +14,7 @@ import {environment} from "../../../../../environments/environment";
     styleUrls: ['./brand-edit.component.css']
 })
 export class BrandEditComponent implements OnInit, OnDestroy {
+    @ViewChild('Image') Image;
     id: number;
     data: any;
     sub: Subscription;
@@ -22,32 +23,42 @@ export class BrandEditComponent implements OnInit, OnDestroy {
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     validateForm: FormGroup;
     ImageFile: File;
-    @ViewChild('Image') Image;
+
+    constructor(private router: Router, private route: ActivatedRoute,
+                private _notification: NzNotificationService,
+                private fb: FormBuilder,
+                private brandService: BrandService) {
+        this.validateForm = this.fb.group({
+            name: ['', [Validators.required]],
+            code:[''],
+            image: [null, []],
+        });
+    }
     //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
-        } 
+        }
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
-          } else {
+        } else {
             formData.append('hasImage', 'false');
-          }
+        }
         this._isSpinning = true;
         this.brandService.update(this.id, formData)
             .subscribe(result => {
                 this._notification.create('success', 'Brand Update successful for ', this.data.name);
-                
+
                 setTimeout(() => {
                     this._isSpinning = false;
                     this.router.navigate(['/dashboard/brand/details/', this.id]);
                 }, this.ImageFile ? 2000 : 0);
-            }, (error) => { 
+            }, (error) => {
                 this._notification.create('error', ' failed', 'Brand update failed');
                 this._isSpinning = false;
             });
@@ -60,28 +71,19 @@ export class BrandEditComponent implements OnInit, OnDestroy {
             this.validateForm.controls[key].markAsPristine();
         }
     }
-    
+
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-    
-    constructor(private router: Router, private route: ActivatedRoute,
-                private _notification: NzNotificationService,
-                private fb: FormBuilder,
-                private brandService: BrandService) {
-        this.validateForm = this.fb.group({
-            name: ['', [Validators.required]],
-            code:[''],
-            image: [null, []],
-        });
-    }
+
+
     // init the component
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.brandService.getById(this.id)
-                .subscribe(result => { 
+                .subscribe(result => {
                     this.ImageFileEdit = [];
                     this.data = result;
                     this.validateForm.patchValue(this.data);
@@ -90,7 +92,7 @@ export class BrandEditComponent implements OnInit, OnDestroy {
                     }
                 });
         });
-        
+
     }
 
     //Event method for removing picture
@@ -103,11 +105,11 @@ export class BrandEditComponent implements OnInit, OnDestroy {
         this.ImageFile = metadata.file;
         return metadata;
     }
-    
+
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-        
+
     }
-    
-    
+
+
 }

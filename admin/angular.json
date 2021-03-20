@@ -18,12 +18,18 @@
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
-              "src/favicon.png"
+              "src/favicon.png",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
               "node_modules/font-awesome/css/font-awesome.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/flatpickr/dist/flatpickr.css",
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
               "src/styles.css"
             ],
             "scripts": [

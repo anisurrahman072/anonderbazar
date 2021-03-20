@@ -5,8 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {asyncForEach} = require('../../libs');
-
+const {asyncForEach} = require('../../libs/helper');
 module.exports = {
 
   //Method called for creating craftsman price data
@@ -68,7 +67,7 @@ module.exports = {
 
       let newCraftmanPrice = [];
       await asyncForEach(craftmanPrice, async (_craftmanPrice) => {
-        let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id,})
+        let tmp = await CraftmanPrice.findOne({id: _craftmanPrice.id})
           .populate('craftman_id')
           .populate('type_id')
           .populate('category_id')

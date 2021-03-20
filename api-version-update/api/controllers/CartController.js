@@ -5,8 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {asyncForEach} = require('../../libs/helper');
 const {isResourceOwner} = require('../../libs/check-permissions');
-const {asyncForEach} = require('../../libs');
 
 module.exports = {
   create: (req, res) => {

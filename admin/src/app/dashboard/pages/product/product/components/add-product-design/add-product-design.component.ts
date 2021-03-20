@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-
 import { DesignCategoryService } from "../../../../../../services/design-category.service";
 import { PartService } from "../../../../../../services/part.service";
 import { ProductDesignService } from "../../../../../../services/product-design.service";

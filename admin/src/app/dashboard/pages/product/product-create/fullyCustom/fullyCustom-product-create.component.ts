@@ -22,6 +22,7 @@ import {BrandService} from '../../../../../services/brand.service';
     styleUrls: ['./fullyCustom-product-create.component.css']
 })
 export class FullyCustomProductCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     tagOptions: any = [];
     validateForm: FormGroup;
     ImageFile: File[] = [];
@@ -56,7 +57,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
-    @ViewChild('Image') Image;
+
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
@@ -66,7 +67,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
     tag: any;
     tags = [];
     inputVisible = false;
-    inputValue = '';
+
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -75,6 +76,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
 
     currentUser: any;
     queryStatus: any;
+    isSubmiting: boolean = false;
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
@@ -86,6 +88,10 @@ export class FullyCustomProductCreateComponent implements OnInit {
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
                 private productService: ProductService) {
+
+    }
+    // For initiating the section element with data
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             code: [''],
@@ -107,8 +113,23 @@ export class FullyCustomProductCreateComponent implements OnInit {
             featured: [false, []],
             weight: ['', []]
         });
-    }
+        this.currentUser = this.authService.getCurrentUser();
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.queryStatus = params.status;
+        });
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.typeSearchOptions = result;
+        });
+        this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
 
+        });
+        this.userService
+            .getAllCraftsmanByWarehouseId(this.currentUser.warehouse.id)
+            .subscribe(result => {
+                this.craftsmanSearchOptions = result.data;
+            });
+    }
     // Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -151,15 +172,25 @@ export class FullyCustomProductCreateComponent implements OnInit {
         } else {
             formData.append('hasImage', 'false');
         }
+        this.isSubmiting = true;
         this.productService.insert(formData).subscribe(result => {
-            if (result.id) {
+            this.isSubmiting = false;
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New fully customize product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
+        }, error => {
+            this.isSubmiting = false;
+            console.log('error', error);
+            this._notification.create(
+                'error',
+                'Ooops!',
+                'There was a problem creating the product'
+            );
         });
     };
 
@@ -191,28 +222,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    // For initiating the section element with data
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.queryStatus = params.status;
-        });
-        this.categoryProductService.getAllCategory().subscribe(result => {
-            this.typeSearchOptions = result;
-        });
-        this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
 
-        });
-        this.userService
-            .getAllCraftsmanByWarehouseId(this.currentUser.warehouse.id)
-            .subscribe(result => {
-                this.craftsmanSearchOptions = result.data;
-            });
-    }
-
-    categorySearchChange($event) {
-    }
 
     // Method called on product type change
     onTypeChange($event) {
@@ -242,12 +252,5 @@ export class FullyCustomProductCreateComponent implements OnInit {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
 
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
 }

@@ -1,147 +1,128 @@
 <section>
-    <nz-card class="card-height">
-        <ng-template #title>
-            List of Attribute's Variant
-        </ng-template>
-        <ng-template #extra>
-            <button *ngIf="'warehousevariant-create'|accessControl" routerLink="/dashboard/warehousevariant/create" nz-button [nzType]="'primary'" [nzSize]="'large'">
+    <nz-card class="card-height" nzTitle="List of Attribute's Variant" [nzExtra]="extraTemplate">
+        <ng-template #extraTemplate>
+            <button *ngIf="'warehousevariant-create'|accessControl" routerLink="/dashboard/warehousevariant/create"
+                    nz-button [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
+            <button nz-button (click)="resetAllFilter()">Clear Filter</button>
         </ng-template>
-        <ng-template #body>
-            <nz-spin [nzSpinning]="_isSpinning">
-                <nz-table #nzTable [nzDataSource]="data" [nzPageSize]="10" [nzTotal]="total" [nzIsPagination]="false" [nzSize]="'default'"
-                    [nzShowTitle]="true">
-                    
-                    <thead nz-thead>
-                        <tr>
-                            <th nz-th>
-                                <span> Picture </span>
-                            </th>
-                            <th nz-th>
-                                <span> Name </span>
-                                <nz-table-sort [(nzValue)]="sortValue.name" (nzValueChange)="sort('name',$event)">
-                                </nz-table-sort>
-                            </th>
-                            <th nz-th>
-                                <span> Materials </span>
-                            </th>
-                            <th nz-th>
-                                <span> Amount </span>
-                            </th>
-                            <th nz-th>
-                                <span> Unit Name </span>
-                            </th>
-                            <th nz-th>
-                                <span> Unit price </span>
-                            </th>
-                            <th nz-th>
-                                <span> Brand </span>
-                            </th>
-                            <th nz-th>
-                                <span>Shelf</span>
 
-                                <th nz-th>
+        <nz-table #nzTable [nzLoading]="_isSpinning"
+                  [nzData]="data"
+                  [nzPageSize]="10"
+                  [nzTotal]="total"
+                  [nzFrontPagination]="false"
+                  (nzPageIndexChange)="getPageData($event)"
+                  [nzSize]="'default'">
 
-                                </th>
+            <thead [nzSingleSort]="true" (nzSortChange)="sort($event) ">
+            <tr>
+                <th>
+                    <span> Picture </span>
+                </th>
+                <th nzShowSort nzSortKey="name">
+                    <span> Name </span>
+                </th>
+                <th>
+                    <span> Materials </span>
+                </th>
+                <th>
+                    <span> Amount </span>
+                </th>
+                <th>
+                    <span> Unit Name </span>
+                </th>
+                <th>
+                    <span> Unit price </span>
+                </th>
+                <th>
+                    <span> Brand </span>
+                </th>
+                <th>
+                    <span>Shelf</span>
+                </th>
+                <th>
+                    <span>Read</span>
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <input nz-input [placeholder]="'Name Search'" [(ngModel)]="nameSearchValue"
+                           (ngModelChange)="page=1; getPageData()">
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of nzTable.data">
+                <td>
+                    <ng-container *ngIf="data.image; else noAvatar">
+                        <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
+                                   [nzIcon]="'user'"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noAvatar>
+                        <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
+                                   [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image"></nz-avatar>
+                    </ng-template>
+                </td>
+                <td>
+                    {{data.name}}
+                </td>
+                <td>
+                    {{data.variant_id?.name}}
+                </td>
+                <td>
+                    <nz-tag>{{data.quantity}}</nz-tag>
+                </td>
+                <td>
+                    <nz-tag>{{data.unit_name}}</nz-tag>
+                </td>
+                <td>
+                    <nz-tag>{{data.unit_price}}</nz-tag>
+                </td>
+                <td>
+                    <nz-tag>{{data.brand_id?.name}}</nz-tag>
+                </td>
+                <td>
+                    <nz-tag>{{data.rack}}</nz-tag>
+                </td>
+                <td>
+                    <nz-button-group>
+                        <button *ngIf="'warehousevariant-read'|accessControl"
+                                [routerLink]="['/dashboard/warehousevariant/details/', data.id]" nz-button
+                                [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <button *ngIf="'warehousevariant-edit'|accessControl"
+                                [routerLink]="['/dashboard/warehousevariant/edit', data.id]" nz-button
+                                [nzType]="'primary'" [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                    </nz-button-group>
+                    <ng-container *ngIf="'warehousevariant-delete'|accessControl">
 
-                        </tr>
-                    </thead>
-                    <thead nz-thead>
-                        <!--search bar.....................-->
-                        <tr>
-                            <th nz-th>
-
-                            </th>
-                            <th nz-th>
-                                <nz-input [nzPlaceHolder]="'Name Search'" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1;getPageData()">
-                                </nz-input>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                            </th>
-                            <th nz-th>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody nz-tbody>
-                        <tr nz-tbody-tr *ngFor="let data of nzTable.data">
-                            <td nz-td>
-                                <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_ENDPOINT+data.image" [nzSize]="'large'" [nzIcon]="'user'"></nz-avatar>
-                            </td>
-                            <td nz-td>
-                                {{data.name}}
-                            </td>
-                            <td nz-td>
-                                {{data.variant_id?.name}}
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.quantity}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.unit_name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.unit_price}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.brand_id?.name}}</nz-tag>
-                            </td>
-                            <td nz-td>
-                                <nz-tag>{{data.rack}}</nz-tag>
-                            </td>
-
-                            <td>
-                                <nz-button-group>
-                                <button *ngIf="'warehousevariant-read'|accessControl" [routerLink]="['/dashboard/warehousevariant/details/', data.id]" nz-button [nzType]="'info'" [nzSize]="'default'">
-                                    <i class="anticon anticon-info-circle"></i>
+                        <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                       [nzCancelText]="'Cancel'"
+                                       (nzOnConfirm)="deleteConfirm(data.id)">
+                            <a nz-popconfirm>
+                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                    <i class="anticon anticon-delete"></i>
                                 </button>
-                                <button *ngIf="'warehousevariant-edit'|accessControl" [routerLink]="['/dashboard/warehousevariant/edit', data.id]" nz-button [nzType]="'primary'" [nzSize]="'default'">
-                                    <i class="anticon anticon-edit"></i>
-                                </button>
-                            </nz-button-group>
-                            <ng-container *ngIf="'warehousevariant-delete'|accessControl">
-
-                                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
-                                    (nzOnConfirm)="deleteConfirm(data.id)">
-                                    <a nz-popconfirm>
-                                        <button  nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                            <i class="anticon anticon-delete"></i>
-                                        </button>
-                                    </a>
-                                </nz-popconfirm>
-                            </ng-container>
-                            </td>
-                        </tr>
-                    </tbody>
-                </nz-table>
-            </nz-spin>
-            <div class="row">
-                    <div class="col-md-offset-5" style="margin-top: 10px">
-                        <span nz-table-title class="col-md-6">
-                            <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)"
-                                            (nzPageSizeChange)="changePage(1,$event)"
-                                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger
-                                            [nzPageSize]="limit">
-                            </nz-pagination>
-                        </span>
-                        <span nz-table-title class="pull-right col-md-6">
-                                <button nz-button (click)="resetAllFilter()">Clear filter</button>
-                            </span>
-                    </div>
-                    </div>
-        </ng-template>
+                            </a>
+                        </nz-popconfirm>
+                    </ng-container>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
     </nz-card>
-
 </section>

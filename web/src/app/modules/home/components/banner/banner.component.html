@@ -4,7 +4,7 @@
             <carousel [interval]="myInterval" [(activeSlide)]="activeSlideIndex">
                 <slide *ngFor="let slide of carousalList; let index=index">
                     <a href="{{slide.description.link}}" title="{{slide.description.linktext}}">
-                        <img [src]="IMAGE_ENDPOINT + slide?.image" alt="Anonder Bazar Banner Image"
+                        <img [src]="IMAGE_ENDPOINT + slide?.image + IMAGE_EXT" alt="Anonder Bazar Banner Image"
                              style="width: 100%; height: auto; text-align: center;"/>
                     </a>
                 </slide>

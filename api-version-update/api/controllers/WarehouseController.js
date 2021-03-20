@@ -4,53 +4,80 @@
  * @description :: Server-side logic for managing warehouses
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
-const {
-  initLogPlaceholder,
-  pagination
-} = require('../../libs');
-
+const Promise = require('bluebird');
 module.exports = {
   //Method called for getting all warehouse data
   //Model models/Warehouse.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'craftsman');
+      const warehouseQuery = Promise.promisify(Warehouse.getDatastore().sendNativeQuery);
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
-      let _where = {};
-      _where.deletedAt = null;
+
+      let rawSelect = `
+        SELECT
+            warehouses.id as id,
+            warehouses.code as code,
+            warehouses.name as name,
+            warehouses.phone as phone,
+            warehouses.email as email,
+            warehouses.status as status,
+            warehouses.buffer_time as buffer_time,
+            warehouses.upazila_id as upazila_id,
+            warehouses.zila_id as zila_id,
+            warehouses.division_id as division_id,
+            division.name as division_name,
+            zilla.name as zilla_name,
+            upazila.name as upazila_name
+            `;
+
+      let fromSQL = ' FROM warehouses as warehouses  ';
+      fromSQL += ' LEFT JOIN areas as division ON division.id = warehouses.division_id   ';
+      fromSQL += ' LEFT JOIN areas as zilla ON zilla.id = warehouses.zila_id   ';
+      fromSQL += ' LEFT JOIN areas as upazila ON upazila.id = warehouses.upazila_id   ';
+
+      let _where = ` WHERE warehouses.deleted_at IS NULL `;
+
       let query = req.query;
       if (query.warehouse_id) {
-        _where.id = parseInt(query.warehouse_id);
+        _where += ` AND warehouses.id = '${parseInt(query.warehouse_id)}' `;
       }
 
-      /* WHERE condition..........END................*/
+      if (query.warehouseName) {
+        _where += ` AND warehouses.name LIKE '%${query.warehouseName}%' `;
+      }
 
-      let totalWarehouse = await Warehouse.count().where(_where);
-      _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouse;
-      let Warehouses = await Warehouse.find(
-        {
-          where: _where,
-          limit: _pagination.limit,
-          skip: _pagination.skip
-        }).populateAll();
+      let _sort = ' ORDER BY warehouses.created_at DESC ';
 
+      const totalWarehousesRaw = await warehouseQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      let totalWarehouses = 0;
+      let allWarehouses = [];
+      if (totalWarehousesRaw && totalWarehousesRaw.rows && totalWarehousesRaw.rows.length > 0) {
+        totalWarehouses = totalWarehousesRaw.rows[0].totalCount;
+        _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouses;
+
+        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
+        const rawResult = await warehouseQuery(rawSelect + fromSQL + _where + _sort + limitSQL, []);
+
+        allWarehouses = rawResult.rows;
+      }
 
       res.status(200).json({
         success: true,
-        total: totalWarehouse,
+        total: totalWarehouses,
         limit: _pagination.limit,
         skip: _pagination.skip,
         page: _pagination.page,
         message: 'Get All Warehouses with pagination',
-        data: Warehouses
+        data: allWarehouses
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All Warehouses with pagination';
 
+      console.log(error);
       res.status(400).json({
         success: false,
         message,
@@ -84,32 +111,26 @@ module.exports = {
   //Method called for creating a warehouse data
   //Model models/Warehouse.js
   create: async (req, res) => {
-
     try {
+
       if (req.body.haslogo === 'true') {
-        try {
-          const uploaded = await uploadImages(req.file('logo'));
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          req.body.logo = '/' + newPath;
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
+        const uploaded = await uploadImages(req.file('logo'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No image was uploaded');
         }
+        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.logo = '/' + newPath;
       }
-      const warehouse = await Warehouse.create(req.body).fetch();
-      return res.json(200, warehouse);
+      req.body.status = 0;
+      const warehouseCreate = await Warehouse.create(req.body).fetch();
+
+      return res.status(200).json(warehouseCreate);
+
     } catch (error) {
-      console.log(error);
-      res.status(400).json({
-        success: false,
-        message: 'Failed to create an warehouse',
-        error
-      });
+      return res.json(error.status, {message: '', error, success: false});
     }
   },
+
   //Method called for updating a warehouse data
   //Model models/Warehouse.js
   update: async (req, res) => {

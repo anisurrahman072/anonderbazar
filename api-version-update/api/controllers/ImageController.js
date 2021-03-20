@@ -5,8 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {imageUploadConfig} = require('../../libs/helper');
-
+const {uploadImages} = require('../../libs/helper');
 module.exports = {
   //Method called for sending a image data
   sendImage: function (req, res) {
@@ -15,15 +14,20 @@ module.exports = {
     res.send();
   },
   //Method called for uploading a image data
-  upload: function (req, res) {
-    if (req.method === 'GET')
-    {return res.json({'status': 'GET not allowed'});}
-
-    req.file('imageFile').upload(imageUploadConfig(), (err, files) => {
-      // maxBytes: 10000000;
-      if (err) {return res.serverError(err);}
-      res.json(200, files);
-    });
+  upload: async (req, res) => {
+    try{
+      if (req.method === 'GET'){
+        return res.json({'status': 'GET not allowed'});
+      }
+      const files = await uploadImages(req.file('imageFile'));
+      return res.status(200).json({files: files});
+    }
+    catch(error){
+      console.log(error);
+      return res.status(error.status).json({'Error': error});
+    }
   }
 };
+
+
 

@@ -11,6 +11,7 @@ import * as fromStore from "../../../../state-management/index";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item-newarrival',
@@ -23,6 +24,7 @@ export class ProductItemNewArrivalComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     newItem: Product;
     compare$: Observable<any>;
@@ -33,8 +35,6 @@ export class ProductItemNewArrivalComponent implements OnInit {
     product: Product;
     cart$: Observable<any>;
     cartId: any;
-    cartTotalprice: any;
-    cartTotalquantity: any;
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -81,7 +81,6 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for add to cart
-
     addToCart(product: any, callback?) {
         if (product.product_variants.length > 0) {
             this.router.navigate([`/product-details/${product.id}`]);
@@ -110,7 +109,11 @@ export class ProductItemNewArrivalComponent implements OnInit {
                     },
                     error => {
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if (error && error.error) {
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
                     }
                 );
         } else {
@@ -120,8 +123,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for add to favourite
-
-    addToFavourite(newItem: Product) {
+    addToFavourite(event: any, newItem: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {
@@ -138,8 +141,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for remove from favourite
-
-    removeFromFavourite(favouriteProduct) {
+    removeFromFavourite(event: any, favouriteProduct) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             if (favouriteProduct) {
@@ -155,9 +158,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for add to compare
-
-    addToCompare(newItem: Product) {
-
+    addToCompare(event: any, newItem: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
 
@@ -173,8 +175,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for remove from compare
-
-    removeFromCompare(product: Product) {
+    removeFromCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));
@@ -187,8 +189,8 @@ export class ProductItemNewArrivalComponent implements OnInit {
     }
 
     //Method for direct buy
-
-    buyNow(product) {
+    buyNow(event: any, product) {
+        event.stopPropagation();
         this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });

@@ -13,7 +13,7 @@ import {BrandService} from "../../services";
 import {FavouriteProduct} from '../../models';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {LoginModalService} from '../../services/ui/loginModal.service';
-
+import {GLOBAL_CONFIGS} from "../../../environments/global_config";
 
 @Component({
     selector: "app-menu",
@@ -24,17 +24,15 @@ export class MenuComponent implements OnInit {
     currentUser$: Observable<any>;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     productTypeList: any;
-    isCategoryShow = false;
     categoryList: any[];
     subCategoryList: any[];
     brandList: any[];
-    isClicked: Boolean = false;
     selectedCategoryId: any;
-    class_list: any;
     @Input()
     isCollapsed: boolean;
     isDisplay: boolean;
     isMobileMenuOpen: boolean = false;
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
 
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -67,15 +65,12 @@ export class MenuComponent implements OnInit {
             this.productTypeList = result;
         });
 
-
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.categoryProductService
             .getCategoriesWithSubcategories()
             .subscribe(result => {
-                console.log('getCategoriesWithSubcategories', result);
-                console.log('getCategoriesWithSubcategories', typeof result);
                 this.categoryList = result;
             });
 

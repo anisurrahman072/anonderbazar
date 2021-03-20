@@ -1,14 +1,14 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
     Validators
 } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {CategoryProductService} from '../../../../../services/category-product.service';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
-import { CmsService } from '../../../../../services/cms.service';
+import {CmsService} from '../../../../../services/cms.service';
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-category-product-create',
@@ -23,7 +23,7 @@ export class CategoryProductCreateComponent implements OnInit {
     @ViewChild('Image') Image;
     categorySearchOptions = [];
     subCategorySearchOptions = [];
-    
+
     constructor(private router: Router, private cmsService: CmsService, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
@@ -33,28 +33,29 @@ export class CategoryProductCreateComponent implements OnInit {
             parent: ['', []],
             offer_id: ['', []],
             sub_parent: ['', []],
-            code:['', [Validators.required]],
+            code: ['', [Validators.required]],
             image: [null, []],
         });
     }
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
-        
+
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
         let parent_id = 0;
-        if(value.sub_parent){
+        if (value.sub_parent) {
             parent_id = value.sub_parent.id;
-        } else if(value.parent){
+        } else if (value.parent) {
             parent_id = value.parent.id;
         }
-        formData.append('parent_id', ''+parent_id);
-        
+        formData.append('parent_id', '' + parent_id);
+
         formData.append('type_id', '2');
         if (value.offer_id) {
             formData.append('offer_id', value.offer_id);
@@ -69,17 +70,17 @@ export class CategoryProductCreateComponent implements OnInit {
             }
         } else {
             formData.append('hasImage', 'false');
-        } 
+        }
         this.categoryProductService.insert(formData)
             .subscribe((result: any) => {
                 if (result.id) {
                     this._notification.create('success', 'Product category ', result.name);
                     this.router.navigate(['/dashboard/category/product/details/', result.id]);
-                    
+
                 }
             });
     }
-    
+
     //Event method for removing picture
     onRemoved(_file: FileHolder) {
         this.ImageFile.splice(
@@ -87,11 +88,13 @@ export class CategoryProductCreateComponent implements OnInit {
             1
         );
     }
+
     //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile.push(metadata.file);
         return metadata;
-    }; 
+    };
+
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -108,18 +111,19 @@ export class CategoryProductCreateComponent implements OnInit {
 
     // init the component
     ngOnInit() {
-        
+
         this.categoryProductService.getAllCategory().subscribe((result: any) => {
             this.categorySearchOptions = result;
         });
         this.cmsService
-      .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
-      .subscribe(result => {
-            this.offers = result;
-      }); 
+            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
+            .subscribe(result => {
+                this.offers = result;
+            });
     }
+
     //Event method on category change
-    onCategoryChange(categoryId){
+    onCategoryChange(categoryId) {
         this.parentCheck = false;
         this.categoryProductService.getSubcategoryByCategoryId(categoryId.id).subscribe((result: any) => {
             this.subCategorySearchOptions = result;

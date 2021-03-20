@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NzNotificationService} from 'ng-zorro-antd';
@@ -15,10 +15,11 @@ import {UserService} from "../../../../services/user.service";
     styleUrls: ['./warehouse-create.component.css']
 })
 export class WarehouseCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     validateForm: FormGroup;
     ImageFile: File;
     logoFile: File;
-    @ViewChild('Image') Image;
+    pass: any;
 
     current = 0;
     genderSearchOptions = [
@@ -29,6 +30,7 @@ export class WarehouseCreateComponent implements OnInit {
     divisionSearchOptions = [];
     zilaSearchOptions: any;
     upazilaSearchOptions: any;
+    submitting: boolean = false;
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -106,6 +108,7 @@ export class WarehouseCreateComponent implements OnInit {
 
     //Event method for submitting the form
     submitForm = ($event, value) => {
+        this.submitting = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -113,7 +116,7 @@ export class WarehouseCreateComponent implements OnInit {
 
         if (value.username) {
             this.userService.checkUsername(value.username).subscribe(result => {
-                if(result.total == 0){
+                if (result.total == 0) {
                     console.log('checkUsername', result)
 
                     const formData: FormData = new FormData();
@@ -146,8 +149,10 @@ export class WarehouseCreateComponent implements OnInit {
                         if (result.id) {
                             this.userInsert(value, result);
                         }
+                        this.submitting = false;
                     });
                 } else {
+                    this.submitting = false;
                     this._notification.create(
                         'error',
                         'User already exists',
@@ -191,8 +196,8 @@ export class WarehouseCreateComponent implements OnInit {
         }
         this.userService.insert(formData)
             .subscribe((result => {
-                    console.log('userService.insert-result', result)
                     if (result) {
+                        this.submitting = false;
                         this._notification.create(
                             'success',
                             'New Shop has been successfully created!',
@@ -201,11 +206,13 @@ export class WarehouseCreateComponent implements OnInit {
                         this.router.navigate(['/dashboard/warehouse/details/', warehouse.id]);
 
                     } else {
+                        this.submitting = false;
                         this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
 
                     }
                 }),
                 (err => {
+                    this.submitting = false;
                     this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
                 })
             );
@@ -257,11 +264,6 @@ export class WarehouseCreateComponent implements OnInit {
         });
     }
 
-    //Method for division search change
-
-    divisionSearchChange($event: string) {
-        const query = encodeURI($event);
-    }
 
     //Method for division change
 
@@ -282,9 +284,4 @@ export class WarehouseCreateComponent implements OnInit {
         });
     }
 
-    zilaSearchChange($event: string) {
-    }
-
-    upazilaSearchChange($event: string) {
-    }
 }

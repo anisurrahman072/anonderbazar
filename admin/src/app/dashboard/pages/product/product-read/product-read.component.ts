@@ -38,13 +38,19 @@ export class ProductReadComponent implements OnInit, OnDestroy {
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.getPageData();
+        }, (error)=>{
+            this._notification.create(
+                'error',
+                'Problem in retrieving the product',
+                'Problem in retrieving the product'
+            );
         });
 
     }
 
     // Event method for getting all the data for the page
     getPageData() {
-        this.productService.getById(this.id)
+        this.productService.getByIdWithPopulate(this.id)
             .subscribe(result => {
                 if (result) {
                     this.data = result;

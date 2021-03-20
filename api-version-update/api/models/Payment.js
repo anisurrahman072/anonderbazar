@@ -14,7 +14,7 @@ module.exports = {
     },
     order_id: {
       model: 'order',
-      required: true
+      required: true,
     },
     suborder_id: {
       model: 'suborder',

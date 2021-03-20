@@ -23,71 +23,71 @@
             </p>
 
             <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-                <div nz-form-item nz-row>
-                    <div nz-form-label nz-col [nzSpan]="7">
+                <div    nz-row>
+                    <div    nz-col [nzSpan]="7">
                         <label> Username </label>
                     </div>
-                    <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                        <nz-input formControlName="userName" [nzType]="'text'"
-                                  [nzPlaceHolder]="'EnterUsername'" [nzSize]="'large'">
-                        </nz-input>
+                    <div nz-col [nzSpan]="12"      >
+                          <input nz-input  formControlName="userName"
+                                  [placeholder]="'Enter Username'" [nzSize]="'large'">
 
-                        <div nz-form-explain
+
+                        <div
                              *ngIf="getFormControl('userName').dirty && getFormControl('userName').hasError('required') ">
                             required!
                         </div>
-                        <div nz-form-explain
+                        <div
                              *ngIf="getFormControl('userName').dirty && getFormControl('userName').hasError('duplicated')">
                             The
                             username is redundant!
                         </div>
-                        <div nz-form-explain
+                        <div
                              *ngIf="getFormControl('userName').dirty && getFormControl('userName').pending">
                             Validating...
                         </div>
                     </div>
                 </div>
 
-                <div nz-form-item nz-row>
-                    <div nz-col [nzSpan]="7" nz-form-label>
+                <div    nz-row>
+                    <div nz-col [nzSpan]="7"   >
                         <label> Password </label>
                     </div>
                     <div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="password" [nzPlaceHolder]="'Enter Passeord'" [nzType]="'password'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="password" type="password" [placeholder]="'Enter Password'"
                                       [nzSize]="'large'"
                             >
-                            </nz-input>
-                            <div nz-form-explain
+
+                            <div
                                  *ngIf="getFormControl('password').dirty && getFormControl('password').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                 </div>
-                <div nz-form-item nz-row>
-                    <div nz-col [nzSpan]="7" nz-form-label>
+                <div    nz-row>
+                    <div nz-col [nzSpan]="7"   >
                     </div>
-                    <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                    <div nz-col [nzSpan]="12"      >
                         <a routerLink="/auth/forgot-password">Forgot your password?</a>
                     </div>
                 </div>
-                <div nz-form-item nz-row>
-                    <div style="text-align: center" nz-form-control nzValidateStatus="error" *ngIf="loginServerError.show">
-                        <div nz-form-explain>
+                <div    nz-row>
+                    <div style="text-align: center"    nzValidateStatus="error" *ngIf="loginServerError.show">
+                        <div   >
                             {{loginServerError.message}}
                         </div>
                     </div>
                 </div>
 
-                <div nz-form-item nz-row>
-                    <div nz-col [nzOffset]="6" [nzSpan]="16" nz-form-control>
+                <div    nz-row>
+                    <div nz-col [nzOffset]="6" [nzSpan]="16"   >
                         <button style="margin-right: 8%;" nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
                             Login
                         </button>
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
                     </div>
-                    <div nz-col [nzOffset]="6" [nzSpan]="16" nz-form-control>
+                    <div nz-col [nzOffset]="6" [nzSpan]="16"   >
                         <a class="btn" routerLink="/auth/signup">
                             <!--Sign Up for Your Shop-->
                             Register for the shop
@@ -95,7 +95,7 @@
                     </div>
                 </div>
             </form>
-            <div class="pull-bottom ">
+            <!--<div class="pull-bottom ">
                 <div class="m-b-30 p-r-80 sm-m-t-20 sm-p-r-15 sm-p-b-20 clearfix">
                     <div class="col-sm-3 col-md-2 page-img">
                         <img alt="" class="m-t-5" data-src="assets/images/pages_icon.png"
@@ -109,7 +109,7 @@
                         </p>
                     </div>
                 </div>
-            </div>
+            </div>-->
             </nz-spin>
         </div>
     </div>

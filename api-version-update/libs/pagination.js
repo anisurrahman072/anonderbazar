@@ -1,5 +1,4 @@
 exports.pagination = (reqBody) => {
-  /* ............PAGINATION........................START............. */
   let limit;
   let skip;
   let page;
@@ -12,8 +11,6 @@ exports.pagination = (reqBody) => {
     skip = parseInt(reqBody.page ? limit * (reqBody.page - 1) : 0) | 0; // if there is no skip set skip to 0
     page = parseInt(reqBody.page) || 1; // if there is no page number set page to 1
   }
-
-  /* ............PAGINATION........................END............. */
   return {
     limit,
     skip,

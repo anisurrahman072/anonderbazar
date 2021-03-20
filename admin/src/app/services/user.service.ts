@@ -13,64 +13,57 @@ export class UserService {
     private currentUser: any | boolean;
 
     constructor(private http: HttpClient,
-                private authService: AuthService,
-                private authenticationService: AuthService) {
+                private authService: AuthService) {
 
         this.currentUser = this.authService.getCurrentUser();
     }
 
-    getAll(): Observable<any> {
-        // get users from api
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}`);
-    }
-
-    getAllShopOwner(page: number, warehouseId: number, limit: number,
-                    emailSearchValue: string,
-                    searchTermName: string,
-                    searchTermPhone: string,
-                    gender: string,
-                    categoryId: number,
-                    subcategoryId: number,
-                    sortName: string,
-                    sortPrice: String): Observable<any> {
+    getAllShopOwner(
+        page: number,
+        warehouseId: number,
+        limit: number,
+        emailSearchValue: string,
+        searchTermName: string,
+        searchTermPhone: string,
+        usernameSearchValue: string,
+        sortKey: string,
+        sortValue: string): Observable<any> {
 
 
         return this.http.get(`${this.EndPoint
-            }?group_id=4&page=${page
+            }/all-shop-users?page=${page
             }&limit=${limit
             }&warehouse_id=${warehouseId
             }&searchTermEmail=${emailSearchValue
             }&searchTermName=${searchTermName
             }&searchTermPhone=${searchTermPhone
-            }&gender=${gender
-            }&category_id=${categoryId
-            }&subcategory_id=${subcategoryId
-            }&sortName=${sortName
-            }&sortPrice=${sortPrice}`
+            }&searchTermUsername=${usernameSearchValue
+            }&sortKey=${sortKey
+            }&sortValue=${sortValue}`
         );
     }
 
-    getAllCustomer(page: number, warehouseId: number, limit: number,
-                   emailSearchValue: string,
-                   searchTermName: string,
-                   searchTermPhone: string,
-                   gender: string,
-                   categoryId: number,
-                   subcategoryId: number,
-                   sortName: string,
-                   sortPrice: String): Observable<any> {
+    getAllCustomer(
+        page: number,
+        warehouseId: number,
+        limit: number,
+        emailSearchValue: string,
+        searchTermName: string,
+        searchTermPhone: string,
+        usernameSearchValue: string,
+        sortKey: string,
+        sortValue: string): Observable<any> {
+
         return this.http.get(`${this.EndPoint
-            }?group_id=2&page=${page
+            }/all-customers?page=${page
             }&limit=${limit
             }&warehouse_id=${warehouseId
             }&searchTermEmail=${emailSearchValue
             }&searchTermName=${searchTermName
             }&searchTermPhone=${searchTermPhone
-            }&gender=${gender
-            }&category_id=${categoryId
-            }&subcategory_id=${subcategoryId
-            }&sortName=${sortName
-            }&sortPrice=${sortPrice}`
+            }&searchTermUsername=${usernameSearchValue
+            }&sortKey=${sortKey
+            }&sortValue=${sortValue}`
         );
     }
 

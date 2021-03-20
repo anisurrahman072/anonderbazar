@@ -4,13 +4,12 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
 
 module.exports = {
   //Method called for initiating a chat room
   //Model models/Chat.js
   create: async (req, res) => {
-    initLogPlaceholder(req, 'chat Service create');
+
     async function create(body) {
       try {
         let data = await Chat.create(body);
@@ -42,11 +41,12 @@ module.exports = {
           return res.status(400).json({ success: false });
         }
       } catch (error) {
+        console.log(error);
         return res.status(400).json({ success: false });
       }
     }
 
-    create(req.body);
+    await create(req.body);
   },
 
 };

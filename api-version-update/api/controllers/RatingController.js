@@ -7,12 +7,14 @@
 
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    Rating.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, rating) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(rating[0]);
-            });
-  },
+  destroy: async (req, res) => {
+    try {
+      const rating = await Rating.update({id: req.param('id')}, {deletedAt: new Date()}).fetch();
+      return res.json(rating[0]);
+    }
+    catch (error){
+      return res.json(err, 400);
+    }
+  }
 };
 

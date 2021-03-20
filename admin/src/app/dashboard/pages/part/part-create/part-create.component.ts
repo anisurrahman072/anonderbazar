@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzNotificationService } from 'ng-zorro-antd';
@@ -122,8 +122,6 @@ export class PartCreateComponent implements OnInit {
 
   onUploadStateChanged(state: boolean) {}
 
-  categorySearchChange($event) {}
-
   categoryChange($event) {
     const query = encodeURI($event);
     if (query !== 'null') {
@@ -137,7 +135,4 @@ export class PartCreateComponent implements OnInit {
     }
   }
 
-  subcategorySearchChange($event) {}
-
-  typeSearchChange($event: string) {}
 }

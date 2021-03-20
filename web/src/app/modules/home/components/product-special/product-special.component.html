@@ -1,16 +1,16 @@
-<section id="product-section" *ngIf="promoCategoey" style="padding-top: 20px; padding-bottom: 20px;">
+<section id="product-section" *ngIf="promoCategories && promoCategories.length > 0" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-7 col-md-12 mb-4">
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-6 col-pro pr-0">
                         <div class="product-details">
-                            <h2 class="proh1first">{{promoCategoey[0]?.data_value[0].category_id.name}}</h2>
-                            <h2 class="proh12nd">{{(promoCategoey[0]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[0]?.data_value[0].lowerlimit}}
-                                - ৳ {{promoCategoey[0]?.data_value[0].upperlimit}}</h2>
+                            <h2 class="proh1first">{{promoCategories[0]?.data_value[0].category_id.name}}</h2>
+                            <h2 class="proh12nd">{{(promoCategories[0]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategories[0]?.data_value[0].lowerlimit}}
+                                - ৳ {{promoCategories[0]?.data_value[0].upperlimit}}</h2>
                             <button>
-                                <a routerLink="/products/category/{{promoCategoey[0]?.data_value[0].category_id.id}}"
-                                   [queryParams]="{min: promoCategoey[0]?.data_value[0].lowerlimit, max:promoCategoey[0]?.data_value[0].upperlimit}">Shop
+                                <a routerLink="/products/category/{{promoCategories[0]?.data_value[0].category_id.id}}"
+                                   [queryParams]="{min: promoCategories[0]?.data_value[0].lowerlimit, max:promoCategories[0]?.data_value[0].upperlimit}">Shop
                                     now<i class="fa fa-angle-right text-center"></i>
                                 </a>
                             </button>
@@ -18,8 +18,8 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-6 pl-0">
                         <div class="product-img">
-                            <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[0]?.data_value[0].category_id.image}}"
-                                 alt="{{promoCategoey[0]?.data_value[0].category_id.name}}">
+                            <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategories[0]?.data_value[0].category_id.image }}"
+                                 alt="{{promoCategories[0]?.data_value[0].category_id.name}}">
                         </div>
                     </div>
                 </div>
@@ -30,20 +30,20 @@
                         <div class="row">
                             <div class="col-md-6 col-6 col-pro pr-0">
                                 <div class="productsub-details">
-                                    <h4 class="proh1first">{{promoCategoey[1]?.data_value[0].category_id.name}}</h4>
-                                    <h4 class="proh12nd">{{(promoCategoey[1]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[1]?.data_value[0].lowerlimit}}
-                                        - ৳ {{promoCategoey[1]?.data_value[0].upperlimit}}</h4>
+                                    <h4 class="proh1first">{{promoCategories[1]?.data_value[0].category_id.name}}</h4>
+                                    <h4 class="proh12nd">{{(promoCategories[1]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategories[1]?.data_value[0].lowerlimit}}
+                                        - ৳ {{promoCategories[1]?.data_value[0].upperlimit}}</h4>
                                     <button>
-                                        <a routerLink="/products/category/{{promoCategoey[1]?.data_value[0].category_id.id}}"
-                                            [queryParams]="{min: promoCategoey[1]?.data_value[0].lowerlimit, max:promoCategoey[1]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i>
+                                        <a routerLink="/products/category/{{promoCategories[1]?.data_value[0].category_id.id}}"
+                                            [queryParams]="{min: promoCategories[1]?.data_value[0].lowerlimit, max:promoCategories[1]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i>
                                         </a>
                                     </button>
                                 </div>
                             </div>
                             <div class="col-md-6 col-6 pl-0">
                                 <div class="productsub-img">
-                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[1]?.data_value[0].category_id.image}}"
-                                         alt="{{promoCategoey[1]?.data_value[0].category_id.name}}">
+                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategories[1]?.data_value[0].category_id.image}}"
+                                         alt="{{promoCategories[1]?.data_value[0].category_id.name}}">
                                 </div>
                             </div>
                         </div>
@@ -52,19 +52,19 @@
                         <div class="row">
                             <div class="col-md-6 col-6 col-pro pr-0">
                                 <div class="productsub-details">
-                                    <h4 class="proh1first">{{promoCategoey[2]?.data_value[0].category_id.name}}</h4>
-                                    <h4 class="proh12nd">{{(promoCategoey[2]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategoey[2]?.data_value[0].lowerlimit}}
-                                        - ৳ {{promoCategoey[2]?.data_value[0].upperlimit}}</h4>
+                                    <h4 class="proh1first">{{promoCategories[2]?.data_value[0].category_id.name}}</h4>
+                                    <h4 class="proh12nd">{{(promoCategories[2]?.data_value[0].lowerlimit == 0) ? 'Under' : '৳ ' + promoCategories[2]?.data_value[0].lowerlimit}}
+                                        - ৳ {{promoCategories[2]?.data_value[0].upperlimit}}</h4>
                                     <button>
-                                        <a  routerLink="/products/category/{{promoCategoey[2]?.data_value[0].category_id.id}}"
-                                            [queryParams]="{min: promoCategoey[2]?.data_value[0].lowerlimit, max:promoCategoey[2]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i></a>
+                                        <a  routerLink="/products/category/{{promoCategories[2]?.data_value[0].category_id.id}}"
+                                            [queryParams]="{min: promoCategories[2]?.data_value[0].lowerlimit, max:promoCategories[2]?.data_value[0].upperlimit}">Shop now<i class="fa fa-angle-right text-center"></i></a>
                                     </button>
                                 </div>
                             </div>
                             <div class="col-md-6 col-6 pl-0">
                                 <div class="productsub-img">
-                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategoey[2]?.data_value[0].category_id.image}}"
-                                         alt="{{promoCategoey[2]?.data_value[0].category_id.name}}">
+                                    <img style="object-fit: contain;" src="{{IMAGE_ENDPOINT + promoCategories[2]?.data_value[0].category_id.image}}"
+                                         alt="{{promoCategories[2]?.data_value[0].category_id.name}}">
                                 </div>
                             </div>
                         </div>

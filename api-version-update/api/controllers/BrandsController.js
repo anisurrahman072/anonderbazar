@@ -4,8 +4,8 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting shopbybrand data
   //Model models/Brand.js
@@ -54,18 +54,15 @@ module.exports = {
   //Model models/Brand.js
   index: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'brands');
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
 
       if (req.query.warehouse_id) {
         _where.warehouse_id = req.query.warehouse_id;
-      }
-      if (req.token && req.token.userInfo.warehouse_id) {
+      } else if (req.token && req.token.userInfo.warehouse_id) {
         _where.warehouse_id = req.token.userInfo.warehouse_id.id;
       }
 
@@ -79,21 +76,13 @@ module.exports = {
           }
         ];
       }
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
       let _sort = [];
-      if (req.query.sortName) {
-        _sort.push({name: req.query.sortName});
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort.push({[req.query.sortKey]: req.query.sortValue});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
 
-      if (req.query.sortCode) {
-        _sort.push({code: req.query.sortCode});
-      }
-
-      if (req.query.sortSlug) {
-        _sort.push({slug: req.query.sortSlug});
-      }
       /*.....SORT END..............................*/
 
       let totalBrand = await Brand.count().where(_where);

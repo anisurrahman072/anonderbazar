@@ -4,13 +4,13 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {initLogPlaceholder, pagination} = require('../../libs');
+
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all design image list data
   //Model models/DesignImage.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'Designs');
 
       let _pagination = pagination(req.query);
 

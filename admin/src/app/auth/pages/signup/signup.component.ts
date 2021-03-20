@@ -12,6 +12,9 @@ import {ValidationService} from "../../../services/validation.service";
 import "rxjs/add/operator/delay";
 import "rxjs/add/observable/timer";
 import "rxjs/add/operator/switchMap";
+import {UniqueEmailValidator} from "../../../services/validator/UniqueEmailValidator";
+import {UniquePhoneValidator} from "../../../services/validator/UniquePhoneValidator";
+import {UniqueUsernameValidator} from "../../../services/validator/UniqueUsernameValidator";
 
 @Component({
     selector: 'app-signup',
@@ -20,16 +23,15 @@ import "rxjs/add/operator/switchMap";
 })
 
 export class SignupComponent implements OnInit {
+    @ViewChild('Image') Image;
     id: number;
     data: any;
     sub: Subscription;
     userID: any;
     currentUser: any;
     current = 0;
-
     index = 'first';
     loginServerError: any;
-
 
     genderSearchOptions = [
         {label: 'Male', value: 'male'},
@@ -44,120 +46,13 @@ export class SignupComponent implements OnInit {
     upazila_id: any;
     permanent_divisionSearchOptions: any;
     permanent_zilaSearchOptions: any;
-    permanent_upazilaSearchOptions: any;
-
     divisionSelect: any;
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: File;
     logoFile: File;
-    @ViewChild('Image') Image;
+
     //Event method for submitting the form
-
-    submitForm = ($event, value) => {
-        $event.preventDefault();
-        for (const key in this.validateForm.controls) {
-            this.validateForm.controls[key].markAsDirty();
-        }
-
-        const wareHouseFormData: FormData = new FormData();
-        wareHouseFormData.append('name', value.shop_name);
-        wareHouseFormData.append('email', value.email);
-        wareHouseFormData.append('phone', value.phone);
-        wareHouseFormData.append('address', value.address);
-        wareHouseFormData.append('upazila_id', value.upazila_id);
-        wareHouseFormData.append('zila_id', value.zila_id);
-        wareHouseFormData.append('division_id', value.division_id);
-        wareHouseFormData.append('postal_code', value.postal_code);
-        wareHouseFormData.append('status', '0');
-        wareHouseFormData.append('country', 'Bangladesh');
-        wareHouseFormData.append('license_no', '0');
-        wareHouseFormData.append('code', '');
-        if (this.logoFile) {
-            wareHouseFormData.append('logo', this.logoFile, this.logoFile.name);
-            wareHouseFormData.append('hasLogo', 'true');
-        } else {
-            wareHouseFormData.append('hasLogo', 'false');
-        }
-
-        this.warehouseService.insert(wareHouseFormData)
-            .subscribe((result => {
-                this.userInsert(value, result);
-                }),
-                (err => {
-                    this._notification.create('error', 'Failure message', 'Your registration was not successful');
-
-                    const errors = err.json();
-                    this.loginServerError.show = true;
-                    this.loginServerError.message = errors.message;
-                })
-            );
-    };
-
-//Event method for user insert
-
-    userInsert(value, warehouse){
-        const formData: FormData = new FormData();
-        formData.append('username', value.username);
-        formData.append('password', value.password);
-        formData.append('confirmPassword', value.password);
-        formData.append('email', value.email);
-        formData.append('first_name', value.first_name);
-        formData.append('last_name', value.last_name);
-        formData.append('father_name', '');
-        formData.append('mother_name', 'mother_name');
-
-        formData.append('phone', value.phone);
-        formData.append('national_id', value.national_id);
-        formData.append('gender', value.gender);
-        formData.append('group_id', '4');
-        formData.append('address', value.address);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('division_id', value.division_id);
-        formData.append('active', '1');
-        formData.append('warehouse_id', warehouse.id);
-        if (this.ImageFile) {
-            formData.append('avatar', this.ImageFile, this.ImageFile.name);
-            formData.append('hasImage', 'true');
-
-        } else {
-            formData.append('hasImage', 'false');
-
-        }
-        this.userService.insert(formData)
-            .subscribe((result => {
-                    if (result) {
-                        this._notification.create('success', 'Successfully Message', 'You have been registered successfully');
-
-                        localStorage.clear();
-                        this.router.navigate(['/']);
-
-                    } else {
-                        this._notification.create('error', 'Failure message', 'Your registration was not successful');
-
-                    }
-                }),
-                (err => {
-                    this._notification.create('error', 'Failure message', 'Your registration was not successful');
-
-                    const errors = err.json();
-                    this.loginServerError.show = true;
-                    this.loginServerError.message = errors.message;
-                })
-            );
-    }
-
-  //Event method for password confirmation validation
-    passwordConfirmationValidator = (control: FormControl): { [s: string]: boolean } => {
-        if (!control.value) {
-            return {required: true};
-        } else if (control.value !== this.validateForm.controls['password'].value) {
-            return {confirm: true, error: true};
-        }
-    };
-
-
 
     constructor(private router: Router, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -166,16 +61,25 @@ export class SignupComponent implements OnInit {
                 private authService: AuthService,
                 private validationService: ValidationService,
                 private areaService: AreaService,
-                private warehouseService: WarehouseService) {
+                private warehouseService: WarehouseService,
+                private uniquEmailValidator: UniqueEmailValidator,
+                private uniqueUsernameValidator: UniqueUsernameValidator,
+                private uniquePhoneValidator: UniquePhoneValidator,
+    ) {
+
+    }
+
+    ngOnInit() {
+
         this.validateForm = this.fb.group({
             shop_name: ['', [Validators.required]],
-            username: ['', [Validators.required], [this.validationService.userNameTakenValidator.bind(this)]],
+            username: ['', [Validators.required], [this.uniqueUsernameValidator]],
             password: ['', [Validators.required]],
             confirmPassword: ['', [this.passwordConfirmationValidator]],
-            email: ['', [this.validationService.emailValidator], [this.validationService.emailTakenValidator.bind(this)]],
+            email: ['', [this.validationService.emailValidator], [this.uniquEmailValidator]],
             first_name: ['', [Validators.required]],
             last_name: ['', [Validators.required]],
-            phone: ['', [this.validationService.phoneValidator], [this.validationService.phoneTakenValidator.bind(this)]],
+            phone: ['', [this.validationService.phoneValidator], [this.uniquePhoneValidator]],
             national_id: ['', [Validators.required]],
             gender: ['', [Validators.required]],
             address: ['', [Validators.required]],
@@ -186,11 +90,113 @@ export class SignupComponent implements OnInit {
             avatar: ['', []],
             logo: ['', []],
         });
+
+        this.areaService.getAllDivision().subscribe(result => {
+            this.divisionSearchOptions = result;
+            this.permanent_divisionSearchOptions = result;
+        });
     }
+
+    submitForm = ($event, value) => {
+        $event.preventDefault();
+        for (const key in this.validateForm.controls) {
+            this.validateForm.controls[key].markAsDirty();
+        }
+
+        console.log('value', value);
+
+        const wareHouseFormData: FormData = new FormData();
+        wareHouseFormData.append('name', value.shop_name);
+        wareHouseFormData.append('email', value.email);
+        wareHouseFormData.append('phone', value.phone);
+        wareHouseFormData.append('address', value.address);
+        wareHouseFormData.append('upazila_id', value.upazila_id);
+        wareHouseFormData.append('zila_id', value.zila_id);
+        wareHouseFormData.append('division_id', value.division_id);
+        wareHouseFormData.append('postal_code', value.postal_code);
+        wareHouseFormData.append('country', 'Bangladesh');
+
+        if (this.logoFile) {
+            wareHouseFormData.append('logo', this.logoFile, this.logoFile.name);
+            wareHouseFormData.append('hasLogo', 'true');
+        } else {
+            wareHouseFormData.append('hasLogo', 'false');
+        }
+
+        wareHouseFormData.append('userdata', JSON.stringify({
+            username: value.username,
+            password: value.password,
+            email: value.email,
+            first_name: value.first_name,
+            last_name: value.last_name,
+            father_name: '',
+            mother_name: '',
+            phone: value.phone,
+            national_id: value.national_id,
+            gender: value.gender,
+            address: value.address,
+            upazila_id: value.upazila_id,
+            zila_id: value.zila_id,
+            division_id: value.division_id,
+            hasImage: !!this.ImageFile,
+        }));
+
+        if (this.ImageFile) {
+            wareHouseFormData.append('user_avatar', this.ImageFile, this.ImageFile.name);
+        }
+        /*        wareHouseFormData.append('user[password]', value.password);
+                wareHouseFormData.append('user.confirmPassword', value.password);
+                wareHouseFormData.append('user.email', value.email);
+                wareHouseFormData.append('user.first_name', value.first_name);
+                wareHouseFormData.append('user.last_name', value.last_name);
+                wareHouseFormData.append('user.father_name', '');
+                wareHouseFormData.append('user.mother_name', 'mother_name');
+
+                wareHouseFormData.append('user.phone', value.phone);
+                wareHouseFormData.append('user.national_id', value.national_id);
+                wareHouseFormData.append('user.gender', value.gender);
+                wareHouseFormData.append('user.group_id', '4');
+                wareHouseFormData.append('user.address', value.address);
+                wareHouseFormData.append('user.upazila_id', value.upazila_id);
+                wareHouseFormData.append('user.zila_id', value.zila_id);
+                wareHouseFormData.append('user.division_id', value.division_id);
+                wareHouseFormData.append('user.active', '1');*/
+        // formData.append('warehouse_id', warehouse.id);
+
+
+        this.warehouseService.signup(wareHouseFormData)
+            .subscribe((result => {
+                    console.log(result);
+                    if (result) {
+                        this._notification.create('success', 'Successfully Message', 'You have been registered successfully');
+                        localStorage.clear();
+                        this.router.navigate(['/']);
+                    } else {
+                        this._notification.create('error', 'Failure message', 'Your registration was not successful');
+                    }
+                }),
+                (err => {
+                    this._notification.create('error', 'Failure message', 'Your registration was not successful');
+                    this.loginServerError.show = true;
+                    this.loginServerError.message = 'Your registration was not successful';
+                })
+            );
+    };
+
+    //Event method for password confirmation validation
+    passwordConfirmationValidator = (control: FormControl): { [s: string]: boolean } => {
+        if (!control.value) {
+            return {required: true};
+        } else if (control.value !== this.validateForm.controls['password'].value) {
+            return {confirm: true, error: true};
+        }
+    };
+
     //Event method for removing the image added in form
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
+
     //storing the image before upload
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
@@ -204,6 +210,7 @@ export class SignupComponent implements OnInit {
 
         return metadata;
     }
+
     //Event method for resetting the form
 
     resetForm($event: MouseEvent) {
@@ -213,27 +220,23 @@ export class SignupComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
     //Event method for setting up form in validation
 
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
-      //Event method for getting all the data for the page
 
-    ngOnInit() {
+    //Event method for getting all the data for the page
 
-        this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
-            this.permanent_divisionSearchOptions = result;
-        });
-    }
 
-      //Method for division search change
+    //Method for division search change
 
     divisionSearchChange($event: string) {
         const query = encodeURI($event);
     }
-      //Method for division change
+
+    //Method for division change
 
     divisionChange($event) {
         const query = encodeURI($event);
@@ -242,7 +245,8 @@ export class SignupComponent implements OnInit {
             this.zilaSearchOptions = result;
         });
     }
-      //Method for zila change
+
+    //Method for zila change
 
     zilaChange($event) {
         const query = encodeURI($event);
@@ -252,23 +256,26 @@ export class SignupComponent implements OnInit {
             this.upazilaSearchOptions = result;
         });
     }
-      //Method for zila search change
+
+    //Method for zila search change
 
     zilaSearchChange($event: string) {
 
     }
 
-      //Method for upazila search change
+    //Method for upazila search change
 
     upazilaSearchChange($event: string) {
 
     }
-  //Method for get permanent address
+
+    //Method for get permanent address
 
     permanent_divisionSearchChange($event: string) {
         const query = encodeURI($event);
     }
-  //Method for get permanent division address
+
+    //Method for get permanent division address
 
     permanent_divisionChange($event) {
         const query = encodeURI($event);
@@ -277,48 +284,29 @@ export class SignupComponent implements OnInit {
             this.permanent_zilaSearchOptions = result;
         });
     }
-  //Method for get permanent zila address
 
-    permanent_zilaChange($event) {
-        const query = encodeURI($event);
-        this.validateForm.controls.permanent_upazila_id.patchValue(null);
 
-        this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {
-            this.permanent_upazilaSearchOptions = result;
-        });
-    }
-  //Method for get permanent zila search address
-
-    permanent_zilaSearchChange($event: string) {
-
-    }
-
-  //Method for get permanent upazila search address
-
-    permanent_upazilaSearchChange($event: string) {
-
-    }
 
     pre() {
         this.current -= 1;
         this.changeContent();
-      }
+    }
 
-      next() {
+    next() {
         this.current += 1;
         this.changeContent();
-      }
+    }
 
-      done() {
+    done() {
 
-      }
+    }
 
-      toggle(current){
-          this.current = current;
-          this.changeContent();
-      }
+    toggle(current) {
+        this.current = current;
+        this.changeContent();
+    }
 
-      changeContent(): void {
+    changeContent(): void {
         switch (this.current) {
             case 0: {
                 this.index = 'first';

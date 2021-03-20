@@ -1,17 +1,23 @@
-const { uploadImgAsync } = require('../../libs');
+/**
+ * WarehouseVariantController
+ *
+ * @description :: Server-side logic for managing variant
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
+const {uploadImagesWithConfig} = require('../../libs/helper');
+const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for deleting a warehouse variant data
   //Model models/WarehouseVariant.js
-  destroy: function(req, res) {
-    WarehouseVariant.update(
-      { id: req.param('id') },
-      { deletedAt: new Date() }
-    ).exec((err, user) => {
-      if (err) {return res.json(err, 400);}
+  destroy: async (req, res) => {
+    try {
+      const user = await WarehouseVariant.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(user[0]);
-    });
+    } catch (error) {
+      return res.status(400).json(error);
+    }
   },
   //Method called for creating a warehouse variant data
   //Model models/WarehouseVariant.js
@@ -19,54 +25,45 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         const uploadConfig = imageUploadConfig();
-        let tempImg = await uploadImgAsync(req.file('image'), {
+        let tempImg = await uploadImagesWithConfig(req.file('image'), {
           ...uploadConfig,
           saveAs: Date.now() + '_warehouse_variant.jpg'
         });
 
-        req.body.image  = '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
+        if (tempImg.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        req.body.image = '/' + tempImg[0].fd.split(/[\\//]+/).reverse()[0];
 
-        let warehouseVariant = await WarehouseVariant.create(req.body);
+        let warehouseVariant = await WarehouseVariant.create(req.body).fetch();
         return res.json(200, warehouseVariant);
       } else {
-        let warehouseVariant = await WarehouseVariant.create(req.body);
+        let warehouseVariant = await WarehouseVariant.create(req.body).fetch();
 
         return res.json(200, warehouseVariant);
       }
     } catch (err) {
-      res.json(400, { message: 'wrong' });
+      console.log(err);
+      res.json(400, {success: false, message: 'wrong', err});
     }
   },
 
   //Method called for updating a warehouse variant data
   //Model models/WarehouseVariant.js
-  update: function(req, res) {
-    if (req.body.hasImage === 'true') {
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, { err: err });
-          }
-
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {return res.serverError(err);}
-          req.body.image = '/' + newPath;
-          WarehouseVariant.update({ id: req.param('id') }, req.body).exec(
-            (err, warehouseVariant) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(200, warehouseVariant);
-            }
-          );
+  update: async (req, res) => {
+    try {
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
         }
-      );
-    } else {
-      WarehouseVariant.update({ id: req.param('id') }, req.body).exec((
-        err,
-        warehouseVariant
-      ) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(200, warehouseVariant);
-      });
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.image = '/' + newPath;
+      }
+      const warehouseVariant = await WarehouseVariant.updateOne({id: req.param('id')}).set(req.body);
+      return res.json(200, warehouseVariant);
+    } catch (error) {
+      return res.json(error.status, {message: '', error, success: false});
     }
   }
 };

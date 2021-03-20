@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {CmsService} from '../../../../services/cms.service';
+import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-section-blog',
@@ -11,7 +12,7 @@ export class SectionBlogComponent implements OnInit {
 
     bottomblogList: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
 
     constructor(private cmsService: CmsService) {
     }

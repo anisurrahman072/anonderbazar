@@ -198,10 +198,13 @@ module.exports = {
   // Comparing passwords
   comparePassword: function (password, userPassword, cb) {
     bcrypt.compare(password, userPassword, (err, match) => {
+      // eslint-disable-next-line callback-return
       if (err) {cb(err);}
       if (match) {
+        // eslint-disable-next-line callback-return
         cb(null, true);
       } else {
+        // eslint-disable-next-line callback-return
         cb(err);
       }
     });

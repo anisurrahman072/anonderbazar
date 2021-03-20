@@ -1,14 +1,39 @@
-const {devEnv} = require('../config/softbd');
+const fetch = require('node-fetch');
+const {devEnv, bKash} = require('../config/softbd');
+const AbortController = require('node-abort-controller');
 
-exports.asyncForEach = async (array, callback) => {
-  if(array && Array.isArray(array) && array.length > 0){
+exports.bKashModeConfigKey = function () {
+  let bKashModeConfigKey = 'production';
+  if (bKash.isSandboxMode) {
+    bKashModeConfigKey = 'sandbox';
+  }
+  return bKashModeConfigKey;
+};
+
+exports.fetchWithTimeout = async function (resource, options) {
+  const {timeout = 30000} = options;
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal
+  });
+  clearTimeout(id);
+
+  return response;
+};
+
+const asyncForEach = async (array, callback) => {
+  if (array && Array.isArray(array) && array.length > 0) {
     for (let index = 0; index < array.length; index++) {
       // eslint-disable-next-line callback-return
       await callback(array[index], index, array);
     }
   }
-
 };
+exports.asyncForEach = asyncForEach;
 
 exports.initLogPlaceholder = (req, funcName) => {
   sails.log(`call from ${funcName}`);
@@ -16,6 +41,58 @@ exports.initLogPlaceholder = (req, funcName) => {
   sails.log('params =======>', req.params);
   sails.log('body =========>', req.body);
 };
+
+exports.baseFilter = (reqBody, Model, localWhere) => {
+
+  const where = localWhere ? localWhere : {};
+  where.deletedAt = null;
+  const modelAttributes = Object.keys(Model.definition);
+
+  modelAttributes.map((attr) => {
+    if (reqBody[attr]) {
+      where[attr] = reqBody[attr];
+    }
+  });
+  return where;
+};
+
+exports.calcCartTotal = function (cart, cartItems) {
+  let grandOrderTotal = 0;
+  let totalQty = 0;
+  cartItems.forEach((cartItem) => {
+    if (cartItem.product_id && cartItem.product_id.id && cartItem.product_quantity > 0) {
+      grandOrderTotal += cartItem.product_total_price;
+      totalQty += cartItem.product_quantity;
+    }
+  });
+  return {
+    grandOrderTotal,
+    totalQty
+  };
+};
+
+exports.escapeExcel = function (str) {
+  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
+};
+
+const imageUploadConfig = function () {
+
+  if (devEnv) {
+    return {
+      maxBytes: 10000000,
+      dirname: sails.config.appPath + '/.tmp/public',
+    };
+  }
+  return {
+    adapter: require('skipper-s3'),
+    key: 'AKIATYQRUSGN2DDD424I',
+    secret: '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',
+    bucket: 'anonderbazar',
+    maxBytes: 10000000
+  };
+
+};
+exports.imageUploadConfig = imageUploadConfig;
 
 exports.uploadImgAsync = (param, option = {}) => {
   return new Promise(((resolve, reject) => {
@@ -46,45 +123,6 @@ exports.deleteImages = async (imageList, path) => {
     }
   });
 };
-
-exports.baseFilter = (reqBody, Model, localWhere) => {
-
-  const where = localWhere ? localWhere : {};
-  where.deletedAt = null;
-  const modelAttributes = Object.keys(Model.definition);
-
-  modelAttributes.map((attr) => {
-    if (reqBody[attr]) {
-      where[attr] = reqBody[attr];
-    }
-  });
-  return where;
-};
-
-
-exports.escapeExcel = function (str) {
-  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
-};
-
-const imageUploadConfig = function () {
-
-  if (devEnv) {
-    return {
-      maxBytes: 10000000,
-      dirname: sails.config.appPath + '/.tmp/public',
-    };
-  }
-  return {
-    adapter: require('skipper-s3'),
-    key: 'AKIATYQRUSGN2DDD424I',
-    secret: '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',
-    bucket: 'anonderbazar',
-    maxBytes: 10000000
-  };
-
-};
-exports.imageUploadConfig = imageUploadConfig;
-
 exports.uploadImages = (imageFile) => {
   return new Promise((resolve, reject) => {
     imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
@@ -114,6 +152,18 @@ exports.uploadImagesWithConfig = (imageFile, customConfig) => {
     });
   });
 };
+exports.comparePasswords = (passwordProvided, userPassword) => {
+  return new Promise((resolve, reject) => {
+    User.comparePassword(passwordProvided, userPassword, (err, valid) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(valid);
+      }
+    });
+  });
+};
+
 exports.getContentTypeByFile = function (fileName) {
   var rc = 'application/octet-stream';
   var fn = fileName.toLowerCase();
@@ -134,26 +184,12 @@ exports.getContentTypeByFile = function (fileName) {
 
   return rc;
 };
-exports.generateUuid = function (count, k) {
-  const _sym = 'abcdefghijklmnopqrstuvwxyz1234567890';
-  let str = '';
 
-  for (let i = 0; i < count; i++) {
-    str += _sym[parseInt(Math.random() * (_sym.length))];
-  }
-  base.getID(str, (err, res) => {
-    if (!res.length) {
-      k(str);                   // use the continuation
-    } else {
-      generate(count, k);
-    }  // otherwise, recurse on generate
-  });
-};
 exports.makeUniqueId = function (length) {
-  var result = '';
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
