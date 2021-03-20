@@ -152,13 +152,13 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    console.log('############# Cancel Agreement Start ########################');
-    console.log('bKash Cancel Agreement-headers', headers);
-    console.log('bKash Cancel Agreement-postBody', postBody);
+    sails.log('############# Cancel Agreement Start ########################');
+    sails.log('bKash Cancel Agreement-headers', headers);
+    sails.log('bKash Cancel Agreement-postBody', postBody);
     let cancelAgreementResponse = await fetchWithTimeout(url, options);
     cancelAgreementResponse = await cancelAgreementResponse.json();
-    console.log('bKash Cancel Agreement-response', cancelAgreementResponse);
-    console.log('############# Cancel Agreement End ########################');
+    sails.log('bKash Cancel Agreement-response', cancelAgreementResponse);
+    sails.log('############# Cancel Agreement End ########################');
     return cancelAgreementResponse;
   },
   bKashCreatePayment: async (idToken, postBody) => {
@@ -171,20 +171,20 @@ module.exports = {
     };
     const url = bKash[modeConfigKey].payment_create;
 
-    console.log('headers-postBody', headers, postBody);
+    sails.log('headers-postBody', headers, postBody);
 
     const options = {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    console.log('############# Create Payment Start ########################');
-    console.log('bKash Create Payment-headers', headers);
-    console.log('bKash Create Payment-postBody', postBody);
+    sails.log('############# Create Payment Start ########################');
+    sails.log('bKash Create Payment-headers', headers);
+    sails.log('bKash Create Payment-postBody', postBody);
     let bKashResponse = await fetchWithTimeout(url, options);
     bKashResponse = await bKashResponse.json();
-    console.log('bKash Create Payment-response', bKashResponse);
-    console.log('############# Create Payment End ########################');
+    sails.log('bKash Create Payment-response', bKashResponse);
+    sails.log('############# Create Payment End ########################');
     return bKashResponse;
   },
   bKashExecutePayment: async (idToken, postBody) => {
@@ -199,20 +199,20 @@ module.exports = {
 
     const url = bKash[modeConfigKey].payment_execute;
 
-    console.log('headers-postBody', headers, postBody);
+    sails.log('headers-postBody', headers, postBody);
 
     const options = {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    console.log('############# Execute Payment Start ########################');
-    console.log('bKash Execute Payment-headers', headers);
-    console.log('bKash Execute Payment-postBody', postBody);
+    sails.log('############# Execute Payment Start ########################');
+    sails.log('bKash Execute Payment-headers', headers);
+    sails.log('bKash Execute Payment-postBody', postBody);
     let bKashResponse = await fetchWithTimeout(url, options);
     bKashResponse = await bKashResponse.json();
-    console.log('bKashExecutePayment-response', bKashResponse);
-    console.log('############# Execute Payment End ########################');
+    sails.log('bKashExecutePayment-response', bKashResponse);
+    sails.log('############# Execute Payment End ########################');
     return bKashResponse;
   },
   bKasQueryPayment: async (idToken, paymentID) => {
@@ -234,14 +234,14 @@ module.exports = {
         paymentID: paymentID
       })
     };
-    console.log('############# Query Payment Start ########################');
-    console.log('bKash Query Payment-headers', headers);
-    console.log('bKash Query Payment-postBody', {paymentID});
+    sails.log('############# Query Payment Start ########################');
+    sails.log('bKash Query Payment-headers', headers);
+    sails.log('bKash Query Payment-postBody', {paymentID});
 
     let bKashPaymentQueryResponse = await fetchWithTimeout(url, options);
     bKashPaymentQueryResponse = await bKashPaymentQueryResponse.json();
-    console.log('bKash Query Payment-response', bKashPaymentQueryResponse);
-    console.log('############# Query Payment End ########################');
+    sails.log('bKash Query Payment-response', bKashPaymentQueryResponse);
+    sails.log('############# Query Payment End ########################');
     return bKashPaymentQueryResponse;
   },
   bKasSearchTransaction: async (idToken, trxID) => {
@@ -263,13 +263,13 @@ module.exports = {
         trxID: trxID
       })
     };
-    console.log('############# Search Transaction Start ########################');
-    console.log('bKash Search Transaction-headers', headers);
-    console.log('bKash Search Transaction-postBody', {trxID});
+    sails.log('############# Search Transaction Start ########################');
+    sails.log('bKash Search Transaction-headers', headers);
+    sails.log('bKash Search Transaction-postBody', {trxID});
     let bKashSearchTranxResponse = await fetchWithTimeout(url, options);
     bKashSearchTranxResponse = await bKashSearchTranxResponse.json();
-    console.log('bKash Search Transaction-response', bKashSearchTranxResponse);
-    console.log('############# Search Transaction End ########################');
+    sails.log('bKash Search Transaction-response', bKashSearchTranxResponse);
+    sails.log('############# Search Transaction End ########################');
     return bKashSearchTranxResponse;
   }
 };
