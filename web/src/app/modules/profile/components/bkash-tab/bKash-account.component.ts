@@ -25,6 +25,8 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     authUserWallets: any;
 
     bKashGrandToken: string = '';
+    agreedToBKashTermsConditions: boolean = false;
+    showBKashAgreementTerm: boolean = false;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -71,6 +73,12 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnDestroy() {
     }
 
+    onAgreedToBKashTerms(event: any) {
+        console.log('onAgreedToBKashTerms', event);
+        this.agreedToBKashTermsConditions = event;
+
+    }
+
     deleteAgreement(event: any, authUserWallet) {
         event.preventDefault();
         event.stopPropagation();
@@ -115,7 +123,11 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     createBKashAgreement() {
-        if (!this.bKashWalletNoToAdd) {
+        if (!this.showBKashAgreementTerm) {
+            this.showBKashAgreementTerm = true;
+            return;
+        }
+        if (!(this.bKashWalletNoToAdd && this.agreedToBKashTermsConditions)) {
             return false;
         }
 
