@@ -24,7 +24,8 @@ module.exports = {
       const authUser = req.token.userInfo;
       const userWallets = await BkashCustomerWallet.find({
         user_id: authUser.id,
-        row_status: 3
+        row_status: 3,
+        deletedAt: null
       });
       return res.status(200).json(userWallets);
     } catch (error) {
