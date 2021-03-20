@@ -20,7 +20,7 @@ import {
     AreaService, AuthService, CartItemService, CartItemVariantService, CartService, CategoryProductService,
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
     ProductVariantService, SuborderItemService, SuborderService, VariantService, WarehouseService, CraftsmanService,
-    UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService
+    UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService, LotteryService
 } from "../services";
 import {NgAisModule} from 'angular-instantsearch';
 import {MaterialModule} from "./material.module";
@@ -152,7 +152,8 @@ if (environment.production) {
         BrandService,
         FormValidatorService,
         LocalStorageService,
-        BkashService
+        BkashService,
+        LotteryService
     ],
     bootstrap: [AppComponent]
 })

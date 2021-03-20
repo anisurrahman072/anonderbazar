@@ -2,7 +2,9 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 col-sm-6 col-12 mb-4">
-
+                <button class="btn btn-primary" (click)="takeDraw()">
+                    Live Lottery
+                </button>
             </div>
             <div class="col-md-6 col-sm-6 col-12 mb-4">
                 <table>
@@ -12,11 +14,11 @@
                         <th>Coupon</th>
                         <th>Prize</th>
                     </tr>
-                    <tr>
-                        <td>{{data.place}}</td>
-                        <td>{{data.winner.}}</td>
-                        <td></td>
-                        <td></td>
+                    <tr *ngFor="let data of winners" >
+                        <td>{{data.id}}</td>
+                        <td>{{data.winner_id.first_name}} {{data.winner_id.last_name}}</td>
+                        <td>{{data.coupon_id}}</td>
+                        <td>{{data.name}}</td>
                     </tr>
                 </table>
             </div>
