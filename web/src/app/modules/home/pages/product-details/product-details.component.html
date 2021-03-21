@@ -67,7 +67,7 @@
                         <div class="productdetailsub-img">
                             <ng-container *ngFor="let image of data?.product_images; let i = index">
                                 <img style="cursor: pointer; height: 70px; width: 70px;"
-                                     src="{{RESIZED_IMAGE_ENDPOINT + image.image_path}}"
+                                     src="{{RESIZED_IMAGE_ENDPOINT + image.image_path + IMAGE_EXT}}"
                                      (click)="primaryPicture = RESIZED_IMAGE_ENDPOINT + image.image_path + IMAGE_EXT"
                                      alt="Product Image">
                             </ng-container>
