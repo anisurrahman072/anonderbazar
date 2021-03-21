@@ -197,6 +197,13 @@ module.exports = {
         return;
       }
 
+      let messageToShow = '';
+      if(req.query.status === 'failure'){
+        messageToShow = 'Your Agreement Creation Request has failed';
+      } else {
+        messageToShow = 'Your Agreement Creation Request has been cancelled';
+      }
+
       await BkashCustomerWallet.updateOne({
         id: userWallet.id
       }).set({
@@ -204,7 +211,7 @@ module.exports = {
       });
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Problem in generating bKash Payment Agreement')
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent(messageToShow)
       });
 
       res.end();
@@ -334,6 +341,13 @@ module.exports = {
         }
       }
 
+      let messageToShow = '';
+      if(req.query.status === 'failure'){
+        messageToShow = 'Your bKash Payment Creation Request has failed';
+      } else {
+        messageToShow = 'Your bKash Payment Creation Request has been cancelled';
+      }
+
       await PaymentTransactionLog.updateOne({
         id: transactionLog.id
       }).set({
@@ -348,7 +362,7 @@ module.exports = {
       });
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(messageToShow)
       });
       res.end();
 
