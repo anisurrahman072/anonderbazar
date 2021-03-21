@@ -204,7 +204,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             });
         });
 
-        this.prevoius_address_change(this.user_id);
+        this.previousAddressChange();
 
         /*
         this.loaderService.hideLoader();
@@ -212,6 +212,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.cartData = cartData;
         });
         */
+    }
+
+    //Method for previous address change
+    previousAddressChange() {
+        // var prevoius_address_id = $event.target.value;
+        this.PaymentAddressService.getAuthUserPaymentAddresses().subscribe(result => {
+            this.prevoius_address = result;
+        }, (err) => {
+            console.log(err);
+        });
     }
 
     ngOnDestroy() {
@@ -571,15 +581,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         });
     }
-
-    //Method for previous address change
-    prevoius_address_change(user_id: number) {
-        // var prevoius_address_id = $event.target.value;
-        this.PaymentAddressService.getpaymentaddress(user_id).subscribe(result => {
-            this.prevoius_address = result;
-        });
-    }
-
 
     //Method for division change
     divisionChange($event, type) {

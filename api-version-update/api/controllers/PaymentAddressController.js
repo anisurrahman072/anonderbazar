@@ -7,6 +7,26 @@
 const {isResourceOwner} = require('../../libs/check-permissions');
 module.exports = {
 
+  authUserAddresses: async (req, res) => {
+
+    const authUser = req.token.userInfo;
+    try {
+      const foundPaymentAddress = await PaymentAddress.findOne({
+        user_id: authUser.id,
+        deletedAt: null
+      });
+
+      return res.status(200).json(foundPaymentAddress);
+
+    } catch (error) {
+
+      return res.status(400).json({
+        success: false,
+        message: 'Problems!',
+        error
+      });
+    }
+  },
   update: async (req, res) => {
 
     try {
@@ -22,7 +42,7 @@ module.exports = {
         id: req.param('id')
       }).set(req.body);
 
-      return res.json(201, paymentAddress);
+      return res.status(201).json(paymentAddress);
 
     } catch (error) {
 
