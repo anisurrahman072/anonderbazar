@@ -124,7 +124,6 @@ module.exports = {
   getByOrderIds: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
-      let _pagination = pagination(req.query);
       let rawSelect = `
       SELECT suborder_item.id, suborder_item.product_suborder_id as suborder_id, p_order.id as order_id, suborder_item.product_id,
        products.name as product_name, products.price as price, products.code as product_code, p_order.ssl_transaction_id,
@@ -168,11 +167,7 @@ module.exports = {
       const totalSuborderItemRaw = await SuborderItemQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
       if (totalSuborderItemRaw && totalSuborderItemRaw.rows && totalSuborderItemRaw.rows.length > 0) {
         totalSuborderItems = totalSuborderItemRaw.rows[0].totalCount;
-        _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborderItems;
-
-        let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
-        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where + limitSQL, []);
-
+        const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where, []);
         allSubOrderItems = rawResult.rows;
       }
 
