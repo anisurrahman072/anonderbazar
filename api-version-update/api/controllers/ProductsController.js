@@ -893,6 +893,7 @@ module.exports = {
 
   bulkUpdate: async (req, res) => {
     try {
+      let count = 0;
       const authUser = req.token.userInfo;
       const len = req.body.length;
       let problematicRow = 0;
@@ -906,7 +907,7 @@ module.exports = {
           {
             code: productCodes
           });
-        // TODO : build key value pairs
+        productsIndex = _.zipObject(productCodes, productsIndex);
       }
 
       for (let i = 0; i < len; i++) {
@@ -940,78 +941,76 @@ module.exports = {
         });
       }
 
-      const dataToSave = req.body.map((item) => {
-        const newItem = {
-          ...item,
-          weight: item.weight ? parseFloat(item.weight) : 0
-        };
+      for(let i = 0; i < Object.keys(productsIndex).length; i++){
+        let product = productsIndex[req.body[i].code];
+        product.weight = parseFloat(req.body[i].weight);
 
-        let parts = item.category.split('|');
+        let parts = req.body[i].category.split('|');
         const allCategoryIds = parts[0].trim();
         let categoryIdParts = allCategoryIds.split(',');
         const categoryColumns = ['type_id', 'category_id', 'subcategory_id'];
         for (let j = 0; j < categoryIdParts.length; j++) {
-          newItem[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
+          product[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
         }
 
-        if (item.product_details) {
-          newItem.product_details = item.product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
+        if (req.body[i].product_details) {
+          product.product_details = req.body[i].product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
         }
 
-        if (item.tag) {
-          const tagArr = item.tag.split(',').map((t) => {
+        if (req.body[i].tag) {
+          const tagArr = req.body[i].tag.split(',').map((t) => {
             return t.trim();
           });
-          newItem.tag = JSON.stringify(tagArr);
+          product.tag = JSON.stringify(tagArr);
         }
 
-        if (item.brand_id && item.brand_id.indexOf('|') !== -1) {
-          parts = item.brand_id.split('|');
-          newItem.brand_id = parseInt(parts[0].trim());
+        if (req.body[i].brand_id && req.body[i].brand_id.indexOf('|') !== -1) {
+          parts = req.body[i].brand_id.split('|');
+          product.brand_id = parseInt(parts[0].trim());
         }
 
-        newItem.price = parseFloat(item.price);
-        newItem.vendor_price = parseFloat(item.vendor_price);
+        product.price = parseFloat(req.body[i].price);
+        product.name = req.body[i].name;
+        product.quantity = req.body[i].quantity;
+        product.vendor_price = parseFloat(req.body[i].vendor_price);
 
-        if (item.promo_price > 0) {
-          newItem.promo_price = parseFloat(item.promo_price);
+        if (req.body[i].promo_price > 0) {
+          product.promo_price = parseFloat(req.body[i].promo_price);
         } else {
-          newItem.promo_price = 0;
+          product.promo_price = 0;
         }
 
         if (authUser.group_id.name === 'admin') {
-          parts = item.warehouse_id.split('|');
+          parts = req.body[i].warehouse_id.split('|');
           if (parts[0]) {
-            newItem.warehouse_id = parseInt(parts[0].trim(), 10);
+            product.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
-        return newItem;
-      });
-      dataToSave.forEach(item => {
-        delete item.category;
-        return item;
-      });
-
-      let count = 0;
-      for (const item of dataToSave) {
-        const foundProduct = await Product.findOne(
-          {
-            where: {code: item.code}
-          });
-        if (foundProduct) {
-          await Product.updateOne({code: item.code}).set(item);
-          count++;
-        } else {
-          res.status(200).json({
-            success: false,
-            message: 'Some products not found in database!'
-          });
-        }
       }
+
+      for(let key in productsIndex){
+        const product = productsIndex[key];
+        await Product.updateOne({code: key}).set({
+          type_id: product.type_id,
+          category_id: product.category_id,
+          subcategory_id: product.subcategory_id,
+          warehouse_id: product.warehouse_id,
+          name: product.name,
+          product_details: product.product_details,
+          brand_id: product.brand_id,
+          price: product.price,
+          promo_price: product.promo_price,
+          vendor_price: product.vendor_price,
+          quantity: product.quantity,
+          weight: product.weight,
+          tag: product.tag
+        });
+        count++;
+      }
+
       res.status(200).json({
         success: true,
         message: 'Number of Products successfully updated: ' + count,
-
       });
     } catch (error) {
       let message = 'Error in Update products with excel';
