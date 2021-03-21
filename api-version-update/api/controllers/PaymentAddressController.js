@@ -13,7 +13,7 @@ module.exports = {
     console.log('authUser', authUser);
 
     try {
-      const foundPaymentAddress = await PaymentAddress.findOne({
+      const foundPaymentAddress = await PaymentAddress.find({
         user_id: authUser.id,
         deletedAt: null
       });
