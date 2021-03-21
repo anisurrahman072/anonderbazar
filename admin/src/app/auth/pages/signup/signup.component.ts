@@ -32,6 +32,7 @@ export class SignupComponent implements OnInit {
     current = 0;
     index = 'first';
     loginServerError: any;
+    _spinning: boolean = false;
 
     genderSearchOptions = [
         {label: 'Male', value: 'male'},
@@ -103,8 +104,6 @@ export class SignupComponent implements OnInit {
             this.validateForm.controls[key].markAsDirty();
         }
 
-        console.log('value', value);
-
         const wareHouseFormData: FormData = new FormData();
         wareHouseFormData.append('name', value.shop_name);
         wareHouseFormData.append('email', value.email);
@@ -164,9 +163,11 @@ export class SignupComponent implements OnInit {
         // formData.append('warehouse_id', warehouse.id);
 
 
+        this._spinning = true;
         this.warehouseService.signup(wareHouseFormData)
             .subscribe((result => {
                     console.log(result);
+                    this._spinning = false;
                     if (result) {
                         this._notification.create('success', 'Successfully Message', 'You have been registered successfully');
                         localStorage.clear();
@@ -176,6 +177,7 @@ export class SignupComponent implements OnInit {
                     }
                 }),
                 (err => {
+                    this._spinning = false;
                     this._notification.create('error', 'Failure message', 'Your registration was not successful');
                     this.loginServerError.show = true;
                     this.loginServerError.message = 'Your registration was not successful';

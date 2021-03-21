@@ -98,15 +98,15 @@ export class UserService {
     }
 
     checkUsername(username: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&username=${username}`);
+        return this.http.post(`${this.EndPoint}/checkUsername`, {username});
     }
 
     checkEmail(email: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"searchTermEmail":"${email}"}`);
+        return this.http.post(`${this.EndPoint}/checkEmail`, {email: email});
     }
 
     checkPhone(phone: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"phone":"${phone}"}`);
+        return this.http.post(`${this.EndPoint}/checkPhone`, {phone});
     }
 
     checkEmailPhone(email: any, phone: any): Observable<any> {
