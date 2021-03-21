@@ -50,7 +50,8 @@ module.exports = {
     sails.log('createAgreement', req.query);
     if (!req.query.id_token) {
       return res.status(422).json({
-        message: 'Invalid Request'
+        statusMessage: 'Invalid Request',
+        statusCode: 'Oppps!'
       });
     }
 
@@ -83,10 +84,11 @@ module.exports = {
     }
   },
   cancelAgreement: async (req, res) => {
-    sails.log('cancelAgreement', req.body);
+
     if (!(req.body.id_token && req.body.agreement_id)) {
       return res.status(422).json({
-        message: 'Invalid Request'
+        statusMessage: 'Invalid Request',
+        statusCode: 'Oppps!'
       });
     }
     try {
@@ -102,7 +104,8 @@ module.exports = {
 
       if (!(foundAgreements && foundAgreements.length > 0)) {
         return res.status(422).json({
-          message: 'Invalid Request'
+          statusMessage: 'Invalid Request',
+          statusCode: 'Oppps!'
         });
       }
 
