@@ -185,6 +185,15 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 return <ProductBulk>obj;
             });
+            this.importProducts = this.importProducts.filter(product => {
+                let flag = false;
+                for(let key in product){
+                    if(product[key] && key !== 'warehouse_id'){
+                        flag = true;
+                    }
+                }
+                return flag;
+            })
             console.log('this.importProducts', this.importProducts)
             this.total = this.importProducts.length;
         };
