@@ -1,6 +1,5 @@
 import {ToastrService} from "ngx-toastr";
 import {concatMap} from 'rxjs/operators';
-import {of} from "rxjs/observable/of";
 import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {UserService} from "../../../../services";
 import {ActivatedRoute, Router} from "@angular/router";

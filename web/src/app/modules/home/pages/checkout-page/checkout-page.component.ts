@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {concatMap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../../state-management";
@@ -73,6 +74,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         billpostCode: string;*/
     private currentUser: User;
     private currentUserSub: Subscription;
+    private mainSubscription: Subscription;
     newShippingAddress: boolean = false;
     newBillingAddress: boolean = false;
     isCopy: boolean = true;
@@ -154,27 +156,42 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.user_id = null;
         });
 
+/*
         this.areaService.getAllDivision().subscribe((result) => {
-            this.divisionSearchOptions = result;
-            console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
-        }, (err) => {
-            console.log(err);
-        });
-
+                    this.divisionSearchOptions = result;
+                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
+                }, (err) => {
+                    console.log(err);
+                });
+*/
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
-        this.cartService.getCourierCharges().subscribe((globalConfig) => {
-
-            console.log('globalConfig', globalConfig);
-
-            if (Array.isArray(globalConfig) && globalConfig.length > 0) {
-                this.courierCharges = globalConfig[0]
-            }
-
-            this.cart$.subscribe((cartData) => {
+        this.mainSubscription = this.cartService.getCourierCharges()
+            .concatMap((globalConfig: any) => {
+                console.log('globalConfig', globalConfig);
+                if (Array.isArray(globalConfig) && globalConfig.length > 0) {
+                    this.courierCharges = globalConfig[0];
+                    return this.areaService.getAllDivision();
+                }
+                return Observable.throw(new Error('Problem in getting global config.'));
+            })
+            .concatMap((divisionList: any) => {
+                if (Array.isArray(divisionList) && divisionList.length > 0) {
+                    this.divisionSearchOptions = divisionList;
+                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
+                    return this.PaymentAddressService.getAuthUserPaymentAddresses();
+                }
+                return Observable.throw(new Error('Problem in getting division list.'));
+            })
+            .concatMap((previousAddresses: any) => {
+                console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses;
+                return this.cart$;
+            })
+            .subscribe((cartData) => {
                 console.log('cartData', cartData);
                 if (cartData) {
                     this.cartData = cartData;
@@ -183,28 +200,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 this.updateGrandTotal();
                 this.loaderService.hideLoader();
-            }, (err) => {
-                this.loaderService.hideLoader();
-                this.toastr.error('Unable to load cart data', 'Sorry!');
-            });
-        }, (err) => {
-            this.cart$.subscribe((cartData) => {
-                console.log('err-cartData', cartData);
-                if (cartData) {
-                    this.cartData = cartData;
-                } else {
-                    this.cartData = null;
-                }
-                this.updateGrandTotal();
-                this.loaderService.hideLoader();
 
             }, (err) => {
+                console.log(err);
                 this.loaderService.hideLoader();
-                this.toastr.error('Unable to load cart data', 'Sorry!');
+                this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
-        });
 
-        this.previousAddressChange();
+        /*this.previousAddressChange();*/
 
         /*
         this.loaderService.hideLoader();
@@ -225,6 +228,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy() {
+        if (this.mainSubscription) {
+            this.mainSubscription.unsubscribe();
+        }
+        if (this.currentUserSub) {
+            this.currentUserSub.unsubscribe();
+        }
     }
 
     ngAfterViewInit() {
