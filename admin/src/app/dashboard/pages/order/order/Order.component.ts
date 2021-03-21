@@ -291,9 +291,11 @@ export class OrderComponent implements OnInit, OnDestroy {
             let allCouponCodes = '';
 
             if (suborderItem.all_coupons) {
-                allCouponCodes = suborderItem.all_coupons.split('|').map((coupon) => {
+                const couponArr = suborderItem.all_coupons.split(',');
+                console.log('couponArr', suborderItem.all_coupons, couponArr);
+                allCouponCodes = couponArr.map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
-                });
+                }).join('|');
             }
 
             let varients = "";
