@@ -17,7 +17,10 @@ module.exports = {
       const foundPaymentAddress = await PaymentAddress.find({
         user_id: authUser.id,
         deletedAt: null
-      });
+      })
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id');
 
       return res.status(200).json(foundPaymentAddress);
 
