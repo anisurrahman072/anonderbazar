@@ -842,7 +842,7 @@ module.exports = {
           if (item.brand_id) {
             ws.cell(row, column++).string(item.brand_id.id + '|' + escapeExcel(item.brand_id.name));
           } else {
-            ws.cell(row, column++).string('null');
+            ws.cell(row, column++).string(null);
           }
 
           ws.cell(row, column++).number(item.price);
@@ -874,7 +874,7 @@ module.exports = {
           if (item.tag) {
             ws.cell(row, column).string(item.tag).style(myStyle);
           } else {
-            ws.cell(row, column).string('null');
+            ws.cell(row, column).string(null);
           }
           row++;
         }
@@ -952,6 +952,9 @@ module.exports = {
         for (let j = 0; j < categoryIdParts.length; j++) {
           product[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
         }
+        for(let i=categoryColumns.length-1; i>=categoryIdParts.length; i--){
+          product[categoryColumns[i]] = null;
+        }
 
         if (req.body[i].product_details) {
           product.product_details = req.body[i].product_details.replace(new RegExp('\r?\n', 'g'), '<br />');
@@ -988,8 +991,13 @@ module.exports = {
         }
       }
 
+      console.log('Asceee');
       for(let key in productsIndex){
         const product = productsIndex[key];
+        console.log('first', product.type_id);
+        console.log('second', product.category_id);
+        console.log('third', product.subcategory_id);
+
         await Product.updateOne({code: key}).set({
           type_id: product.type_id,
           category_id: product.category_id,
@@ -1005,6 +1013,7 @@ module.exports = {
           weight: product.weight,
           tag: product.tag
         });
+        console.log('Aseeenai');
         count++;
       }
 
