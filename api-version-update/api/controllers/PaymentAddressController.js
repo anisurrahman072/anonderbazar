@@ -9,6 +9,7 @@ module.exports = {
 
   authUserAddresses: async (req, res) => {
 
+    console.log('authUserAddresses');
     const authUser = req.token.userInfo;
     console.log('authUser', authUser);
 
