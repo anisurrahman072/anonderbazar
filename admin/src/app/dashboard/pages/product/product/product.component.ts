@@ -44,8 +44,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     isVariantVisible = false;
     isPromotionVisible = false;
     currentProduct: any = {};
-    IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    IMAGE_ENDPOINT = environment.IMAGE_LIST_ENDPOINT;
     IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
+    IMG_EXT = environment.productImageExtension;
+
     data = [];
     _isSpinning = true;
     currentProduct_variants: any = [];

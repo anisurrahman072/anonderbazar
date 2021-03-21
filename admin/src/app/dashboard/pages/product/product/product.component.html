@@ -35,7 +35,7 @@
                   (nzPageIndexChange)="getProductData($event, 'page')"
                   (nzPageSizeChange)="getProductData($event, 'size')"
                   nzShowSizeChanger
-                  [nzScroll]="{ x:'1900px',y: '800px'  }"
+                  [nzScroll]="{ x:'2100px',y: '800px'  }"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
@@ -69,10 +69,10 @@
                 <th style="text-align: center">
                     <span> Brand </span>
                 </th>
-                <th style="text-align: center">
+                <th style="text-align: center" nzWidth="100px">
                     <span> Image </span>
                 </th>
-                <th style="text-align: center">
+                <th style="text-align: center" nzWidth="200px">
                     <span> Action </span>
                 </th>
             </tr>
@@ -198,8 +198,8 @@
                 <td style="text-align: center; width: 75px">
                     <ng-container *ngIf="data.image; else noImage">
                         <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
-                                   [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
-                                   [nzIcon]="'user'"></nz-avatar>
+                                   [nzSrc]="IMAGE_ENDPOINT + data.image + IMG_EXT" [nzSize]="'large'"
+                                   [nzIcon]="'question-circle'"  style="background-color:#1e241c;"></nz-avatar>
                     </ng-container>
                     <ng-template #noImage>
                         <nz-tag>No Image</nz-tag>
