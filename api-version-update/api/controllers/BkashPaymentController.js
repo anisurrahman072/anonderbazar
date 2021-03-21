@@ -299,6 +299,29 @@ module.exports = {
             paymentID: req.query.paymentID
           });
 
+          if (!(bKashResponse && bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Completed')) {
+            await PaymentTransactionLog.updateOne({
+              id: transactionLog.id
+            }).set({
+              details: JSON.stringify({
+                id_token: transactionDetails.id_token,
+                payerReference: transactionDetails.payerReference,
+                billingAddressId: transactionDetails.billingAddressId,
+                shippingAddressId: transactionDetails.shippingAddressId,
+                bKashResponse
+              })
+            });
+            let messageToSend = 'There was a problem in processing the order.';
+            if(bKashResponse && bKashResponse.statusMessage){
+              messageToSend = bKashResponse.statusMessage;
+            }
+            res.writeHead(301, {
+              Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(messageToSend)
+            });
+            res.end();
+            return;
+          }
+
           const order = await bKashSaveOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
 
           if (order && order.id) {
