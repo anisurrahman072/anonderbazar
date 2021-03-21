@@ -149,8 +149,9 @@ export class ProfileComponent implements OnInit, OnDestroy  {
             console.log(error);
             this.loaderService.hideLoader();
             this.toastService.error('Problem in loading customer data', 'Problem!');
-        })
-        this.paymentAddressService.getPaymentaddressWithoutOrderid(this.authService.getCurrentUserId()).subscribe(result => {
+        });
+
+        this.paymentAddressService.getAuthUserPaymentAddresses().subscribe(result => {
             this.addresses = result;
         });
 

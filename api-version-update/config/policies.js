@@ -173,6 +173,7 @@ module.exports.policies = {
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
+    'authUserAddresses': ['isAuthorized', 'isCustomer'],
     'findOne': ['isAuthorized'],
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
