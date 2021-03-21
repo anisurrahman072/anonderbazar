@@ -13,7 +13,7 @@ module.exports = {
     let _sort = [];
     _sort.push({id: 'DESC'});
     _where.deletedAt = { '!=' : ['null'] };
-    const allWinners = await Lottery.find({
+    const allWinners = await ProductCouponLotteries.find({
       where: _where,
       sort: _sort
     }).populate('winner_id');
@@ -25,12 +25,12 @@ module.exports = {
     });
   },
 
-  takeDraw: async(req, res) => {
+  makeDraw: async(req, res) => {
     try {
       let updatedLottery;
 
       /* Check any prize left for draw or not */
-      const prizeLeft = await Lottery.find({
+      const prizeLeft = await ProductCouponLotteries.find({
         deletedAt: null
       });
       if(prizeLeft.length){
@@ -47,7 +47,7 @@ module.exports = {
         let randomCouponId;
         for(;;){
           randomCouponId = Math.floor(Math.random() * totalCoupon.rows[0].totalCount + 1);
-          let lottery = await Lottery.find({
+          let lottery = await ProductCouponLotteries.find({
             coupon_id: randomCouponId
           });
           if(!lottery.length){
@@ -73,18 +73,18 @@ module.exports = {
         _where.deletedAt = null;
         let _sort = [];
         _sort.push({id: 'DESC'});
-        let lottery = await Lottery.find({
+        let lottery = await ProductCouponLotteries.find({
           where: _where,
           sort: _sort
         });
 
         /* Update lottery */
-        updatedLottery = await Lottery.updateOne({id: lottery[0].id})
+        updatedLottery = await ProductCouponLotteries.updateOne({id: lottery[0].id})
           .set({deletedAt: new Date(), winner_id: winner_id, coupon_id: randomCouponId});
       }
 
       /* Find all drawn lotteries to show on table */
-      const allWinners = await Lottery.find({
+      const allWinners = await ProductCouponLotteries.find({
         where: {deletedAt: { '!=' : ['null'] }},
         sort: [{id: 'DESC'}]
       }).populate('winner_id');
