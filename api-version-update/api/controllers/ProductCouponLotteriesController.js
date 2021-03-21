@@ -94,6 +94,7 @@ module.exports = {
           success: false,
           message: 'All prizes are already distributed!',
           winners: allWinners,
+
         });
       }
       else{
