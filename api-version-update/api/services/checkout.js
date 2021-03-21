@@ -520,20 +520,6 @@ module.exports = {
 
   },
   bKashSaveOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
-    if (!(bKashResponse && bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Completed')) {
-      await PaymentTransactionLog.updateOne({
-        id: transactionLogId
-      }).set({
-        details: JSON.stringify({
-          id_token: transactionDetails.id_token,
-          payerReference: transactionDetails.payerReference,
-          billingAddressId: transactionDetails.billingAddressId,
-          shippingAddressId: transactionDetails.shippingAddressId,
-          bKashResponse
-        })
-      });
-      return null;
-    }
 
     await PaymentTransactionLog.updateOne({
       id: transactionLogId
