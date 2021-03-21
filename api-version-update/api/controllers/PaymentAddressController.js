@@ -10,6 +10,8 @@ module.exports = {
   authUserAddresses: async (req, res) => {
 
     const authUser = req.token.userInfo;
+    console.log('authUser', authUser);
+
     try {
       const foundPaymentAddress = await PaymentAddress.findOne({
         user_id: authUser.id,
@@ -19,7 +21,7 @@ module.exports = {
       return res.status(200).json(foundPaymentAddress);
 
     } catch (error) {
-
+      console.log(error);
       return res.status(400).json({
         success: false,
         message: 'Problems!',
@@ -34,7 +36,7 @@ module.exports = {
         id: req.param('id')
       });
 
-      if(!isResourceOwner(req.token.userInfo, foundPaymentAddress)){
+      if (!isResourceOwner(req.token.userInfo, foundPaymentAddress)) {
         return res.forbidden();
       }
 
@@ -62,7 +64,7 @@ module.exports = {
         id: req.param('id')
       });
 
-      if(!isResourceOwner(req.token.userInfo, foundPaymentAddress)){
+      if (!isResourceOwner(req.token.userInfo, foundPaymentAddress)) {
         return res.forbidden();
       }
 
