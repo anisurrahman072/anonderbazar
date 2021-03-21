@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
 import {BkashService} from "../../../../services/bkash.service";
 import {LoaderService} from "../../../../services/ui/loader.service";
+import {Observable} from "rxjs";
 
 
 @Component({
@@ -90,11 +91,11 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash Wallet has been successfully deleted.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
-                        this.toastService.error('Problem in generating bKash Payment Agreement.', 'Oppss!');
+                        this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
                     })
             }
         } else {
@@ -107,16 +108,20 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                             this.bKashGrandToken = res.id_token;
                             return this.bkashService.cancelAgreement(res.id_token, authUserWallet.agreement_id)
                         }
-                        return of(false);
+                        return Observable.throw(new Error('Problem in generating token.'));
                     })
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash Wallet has been successfully deleted.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
-                        this.toastService.error('Problem in generating bKash Payment Agreement.', 'Oppss!');
+                        if (err && err.error && err.error.statusMessage) {
+                            this.toastService.error(err.error.statusMessage, err.error.statusCode);
+                        } else {
+                            this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
+                        }
                     })
             }
         }
@@ -133,7 +138,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log(this.bKashWalletNoToAdd);
         this.isSubmitting = true;
-        this._spinning = true;
+        this.loaderService.showLoader();
 
         this.bkashService.generateGrandToken()
             .concatMap((res: any) => {
@@ -142,23 +147,28 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.bKashGrandToken = res.id_token;
                     return this.bkashService.createAgreementRequest(res.id_token, this.bKashWalletNoToAdd);
                 }
-                return of(false);
+                return Observable.throw(new Error('Problem in generating token.'));
             })
             .subscribe((res: any) => {
                 console.log('createBKashAgreement', res);
-                this._spinning = false;
+                this.loaderService.hideLoader();
                 this.isSubmitting = false;
 
                 if (res && res.tokenRes && res.tokenRes.bkashURL) {
                     window.location.href = res.tokenRes.bkashURL;
                 } else {
-                    throw new Error('Problem');
+                    throw new Error('Problem in generating bKash Payment Agreement');
                 }
             }, (err) => {
                 console.log(err);
-                this._spinning = false;
+                this.loaderService.hideLoader();
                 this.isSubmitting = false;
-                this.toastService.error('Problem in generating bKash Payment Agreement', 'Oppss!');
-            })
+                if (err && err.error && err.error.statusMessage) {
+                    this.toastService.error(err.error.statusMessage, err.error.statusCode);
+                } else {
+                    this.toastService.error('Problem in generating bKash Payment Agreement', 'Oppss!');
+                }
+
+            });
     }
 }
