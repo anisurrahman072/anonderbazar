@@ -1,21 +1,27 @@
 <div class="lottery">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6 col-sm-6 col-12 mb-4">
-                <button class="btn btn-primary" (click)="takeDraw()">
+            <div class="col-md-6 col-sm-6 col-12 mt-5">
+                <div class="d-flex justify-content-between">
+                    <span *ngFor="let digit of currentCoupon" class="bg-red" style="color: white; font-size: 60px !important;">
+                        {{digit}}
+                    </span>
+                </div>
+                <button class="btn btn-primary mt-3" (click)="takeDraw()" style="display: block; margin: auto;">
                     Live Lottery
                 </button>
             </div>
-            <div class="col-md-6 col-sm-6 col-12 mb-4">
-                <table>
+            <div class="col-md-6 col-sm-6 col-12">
+                <h2 style="text-align: center" class="mt-4">Winner List</h2>
+                <table class="table table-striped mt-2 w-80 text-center" style="margin: auto;">
                     <tr>
-                        <th>Place</th>
-                        <th>Winner</th>
-                        <th>Coupon</th>
-                        <th>Prize</th>
+                        <th scope="col">Place</th>
+                        <th scope="col">Winner</th>
+                        <th scope="col">Coupon</th>
+                        <th scope="col">Prize</th>
                     </tr>
                     <tr *ngFor="let data of winners" >
-                        <td>{{data.id}}</td>
+                        <td scope="row">{{data.id}}</td>
                         <td>{{data.winner_id.first_name}} {{data.winner_id.last_name}}</td>
                         <td>{{data.coupon_id}}</td>
                         <td>{{data.name}}</td>
