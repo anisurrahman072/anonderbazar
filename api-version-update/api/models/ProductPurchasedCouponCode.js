@@ -22,6 +22,9 @@ module.exports = {
     user_id: {
       model: 'product'
     },
+    coupon_lottery_draw_id: {
+      model: 'couponLotteryDraw'
+    }
   },
   tableName: 'product_purchased_coupon_codes',
 };
