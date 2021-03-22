@@ -449,11 +449,14 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
+                                <mat-radio-button *ngIf="enabledPaymentMethods['cashBack'] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
+                                                  value="CashBack">
+                                    <i class="fa fa-money"></i>By Using Cashback
+                                </mat-radio-button>
                                 <mat-radio-button *ngIf="!hideCashonDelivery && enabledPaymentMethods['Cash']"
                                                   value="Cash">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
-                                <br>
                                 <mat-radio-button *ngIf="enabledPaymentMethods['SSLCommerce']" value="SSLCommerce"
                                                   [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
@@ -509,7 +512,7 @@
                                 </tr>
                                 <tr class="border-bottom-0">
                                     <td class="td1 pr-5">Total</td>
-                                    <td>৳ {{cartData?.data.total_price}}</td>
+                                    <td>৳ {{grantTotal}}</td>
                                 </tr>
                             </table>
                         </div>

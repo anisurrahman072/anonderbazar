@@ -27,28 +27,29 @@ module.exports = {
 
     const authUser = req.token.userInfo;
 
-    User.findOne({
-      id: authUser.id
-    })
-      .populate('group_id')
-      .populate('warehouse_id')
-      .populate('upazila_id')
-      .populate('zila_id')
-      .populate('division_id')
-      .then((user) => {
-        if (!user) {
-          return res.notFound();
-        }
-        return res.json(user);
+    try {
+      const user = await User.findOne({
+        id: authUser.id
       })
-      // If there was some kind of usage / validation error
-      .catch({name: 'UsageError'}, (err) => {
-        return res.badRequest(err);
-      })
-      // If something completely unexpected happened.
-      .catch((err) => {
-        return res.serverError(err);
-      });
+        .populate('group_id')
+        .populate('warehouse_id')
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id')
+        .populate('couponLotteryCashback');
+
+      if (!user) {
+        return res.notFound();
+      }
+      return res.status(200).json(user);
+
+    } catch (error) {
+      if (error.name === 'UsageError') {
+        return res.badRequest(error);
+      }
+      return res.serverError(error);
+    }
+
   },
   findOne: async (req, res) => {
 
