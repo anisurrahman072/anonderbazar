@@ -9,20 +9,37 @@ const Promise = require('bluebird');
 
 module.exports = {
   getAll: async (req, res) => {
-    let _where = {};
-    let _sort = [];
-    _sort.push({id: 'DESC'});
-    _where.deletedAt = { '!=' : ['null'] };
-    const allWinners = await ProductCouponLotteries.find({
-      where: _where,
-      sort: _sort
-    }).populate('winner_id');
+    try {
+      const runningtLotteryCoupons = await CouponLottery.find({
+        where: {deletedAt: null, status: 2},
+        sort: [{draw_date: 'DESC'}]
+      });
+      if(runningtLotteryCoupons.length === 0){
+        return res.status(200).json({
+          success: true,
+          message: 'No Lottery running!'
+        });
+      }
 
-    res.status(200).json({
-      success: true,
-      message: 'Successfully get all winners!',
-      winners: allWinners
-    });
+      const lotteryCoupon = runningtLotteryCoupons[0];
+      let allWinners = await CouponLotteryDraw.find({
+        where: {coupon_lottery_id: lotteryCoupon.id, deletedAt: null}
+      }).populate('user_id')
+        .populate('coupon_lottery_prize_id');
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully get all winners!',
+        data: allWinners
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while getting all winners!',
+        error
+      });
+    }
   },
 
   makeDraw: async(req, res) => {

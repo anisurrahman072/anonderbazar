@@ -1,4 +1,4 @@
-exports.productCouponLotteriesRoute = {
-  'GET /api/v1/ProductCouponLotteries/makeDraw': 'ProductCouponLotteriesController.makeDraw',
-  'GET /api/v1/ProductCouponLotteries/getAll': 'ProductCouponLotteriesController.getAll',
+exports.CouponLotteryDrawRoute = {
+  'GET /api/v1/CouponLotteryDraw/makeDraw': 'CouponLotteryDrawController.makeDraw',
+  'GET /api/v1/CouponLotteryDraw/getAll': 'CouponLotteryDrawController.getAll',
 };
