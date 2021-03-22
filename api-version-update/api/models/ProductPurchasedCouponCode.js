@@ -24,6 +24,9 @@ module.exports = {
     },
     coupon_lottery_draw_id: {
       model: 'couponLotteryDraw'
+    },
+    coupon_lottery_cashback_id: {
+      model: 'couponLotteryCashback'
     }
   },
   tableName: 'product_purchased_coupon_codes',
