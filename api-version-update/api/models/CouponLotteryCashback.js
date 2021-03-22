@@ -9,6 +9,7 @@ module.exports = {
   attributes: {
     user_id: {
       model: 'user',
+      unique: true
     },
     amount: {
       type: 'number',

@@ -156,15 +156,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.user_id = null;
         });
 
-/*
-        this.areaService.getAllDivision().subscribe((result) => {
-                    this.divisionSearchOptions = result;
-                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
-                }, (err) => {
-                    console.log(err);
-                });
-*/
-
         this.cart$ = this.store.select<any>(fromStore.getCart);
 
         this.loaderService.showLoader();
@@ -207,14 +198,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
 
-        /*this.previousAddressChange();*/
-
-        /*
-        this.loaderService.hideLoader();
-        this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-            this.cartData = cartData;
-        });
-        */
     }
 
     //Method for previous address change
