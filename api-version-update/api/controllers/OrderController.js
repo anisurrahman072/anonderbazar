@@ -9,6 +9,9 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {sslWebUrl} = require('../../config/softbd');
+const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const {placeCouponCashbackOrder} = require('../services/checkout');
 const {createBKashPayment, placeSSlCommerzOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach, calcCartTotal} = require('../../libs/helper');
@@ -86,7 +89,6 @@ module.exports = {
   },
   //Method called for creating a custom order data from frontend
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
-  //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrderForCashOnDelivery: async function (req, res) {
 
     const authUser = req.token.userInfo;
@@ -118,15 +120,28 @@ module.exports = {
         .populate('product_id');
 
       let onlyCouponProduct = false;
+      let paymentMethodNotAllowed = false;
       if (cartItems && cartItems.length > 0) {
         const couponProductFound = cartItems.filter((cartItem) => {
+
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+
         });
+        const notAllowedProductFound = cartItems.filter((cartItem) => {
+
+          // eslint-disable-next-line eqeqeq
+          return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
+
+        });
+
         onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
+        paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
       }
 
-      if (onlyCouponProduct) {
-        return res.badRequest('Payment method is invalid for this particular order.');
+      if (onlyCouponProduct || paymentMethodNotAllowed) {
+        return res.status(422).json({
+          message: 'Payment method is invalid for this particular order.'
+        });
       }
 
       const {
@@ -135,8 +150,9 @@ module.exports = {
         subordersTemp
       } = await sails.getDatastore()
         .transaction(async (db) => {
+
           let courierCharge = 0;
-          /*.................Shipping Address....................*/
+
           if (req.param('shipping_address')) {
             if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
 
@@ -395,7 +411,11 @@ module.exports = {
 
     } catch (finalError) {
       console.log('finalError', finalError);
-      return res.badRequest('There was a problem in processing the order.');
+      return res.status(400).json({
+        message: 'There was a problem in processing the order.',
+        additionalMessage: finalError.message
+      });
+
     }
 
   },
@@ -444,9 +464,6 @@ module.exports = {
       let courierCharge = 0;
       let adminPaymentAddress = null;
 
-
-      /** .................Shipping Address.................... */
-
       if (!noShippingCharge) {
         if (req.param('shipping_address')) {
           if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
@@ -480,7 +497,6 @@ module.exports = {
 
       grandOrderTotal += courierCharge;
 
-      /** .................Billing Address.................... */
       if (!noShippingCharge && req.param('billing_address')) {
         if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
 
@@ -510,11 +526,15 @@ module.exports = {
       console.log('Place Order - shipping_address: ', req.param('shipping_address'));
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
-      if (req.param('paymentType') === 'SSLCommerce') {
+      if (req.param('paymentType') === 'CashBack') {
 
-        const sslResponse = await placeSSlCommerzOrder(
+        const orderId = await placeCouponCashbackOrder(
           authUser,
-          {grandOrderTotal, totalQuantity: totalQty},
+          {
+            paymentType: 'CashBack',
+            grandOrderTotal,
+            totalQuantity: totalQty
+          },
           {
             adminPaymentAddress,
             billingAddress: req.param('billing_address'),
@@ -522,6 +542,25 @@ module.exports = {
           },
           globalConfigs
         );
+
+        return res.status(201).json({
+          order_id: orderId
+        });
+      }
+
+      if (req.param('paymentType') === 'SSLCommerce') {
+
+        const sslResponse = await placeSSlCommerzOrder(
+          authUser,
+          {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs
+        );
+
         return res.status(200).json(sslResponse);
 
       }
@@ -532,6 +571,7 @@ module.exports = {
         const bKashResponse = await createBKashPayment(authUser, {
           payerReference: req.body.payerReference,
           agreement_id: req.body.agreement_id,
+          paymentType: 'bKash',
           grandOrderTotal,
           totalQuantity: totalQty
         }, {
