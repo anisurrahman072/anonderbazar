@@ -29,7 +29,6 @@ export class OfferComponent implements OnInit {
             .subscribe(result => {
 
                 this.homeOfferData = result;
-
                 this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0))
                     .forEach(element => {
 
