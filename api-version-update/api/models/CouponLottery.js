@@ -29,7 +29,7 @@ module.exports = {
       columnType: 'datetime',
       required: false
     },
-    row_status: {
+    status: {
       type: 'number',
       columnType: 'integer',
       required: false,
