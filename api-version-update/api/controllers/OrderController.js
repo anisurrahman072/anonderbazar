@@ -9,13 +9,10 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {sslWebUrl} = require('../../config/softbd');
-const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
-const {placeCouponCashbackOrder} = require('../services/checkout');
-const {createBKashPayment, placeSSlCommerzOrder} = require('../services/checkout');
+const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach, calcCartTotal} = require('../../libs/helper');
-const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
+const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
   index: (req, res) => {
@@ -502,7 +499,6 @@ module.exports = {
 
           let paymentAddress = await PaymentAddress.create({
             user_id: authUser.id,
-            // order_id: order.id,
             first_name: req.param('billing_address').firstName,
             last_name: req.param('billing_address').lastName,
             address: req.param('billing_address').address,

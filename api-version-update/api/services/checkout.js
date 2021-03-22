@@ -107,13 +107,7 @@ module.exports = {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
           }
         }
-        // SmsService.sendingOneSmsToOne([smsPhone], smsText);
-      }
-
-      try {
-        // EmailService.orderSubmitMail(orderForMail);
-      } catch (err) {
-        console.log('Email Sending Error', err);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }
 
     } catch (err) {

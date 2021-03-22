@@ -144,6 +144,7 @@ module.exports = {
 
     try {
       const user = await User.findOne({username: username, deletedAt: null})
+        .populate('couponLotteryCashback')
         .populate('group_id')
         .populate('warehouse_id');
 

@@ -429,6 +429,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     window.location.href = result.GatewayPageURL;
                 } else if(result && result.order_id){
                     this.successOrderId = result.order_id;
+                    this.store.dispatch(new fromStore.LoadCurrentUser());
                     this.store.dispatch(new fromStore.LoadCart());
                 } else {
                     this.toastr.error("Problem in placing your order.", "Oppppps!", {
