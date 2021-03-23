@@ -68,7 +68,6 @@ module.exports = {
           LEFT JOIN warehouses as warehouse ON warehouse.id = product.warehouse_id
       `;
 
-      console.log(req.query);
       let _where = ' WHERE product.deleted_at IS NULL ';
 
       if (req.query.status) {

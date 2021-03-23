@@ -21,9 +21,13 @@ module.exports = {
     api_key: 'C20075355fdae5af5f8c82.48883475',
     senderid: '8809612446331',
   },
+  sslCommerzOTPSMSConfig: {
+    'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
+    'sid': 'ANONDERBAZARAPI',
+  },
   sslCommerzSMSConfig: {
     'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
-    'sid': 'SOFTBDNONAPI',
+    'sid': 'ANONDERBAZARBULK',
   },
   bKash: {
     isSandboxMode: true,
