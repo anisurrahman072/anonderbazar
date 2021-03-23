@@ -6,27 +6,41 @@
  */
 
 const Promise = require('bluebird');
+const moment = require('moment');
 
 module.exports = {
-  getAll: async (req, res) => {
+  getAllWinners: async (req, res) => {
     try {
-      const runningtLotteryCoupons = await CouponLottery.find({
-        where: {deletedAt: null, status: 2},
-        sort: [{draw_date: 'DESC'}]
+      /** Find the Lottery Coupon by code */
+      let code = req.params._code;
+      let _where = {};
+      _where.code = code;
+      _where.deletedAt = null;
+      let currentLotteryCoupon = await CouponLottery.find({
+        where: _where
       });
-      if(runningtLotteryCoupons.length === 0){
+      const lotteryCoupon = currentLotteryCoupon[0];
+
+      if(lotteryCoupon.status === 1){
         return res.status(200).json({
           success: true,
-          message: 'No Lottery running!'
+          message: 'The lottery is not started!',
         });
       }
 
-      const lotteryCoupon = runningtLotteryCoupons[0];
+      /** Find all winners for the Lottery Coupon */
       let allWinners = await CouponLotteryDraw.find({
         where: {coupon_lottery_id: lotteryCoupon.id, deletedAt: null}
       }).populate('user_id')
         .populate('coupon_lottery_prize_id');
 
+      if(lotteryCoupon.status === 3){
+        return res.status(200).json({
+          success: true,
+          message: 'The lottery has been finished!',
+          data: allWinners
+        });
+      }
       return res.status(200).json({
         success: true,
         message: 'Successfully get all winners!',
@@ -44,88 +58,132 @@ module.exports = {
 
   makeDraw: async(req, res) => {
     try {
-      let updatedLottery;
-
-      /* Check any prize left for draw or not */
-      const prizeLeft = await ProductCouponLotteries.find({
-        deletedAt: null
+      /** Find the Lottery Coupon by code */
+      let code = req.params._code;
+      let _where = {};
+      _where.code = code;
+      _where.deletedAt = null;
+      let currentLotteryCoupon = await CouponLottery.find({
+        where: _where
       });
-      if(prizeLeft.length){
-        const couponQuery = Promise.promisify(ProductPurchasedCouponCode.getDatastore().sendNativeQuery);
-        const rawSelect =` SELECT productPurchasedCouponCode.user_id as user_id, GROUP_CONCAT (productPurchasedCouponCode.id) as id`;
-        const fromSQL = ` FROM product_purchased_coupon_codes as productPurchasedCouponCode`;
-        let _where = {};
-        _where = ' WHERE productPurchasedCouponCode.deleted_at IS NULL';
-        const totalCoupon = await couponQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
-        _where += ' GROUP BY user_id';
-        const rawResult = await couponQuery(rawSelect + fromSQL + _where, []);
+      let lotteryCoupon = currentLotteryCoupon[0];
 
-        /* Find & check weather random coupon is already taken or not */
-        let randomCouponId;
-        for(;;){
-          randomCouponId = Math.floor(Math.random() * totalCoupon.rows[0].totalCount + 1);
-          let lottery = await ProductCouponLotteries.find({
-            coupon_id: randomCouponId
-          });
-          if(!lottery.length){
-            break;
-          }
-        }
 
-        /* Find current winner ID */
-        let winner_id;
-        for(let i = 0; i < rawResult.rows.length; i++){
-          const couponIds = rawResult.rows[i].id.split(',');
-          const winnerCoupon = couponIds.find(id => {
-            return parseInt(id) === randomCouponId;
-          });
-          if(winnerCoupon){
-            winner_id = rawResult.rows[i].user_id;
-            break;
-          }
-        }
+      /** Check weather today is the correct day for DRAW the coupon */
+      let couponLotteryDate = lotteryCoupon.draw_date;
 
-        /* Find remaining lotteries */
-        _where = {};
-        _where.deletedAt = null;
-        let _sort = [];
-        _sort.push({id: 'DESC'});
-        let lottery = await ProductCouponLotteries.find({
-          where: _where,
-          sort: _sort
+      let startDate = moment().utcOffset(0);
+      startDate.set({hour:0,minute:0,second:0,millisecond:0});
+      startDate = startDate.toISOString();
+
+      let endDate = moment().utcOffset(0);
+      endDate.set({hour:23,minute:59,second:59,millisecond:59});
+      endDate = endDate.toISOString();
+
+      if(startDate > couponLotteryDate || endDate < couponLotteryDate){
+        return res.status(400).json({
+          success: false,
+          message: 'Today is not the day to DRAW!'
         });
-
-        /* Update lottery */
-        updatedLottery = await ProductCouponLotteries.updateOne({id: lottery[0].id})
-          .set({deletedAt: new Date(), winner_id: winner_id, coupon_id: randomCouponId});
       }
 
-      /* Find all drawn lotteries to show on table */
-      const allWinners = await ProductCouponLotteries.find({
-        where: {deletedAt: { '!=' : ['null'] }},
-        sort: [{id: 'DESC'}]
-      }).populate('winner_id');
 
-      if(!prizeLeft.length){
-        return res.status(200).json({
+      /** Find all purchased coupon for today's draw coupon */
+      const couponQuery = Promise.promisify(ProductPurchasedCouponCode.getDatastore().sendNativeQuery);
+      const rawSelect =` SELECT productPurchasedCouponCode.user_id as user_id, GROUP_CONCAT (productPurchasedCouponCode.id) as id`;
+      const fromSQL = ` FROM product_purchased_coupon_codes as productPurchasedCouponCode`;
+      _where = {};
+      _where = ' WHERE productPurchasedCouponCode.deleted_at IS NULL';
+      _where += ` AND productPurchasedCouponCode.product_id = ${lotteryCoupon.product_id}`;
+      const totalCoupon = await couponQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      _where += ' GROUP BY user_id';
+      const rawResult = await couponQuery(rawSelect + fromSQL + _where, []);
+
+
+      /** make an array of all purchased coupon ids & find a random coupon ID*/
+      let allPurchasedCoupons = [];
+      for(let i=0; i<rawResult.rows.length; i++){
+        let ids = rawResult.rows[i].id.split(',');
+        ids = ids.map(id => {
+          return parseInt(id);
+        });
+        allPurchasedCoupons = [...allPurchasedCoupons, ...ids];
+      }
+      let randomNumber = Math.floor(Math.random() * totalCoupon.rows[0].totalCount + 1);
+      let randomCouponId = allPurchasedCoupons[randomNumber-1];
+
+
+      /** Find user_id */
+      let winner_id;
+      for(let i = 0; i < rawResult.rows.length; i++){
+        const couponIds = rawResult.rows[i].id.split(',');
+        const winnerCoupon = couponIds.find(id => {
+          return parseInt(id) === randomCouponId;
+        });
+        if(winnerCoupon){
+          winner_id = rawResult.rows[i].user_id;
+          break;
+        }
+      }
+
+      /** Find order_id */
+      let order_id = await ProductPurchasedCouponCode.find({
+        id: randomCouponId
+      });
+
+      /** Find coupon_lottery_prize_id (it is current prize that is going to be shown). */
+      /* First find all drawn lotteries from CouponLotteryDraw for same product_id. */
+      let allDrawnLotteries = await CouponLotteryDraw.find({
+        where: { coupon_lottery_id: lotteryCoupon.id }
+      }).populate('coupon_lottery_prize_id');
+
+      /* then Find the smallest place of prize from all drawn lotteries */
+      let place = Math.pow(10, 1000);
+      for(let i = 0; i < allDrawnLotteries.length; i++){
+        if(allDrawnLotteries[i].coupon_lottery_prize_id.place < place){
+          place = allDrawnLotteries[i].coupon_lottery_prize_id.place;
+        }
+      }
+      /* now Find the prize for current draw */
+      place--;
+      let currentPrize = await CouponLotteryPrize.find({
+        where: {coupon_lottery_id: lotteryCoupon.id, place: place}
+      });
+
+
+      /** Check weather all lotteries are drawn or not. If not then set status = 2 */
+      if(currentPrize.length === 0){
+        await CouponLottery.update({
+          product_id: lotteryCoupon.product_id
+        }).set({status: 3});
+        return res.status(400).json({
           success: false,
-          message: 'All prizes are already distributed!',
-          winners: allWinners,
-
+          message: 'You have already drawn all the lottery for today!'
         });
       }
       else{
-        res.status(200).json({
-          success: true,
-          message: 'Successfully drawn the coupon!',
-          winners: allWinners,
-          winner: allWinners[allWinners.length-1].winner_id.first_name+' '+allWinners[allWinners.length-1].winner_id.last_name,
-          prize: updatedLottery
-        });
+        await CouponLottery.update({
+          product_id: lotteryCoupon.product_id
+        }).set({status: 2});
       }
+
+      /** Create new row for drawn prize in CouponLotteryDraw */
+      let newDrawnLottery = {
+        user_id: winner_id,
+        coupon_lottery_id: lotteryCoupon.id,
+        coupon_lottery_prize_id: currentPrize[0].id,
+        order_id: order_id[0].order_id,
+        product_purchased_coupon_code_id: randomCouponId
+      };
+      let drawnLottery = await CouponLotteryDraw.create(newDrawnLottery).fetch();
+
+
+      /** Update ProductPurchasedCouponCode */
+      await ProductPurchasedCouponCode.update({ id: randomCouponId })
+        .set({ coupon_lottery_draw_id: drawnLottery[0].id });
     }
     catch (error){
-      let message = 'Error occurred while taking a draw!';
+      let message = 'Error occurred while making a draw!';
       res.status(400).json({
         success: false,
         message,

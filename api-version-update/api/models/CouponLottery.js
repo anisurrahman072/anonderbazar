@@ -35,6 +35,14 @@ module.exports = {
       required: false,
       defaultsTo: 1
     },
+    product_id: {
+      model: 'product'
+    },
+    code: {
+      type: 'string',
+      columnType: 'varchar',
+      required: true,
+    },
   },
   tableName: 'coupon_lotteries',
 };
