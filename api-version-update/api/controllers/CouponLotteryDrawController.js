@@ -34,17 +34,17 @@ module.exports = {
       }).populate('user_id')
         .populate('coupon_lottery_prize_id');
 
+      let message = '';
       if(lotteryCoupon.status === 3){
-        return res.status(200).json({
-          success: true,
-          message: 'The lottery has been finished!',
-          data: allWinners
-        });
+        message = 'The lottery has been finished!';
+      }
+      else {
+        message = 'Successfully get all winners!';
       }
       return res.status(200).json({
         success: true,
-        message: 'Successfully get all winners!',
-        data: allWinners
+        message,
+        data: allWinners,
       });
     }
     catch (error){

@@ -6,7 +6,7 @@ import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class LotteryService {
-  private EndPoint = `${AppSettings.API_ENDPOINT}/ProductCouponLotteries`;
+  private EndPoint = `${AppSettings.API_ENDPOINT}/CouponLotteryDraw`;
   constructor(private http: HttpClient) { }
 
   takeDraw(): Observable<any> {
@@ -14,7 +14,7 @@ export class LotteryService {
         .map((response) => response);
   }
   getAll(): Observable<any> {
-    return this.http.get(this.EndPoint+'/getAll')
+    return this.http.get(this.EndPoint+'/getAllWinner')
         .map((response) => response);
   }
 }
