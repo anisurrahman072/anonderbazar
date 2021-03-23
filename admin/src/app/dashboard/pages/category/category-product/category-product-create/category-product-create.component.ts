@@ -5,6 +5,7 @@ import {
     Validators
 } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
+import {concatMap} from 'rxjs/operators';
 import {CategoryProductService} from '../../../../../services/category-product.service';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
 import {CmsService} from '../../../../../services/cms.service';
@@ -16,18 +17,29 @@ import {NzNotificationService} from "ng-zorro-antd";
     styleUrls: ['./category-product-create.component.css']
 })
 export class CategoryProductCreateComponent implements OnInit {
+    @ViewChild('Image') Image;
     validateForm: FormGroup;
     offers: any = [];
     parentCheck = true;
     ImageFile: File[] = [];
-    @ViewChild('Image') Image;
     categorySearchOptions = [];
     subCategorySearchOptions = [];
 
-    constructor(private router: Router, private cmsService: CmsService, private route: ActivatedRoute,
-                private _notification: NzNotificationService,
-                private fb: FormBuilder,
-                private categoryProductService: CategoryProductService) {
+    isLoading: boolean = true;
+
+    constructor(
+        private router: Router,
+        private cmsService: CmsService,
+        private route: ActivatedRoute,
+        private _notification: NzNotificationService,
+        private fb: FormBuilder,
+        private categoryProductService: CategoryProductService
+    ) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             parent: ['', []],
@@ -36,6 +48,22 @@ export class CategoryProductCreateComponent implements OnInit {
             code: ['', [Validators.required]],
             image: [null, []],
         });
+        this.categoryProductService.getAllCategory()
+            .pipe(
+                concatMap((result: any) => {
+                    console.log('getAllCategory', result);
+                    this.categorySearchOptions = result;
+                    return this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'});
+                })
+            )
+            .subscribe((result: any) => {
+                console.log('getAllSearch', result);
+                this.offers = result.data;
+                this.isLoading = false;
+            }, (err) => {
+                this.isLoading = false;
+            });
+
     }
 
     //Event method for submitting the form
@@ -71,13 +99,19 @@ export class CategoryProductCreateComponent implements OnInit {
         } else {
             formData.append('hasImage', 'false');
         }
+        this.isLoading = true;
         this.categoryProductService.insert(formData)
             .subscribe((result: any) => {
-                if (result.id) {
+                this.isLoading = false;
+                if (result && result.id) {
                     this._notification.create('success', 'Product category ', result.name);
                     this.router.navigate(['/dashboard/category/product/details/', result.id]);
-
+                } else {
+                    this._notification.error('Error', 'Problem in Creating Category');
                 }
+            }, (err)=> {
+                this._notification.error('Error', 'Problem in Creating Category');
+                this.isLoading = false;
             });
     }
 
@@ -107,19 +141,6 @@ export class CategoryProductCreateComponent implements OnInit {
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
-    }
-
-    // init the component
-    ngOnInit() {
-
-        this.categoryProductService.getAllCategory().subscribe((result: any) => {
-            this.categorySearchOptions = result;
-        });
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
-            .subscribe(result => {
-                this.offers = result;
-            });
     }
 
     //Event method on category change

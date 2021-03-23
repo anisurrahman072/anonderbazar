@@ -16,12 +16,17 @@ import {
     UserService, BrandService
 } from "../../../../services";
 import {Observable} from "rxjs/Observable";
-import {combineLatest} from 'rxjs/observable/combineLatest'
+
+import {forkJoin} from "rxjs/observable/forkJoin";
+import * as _ from "lodash";
+import {of} from "rxjs/observable/of";
 import {Meta, Title, TransferState} from "@angular/platform-browser";
 import {FilterUiService} from "../../../../services/ui/filterUi.service";
 import {AppSettings} from "../../../../config/app.config";
 import {LoaderService} from "../../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
+import {combineLatest} from "rxjs/observable/combineLatest";
+import {concatMap} from "rxjs/operator/concatMap";
 
 @Component({
     selector: "app-category-page",
@@ -75,7 +80,6 @@ export class CategoryPageComponent implements OnInit {
     currentSubSubCategoryId: any;
     currentCategoryType: any;
 
-
     classList_filter_list = [];
     categoryList_filter_list = [];
     warehouses_filter_list = [];
@@ -84,9 +88,9 @@ export class CategoryPageComponent implements OnInit {
     brand_filter_list = [];
     category: Observable<any>;
     //breadCumbs variables
-    categoryB = [];
-    subcategoryB = [];
-    subsubcategoryB = [];
+    categoryB = null;
+    subcategoryB = null;
+    subsubcategoryB = null;
 
     options: Options = {
         floor: 1,
@@ -112,9 +116,11 @@ export class CategoryPageComponent implements OnInit {
     showWarehouse: any;
     sortTitle: string = '';
     sortTerm: String = '0';
+    isLoading: boolean = false;
 
     constructor(
         private httpClient: HttpClient,
+        private route: ActivatedRoute,
         private transferState: TransferState,
         private injector: Injector,
         private title: Title,
@@ -126,7 +132,6 @@ export class CategoryPageComponent implements OnInit {
         private VariantService: VariantService,
         private WarehouseService: WarehouseService,
         private UserService: UserService,
-        private route: ActivatedRoute,
         private FilterUiService: FilterUiService,
         public loaderService: LoaderService,
         private brandService: BrandService,
@@ -146,64 +151,88 @@ export class CategoryPageComponent implements OnInit {
         } else if (queryParams['max'] > 0) {
             this.maxPrice = queryParams['max'];
         }
-        this.categoryB = [];
-        this.subcategoryB = [];
-        this.subsubcategoryB = [];
+        this.categoryB = null;
+        this.subcategoryB = null;
+        this.subsubcategoryB = null;
+
+        this.loaderService.showLoader();
+        forkJoin([
+            this.brandService.getAll(),
+            this.categoryProductService.getAllCategory(),
+            this.productService.getMinPrice(),
+            this.productService.getMaxPrice()
+        ]).subscribe((results: any) => {
+
+            console.log('Fork Join: ', results);
+            if (!_.isNil(results[0])) {
+                this.allBrand = results[0];
+            }
+            if (!_.isNil(results[1])) {
+                this.allCategory = results[1];
+            }
+            if (!_.isNil(results[2]) && !_.isNil(results[2].min)) {
+                this.minPrice = results[2].min;
+                this.min = this.minPrice;
+            }
+            if (!_.isNil(results[3]) && !_.isNil(results[3].max)) {
+                this.maxPrice = results[3].max;
+                this.max = this.maxPrice;
+            }
+        });
 
         combineLatest(
             this.route.params,
             this.route.queryParams
-        ).subscribe(
-            ([params, queryParams]) => {
-                this.route.snapshot.params = params;
-
-                this.currentCategoryId = +this.route.snapshot.params['id'];
-                this.categoryList_ids = [];
-                if (this.currentCategoryId) {
-                    this.categoryList_ids.push('' + this.currentCategoryId);
-                }
-
-                this.brand_ids = [];
-                this.subCategory_ids = [];
-                this.subsubCategory_ids = [];
-
-                this.isCollapsed_brand = false;
-                this.isCollapsed_class = false;
-                this.isCollapsed_subclass = false;
-                this.isCollapsed_subsubclass = false;
-                this.isCollapsed_warehouses = false;
-
-                this.showWarehouse = !(this.route.snapshot.params['id'] && this.route.snapshot.params['warehouse'] === 'warehouse');
-
-                if (this.route.snapshot.params['id'] && this.route.snapshot.params['craftsman'] === 'craftsman') {
-                    this.showcraftsman = true;
-                } else {
-                    this.showcraftsman = false;
-                    this.showWarehouse = false;
-                }
-
-                if (this.currentCategoryId > 0) {
-                    this.isCollapsed_class = true;
-                    this.isCollapsed_subclass = true;
-                    this.isCollapsed_subsubclass = true;
-                }
-
-                this.FilterUiService.currentcategoryType.subscribe(type => {
+        ).subscribe((res: any) => {
+            this.isLoading = true;
+            const params = res[0];
+            const queryParams = res[1];
+            this.handleParamInit(params);
+            this.handleQueryParams(queryParams);
+            this.FilterUiService.currentcategoryType
+                .switchMap((type: any) => {
                     this.currentCategoryType = type;
+
+                    return forkJoin([
+                        this.allSubCategoryOb(),
+                        this.categoryProductService.getById(this.currentCategoryId),
+                        this.allSubSubcategoryOb(),
+                        this.categoryProductService.getById(this.currentSubCategoryId),
+                        this.categoryProductService.getById(this.currentSubSubCategoryId)
+                    ]);
+                })
+                .concatMap((results: any) => {
+                    console.log('combine result for categories', results);
+                    this.allSubSubCategory = results[0];
+                    this.categoryB = results[1];
+                    this.allSubSubCategory = results[2];
+                    this.subcategoryB = results[3];
+                    this.subsubcategoryB = results[4];
+                    return this.filterSearchObservable();
+                })
+                .subscribe((result: any) => {
+                    console.log('filterSearchObservable-result', result);
+                    if (result && result.data) {
+                        this.allProductsByCategory = result.data;
+                    } else {
+                        this.allProductsByCategory = [];
+                    }
+                    this.isLoading = false;
+                    this.loaderService.hideLoader();
+
+                }, (err) => {
+                    console.log(err);
+                    this.isLoading = false;
+                    this.loaderService.hideLoader();
+
+                    this.toastr.error('Sorry! There was a problem!', 'Sorry!');
                 });
+        }, (err) => {
+            console.log(err);
+            this.loaderService.hideLoader();
+            this.toastr.error('Sorry! There was a problem!', 'Sorry!');
+        });
 
-                this.priceRange = [this.minPrice, this.maxPrice];
-                this.getAllSubcategory();
-                this.getAllSubSubcategory();
-                this.handleQueryParams(queryParams);
-                this.filter_search_result();
-            }
-        );
-
-        this.getAllBrands();
-        this.getAllCategories();
-        this.getMinPriceOfProduct();
-        this.getMaxPriceOfProduct();
     }
 
     isNotEmptyObject(val) {
@@ -212,6 +241,7 @@ export class CategoryPageComponent implements OnInit {
 
     //Method called for product filtering
     handleQueryParams(queryParams) {
+
         this.brand_ids = [];
         this.subCategory_ids = [];
         this.subsubCategory_ids = [];
@@ -220,7 +250,11 @@ export class CategoryPageComponent implements OnInit {
         this.currentSubCategoryId = '';
         this.currentSubSubCategoryId = '';
 
+        let categoryChange = false, subCategoryChange = false, subSubCategoryChange = false;
         for (let key in queryParams) {
+            if (!queryParams.hasOwnProperty(key)) {
+                continue;
+            }
             if (key === 'filter' && queryParams[key] === 'newArrival') {
                 this.changeStatusN = true;
                 this.sortTitle = 'created_at';
@@ -239,30 +273,40 @@ export class CategoryPageComponent implements OnInit {
                 if (this.currentCategoryId) {
                     this.categoryList_ids.push('' + this.currentCategoryId);
                 }
-                this.getAllSubcategory();
-                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                    this.categoryB = res;
-                });
+                categoryChange = true;
+
+
+                /*this.getAllSubcategory();*/
+                /*                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
+                                    this.categoryB = res;
+                                });*/
                 this.subcategoryB = [];
                 this.subsubcategoryB = [];
             } else if (key === 'sub') {
+                subCategoryChange = true;
                 this.currentSubCategoryId = +queryParams[key];
                 this.subCategory_ids.push('' + queryParams[key]);
-                this.getAllSubSubcategory();
-                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                    this.subcategoryB = res;
-                });
+                /*                this.getAllSubSubcategory();
+                                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
+                                    this.subcategoryB = res;
+                                });*/
                 this.subsubcategoryB = [];
             } else if (key === 'subsub') {
+                subSubCategoryChange = true;
                 this.currentSubSubCategoryId = +queryParams[key];
                 this.subsubCategory_ids.push('' + queryParams[key]);
-                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                    this.subsubcategoryB = res;
-                });
+                /*                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
+                                    this.subsubcategoryB = res;
+                                });*/
             } else if (key === 'search') {
                 this.searchTerm = queryParams[key];
             }
         }
+        console.log('categoryChange', categoryChange);
+        console.log('subCategoryChange', subCategoryChange);
+        console.log('subSubCategoryChange', subSubCategoryChange);
+
+
     }
 
 
@@ -442,7 +486,7 @@ export class CategoryPageComponent implements OnInit {
             this.sortTitle = 'created_at';
             this.sortTerm = name;
         }
-        this.filter_search_result();
+        this.generateSearchFilterResult();
         //  return true;
     }
 
@@ -483,13 +527,11 @@ export class CategoryPageComponent implements OnInit {
         this.priceRange = [this.min, this.max];
         this.clearAll = true;
 
-        this.filter_search_result();
+        this.generateSearchFilterResult();
     }
 
-    /** Event method for setting up filter data */
-    private filter_search_result() {
-        this.loaderService.showLoader();
-        this.productService
+    private filterSearchObservable() {
+        return this.productService
             .filter_result(
                 this.searchTerm,
                 this.classList_ids,
@@ -504,22 +546,27 @@ export class CategoryPageComponent implements OnInit {
                 this.sortTerm,
                 1,
                 0
-            )
+            );
+    }
+
+    /** Event method for setting up filter data */
+    private generateSearchFilterResult() {
+        this.loaderService.showLoader();
+        this.filterSearchObservable()
             .subscribe(result => {
-                console.log('filter_search_result-result', result);
+                console.log('generateSearchFilterResult-result', result);
                 this.allProductsByCategory = result.data;
                 this.loaderService.hideLoader();
             }, (err) => {
-                console.log('filter_search_result', err);
+                console.log('generateSearchFilterResult', err);
                 this.toastr.error('Sorry! There was a problem!', 'Sorry!');
                 this.loaderService.hideLoader();
             });
     }
 
-    // Event method for getting all the subcategory data for the page
-    private getAllSubcategory() {
-        if (this.categoryList_ids.length > 0) {
-            this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids).subscribe(result => {
+    private allSubCategoryOb() {
+        return this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids)
+            .concatMap((result: any) => {
                 this.allsubCategory = result;
 
                 this.subCategory_ids = this.subCategory_ids.filter((subCategoryId) => {
@@ -528,15 +575,41 @@ export class CategoryPageComponent implements OnInit {
                     })
                 });
 
-                this.getAllSubSubcategory();
+                return this.allSubSubcategoryOb();
             });
+    }
+
+    // Event method for getting all the subcategory data for the page
+    private getAllSubcategory() {
+        if (this.categoryList_ids.length > 0) {
+            this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids)
+                .concatMap((result: any) => {
+                    this.allsubCategory = result;
+
+                    this.subCategory_ids = this.subCategory_ids.filter((subCategoryId) => {
+                        return this.allsubCategory.find((subCategory) => {
+                            return subCategory.id == subCategoryId
+                        })
+                    });
+
+                    return this.allSubSubcategoryOb();
+                })
+                .subscribe(result => {
+                    this.allSubSubCategory = result;
+                });
         } else {
             this.allsubCategory = [];
         }
     }
 
-    //Event method for getting all sub sub category data
+    private allSubSubcategoryOb() {
+        if (this.subCategory_ids.length > 0) {
+            return this.categoryProductService.getSubcategoryByCategoryIds(this.subCategory_ids);
+        }
+        return of([]);
+    }
 
+    //Event method for getting all sub sub category data
     private getAllSubSubcategory() {
         if (this.subCategory_ids.length != 0) {
             this.categoryProductService.getSubcategoryByCategoryIds(this.subCategory_ids).subscribe(result => {
@@ -547,11 +620,12 @@ export class CategoryPageComponent implements OnInit {
         }
     }
 
-
     //Event method for getting all brands
     private getAllBrands() {
         this.brandService.getAll().subscribe(result => {
             this.allBrand = result;
+        }, (err) => {
+            console.log(err);
         });
     }
 
@@ -559,6 +633,8 @@ export class CategoryPageComponent implements OnInit {
     private getAllCategories() {
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.allCategory = result;
+        }, (err) => {
+            console.log(err);
         });
     }
 
@@ -567,6 +643,8 @@ export class CategoryPageComponent implements OnInit {
         this.productService.getMinPrice().subscribe(result => {
             this.minPrice = result.min;
             this.min = this.minPrice;
+        }, (err) => {
+            console.log(err);
         });
     }
 
@@ -575,6 +653,8 @@ export class CategoryPageComponent implements OnInit {
         this.productService.getMaxPrice().subscribe(result => {
             this.maxPrice = result.max;
             this.max = this.maxPrice;
+        }, (err) => {
+            console.log(err);
         });
     }
 
@@ -586,7 +666,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = false;
         this.sortTitle = 'last_order_completed_date';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
-        this.filter_search_result();
+        this.generateSearchFilterResult();
     }
 
     //Event method for showing rating sort
@@ -598,7 +678,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = false;
         this.sortTitle = 'rating';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
-        this.filter_search_result();
+        this.generateSearchFilterResult();
     }
 
     //Event method for showing newest sort
@@ -610,7 +690,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = false;
         this.sortTitle = 'created_at';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
-        this.filter_search_result();
+        this.generateSearchFilterResult();
     }
 
     //Event method for showing price sort
@@ -622,7 +702,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = true;
         this.sortTitle = 'price';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
-        this.filter_search_result();
+        this.generateSearchFilterResult();
     }
 
 
@@ -631,4 +711,91 @@ export class CategoryPageComponent implements OnInit {
         window.scroll(0, 0);
         this.p = event
     }
+
+    private handleParamInit(params) {
+        console.log('params', params);
+
+        this.route.snapshot.params = params;
+
+        this.currentCategoryId = +this.route.snapshot.params['id'];
+        this.categoryList_ids = [];
+        if (this.currentCategoryId) {
+            this.categoryList_ids.push('' + this.currentCategoryId);
+        }
+
+        this.brand_ids = [];
+        this.subCategory_ids = [];
+        this.subsubCategory_ids = [];
+
+        this.isCollapsed_brand = false;
+        this.isCollapsed_class = false;
+        this.isCollapsed_subclass = false;
+        this.isCollapsed_subsubclass = false;
+        this.isCollapsed_warehouses = false;
+
+        this.showWarehouse = !(this.route.snapshot.params['id'] && this.route.snapshot.params['warehouse'] === 'warehouse');
+
+        if (this.route.snapshot.params['id'] && this.route.snapshot.params['craftsman'] === 'craftsman') {
+            this.showcraftsman = true;
+        } else {
+            this.showcraftsman = false;
+            this.showWarehouse = false;
+        }
+
+        if (this.currentCategoryId > 0) {
+            this.isCollapsed_class = true;
+            this.isCollapsed_subclass = true;
+            this.isCollapsed_subsubclass = true;
+        }
+
+        this.priceRange = [this.minPrice, this.maxPrice];
+
+    }
+
+    extractCategoryMainImage() {
+        let imageUrl = null;
+        if (this.isNotEmptyObject(this.subsubcategoryB) && this.subsubcategoryB.image) {
+            imageUrl = this.IMAGE_ENDPOINT + this.subsubcategoryB.image;
+        } else if (this.isNotEmptyObject(this.subcategoryB) && this.subcategoryB.image) {
+            imageUrl = this.IMAGE_ENDPOINT + this.subcategoryB.image;
+        } else if (this.isNotEmptyObject(this.categoryB) && this.categoryB) {
+            imageUrl = this.IMAGE_ENDPOINT + this.categoryB.image;
+        }
+        return imageUrl;
+    }
 }
+
+/*
+        let dummyObservable = of([]);
+if (categoryChange) {
+    dummyObservable = forkJoin([this.allSubCategoryOb(), this.categoryProductService.getById(this.currentCategoryId)])
+        .pipe(concatMap((results: any) => {
+            this.allSubSubCategory = results[0];
+            this.categoryB = results[1];
+            return of([]);
+        }));
+}
+
+if (subCategoryChange) {
+    dummyObservable.switchMap(() => {
+        return forkJoin([this.allSubSubcategoryOb(), this.categoryProductService.getById(this.currentSubCategoryId)])
+            .concatMap((results: any) => {
+                this.allSubSubCategory = results[0];
+                this.subcategoryB = results[1];
+                return of([]);
+            });
+    });
+}
+
+if (subSubCategoryChange) {
+    dummyObservable.concatMap(() => {
+        return this.categoryProductService.getById(this.currentSubSubCategoryId)
+            .concatMap((res: any) => {
+                this.subsubcategoryB = res;
+                return of([]);
+            });
+    });
+}
+
+return dummyObservable;
+ */

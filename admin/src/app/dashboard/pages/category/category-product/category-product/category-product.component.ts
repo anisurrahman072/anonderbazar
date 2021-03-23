@@ -22,6 +22,7 @@ export class CategoryProductComponent implements OnInit {
     total: number;
     nameSearchValue: string = '';
     codeSearchValue: string = '';
+    idSearchValue: string = '';
     sortValue = 'DESC';
     sortKey = 'child_count';
 
@@ -49,6 +50,7 @@ export class CategoryProductComponent implements OnInit {
                 this.limit,
                 this.nameSearchValue,
                 this.codeSearchValue,
+                this.idSearchValue,
                 this.sortKey,
                 this.sortValue
             )

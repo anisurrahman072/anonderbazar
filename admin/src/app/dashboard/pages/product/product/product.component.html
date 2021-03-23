@@ -39,6 +39,9 @@
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
+                <th style="text-align: center" nzWidth="100px">
+                    <span> Image </span>
+                </th>
                 <th nzShowSort nzSortKey="updated_at" style="text-align: center">
                     <span>Last Updated</span>
                 </th>
@@ -69,14 +72,13 @@
                 <th style="text-align: center">
                     <span> Brand </span>
                 </th>
-                <th style="text-align: center" nzWidth="100px">
-                    <span> Image </span>
-                </th>
+
                 <th style="text-align: center" nzWidth="200px">
                     <span> Action </span>
                 </th>
             </tr>
             <tr>
+                <th nzWidth="100px">&nbsp;</th>
                 <th>&nbsp;</th>
                 <th>
                     <input nz-input style="width: 250px;" placeholder="Code"
@@ -151,7 +153,7 @@
                         </nz-option>
                     </nz-select>
                 </th>
-                <th nzWidth="100px">&nbsp;</th>
+
                 <th nzWidth="200px">&nbsp;</th>
             </tr>
             </thead>
@@ -159,7 +161,16 @@
             <tbody>
 
             <tr *ngFor="let data of nzTable.data">
-
+                <td style="text-align: center; width: 75px">
+                    <ng-container *ngIf="data.image; else noImage">
+                        <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
+                                   [nzSrc]="IMAGE_ENDPOINT + data.image + IMG_EXT" [nzSize]="'large'"
+                                   [nzIcon]="'question-circle'"  style="background-color:#1e241c;"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noImage>
+                        <nz-tag>No Image</nz-tag>
+                    </ng-template>
+                </td>
                 <td style="width: 136px">
                     {{data.updatedAt|date:'dd/MM/yyyy hh:mm a'}}
                 </td>
@@ -195,16 +206,7 @@
                 <td style="text-align: center; width: 139px">
                     <span>{{data.brand_name}}</span>
                 </td>
-                <td style="text-align: center; width: 75px">
-                    <ng-container *ngIf="data.image; else noImage">
-                        <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
-                                   [nzSrc]="IMAGE_ENDPOINT + data.image + IMG_EXT" [nzSize]="'large'"
-                                   [nzIcon]="'question-circle'"  style="background-color:#1e241c;"></nz-avatar>
-                    </ng-container>
-                    <ng-template #noImage>
-                        <nz-tag>No Image</nz-tag>
-                    </ng-template>
-                </td>
+
                 <td style="text-align: center">
                     <nz-button-group>
                         <button *ngIf="'product-read'|accessControl"

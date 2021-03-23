@@ -261,13 +261,14 @@ module.exports = {
   //Model models/Product.js
   search: async (req, res) => {
     try {
+
       let _pagination = pagination(req.query);
 
       let _where = {};
       _where.deletedAt = null;
 
       if (req.query.filters) {
-        console.log('filter', req.query.filters);
+
         let filters = JSON.parse(req.query.filters);
 
         if (filters.searchTerm) {
@@ -314,11 +315,16 @@ module.exports = {
         if (filters.warehousesList.length) {
           _where.warehouse_id = filters.warehousesList;
         }
+
       }
 
       let _sort = [];
       if (req.query.sortTitle) {
-        _sort.push({[req.query.sortTitle]: parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC'});
+        let sortTitle = req.query.sortTitle;
+        if (req.query.sortTitle === 'created_at') {
+          sortTitle = 'createdAt';
+        }
+        _sort.push({[sortTitle]: parseInt(req.query.sortTerm) === 1 ? 'DESC' : 'ASC'});
       } else {
         _sort.push({
           createdAt: 'DESC'
@@ -941,7 +947,7 @@ module.exports = {
         });
       }
 
-      for(let i = 0; i < Object.keys(productsIndex).length; i++){
+      for (let i = 0; i < Object.keys(productsIndex).length; i++) {
         let product = productsIndex[req.body[i].code];
         product.weight = parseFloat(req.body[i].weight);
 
@@ -952,7 +958,7 @@ module.exports = {
         for (let j = 0; j < categoryIdParts.length; j++) {
           product[categoryColumns[j]] = parseInt(categoryIdParts[j], 10);
         }
-        for(let i=categoryColumns.length-1; i>=categoryIdParts.length; i--){
+        for (let i = categoryColumns.length - 1; i >= categoryIdParts.length; i--) {
           product[categoryColumns[i]] = null;
         }
 
@@ -992,7 +998,7 @@ module.exports = {
       }
 
       console.log('Asceee');
-      for(let key in productsIndex){
+      for (let key in productsIndex) {
         const product = productsIndex[key];
         console.log('first', product.type_id);
         console.log('second', product.category_id);

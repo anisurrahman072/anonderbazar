@@ -14,6 +14,7 @@ import {NzNotificationService} from "ng-zorro-antd";
     styleUrls: ['./category-product-edit.component.css']
 })
 export class CategoryProductEditComponent implements OnInit, OnDestroy {
+    @ViewChild('Image') Image;
     id: number;
     data: any;
     sub: Subscription;
@@ -23,8 +24,7 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: File[] = [];
-    @ViewChild('Image') Image;
-
+    isLoading: boolean = true;
     constructor(
         private router: Router,
         private cmsService: CmsService,
@@ -32,6 +32,11 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private categoryProductService: CategoryProductService) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             parent_id: [null, []],
@@ -39,6 +44,32 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
             code: ['', [Validators.required]],
             image: [null, []],
         });
+
+        this.sub = this.route.params.subscribe((params: any) => {
+            this.id = +params['id'];
+            this.isLoading = true;
+            this.categoryProductService.getById(this.id)
+                .subscribe((result: any) => {
+                    this.data = result;
+                    this.oldImages = [];
+                    this.validateForm.patchValue(this.data);
+                    if (this.data && this.data.image) {
+                        this.oldImages.push(this.IMAGE_ENDPOINT + this.data.image);
+                    }
+                    this.isLoading = false;
+                }, (err)=> {
+                    this.isLoading = false;
+                });
+        });
+
+        this.cmsService
+            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
+            .subscribe(result => {
+                this.offers = result;
+                this.isLoading = false;
+            }, (err)=> {
+                this.isLoading = false;
+            });
     }
 
     //Event method for submitting the form
@@ -50,9 +81,9 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
-        if(value.parent_id === 'true')
+        if (value.parent_id === 'true')
             formData.append('parent_id', value.parent_id);
-        if(value.offer_id === 'true')
+        if (value.offer_id === 'true')
             formData.append('offer_id', value.offer_id);
         if (this.ImageFile.length.toString() != "0") {
             formData.append('hasImage', 'true');
@@ -64,10 +95,14 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         } else {
             formData.append('hasImage', 'false');
         }
+        this.isLoading = true;
         this.categoryProductService.update(this.id, formData)
             .subscribe(result => {
+                this.isLoading = false;
                 this._notification.create('success', 'Update successful for ', this.data.name);
                 this.router.navigate(['/dashboard/category/product/details/', this.id]);
+            }, (err)=> {
+                this.isLoading = false;
             });
     }
 
@@ -85,28 +120,6 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         return this.validateForm.controls[name];
     }
 
-
-    // init the component
-    ngOnInit() {
-
-        this.sub = this.route.params.subscribe((params: any) => {
-            this.id = +params['id'];
-            this.categoryProductService.getById(this.id)
-                .subscribe((result: any) => {
-                    this.data = result;
-                    this.oldImages = [];
-                    this.validateForm.patchValue(this.data);
-                    if (this.data && this.data.image) {
-                        this.oldImages.push(this.IMAGE_ENDPOINT + this.data.image);
-                    }
-                });
-        });
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
-            .subscribe(result => {
-                this.offers = result;
-            });
-    }
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';

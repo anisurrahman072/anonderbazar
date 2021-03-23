@@ -93,7 +93,7 @@ module.exports = {
       let fromSQL = ' FROM categories as categories  ';
       fromSQL += ' LEFT JOIN categories as subCategory ON subCategory.parent_id = categories.id   ';
       fromSQL += ' LEFT JOIN categories as parent ON parent.id = categories.parent_id   ';
-      let _where = ` WHERE categories.deleted_at IS NULL AND categories.type_id = 2 `;
+      let _where = ` WHERE categories.deleted_at IS NULL  `;
 
       let _groupBy = ' GROUP By categories.id ';
 
@@ -102,6 +102,9 @@ module.exports = {
       }
       if (req.query.code_search) {
         _where += ` AND categories.code LIKE '%${req.query.code_search}%' `;
+      }
+      if (req.query.id_search) {
+        _where += ` AND categories.id = '${req.query.id_search}' `;
       }
 
       let _sort = '';

@@ -29,10 +29,11 @@ export class CategoryProductService {
         limit: number,
         nameSearchValue: string,
         codeSearchValue: string,
+        idSearchValue: string,
         sortKey: string,
         sortVal: string
     ): Observable<any> {
-        return this.http.get(`${this.EndPoint3}?page=${page}&limit=${limit}&name_search=${nameSearchValue}&code_search=${codeSearchValue}&sortKey=${sortKey}&sortVal=${sortVal}`)
+        return this.http.get(`${this.EndPoint3}?page=${page}&limit=${limit}&id_search=${idSearchValue}&name_search=${nameSearchValue}&code_search=${codeSearchValue}&sortKey=${sortKey}&sortVal=${sortVal}`)
     }
 
     getById(id) {
