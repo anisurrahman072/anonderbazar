@@ -1,15 +1,15 @@
 <div class="lottery">
     <div class="container-fluid">
-        <div class="col-md-12 col-sm-12 col-12 mt-4 couponShow" *ngIf="couponShow" style="">
+        <div class="col-md-12 col-sm-12 col-12 mt-4 couponShow" *ngIf="couponShow">
             <h1 style="text-align: center;">
                 Anonder Bazar Live Lottery
             </h1>
             <h3 *ngIf="suggestion" style="text-align: center;">
                 "Click" on Live Lottery button to start
             </h3>
-            <div class="couponContainer mt-5">
-                    <span *ngFor="let digit of currentCoupon" class="couponDigits">
-                        {{digit}}
+            <div class="couponContainer mt-5" *ngIf="currentCoupon">
+                    <span *ngFor="let digit of currentCoupon" class="couponDigitBox" >
+                        <p [@myAnimation] class="digit">{{digit}}</p>
                     </span>
             </div>
             <div class="row mt-5">
@@ -20,8 +20,8 @@
                     Winner List
                 </button>
             </div>
-
         </div>
+
         <div class="row">
             <div class="col-md-12 col-sm-12 col-12" *ngIf="winnerListShow">
                 <div class="row">
@@ -49,6 +49,7 @@
                 </table>
             </div>
         </div>
+
         <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="notStarted">
             <h1 style="text-align: center;">
                 The lottery has not started!!
@@ -57,6 +58,7 @@
                 Live Lottery
             </button>
         </div>
+
         <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="completed">
             <h1 style="text-align: center;">
                 The lottery has been Completed!!
@@ -64,6 +66,18 @@
             <button class="btn btn-primary" (click)="getWinners()" style="display: block; margin: auto;">
                 Winner List
             </button>
+        </div>
+
+        <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="winnerShow" style="text-align: center;">
+            <div class="place-container">
+                <p class="place">{{currentWinner.coupon_lottery_prize_id.place}}</p>
+            </div>
+            <h2 class="winnerName">{{currentWinner.user_id.first_name}} {{currentWinner.user_id.last_name}}</h2>
+            <h2 class="prizeName">{{currentWinner.coupon_lottery_prize_id.name}}</h2>
+            <div class="image-container">
+                <img src="{{currentWinner.coupon_lottery_prize_id.image}}" alt="{{currentWinner.coupon_lottery_prize_id.name}}">
+            </div>
+
         </div>
     </div>
 </div>

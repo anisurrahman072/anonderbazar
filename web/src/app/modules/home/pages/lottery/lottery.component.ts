@@ -8,21 +8,24 @@ import {NotificationsService} from "angular2-notifications";
   templateUrl: './lottery.component.html',
   styleUrls: ['./lottery.component.scss'],
     animations: [
-        trigger('couponChange', [
-            state('in', style({
-                color: 'blue'
-            })),
-            state('out', style({
-                color: 'yellow'
-            })),
-            transition('in => out', [
-                animate('1s')
-            ]),
-            transition('out => in', [
-                animate('1s')
-            ]),
-        ]),
-    ],
+        trigger(
+            'myAnimation',
+            [
+                transition(
+                    ':enter', [
+                        style({ transform: 'translateY(100%)', opacity: 0 }),
+                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                    ]
+                ),
+                transition(
+                    ':leave', [
+                        style({ transform: 'translateY(0)', opacity: 1 }),
+                        animate('500ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
+                    ]
+                )
+            ]
+        )
+    ]
 })
 export class LotteryComponent implements OnInit {
     winners: any;
@@ -32,6 +35,8 @@ export class LotteryComponent implements OnInit {
     notStarted: boolean = false;
     completed: boolean = false;
     suggestion: boolean = false;
+    currentWinner: any;
+    winnerShow: boolean = false;
 
   constructor(private lotteryService: LotteryService,
               private _notify: NotificationsService) { }
@@ -66,7 +71,7 @@ export class LotteryComponent implements OnInit {
       else{
           /** Users will see the the last winner coupon ID */
           let len = this.winners.length;
-          this._notify.success(`The last winner coupon is: ${this.winners[len-1].product_purchased_coupon_code_id}`)
+          this._notify.success(`Last winner coupon is: ${this.winners[len-1].product_purchased_coupon_code_id}`);
           this.currentCoupon = this.separateCoupon(this.winners[len-1].product_purchased_coupon_code_id);
       }
   }
@@ -75,7 +80,7 @@ export class LotteryComponent implements OnInit {
       /** completed */
     const couponArray = String(coupon_id).split('');
     if(couponArray.length < 5){
-        let len = 7 - couponArray.length;
+        let len = 5 - couponArray.length;
         for(let i = 0; i < len; i++){
             couponArray.unshift('0');
         }
@@ -113,9 +118,23 @@ export class LotteryComponent implements OnInit {
           this.lotteryService.makeDraw()
               .subscribe((couponData) => {
                   if(couponData.success){
-                      this.couponShow = true;
-                      this.notStarted = false;
-                      this.currentCoupon = this.separateCoupon(couponData.data);
+                      this.lotteryService.getAllWinners()
+                          .subscribe((data) => {
+                              let len = data.data.length;
+                              this.currentWinner = data.data[len-1];
+                              this.winnerShow = true;
+                              this.notStarted = false;
+                              this.couponShow = false;
+                              this.winnerListShow = false;
+                              this.completed = false;
+                              this.currentCoupon = [];
+                              this.currentCoupon = this.separateCoupon(couponData.data);
+                              setTimeout(() => {
+                                  this.winnerShow = false;
+                                  this.couponShow = true;
+                                  this.notStarted = false;
+                              }, 5000);
+                          })
                   }
                   else if(couponData.code === 'completed') {
                       this.notStarted = false;
