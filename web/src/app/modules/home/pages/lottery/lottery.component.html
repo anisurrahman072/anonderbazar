@@ -1,17 +1,36 @@
 <div class="lottery">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6 col-sm-6 col-12 mt-5">
-                <div class="d-flex justify-content-between">
-                    <span *ngFor="let digit of currentCoupon" class="bg-red" style="color: white; font-size: 60px !important;">
+        <div>
+            <div class="col-md-12 col-sm-12 col-12 mt-4 couponShow" *ngIf="couponShow" style="">
+                <h1 style="text-align: center;">
+                    Anonder Bazar Live Lottery
+                </h1>
+                <div class="couponContainer mt-5">
+                    <span *ngFor="let digit of currentCoupon" class="couponDigits" [@couponChange]="currentCoupon">
                         {{digit}}
                     </span>
                 </div>
-                <button class="btn btn-primary mt-3" (click)="takeDraw()" style="display: block; margin: auto;">
-                    Live Lottery
-                </button>
+                <div class="row mt-5">
+                    <button class="btn btn-primary" (click)="makeDraw()" style="display: block; margin: auto;">
+                        Live Lottery
+                    </button>
+                    <button class="btn btn-primary" (click)="getWinners()" style="display: block; margin: auto;">
+                        Winner List
+                    </button>
+                </div>
+
             </div>
-            <div class="col-md-6 col-sm-6 col-12">
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-12" *ngIf="winnerListShow">
+                <div class="row">
+                    <button class="btn btn-primary mt-3" (click)="makeDraw()" style="display: block; margin: auto;">
+                        Live Lottery
+                    </button>
+                    <button class="btn btn-primary mt-3" style="display: block; margin: auto;">
+                        Winner List
+                    </button>
+                </div>
                 <h2 style="text-align: center" class="mt-4">Winner List</h2>
                 <table class="table table-striped mt-2 w-80 text-center" style="margin: auto;">
                     <tr>
@@ -20,7 +39,7 @@
                         <th scope="col">Coupon</th>
                         <th scope="col">Prize</th>
                     </tr>
-                    <tr *ngFor="let data of winners" >
+                    <tr *ngFor="let data of winners.winners" >
                         <td scope="row">{{data.id}}</td>
                         <td>{{data.winner_id.first_name}} {{data.winner_id.last_name}}</td>
                         <td>{{data.coupon_id}}</td>
