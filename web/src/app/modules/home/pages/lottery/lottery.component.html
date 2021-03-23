@@ -1,25 +1,26 @@
 <div class="lottery">
     <div class="container-fluid">
-        <div>
-            <div class="col-md-12 col-sm-12 col-12 mt-4 couponShow" *ngIf="couponShow" style="">
-                <h1 style="text-align: center;">
-                    Anonder Bazar Live Lottery
-                </h1>
-                <div class="couponContainer mt-5">
-                    <span *ngFor="let digit of currentCoupon" class="couponDigits" [@couponChange]="currentCoupon">
+        <div class="col-md-12 col-sm-12 col-12 mt-4 couponShow" *ngIf="couponShow" style="">
+            <h1 style="text-align: center;">
+                Anonder Bazar Live Lottery
+            </h1>
+            <h3 *ngIf="suggestion" style="text-align: center;">
+                "Click" on Live Lottery button to start
+            </h3>
+            <div class="couponContainer mt-5">
+                    <span *ngFor="let digit of currentCoupon" class="couponDigits">
                         {{digit}}
                     </span>
-                </div>
-                <div class="row mt-5">
-                    <button class="btn btn-primary" (click)="makeDraw()" style="display: block; margin: auto;">
-                        Live Lottery
-                    </button>
-                    <button class="btn btn-primary" (click)="getWinners()" style="display: block; margin: auto;">
-                        Winner List
-                    </button>
-                </div>
-
             </div>
+            <div class="row mt-5">
+                <button class="btn btn-primary" (click)="makeDraw()" style="display: block; margin: auto;">
+                    Live Lottery
+                </button>
+                <button class="btn btn-primary" (click)="getWinners()" style="display: block; margin: auto;">
+                    Winner List
+                </button>
+            </div>
+
         </div>
         <div class="row">
             <div class="col-md-12 col-sm-12 col-12" *ngIf="winnerListShow">
@@ -39,14 +40,30 @@
                         <th scope="col">Coupon</th>
                         <th scope="col">Prize</th>
                     </tr>
-                    <tr *ngFor="let data of winners.winners" >
-                        <td scope="row">{{data.id}}</td>
-                        <td>{{data.winner_id.first_name}} {{data.winner_id.last_name}}</td>
-                        <td>{{data.coupon_id}}</td>
-                        <td>{{data.name}}</td>
+                    <tr *ngFor="let winner of winners" >
+                        <td scope="row">{{winner.coupon_lottery_prize_id.place}}</td>
+                        <td>{{winner.user_id.first_name}} {{winner.user_id.last_name}}</td>
+                        <td>{{winner.product_purchased_coupon_code_id}}</td>
+                        <td>{{winner.coupon_lottery_prize_id.name}}</td>
                     </tr>
                 </table>
             </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="notStarted">
+            <h1 style="text-align: center;">
+                The lottery has not started!!
+            </h1>
+            <button class="btn btn-primary" (click)="makeDraw()" style="display: block; margin: auto;">
+                Live Lottery
+            </button>
+        </div>
+        <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="completed">
+            <h1 style="text-align: center;">
+                The lottery has been Completed!!
+            </h1>
+            <button class="btn btn-primary" (click)="getWinners()" style="display: block; margin: auto;">
+                Winner List
+            </button>
         </div>
     </div>
 </div>

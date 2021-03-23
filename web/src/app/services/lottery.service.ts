@@ -9,12 +9,12 @@ export class LotteryService {
   private EndPoint = `${AppSettings.API_ENDPOINT}/CouponLotteryDraw`;
   constructor(private http: HttpClient) { }
 
-  takeDraw(): Observable<any> {
-    return this.http.get(this.EndPoint+'/makeDraw')
+  makeDraw(): Observable<any> {
+    return this.http.get(this.EndPoint+'/makeDraw?code=CL50')
         .map((response) => response);
   }
   getAllWinners(): Observable<any> {
-    return this.http.get(this.EndPoint+'/getAllWinner')
+    return this.http.get(this.EndPoint+'/getAllWinner?code=CL50')
         .map((response) => response);
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {LotteryService} from "../../../../services/lottery.service";
 import {trigger, state, style, animate, transition} from '@angular/animations';
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
   selector: 'app-lottery',
@@ -26,37 +27,55 @@ import {trigger, state, style, animate, transition} from '@angular/animations';
 export class LotteryComponent implements OnInit {
     winners: any;
     currentCoupon: any;
-    couponShow: boolean = true;
+    couponShow: boolean = false;
     winnerListShow: boolean = false;
+    notStarted: boolean = false;
+    completed: boolean = false;
+    suggestion: boolean = false;
 
-  constructor(private lotteryService: LotteryService) { }
+  constructor(private lotteryService: LotteryService,
+              private _notify: NotificationsService) { }
 
   ngOnInit() {
-      this.showWinnerList();
+      /** completed */
+      this.lotteryService.getAllWinners()
+          .subscribe(data => {
+             if(data.code === 'notStarted'){
+                 this.notStarted = true;
+             }
+             else if(data.code === 'completed'){
+                 this.couponShow = false;
+                 this.notStarted = false;
+                 this.completed = true;
+             }
+             else{
+                 this.notStarted = false;
+                 this.couponShow = true;
+                 this.winners = data.data;
+                 this.setCurrentCoupon();
+             }
+          });
   }
 
   setCurrentCoupon(){
-      if(this.winners.length === 0){
-          // No lotteries were drawn
-          this.currentCoupon = this.seperateCoupon(0);
+      /** completed */
+      if(this.winners.length === 0 ){
+          this._notify.error(`Winner List is empty!`);
+          this.currentCoupon = this.separateCoupon(0);
       }
       else{
-          if(this.winners.success){
-              // Users will see the the last winner coupon ID
-              let len = this.winners.length;
-              this.currentCoupon = this.seperateCoupon(this.winners[len-1].product_purchased_coupon_code_id);
-          }
-          else{
-              // All lotteries are already distributed
-              this.currentCoupon = this.seperateCoupon(0);
-          }
+          /** Users will see the the last winner coupon ID */
+          let len = this.winners.length;
+          this._notify.success(`The last winner coupon is: ${this.winners[len-1].product_purchased_coupon_code_id}`)
+          this.currentCoupon = this.separateCoupon(this.winners[len-1].product_purchased_coupon_code_id);
       }
   }
 
-  seperateCoupon(coupon_id: any) {
+  separateCoupon(coupon_id: any) {
+      /** completed */
     const couponArray = String(coupon_id).split('');
     if(couponArray.length < 5){
-        let len = 5 - couponArray.length;
+        let len = 7 - couponArray.length;
         for(let i = 0; i < len; i++){
             couponArray.unshift('0');
         }
@@ -64,32 +83,69 @@ export class LotteryComponent implements OnInit {
     return couponArray;
   }
 
-  showWinnerList() {
-    this.lotteryService.getAllWinners()
-        .subscribe((data) => {
-            console.log(data);
-            this.winners = data;
-            this.setCurrentCoupon();
-        });
-  }
-
   makeDraw() {
-      if(this.couponShow){
-          this.lotteryService.takeDraw()
-              .subscribe((winners) => {
-                  this.winners = winners;
-                  this.setCurrentCoupon();
+      this.suggestion = false;
+      if(this.winnerListShow || this.notStarted){
+          this.lotteryService.getAllWinners()
+              .subscribe(data => {
+                  if(data.code === 'completed'){
+                      this.couponShow = false;
+                      this.winnerListShow = false;
+                      this.completed = true;
+                      this.notStarted = false;
+                  }
+                  else{
+                      this.winnerListShow = false;
+                      this.notStarted = false;
+                      this.couponShow = true;
+                      if(data.data && data.data.length > 0){
+                          this.winners = data.data;
+                          this.setCurrentCoupon();
+                      }
+                      else{
+                          this.suggestion = true;
+                      }
+                  }
               });
       }
-      else {
-          this.winnerListShow = false;
-          this.couponShow = true;
+      /** Jodi touhid vai bolen je "Lottery not stared" theke direct lottery draw hoe jabe  thaole thik uporer jei line a this.suggestion = true likhco sekhane makeDraw() ar API call korbe */
+      else if(this.couponShow) {
+          this.lotteryService.makeDraw()
+              .subscribe((couponData) => {
+                  if(couponData.success){
+                      this.couponShow = true;
+                      this.notStarted = false;
+                      this.currentCoupon = this.separateCoupon(couponData.data);
+                  }
+                  else if(couponData.code === 'completed') {
+                      this.notStarted = false;
+                      this.couponShow = false;
+                      this.completed = true;
+                  }
+                  else {
+                      this._notify.error(`${couponData.message}`);
+                  }
+              })
       }
   }
 
   getWinners() {
-      this.showWinnerList();
-      this.couponShow = false;
-      this.winnerListShow = true;
+      /** completed */
+      this.lotteryService.getAllWinners()
+          .subscribe(data => {
+              if(data.code === 'notStarted'){
+                  this.couponShow = false;
+                  this.completed = false;
+                  this.winnerListShow = false;
+                  this.notStarted = true;
+              }
+              else{
+                  this.notStarted = false;
+                  this.couponShow = false;
+                  this.completed = false;
+                  this.winnerListShow = true;
+                  this.winners = data.data;
+              }
+          });
   }
 }

@@ -23,7 +23,8 @@ module.exports = {
 
       if(lotteryCoupon.status === 1){
         return res.status(200).json({
-          success: true,
+          success: false,
+          code: 'notStarted',
           message: 'The lottery is not started!',
         });
       }
@@ -36,15 +37,19 @@ module.exports = {
         .populate('coupon_lottery_prize_id');
 
       let message = '';
+      let resCode = '';
       if(lotteryCoupon.status === 3){
         message = 'The lottery has been finished!';
+        resCode = 'completed';
       }
       else {
         message = 'Successfully get all winners!';
+        resCode = 'success';
       }
       return res.status(200).json({
         success: true,
         message,
+        code: resCode,
         data: allWinners,
       });
     }
@@ -73,19 +78,21 @@ module.exports = {
       /** Check weather today is the correct day for DRAW the coupon */
       let couponLotteryDate = lotteryCoupon.draw_date;
       let todayDate = moment().format('YYYY-MM-DD').slice(0, 10);
-      let date = moment(couponLotteryDate).utc().format('YYYY-MM-DD');
+      let date = moment(couponLotteryDate).format('YYYY-MM-DD');
 
       if(todayDate !== date){
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          code: 'notDay',
           message: 'Today is not the day to DRAW!'
         });
       }
 
       /** Check weather the Coupon Lottery is already completed or not */
       if(lotteryCoupon.status === 3){
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          code: 'completed',
           message: 'Lottery has been completed for this Coupon!'
         });
       }
@@ -145,8 +152,9 @@ module.exports = {
         await CouponLottery.update({
           product_id: lotteryCoupon.product_id
         }).set({status: 3});
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          code: 'completed',
           message: 'Lottery has been completed for this Coupon!'
         });
       }
@@ -205,6 +213,7 @@ module.exports = {
 
       return res.status(200).json({
         success: true,
+        code: 'success',
         message: 'Successfully drawn the coupon!',
         data: randomCouponId
       });
