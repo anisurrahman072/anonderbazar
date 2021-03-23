@@ -36,7 +36,7 @@ module.exports = {
           suborders.status != '12' AND
           coupon.product_id = '6016'
 
-          GROUP BY coupon.user_id HAVING coupon.user_id = 130
+          GROUP BY coupon.user_id
     `;
 
     const rawResult = await couponQury(rawSelect + fromSQL + _where, []);
@@ -87,14 +87,23 @@ module.exports = {
       }
     }
 
-    try {
-      await SmsService.sendingDynamicSmsToMany(sms);
-      return exits.success();
-    } catch (err) {
-      console.log('SMS sending error');
-      console.log(err);
-      return exits.error(err);
+    if (sms.length > 0) {
+      try {
+        await SmsService.sendingDynamicSmsToMany(sms);
+        return exits.success();
+      } catch (err) {
+        console.log('SMS sending error');
+        if (err.data) {
+          console.log(err.data);
+        } else {
+          console.log(err);
+        }
+        return exits.error(err);
+      }
+    } else {
+      console.log('No coupon to send.');
     }
+
   }
 };
 

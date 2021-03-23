@@ -2,6 +2,7 @@ const moment = require('moment');
 const {bangladeshSMSConfig, sslCommerzSMSConfig} = require('../../config/softbd');
 const {makeUniqueId} = require('../../libs/helper');
 const axios = require('axios');
+const fs = require('fs');
 /*
 {
   type : "post",
@@ -40,7 +41,10 @@ module.exports = {
       'sms': sms,
     };
 
+    console.log('number of sms: ', payload.sms.length);
     console.log(payload);
+
+    fs.writeFileSync('./all-sms-content.json', JSON.stringify(payload, null, 2), 'utf8');
 
     const response = await axios.post('https://smsplus.sslwireless.com/api/v3/send-sms/dynamic', payload, {
       'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ export class GLOBAL_CONFIGS {
     public static bannerImageExtension = '.webp';
     public static otherImageExtension = '.webp';
     public static activePaymentMethods = {
-        cashBack: true,
+        cashBack: false,
         Cash: true,
         SSLCommerce: true,
         bKash: false,
