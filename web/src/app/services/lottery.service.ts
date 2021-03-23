@@ -13,7 +13,7 @@ export class LotteryService {
     return this.http.get(this.EndPoint+'/makeDraw')
         .map((response) => response);
   }
-  getAll(): Observable<any> {
+  getAllWinners(): Observable<any> {
     return this.http.get(this.EndPoint+'/getAllWinner')
         .map((response) => response);
   }

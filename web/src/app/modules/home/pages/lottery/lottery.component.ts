@@ -36,15 +36,15 @@ export class LotteryComponent implements OnInit {
   }
 
   setCurrentCoupon(){
-      if(this.winners.winners.length === 0){
+      if(this.winners.length === 0){
           // No lotteries were drawn
           this.currentCoupon = this.seperateCoupon(0);
       }
       else{
           if(this.winners.success){
               // Users will see the the last winner coupon ID
-              let len = this.winners.winners.length;
-              this.currentCoupon = this.seperateCoupon(this.winners.winners[len-1].coupon_id);
+              let len = this.winners.length;
+              this.currentCoupon = this.seperateCoupon(this.winners[len-1].product_purchased_coupon_code_id);
           }
           else{
               // All lotteries are already distributed
@@ -65,9 +65,10 @@ export class LotteryComponent implements OnInit {
   }
 
   showWinnerList() {
-    this.lotteryService.getAll()
-        .subscribe((winners) => {
-            this.winners = winners;
+    this.lotteryService.getAllWinners()
+        .subscribe((data) => {
+            console.log(data);
+            this.winners = data;
             this.setCurrentCoupon();
         });
   }

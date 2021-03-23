@@ -30,7 +30,8 @@ module.exports = {
 
       /** Find all winners for the Lottery Coupon */
       let allWinners = await CouponLotteryDraw.find({
-        where: {coupon_lottery_id: lotteryCoupon.id, deletedAt: null}
+        where: {coupon_lottery_id: lotteryCoupon.id, deletedAt: null},
+        sort: [{id: 'ASC'}]
       }).populate('user_id')
         .populate('coupon_lottery_prize_id');
 
