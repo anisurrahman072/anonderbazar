@@ -68,14 +68,17 @@
             </button>
         </div>
 
-        <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="winnerShow" style="text-align: center;">
-            <div class="place-container">
-                <p class="place">{{currentWinner.coupon_lottery_prize_id.place}}</p>
+        <div class="col-md-12 col-sm-12 col-12 mt-4 winnerShow" *ngIf="winnerShow">
+            <div class="place-container mt-2">
+                <img src="assets/images/place.png" alt="place">
+                <p class="place">
+                    {{currentWinner.coupon_lottery_prize_id.place}}
+                </p>
             </div>
             <h2 class="winnerName">{{currentWinner.user_id.first_name}} {{currentWinner.user_id.last_name}}</h2>
-            <h2 class="prizeName">{{currentWinner.coupon_lottery_prize_id.name}}</h2>
+            <p class="mt-1 prizeName">{{currentWinner.coupon_lottery_prize_id.name}}</p>
             <div class="image-container">
-                <img src="{{currentWinner.coupon_lottery_prize_id.image}}" alt="{{currentWinner.coupon_lottery_prize_id.name}}">
+                <img src="assets/images/prize.png" alt="{{currentWinner.coupon_lottery_prize_id.name}}" class="prizeImage">
             </div>
 
         </div>

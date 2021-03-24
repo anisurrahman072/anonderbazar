@@ -343,7 +343,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (selectedZilaId > 0 && !this.noShippingCharge) {
 
                 if (this.courierCharges) {
-                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                    // this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
 
                 if (this.shippingCharge) {
@@ -397,7 +397,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -409,7 +409,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
@@ -539,7 +539,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -551,7 +551,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,

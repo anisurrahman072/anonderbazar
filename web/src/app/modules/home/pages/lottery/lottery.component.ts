@@ -16,13 +16,13 @@ import {NotificationsService} from "angular2-notifications";
                         style({ transform: 'translateY(100%)', opacity: 0 }),
                         animate('2000ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
-                ),
+                )/*,
                 transition(
                     ':leave', [
                         style({ transform: 'translateY(0%)', opacity: 1 }),
-                        animate('1000ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
+                        animate('2000ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
                     ]
-                )
+                )*/
             ]
         )
     ]
@@ -113,18 +113,17 @@ export class LotteryComponent implements OnInit {
                   }
               });
       }
-      /** Jodi touhid vai bolen je "Lottery not stared" theke direct lottery draw hoe jabe  thaole thik uporer jei line a this.suggestion = true likhco sekhane makeDraw() ar API call korbe */
       else if(this.couponShow) {
           this.lotteryService.makeDraw()
               .subscribe((couponData) => {
                   if(couponData.success){
+                      this.currentCoupon = null;
                       this.lotteryService.getAllWinners()
                           .subscribe((data) => {
                               this.winnerShow = false;
                               this.notStarted = false;
                               this.winnerListShow = false;
                               this.couponShow = true;
-                              this.currentCoupon = null;
                               this.currentCoupon = this.separateCoupon(couponData.data);
                               setTimeout(() => {
                                   let len = data.data.length;
@@ -138,7 +137,7 @@ export class LotteryComponent implements OnInit {
                               setTimeout(() => {
                                   this.winnerShow = false;
                                   this.couponShow = true;
-                              }, 7000);
+                              }, 700000);
                           })
                   }
                   else if(couponData.code === 'completed') {

@@ -21,6 +21,15 @@
   border-image-slice: 1;
 }
 
+.winnerShow{
+  background-image: url("../../../../../assets/images/winnerBackground.svg");
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  text-align: center;
+}
+
 .digit{
   color: white;
   line-height: initial;
@@ -28,4 +37,33 @@
 
 .place-container{
   position: relative;
+}
+
+.place{
+  position: absolute;
+  top: 31%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 70px;
+  background: -webkit-linear-gradient(#ece1ca, #d2a80b,  #725d03, #d6b205);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: initial;
+}
+
+.place-container{
+  position: relative;
+}
+
+.winnerName{
+  color: black;
+}
+
+.prizeName{
+  color: red;
+  font-size: 30px;
+}
+
+.prizeImage{
+  margin-bottom: 55px;
 }
