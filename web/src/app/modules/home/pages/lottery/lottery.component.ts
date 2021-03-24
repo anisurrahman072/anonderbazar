@@ -14,13 +14,13 @@ import {NotificationsService} from "angular2-notifications";
                 transition(
                     ':enter', [
                         style({ transform: 'translateY(100%)', opacity: 0 }),
-                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                        animate('2000ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
                 ),
                 transition(
                     ':leave', [
-                        style({ transform: 'translateY(0)', opacity: 1 }),
-                        animate('500ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
+                        style({ transform: 'translateY(0%)', opacity: 1 }),
+                        animate('1000ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
                     ]
                 )
             ]
@@ -120,20 +120,25 @@ export class LotteryComponent implements OnInit {
                   if(couponData.success){
                       this.lotteryService.getAllWinners()
                           .subscribe((data) => {
-                              let len = data.data.length;
-                              this.currentWinner = data.data[len-1];
-                              this.winnerShow = true;
+                              this.winnerShow = false;
                               this.notStarted = false;
-                              this.couponShow = false;
                               this.winnerListShow = false;
-                              this.completed = false;
-                              this.currentCoupon = [];
+                              this.couponShow = true;
+                              this.currentCoupon = null;
                               this.currentCoupon = this.separateCoupon(couponData.data);
+                              setTimeout(() => {
+                                  let len = data.data.length;
+                                  this.currentWinner = data.data[len-1];
+                                  this.winnerShow = true;
+                                  this.notStarted = false;
+                                  this.couponShow = false;
+                                  this.winnerListShow = false;
+                                  this.completed = false;
+                              }, 3000);
                               setTimeout(() => {
                                   this.winnerShow = false;
                                   this.couponShow = true;
-                                  this.notStarted = false;
-                              }, 5000);
+                              }, 7000);
                           })
                   }
                   else if(couponData.code === 'completed') {
