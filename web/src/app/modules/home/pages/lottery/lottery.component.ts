@@ -12,15 +12,15 @@ import {NotificationsService} from "angular2-notifications";
             'myAnimation',
             [
                 transition(
-                    ':enter', [
-                        style({ transform: 'translateY(50%)', opacity: 0 }),
-                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                    ':leave', [
+                        style({ transform: 'translateY(0)', opacity: 1 }),
+                        animate('500ms', style({ transform: 'translateY(-50%)', 'opacity': 0 }))
                     ]
                 ),
                 transition(
-                    ':leave', [
-                        style({ transform: 'translateY(0%)', opacity: 1 }),
-                        animate('2000ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
+                    ':enter', [
+                        style({ transform: 'translateY(50%)', opacity: 0 }),
+                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
                 )
             ]
@@ -37,21 +37,23 @@ export class LotteryComponent implements OnInit {
     suggestion: boolean = false;
     currentWinner: any;
     winnerShow: boolean = false;
+    p;
 
   constructor(private lotteryService: LotteryService,
               private _notify: NotificationsService) { }
 
   ngOnInit() {
-      /** completed */
       this.lotteryService.getAllWinners()
           .subscribe(data => {
              if(data.code === 'notStarted'){
                  this.notStarted = true;
+                 this._notify.error(`${data.message}`);
              }
              else if(data.code === 'completed'){
                  this.couponShow = false;
                  this.notStarted = false;
                  this.completed = true;
+                 this._notify.error(`${data.message}`);
              }
              else{
                  this.notStarted = false;
@@ -63,7 +65,6 @@ export class LotteryComponent implements OnInit {
   }
 
   setCurrentCoupon(){
-      /** completed */
       if(this.winners.length === 0 ){
           this._notify.error(`Winner List is empty!`);
           this.currentCoupon = this.separateCoupon(0);
@@ -77,7 +78,6 @@ export class LotteryComponent implements OnInit {
   }
 
   separateCoupon(coupon_id: any) {
-      /** completed */
     const couponArray = String(coupon_id).split('');
     if(couponArray.length < 5){
         let len = 5 - couponArray.length;
@@ -98,6 +98,7 @@ export class LotteryComponent implements OnInit {
                       this.winnerListShow = false;
                       this.completed = true;
                       this.notStarted = false;
+                      this._notify.error(`${data.message}`);
                   }
                   else{
                       this.winnerListShow = false;
@@ -145,6 +146,7 @@ export class LotteryComponent implements OnInit {
                       this.notStarted = false;
                       this.couponShow = false;
                       this.completed = true;
+                      this._notify.error(`${couponData.message}`);
                   }
                   else {
                       this._notify.error(`${couponData.message}`);
@@ -154,7 +156,6 @@ export class LotteryComponent implements OnInit {
   }
 
   getWinners() {
-      /** completed */
       this.lotteryService.getAllWinners()
           .subscribe(data => {
               if(data.code === 'notStarted'){
@@ -172,4 +173,9 @@ export class LotteryComponent implements OnInit {
               }
           });
   }
+
+    onPageChange(event) {
+        window.scroll(0, 0);
+        this.p = event
+    }
 }

@@ -25,7 +25,7 @@ module.exports = {
         return res.status(200).json({
           success: false,
           code: 'notStarted',
-          message: 'The lottery is not started!',
+          message: 'Lottery draw is not started! DRAW date: '+lotteryCoupon.draw_date,
         });
       }
 
@@ -39,7 +39,7 @@ module.exports = {
       let message = '';
       let resCode = '';
       if(lotteryCoupon.status === 3){
-        message = 'The lottery has been finished!';
+        message = 'This lottery draw has been finished! Drawn date: '+lotteryCoupon.draw_date;
         resCode = 'completed';
       }
       else {
@@ -93,7 +93,7 @@ module.exports = {
         return res.status(200).json({
           success: false,
           code: 'completed',
-          message: 'Lottery has been completed for this Coupon!'
+          message: 'Lottery has been completed for this session!'
         });
       }
 
