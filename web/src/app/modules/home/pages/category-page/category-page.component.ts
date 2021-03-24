@@ -677,7 +677,6 @@ export class CategoryPageComponent implements OnInit {
     }
 
     //Event method for showing rating sort
-
     showRating(event) {
         this.changeStatusP = false;
         this.changeStatusR = true;
@@ -689,7 +688,6 @@ export class CategoryPageComponent implements OnInit {
     }
 
     //Event method for showing newest sort
-
     showNewest(event) {
         this.changeStatusP = false;
         this.changeStatusR = false;
@@ -701,7 +699,6 @@ export class CategoryPageComponent implements OnInit {
     }
 
     //Event method for showing price sort
-
     showPrice(event) {
         this.changeStatusP = false;
         this.changeStatusR = false;
@@ -711,7 +708,6 @@ export class CategoryPageComponent implements OnInit {
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
         this.generateSearchFilterResult();
     }
-
 
     //Event method for pagination change
     onPageChange(event) {
@@ -723,7 +719,6 @@ export class CategoryPageComponent implements OnInit {
         query.page = event;
 
         this.router.navigate(['/products', this.route.snapshot.params], {queryParams: query});
-
     }
 
     private handleParamInit(params) {

@@ -1,6 +1,9 @@
 const Promise = require('bluebird');
 const ___ = require('lodash');
-const SmsService = require('../api/services/SmsService');
+const fs = require('fs');
+const axios = require('axios');
+const {makeUniqueId} = require('../libs/helper');
+const {sslCommerzSMSConfig} = require('../config/softbd');
 module.exports = {
 
 
@@ -37,6 +40,8 @@ module.exports = {
           coupon.product_id = '6016'
 
           GROUP BY coupon.user_id
+
+          LIMIT 280 OFFSET 840
     `;
 
     const rawResult = await couponQury(rawSelect + fromSQL + _where, []);
@@ -44,6 +49,8 @@ module.exports = {
     if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
       return exits.error(new Error('No Coupon code found'));
     }
+
+    console.log('numberOfUser: ', rawResult.rows.length);
 
     const allCoupons = rawResult.rows.map(row => {
       let allCouponIds = '';
@@ -66,7 +73,7 @@ module.exports = {
       id: allUserIds
     });
 
-    const sms = [];
+    const contactsMessages = [];
     for (let i = 0; i < allUsers.length; i++) {
       const user = allUsers[i];
       if (!___.isNil(allCouponKeyValues[user.id])) {
@@ -78,7 +85,7 @@ module.exports = {
           smsText += ' স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + couponCodes.join(',');
         }
         if (user.phone) {
-          sms.push({
+          contactsMessages.push({
             msisdn: user.phone,
             user_id: user.id,
             text: smsText
@@ -87,9 +94,41 @@ module.exports = {
       }
     }
 
-    if (sms.length > 0) {
+    if (contactsMessages.length > 0) {
       try {
-        await SmsService.sendingDynamicSmsToMany(sms);
+        const sms = contactsMessages.map((contactMessage) => {
+          let contact = contactMessage.msisdn;
+          if (contact.charAt(0) === '+') {
+            contact = contact.substr(1);
+          } else if (contact.charAt(0) === '0') {
+            contact = '88' + contact;
+          }
+          return {
+            csms_id: makeUniqueId(18) + contactMessage.user_id,
+            text: contactMessage.text,
+            msisdn: contact
+          };
+        });
+
+        const payload = {
+          ...sslCommerzSMSConfig,
+          'sms': sms,
+        };
+
+        console.log('number of sms: ', payload.sms.length);
+
+        const response = await axios.post('https://smsplus.sslwireless.com/api/v3/send-sms/dynamic', payload, {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        });
+        const currentDate = new Date();
+        fs.writeFileSync('./all-sms-content-payload-' + currentDate.getTime() + '.json', JSON.stringify(payload, null, 2), 'utf8');
+        if(response && response.data){
+          console.log(response.data);
+          fs.writeFileSync('./all-sms-content-response-' + currentDate.getTime() + '.json', JSON.stringify(response.data, null, 2), 'utf8');
+        } else {
+          console.log(response);
+        }
         return exits.success();
       } catch (err) {
         console.log('SMS sending error');
