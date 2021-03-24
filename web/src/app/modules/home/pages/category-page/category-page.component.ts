@@ -1,6 +1,6 @@
 import {HttpClient} from "@angular/common/http";
 import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
     Component,
     Injector,
@@ -38,7 +38,8 @@ export class CategoryPageComponent implements OnInit {
     @Input() showAtert: boolean;
     @Input() productname: any;
     @Input() productprice: any;
-    p;
+    page;
+    private queryParams: any;
     allProducts: any;
     allProductsByCategory: any;
 
@@ -120,6 +121,7 @@ export class CategoryPageComponent implements OnInit {
 
     constructor(
         private httpClient: HttpClient,
+        private router: Router,
         private route: ActivatedRoute,
         private transferState: TransferState,
         private injector: Injector,
@@ -188,8 +190,17 @@ export class CategoryPageComponent implements OnInit {
             this.isLoading = true;
             const params = res[0];
             const queryParams = res[1];
-            this.handleParamInit(params);
-            this.handleQueryParams(queryParams);
+
+            const paramRes = this.handleParamInit(params);
+
+            const queryParamRes = this.handleQueryParams(queryParams);
+
+            if(!paramRes && !queryParamRes) {
+                this.page = queryParams.page ? queryParams.page: 1;
+                this.isLoading = false;
+                return false;
+            }
+
             this.FilterUiService.currentcategoryType
                 .switchMap((type: any) => {
                     this.currentCategoryType = type;
@@ -244,6 +255,20 @@ export class CategoryPageComponent implements OnInit {
     //Method called for product filtering
     handleQueryParams(queryParams) {
 
+        const oldQueryParam = {...this.queryParams};
+        const newQueryParam = {...queryParams};
+        if (oldQueryParam.page) {
+            delete oldQueryParam.page;
+        }
+        if (newQueryParam.page) {
+            delete newQueryParam.page;
+        }
+        if (_.isEqual(newQueryParam, oldQueryParam)) {
+            return false;
+        }
+
+        this.queryParams = queryParams;
+
         this.brand_ids = [];
         this.subCategory_ids = [];
         this.subsubCategory_ids = [];
@@ -252,7 +277,6 @@ export class CategoryPageComponent implements OnInit {
         this.currentSubCategoryId = '';
         this.currentSubSubCategoryId = '';
 
-        let categoryChange = false, subCategoryChange = false, subSubCategoryChange = false;
         for (let key in queryParams) {
             if (!queryParams.hasOwnProperty(key)) {
                 continue;
@@ -275,35 +299,22 @@ export class CategoryPageComponent implements OnInit {
                 if (this.currentCategoryId) {
                     this.categoryList_ids.push('' + this.currentCategoryId);
                 }
-                categoryChange = true;
-
-
-                /*this.getAllSubcategory();*/
-                /*                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                                    this.categoryB = res;
-                                });*/
                 this.subcategoryB = [];
                 this.subsubcategoryB = [];
             } else if (key === 'sub') {
-                subCategoryChange = true;
                 this.currentSubCategoryId = +queryParams[key];
                 this.subCategory_ids.push('' + queryParams[key]);
-                /*                this.getAllSubSubcategory();
-                                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                                    this.subcategoryB = res;
-                                });*/
                 this.subsubcategoryB = [];
             } else if (key === 'subsub') {
-                subSubCategoryChange = true;
                 this.currentSubSubCategoryId = +queryParams[key];
                 this.subsubCategory_ids.push('' + queryParams[key]);
-                /*                this.categoryProductService.getById(queryParams[key]).subscribe(res => {
-                                    this.subsubcategoryB = res;
-                                });*/
             } else if (key === 'search') {
                 this.searchTerm = queryParams[key];
+            } else if (key === 'page') {
+                this.page = +queryParams[key];
             }
         }
+        return true;
     }
 
     filter_result(event: any, type: string, name: String) {
@@ -705,12 +716,21 @@ export class CategoryPageComponent implements OnInit {
     //Event method for pagination change
     onPageChange(event) {
         window.scroll(0, 0);
-        this.p = event
+        let query: any = {};
+        if (this.queryParams) {
+            query = {...this.queryParams};
+        }
+        query.page = event;
+
+        this.router.navigate(['/products', this.route.snapshot.params], {queryParams: query});
+
     }
 
     private handleParamInit(params) {
-        console.log('params', params);
 
+        if (_.isEqual(this.route.snapshot.params, params)) {
+            return false;
+        }
         this.route.snapshot.params = params;
 
         if (this.route.snapshot.params['id']) {
@@ -751,6 +771,7 @@ export class CategoryPageComponent implements OnInit {
 
         this.priceRange = [this.minPrice, this.maxPrice];
 
+        return true;
     }
 
     extractCategoryMainImage() {
