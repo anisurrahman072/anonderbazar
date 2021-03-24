@@ -71,7 +71,7 @@ export class LotteryComponent implements OnInit {
       else{
           /** Users will see the the last winner coupon ID */
           let len = this.winners.length;
-          this._notify.success(`Last winner coupon is: ${this.winners[len-1].product_purchased_coupon_code_id}`);
+          this._notify.success(`Last winner coupon was: ${this.winners[len-1].product_purchased_coupon_code_id}`);
           this.currentCoupon = this.separateCoupon(this.winners[len-1].product_purchased_coupon_code_id);
       }
   }
@@ -117,6 +117,7 @@ export class LotteryComponent implements OnInit {
           this.lotteryService.makeDraw()
               .subscribe((couponData) => {
                   if(couponData.success){
+                      this._notify.success(`${couponData.message}`);
                       this.currentCoupon = null;
                       this.lotteryService.getAllWinners()
                           .subscribe((data) => {
