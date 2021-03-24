@@ -13,8 +13,8 @@ import {NotificationsService} from "angular2-notifications";
             [
                 transition(
                     ':enter', [
-                        style({ transform: 'translateY(100%)', opacity: 0 }),
-                        animate('2000ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                        style({ transform: 'translateY(50%)', opacity: 0 }),
+                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
                 )/*,
                 transition(
@@ -133,11 +133,11 @@ export class LotteryComponent implements OnInit {
                                   this.couponShow = false;
                                   this.winnerListShow = false;
                                   this.completed = false;
-                              }, 3000);
+                              }, 2000);
                               setTimeout(() => {
                                   this.winnerShow = false;
                                   this.couponShow = true;
-                              }, 700000);
+                              }, 8000);
                           })
                   }
                   else if(couponData.code === 'completed') {
