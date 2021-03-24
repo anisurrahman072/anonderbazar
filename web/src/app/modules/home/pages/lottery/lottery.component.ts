@@ -16,13 +16,13 @@ import {NotificationsService} from "angular2-notifications";
                         style({ transform: 'translateY(50%)', opacity: 0 }),
                         animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
-                )/*,
+                ),
                 transition(
                     ':leave', [
                         style({ transform: 'translateY(0%)', opacity: 1 }),
                         animate('2000ms', style({ transform: 'translateY(-100%)', 'opacity': 0 }))
                     ]
-                )*/
+                )
             ]
         )
     ]

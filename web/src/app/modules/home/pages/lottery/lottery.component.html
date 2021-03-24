@@ -7,7 +7,7 @@
             <h3 *ngIf="suggestion" style="text-align: center;">
                 "Click" on Live Lottery button to start
             </h3>
-            <div class="couponContainer mt-5" *ngIf="currentCoupon">
+            <div class="couponContainer mt-5" >
                     <span *ngFor="let digit of currentCoupon" class="couponDigitBox" >
                         <p [@myAnimation] class="digit">{{digit}}</p>
                     </span>
@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        <div class="col-md-12 col-sm-12 col-12 mt-4" *ngIf="completed">
+        <div class="col-md-12 col-sm-12 col-12 mt-5" *ngIf="completed">
             <h1 style="text-align: center;">
                 The lottery has been Completed!!
             </h1>
