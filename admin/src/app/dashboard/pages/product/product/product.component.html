@@ -25,6 +25,7 @@
         </ng-template>
 
         <nz-table #nzTable
+                  nzShowSizeChanger
                   [nzShowPagination]="true"
                   [nzFrontPagination]="false"
                   [nzData]="data"
@@ -34,7 +35,6 @@
                   [nzPageSize]="limit"
                   (nzPageIndexChange)="getProductData($event, 'page')"
                   (nzPageSizeChange)="getProductData($event, 'size')"
-                  nzShowSizeChanger
                   [nzScroll]="{ x:'2100px',y: '800px'  }"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>

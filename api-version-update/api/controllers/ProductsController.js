@@ -796,19 +796,66 @@ module.exports = {
         }
       }
 
-      let _where = {
+      /*      let _where = {
         deletedAt: null,
         type_id: req.query.type_id
-      };
+      };*/
+
+      console.log(req.query);
+
+
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+            SELECT
+                products.id as id,
+                products.code  as code,
+                products.name as name,
+                products.price,
+                products.weight,
+                products.vendor_price as vendor_price,
+                products.image as image,
+                products.tag as tag,
+                products.category_id as category_id ,
+                products.subcategory_id as subcategory_id ,
+                products.type_id as type_id  ,
+                products.brand_id as brand_id,
+                products.quantity as quantity,
+                products.promotion as promotion,
+                products.promo_price as promo_price,
+                products.warehouse_id,
+                products.product_details,
+                types.name as type_name,
+                category.name as category_name,
+                subCategory.name as subcategory_name,
+                brands.name as brand_name,
+                warehouses.name as warehouse_name
+      `;
+
+      let fromSQL = ` FROM products
+        LEFT JOIN categories as types ON types.id = products.type_id
+        LEFT JOIN categories as category ON category.id = products.category_id
+        LEFT JOIN categories as subCategory ON subCategory.id = products.subcategory_id
+        LEFT JOIN warehouses   ON warehouses.id = products.warehouse_id
+        LEFT JOIN brands ON brands.id = products.brand_id
+      `;
+
+      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL AND products.type_id = ${req.query.type_id} `;
 
       if (req.query.category_id && req.query.category_id !== 'null') {
-        _where.category_id = req.query.category_id;
+        _where += ` AND products.category_id = ${req.query.category_id} `;
       }
       if (req.query.subcategory_id && req.query.subcategory_id !== 'null') {
-        _where.subcategory_id = req.query.subcategory_id;
+        _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
-      let products = await Product.find(
+      _where += ' ORDER BY products.created_at DESC ';
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      const products = rawResult.rows;
+
+      /* let products = await Product.find(
         {
           where: _where
         })
@@ -816,77 +863,79 @@ module.exports = {
         .populate('category_id')
         .populate('subcategory_id')
         .populate('brand_id')
-        .populate('warehouse_id');
+        .populate('warehouse_id');*/
 
       let row = 2;
 
       products.forEach(item => {
-        if (item.warehouse_id.deletedAt === null) {
-          let column = 1;
-          let Category = '' + item.type_id.id;
-          let label = '' + item.type_id.name;
-          if (item.category_id !== null) {
-            Category += (',' + item.category_id.id);
-            label = label + '=>' + item.category_id.name;
-            if (item.subcategory_id !== null) {
-              Category += (',' + item.subcategory_id.id);
-              label += ('=>' + item.subcategory_id.name);
-            }
+
+        let column = 1;
+        let Category = '' + item.type_id;
+        let label = '' + item.type_name;
+        if (item.category_id !== null) {
+          Category += (',' + item.category_id);
+          label = label + '=>' + item.category_name;
+          if (item.subcategory_id !== null) {
+            Category += (',' + item.subcategory_id);
+            label += ('=>' + item.subcategory_name);
           }
-          Category = Category + '|' + escapeExcel(label);
-          ws.cell(row, column++).string(Category).style(myStyle);
-
-          if (isAdmin) {
-            ws.cell(row, column++).string(item.warehouse_id.id + '|' + escapeExcel(item.warehouse_id.name));
-          }
-
-          ws.cell(row, column++).string(escapeExcel(item.name)).style(myStyle);
-          ws.cell(row, column++).string(item.code);
-          ws.cell(row, column++).string(escapeExcel(item.product_details)).style(myStyle);
-
-          if (item.brand_id) {
-            ws.cell(row, column++).string(item.brand_id.id + '|' + escapeExcel(item.brand_id.name));
-          } else {
-            ws.cell(row, column++).string(null);
-          }
-
-          ws.cell(row, column++).number(item.price);
-
-          if (item.promo_price) {
-            ws.cell(row, column++).number(item.promo_price);
-          } else {
-            ws.cell(row, column++).number(0);
-          }
-
-          if (item.vendor_price) {
-            ws.cell(row, column++).number(item.vendor_price);
-          } else {
-            ws.cell(row, column++).number(0);
-          }
-
-          if (item.quantity) {
-            ws.cell(row, column++).number(item.quantity);
-          } else {
-            ws.cell(row, column++).number(0);
-          }
-
-          if (item.weight) {
-            ws.cell(row, column++).number(item.weight);
-          } else {
-            ws.cell(row, column++).number(0);
-          }
-
-          if (item.tag) {
-            ws.cell(row, column).string(item.tag).style(myStyle);
-          } else {
-            ws.cell(row, column).string(null);
-          }
-          row++;
         }
+        Category = Category + '|' + escapeExcel(label);
+        ws.cell(row, column++).string(Category).style(myStyle);
+
+        if (isAdmin) {
+          ws.cell(row, column++).string(item.warehouse_id + '|' + escapeExcel(item.warehouse_name));
+        }
+
+        ws.cell(row, column++).string(escapeExcel(item.name)).style(myStyle);
+        ws.cell(row, column++).string(item.code);
+        ws.cell(row, column++).string(escapeExcel(item.product_details)).style(myStyle);
+
+        if (item.brand_id) {
+          ws.cell(row, column++).string(item.brand_id + '|' + escapeExcel(item.brand_name));
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        ws.cell(row, column++).number(item.price);
+
+        if (item.promo_price) {
+          ws.cell(row, column++).number(item.promo_price);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        if (item.vendor_price) {
+          ws.cell(row, column++).number(item.vendor_price);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        if (item.quantity) {
+          ws.cell(row, column++).number(item.quantity);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        if (item.weight) {
+          ws.cell(row, column++).number(item.weight);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        if (item.tag) {
+          ws.cell(row, column).string(item.tag).style(myStyle);
+        } else {
+          ws.cell(row, column).string(null);
+        }
+        row++;
+
       });
+
       wb.write('Excel-' + Date.now() + '.xlsx', res);
 
     } catch (error) {
+      console.log(error);
       let message = 'Error in Get All products with excel';
       res.status(400).json({
         success: false,
@@ -996,7 +1045,6 @@ module.exports = {
         }
       }
 
-      console.log('Asceee');
       for (let key in productsIndex) {
         const product = productsIndex[key];
         console.log('first', product.type_id);
@@ -1018,7 +1066,7 @@ module.exports = {
           weight: product.weight,
           tag: product.tag
         });
-        console.log('Aseeenai');
+
         count++;
       }
 

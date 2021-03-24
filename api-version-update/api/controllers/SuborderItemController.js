@@ -160,13 +160,14 @@ module.exports = {
           return res.badRequest('Invalid Data');
         }
       }
-      _where += ' GROUP BY coupon.suborder_item_id ORDER BY suborder_item.created_at DESC ';
+      _where += ' GROUP BY suborder_item.id ORDER BY suborder_item.created_at DESC ';
 
       let totalSuborderItems = 0;
       let allSubOrderItems = [];
       const totalSuborderItemRaw = await SuborderItemQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
       if (totalSuborderItemRaw && totalSuborderItemRaw.rows && totalSuborderItemRaw.rows.length > 0) {
         totalSuborderItems = totalSuborderItemRaw.rows[0].totalCount;
+
         const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where, []);
         allSubOrderItems = rawResult.rows;
       }

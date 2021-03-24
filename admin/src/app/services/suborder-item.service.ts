@@ -14,9 +14,7 @@ export class SuborderItemService {
         environment.API_ENDPOINT
     }/suborderItem/getSuborderItems`;
 
-    constructor(
-        private http: HttpClient
-    ) {
+    constructor(private http: HttpClient) {
     }
 
     getSuborderItems(
@@ -31,21 +29,21 @@ export class SuborderItemService {
         } else {
             url = `${this.EndPoint1}?warehouse_id=${warehouseId}&status=${status}&date=${date}&sortPrice=${sortPrice}`;
         }
-        return this.http.get(url)
+        return this.http.get(url);
     }
 
     allOrderItemsByOrderIds(orderIds: number[]) {
         const url = `${this.EndPoint}/getByOrderIds?order_ids=${JSON.stringify(orderIds)}`;
-        return this.http.get(url)
+        return this.http.get(url);
     }
 
     allSubOrderItemsBySubOrderIds(orderIds: number[], withStatuses = true) {
         let url = `${this.EndPoint}/getBySubOrderIds?sub_order_ids=${JSON.stringify(orderIds)}`;
-        if(withStatuses){
+        if (withStatuses) {
             url += '&withStatuses=1';
         }
 
-        return this.http.get(url)
+        return this.http.get(url);
     }
 
     getById(id): Observable<any> {
