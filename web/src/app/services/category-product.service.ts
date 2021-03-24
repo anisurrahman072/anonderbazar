@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../config/app.config';
 import {catchError} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
+import {of} from "rxjs/observable/of";
 
 @Injectable()
 export class CategoryProductService {
@@ -21,6 +22,9 @@ export class CategoryProductService {
 
     getById(id): Observable<any> {
         // get users from api
+        if(!id){
+            return of(null);
+        }
         return this.http.get(this.EndPoint + '/' + id);
     }
 

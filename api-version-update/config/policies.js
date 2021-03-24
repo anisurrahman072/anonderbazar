@@ -65,6 +65,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'updateType': ['isAuthorized', 'isAdmin'],
     'updateProduct': ['isAuthorized', 'isAdmin'],
+    'removeImage': ['isAuthorized', 'isAdmin'],
     'getType': true,
     'getProduct': true,
     'getSingleType': true,

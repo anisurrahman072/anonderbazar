@@ -21,7 +21,8 @@ export class CategoryProductCreateComponent implements OnInit {
     validateForm: FormGroup;
     offers: any = [];
     parentCheck = true;
-    ImageFile: File[] = [];
+    ImageFile: File;
+    BannerImageFile: File;
     categorySearchOptions = [];
     subCategorySearchOptions = [];
 
@@ -47,6 +48,7 @@ export class CategoryProductCreateComponent implements OnInit {
             sub_parent: ['', []],
             code: ['', [Validators.required]],
             image: [null, []],
+            banner_image: [null, []],
         });
         this.categoryProductService.getAllCategory()
             .pipe(
@@ -85,20 +87,21 @@ export class CategoryProductCreateComponent implements OnInit {
         formData.append('parent_id', '' + parent_id);
 
         formData.append('type_id', '2');
+
         if (value.offer_id) {
             formData.append('offer_id', value.offer_id);
         }
-        if (this.ImageFile.length.toString() != "0") {
+
+        if (this.ImageFile) {
             formData.append('hasImage', 'true');
-
-            formData.append('imageCounter', this.ImageFile.length.toString());
-
-            for (let i = 0; i < this.ImageFile.length; i++) {
-                formData.append('image' + i, this.ImageFile[i], this.ImageFile[i].name);
-            }
-        } else {
-            formData.append('hasImage', 'false');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
         }
+
+        if (this.BannerImageFile) {
+            formData.append('hasBannerImage', 'true');
+            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
+        }
+
         this.isLoading = true;
         this.categoryProductService.insert(formData)
             .subscribe((result: any) => {
@@ -109,7 +112,7 @@ export class CategoryProductCreateComponent implements OnInit {
                 } else {
                     this._notification.error('Error', 'Problem in Creating Category');
                 }
-            }, (err)=> {
+            }, (err) => {
                 this._notification.error('Error', 'Problem in Creating Category');
                 this.isLoading = false;
             });
@@ -117,15 +120,24 @@ export class CategoryProductCreateComponent implements OnInit {
 
     //Event method for removing picture
     onRemoved(_file: FileHolder) {
-        this.ImageFile.splice(
-            this.ImageFile.findIndex(e => e.name === _file.file.name),
-            1
-        );
+        this.ImageFile = null;
+    }
+
+    //Event method for removing picture
+    onRemovedBanner(_file: FileHolder) {
+        this.BannerImageFile = null;
     }
 
     //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile.push(metadata.file);
+        this.ImageFile = metadata.file;
+        return metadata;
+    };
+
+    //Event method for storing imgae in variable
+    onBeforeUploadBanner = (metadata: UploadMetadata) => {
+        console.log('onBeforeUploadBanner', metadata);
+        this.BannerImageFile = metadata.file;
         return metadata;
     };
 

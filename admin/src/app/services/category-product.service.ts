@@ -40,9 +40,8 @@ export class CategoryProductService {
         return this.http.get(this.EndPoint + '/' + id);
     }
 
-    insert(categoryType) {
-
-        return this.http.post(this.EndPoint, categoryType);
+    insert(data) {
+        return this.http.post(this.EndPoint, data);
     }
 
     delete(id) {
@@ -52,6 +51,10 @@ export class CategoryProductService {
 
     update(id: number, data: any) {
         return this.http.put(this.EndPoint + '/' + id, data);
+    }
+
+    removeImages(id: number, imageType: string) {
+        return this.http.delete(`${this.EndPoint}/remove-image/${id}/${imageType}`);
     }
 
     getAllCategory() {

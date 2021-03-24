@@ -17,14 +17,19 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div nz-row>
-                            <div nz-col [nzSpan]="16">
-                                <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                                              dropBoxMessage="Drop Picture here"
+                            <div nz-col [nzSpan]="12">
+                                <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select Category Image"
+                                              dropBoxMessage="Drop Image Here"
                                               clearButtonCaption="remove it?"
                                               [beforeUpload]="onBeforeUpload"></image-upload>
                             </div>
+                            <div nz-col [nzSpan]="12">
+                                <image-upload [max]="1" (removed)="onRemovedBanner($event)" buttonCaption="Select Banner Image"
+                                              dropBoxMessage="Drop Banner Image Here"
+                                              clearButtonCaption="remove it?"
+                                              [beforeUpload]="onBeforeUploadBanner"></image-upload>
+                            </div>
                         </div>
-                        <!--Image-->
                     </div>
                     <div class="col-md-9">
                         <div nz-row class="m-10">

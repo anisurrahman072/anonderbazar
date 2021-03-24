@@ -184,6 +184,7 @@ export class CategoryPageComponent implements OnInit {
             this.route.params,
             this.route.queryParams
         ).subscribe((res: any) => {
+            console.log('category-page: ', res);
             this.isLoading = true;
             const params = res[0];
             const queryParams = res[1];
@@ -193,13 +194,14 @@ export class CategoryPageComponent implements OnInit {
                 .switchMap((type: any) => {
                     this.currentCategoryType = type;
 
-                    return forkJoin([
-                        this.allSubCategoryOb(),
-                        this.categoryProductService.getById(this.currentCategoryId),
-                        this.allSubSubcategoryOb(),
-                        this.categoryProductService.getById(this.currentSubCategoryId),
-                        this.categoryProductService.getById(this.currentSubSubCategoryId)
-                    ]);
+                    const apis = [];
+                    apis.push(this.allSubCategoryOb());
+                    apis.push(this.categoryProductService.getById(this.currentCategoryId));
+                    apis.push(this.allSubSubcategoryOb());
+                    apis.push(this.categoryProductService.getById(this.currentSubCategoryId));
+                    apis.push(this.categoryProductService.getById(this.currentSubSubCategoryId));
+
+                    return forkJoin(apis);
                 })
                 .concatMap((results: any) => {
                     console.log('combine result for categories', results);
@@ -302,13 +304,7 @@ export class CategoryPageComponent implements OnInit {
                 this.searchTerm = queryParams[key];
             }
         }
-        console.log('categoryChange', categoryChange);
-        console.log('subCategoryChange', subCategoryChange);
-        console.log('subSubCategoryChange', subSubCategoryChange);
-
-
     }
-
 
     filter_result(event: any, type: string, name: String) {
 
@@ -717,7 +713,12 @@ export class CategoryPageComponent implements OnInit {
 
         this.route.snapshot.params = params;
 
-        this.currentCategoryId = +this.route.snapshot.params['id'];
+        if (this.route.snapshot.params['id']) {
+            this.currentCategoryId = +this.route.snapshot.params['id'];
+        } else {
+            this.currentCategoryId = null;
+        }
+
         this.categoryList_ids = [];
         if (this.currentCategoryId) {
             this.categoryList_ids.push('' + this.currentCategoryId);
@@ -742,7 +743,7 @@ export class CategoryPageComponent implements OnInit {
             this.showWarehouse = false;
         }
 
-        if (this.currentCategoryId > 0) {
+        if (this.currentCategoryId && this.currentCategoryId > 0) {
             this.isCollapsed_class = true;
             this.isCollapsed_subclass = true;
             this.isCollapsed_subsubclass = true;
@@ -754,12 +755,12 @@ export class CategoryPageComponent implements OnInit {
 
     extractCategoryMainImage() {
         let imageUrl = null;
-        if (this.isNotEmptyObject(this.subsubcategoryB) && this.subsubcategoryB.image) {
-            imageUrl = this.IMAGE_ENDPOINT + this.subsubcategoryB.image;
-        } else if (this.isNotEmptyObject(this.subcategoryB) && this.subcategoryB.image) {
-            imageUrl = this.IMAGE_ENDPOINT + this.subcategoryB.image;
-        } else if (this.isNotEmptyObject(this.categoryB) && this.categoryB) {
-            imageUrl = this.IMAGE_ENDPOINT + this.categoryB.image;
+        if (this.isNotEmptyObject(this.subsubcategoryB) && this.subsubcategoryB.banner_image) {
+            imageUrl = this.IMAGE_ENDPOINT + this.subsubcategoryB.banner_image;
+        } else if (this.isNotEmptyObject(this.subcategoryB) && this.subcategoryB.banner_image) {
+            imageUrl = this.IMAGE_ENDPOINT + this.subcategoryB.banner_image;
+        } else if (this.isNotEmptyObject(this.categoryB) && this.categoryB.banner_image) {
+            imageUrl = this.IMAGE_ENDPOINT + this.categoryB.banner_image;
         }
         return imageUrl;
     }
