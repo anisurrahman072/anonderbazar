@@ -1,7 +1,9 @@
 const {sslcommerzInstance} = require('../libs/sslcommerz');
 const _ = require('lodash');
-const SmsService = require('../api/services/SmsService');
-const {adminPaymentAddressId} = require('../config/softbd');
+const axios = require('axios');
+const {makeUniqueId} = require('../libs/helper');
+const {adminPaymentAddressId, sslCommerzSMSConfig} = require('../config/softbd');
+
 module.exports = {
 
   friendlyName: 'Generate orders',
@@ -194,8 +196,39 @@ module.exports = {
             }
           }
           console.log('Created Order ID: ', order.id);
-          console.log(smsText);
-          //  SmsService.sendingOneSmsToOne([smsPhone], smsText);
+
+          let smsSendPhone = '';
+          if (smsPhone.charAt(0) === '+') {
+            smsSendPhone = smsPhone.substr(1);
+          } else if (smsPhone.charAt(0) === '0') {
+            smsSendPhone = '88' + smsPhone;
+          }
+
+          const csmsId = makeUniqueId(18);
+
+          const payload = {
+            ...sslCommerzSMSConfig,
+            'msisdn': smsSendPhone,
+            'sms': smsText,
+            'csms_id': csmsId
+          };
+
+          try {
+            const smsResponse = await axios.post('https://smsplus.sslwireless.com/api/v3/send-sms', payload, {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            });
+
+            console.log(smsText);
+            console.log(smsResponse.data);
+
+          } catch (e) {
+            if (e.data) {
+              console.log(e.data);
+            } else {
+              console.log(e);
+            }
+          }
         }
 
       } catch (err) {
