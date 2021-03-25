@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {LotteryService} from "../../../../services/lottery.service";
 import {trigger, state, style, animate, transition, stagger} from '@angular/animations';
 import {NotificationsService} from "angular2-notifications";
+import {Subject} from "rxjs/Subject";
+import {Subscription} from "rxjs/Subscription";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
     selector: 'app-lottery',
@@ -39,6 +42,8 @@ export class LotteryComponent implements OnInit {
     currentWinner: any;
     winnerShow: boolean = false;
 
+    private makingDraw = new Subject();
+    private makeDrawSubscription: Subscription;
     p;
     digit1 = null;
     digit2 = null;
@@ -80,6 +85,56 @@ export class LotteryComponent implements OnInit {
                     this.setCurrentCoupon();
                 }
             });
+        this.makeDrawSubscription =  this.makingDraw
+            .pipe(debounceTime(500))
+            .subscribe(() => {
+                this.createNewDraw();
+            })
+    }
+
+    ngOnDestroy(): void {
+        this.makeDrawSubscription ? this.makeDrawSubscription.unsubscribe() : '';
+    }
+
+    createNewDraw(){
+        this.lotteryService.makeDraw()
+            .subscribe((couponData) => {
+                if(couponData.success){
+                    this._notify.success(`${couponData.message}`);
+                    this.lotteryService.getAllWinners()
+                        .subscribe((data) => {
+                            this.data = data;
+                            this.winnerShow = false;
+                            this.notStarted = false;
+                            this.winnerListShow = false;
+                            this.couponShow = true;
+
+                            this.separateCoupon(couponData.data);
+                            setTimeout(() => {
+                                let len = data.data.length;
+                                this.currentWinner = data.data[len-1];
+                                this.winnerShow = true;
+                                this.notStarted = false;
+                                this.couponShow = false;
+                                this.winnerListShow = false;
+                                this.completed = false;
+                            }, 4000);
+                            setTimeout(() => {
+                                this.winnerShow = false;
+                                this.couponShow = true;
+                            }, 5000);
+                        })
+                }
+                else if(couponData.code === 'completed') {
+                    this.notStarted = false;
+                    this.couponShow = false;
+                    this.completed = true;
+                    this._notify.info(`${couponData.message}`);
+                }
+                else {
+                    this._notify.info(`${couponData.message}`);
+                }
+            })
     }
 
     setCurrentCoupon(){
@@ -210,44 +265,7 @@ export class LotteryComponent implements OnInit {
             }
         }
         else if(this.couponShow) {
-            this.lotteryService.makeDraw()
-                .subscribe((couponData) => {
-                    if(couponData.success){
-                        this._notify.success(`${couponData.message}`);
-                        this.lotteryService.getAllWinners()
-                            .subscribe((data) => {
-                                this.data = data;
-                                this.winnerShow = false;
-                                this.notStarted = false;
-                                this.winnerListShow = false;
-                                this.couponShow = true;
-
-                                this.separateCoupon(couponData.data);
-                                setTimeout(() => {
-                                    let len = data.data.length;
-                                    this.currentWinner = data.data[len-1];
-                                    this.winnerShow = true;
-                                    this.notStarted = false;
-                                    this.couponShow = false;
-                                    this.winnerListShow = false;
-                                    this.completed = false;
-                                }, 4000);
-                                setTimeout(() => {
-                                    this.winnerShow = false;
-                                    this.couponShow = true;
-                                }, 5000);
-                            })
-                    }
-                    else if(couponData.code === 'completed') {
-                        this.notStarted = false;
-                        this.couponShow = false;
-                        this.completed = true;
-                        this._notify.info(`${couponData.message}`);
-                    }
-                    else {
-                        this._notify.info(`${couponData.message}`);
-                    }
-                })
+            this.makingDraw.next();
         }
     }
 
