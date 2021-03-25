@@ -7,10 +7,28 @@
             <h3 *ngIf="suggestion" style="text-align: center;">
                 "Click" on Live Lottery button to start
             </h3>
-            <div class="couponContainer mt-5" >
-                    <span *ngFor="let digit of currentCoupon" class="couponDigitBox" >
-                        <p [@myAnimation] class="digit">{{digit}}</p>
-                    </span>
+            <div class="couponContainer mt-5" *ngIf="data.data && data.data.length > 0">
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit1" >{{digit1}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit2"  >{{digit2}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit3" >{{digit3}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit4" >{{digit4}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit5" >{{digit5}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit6" >{{digit6}}</p>
+                </span>
+                <span class="couponDigitBox" >
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit7" >{{digit7}}</p>
+                </span>
             </div>
             <div class="row mt-5 buttonSection">
                 <button class="btn mr-1 btnDraw" (click)="makeDraw()">
@@ -43,7 +61,7 @@
                             <th scope="col" class="head">Name</th>
                             <th scope="col">Prize</th>
                         </tr>
-                        <tr *ngFor="let winner of (winners  | paginate: { itemsPerPage: 10, currentPage: p })" >
+                        <tr *ngFor="let winner of (data.data  | paginate: { itemsPerPage: 10, currentPage: p })" >
                             <td scope="row">{{winner.coupon_lottery_prize_id.place}}</td>
                             <td>{{winner.product_purchased_coupon_code_id}}</td>
                             <td>{{winner.user_id.first_name}} {{winner.user_id.last_name}}</td>
@@ -51,7 +69,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="text-center" *ngIf="winners?.length > 10">
+                <div class="text-center" *ngIf="data.data?.length > 10">
                     <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
                                          maxSize="5" responsive="true"
                                          nextLabel="Next">

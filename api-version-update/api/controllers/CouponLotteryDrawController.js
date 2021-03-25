@@ -39,7 +39,7 @@ module.exports = {
       let message = '';
       let resCode = '';
       if(lotteryCoupon.status === 3){
-        message = 'This lottery draw has been finished! Drawn date: '+lotteryCoupon.draw_date;
+        message = 'Lottery draw has been finished! Drawn date: '+lotteryCoupon.draw_date;
         resCode = 'completed';
       }
       else {
