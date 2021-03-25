@@ -50,7 +50,6 @@
 }
 
 .winnerShow{
-  background-image: url("../../../../../assets/images/winnerBackground.svg");
   background-position: bottom;
   background-repeat: no-repeat;
   background-size: cover;
@@ -61,6 +60,7 @@
 .digit{
   color: white;
   line-height: initial;
+  margin-bottom: 0px;
 }
 
 .winnerTableHeader{
@@ -96,7 +96,7 @@
   top: 31%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 70px;
+  font-size: 50px;
   background: -webkit-linear-gradient(#ece1ca, #d2a80b,  #725d03, #d6b205);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -109,13 +109,88 @@
 
 .winnerName{
   color: black;
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 
 .prizeName{
   color: red;
-  font-size: 30px;
+  font-size: 17px;
+  display: block;
+}
+
+.image-container{
+  position: relative;
+  margin-top: 10%;
+}
+
+.prizeHolder{
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 30%;
 }
 
 .prizeImage{
-  margin-bottom: 55px;
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  width: 15%;
+  transform: translate(-50%, -50%);
 }
+@media screen and (max-width: 768px) {
+  .image-container{
+    margin-top: 18%;
+  }
+  .prizeHolder{
+    width: 60%;
+  }
+  .prizeImage{
+    width: 31%;
+  }
+}
+//@media screen and (min-width: 768px) {
+//  .image-container{
+//    margin-bottom: 58px;
+//  }
+//}
+//@media screen and (min-width: 1024px) {
+//  .image-container{
+//    margin-bottom: 71px;
+//  }
+//}
+//@media screen and (min-width: 1300px) {
+//  .image-container{
+//    margin-bottom: 100px;
+//    width: 200px;
+//  }
+//}
+//@media screen and (min-width: 1440px) {
+//  .image-container{
+//    width: 210px;
+//    margin-bottom: 100px;
+//  }
+//}
+@media screen and (min-width: 2560px) {
+  .winnerName{
+    margin-top: 15px;
+    font-size: 30px;
+  }
+  .prizeName{
+    font-size: 30px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

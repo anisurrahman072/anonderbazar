@@ -5,6 +5,8 @@ import {NotificationsService} from "angular2-notifications";
 import {Subject} from "rxjs/Subject";
 import {Subscription} from "rxjs/Subscription";
 import {debounceTime} from "rxjs/operators";
+import {AuthService} from "../../../../services";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-lottery',
@@ -23,7 +25,7 @@ import {debounceTime} from "rxjs/operators";
                 transition(
                     ':enter', [
                         style({ transform: 'translateY(50%)', opacity: 0 }),
-                        animate('1000ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                        animate('1800ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
                     ]
                 )
             ]
@@ -45,7 +47,7 @@ export class LotteryComponent implements OnInit {
     private makingDraw = new Subject();
     private makeDrawSubscription: Subscription;
     p;
-    digit1 = null;
+    digit1 = 1;
     digit2 = null;
     digit3 = null;
     digit4 = null;
@@ -61,8 +63,12 @@ export class LotteryComponent implements OnInit {
     animateDigit7 = true;
     delay = 0;
 
+    lotteryAdminId = GLOBAL_CONFIGS.lotteryAdminId;
+    isAuthorized = false;
+
     constructor(private lotteryService: LotteryService,
-                private _notify: NotificationsService) { }
+                private _notify: NotificationsService,
+                private authService: AuthService) { }
 
     ngOnInit() {
         this.lotteryService.getAllWinners()
@@ -70,26 +76,26 @@ export class LotteryComponent implements OnInit {
                 this.data = data;
                 if(data.code === 'notStarted'){
                     this.notStarted = true;
-                    this._notify.info(`${data.message}`);
                 }
                 else if(data.code === 'completed'){
                     this.couponShow = false;
                     this.notStarted = false;
                     this.completed = true;
-                    this._notify.info(`${data.message}`);
                 }
                 else{
                     this.notStarted = false;
                     this.couponShow = true;
-                    console.log('first', this.data);
                     this.setCurrentCoupon();
                 }
             });
         this.makeDrawSubscription =  this.makingDraw
-            .pipe(debounceTime(500))
+            .pipe(debounceTime(200))
             .subscribe(() => {
                 this.createNewDraw();
             })
+        if(this.authService.getCurrentUserId() === this.lotteryAdminId){
+            this.isAuthorized = true;
+        }
     }
 
     ngOnDestroy(): void {
@@ -100,7 +106,6 @@ export class LotteryComponent implements OnInit {
         this.lotteryService.makeDraw()
             .subscribe((couponData) => {
                 if(couponData.success){
-                    this._notify.success(`${couponData.message}`);
                     this.lotteryService.getAllWinners()
                         .subscribe((data) => {
                             this.data = data;
@@ -118,21 +123,17 @@ export class LotteryComponent implements OnInit {
                                 this.couponShow = false;
                                 this.winnerListShow = false;
                                 this.completed = false;
-                            }, 4000);
+                            }, 3500);
                             setTimeout(() => {
                                 this.winnerShow = false;
                                 this.couponShow = true;
-                            }, 5000);
+                            }, 13500);
                         })
                 }
                 else if(couponData.code === 'completed') {
                     this.notStarted = false;
                     this.couponShow = false;
                     this.completed = true;
-                    this._notify.info(`${couponData.message}`);
-                }
-                else {
-                    this._notify.info(`${couponData.message}`);
                 }
             })
     }
@@ -167,8 +168,9 @@ export class LotteryComponent implements OnInit {
             this.animateDigit6 = true;
             this.animateDigit7 = true;
 
-            let newArr = [parseInt(couponArray[0]), parseInt(couponArray[1]), parseInt(couponArray[2]),
+            let newArr = [1, parseInt(couponArray[1]), parseInt(couponArray[2]),
                 parseInt(couponArray[3]), parseInt(couponArray[4]), parseInt(couponArray[5]), parseInt(couponArray[6])];
+            this.digit1 = 0;
             for(let i = 1; i <= 10; i++){
                 setTimeout(() => {
                     if(this.digit1 !== newArr[0]){
@@ -233,22 +235,20 @@ export class LotteryComponent implements OnInit {
                             ++this.digit7;
                         }
                     }
-                }, 100*i);
+                }, 200*i);
             }
         }, this.delay);
-        this.delay = 500;
+        this.delay = 499;
     }
 
     makeDraw() {
         this.suggestion = false;
         if(this.winnerListShow || this.notStarted){
-            console.log('annn', this.data);
             if(this.data.code === 'completed'){
                 this.couponShow = false;
                 this.winnerListShow = false;
                 this.completed = true;
                 this.notStarted = false;
-                this._notify.info(`${this.data.message}`);
             }
             else{
                 /** running */
@@ -264,7 +264,7 @@ export class LotteryComponent implements OnInit {
                 }
             }
         }
-        else if(this.couponShow) {
+        else if(this.couponShow && this.isAuthorized) {
             this.makingDraw.next();
         }
     }

@@ -9,4 +9,5 @@ export class GLOBAL_CONFIGS {
         SSLCommerce: true,
         bKash: false,
     };
+    public static  lotteryAdminId = 2228;
 }
