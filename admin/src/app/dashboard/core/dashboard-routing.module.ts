@@ -71,8 +71,12 @@ const routes: Routes = [
                 loadChildren: '../pages/order/order.module#OrderModule'
             },
             {
+                path: 'coupon-lottery' /* /dashboard/order   */,
+                loadChildren: '../pages/coupon-lottery/coupon-lottery.module#CouponLotteryModule'
+            },
+            {
                 path: 'suborder' /* /dashboard/suborder   */,
-                loadChildren: '../pages/suborder/suborder.module#SuborderModule'
+                loadChildren: '../pages/suborder/suborder.module#CouponLotteryModule'
             },
             {
                 path: 'payment' /* /dashboard/payment   */,

@@ -76,6 +76,12 @@ module.exports.policies = {
   CraftmanPricesController: {
     'getAll': true
   },
+  CouponLotteryDrawController: {
+    '*': false,
+    'byLotteryId': ['isAuthorized', 'isAdmin'],
+    'getAllWinner': true,
+    'makeDraw': ['isAuthorized', 'isCustomer']
+  },
   CMSController: {
     '*': false,
     'find': true,
