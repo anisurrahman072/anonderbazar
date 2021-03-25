@@ -4,12 +4,12 @@
             <h1 style="text-align: center;">
                 Anonder Bazar Live Lottery
             </h1>
-            <h3 *ngIf="suggestion" style="text-align: center;">
+            <h3 *ngIf="suggestion && isAuthorized" style="text-align: center;">
                 "Click" on Live Lottery button to start
             </h3>
             <div class="couponContainer mt-5" *ngIf="data.data && data.data.length > 0">
                 <span class="couponDigitBox" >
-                    <p [@myAnimation] class="digit" *ngIf="animateDigit1" >{{digit1}}</p>
+                    <p [@myAnimation] class="digit" *ngIf="animateDigit1"  >{{digit1}}</p>
                 </span>
                 <span class="couponDigitBox" >
                     <p [@myAnimation] class="digit" *ngIf="animateDigit2"  >{{digit2}}</p>
@@ -31,7 +31,7 @@
                 </span>
             </div>
             <div class="row mt-5 buttonSection">
-                <button class="btn mr-1 btnDraw" (click)="makeDraw()">
+                <button class="btn mr-1 btnDraw" (click)="makeDraw()" *ngIf="isAuthorized">
                     Live Lottery
                 </button>
                 <button class="btn ml-1 btnWinnerList" (click)="getWinners()">
@@ -86,6 +86,7 @@
                 <button class="btn mr-1 btnDraw" (click)="makeDraw()">
                     Live Lottery
                 </button>
+                <p style="text-align: center; color: black; font-size: 20px;" class="mt-3">{{data.message}}</p>
             </div>
         </div>
 
@@ -100,20 +101,21 @@
                 </button>
             </div>
         </div>
-
-        <div class="col-md-12 col-sm-12 col-12 mt-4 winnerShow" *ngIf="winnerShow">
-            <div class="place-container mt-2">
-                <img src="assets/images/place.png" alt="place">
-                <p class="place">
-                    {{currentWinner.coupon_lottery_prize_id.place}}
-                </p>
-            </div>
-            <h2 class="winnerName">{{currentWinner.user_id.first_name}} {{currentWinner.user_id.last_name}}</h2>
-            <p class="mt-1 prizeName">{{currentWinner.coupon_lottery_prize_id.name}}</p>
-            <div class="image-container">
-                <img src="assets/images/prize.png" alt="{{currentWinner.coupon_lottery_prize_id.name}}" class="prizeImage">
-            </div>
-
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-12 mb-3 mt-0 mx-0 winnerShow" *ngIf="winnerShow">
+        <div class="place-container mt-2">
+            <img width="150" height="150" src="assets/images/place.png" alt="place">
+            <p class="place">
+                {{currentWinner.coupon_lottery_prize_id.place}}
+            </p>
+        </div>
+        <p class="winnerName">{{currentWinner.user_id.first_name}} {{currentWinner.user_id.last_name}}</p>
+        <p class="prizeName">{{currentWinner.coupon_lottery_prize_id.name}}</p>
+        <div class="image-container">
+            <img src="assets/images/prizeHolder.png" class="prizeHolder" alt="prizeHolder">
+            <img src="{{currentWinner.coupon_lottery_prize_id.image}}" alt="{{currentWinner.coupon_lottery_prize_id.name}}" class="prizeImage">
         </div>
     </div>
 </div>

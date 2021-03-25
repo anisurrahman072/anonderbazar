@@ -25,7 +25,7 @@ module.exports = {
         return res.status(200).json({
           success: false,
           code: 'notStarted',
-          message: 'Lottery draw is not started! DRAW date: '+lotteryCoupon.draw_date,
+          message: 'DRAW date: '+lotteryCoupon.draw_date,
         });
       }
 
