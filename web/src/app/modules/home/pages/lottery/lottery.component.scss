@@ -1,5 +1,32 @@
+.buttonSection{
+  display: block;
+  text-align: center;
+}
+
+.btnWinnerList{
+  box-shadow: none;
+  color: #dd1a1a;
+  border: 1px solid #dd1a1a;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.btnWinnerIcon{
+  color: #dd1a1a;
+  padding-right: 5px;
+}
+
+.btnDraw{
+  background-color: #dd1a1a;
+  color: white;
+  box-shadow: none;
+  border: 1px solid #dd1a1a;
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
 .couponShow{
-  width: 70%;
+  width: 90%;
   margin: auto;
 }
 
@@ -7,19 +34,88 @@
   display: flex;
   justify-content: space-around;
   font-size: 140px;
-  line-height: initial;
 }
 
-.couponDigits{
+.couponDigitBox{
   margin: 0px;
   font-family: fantasy;
-  padding: 0px 30px;
-  color: white;
+  text-align: center;
+  width: 130px;
   background: rgb(187,4,4);
-  background: linear-gradient(0deg, rgba(187,4,4,1) 0%, rgb(187,4,4) 54%, rgb(249,70,70) 56%, rgba(243,65,67,1) 60%, rgba(223,128,128,1) 73%, rgba(230,140,140,1) 78%, rgba(243,65,67,1) 92%, rgba(243,65,67,1) 100%);
+  background: linear-gradient(0deg, rgba(187,4,4,1) 0%, rgb(187, 4, 4) 54%, rgb(249,70,70) 56%, rgba(243,65,67,1) 60%, rgba(223,128,128,1) 73%, rgba(230,140,140,1) 78%, rgba(243,65,67,1) 92%, rgba(243,65,67,1) 100%);
   border-width: 5px;
   border-style: solid;
   border-image: linear-gradient( to bottom, rgb(187,4,4), hsla(0,29%,83%,0.86) );
-  border-radius: 7px;
   border-image-slice: 1;
+}
+
+.winnerShow{
+  background-image: url("../../../../../assets/images/winnerBackground.svg");
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  text-align: center;
+}
+
+.digit{
+  color: white;
+  line-height: initial;
+}
+
+.winnerTableHeader{
+  background: rgb(47,249,243);
+  background: linear-gradient(0deg, rgba(47,249,243,1) 0%, rgba(249,249,249,1) 100%);
+}
+
+.head{
+  border-right: 1px solid #c8bdbd;
+}
+
+.winnerListTitle{
+  border: 1px solid #c8bdbd;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  color: black;
+  margin-bottom: 0px;
+}
+
+.winnerListTable{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+.place-container{
+  position: relative;
+}
+
+.place{
+  position: absolute;
+  top: 31%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 70px;
+  background: -webkit-linear-gradient(#ece1ca, #d2a80b,  #725d03, #d6b205);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: initial;
+}
+
+.place-container{
+  position: relative;
+}
+
+.winnerName{
+  color: black;
+}
+
+.prizeName{
+  color: red;
+  font-size: 30px;
+}
+
+.prizeImage{
+  margin-bottom: 55px;
 }
