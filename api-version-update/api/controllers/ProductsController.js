@@ -370,8 +370,9 @@ module.exports = {
     try {
       let _pagination = pagination(req.query);
 
-      let _where = {};
-      _where.deletedAt = null;
+      let _where = {
+        deletedAt: null
+      };
 
       if (req.query.searchterm) {
         _where.or = [
@@ -382,7 +383,7 @@ module.exports = {
 
       let productTotal = await Product.count(_where);
       let products = await Product.find(
-        {where: _where}
+        {where: {..._where, approval_status: 2}}
       )
         .populate('subcategory_id')
         .paginate({page: _pagination._page, limit: _pagination._limit});

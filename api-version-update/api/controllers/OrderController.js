@@ -120,15 +120,12 @@ module.exports = {
       let paymentMethodNotAllowed = false;
       if (cartItems && cartItems.length > 0) {
         const couponProductFound = cartItems.filter((cartItem) => {
-
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-
         });
-        const notAllowedProductFound = cartItems.filter((cartItem) => {
 
+        const notAllowedProductFound = cartItems.filter((cartItem) => {
           // eslint-disable-next-line eqeqeq
           return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
-
         });
 
         onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
@@ -348,6 +345,7 @@ module.exports = {
             .populate('user_id')
             .populate('shipping_address')
             .usingConnection(db);
+
           let allOrderedProducts = [];
           for (let i = 0; i < subordersTemp.length; i++) {
             let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})

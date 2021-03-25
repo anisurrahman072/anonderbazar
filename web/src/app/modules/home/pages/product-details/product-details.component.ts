@@ -43,9 +43,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     productVariants: any;
     private sub: Subscription;
     private sub1: Subscription;
+
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     RESIZED_IMAGE_ENDPOINT = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
+
     discountBadgeIcon: any;
     cart$: Observable<any>;
     cartId: any;
@@ -94,6 +96,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private chatService: ChatService,
         private title: Title,
         private meta: Meta,
@@ -114,7 +117,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private modalService: BsModalService,
         private craftsmanService: CraftsmanService,
         private partService: PartService,
-        private router: Router,
         public loaderService: LoaderService,
         private favouriteProductService: FavouriteProductService,
         private _elementRef: ElementRef
@@ -217,6 +219,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.productService.getByIdWithDetails(this.id).subscribe(result => {
             this.loaderService.hideLoader();
             this.data = result;
+
+            console.log('product data', result);
+
+            if( !(result && result.approval_status == '2') ){
+                this.toastr.info('This Page is not available.', 'Not Found!');
+                this.router.navigate(['/']);
+                return;
+            }
 
             this.addPageTitleNMetaTag();
 
