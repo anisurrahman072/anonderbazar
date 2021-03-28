@@ -167,14 +167,11 @@ export class WarehouseCreateComponent implements OnInit {
         } else {
             formData.append('hasLogo', 'false');
         }
-
-        formData.append('invoice_footer', value.invoice_footer);
-
-
-
         if (this.ImageFile) {
             formData.append('user_avatar', this.ImageFile, this.ImageFile.name);
         }
+
+        formData.append('invoice_footer', value.invoice_footer);
 
         this._spinning = true;
         this.warehouseService.insert(formData).subscribe(result => {
