@@ -47,11 +47,14 @@ export class BrandService {
     }
 
     delete(id): Observable<any> {
-        // get users from api
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
 
     update(id: number, data: any) {
         return this.http.put(`${this.EndPoint}/${id}`, data);
+    }
+
+    checkBrandNameUniqueNess(brandName: string, id: number = 0): Observable<any> {
+        return this.http.post(`${this.EndPoint}/unique-check-name/${encodeURIComponent(brandName)}`, {ignore_id: id});
     }
 }

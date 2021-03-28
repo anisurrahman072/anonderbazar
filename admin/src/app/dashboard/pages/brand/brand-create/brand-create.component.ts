@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -9,32 +9,44 @@ import {UploadMetadata, FileHolder} from 'angular2-image-upload';
 import {BrandService} from '../../../../services/brand.service';
 import {AuthService} from '../../../../services/auth.service';
 import {NzNotificationService} from "ng-zorro-antd";
+import {UniqueBrandNameValidator} from "../../../../services/validator/UniqueBrandNameValidator";
 
 @Component({
     selector: 'app-brand-create',
     templateUrl: './brand-create.component.html',
     styleUrls: ['./brand-create.component.css']
 })
-export class BrandCreateComponent implements OnInit {
+export class BrandCreateComponent implements OnInit, OnDestroy {
+    @ViewChild('Image') Image;
     validateForm: FormGroup;
     _isSpinning: boolean = false;
     ImageFile: File[] = [];
-    @ViewChild('Image') Image;
     currentUser: any;
-
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
                 private authService: AuthService,
-                private brandService: BrandService) {
+                private brandService: BrandService,
+                private uniqueBrandNameValidator: UniqueBrandNameValidator) {
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
-            name: ['', [Validators.required]],
-            code:[''],
+            name: ['', [Validators.required], [this.uniqueBrandNameValidator]],
+            code: [''],
+            frontend_position: ['111'],
             image: [''],
         });
+        this.currentUser = this.authService.getCurrentUser();
     }
+
+    ngOnDestroy() {
+
+    }
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -52,25 +64,30 @@ export class BrandCreateComponent implements OnInit {
             formData.append('hasImage', 'false');
 
         }
+        this._isSpinning = true;
         this.brandService.insert(formData)
             .subscribe((result: any) => {
+                this._isSpinning = false;
                 if (result.id) {
                     this._notification.create('success', 'New Brand has been successfully added. ', result.name);
                     this.router.navigate(['/dashboard/brand/details/', result.id]);
-
                 }
+            }, (err) => {
+                this._isSpinning = false;
+                this._notification.create('error', 'Problem in creating brand', '');
             });
     }
+
     //Event method for removing picture
     onRemoved(_file: FileHolder) {
         this.ImageFile = [];
     }
+
     //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         try {
             this.ImageFile[0] = metadata.file;
             return metadata;
-
         } catch (error) {
         }
     }
@@ -83,13 +100,10 @@ export class BrandCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsPristine();
         }
     }
+
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
-    }
-    // init the component
-    ngOnInit() {
-        this.currentUser = this.authService.getCurrentUser();
     }
 
     onUploadStateChanged(state: boolean) {

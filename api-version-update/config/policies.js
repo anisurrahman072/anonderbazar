@@ -29,6 +29,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'uniqueCheckName': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],

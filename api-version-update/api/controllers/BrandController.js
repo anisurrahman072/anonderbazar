@@ -20,6 +20,8 @@ module.exports = {
   //Method called for creating product brand
   //Model models/Brand.js
   create: async (req, res) => {
+    const authUser = req.token.userInfo;
+    const isVendor = authUser.group_id.name === 'owner';
     try {
       let body = req.body;
       if (body.hasImage === 'true') {
@@ -37,6 +39,9 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
 
+      }
+      if (isVendor && authUser.warehouse_id && authUser.warehouse_id.id) {
+        body.warehouse_id = authUser.warehouse_id.id;
       }
       let stringForMakingSlug = body.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
@@ -84,6 +89,28 @@ module.exports = {
     } catch (err) {
       return res.status(400).json({message: 'Something Went Wrong', err});
     }
-
   },
+  uniqueCheckName: async (req, res) => {
+    try {
+      const ignoreId = parseInt(req.body.ignore_id, 10);
+      const where = {
+        name: req.param('name')
+      };
+
+      if(ignoreId){
+        where.id = { '!=': ignoreId };
+      }
+
+      console.log(where, ignoreId);
+      let exists = await Brand.find(where);
+      if (exists && exists.length > 0) {
+        return res.status(200).json({isunique: false});
+      } else {
+        return res.status(200).json({isunique: true});
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({isunique: true});
+    }
+  }
 };

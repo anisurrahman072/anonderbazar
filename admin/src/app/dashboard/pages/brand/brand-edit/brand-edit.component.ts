@@ -7,6 +7,7 @@ import {BrandService} from '../../../../services/brand.service';
 
 import {environment} from "../../../../../environments/environment";
 import {NzNotificationService} from "ng-zorro-antd";
+import {UniqueBrandNameValidator} from "../../../../services/validator/UniqueBrandNameValidator";
 
 @Component({
     selector: 'app-brand-edit',
@@ -27,13 +28,35 @@ export class BrandEditComponent implements OnInit, OnDestroy {
     constructor(private router: Router, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
-                private brandService: BrandService) {
+                private brandService: BrandService,
+                private uniqueBrandNameValidator: UniqueBrandNameValidator) {
+
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
-            name: ['', [Validators.required]],
-            code:[''],
+            id: [''],
+            name: ['', [Validators.required], [this.uniqueBrandNameValidator]],
+            code: [''],
+            frontend_position: ['111'],
             image: [null, []],
         });
+        this.sub = this.route.params.subscribe(params => {
+            this.id = +params['id']; // (+) converts string 'id' to a number
+            this.brandService.getById(this.id)
+                .subscribe(result => {
+                    this.ImageFileEdit = [];
+                    this.data = result;
+                    this.validateForm.patchValue(this.data);
+                    if (this.data && this.data.image) {
+                        this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
+                    }
+                });
+        });
+
     }
+
     //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -63,6 +86,7 @@ export class BrandEditComponent implements OnInit, OnDestroy {
                 this._isSpinning = false;
             });
     };
+
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
         $event.preventDefault();
@@ -77,23 +101,6 @@ export class BrandEditComponent implements OnInit, OnDestroy {
         return this.validateForm.controls[name];
     }
 
-
-    // init the component
-    ngOnInit() {
-        this.sub = this.route.params.subscribe(params => {
-            this.id = +params['id']; // (+) converts string 'id' to a number
-            this.brandService.getById(this.id)
-                .subscribe(result => {
-                    this.ImageFileEdit = [];
-                    this.data = result;
-                    this.validateForm.patchValue(this.data);
-                    if (this.data && this.data.image) {
-                        this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
-                    }
-                });
-        });
-
-    }
 
     //Event method for removing picture
     onRemoved(file: FileHolder) {
