@@ -8,6 +8,7 @@ import {debounceTime} from "rxjs/operators";
 import {mergeMap} from "rxjs/operators/mergeMap";
 import {AuthService} from "../../../../services";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import * as ___ from 'lodash';
 
 @Component({
     selector: 'app-lottery',
@@ -266,6 +267,19 @@ export class LotteryComponent implements OnInit {
                     this.winnerListShow = false;
                     this.notStarted = true;
                 } else {
+                    let allWinner = data.allWinner;
+                    allWinner = allWinner.map((winner) => {
+                        let product_purchased_coupon_code_id =  '1'+___.padStart(String(winner.product_purchased_coupon_code_id), 6, '0');
+                        return {
+                            ...winner,
+                            product_purchased_coupon_code_id
+                        }
+                    });
+                    data = {
+                        ...data,
+                        allWinner
+                    }
+
                     this.notStarted = false;
                     this.couponShow = false;
                     this.completed = false;
