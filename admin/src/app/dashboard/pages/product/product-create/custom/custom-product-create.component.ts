@@ -15,6 +15,7 @@ import {CategoryProductService} from '../../../../../services/category-product.s
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {BrandService} from '../../../../../services/brand.service';
+import {UniqueProductCodeValidator} from "../../../../../services/validator/UniqueProductCodeValidator";
 
 @Component({
     selector: 'app-custom-product-create',
@@ -88,7 +89,8 @@ export class CustomProductCreateComponent implements OnInit {
                 private authService: AuthService,
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
-                private productService: ProductService) {
+                private productService: ProductService,
+                private uniquProductCodeValidator: UniqueProductCodeValidator) {
 
     }
 
@@ -96,12 +98,12 @@ export class CustomProductCreateComponent implements OnInit {
     ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code: [''],
+            code: ['', [Validators.required], [this.uniquProductCodeValidator]],
             image: [null, []],
-            price: ['', []],
-            vendor_price: ['', []],
-            min_unit: [0, [Validators.required]],
-            alert_quantity: [0, []],
+            price: ['0', [Validators.required]],
+            vendor_price: ['0', []],
+            min_unit: [1, [Validators.required]],
+            alert_quantity: [1, []],
             brand_id: ['', []],
             category_id: ['', [Validators.required]],
             subcategory_id: ['', []],

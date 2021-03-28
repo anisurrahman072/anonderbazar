@@ -9,7 +9,7 @@ import {AccessControl} from '../../auth/core/guard/AccessControl.guard';
 
 const routes: Routes = [
     {
-        path: '' /* /dashboard/ */,
+        path: '',
         data: {
             breadcrumbs: 'Dashboard'
         },
@@ -71,7 +71,7 @@ const routes: Routes = [
                 loadChildren: '../pages/order/order.module#OrderModule'
             },
             {
-                path: 'coupon-lottery' /* /dashboard/order   */,
+                path: 'coupon-lottery' /* /dashboard/coupon-lottery   */,
                 loadChildren: '../pages/coupon-lottery/coupon-lottery.module#CouponLotteryModule'
             },
             {

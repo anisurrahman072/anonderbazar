@@ -8,7 +8,6 @@ import {SidebarComponent} from '../layout/sidebar/sidebar.component';
 import {DashboardCoreComponent} from './dashboard-core.component';
 import {BreadcrumbComponent} from '../layout/breadcrumb/breadcrumb.component';
 import {DashboardRoutingModule} from './dashboard-routing.module';
-
 import {RunningOrderComponent} from '../components/running-order/running-order.component';
 import {OnlineOrderComponent} from '../components/online-order/online-order.component';
 import {CommonModule} from '@angular/common';
@@ -20,7 +19,6 @@ import {CustomerComponent} from "../pages/craftsman/customer/customer.component"
 import {NgxChartsModule} from '@swimlane/ngx-charts';
 import { EventRegisterComponent } from '../components/event-register/event-register.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 
 @NgModule({
     imports: [
@@ -46,8 +44,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         UserComponent,
         CustomerComponent,
         EventRegisterComponent,
-    ], 
-    
+    ]
 })
-export class DashboardModule {
-}
+export class DashboardModule {}

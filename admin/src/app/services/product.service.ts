@@ -81,7 +81,9 @@ export class ProductService {
         // get users from api
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
-
+    uniqueCheckProductCode(productCode: string): Observable<any> {
+        return this.http.get(`${this.EndPoint}/unique-check-code/${encodeURIComponent(productCode)}`);
+    }
     approveByAdmin(id): Observable<any> {
         // get users from api
         return this.http.put(this.EndPoint + '/' + id, {approval_status: 2});
