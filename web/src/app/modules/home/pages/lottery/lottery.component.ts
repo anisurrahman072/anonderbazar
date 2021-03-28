@@ -107,8 +107,8 @@ export class LotteryComponent implements OnInit {
 
                             this.separateCoupon(couponData.data);
                             setTimeout(() => {
-                                let len = data.data.length;
-                                this.currentWinner = data.data[len - 1];
+                                let len = data.allWinner.length;
+                                this.currentWinner = data.allWinner[len - 1];
                                 this.winnerShow = true;
                                 this.notStarted = false;
                                 this.couponShow = false;
@@ -137,8 +137,8 @@ export class LotteryComponent implements OnInit {
     }
 
     setCurrentCoupon() {
-        let len = this.data.data.length;
-        this.separateCoupon(this.data.data[len - 1].product_purchased_coupon_code_id);
+        let len = this.data.allWinner.length;
+        this.separateCoupon(this.data.allWinner[len - 1].product_purchased_coupon_code_id);
     }
 
     separateCoupon(coupon_id: any) {
@@ -229,7 +229,7 @@ export class LotteryComponent implements OnInit {
                 }, 200 * i);
             }
         }, this.delay);
-        this.delay = 499;
+        this.delay = 527;
     }
 
     makeDraw() {
@@ -245,7 +245,7 @@ export class LotteryComponent implements OnInit {
                 this.winnerListShow = false;
                 this.notStarted = false;
                 this.couponShow = true;
-                if (this.data.data && this.data.data.length > 0) {
+                if (this.data.allWinner && this.data.allWinner.length > 0) {
                     this.delay = 0;
                     this.setCurrentCoupon();
                 } else {
