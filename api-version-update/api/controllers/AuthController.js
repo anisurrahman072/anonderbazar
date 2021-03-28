@@ -198,6 +198,7 @@ module.exports = {
           message: 'Invalid User data'
         });
       }
+
       console.log(postBody);
       let userData = postBody.userdata;
       delete postBody.userdata;
