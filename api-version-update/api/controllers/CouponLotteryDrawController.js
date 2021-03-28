@@ -72,15 +72,32 @@ module.exports = {
       }
 
       if (lotteryCoupon.status === 1) {
-        return res.status(200).json({
-          success: false,
-          code: 'notStarted',
-          message: 'DRAW date: ' + lotteryCoupon.draw_date,
-        });
+        let couponLotteryDate = lotteryCoupon.draw_date;
+        let todayDate = moment().format('YYYY-MM-DD HH:mm:ss').slice(0, 19);
+        let date = moment(couponLotteryDate).format('YYYY-MM-DD HH:mm:ss').slice(0, 19);
+
+        let success = false;
+        let code = 'notStarted';
+        let onlyDate = moment(date).toString();
+        onlyDate = onlyDate.substring(0, onlyDate.length-9);
+        if(moment(todayDate).isAfter(date)){
+          return res.status(200).json({
+            success,
+            code,
+            message: 'DRAW due date: ' + onlyDate,
+          });
+        }
+        else{
+          return res.status(200).json({
+            success,
+            code,
+            message: 'DRAW date: ' + onlyDate,
+          });
+        }
       }
 
       /** Find all winners for the Lottery Coupon */
-      let allWinners = await CouponLotteryDraw.find({
+      let allWinner = await CouponLotteryDraw.find({
         where: {coupon_lottery_id: lotteryCoupon.id, deletedAt: null},
         sort: [{id: 'ASC'}]
       }).populate('user_id')
@@ -99,7 +116,7 @@ module.exports = {
         success: true,
         message,
         code: resCode,
-        data: allWinners,
+        allWinner,
       });
     } catch (error) {
       return res.status(400).json({
@@ -125,14 +142,14 @@ module.exports = {
 
       /** Check weather today is the correct day for DRAW the coupon */
       let couponLotteryDate = lotteryCoupon.draw_date;
-      let todayDate = moment().format('YYYY-MM-DD').slice(0, 10);
-      let date = moment(couponLotteryDate).format('YYYY-MM-DD');
+      let todayDate = moment().format('YYYY-MM-DD HH:mm:ss').slice(0, 19);
+      let date = moment(couponLotteryDate).format('YYYY-MM-DD HH:mm:ss').slice(0, 19);
 
-      if (todayDate !== date) {
+      if (moment(date).isAfter(todayDate)) {
         return res.status(200).json({
           success: false,
           code: 'notDay',
-          message: 'Today is not the day to DRAW!'
+          message: 'Time not started! Draw time: ' + date
         });
       }
 

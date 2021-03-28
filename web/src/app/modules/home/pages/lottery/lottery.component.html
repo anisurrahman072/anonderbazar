@@ -7,7 +7,7 @@
             <h3 *ngIf="suggestion && isAuthorized" style="text-align: center;">
                 "Click" on Live Lottery button to start
             </h3>
-            <div class="couponContainer mt-5" *ngIf="data.data && data.data.length > 0">
+            <div class="couponContainer mt-5" *ngIf="data.allWinner && data.allWinner.length > 0">
                 <span class="couponDigitBox" >
                     <p [@myAnimation] class="digit" *ngIf="animateDigit1"  >{{digit1}}</p>
                 </span>
@@ -31,8 +31,11 @@
                 </span>
             </div>
             <div class="row mt-5 buttonSection">
-                <button class="btn mr-1 btnDraw" (click)="makeDraw()" *ngIf="isAuthorized">
-                    Live Lottery
+                <button class="btn mr-1 btnDraw" (click)="makeDraw()" *ngIf="isAuthorized && data.code === 'notStarted'">
+                    Start Draw
+                </button>
+                <button class="btn mr-1 btnDraw" (click)="makeDraw()" *ngIf="isAuthorized && data.code === 'success'">
+                    New Draw
                 </button>
                 <button class="btn ml-1 btnWinnerList" (click)="getWinners()">
                     <i class="fa fa-trophy btnWinnerIcon" style=""></i>
@@ -42,7 +45,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12 col-sm-12 col-12" *ngIf="winnerListShow">
+            <div class="col-12" *ngIf="winnerListShow">
                 <div class="row mt-5 buttonSection">
                     <button class="btn mr-1 btnWinnerList" (click)="makeDraw()" style="  padding-left: 35px; padding-right: 35px;">
                         Live Lottery
@@ -61,7 +64,7 @@
                             <th scope="col" class="head">Name</th>
                             <th scope="col">Prize</th>
                         </tr>
-                        <tr *ngFor="let winner of (data.data  | paginate: { itemsPerPage: 10, currentPage: p })" >
+                        <tr *ngFor="let winner of (data.allWinner  | paginate: { itemsPerPage: 10, currentPage: p })" >
                             <td scope="row">{{winner.coupon_lottery_prize_id.place}}</td>
                             <td>{{winner.product_purchased_coupon_code_id}}</td>
                             <td>{{winner.user_id.first_name}} {{winner.user_id.last_name}}</td>
@@ -69,7 +72,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="text-center" *ngIf="data.data?.length > 10">
+                <div class="text-center" *ngIf="data.allWinner?.length > 10">
                     <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
                                          maxSize="5" responsive="true"
                                          nextLabel="Next">
@@ -78,9 +81,9 @@
             </div>
         </div>
 
-        <div class="col-md-12 col-sm-12 col-12 mt-5"  *ngIf="notStarted">
+        <div class="col-12 mt-5"  *ngIf="notStarted">
             <h1 style="text-align: center;">
-                The lottery has not started!!
+                The lottery has not been started yet!!
             </h1>
             <div class="row mt-5 buttonSection">
                 <button class="btn mr-1 btnDraw" (click)="makeDraw()">
@@ -104,7 +107,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12 col-sm-12 col-12 mb-3 mt-0 mx-0 winnerShow" *ngIf="winnerShow">
+    <div class="col-12 mb-3 mt-0 mx-0 winnerShow" *ngIf="winnerShow">
         <div class="place-container mt-2">
             <img width="150" height="150" src="assets/images/place.png" alt="place">
             <p class="place">
