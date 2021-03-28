@@ -215,7 +215,8 @@ module.exports = {
 
 
           /** Find a random Coupon Id & check weather it already got prize or not */
-          for (; ;) {
+
+          while(1) {
             let randomNumber = Math.floor(Math.random() * totalCoupon.rows[0].totalCount + 1);
             randomCouponId = allPurchasedCoupons[randomNumber - 1];
             let alreadyGotPrize = await CouponLotteryDraw.find({
