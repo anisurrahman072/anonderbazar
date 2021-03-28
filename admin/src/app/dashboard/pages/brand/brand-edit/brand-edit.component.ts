@@ -52,6 +52,8 @@ export class BrandEditComponent implements OnInit, OnDestroy {
                     if (this.data && this.data.image) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
                     }
+                }, () => {
+                    this._notification.error('Problem', 'Problem in loading brand');
                 });
         });
 
@@ -62,6 +64,10 @@ export class BrandEditComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
+        }
+        console.log(value);
+        if (this.validateForm.invalid) {
+            return;
         }
         const formData: FormData = new FormData();
         formData.append('name', value.name);

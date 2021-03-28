@@ -5,9 +5,11 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {UploadMetadata, FileHolder} from 'angular2-image-upload';
 import {WarehouseService} from '../../../../services/warehouse.service';
 import {AreaService} from '../../../../services/area.service';
-import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 import {ValidationService} from "../../../../services/validation.service";
 import {UserService} from "../../../../services/user.service";
+import {UniqueEmailValidator} from "../../../../services/validator/UniqueEmailValidator";
+import {UniqueUsernameValidator} from "../../../../services/validator/UniqueUsernameValidator";
+import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneValidator";
 
 @Component({
     selector: 'app-warehouse-create',
@@ -20,7 +22,7 @@ export class WarehouseCreateComponent implements OnInit {
     ImageFile: File;
     logoFile: File;
     pass: any;
-
+    _spinning: boolean = false;
     current = 0;
     genderSearchOptions = [
         {label: 'Male', value: 'male'},
@@ -70,10 +72,17 @@ export class WarehouseCreateComponent implements OnInit {
                 private areaService: AreaService,
                 private warehouseService: WarehouseService,
                 private validationService: ValidationService,
-                private userService: UserService,) {
+                private userService: UserService,
+                private uniquEmailValidator: UniqueEmailValidator,
+                private uniqueUsernameValidator: UniqueUsernameValidator,
+                private uniquePhoneValidator: UniquePhoneValidator) {
+    }
+
+    // init the component
+    ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            username: ['', [Validators.required], [this.validationService.userNameTakenValidator.bind(this)]],
+            username: ['', [Validators.required], [this.uniqueUsernameValidator]],
             password: ['', [Validators.required]],
             confirmPassword: ['', [this.passwordConfirmationValidator]],
             first_name: ['', [Validators.required]],
@@ -82,7 +91,6 @@ export class WarehouseCreateComponent implements OnInit {
             national_id: ['', [Validators.required]],
             license_no: ['', [Validators.required]],
             tin_no: ['', []],
-
             buffer_time: ['', []],
             code: [''],
             address: ['', [Validators.required]],
@@ -90,10 +98,14 @@ export class WarehouseCreateComponent implements OnInit {
             zila_id: [null, [Validators.required]],
             upazila_id: [null, [Validators.required]],
             postal_code: ['', [Validators.required]],
-            phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
-            email: ['', [Validators.required, FormValidatorService.emailValidator]],
+            phone: ['', [Validators.required],   [this.uniquePhoneValidator]],
+            email: ['', [Validators.required],   [this.uniquEmailValidator]],
             invoice_footer: ['', []],
             logo: ['']
+        });
+
+        this.areaService.getAllDivision().subscribe(result => {
+            this.divisionSearchOptions = result;
         });
     }
 
@@ -114,109 +126,80 @@ export class WarehouseCreateComponent implements OnInit {
             this.validateForm.controls[key].markAsDirty();
         }
 
-        if (value.username) {
-            this.userService.checkUsername(value.username).subscribe(result => {
-                if (result.total == 0) {
-                    console.log('checkUsername', result)
-
-                    const formData: FormData = new FormData();
-
-                    formData.append('name', value.name);
-                    formData.append('phone', value.phone);
-                    formData.append('email', value.email);
-                    formData.append('code', '');
-                    formData.append('buffer_time', '0');
-                    formData.append('license_no', value.license_no);
-                    formData.append('tin_no', value.tin_no);
-                    formData.append('country', "Bangladesh");
-                    formData.append('division_id', value.division_id);
-                    formData.append('zila_id', value.zila_id);
-                    formData.append('upazila_id', value.upazila_id);
-                    formData.append('address', value.address);
-                    formData.append('postal_code', value.postal_code);
-                    formData.append('status', "1");
-
-                    if (this.logoFile) {
-                        console.log(this.logoFile);
-                        formData.append('logo', this.logoFile, this.logoFile.name);
-                        formData.append('hasLogo', 'true');
-                    } else {
-                        formData.append('hasLogo', 'false');
-                    }
-
-                    formData.append('invoice_footer', value.invoice_footer);
-                    this.warehouseService.insert(formData).subscribe(result => {
-                        if (result.id) {
-                            this.userInsert(value, result);
-                        }
-                        this.submitting = false;
-                    });
-                } else {
-                    this.submitting = false;
-                    this._notification.create(
-                        'error',
-                        'User already exists',
-                        'User already exists with this provided username'
-                    );
-                }
-
-            })
-        }
-    };
-
-    // Event method for submitting the form
-    userInsert(value, warehouse) {
-
         const formData: FormData = new FormData();
 
-        formData.append('username', value.username);
-        formData.append('password', value.password);
-        formData.append('confirmPassword', value.password);
-        formData.append('email', value.email);
-        formData.append('first_name', value.first_name);
-        formData.append('last_name', value.last_name);
+        formData.append('userdata', JSON.stringify({
+            username: value.username,
+            password: value.password,
+            email: value.email,
+            first_name: value.first_name,
+            last_name: value.last_name,
+            father_name: '',
+            mother_name: '',
+            phone: value.phone,
+            national_id: value.national_id,
+            gender: value.gender,
+            address: value.address,
+            upazila_id: value.upazila_id,
+            zila_id: value.zila_id,
+            division_id: value.division_id,
+            hasImage: !!this.ImageFile,
+        }));
+
+        formData.append('name', value.name);
         formData.append('phone', value.phone);
-        formData.append('national_id', value.national_id);
-        formData.append('gender', value.gender);
-        formData.append('group_id', '4');
-        formData.append('address', value.address);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('zila_id', value.zila_id);
+        formData.append('email', value.email);
+        formData.append('code', '');
+        formData.append('buffer_time', '0');
+        formData.append('license_no', value.license_no);
+        formData.append('tin_no', value.tin_no);
+        formData.append('country', "Bangladesh");
         formData.append('division_id', value.division_id);
-        formData.append('active', '1');
-        formData.append('warehouse_id', warehouse.id);
+        formData.append('zila_id', value.zila_id);
+        formData.append('upazila_id', value.upazila_id);
+        formData.append('address', value.address);
+        formData.append('postal_code', value.postal_code);
+        formData.append('status', "1");
+
+        if (this.logoFile) {
+            formData.append('logo', this.logoFile, this.logoFile.name);
+            formData.append('hasLogo', 'true');
+        } else {
+            formData.append('hasLogo', 'false');
+        }
+
+        formData.append('invoice_footer', value.invoice_footer);
+
+
 
         if (this.ImageFile) {
-            formData.append('avatar', this.ImageFile, this.ImageFile.name);
-            formData.append('hasImage', 'true');
-
-        } else {
-            formData.append('hasImage', 'false');
-
+            formData.append('user_avatar', this.ImageFile, this.ImageFile.name);
         }
-        this.userService.insert(formData)
-            .subscribe((result => {
-                    if (result) {
-                        this.submitting = false;
-                        this._notification.create(
-                            'success',
-                            'New Shop has been successfully created!',
-                            result.name
-                        );
-                        this.router.navigate(['/dashboard/warehouse/details/', warehouse.id]);
 
-                    } else {
-                        this.submitting = false;
-                        this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
+        this._spinning = true;
+        this.warehouseService.insert(formData).subscribe(result => {
 
-                    }
-                }),
-                (err => {
-                    this.submitting = false;
-                    this._notification.create('error', 'Failure message', 'Operation has been failed. Please try again later.');
-                })
-            );
-    }
+            this.submitting = false;
+            this._spinning = false;
+            if(result.warehouse && result.warehouse.id){
+                this._notification.create(
+                    'success',
+                    'New Shop has been successfully created!',
+                    result.name
+                );
+                this.router.navigate(['/dashboard/warehouse/details/', result.warehouse.id]);
+            } else {
+                this._notification.error('Problem!', "Problem in creating Shop");
+            }
+
+        }, (err) => {
+            this._notification.error('Problem!', "Problem in creating Shop");
+            console.log(err);
+            this.submitting = false;
+            this._spinning = false;
+        });
+
+    };
 
     //Event method for removing picture
     onRemoved(file: FileHolder) {
@@ -238,7 +221,6 @@ export class WarehouseCreateComponent implements OnInit {
     // Event method for storing logo in variable
     onBeforeLogoUpload = (metadata: UploadMetadata) => {
         this.logoFile = metadata.file;
-        console.log(this.logoFile);
 
         return metadata;
     }
@@ -257,16 +239,8 @@ export class WarehouseCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    // init the component
-    ngOnInit() {
-        this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
-        });
-    }
-
 
     //Method for division change
-
     divisionChange($event) {
         const query = encodeURI($event);
 
@@ -276,7 +250,6 @@ export class WarehouseCreateComponent implements OnInit {
     }
 
     //Method for zila change
-
     zilaChange($event) {
         const query = encodeURI($event);
         this.areaService.getAllUpazilaByZilaId(query).subscribe(result => {

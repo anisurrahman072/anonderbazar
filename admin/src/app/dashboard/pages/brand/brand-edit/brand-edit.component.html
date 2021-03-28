@@ -15,6 +15,7 @@
                         <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
                                       dropBoxMessage="Drop Picture here"
                                       clearButtonCaption="remove it?"
+                                      [uploadedFiles]="ImageFileEdit"
                                       [beforeUpload]="onBeforeUpload">
                         </image-upload>
                         <div *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
@@ -65,10 +66,10 @@
                 </div>
                 <div nz-row class="form-row">
                     <div nz-col [nzOffset]="2" [nzSpan]="16">
-                        <button nz-button [disabled]="!validateForm.valid">
+                        <button nz-button  >
                             Save
                         </button>
-                        <button nz-button (click)="resetForm($event)"> Reset</button>
+                        <button nz-button (click)="resetForm($event)">Reset</button>
                     </div>
                 </div>
             </div>

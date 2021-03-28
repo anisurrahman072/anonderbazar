@@ -9,6 +9,7 @@ import {environment} from "../../environments/environment";
 export class WarehouseService {
 
     private EndPoint = `${environment.API_ENDPOINT}/warehouse`;
+    private EndPoint3 = `${environment.API_ENDPOINT}/warehouses`;
     private EndPointAUTH = `${environment.API_ENDPOINT}/auth`;
     private EndPoint2 = `${environment.API_ENDPOINT}/product`;
 
@@ -38,7 +39,7 @@ export class WarehouseService {
     }
 
     insert(data): Observable<any> {
-        return this.http.post(this.EndPoint, data);
+        return this.http.post(this.EndPoint3 + '/create-custom', data);
     }
 
     signup(warehouseData): Observable<any> {
