@@ -698,10 +698,17 @@ module.exports = {
         message: 'Please insert product type & category!'
       });
     }
-
+    const authUser = req.token.userInfo;
+    const isAdmin = authUser.group_id.name === 'admin';
+    const isVendor = authUser.group_id.name === 'owner';
+    if (!(isAdmin || isVendor)) {
+      return res.status(401).json({
+        success: false,
+        message: 'You are not allowed to this operation'
+      });
+    }
     try {
-      const authUser = req.token.userInfo;
-      const isAdmin = authUser.group_id.name === 'admin';
+
       const wb = new xl.Workbook({
         jszip: {
           compression: 'DEFLATE',
@@ -802,9 +809,6 @@ module.exports = {
         type_id: req.query.type_id
       };*/
 
-      console.log(req.query);
-
-
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let rawSelect = `
@@ -850,6 +854,9 @@ module.exports = {
         _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
+      if (isVendor && authUser.warehouse_id && authUser.warehouse_id.id) {
+        _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
+      }
       _where += ' ORDER BY products.created_at DESC ';
 
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
