@@ -6,8 +6,6 @@ import {CouponLotteryRoutingModule} from "./coupon-lottery-routing.module";
 import {CouponLotteryComponent} from "./coupon-lottery/coupon-lottery.component";
 import {CouponLotteryService} from "../../../services/coupon-lottery.service";
 
-
-
 @NgModule({
     imports: [
         CommonModule,
@@ -17,11 +15,9 @@ import {CouponLotteryService} from "../../../services/coupon-lottery.service";
     ],
     declarations: [
         CouponLotteryComponent,
- 
     ],
     providers: [
         CouponLotteryService,
-
     ]
 })
 export class CouponLotteryModule {
