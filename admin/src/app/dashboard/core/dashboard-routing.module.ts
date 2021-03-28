@@ -72,7 +72,11 @@ const routes: Routes = [
             },
             {
                 path: 'suborder' /* /dashboard/suborder   */,
-                loadChildren: '../pages/suborder/suborder.module#CouponLotteryModule'
+                loadChildren: '../pages/suborder/suborder.module#SuborderModule'
+            },
+            {
+                path: 'coupon-lottery' /* /dashboard/suborder   */,
+                loadChildren: '../pages/coupon-lottery/coupon-lottery.module#CouponLotteryModule'
             },
             {
                 path: 'payment' /* /dashboard/payment   */,
