@@ -3,7 +3,9 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CouponLotteryService {
     private EndPoint1 = `${environment.API_ENDPOINT}/couponLottery`;
     private EndPoint2 = `${environment.API_ENDPOINT}/couponLotteryDraw`;
