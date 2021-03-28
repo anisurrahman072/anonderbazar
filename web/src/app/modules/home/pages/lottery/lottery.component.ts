@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {LotteryService} from "../../../../services/lottery.service";
+import {LotteryService} from "../../../../services";
 import {trigger, state, style, animate, transition, stagger} from '@angular/animations';
 import {NotificationsService} from "angular2-notifications";
 import {Subject} from "rxjs/Subject";
