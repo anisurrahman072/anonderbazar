@@ -9,6 +9,8 @@ import {mergeMap} from "rxjs/operators/mergeMap";
 import {AuthService} from "../../../../services";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import * as ___ from 'lodash';
+import {AppSettings} from "../../../../config/app.config";
+import {environment} from "../../../../../environments/environment";
 
 @Component({
     selector: 'app-lottery',
@@ -70,6 +72,8 @@ export class LotteryComponent implements OnInit {
     lotteryAdminId = GLOBAL_CONFIGS.lotteryAdminId;
     isAuthorized = false;
 
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
+
     constructor(private lotteryService: LotteryService,
                 private _notify: NotificationsService,
                 private authService: AuthService) {
@@ -119,7 +123,7 @@ export class LotteryComponent implements OnInit {
                             setTimeout(() => {
                                 this.winnerShow = false;
                                 this.couponShow = true;
-                            }, 13500);
+                            }, 8500);
                         })
                 } else if (couponData.code === 'completed') {
                     this.notStarted = false;
