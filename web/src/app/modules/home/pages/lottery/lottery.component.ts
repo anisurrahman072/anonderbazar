@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {LotteryService} from "../../../../services";
 import {trigger, state, style, animate, transition, stagger} from '@angular/animations';
 import {NotificationsService} from "angular2-notifications";
 import {Subject} from "rxjs/Subject";
 import {Subscription} from "rxjs/Subscription";
 import {debounceTime} from "rxjs/operators";
+import {mergeMap} from "rxjs/operators/mergeMap";
 import {AuthService} from "../../../../services";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
@@ -18,14 +19,14 @@ import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
             [
                 transition(
                     ':leave', [
-                        style({ transform: 'translateY(0)', opacity: 1 }),
-                        animate('500ms', style({ transform: 'translateY(-50%)', 'opacity': 0 }))
+                        style({transform: 'translateY(0)', opacity: 1}),
+                        animate('500ms', style({transform: 'translateY(-50%)', 'opacity': 0}))
                     ]
                 ),
                 transition(
                     ':enter', [
-                        style({ transform: 'translateY(50%)', opacity: 0 }),
-                        animate('1800ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                        style({transform: 'translateY(50%)', opacity: 0}),
+                        animate('1800ms', style({transform: 'translateY(0)', 'opacity': 1}))
                     ]
                 )
             ]
@@ -44,7 +45,9 @@ export class LotteryComponent implements OnInit {
     currentWinner: any;
     winnerShow: boolean = false;
 
-    private makingDraw = new Subject();
+    private makingDraw = new Subject<boolean>();
+    private makingDrawObservable = this.makingDraw.asObservable();
+
     private makeDrawSubscription: Subscription;
     p;
     digit1 = 1;
@@ -68,44 +71,32 @@ export class LotteryComponent implements OnInit {
 
     constructor(private lotteryService: LotteryService,
                 private _notify: NotificationsService,
-                private authService: AuthService) { }
+                private authService: AuthService) {
+    }
 
     ngOnInit() {
         this.lotteryService.getAllWinners()
             .subscribe(data => {
                 this.data = data;
-                if(data.code === 'notStarted'){
+                if (data.code === 'notStarted') {
                     this.notStarted = true;
-                }
-                else if(data.code === 'completed'){
+                } else if (data.code === 'completed') {
                     this.couponShow = false;
                     this.notStarted = false;
                     this.completed = true;
-                }
-                else{
+                } else {
                     this.notStarted = false;
                     this.couponShow = true;
                     this.setCurrentCoupon();
                 }
             });
-        this.makeDrawSubscription =  this.makingDraw
-            .pipe(debounceTime(200))
-            .subscribe(() => {
-                this.createNewDraw();
-            })
-        if(this.authService.getCurrentUserId() === this.lotteryAdminId){
-            this.isAuthorized = true;
-        }
-    }
-
-    ngOnDestroy(): void {
-        this.makeDrawSubscription ? this.makeDrawSubscription.unsubscribe() : '';
-    }
-
-    createNewDraw(){
-        this.lotteryService.makeDraw()
+        this.makeDrawSubscription = this.makingDrawObservable
+            .pipe(
+                debounceTime(200),
+                mergeMap(() => this.lotteryService.makeDraw()),
+            )
             .subscribe((couponData) => {
-                if(couponData.success){
+                if (couponData.success) {
                     this.lotteryService.getAllWinners()
                         .subscribe((data) => {
                             this.data = data;
@@ -117,7 +108,7 @@ export class LotteryComponent implements OnInit {
                             this.separateCoupon(couponData.data);
                             setTimeout(() => {
                                 let len = data.data.length;
-                                this.currentWinner = data.data[len-1];
+                                this.currentWinner = data.data[len - 1];
                                 this.winnerShow = true;
                                 this.notStarted = false;
                                 this.couponShow = false;
@@ -129,25 +120,32 @@ export class LotteryComponent implements OnInit {
                                 this.couponShow = true;
                             }, 13500);
                         })
-                }
-                else if(couponData.code === 'completed') {
+                } else if (couponData.code === 'completed') {
                     this.notStarted = false;
                     this.couponShow = false;
                     this.completed = true;
                 }
-            })
+            });
+
+        if (this.authService.getCurrentUserId() === this.lotteryAdminId) {
+            this.isAuthorized = true;
+        }
     }
 
-    setCurrentCoupon(){
+    ngOnDestroy(): void {
+        this.makeDrawSubscription ? this.makeDrawSubscription.unsubscribe() : '';
+    }
+
+    setCurrentCoupon() {
         let len = this.data.data.length;
-        this.separateCoupon(this.data.data[len-1].product_purchased_coupon_code_id);
+        this.separateCoupon(this.data.data[len - 1].product_purchased_coupon_code_id);
     }
 
     separateCoupon(coupon_id: any) {
         const couponArray = String(coupon_id).split('');
-        if(couponArray.length < 7){
+        if (couponArray.length < 7) {
             let len = 7 - couponArray.length;
-            for(let i = 0; i < len; i++){
+            for (let i = 0; i < len; i++) {
                 couponArray.unshift('0');
             }
         }
@@ -171,71 +169,64 @@ export class LotteryComponent implements OnInit {
             let newArr = [1, parseInt(couponArray[1]), parseInt(couponArray[2]),
                 parseInt(couponArray[3]), parseInt(couponArray[4]), parseInt(couponArray[5]), parseInt(couponArray[6])];
             this.digit1 = 0;
-            for(let i = 1; i <= 10; i++){
+            for (let i = 1; i <= 10; i++) {
                 setTimeout(() => {
-                    if(this.digit1 !== newArr[0]){
-                        if(this.digit1 === 9){
+                    if (this.digit1 !== newArr[0]) {
+                        if (this.digit1 === 9) {
                             this.digit1 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit1;
                         }
                     }
 
-                    if(this.digit2 !== newArr[1]){
-                        if(this.digit2 === 9){
+                    if (this.digit2 !== newArr[1]) {
+                        if (this.digit2 === 9) {
                             this.digit2 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit2;
                         }
                     }
 
-                    if(this.digit3 !== newArr[2]){
-                        if(this.digit3 === 9){
+                    if (this.digit3 !== newArr[2]) {
+                        if (this.digit3 === 9) {
                             this.digit3 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit3;
                         }
                     }
 
-                    if(this.digit4 !== newArr[3]){
-                        if(this.digit4 === 9){
+                    if (this.digit4 !== newArr[3]) {
+                        if (this.digit4 === 9) {
                             this.digit4 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit4;
                         }
                     }
 
-                    if(this.digit5 !== newArr[4]){
-                        if(this.digit5 === 9){
+                    if (this.digit5 !== newArr[4]) {
+                        if (this.digit5 === 9) {
                             this.digit5 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit5;
                         }
                     }
 
-                    if(this.digit6 !== newArr[5]){
-                        if(this.digit6 === 9){
+                    if (this.digit6 !== newArr[5]) {
+                        if (this.digit6 === 9) {
                             this.digit6 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit6;
                         }
                     }
 
-                    if(this.digit7 !== newArr[6]){
-                        if(this.digit7 === 9){
+                    if (this.digit7 !== newArr[6]) {
+                        if (this.digit7 === 9) {
                             this.digit7 = 0;
-                        }
-                        else {
+                        } else {
                             ++this.digit7;
                         }
                     }
-                }, 200*i);
+                }, 200 * i);
             }
         }, this.delay);
         this.delay = 499;
@@ -243,42 +234,38 @@ export class LotteryComponent implements OnInit {
 
     makeDraw() {
         this.suggestion = false;
-        if(this.winnerListShow || this.notStarted){
-            if(this.data.code === 'completed'){
+        if (this.winnerListShow || this.notStarted) {
+            if (this.data.code === 'completed') {
                 this.couponShow = false;
                 this.winnerListShow = false;
                 this.completed = true;
                 this.notStarted = false;
-            }
-            else{
+            } else {
                 /** running */
                 this.winnerListShow = false;
                 this.notStarted = false;
                 this.couponShow = true;
-                if(this.data.data && this.data.data.length > 0){
+                if (this.data.data && this.data.data.length > 0) {
                     this.delay = 0;
                     this.setCurrentCoupon();
-                }
-                else{
+                } else {
                     this.suggestion = true;
                 }
             }
-        }
-        else if(this.couponShow && this.isAuthorized) {
-            this.makingDraw.next();
+        } else if (this.couponShow && this.isAuthorized) {
+            this.makingDraw.next(true);
         }
     }
 
     getWinners() {
         this.lotteryService.getAllWinners()
             .subscribe(data => {
-                if(data.code === 'notStarted'){
+                if (data.code === 'notStarted') {
                     this.couponShow = false;
                     this.completed = false;
                     this.winnerListShow = false;
                     this.notStarted = true;
-                }
-                else{
+                } else {
                     this.notStarted = false;
                     this.couponShow = false;
                     this.completed = false;

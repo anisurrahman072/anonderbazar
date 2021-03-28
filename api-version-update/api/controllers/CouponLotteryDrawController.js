@@ -58,13 +58,18 @@ module.exports = {
     try {
       /** Find the Lottery Coupon by code */
       let code = req.param('code');
-      let _where = {};
-      _where.code = code;
-      _where.deletedAt = null;
-      let currentLotteryCoupon = await CouponLottery.find({
-        where: _where
-      });
-      const lotteryCoupon = currentLotteryCoupon[0];
+      let _where = {
+        deletedAt: null,
+        code
+      };
+
+      let lotteryCoupon = await CouponLottery.findOne(_where);
+
+      if( !(lotteryCoupon && lotteryCoupon.id) ){
+        return res.status(422).status({
+          message: 'No coupon lottery has been found with the provided lottery code'
+        });
+      }
 
       if (lotteryCoupon.status === 1) {
         return res.status(200).json({
