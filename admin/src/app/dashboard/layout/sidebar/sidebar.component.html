@@ -145,21 +145,6 @@
             </li>
         </ul>
     </li>
-    <li nz-submenu *ngIf="'coupon-lottery'|accessControl">
-        <span title>
-            <i class="fa fa-truck"></i>
-            <span class="nav-text">Coupon Lottery</span>
-        </span>
-        <ul>
-            <li nz-menu-item *ngIf="'coupon-lottery-list'|accessControl">
-                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
-                   routerLink="/dashboard/coupon-lottery">
-                    <i class="anticon anticon-file"></i>
-                    Lottery List
-                </a>
-            </li>
-        </ul>
-    </li>
     <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>

@@ -60,6 +60,7 @@ import {ExcelService} from "../services/excel.service";
 import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
+import {CouponLotteryService} from "../services/coupon-lottery.service";
 registerLocaleData(en);
 
 @NgModule({
@@ -122,6 +123,7 @@ registerLocaleData(en);
         DesignImagesService,
         AccessControlPipe,
         ExcelService,
+        CouponLotteryService,
         ChatService,
         {
             provide: HTTP_INTERCEPTORS,
