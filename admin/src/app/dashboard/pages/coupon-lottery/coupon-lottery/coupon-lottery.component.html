@@ -1,0 +1,99 @@
+<section>
+    <nz-card class="card-height order-list-card" nzTitle="Coupon Lottery list">
+        <nz-spin [nzSpinning]="_isSpinning">
+            <nz-table
+                #nzTable
+                [nzTotal]="lotteryTotal"
+                [nzData]="lotteryList"
+                [nzShowSizeChanger]="true"
+                [nzFrontPagination]="true"
+                [nzPageSize]="lotteryLimit"
+                [nzPageIndex]="lotteryPage"
+                [nzHideOnSinglePage]="true"
+                [nzScroll]="{ x:'1600px',y: '800px'  }"
+                [nzBordered]="true"
+            >
+                <thead>
+                <tr>
+                    <th nzWidth="200px">
+                        <span> Code </span>
+                    </th>
+                    <th nzWidth="220px">
+                        <span> Draw Date </span>
+                    </th>
+                    <th nzWidth="220px">
+                        <span> Name </span>
+                    </th>
+                    <th nzWidth="220px">
+                        <span> Product </span>
+                    </th>
+                    <th nzWidth="120px">
+                        <span>Status</span>
+                    </th>
+                    <th><span>Actions</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let datum of nzTable.data;let i=index">
+                    <td style="width: 200px;">{{datum.code}}</td>
+                    <td style="width: 220px;">{{datum.draw_date|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td style="width: 220px;">{{datum.name}}</td>
+                    <td style="width: 220px;">{{datum.product_id?.name}}</td>
+                    <td style="width: 120px;">{{datum.status}}</td>
+                    <td>
+                        <nz-button-group>
+                            <button (click)="openWinnerModal(datum.id)"
+                                    nz-button [nzSize]="'default'">
+                                <i class="anticon anticon-info-circle"> </i>
+                            </button>
+                        </nz-button-group>
+                    </td>
+                </tr>
+                </tbody>
+            </nz-table>
+        </nz-spin>
+    </nz-card>
+</section>
+<!--product modal-->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isWinnerModalVisible"
+          [nzTitle]="'List of Winners'"
+          [nzContent]="winnerModalContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #winnerModalContent>
+        <nz-spin [nzSpinning]="_isSpinning">
+            <nz-table #nzTableWinners
+                      [nzBordered]="true"
+                      [nzData]="winnerList"
+                      [nzFrontPagination]="true"
+                      [nzLoading]="_isSpinning"
+                      [(nzPageIndex)]="winnerPage"
+                      [nzPageSize]="15"
+                      [nzHideOnSinglePage]="true"
+                      [nzTotal]="winnerTotal"
+            >
+                <thead>
+                <tr>
+                    <th>Winner Name</th>
+                    <th>Coupon Code</th>
+                    <th>Place</th>
+                    <th>Prize</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let datum of nzTableWinners.data;let i=index;">
+                    <td>{{datum.customer_name}}</td>
+                    <td>{{datum.coupon_code}}</td>
+                    <td>{{datum.prize_place}}</td>
+                    <td>{{datum.prize_name}}</td>
+                    <td>{{datum.status}}</td>
+                </tr>
+                </tbody>
+            </nz-table>
+        </nz-spin>
+    </ng-template>
+</nz-modal>
