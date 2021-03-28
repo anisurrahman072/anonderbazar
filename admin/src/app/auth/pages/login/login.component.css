@@ -143,6 +143,9 @@ textarea {
   line-height: 20px;
 }
 
+.login-container label {
+  line-height: 40px;
+}
 
 element {
 
