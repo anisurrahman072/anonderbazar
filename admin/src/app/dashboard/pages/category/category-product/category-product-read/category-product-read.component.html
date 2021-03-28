@@ -12,10 +12,23 @@
         </button>
     </ng-template>
     <div class="row" *ngIf="data">
+        <nz-spin [nzSpinning]="isLoading">
         <div class="col-md-4">
             <div class="profile-img">
-                <img class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                <img *ngIf="data.image; else ImagePlaceHolderTemplate" class="img img-responsive" style="margin: auto;" alt="category"
                      src="{{  IMAGE_ENDPOINT + data.image}}"/>
+                <ng-template #ImagePlaceHolderTemplate>
+                    <img  class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                         src="/assets/images/general_placeholder.png"/>
+                </ng-template>
+            </div>
+            <div class="profile-img">
+                <img *ngIf="data.banner_image; else ImagePlaceHolderTemplate1" class="img img-responsive" style="margin: auto;" alt="category banner"
+                     src="{{  IMAGE_ENDPOINT + data.banner_image}}"/>
+                <ng-template #ImagePlaceHolderTemplate1>
+                    <img  class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                          src="/assets/images/general_placeholder.png"/>
+                </ng-template>
             </div>
         </div>
         <div class="col-md-6">
@@ -47,5 +60,6 @@
                 </div>
             </div>
         </div>
+        </nz-spin>
     </div>
 </nz-card>

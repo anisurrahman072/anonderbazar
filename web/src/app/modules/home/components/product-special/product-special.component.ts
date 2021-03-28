@@ -34,9 +34,9 @@ export class ProductSpecialComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
-    id: any;
     private sub: Subscription;
     private sub1: Subscription;
+    id: any;
     cart$: Observable<any>;
     cartId: any;
     cartTotalprice: any;

@@ -174,6 +174,10 @@ module.exports = {
       required: false,
       defaultsTo: 0
     },
+    couponLotteryCashback: {
+      collection: 'couponLotteryCashback',
+      via: 'user_id'
+    }
   },
   tableName: 'users',
   customToJSON: function () {
@@ -186,9 +190,13 @@ module.exports = {
   // Encrypt password before creating a User
   beforeCreate: function (values, next) {
     bcrypt.genSalt(10, (err, salt) => {
-      if (err) {return next(err);}
+      if (err) {
+        return next(err);
+      }
       bcrypt.hash(values.password, 10, (err, hash) => {
-        if (err) {return next(err);}
+        if (err) {
+          return next(err);
+        }
         values.password = hash;
         next();
       });
@@ -199,7 +207,9 @@ module.exports = {
   comparePassword: function (password, userPassword, cb) {
     bcrypt.compare(password, userPassword, (err, match) => {
       // eslint-disable-next-line callback-return
-      if (err) {cb(err);}
+      if (err) {
+        cb(err);
+      }
       if (match) {
         // eslint-disable-next-line callback-return
         cb(null, true);

@@ -72,6 +72,9 @@ exports.calcCartTotal = function (cart, cartItems) {
 };
 
 exports.escapeExcel = function (str) {
+  if (!str) {
+    return '';
+  }
   return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
 };
 

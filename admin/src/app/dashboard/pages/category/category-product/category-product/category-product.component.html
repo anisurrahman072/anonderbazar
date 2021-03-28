@@ -22,6 +22,7 @@
                 <th>
                     <span> Picture </span>
                 </th>
+                <th nzShowSort nzSortKey="id"><span>ID</span></th>
                 <th nzShowSort nzSortKey="child_count"><span>Child Count</span></th>
                 <th>
                     <span> Parent Category </span>
@@ -39,6 +40,8 @@
             </tr>
             <tr>
                 <th></th>
+                <th> <input nz-input placeholder="ID" [(ngModel)]="idSearchValue"
+                            (ngModelChange)="page=1; getPageData(); "></th>
                 <th></th>
                 <th></th>
                 <th>
@@ -65,6 +68,9 @@
                     <ng-template #noAvatar>
                        <nz-tag>No Image</nz-tag>
                     </ng-template>
+                </td>
+                <td>
+                    {{data.id}}
                 </td>
                 <td>
                     {{data.total_sub_categories}}

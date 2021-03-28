@@ -562,12 +562,25 @@ module.exports = {
       );
     } catch (error) {
 
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: '',
         error,
       });
     }
   },
+  uniqueCheckCode: async (req, res) => {
+    try {
+      let exists = await Product.find({code: req.param('code')});
+      if (exists && exists.length > 0) {
+        return res.status(200).json({isunique: false});
+      } else {
+        return res.status(200).json({isunique: true});
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({isunique: true});
+    }
+  }
 
 };

@@ -21,7 +21,10 @@ export class CurrentUserEffect {
             if (currentUserId) {
                 return this.userService.getAuthUser()
                     .pipe(
-                        map(currentUser => new currentUserActions.LoadCurrentUserSuccess(currentUser)),
+                        map(currentUser => {
+                            console.log('CurrentUserEffect', currentUser);
+                            return new currentUserActions.LoadCurrentUserSuccess(currentUser)
+                        }),
                         catchError(error => of(new currentUserActions.LoadCurrentUserFail(error)))
                     )
             } else {

@@ -30,6 +30,12 @@ module.exports = {
       required: false,
       allowNull: true,
     },
+    frontend_position: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 111,
+    },
     slug: {
       type: 'string',
       columnType: 'varchar',

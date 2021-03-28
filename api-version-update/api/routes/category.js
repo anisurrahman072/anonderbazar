@@ -29,4 +29,7 @@ exports.categoryRoutes = {
   'PUT /api/v1/category_product/:id': [
     {controller: 'CategoryController', action: 'updateProduct'}
   ],
+  'DELETE /api/v1/category/remove-image/:id/:type': [
+    {controller: 'CategoryController', action: 'removeImage'}
+  ],
 };

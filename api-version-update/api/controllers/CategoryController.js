@@ -8,28 +8,68 @@ const {asyncForEach} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
+  removeImage: async (req, res) => {
+
+    const type = req.param('type');
+    const id = req.param('id');
+
+    try {
+      await Category.updateOne({
+        id: id
+      }).set({
+        [type]: null
+      });
+      return res.status(201).json({
+        message: true
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({message: 'server problem!', error});
+    }
+
+  },
   //Method called for creating category data
   //Model models/Category.js
   create: async (req, res) => {
     try {
+
       let body = req.body;
-      if (body.hasImage === 'true') {
+      if (body.hasImage && body.hasImage === 'true') {
         try {
-          const uploaded = await uploadImages(req.file('image0'));
-          if (uploaded.length === 0) {
-            return res.badRequest('No image was uploaded');
+
+          if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
+            const uploaded = await uploadImages(req.file('image'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
+            console.log('uploaded image: ', uploaded);
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
+              body.image = '/' + newPath;
+              if (typeof uploaded[1] !== 'undefined') {
+                const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+                body.banner_image = '/' + newPathBanner;
+              }
+            } else if (body.hasImage && body.hasImage === 'true') {
+              body.image = '/' + newPath;
+            } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
+              body.banner_image = '/' + newPath;
+            }
           }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          body.image = '/' + newPath;
+
         } catch (err) {
           console.log('err', err);
           return res.json(err.status, {err: err});
         }
       }
+
+      console.log('body', body);
       const returnCategory = await Category.create(body).fetch();
-      return res.json(200, returnCategory);
+
+      return res.status(200).json(returnCategory);
     } catch (err) {
-      res.json(400, {message: 'wrong', err});
+      console.log(err);
+      res.status(400).json({message: 'server problem!', err});
     }
   },
 
@@ -155,17 +195,26 @@ module.exports = {
     try {
       let body = req.body;
 
-      if (body.hasImage === 'true') {
-        const uploaded = await uploadImages(req.file('image0'));
+      if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
+        const uploaded = await uploadImages(req.file('image'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
+        console.log('uploaded image: ', uploaded);
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        body.image = '/' + newPath;
-        body.type_id = 1;
-      } else {
-        body.type_id = 2;
+        if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
+          body.image = '/' + newPath;
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + newPathBanner;
+          }
+        } else if (body.hasImage && body.hasImage === 'true') {
+          body.image = '/' + newPath;
+        } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
+          body.banner_image = '/' + newPath;
+        }
       }
+
       const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
       return res.status(200).json(updateCategory);
     } catch (error) {

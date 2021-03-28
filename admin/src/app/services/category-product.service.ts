@@ -29,19 +29,19 @@ export class CategoryProductService {
         limit: number,
         nameSearchValue: string,
         codeSearchValue: string,
+        idSearchValue: string,
         sortKey: string,
         sortVal: string
     ): Observable<any> {
-        return this.http.get(`${this.EndPoint3}?page=${page}&limit=${limit}&name_search=${nameSearchValue}&code_search=${codeSearchValue}&sortKey=${sortKey}&sortVal=${sortVal}`)
+        return this.http.get(`${this.EndPoint3}?page=${page}&limit=${limit}&id_search=${idSearchValue}&name_search=${nameSearchValue}&code_search=${codeSearchValue}&sortKey=${sortKey}&sortVal=${sortVal}`)
     }
 
     getById(id) {
         return this.http.get(this.EndPoint + '/' + id);
     }
 
-    insert(categoryType) {
-
-        return this.http.post(this.EndPoint, categoryType);
+    insert(data) {
+        return this.http.post(this.EndPoint, data);
     }
 
     delete(id) {
@@ -51,6 +51,10 @@ export class CategoryProductService {
 
     update(id: number, data: any) {
         return this.http.put(this.EndPoint + '/' + id, data);
+    }
+
+    removeImages(id: number, imageType: string) {
+        return this.http.delete(`${this.EndPoint}/remove-image/${id}/${imageType}`);
     }
 
     getAllCategory() {

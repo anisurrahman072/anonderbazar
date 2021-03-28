@@ -10,4 +10,5 @@ export interface User {
     avatar?: any;
     gender?: string;
     username?: string;
+    couponLotteryCashback?: any;
 }

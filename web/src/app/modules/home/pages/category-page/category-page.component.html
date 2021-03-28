@@ -12,7 +12,8 @@
                [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id}"
                routerLinkActive="active">{{subcategoryB?.name}}
             </a>
-            <a *ngIf="isNotEmptyObject(categoryB) && isNotEmptyObject(subcategoryB) && isNotEmptyObject(subsubcategoryB)" style="text-transform: uppercase;"
+            <a *ngIf="isNotEmptyObject(categoryB) && isNotEmptyObject(subcategoryB) && isNotEmptyObject(subsubcategoryB)"
+               style="text-transform: uppercase;"
                routerLink="/products/category/{{categoryB?.id}}"
                [queryParams]="{category: categoryB?.id, sub: subcategoryB?.id, subsub: subsubcategoryB?.id}">{{subsubcategoryB?.name}}
             </a>
@@ -72,7 +73,7 @@
                                        [attr.checked]="categoryList_ids.includes(''+category.id) ? 'checked' : null"
                                        name="category" (click)="filter_result($event, 'category', category.name)"/>
                                 <label for="category_{{ category.id }}">{{
-                                  category.name
+                                    category.name
                                     }}</label>
                             </div>
                         </div>
@@ -145,63 +146,79 @@
                 </div>
                 <button class="filter-clear-btn" (click)="clearAllFilter()">Clear filters</button>
             </div>
-            <div class="col-lg-12 col-md-12">
-                <div class="des-nav justify-content-between">
-                    <ul class="nav nav-pills mb-5">
-                        <li class="list1 sort-by">Sort by:</li>
-                        <li class="list1 sort-by">
-                            <a class="" [ngClass]="{'active': changeStatusP === true}" (click)="showPopular($event)">Popular</a>
-                        </li>
-                        <li class="list1 sort-by">
-                            <a class="" [ngClass]="{'active': changeStatusR === true}" (click)="showRating($event)">Ratings</a>
-                        </li>
-                        <li class="list1 sort-by">
-                            <a class="" [ngClass]="{'active': changeStatusN === true}" (click)="showNewest($event)">Newest</a>
-                        </li>
-                        <li class="list1 sort-by">
-                            <a class="" [ngClass]="{'active': changeStatusPr === true}" (click)="showPrice($event)">Prices</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade active show" id="pills-home" role="tabpanel"
-                         aria-labelledby="pills-home-tab">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"
-                                 *ngFor="let product of (allProductsByCategory | paginate: { itemsPerPage: 24, currentPage: p })">
-                                <app-product-item [dataProduct]="product"></app-product-item>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center"
-                                 style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
-                                 *ngIf="allProductsByCategory?.length <= 0">
-                                <img class="img-fluid" src="assets/images/No_Product_Found.png"
-                                     alt="No Product is available.">
-                            </div>
-                        </div>
-                        <div class="text-center" *ngIf="allProductsByCategory?.length > 9">
-                            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
-                                                 maxSize="5" responsive="true"
-                                                 nextLabel="Next">
-                            </pagination-controls>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                        <div class="row">
-
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="pills-planing" role="tabpanel" aria-labelledby="pills-plan-tab">
-                        <div class="row">
-
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="pills-Prices" role="tabpanel" aria-labelledby="pills-plan-tab">
-                        <div class="row">
-
-                        </div>
-                    </div>
+            <div class="col-lg-12 col-md-12" *ngIf="isLoading; else showNotLoadingTemplate">
+                <div class="d-flex justify-content-center" style="margin-top: 10%;">
+                    <mat-spinner></mat-spinner>
                 </div>
             </div>
+            <ng-template #showNotLoadingTemplate>
+                <div class="col-lg-12 col-md-12">
+                    <div class="row" *ngIf="extractCategoryMainImage()">
+                        <div class="col-md-12">
+                            <div class="category-img-wrapper">
+                                <img class="img img-responsive" [src]="extractCategoryMainImage()" alt="subsubcategoryB?.name"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="des-nav justify-content-between">
+                        <ul class="nav nav-pills mb-5">
+                            <li class="list1 sort-by">Sort by:</li>
+                            <li class="list1 sort-by">
+                                <a class="" [ngClass]="{'active': changeStatusP === true}"
+                                   (click)="showPopular($event)">Popular</a>
+                            </li>
+                            <li class="list1 sort-by">
+                                <a class="" [ngClass]="{'active': changeStatusR === true}" (click)="showRating($event)">Ratings</a>
+                            </li>
+                            <li class="list1 sort-by">
+                                <a class="" [ngClass]="{'active': changeStatusN === true}" (click)="showNewest($event)">Newest</a>
+                            </li>
+                            <li class="list1 sort-by">
+                                <a class="" [ngClass]="{'active': changeStatusPr === true}" (click)="showPrice($event)">Prices</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade active show" id="pills-home" role="tabpanel"
+                             aria-labelledby="pills-home-tab">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"
+                                     *ngFor="let product of (allProductsByCategory | paginate: { itemsPerPage: 24, currentPage: page })">
+                                    <app-product-item [dataProduct]="product"></app-product-item>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center"
+                                     style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
+                                     *ngIf="allProductsByCategory?.length <= 0">
+                                    <img class="img-fluid" src="assets/images/No_Product_Found.png"
+                                         alt="No Product is available.">
+                                </div>
+                            </div>
+                            <div class="text-center" *ngIf="allProductsByCategory?.length > 9">
+                                <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
+                                                     maxSize="5" responsive="true"
+                                                     nextLabel="Next">
+                                </pagination-controls>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                             aria-labelledby="pills-profile-tab">
+                            <div class="row">
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-planing" role="tabpanel" aria-labelledby="pills-plan-tab">
+                            <div class="row">
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-Prices" role="tabpanel" aria-labelledby="pills-plan-tab">
+                            <div class="row">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>

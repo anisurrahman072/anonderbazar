@@ -4,7 +4,7 @@ import {Observable} from "rxjs/Rx";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../state-management";
 import {JwtHelper} from "angular2-jwt";
-import {UIService} from "../services/ui/ui.service";
+import {LoginModalService} from "../services/ui/loginModal.service";
 
 @Injectable()
 export class JwtTokenInterceptor implements HttpInterceptor {
@@ -13,7 +13,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
     constructor(
         private store: Store<fromStore.HomeState>,
         private jwtHelper: JwtHelper,
-        private uiService: UIService) {
+        private loginModalService: LoginModalService) {
     }
 
     getToken() {
@@ -61,7 +61,8 @@ export class JwtTokenInterceptor implements HttpInterceptor {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
                     this.logout();
-                    this.uiService.showTokenExpiredNotification('Token has been expired. Please login again.');
+                    this.loginModalService.showLoginModal(true);
+                    // this.uiService.showTokenExpiredNotification('Token has been expired. Please login again.');
                 }
             }
             //intercept the respons error and displace it to the console

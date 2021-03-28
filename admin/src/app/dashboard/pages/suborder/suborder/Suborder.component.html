@@ -16,6 +16,7 @@
 
         <nz-table #nzTable
                   nzShowSizeChanger
+                  [nzShowPagination]="true"
                   [nzFrontPagination]="false"
                   [nzData]="data"
                   [nzLoading]="_isSpinning"
@@ -23,71 +24,77 @@
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
                   (nzPageIndexChange)="getSubOrderData($event)"
-                  [nzHideOnSinglePage]="true"
                   (nzPageSizeChange)="page = 1; getSubOrderData()"
+                  [nzHideOnSinglePage]="true"
+                  [nzScroll]="{ x:'1600px',y: '800px'  }"
+                  [nzBordered]="true"
+
         >
 
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
-                <th>
+                <th nzWidth="130px">
                     <span> Order </span>
                 </th>
-                <th>
+                <th nzWidth="130px">
                     <span> Suborder </span>
                 </th>
-                <th nzShowSort nzSortKey="order_date">
+                <th nzShowSort nzSortKey="order_date" nzWidth="265px">
                     <span> Order Date </span>
                 </th>
-                <th style="text-align: center;">
+                <th nzWidth="100px">
                     Vendor Id
                 </th>
-                <th>
+                <th nzWidth="180px">
                     <span> Vendor Name </span>
                 </th>
-                <th>
+                <th nzWidth="130px">
                     <span> Quantity </span>
                 </th>
-                <th>
-                    <span> Total Price</span>
+                <th nzWidth="130px">
+                    <span> Total </span>
                 </th>
-                <th>
+                <th nzWidth="200px">
                     <span> Status </span>
                 </th>
-                <th>
+                <th nzWidth="180px">
                     <span> Status Changer </span>
                 </th>
-                <th></th>
+                <th>
+                    <span> Actions </span>
+                </th>
             </tr>
             <tr>
-                <th>
+                <th style="text-align: center" nzWidth="130px">
                     <input nz-input placeholder="Order" [(ngModel)]="orderNumberSearchValue"
                            (ngModelChange)="page=1; getSubOrderData()" [ngStyle]="{'width': '100px'}">
                 </th>
-                <th>
+                <th style="text-align: center" nzWidth="130px">
                     <input nz-input placeholder="Suborder" [(ngModel)]="suborderNumberSearchValue"
                            (ngModelChange)="page=1; getSubOrderData()" [ngStyle]="{'width': '100px'}">
                 </th>
-                <th class="suborder-daterange">
-                    <nz-range-picker [(ngModel)]="dateRangeModel" (ngModelChange)="onDateRangeChange($event)"
+                <th class="suborder-daterange" style="text-align: center" nzWidth="265px">
+                    <nz-range-picker [nzPlaceHolder]="['Start', 'End']" [(ngModel)]="dateRangeModel"
+                                     (ngModelChange)="onDateRangeChange($event)"
                                      nzFormat="dd/MM/yyyy" [nzDisabledDate]="disabledDate"></nz-range-picker>
                 </th>
-                <th>
+                <th nzWidth="100px">
 
                 </th>
-                <th>
+                <th nzWidth="180px">
                     <input nz-input placeholder="Vendor" [(ngModel)]="vendorNameValue"
                            *ngIf="currentUser.group_id=='admin'"
-                           (ngModelChange)="page=1; getSubOrderData()">
+                           (ngModelChange)="page=1; getSubOrderData()" [ngStyle]="{'width': '160px'}">
                 </th>
-                <th>
+                <th nzWidth="130px">
                     <input nz-input placeholder="Quantity" [(ngModel)]="quantitySearchValue"
-                           (ngModelChange)="page=1; getSubOrderData()">
+                           (ngModelChange)="page=1; getSubOrderData()" [ngStyle]="{'width': '100px'}">
                 </th>
-                <th>
+                <th nzWidth="130px">
                     <input nz-input placeholder="Total Price" [(ngModel)]="totalPriceSearchValue"
-                           (ngModelChange)="page=1;getSubOrderData()">
+                           (ngModelChange)="page=1;getSubOrderData()" [ngStyle]="{'width': '100px'}">
                 </th>
-                <th>
+                <th nzWidth="200px">
                     <nz-select style="width: 180px;" [(ngModel)]="statusSearchValue"
                                nzAllowClear (ngModelChange)="page=1; getSubOrderData()"
                                nzPlaceHolder="Select Status"
@@ -101,7 +108,7 @@
                         </nz-option>
                     </nz-select>
                 </th>
-                <th>
+                <th nzWidth="180px">
                 </th>
                 <th>
 

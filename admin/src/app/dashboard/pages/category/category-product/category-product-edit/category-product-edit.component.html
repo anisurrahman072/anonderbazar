@@ -7,89 +7,102 @@
         </button>
     </ng-template>
     <ng-container>
-        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-            <div class="col-md-3">
-                <div nz-row>
-                    <div nz-col [nzSpan]="16">
-                        <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                                      dropBoxMessage="Drop Picture here"
-                                      clearButtonCaption="remove it?" [uploadedFiles]="oldImages"
-                                      [beforeUpload]="onBeforeUpload">
-                        </image-upload>
-                        <div
-                                *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
-                            Please upload an image here!
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div nz-row>
-                    <div nz-col [nzSpan]="2">
-                        <label> Name </label>
-                    </div>
-                    <div nz-col [nzSpan]="16">
-                        <input nz-input formControlName="name" placeholder="Enter Name" [nzSize]="'large'">
-                        <div
-                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
-                            Name is required!
-                        </div>
-                        <div
-                                *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
-                            Name already exists!
-                        </div>
-                        <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
-                            Verifying ...
-                        </div>
-                    </div>
-                </div>
-                <!--Name-->
-
-                <div nz-row>
-                    <div nz-col [nzSpan]="2">
-                        <label> Code </label>
-                    </div>
-                    <div nz-col [nzSpan]="16">
-                        <input nz-input formControlName="code" placeholder="Enter Code" [nzSize]="'large'">
-                        <div
-                                *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
-                            Please enter category code !
-                        </div>
-                    </div>
-                </div>
-                <!--parent_id-->
-
-                <div nz-row *ngIf='data != null && data.parent_id==0'>
-                    <div nz-col [nzSpan]="2">
-                        <label> Add Offer </label>
-                    </div>
-                    <div nz-col [nzSpan]="16">
-                        <nz-select [ngModel]="data?.id" formControlName="offer_id" nzAllowClear
-                                   nzPlaceHolder="Select Product category"
-                                   [nzNotFoundContent]="'Not found'" nzShowSearch>
-                            <div *ngFor="let option of offers">
-                                <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
-                                </nz-option>
+        <nz-spin [nzSpinning]="isLoading">
+            <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+                <div class="col-md-3">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="16">
+                            <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select image"
+                                          dropBoxMessage="Drop image here"
+                                          clearButtonCaption="remove it?" [uploadedFiles]="oldImages"
+                                          [beforeUpload]="onBeforeUpload">
+                            </image-upload>
+                            <div
+                                    *ngIf="getFormControl('image').dirty && getFormControl('image').hasError('required')">
+                                Please upload an image here!
                             </div>
-
-                        </nz-select>
-                        <div
-                                *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
-                            required!
+                        </div>
+                        <div nz-col [nzSpan]="16">
+                            <image-upload [max]="1" (removed)="onRemovedBanner($event)" buttonCaption="Select banner image"
+                                          dropBoxMessage="Drop image here"
+                                          clearButtonCaption="remove it?" [uploadedFiles]="existingBannerImage"
+                                          [beforeUpload]="onBeforeUploadBanner">
+                            </image-upload>
+                            <div
+                                    *ngIf="getFormControl('banner_image').dirty && getFormControl('banner_image').hasError('required')">
+                                Please upload a banner image here!
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!--parent_id-->
-                <div nz-row>
-                    <div nz-col [nzOffset]="2" [nzSpan]="16">
-                        <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
-                            Save
-                        </button>
-                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                <div class="col-md-9">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="2">
+                            <label> Name </label>
+                        </div>
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="name" placeholder="Enter Name" [nzSize]="'large'">
+                            <div
+                                    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+                                Name is required!
+                            </div>
+                            <div
+                                    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                                Name already exists!
+                            </div>
+                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                                Verifying ...
+                            </div>
+                        </div>
+                    </div>
+                    <!--Name-->
+
+                    <div nz-row>
+                        <div nz-col [nzSpan]="2">
+                            <label> Code </label>
+                        </div>
+                        <div nz-col [nzSpan]="16">
+                            <input nz-input formControlName="code" placeholder="Enter Code" [nzSize]="'large'">
+                            <div
+                                    *ngIf="getFormControl('code').dirty&&getFormControl('code').hasError('required')">
+                                Please enter category code !
+                            </div>
+                        </div>
+                    </div>
+                    <!--parent_id-->
+
+                    <div nz-row *ngIf='data != null && data.parent_id==0'>
+                        <div nz-col [nzSpan]="2">
+                            <label> Add Offer </label>
+                        </div>
+                        <div nz-col [nzSpan]="16">
+                            <nz-select [ngModel]="data?.id" formControlName="offer_id" nzAllowClear
+                                       nzPlaceHolder="Select Product category"
+                                       [nzNotFoundContent]="'Not found'" nzShowSearch>
+                                <div *ngFor="let option of offers">
+                                    <nz-option [nzLabel]="option.data_value[0].title" [nzValue]="option.id">
+                                    </nz-option>
+                                </div>
+
+                            </nz-select>
+                            <div
+                                    *ngIf="getFormControl('offer_id').dirty&&getFormControl('offer_id').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                    <!--parent_id-->
+                    <div nz-row>
+                        <div nz-col [nzOffset]="2" [nzSpan]="16">
+                            <button nz-button [nzSize]="'large'" [disabled]="!validateForm.valid">
+                                Save
+                            </button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        </form>
+            </form>
+        </nz-spin>
     </ng-container>
 </nz-card>

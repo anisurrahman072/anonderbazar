@@ -1,8 +1,8 @@
 const moment = require('moment');
 const {bangladeshSMSConfig, sslCommerzSMSConfig} = require('../../config/softbd');
 const {makeUniqueId} = require('../../libs/helper');
-
 const axios = require('axios');
+const fs = require('fs');
 /*
 {
   type : "post",
@@ -20,6 +20,40 @@ const axios = require('axios');
 
 module.exports = {
 
+  sendingDynamicSmsToMany: async (contactsMessages) => {
+
+    const sms = contactsMessages.map((contactMessage) => {
+      let contact = contactMessage.msisdn;
+      if (contact.charAt(0) === '+') {
+        contact = contact.substr(1);
+      } else if (contact.charAt(0) === '0') {
+        contact = '88' + contact;
+      }
+      return {
+        csms_id: makeUniqueId(18) + contactMessage.user_id,
+        text: contactMessage.text,
+        msisdn: contact
+      };
+    });
+
+    const payload = {
+      ...sslCommerzSMSConfig,
+      'sms': sms,
+    };
+
+    console.log('number of sms: ', payload.sms.length);
+    console.log(payload);
+
+    fs.writeFileSync('./all-sms-content.json', JSON.stringify(payload, null, 2), 'utf8');
+
+    const response = await axios.post('https://smsplus.sslwireless.com/api/v3/send-sms/dynamic', payload, {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    console.log(response);
+
+  },
   sendingOneSmsToOne: (contacts, message) => {
     const contactTexts = contacts.map((contact) => {
       if (contact.charAt(0) === '+') {

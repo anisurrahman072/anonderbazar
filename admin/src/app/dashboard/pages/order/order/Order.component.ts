@@ -60,20 +60,23 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     submitting: boolean = false;
 
-    constructor(private orderService: OrderService,
-                private suborderItemService: SuborderItemService,
-                private fb: FormBuilder,
-                private _notification: NzNotificationService,
-                private uiService: UIService,
-                private suborderService: SuborderService,
-                private statusChangeService: StatusChangeService,
-                private exportService: ExportService,
-                private authService: AuthService) {
+    constructor(
+        private orderService: OrderService,
+        private suborderItemService: SuborderItemService,
+        private fb: FormBuilder,
+        private _notification: NzNotificationService,
+        private uiService: UIService,
+        private suborderService: SuborderService,
+        private statusChangeService: StatusChangeService,
+        private exportService: ExportService,
+        private authService: AuthService
+    ) {
 
         this.validateProductForm = this.fb.group({
             productChecked: ['', []],
         });
     }
+
     ngOnDestroy(): void {
         this.orderDataSubscription
             ? this.orderDataSubscription.unsubscribe()
@@ -83,6 +86,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.subOrderUpdateSub ? this.subOrderUpdateSub.unsubscribe() : '';
 
     }
+
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
@@ -163,10 +167,10 @@ export class OrderComponent implements OnInit, OnDestroy {
                     this.orderCsvTotal = result.total;
                     const thisTotal = this.csvOrders.length;
 
-                    if(typeof this.storedCsvOrders[page - 1] === 'undefined'){
+                    if (typeof this.storedCsvOrders[page - 1] === 'undefined') {
                         this.storedCsvOrders[page - 1] = [];
                     }
-                    if(typeof this.csvPageSelectAll[page - 1] === 'undefined'){
+                    if (typeof this.csvPageSelectAll[page - 1] === 'undefined') {
                         this.csvPageSelectAll[page - 1] = false;
                     }
 
@@ -259,7 +263,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     //Method for status change
     changeStatusConfirm($event, id, oldStatus) {
-        this.subOrderUpdateSub = this.orderService.update(id, {status: $event, changed_by: this.currentUser.id}).subscribe((res) => {
+        this.subOrderUpdateSub = this.orderService.update(id, {
+            status: $event,
+            changed_by: this.currentUser.id
+        }).subscribe((res) => {
             console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
@@ -291,9 +298,11 @@ export class OrderComponent implements OnInit, OnDestroy {
             let allCouponCodes = '';
 
             if (suborderItem.all_coupons) {
-                allCouponCodes = suborderItem.all_coupons.split('|').map((coupon) => {
+                const couponArr = suborderItem.all_coupons.split(',');
+                console.log('couponArr', suborderItem.all_coupons, couponArr);
+                allCouponCodes = couponArr.map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
-                });
+                }).join('|');
             }
 
             let varients = "";
@@ -353,7 +362,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
             return item.id;
         });
-        if(orderIds.length === 0){
+        if (orderIds.length === 0) {
             return false;
         }
 

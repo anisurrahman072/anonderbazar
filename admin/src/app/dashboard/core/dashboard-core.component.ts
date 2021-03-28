@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { UIService } from '../../services/ui/ui.service';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { AccessControl } from '../../auth/core/guard/AccessControl.guard';
   templateUrl: './dashboard-core.component.html',
   styleUrls: ['./dashboard-core.component.css']
 })
-export class DashboardCoreComponent implements OnInit {
+export class DashboardCoreComponent implements OnInit, OnDestroy {
   currentUser: any;
   isCollapsed: boolean;
 
@@ -35,6 +35,8 @@ export class DashboardCoreComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+  }
   logOut($event) {
     this.uiService.selectedWarehouseUpdate(null);
     this.authService.logout();

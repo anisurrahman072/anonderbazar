@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {concatMap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../../state-management";
@@ -91,6 +90,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     showBKashAgreementTerm: boolean = false;
     agreedToBKashTermsConditions: boolean = false;
 
+    couponCashbackAmount: number = 0;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -149,21 +150,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.currentUser = user;
             if (this.currentUser) {
                 this.user_id = this.currentUser.id;
+                if (this.currentUser.couponLotteryCashback && this.currentUser.couponLotteryCashback.length > 0) {
+                    this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
+                }
+
             } else {
                 this.user_id = null;
             }
         }, () => {
             this.user_id = null;
         });
-
-/*
-        this.areaService.getAllDivision().subscribe((result) => {
-                    this.divisionSearchOptions = result;
-                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
-                }, (err) => {
-                    console.log(err);
-                });
-*/
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
 
@@ -207,14 +203,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
 
-        /*this.previousAddressChange();*/
-
-        /*
-        this.loaderService.hideLoader();
-        this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-            this.cartData = cartData;
-        });
-        */
     }
 
     //Method for previous address change
@@ -302,16 +290,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //Event method for removing cart items
     removeCartItem(cartItemId) {
-        // this._progress.start("mainLoader");
+
         this.loaderService.showLoader();
         this.cartItemService.delete(cartItemId).subscribe(res => {
-            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                            this.cartData = cartData;
-                            this.updateGrandTotal();
-                            // this._progress.complete("mainLoader");
-                            this.loaderService.hideLoader();
-                            this.toastr.info("Item removed from cart successfully", 'Note');
-                        });*/
             this.store.dispatch(new fromStore.LoadCart());
             this.toastr.info("Item removed from cart successfully", 'Note');
             this.loaderService.hideLoader();
@@ -362,7 +343,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (selectedZilaId > 0 && !this.noShippingCharge) {
 
                 if (this.courierCharges) {
-                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                    // this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
 
                 if (this.shippingCharge) {
@@ -416,7 +397,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -428,7 +409,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
@@ -437,23 +418,33 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        // this._progress.start("mainLoader");
-
-        if (value.paymentType == "SSLCommerce") {
+        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack') {
             this.loaderService.showLoader();
             this.orderService.placeOrder(requestPayload).subscribe(result => {
-                // this._progress.complete("mainLoader");
+
                 console.log('result-SSLCommerce', result);
                 this.loaderService.hideLoader();
                 if (result && result.GatewayPageURL) {
                     this.store.dispatch(new fromStore.LoadCart());
                     window.location.href = result.GatewayPageURL;
+                } else if(result && result.order_id){
+                    this.successOrderId = result.order_id;
+                    this.store.dispatch(new fromStore.LoadCurrentUser());
+                    this.store.dispatch(new fromStore.LoadCart());
+                } else {
+                    this.toastr.error("Problem in placing your order.", "Oppppps!", {
+                        positionClass: 'toast-bottom-right'
+                    });
                 }
             }, (error) => {
                 this.loaderService.hideLoader();
                 console.log('sslcommerz error', error);
                 if (error && error.error) {
-                    this.toastr.error(error.error.message, "Oppppps!", {
+                    this.toastr.error(error.error.message, "Problem in placing your order!", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                } else if(error && error.additionalMessage) {
+                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
@@ -462,6 +453,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     });
                 }
             });
+
         } else if (value.paymentType === 'bKash') {
 
             this.loaderService.showLoader();
@@ -479,10 +471,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
             this.loaderService.showLoader();
             this.orderService.placeCashOnDeliveryOrder(requestPayload).subscribe(result => {
-                // this._progress.complete("mainLoader");
                 this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
-                // this.router.navigate(['/profile/orders/invoice/', result.order.id]);
                 this.successOrderId = result.order.id;
                 this.toastr.success("Your order has been successfully placed.", "Note", {
                     positionClass: 'toast-bottom-right'
@@ -491,7 +481,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.loaderService.hideLoader();
                 console.log('cash', error);
                 if (error && error.error) {
-                    this.toastr.error(error.error, "Problem", {
+                    this.toastr.error(error.error, "Problem in placing your order!", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                }  else if(error && error.additionalMessage) {
+                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
@@ -545,7 +539,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -557,7 +551,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
@@ -752,20 +746,18 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             let division = this.divisionSearchOptions.find(x => x.id == formValue.shipping_division_id);
             let shipping_upazila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
             let shipping_zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
-            let fullAddress = formValue.shippingAddress + ', ' +
-                division.name + ', ' +
-                shipping_upazila.name + ', ' +
-                shipping_zila.name;
-            return fullAddress;
+            return formValue.shippingAddress + ', ' +
+                (division ? division.name : '') + ', ' +
+                (shipping_upazila ? shipping_upazila.name : '') + ', ' +
+                (shipping_zila ? shipping_zila.name : '');
         } else {
             let division = this.divisionSearchOptions.find(x => x.id == formValue.division_id);
             let shipping_upazila = this.upazilaSearchOptions.find(x => x.id == formValue.upazila_id);
             let shipping_zila = this.zilaSearchOptions.find(x => x.id == formValue.zila_id);
-            let fullAddress = formValue.address + ', ' +
-                division.name + ', ' +
-                shipping_upazila.name + ', ' +
-                shipping_zila.name;
-            return fullAddress;
+            return formValue.address + ', ' +
+                (division ? division.name : '') + ', ' +
+                (shipping_upazila ? shipping_upazila.name : '') + ', ' +
+                (shipping_zila ? shipping_zila.name : '');
         }
     }
 

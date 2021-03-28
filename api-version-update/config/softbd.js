@@ -4,8 +4,9 @@ module.exports = {
   jwtTokenExpirationTime: 60 * 60 * 24,
   couponCodePadCount: 6,
   adminPaymentAddressId: 75,
+  cashOnDeliveryNotAllowedForCategory: 428,
   dhakaZilaId: 2942,
-  sslCommerceSandbox: false,
+  sslCommerceSandbox: true,
   sslCommerzSandboxCred: {
     store_id: 'anond5efeb984e900f',
     store_passwd: 'anond5efeb984e900f@ssl'
@@ -20,9 +21,13 @@ module.exports = {
     api_key: 'C20075355fdae5af5f8c82.48883475',
     senderid: '8809612446331',
   },
+  sslCommerzOTPSMSConfig: {
+    'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
+    'sid': 'ANONDERBAZARAPI',
+  },
   sslCommerzSMSConfig: {
     'api_token': 'SOFTBD-753ba2f0-f1a3-4388-a19f-62e47260f148',
-    'sid': 'SOFTBDNONAPI',
+    'sid': 'ANONDERBAZARBULK',
   },
   bKash: {
     isSandboxMode: true,

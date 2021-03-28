@@ -29,6 +29,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'uniqueCheckName': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
@@ -65,6 +66,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'updateType': ['isAuthorized', 'isAdmin'],
     'updateProduct': ['isAuthorized', 'isAdmin'],
+    'removeImage': ['isAuthorized', 'isAdmin'],
     'getType': true,
     'getProduct': true,
     'getSingleType': true,
@@ -74,6 +76,12 @@ module.exports.policies = {
   },
   CraftmanPricesController: {
     'getAll': true
+  },
+  CouponLotteryDrawController: {
+    '*': false,
+    'byLotteryId': ['isAuthorized', 'isAdmin'],
+    'getAllWinner': true,
+    'makeDraw': ['isAuthorized', 'isCustomer']
   },
   CMSController: {
     '*': false,

@@ -161,3 +161,7 @@ h3.ant-card-head-title {
 body .cdk-overlay-container {
   z-index: 19999999;
 }
+.order-list-card .ant-table-tbody>tr>td, .order-list-card .ant-table-thead>tr>th {
+  text-align: center;
+  padding: 10px;
+}

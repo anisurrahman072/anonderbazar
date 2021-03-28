@@ -3,3 +3,7 @@
 .flatpickr-calendar.arrowTop:after {
     display: none;
 }
+.ant-table-tbody>tr>td, .ant-table-thead>tr>th {
+    text-align: center;
+    padding: 10px;
+}

@@ -8,6 +8,122 @@ const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
 module.exports = {
+
+  placeCouponCashbackOrder: async function (authUser, orderDetails, addresses, globalConfigs) {
+    const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
+    const {paymentType, grandOrderTotal} = orderDetails;
+
+    let finalBillingAddressId = null;
+    let finalShippingAddressId = null;
+
+    if (billingAddress && billingAddress.id) {
+      finalBillingAddressId = billingAddress.id;
+    } else if (adminPaymentAddress && adminPaymentAddress.id) {
+      finalBillingAddressId = adminPaymentAddress.id;
+    }
+
+    if (shippingAddress && shippingAddress.id) {
+      finalShippingAddressId = shippingAddress.id;
+    } else if (adminPaymentAddress && adminPaymentAddress.id) {
+      finalShippingAddressId = adminPaymentAddress.id;
+    }
+
+    if (finalShippingAddressId === null || finalBillingAddressId === null) {
+      throw new Error('No Shipping or Billing Address found!');
+    }
+
+    const couponLotteryCashback = await CouponLotteryCashback.findOne({
+      user_id: authUser.id,
+      deletedAt: null
+    });
+
+    if (!(couponLotteryCashback && grandOrderTotal <= couponLotteryCashback.amount)) {
+      throw new Error('The customer is not allowed to use cashback with this order.');
+    }
+    const {
+      orderForMail,
+      allCouponCodes,
+      order,
+      noShippingCharge,
+    } = await sails.getDatastore()
+      .transaction(async (db) => {
+        /****** Finalize Order -------------------------- */
+        const {
+          orderForMail,
+          allCouponCodes,
+          order,
+          subordersTemp,
+          noShippingCharge,
+        } = await this.createOrder(
+          db,
+          authUser,
+          {
+            paymentType: paymentType,
+            paidAmount: grandOrderTotal,
+            sslCommerztranId: null,
+            paymentResponse: {
+              'purpose': 'Cashback Payment for coupon code purchase'
+            }
+          },
+          {
+            billingAddressId: finalBillingAddressId,
+            shippingAddressId: finalShippingAddressId
+          },
+          globalConfigs
+        );
+
+        const cashBackAmount = couponLotteryCashback.amount;
+        const deductedCashBackAmount = (cashBackAmount - grandOrderTotal);
+
+        await CouponLotteryCashback.updateOne({
+          id: couponLotteryCashback.id
+        }).set({
+          amount: deductedCashBackAmount
+        });
+
+        return {
+          orderForMail,
+          allCouponCodes,
+          order,
+          subordersTemp,
+          noShippingCharge
+        };
+      });
+
+    try {
+
+      let smsPhone = authUser.phone;
+
+      if (!noShippingCharge && shippingAddress.phone) {
+        smsPhone = shippingAddress.phone;
+      }
+
+      if (smsPhone) {
+        let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
+        if (allCouponCodes && allCouponCodes.length > 0) {
+          if (allCouponCodes.length === 1) {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
+          } else {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
+          }
+        }
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+
+    } catch (err) {
+      console.log('order sms was not sent!');
+      console.log(err);
+    }
+
+    try {
+      EmailService.orderSubmitMail(orderForMail);
+    } catch (err) {
+      console.log('order email was not sent!');
+      console.log(err);
+    }
+
+    return order.id;
+  },
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
     console.log('################# placeSSlCommerzOrder ##################### ');

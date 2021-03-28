@@ -82,9 +82,11 @@ export class MenuComponent implements OnInit {
             }
         });
     }
-    showHideMobileMenu(){
+
+    showHideMobileMenu() {
         this.isMobileMenuOpen = !this.isMobileMenuOpen;
     }
+
     //Event method for category hover from menu
     categoryHover(category: any) {
         this.subCategoryList = category.subCategories;
@@ -115,7 +117,7 @@ export class MenuComponent implements OnInit {
         this.filterUIService.changeCategoryId(id);
         this.filterUIService.changeCategoryType(type);
         this.filterUIService.changeCategoryName(name);
-        this.router.navigate(['/products/category/', id], {
+        this.router.navigate(['/products', {type: 'category', id: id}], {
             queryParams: {
                 category: id
             }
@@ -127,7 +129,7 @@ export class MenuComponent implements OnInit {
         event.stopPropagation();
         this.selectedCategoryId = category.id;
         this.isDisplay = false
-        this.router.navigate(['/products/category/', this.selectedCategoryId], {
+        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
                 category: category.id,
                 sub: subCategory.id
@@ -140,7 +142,7 @@ export class MenuComponent implements OnInit {
         event.stopPropagation();
         this.selectedCategoryId = category.id;
         this.isDisplay = false
-        this.router.navigate(['/products/category/', this.selectedCategoryId], {
+        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
                 category: category.id,
                 sub: subCategory.id,
@@ -154,7 +156,7 @@ export class MenuComponent implements OnInit {
         event.stopPropagation();
         this.selectedCategoryId = category.id;
         this.isDisplay = false
-        this.router.navigate(['/products/category/', this.selectedCategoryId], {
+        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
                 category: category.id,
                 brand: brand.id
