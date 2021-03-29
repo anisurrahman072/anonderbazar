@@ -3,7 +3,7 @@ import * as fromStore from "../../../state-management";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {User} from "../../../models/";
-import {AuthService, FavouriteProductService, UserService} from "../../../services";
+import {AuthService, FavouriteProductService, LotteryService, UserService} from "../../../services";
 import {ActivatedRoute, Router} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
 import {NotificationsService} from "angular2-notifications";
@@ -61,6 +61,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
     ImageFileEdit: any[] = [];
     ImageFile: File;
 
+    cashbackAmount: any;
+
     constructor(
         private route: ActivatedRoute,
         private store: Store<fromStore.HomeState>,
@@ -72,6 +74,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         private favouriteProductService: FavouriteProductService,
         public loaderService: LoaderService,
         private toastService: ToastrService,
+        private lotteryService: LotteryService
 
     ) {
         this.options = [
@@ -158,6 +161,20 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.currentUser$.subscribe((res)=> {
             console.log(' this.currentUser$.subscribe', res);
             this.user = res;
+
+            if(res){
+                this.lotteryService.getCashbackByUserId(this.user.id)
+                    .subscribe((data) => {
+                        console.log('Amount paici: ', data);
+                        if(data.length === 0){
+                            this.cashbackAmount = 0;
+                        }
+                        else{
+                            this.cashbackAmount = data[0].amount;
+                        }
+                    });
+            }
+
         }, (error)=>{
             console.log(' this.currentUser$.subscribe', error);
         })

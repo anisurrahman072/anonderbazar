@@ -2932,13 +2932,18 @@ footer - start
     font-weight: 500;
 }
 
-.shipping-contact {
+.shipping-contact, .cashback {
     padding-bottom: 20px;
     margin-bottom: 20px;
     border-bottom: 1px solid #D4D4D4;
 }
 
 .shipping-contact .conttag p {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.cashbackTitle{
     font-weight: 500;
     font-size: 16px;
 }
