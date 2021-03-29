@@ -299,7 +299,7 @@ module.exports = {
       if (!req.body.username) {
         return res.status(422).json({
           success: false,
-          message: 'username was not provided'
+          isunique: false,
         });
       }
       const user = await User.find({
@@ -310,18 +310,18 @@ module.exports = {
       if (user && user.length > 0) {
         return res.status(422).json({
           success: false,
-          message: 'User already exists with this username',
+          isunique: false,
         });
       }
       return res.status(200).json({
         success: true,
-        message: 'username is available'
+        isunique: true,
       });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
         success: false,
-        message: 'Problem in server',
+        isunique: false,
         error
       });
     }
@@ -332,7 +332,7 @@ module.exports = {
       if (!req.body.phone) {
         return res.status(422).json({
           success: false,
-          message: 'phone was not provided'
+          isunique: false
         });
       }
       const user = await User.find({
@@ -343,18 +343,18 @@ module.exports = {
       if (user && user.length > 0) {
         return res.status(422).json({
           success: false,
-          message: 'User already exists with this phone',
+          isunique: false
         });
       }
       return res.status(200).json({
         success: true,
-        message: 'phone is available'
+        isunique: true
       });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
         success: false,
-        message: 'Problem in server',
+        isunique: false,
         error
       });
     }
@@ -365,7 +365,7 @@ module.exports = {
       if (!req.body.email) {
         return res.status(422).json({
           success: false,
-          message: 'email was not provided'
+          isunique: false,
         });
       }
       const user = await User.find({
@@ -376,24 +376,23 @@ module.exports = {
       if (user && user.length > 0) {
         return res.status(422).json({
           success: false,
-          message: 'User already exists with this email',
+          isunique: false,
         });
       }
       return res.status(200).json({
         success: true,
-        message: 'email is available'
+        isunique: true,
       });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
         success: false,
-        message: 'Problem in server',
+        isunique: false,
         error
       });
     }
   },
   getAllShopUsers: async (req, res) => {
-
     try {
       const {
         allCustomer,

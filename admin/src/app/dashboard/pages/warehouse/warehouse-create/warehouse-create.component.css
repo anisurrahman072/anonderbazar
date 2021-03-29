@@ -572,3 +572,12 @@ p {
     overflow-y: scroll;
     height: 520px;
 }
+.form-row {
+    margin-bottom: 10px;
+}
+.validation-error {
+    color: red;
+}
+#validateForm label {
+    margin-bottom: 0;
+}

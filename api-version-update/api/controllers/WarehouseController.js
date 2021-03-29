@@ -110,10 +110,61 @@ module.exports = {
   },
   //Method called for creating a warehouse data
   //Model models/Warehouse.js
-  create: async (req, res) => {
+  createCustom: async (req, res) => {
     try {
 
-      if (req.body.haslogo === 'true') {
+      console.log(req.body);
+      let postBody = {...req.body};
+      // console.log(postBody);
+
+      try {
+        postBody.userdata = JSON.parse(postBody.userdata);
+      } catch (__) {
+        return res.status(422).json({
+          success: false,
+          message: 'Invalid User data'
+        });
+      }
+      let userData = postBody.userdata;
+      delete postBody.userdata;
+
+      const {
+        warehouse,
+        user
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          if (postBody.hasLogo === 'true') {
+            const uploaded = await uploadImages(req.file('logo'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No logo image was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            postBody.logo = '/' + newPath;
+          }
+          postBody.status = 0;
+          const warehouse = await Warehouse.create(postBody).fetch().usingConnection(db);
+
+          if (userData.hasImage === 'true') {
+            const uploaded = await uploadImages(req.file('user_avatar'));
+            if (uploaded.length === 0) {
+              return res.badRequest('No user avatar was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            userData.avatar = '/' + newPath;
+          }
+          userData.warehouse_id = warehouse.id;
+          userData.active = 1;
+          userData.group_id = 4; // 4 for owner / warehouse
+
+          let user = await User.create(userData).fetch().usingConnection(db);
+
+          return {
+            warehouse,
+            user
+          };
+        });
+
+      /*      if (req.body.haslogo === 'true') {
         const uploaded = await uploadImages(req.file('logo'));
         if (uploaded.length === 0) {
           return res.badRequest('No image was uploaded');
@@ -122,12 +173,16 @@ module.exports = {
         req.body.logo = '/' + newPath;
       }
       req.body.status = 0;
-      const warehouseCreate = await Warehouse.create(req.body).fetch();
+      const warehouseCreate = await Warehouse.create(req.body).fetch();*/
 
-      return res.status(200).json(warehouseCreate);
+      return res.status(200).json({
+        user,
+        warehouse
+      });
 
     } catch (error) {
-      return res.json(error.status, {message: '', error, success: false});
+      console.log(error);
+      return res.status(400).json({message: 'Something went wrong!', error});
     }
   },
 
