@@ -6,13 +6,13 @@ module.exports = {
   adminPaymentAddressId: 75,
   cashOnDeliveryNotAllowedForCategory: 428,
   dhakaZilaId: 2942,
-  sslCommerceSandbox: false,
+  sslCommerceSandbox: true,
   sslCommerzSandboxCred: {
     store_id: 'anond5efeb984e900f',
     store_passwd: 'anond5efeb984e900f@ssl'
   },
-  sslWebUrl: 'http://localhost:4200',
-  sslApiUrl: 'http://localhost:4000/api/v1',
+  sslWebUrl: 'http://test.anonderbazar.com',
+  sslApiUrl: 'http://api.test.anonderbazar.com/api/v1',
   sslCommerzProductionCred: {
     store_id: 'anonderbazarlive@ssl',
     store_passwd: 'i2EFz@ZNt57@t@r'
