@@ -4,10 +4,10 @@ export class GLOBAL_CONFIGS {
     public static bannerImageExtension = '.webp';
     public static otherImageExtension = '.webp';
     public static activePaymentMethods = {
-        cashBack: false,
+        cashBack: true,
         Cash: true,
         SSLCommerce: true,
         bKash: false,
     };
-    public static  lotteryAdminId = 130;
+    public static lotteryAdminId = 130;
 }
