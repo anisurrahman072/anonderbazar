@@ -144,8 +144,11 @@ module.exports = {
           postBody.status = 0;
           const warehouse = await Warehouse.create(postBody).fetch().usingConnection(db);
 
-          if (userData.hasImage === 'true') {
+          if (postBody.hasAvatar === 'true') {
             const uploaded = await uploadImages(req.file('user_avatar'));
+
+            console.log('User Avatar', uploaded);
+
             if (uploaded.length === 0) {
               return res.badRequest('No user avatar was uploaded');
             }

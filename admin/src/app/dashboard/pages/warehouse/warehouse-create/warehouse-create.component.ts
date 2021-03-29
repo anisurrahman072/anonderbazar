@@ -168,6 +168,7 @@ export class WarehouseCreateComponent implements OnInit {
             formData.append('hasLogo', 'false');
         }
         if (this.ImageFile) {
+            formData.append('hasAvatar', 'true');
             formData.append('user_avatar', this.ImageFile, this.ImageFile.name);
         }
 
