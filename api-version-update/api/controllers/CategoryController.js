@@ -34,34 +34,34 @@ module.exports = {
     try {
 
       let body = req.body;
-      if (body.hasImage && body.hasImage === 'true') {
-        try {
 
-          if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
-            const uploaded = await uploadImages(req.file('image'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No file was uploaded');
-            }
-            console.log('uploaded image: ', uploaded);
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
-              body.image = '/' + newPath;
-              if (typeof uploaded[1] !== 'undefined') {
-                const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
-                body.banner_image = '/' + newPathBanner;
-              }
-            } else if (body.hasImage && body.hasImage === 'true') {
-              body.image = '/' + newPath;
-            } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
-              body.banner_image = '/' + newPath;
-            }
+      try {
+
+        if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
-
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
+          console.log('uploaded image: ', uploaded);
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
+            body.image = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + newPathBanner;
+            }
+          } else if (body.hasImage && body.hasImage === 'true') {
+            body.image = '/' + newPath;
+          } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
+            body.banner_image = '/' + newPath;
+          }
         }
+
+      } catch (err) {
+        console.log('err', err);
+        return res.json(err.status, {err: err});
       }
+
 
       console.log('body', body);
       const returnCategory = await Category.create(body).fetch();

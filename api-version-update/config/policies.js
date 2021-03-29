@@ -343,9 +343,8 @@ module.exports.policies = {
     'findOne': true,
     'getAll': ['isAuthorized'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'create': false,
     'createCustom': ['isAuthorized', 'isAdmin'],
-    'update': ['isAuthorized', 'isOwnerOrAdmin'],
+    'updateCustom': ['isAuthorized', 'isAdmin'],
   },
   VariantController: {
     '*': false,

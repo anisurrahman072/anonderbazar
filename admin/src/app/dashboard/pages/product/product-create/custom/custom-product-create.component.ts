@@ -1,5 +1,5 @@
 import {
-    Component,
+    Component, OnDestroy,
     OnInit,
     ViewChild
 } from '@angular/core';
@@ -22,7 +22,7 @@ import {UniqueProductCodeValidator} from "../../../../../services/validator/Uniq
     templateUrl: './custom-product-create.component.html',
     styleUrls: ['./custom-product-create.component.css']
 })
-export class CustomProductCreateComponent implements OnInit {
+export class CustomProductCreateComponent implements OnInit, OnDestroy {
     @ViewChild('Image') Image;
 
     tagOptions: any = [];
@@ -128,6 +128,9 @@ export class CustomProductCreateComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+    }
+
     // Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
@@ -165,12 +168,12 @@ export class CustomProductCreateComponent implements OnInit {
             }
             formData.append('ImageBlukArray', ImageBluk.toString());
         }
+
         if (this.ImageFrontFile.length > 0) {
             formData.append('hasImageFront', 'true');
             formData.append('frontimage', this.ImageFrontFile[0], this.ImageFrontFile[0].name);
         } else {
             formData.append('hasImageFront', 'false');
-
         }
 
         this.isSubmit = false;
@@ -183,6 +186,7 @@ export class CustomProductCreateComponent implements OnInit {
                     'New product has been successfully added.',
                     result.data.name
                 );
+
                 this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
 

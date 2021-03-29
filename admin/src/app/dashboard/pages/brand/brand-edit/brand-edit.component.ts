@@ -48,6 +48,7 @@ export class BrandEditComponent implements OnInit, OnDestroy {
                 .subscribe(result => {
                     this.ImageFileEdit = [];
                     this.data = result;
+                    this.uniqueBrandNameValidator.setExcludeId(this.data.id);
                     this.validateForm.patchValue(this.data);
                     if (this.data && this.data.image) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image);
