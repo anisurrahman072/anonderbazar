@@ -11,6 +11,16 @@
   padding-right: 20px;
 }
 
+.btnWinnerWinner{
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
+.btnDrawWinner{
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .btnWinnerIcon{
   color: #dd1a1a;
   padding-right: 5px;
@@ -139,7 +149,63 @@
   max-height: 90%;
   transform: translate(-50%, -50%);
 }
+@media screen and (max-width: 320px) {
+  .btnWinnerList{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .btnDraw{
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+  .table-content{
+    padding: 2px !important;
+  }
+  .btnWinnerWinner{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .btnDrawWinner{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+@media screen and (max-width: 375px) {
+  .couponContainer{
+    font-size: 55px !important;
+  }
+  .btnDraw{
+    margin-right: 0px !important;
+  }
+  .couponDigitBox{
+    width: 42px !important;
+    min-width: 42px !important;
+  }
+}
+@media screen and (max-width: 425px) {
+  .couponContainer{
+    font-size: 80px;
+  }
+  .lottery-title{
+    font-size: 25px ;
+  }
+  .couponDigitBox{
+    width: 54px;
+    min-width: 54px;
+    margin: 2px !important;
+  }
+  .winnerListTable{
+    width: 100%;
+  }
+  .winnerListTitle{
+    padding-left: 0px !important;
+    text-align: center;
+  }
+}
 @media screen and (max-width: 768px) {
+  .couponShow{
+    width: 100%;
+  }
   .image-container{
     margin-top: 18%;
   }
@@ -148,6 +214,11 @@
   }
   .prizeImage{
     width: 31%;
+  }
+}
+@media screen and (max-width: 1024px) {
+  .couponDigitBox{
+    margin: 2px !important;
   }
 }
 //@media screen and (min-width: 768px) {
