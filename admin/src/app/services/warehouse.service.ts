@@ -52,6 +52,6 @@ export class WarehouseService {
     }
 
     update(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/' + id, data);
+        return this.http.put(this.EndPoint + '/update-custom/' + id, data);
     }
 }

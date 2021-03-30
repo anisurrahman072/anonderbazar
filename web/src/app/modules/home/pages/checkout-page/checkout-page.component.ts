@@ -34,6 +34,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     prevoius_address: any;
     checkoutForm: FormGroup;
 
+    showBkashPayment: boolean = false;
     /*
     prevoius_address_id: any;
     help1Show: boolean = false;
@@ -154,6 +155,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
 
+                if (this.user_id == 130) {
+                    this.showBkashPayment = true;
+                }
             } else {
                 this.user_id = null;
             }
