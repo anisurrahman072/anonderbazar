@@ -49,6 +49,7 @@ import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
 import {CouponBannersComponent} from "./pages/product-details/coupon-banners/coupon-banners.component";
 import { LotteryComponent } from './pages/lottery/lottery.component';
+import {NgxCarouselModule} from "ngx-carousel";
 
 const routes: Routes = [
     // ovi
@@ -191,7 +192,8 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         NgAisModule,
         MaterialModule,
         //ovi
-        Ng5SliderModule
+        Ng5SliderModule,
+        NgxCarouselModule
     ],
     declarations: [
         HomeComponent,
