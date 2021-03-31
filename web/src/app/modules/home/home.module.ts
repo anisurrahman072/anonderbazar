@@ -48,11 +48,9 @@ import {RecentlyViewesComponent} from './components/recently-viewes/recently-vie
 import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
 import {CouponBannersComponent} from "./pages/product-details/coupon-banners/coupon-banners.component";
-import { LotteryComponent } from './pages/lottery/lottery.component';
+import {LotteryComponent} from './pages/lottery/lottery.component';
 
 const routes: Routes = [
-    // ovi
-
     {
         path: "cms",
         component: CmsPageComponent,
@@ -74,9 +72,6 @@ const routes: Routes = [
             title: "Cms Details"
         }
     },
-
-    // ovi
-
     {
         path: "",
         component: HomeComponent,
@@ -91,7 +86,6 @@ const routes: Routes = [
             title: "Product Details"
         }
     },
-
     {
         path: "cart",
         component: ShoppingCartComponent,
