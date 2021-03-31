@@ -3,6 +3,7 @@ import {UserService} from "../../../../services/user.service";
 import {UIService} from "../../../../services/ui/ui.service";
 import {AuthService} from "../../../../services/auth.service";
 import {environment} from "../../../../../environments/environment";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
     selector: 'app-user',
@@ -37,11 +38,21 @@ export class UserComponent implements OnInit, OnDestroy {
     categorySearchOptions: any[] = [];
     loading: boolean = false;
 
+    isUserVisible: boolean = false;
+    validateProductForm: FormGroup;
+    allUser: any;
+    userPage: number = 1;
+    userTotal: number;
+
     constructor(
         private userService: UserService,
         private uiService: UIService,
-        private authService: AuthService
+        private authService: AuthService,
+        private fb: FormBuilder,
     ) {
+        this.validateProductForm = this.fb.group({
+            userChecked: ['', []],
+        });
     }
 
     // init the component
@@ -87,6 +98,12 @@ export class UserComponent implements OnInit, OnDestroy {
             .subscribe(
                 result => {
                     this.data = result.data;
+                    this.allUser = result.data.map(data => {
+                        return {
+                            ...data,
+                            checked: false
+                        }
+                    });
                     this.total = result.total;
                     this._isSpinning = false;
                 },
@@ -147,5 +164,16 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     subcategoryIdSearchChange($event) {
+    }
+
+    handleCancel = e => {
+        this.isUserVisible = false;
+    };
+
+    handleOk = e => {
+        this.isUserVisible = false;
+    };
+
+    submitForm($event: any, value: any) {
     }
 }

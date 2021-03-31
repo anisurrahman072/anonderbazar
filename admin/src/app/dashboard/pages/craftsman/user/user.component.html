@@ -1,6 +1,9 @@
 <section>
     <nz-card class="card-height" nzTitle=" User list" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
+            <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
+                <i class="anticon anticon-download"></i><span> Download </span>
+            </button>
             <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
@@ -122,3 +125,74 @@
         </nz-table>
     </nz-card>
 </section>
+
+<!--product modal-->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isUserVisible"
+          [nzTitle]="'Generate and Download Excel Document'"
+          [nzContent]="modalUserContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalUserContent>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
+              (ngSubmit)="submitForm($event, validateProductForm.value)">
+
+            <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allUser" [nzFrontPagination]="false"
+                      [nzLoading]="_isSpinning"
+                      [(nzPageIndex)]="userPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
+                      [nzTotal]="total"
+                      (nzPageIndexChange)="getPageData($event)"
+            >
+                <thead>
+                <tr>
+                    <th>
+                        <input  type="checkbox" id="order_check_all_pr" #csvSelectAll
+                                (change)="selectAllCsv($event)">
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of nzTableDownload.data;let i=index;">
+                    <td>
+                        <input type="checkbox" id="{{'order_checked_pr' + data.id}}"
+                               (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
+                    </td>
+                    <td>{{data.id}}</td>
+                    <td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td>
+                        <nz-tag>{{data.full_name}}</nz-tag>
+                    </td>
+                    <td>{{data.total_quantity}}</td>
+                    <td>{{data.total_price}}</td>
+                    <td>{{getStatusLabel(data.status)}}</td>
+                    <td>{{data.changedByName}}</td>
+                </tr>
+                </tbody>
+            </nz-table>
+            <div>
+                <div>
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateProductForm.valid || submitting">
+                        Create Excel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+</nz-modal>
