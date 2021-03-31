@@ -16,6 +16,7 @@ import {CategoryProductService} from '../../../../services/category-product.serv
 import {BrandService} from '../../../../services/brand.service';
 import {UserService} from '../../../../services/user.service';
 import {AuthService} from '../../../../services/auth.service';
+import {UniqueProductCodeValidator} from "../../../../services/validator/UniqueProductCodeValidator";
 import {environment} from "../../../../../environments/environment";
 
 @Component({
@@ -129,7 +130,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private categoryTypeService: CategoryTypeService,
         private categoryProductService: CategoryProductService,
-        private productService: ProductService
+        private productService: ProductService,
+        private uniqueProductCodeValidator: UniqueProductCodeValidator
     ) {
 
     }
@@ -138,7 +140,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code: [''],
+            code: ['', [Validators.required], [this.uniqueProductCodeValidator]],
             image: [null, []],
             frontimage: [null, []],
             price: ['', []],
@@ -157,6 +159,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             weight: ['', []],
             status: ['', [Validators.required]]
         });
+
         this.validateFormCouponBanner = this.fb.group({});
 
         this.currentUser = this.authService.getCurrentUser();
@@ -169,7 +172,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.productService.getById(this.id).subscribe(result => {
                 console.log('product', result);
-                if(result.warehouse_id){
+                if (result.warehouse_id) {
                     this.warehouse_name = result.warehouse_id.name;
                 } else {
                     this.warehouse_name = 'N/F';
@@ -177,6 +180,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
                 this.data = result;
 
+                this.uniqueProductCodeValidator.setExcludeId(this.data.id);
                 this.validateForm.patchValue(this.data);
                 if (this.data && this.data.brand_id) {
                     this.brand_id = this.data.brand_id;
@@ -245,7 +249,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                     this.tag = JSON.parse(this.data.tag);
                 }
 
-            }, (error)=> {
+            }, (error) => {
                 this._notification.error('Product could not be retrieved', 'Product could not be retrieved');
             });
         });
@@ -263,6 +267,10 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
+        }
+
+        if(this.validateForm.invalid){
+            return false;
         }
 
         const formData: FormData = new FormData();
@@ -325,7 +333,9 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     //Event method for submitting the form
     submitFormCouponBanner = ($event, value) => {
         const formData: FormData = new FormData();
-
+        if (this.validateFormCouponBanner.invalid) {
+            return false;
+        }
         formData.append('product_id', this.id.toString());
 
         this.ImageBannerFiles.forEach((file, index) => {
@@ -450,6 +460,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             this.categorySearchOptions = {};
         }
     }
+
     // Method called on category change
     categoryChange($event) {
         const query = encodeURI($event);
@@ -472,8 +483,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             this.subcategorySearchOptions = {};
         }
     }
-
-
 
 
     handleCancelModal($event) {

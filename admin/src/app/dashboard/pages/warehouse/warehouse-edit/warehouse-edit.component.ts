@@ -13,6 +13,9 @@ import {AreaService} from '../../../../services/area.service';
 import {environment} from "../../../../../environments/environment";
 import {ValidationService} from "../../../../services/validation.service";
 import {UserService} from "../../../../services/user.service";
+import {UniqueEmailValidator} from "../../../../services/validator/UniqueEmailValidator";
+import {UniqueUsernameValidator} from "../../../../services/validator/UniqueUsernameValidator";
+import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneValidator";
 
 @Component({
     selector: 'app-warehouse-edit',
@@ -22,6 +25,7 @@ import {UserService} from "../../../../services/user.service";
 export class WarehouseEditComponent implements OnInit, OnDestroy {
     @ViewChild('Image') Image;
     id: number;
+    userId: number;
     data: any = [];
     sub: Subscription;
     zilaSearchOptions: any;
@@ -31,13 +35,14 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
     zila_id: number;
     upazila_id: number;
     current = 0;
-
+    _spinning: boolean = false;
+    submitting: boolean = false;
     divisionSelect: any;
     ImageFileEdit: any[] = [];
     ImageLogoFileEdit: any[] = [];
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     validateForm: FormGroup;
-    ImageFile: File;
+    avatarImageFile: File;
     logoFile: File;
 
     ckConfig = {
@@ -84,15 +89,19 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
                 private areaService: AreaService,
                 private warehouseService: WarehouseService,
                 private validationService: ValidationService,
-                private userService: UserService,) {
+                private userService: UserService,
+                private uniquEmailValidator: UniqueEmailValidator,
+                private uniqueUsernameValidator: UniqueUsernameValidator,
+                private uniquePhoneValidator: UniquePhoneValidator) {
 
     }
 
     // init the component
     ngOnInit() {
         this.validateForm = this.fb.group({
+            id: ['', [Validators.required]],
             name: ['', [Validators.required]],
-            username: ['', [Validators.required], [this.validationService.userNameTakenValidator.bind(this)]],
+            username: ['', [Validators.required], [this.uniqueUsernameValidator]],
             first_name: ['', [Validators.required]],
             last_name: ['', [Validators.required]],
             gender: ['', [Validators.required]],
@@ -105,8 +114,8 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
             postal_code: ['', [Validators.required]],
-            phone: ['', [Validators.required]],
-            email: ['', [Validators.required]],
+            phone: ['', [Validators.required], [this.uniquePhoneValidator]],
+            email: ['', [Validators.required], [this.uniquEmailValidator]],
             invoice_footer: ['', []],
             logo: [''],
             award_points: ['']
@@ -121,13 +130,20 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
 
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
+            this._spinning = true;
             this.warehouseService.getById(this.id).subscribe(result => {
-                console.log('this.warehouseService.getById(this.id)', result);
+
                 this.data = result;
                 this.ImageFileEdit = [];
                 this.ImageLogoFileEdit = [];
                 this.validateForm.patchValue(this.data);
                 let user = this.data.user[0];
+                this.userId = user.id;
+
+                this.uniqueUsernameValidator.setExcludeId(this.userId);
+                this.uniquEmailValidator.setExcludeId(this.userId);
+                this.uniquePhoneValidator.setExcludeId(this.userId);
+
                 this.validateForm.patchValue({
                     first_name: user.first_name,
                     last_name: user.last_name,
@@ -148,6 +164,9 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
                 if (this.data && this.data.logo) {
                     this.ImageLogoFileEdit.push(this.IMAGE_ENDPOINT + this.data.logo);
                 }
+                this._spinning = false;
+            }, (error) => {
+                this._spinning = false;
             });
         });
     }
@@ -162,32 +181,71 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
-        const formData: FormData = new FormData();
-        formData.append('name', value.name);
-        formData.append('code', '');
-        formData.append('phone', value.phone);
-        formData.append('email', value.email);
-        formData.append('license_no', value.license_no);
-        formData.append('tin_no', value.tin_no);
-        formData.append('country', 'Bangladesh');
-        formData.append('division_id', value.division_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('address', value.address);
-        formData.append('postal_code', value.postal_code);
-        formData.append('invoice_footer', value.invoice_footer);
-        if (this.logoFile) {
-            formData.append('logo', this.logoFile, this.logoFile.name);
-            formData.append('haslogo', 'true');
-        } else {
-            formData.append('haslogo', 'false');
+        if(this.validateForm.invalid){
+            return false;
         }
-        this.warehouseService.update(this.id, formData).subscribe(result => {
-            this.updateUser(value, result);
+        const formData: FormData = new FormData();
+
+        formData.set('userdata', JSON.stringify({
+            id: this.userId,
+            username: value.username,
+            password: value.password,
+            email: value.email,
+            first_name: value.first_name,
+            last_name: value.last_name,
+            father_name: '',
+            mother_name: '',
+            phone: value.phone,
+            national_id: value.national_id,
+            gender: value.gender,
+            address: value.address,
+            upazila_id: value.upazila_id,
+            zila_id: value.zila_id,
+            division_id: value.division_id,
+        }));
+
+        if (this.logoFile) {
+            formData.append('image', this.logoFile, this.logoFile.name);
+            formData.set('hasLogo', 'true');
+        }
+
+        if (this.avatarImageFile) {
+            formData.append('image', this.avatarImageFile, this.avatarImageFile.name);
+            formData.set('hasAvatar', 'true');
+        }
+
+        formData.set('name', value.name);
+        formData.set('code', '');
+        formData.set('phone', value.phone);
+        formData.set('email', value.email);
+        formData.set('license_no', value.license_no);
+        formData.set('tin_no', value.tin_no);
+        formData.set('country', 'Bangladesh');
+        formData.set('division_id', value.division_id);
+        formData.set('zila_id', value.zila_id);
+        formData.set('upazila_id', value.upazila_id);
+        formData.set('address', value.address);
+        formData.set('postal_code', value.postal_code);
+        formData.set('invoice_footer', value.invoice_footer);
+
+        this.submitting = true;  this._spinning = true;
+        this.warehouseService.update(this.id, formData).subscribe((result: any) => {
+            this._spinning = false;
+            if(result && result.warehouse && result.warehouse.id){
+                this._notification.create('success', 'Shop has been updated successfully', result.warehouse.name);
+                this.router.navigate(['/dashboard/warehouse/details', this.id]);
+            } else {
+                this._notification.create('error', 'Failure message', 'Shop has not been updated successfully');
+            }
+        }, (err) => {
+            this._notification.error('Problem!', "Problem in creating Shop");
+            console.log(err);
+            this.submitting = false;
+            this._spinning = false;
         });
     };
 
-//Event method for submitting the form
+    //Event method for submitting the form
     updateUser(value, warehouse) {
         const formData: FormData = new FormData();
         formData.append('username', value.username);
@@ -205,8 +263,8 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
         formData.append('division_id', value.division_id);
         formData.append('active', this.data.user[0].active);
         formData.append('warehouse_id', warehouse.id);
-        if (this.ImageFile) {
-            formData.append('avatar', this.ImageFile, this.ImageFile.name);
+        if (this.avatarImageFile) {
+            formData.append('avatar', this.avatarImageFile, this.avatarImageFile.name);
             formData.append('hasImage', 'true');
 
         } else {
@@ -245,13 +303,13 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
     }
 
     //Event method for removing picture
-    onRemoved(file: FileHolder) {
-        this.ImageFile = null;
+    onRemovedAvatar(file: FileHolder) {
+        this.avatarImageFile = null;
     }
 
 //Event method for storing imgae in variable
-    onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+    onBeforeUploadAvatar = (metadata: UploadMetadata) => {
+        this.avatarImageFile = metadata.file;
 
         return metadata;
     }
@@ -264,8 +322,6 @@ export class WarehouseEditComponent implements OnInit, OnDestroy {
     //Event method for storing logo in variable
     onBeforeLogoUpload = (metadata: UploadMetadata) => {
         this.logoFile = metadata.file;
-        console.log(this.logoFile);
-
         return metadata;
     }
 

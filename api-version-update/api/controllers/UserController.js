@@ -302,10 +302,16 @@ module.exports = {
           isunique: false,
         });
       }
-      const user = await User.find({
+      const where = {
         username: req.body.username,
         deletedAt: null
-      });
+      };
+
+      if (req.body.exclude_id) {
+        where.id = {'!=': req.body.exclude_id};
+      }
+
+      const user = await User.find(where);
 
       if (user && user.length > 0) {
         return res.status(422).json({
@@ -335,10 +341,16 @@ module.exports = {
           isunique: false
         });
       }
-      const user = await User.find({
+      const where = {
         phone: req.body.phone,
         deletedAt: null
-      });
+      };
+
+      if (req.body.exclude_id) {
+        where.id = {'!=': req.body.exclude_id};
+      }
+
+      const user = await User.find(where);
 
       if (user && user.length > 0) {
         return res.status(422).json({
@@ -368,10 +380,16 @@ module.exports = {
           isunique: false,
         });
       }
-      const user = await User.find({
+      const where = {
         email: req.body.email,
         deletedAt: null
-      });
+      };
+
+      if (req.body.exclude_id) {
+        where.id = {'!=': req.body.exclude_id};
+      }
+
+      const user = await User.find(where);
 
       if (user && user.length > 0) {
         return res.status(422).json({

@@ -7,7 +7,7 @@ export class GLOBAL_CONFIGS {
         cashBack: true,
         Cash: true,
         SSLCommerce: true,
-        bKash: false,
+        bKash: true,
     };
     public static lotteryAdminId = 130;
 }
