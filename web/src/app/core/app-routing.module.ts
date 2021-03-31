@@ -3,7 +3,7 @@ import {Routes, RouterModule} from '@angular/router';
 import {IsLoggedIn} from "./isLoggedIn";
 
 //This route const for home and profile
-const routes: Routes = [ 
+const routes: Routes = [
     {path: '', loadChildren: '../modules/home/home.module#HomeModule'},
     {path: 'profile', canActivate: [IsLoggedIn], loadChildren: '../modules/profile/profile.module#ProfileModule'},
     {path: '**', redirectTo: '/'}

@@ -15,6 +15,28 @@ const {asyncForEach, calcCartTotal} = require('../../libs/helper');
 const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
+  findOne: async (req, res) => {
+    try {
+      const orders = await Order.findOne({id: req.param('id')})
+          .populate('user_id')
+          .populate('billing_address')
+          .populate('shipping_address')
+          .populate('payment')
+          .populate('couponProductCodes', {deletedAt: null})
+          .populate('suborders', {deletedAt: null});
+
+      console.log('orders', orders.couponProductCodes);
+
+      return res.status(200).json(orders);
+
+    } catch (error){
+      console.log(error);
+      return res.status(400).json({
+        message: false,
+        error
+      });
+    }
+  },
   index: (req, res) => {
     try {
       return res.json({message: 'Not Authorized'});
