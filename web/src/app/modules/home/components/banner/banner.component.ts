@@ -51,7 +51,7 @@ export class BannerComponent implements OnInit {
             this.carouselBannerItems.forEach(element => {
                 element.description = JSON.parse(element.description);
 
-                console.log('this.carousalList-element ', element.description.link, element)
+                // console.log('this.carousalList-element ', element.description.link, element)
             });
         });
 

@@ -16,16 +16,18 @@ export class ProductDescriptionComponent implements OnInit {
     constructor(private paymentAddressService: PaymentAddressService,
                 private authService: AuthService) {
     }
-      //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         let userId = this.authService.getCurrentUserId();
         this.paymentAddressService.getPaymentaddressWithoutOrderid(userId).subscribe(result => {
             this.address = result[0];
         });
     }
+
     //Method called in rating changes
     ratingChange(event){
         this.onRatingChange.emit(event);
     }
-    
+
 }

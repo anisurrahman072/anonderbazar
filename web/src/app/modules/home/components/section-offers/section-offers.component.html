@@ -44,14 +44,14 @@
                         <div class="offer-contant">
                             <h6>{{data.data_value[0]?.title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms-details/{{data.id}}">View All Offer<i
+                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i
                                     class="fa fa-angle-right text-center"></i></a>
                         </div>
                     </div>
                     <div class="offer-details"
                          *ngIf='data.data_value[0].allproducts && data.data_value[0].allproducts?.length > 0'>
                         <div class="offer-img">
-                            <a routerLink="/cms-details/{{data.id}}">
+                            <a routerLink="/cms/cms-details/{{data.id}}">
                                 <div class="row">
                                     <div class="col-md-8 col-8 pr-0">
                                         <div class="mr-1">
@@ -85,7 +85,7 @@
                         <div class="offer-contant">
                             <h6>{{data.data_value[0].title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms-details/{{data.id}}">View All Offer<i
+                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i
                                     class="fa fa-angle-right text-center"></i></a>
                         </div>
                     </div>
