@@ -137,7 +137,7 @@
 >
     <ng-template #modalUserContent>
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
-              (ngSubmit)="submitForm($event, validateProductForm.value)">
+              (ngSubmit)="generateExcel($event, validateProductForm.value)">
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allUser" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
@@ -163,25 +163,22 @@
                     </th>
                     <th>
                     </th>
-                    <th>
-                    </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let data of nzTableDownload.data;let i=index;">
-                    <td>
+                    <td width="5%">
                         <input type="checkbox" id="{{'order_checked_pr' + data.id}}"
                                (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
                     </td>
-                    <td>{{data.id}}</td>
-                    <td>
-                        <nz-tag>{{data.customer_name}}</nz-tag>
+                    <td width="10%">{{data.id}}</td>
+                    <td width="20%">
+                        {{data.customer_name}}
                     </td>
-                    <td>{{data.group_name}}</td>
-                    <td>{{data.email}}</td>
-                    <td>{{data.phone}}</td>
-                    <td>{{data.national_id}}</td>
-                    <td>{{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}</td>
+                    <td width="15%">{{data.email}}</td>
+                    <td width="10%">{{data.phone}}</td>
+                    <td width="15%">{{data.national_id}}</td>
+                    <td width="25%">{{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}</td>
                 </tr>
                 </tbody>
             </nz-table>

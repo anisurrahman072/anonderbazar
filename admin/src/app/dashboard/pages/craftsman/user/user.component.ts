@@ -4,6 +4,8 @@ import {UIService} from "../../../../services/ui/ui.service";
 import {AuthService} from "../../../../services/auth.service";
 import {environment} from "../../../../../environments/environment";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import * as ___ from 'lodash';
+import {ExportService} from "../../../../services/export.service";
 
 @Component({
     selector: 'app-user',
@@ -52,6 +54,7 @@ export class UserComponent implements OnInit, OnDestroy {
         private uiService: UIService,
         private authService: AuthService,
         private fb: FormBuilder,
+        private exportService: ExportService
     ) {
         this.validateProductForm = this.fb.group({
             userChecked: ['', []],
@@ -164,28 +167,40 @@ export class UserComponent implements OnInit, OnDestroy {
     selectAllExcel($event) {
 
         const isChecked = !!$event.target.checked;
-        console.log('ann1 selectAllCsv', isChecked);
         if (!isChecked) {
-            this.storedExcelUsers[this.csvPage - 1] = [];
+            this.storedExcelUsers[this.userPage - 1] = [];
         }
-        this.csvPageSelectAll[this.csvPage - 1] = isChecked;
-        const len = this.csvOrders.length;
+        this.excelPageSelectAll[this.userPage - 1] = isChecked;
+        const len = this.allUser.length;
         /** Check or uncheck all the checkbox of the current users in the current page */
         for (let i = 0; i < len; i++) {
             /** If parent checkbox is true then check all other unchecked boxes */
-            this.csvOrders[i].checked = isChecked;
+            this.allUser[i].checked = isChecked;
 
             /** Now push all the checked users in STORE */
             if (isChecked) {
-                const foundIndex = this.storedCsvOrders[this.csvPage - 1].findIndex((storedOder) => {
-                    return storedOder.id == this.csvOrders[i].id;
+                const foundIndex = this.storedExcelUsers[this.userPage - 1].findIndex((storedUser) => {
+                    return storedUser.id == this.allUser[i].id;
                 });
                 if (foundIndex === -1) {
-                    this.storedCsvOrders[this.csvPage - 1].push(this.csvOrders[i]);
+                    this.storedExcelUsers[this.userPage - 1].push(this.allUser[i]);
                 }
             }
         }
-        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
+        console.log('this.storedCsvOrders', this.storedExcelUsers[this.userPage - 1]);
+    }
+
+    _refreshStatus($event, value) {
+        if ($event && $event.currentTarget.checked) {
+            this.storedExcelUsers[this.userPage - 1].push(value);
+        } else {
+            let findValue = this.storedExcelUsers[this.userPage - 1].findIndex((item) => {
+                return item.id == value.id
+            });
+            if (findValue !== -1) {
+                this.storedExcelUsers[this.userPage - 1].splice(findValue, 1);
+            }
+        }
     }
 
     //Event method for setting up filter data
@@ -238,9 +253,6 @@ export class UserComponent implements OnInit, OnDestroy {
         this.getPageData();
     }
 
-    subcategoryIdSearchChange($event) {
-    }
-
     handleCancel = e => {
         this.isUserVisible = false;
     };
@@ -249,6 +261,35 @@ export class UserComponent implements OnInit, OnDestroy {
         this.isUserVisible = false;
     };
 
-    submitForm($event: any, value: any) {
+    generateExcel($event: any, value: any) {
+        if (!(this.storedExcelUsers.length > 0)){
+            return false;
+        }
+
+        let allStoredUsers = ___.flatten(this.storedExcelUsers);
+        let excelData = [];
+
+        allStoredUsers.forEach(user => {
+            let location = user.upazila_name+', '+user.zilla_name+', '+user.division_name;
+            excelData.push({
+                'User Id': user.id,
+                'User Name': user.customer_name,
+                'Email': user.email,
+                'Phone': user.phone,
+                'National Id': user.national_id,
+                'Location': location
+            });
+        });
+
+        const header = [
+            'User Id',
+            'User Name',
+            'Email',
+            'Phone',
+            'National Id',
+            'Location'
+        ];
+
+        this.exportService.downloadFile(excelData, header);
     }
 }
