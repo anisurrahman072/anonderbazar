@@ -127,8 +127,6 @@ export class UserComponent implements OnInit, OnDestroy {
                             }
                         });
 
-                        console.log('Annnnn1', this.allUser );
-
                         const thisTotal = this.allUser.length;
 
                         if (typeof this.storedExcelUsers[this.page - 1] === 'undefined') {
@@ -140,8 +138,6 @@ export class UserComponent implements OnInit, OnDestroy {
 
                         this.excelSelectAll.nativeElement.checked = !!this.excelPageSelectAll[this.page - 1];
 
-                        /** Jokhon porer abr ager page gulote jawa hocce tokhon jodi age konota check kra hoe thake
-                         tahole seita abr aikahne checked show korte hobe */
                         if (this.storedExcelUsers[this.page - 1].length) {
                             for (let index = 0; index < thisTotal; index++) {
                                 const foundIndex = this.storedExcelUsers[this.page - 1].findIndex((storedUser) => {
@@ -155,8 +151,6 @@ export class UserComponent implements OnInit, OnDestroy {
                             }
                         }
                     }
-
-
                 },
                 error => {
                     this._isSpinning = false;
@@ -172,12 +166,9 @@ export class UserComponent implements OnInit, OnDestroy {
         }
         this.excelPageSelectAll[this.userPage - 1] = isChecked;
         const len = this.allUser.length;
-        /** Check or uncheck all the checkbox of the current users in the current page */
         for (let i = 0; i < len; i++) {
-            /** If parent checkbox is true then check all other unchecked boxes */
             this.allUser[i].checked = isChecked;
 
-            /** Now push all the checked users in STORE */
             if (isChecked) {
                 const foundIndex = this.storedExcelUsers[this.userPage - 1].findIndex((storedUser) => {
                     return storedUser.id == this.allUser[i].id;
@@ -187,7 +178,6 @@ export class UserComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log('this.storedCsvOrders', this.storedExcelUsers[this.userPage - 1]);
     }
 
     _refreshStatus($event, value) {
@@ -270,15 +260,18 @@ export class UserComponent implements OnInit, OnDestroy {
         let excelData = [];
 
         allStoredUsers.forEach(user => {
-            let location = user.upazila_name+', '+user.zilla_name+', '+user.division_name;
-            excelData.push({
-                'User Id': user.id,
-                'User Name': user.customer_name,
-                'Email': user.email,
-                'Phone': user.phone,
-                'National Id': user.national_id,
-                'Location': location
-            });
+            if(user){
+                let location = user.upazila_name+'; '+user.zilla_name+'; '+user.division_name;
+                let phone = user.phone+'';
+                excelData.push({
+                    'User Id': user.id,
+                    'User Name': user.customer_name,
+                    'Email': user.email,
+                    'Phone': phone,
+                    'National Id': user.national_id,
+                    'Location': location
+                });
+            }
         });
 
         const header = [
