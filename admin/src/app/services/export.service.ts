@@ -6,8 +6,7 @@ import { Injectable } from '@angular/core';
 export class ExportService {
 
   constructor() { }
-  downloadFile(data: any, header: any) {
-
+  downloadFile(data: any, header: any, fileName?: any) {
     const csv = this.ConvertToCSV(data, header);
 
     const a = document.createElement('a');
@@ -15,6 +14,9 @@ export class ExportService {
     const url = window.URL.createObjectURL(blob);
 
     a.href = url;
+    if(fileName){
+
+    }
     a.download = 'myFile.csv';
     a.click();
     window.URL.revokeObjectURL(url);

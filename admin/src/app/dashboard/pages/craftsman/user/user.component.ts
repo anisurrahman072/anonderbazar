@@ -261,14 +261,33 @@ export class UserComponent implements OnInit, OnDestroy {
 
         allStoredUsers.forEach(user => {
             if(user){
-                let location = user.upazila_name+'; '+user.zilla_name+'; '+user.division_name;
+                let location = '';
+                if(user.upazila_name){
+                    location += user.upazila_name;
+                }
+                if(user.zilla_name){
+                    if(location.length !== 0){
+                        location += ';'
+                    }
+                    location += user.zilla_name;
+                }
+                if(user.division_name){
+                    if(location.length !== 0){
+                        location += ';'
+                    }
+                    location += user.division_name;
+                }
+                if(location.length === 0){
+                    location += 'null'
+                }
                 let phone = user.phone+'';
+                let national_id = user.national_id+'';
                 excelData.push({
                     'User Id': user.id,
                     'User Name': user.customer_name,
                     'Email': user.email,
                     'Phone': phone,
-                    'National Id': user.national_id,
+                    'National Id': national_id,
                     'Location': location
                 });
             }

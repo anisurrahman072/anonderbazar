@@ -3,7 +3,7 @@
         <ng-template #extraTemplate>
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
-            </button>
+            </button>&nbsp;
             <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
@@ -126,7 +126,7 @@
     </nz-card>
 </section>
 
-<!--product modal-->
+<!--User modal-->
 <nz-modal [nzFooter]="null"
           nzWidth="70%"
           [nzVisible]="isUserVisible"
