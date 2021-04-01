@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UserService} from "../../../../services/user.service";
 import {UIService} from "../../../../services/ui/ui.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -43,6 +43,9 @@ export class UserComponent implements OnInit, OnDestroy {
     allUser: any;
     userPage: number = 1;
     userTotal: number;
+    private storedExcelUsers: any = [];
+    private excelPageSelectAll = [];
+    @ViewChild('excelSelectAll') excelSelectAll;
 
     constructor(
         private userService: UserService,
@@ -77,8 +80,18 @@ export class UserComponent implements OnInit, OnDestroy {
         });
     }
 
+    showProductModal = () => {
+
+        this.excelSelectAll.nativeElement.checked = false;
+        this.isUserVisible = true;
+        this.storedExcelUsers= [];
+        this.excelPageSelectAll = [];
+
+        this.getPageData(null, true);
+    };
+
     //Event method for getting all the data for the page
-    getPageData(event?: any) {
+    getPageData(event?: any, forExcel?: boolean) {
         if (event) {
             this.page = event;
         }
@@ -97,20 +110,82 @@ export class UserComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 result => {
-                    this.data = result.data;
-                    this.allUser = result.data.map(data => {
-                        return {
-                            ...data,
-                            checked: false
-                        }
-                    });
                     this.total = result.total;
                     this._isSpinning = false;
+
+                    if(!forExcel){
+                        this.data = result.data;
+                    }
+                    else {
+                        this.allUser = result.data.map(data => {
+                            return {
+                                ...data,
+                                checked: false
+                            }
+                        });
+
+                        console.log('Annnnn1', this.allUser );
+
+                        const thisTotal = this.allUser.length;
+
+                        if (typeof this.storedExcelUsers[this.page - 1] === 'undefined') {
+                            this.storedExcelUsers[this.page - 1] = [];
+                        }
+                        if (typeof this.excelPageSelectAll[this.page - 1] === 'undefined') {
+                            this.excelPageSelectAll[this.page - 1] = false;
+                        }
+
+                        this.excelSelectAll.nativeElement.checked = !!this.excelPageSelectAll[this.page - 1];
+
+                        /** Jokhon porer abr ager page gulote jawa hocce tokhon jodi age konota check kra hoe thake
+                         tahole seita abr aikahne checked show korte hobe */
+                        if (this.storedExcelUsers[this.page - 1].length) {
+                            for (let index = 0; index < thisTotal; index++) {
+                                const foundIndex = this.storedExcelUsers[this.page - 1].findIndex((storedUser) => {
+                                    return storedUser.id == this.allUser[index].id;
+                                });
+                                this.allUser[index].checked = foundIndex !== -1;
+                            }
+                        } else {
+                            for (let index = 0; index < thisTotal; index++) {
+                                this.allUser[index].checked = false;
+                            }
+                        }
+                    }
+
+
                 },
                 error => {
                     this._isSpinning = false;
                 }
             );
+    }
+
+    selectAllExcel($event) {
+
+        const isChecked = !!$event.target.checked;
+        console.log('ann1 selectAllCsv', isChecked);
+        if (!isChecked) {
+            this.storedExcelUsers[this.csvPage - 1] = [];
+        }
+        this.csvPageSelectAll[this.csvPage - 1] = isChecked;
+        const len = this.csvOrders.length;
+        /** Check or uncheck all the checkbox of the current users in the current page */
+        for (let i = 0; i < len; i++) {
+            /** If parent checkbox is true then check all other unchecked boxes */
+            this.csvOrders[i].checked = isChecked;
+
+            /** Now push all the checked users in STORE */
+            if (isChecked) {
+                const foundIndex = this.storedCsvOrders[this.csvPage - 1].findIndex((storedOder) => {
+                    return storedOder.id == this.csvOrders[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.storedCsvOrders[this.csvPage - 1].push(this.csvOrders[i]);
+                }
+            }
+        }
+        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
     }
 
     //Event method for setting up filter data

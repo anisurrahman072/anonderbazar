@@ -13,7 +13,7 @@
         </ng-template>
 
         <nz-table #nzTable
-                  (nzPageIndexChange)="getPageData($event)"
+                  (nzPageIndexChange)="getPageData($event, false)"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
                   [nzData]="data"
@@ -143,13 +143,13 @@
                       [nzLoading]="_isSpinning"
                       [(nzPageIndex)]="userPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="total"
-                      (nzPageIndexChange)="getPageData($event)"
+                      (nzPageIndexChange)="getPageData($event, true)"
             >
                 <thead>
                 <tr>
                     <th>
-                        <input  type="checkbox" id="order_check_all_pr" #csvSelectAll
-                                (change)="selectAllCsv($event)">
+                        <input  type="checkbox" id="order_check_all_pr" #excelSelectAll
+                                (change)="selectAllExcel($event)">
                     </th>
                     <th>
                     </th>
@@ -174,21 +174,21 @@
                                (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
                     </td>
                     <td>{{data.id}}</td>
-                    <td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
                     <td>
-                        <nz-tag>{{data.full_name}}</nz-tag>
+                        <nz-tag>{{data.customer_name}}</nz-tag>
                     </td>
-                    <td>{{data.total_quantity}}</td>
-                    <td>{{data.total_price}}</td>
-                    <td>{{getStatusLabel(data.status)}}</td>
-                    <td>{{data.changedByName}}</td>
+                    <td>{{data.group_name}}</td>
+                    <td>{{data.email}}</td>
+                    <td>{{data.phone}}</td>
+                    <td>{{data.national_id}}</td>
+                    <td>{{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}</td>
                 </tr>
                 </tbody>
             </nz-table>
             <div>
                 <div>
                     <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
-                            [disabled]="!validateProductForm.valid || submitting">
+                            [disabled]="!validateProductForm.valid ">
                         Create Excel
                     </button>
                 </div>
