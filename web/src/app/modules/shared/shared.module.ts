@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule} from '@angular/router';
 import {
     OrderInvoiceComponent, ProductItemComponent, ProductListComponent,
     SuborderInvoiceComponent
-} from "./components"; 
+} from "./components";
 import {ProductItemCompareComponent} from "./components/product-item-compare/product-item-compare.component";
 import {ProductItemWholeSaleComponent} from "./components/product-item-wholesale/product-item-wholesale.component";
 import {ProductItemRewardPointComponent} from "./components/product-item-rewardpoint/product-item-rewardpoint.component";
@@ -29,7 +29,7 @@ const sharedComponents = [
     ProductItemRewardPointComponent,
     ProductItemFeedbackComponent,
     ProductItemNewArrivalComponent,
-    ProductListComponent, 
+    ProductListComponent,
     ProductItemFlashDealComponent,
     CategoryItemComponent,
     ProductItemCompareComponent,
@@ -50,7 +50,7 @@ const sharedComponents1 = [
     ProductItemNewArrivalComponent,
     ProductItemFlashDealComponent,
     CategoryItemComponent,
-    ProductListComponent, 
+    ProductListComponent,
     IsAddedToComparePipe,
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
@@ -74,7 +74,7 @@ const sharedComponents1 = [
     ],
     declarations: sharedComponents,
     exports: sharedComponents1
-    
+
 })
 export class SharedModule {
 }

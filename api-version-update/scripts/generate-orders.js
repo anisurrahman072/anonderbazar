@@ -25,9 +25,19 @@ module.exports = {
 
     sails.log('Running custom shell script... (`sails run generate-orders`)');
 
-    console.log(username, ssl_transaction_id);
+    let usernameTmp = username;
+    if (usernameTmp.charAt(0) === '+') {
+      usernameTmp = usernameTmp.substr(1);
+    } else if (usernameTmp.charAt(0) === '0') {
+      usernameTmp = '88' + usernameTmp;
+    } else if (!(usernameTmp.charAt(0) === '8' || usernameTmp.charAt(1) === '8')) {
+      usernameTmp = '0' + usernameTmp;
+    }
+    console.log('-----------------------------------------');
+    console.log(username, usernameTmp, ssl_transaction_id);
+
     const users = await User.find({
-      username: '0' + username,
+      username: usernameTmp,
       deletedAt: null
     });
 
@@ -202,6 +212,8 @@ module.exports = {
             smsSendPhone = smsPhone.substr(1);
           } else if (smsPhone.charAt(0) === '0') {
             smsSendPhone = '88' + smsPhone;
+          } else {
+            smsSendPhone = smsPhone;
           }
 
           const csmsId = makeUniqueId(18);
@@ -219,8 +231,8 @@ module.exports = {
               'Accept': 'application/json'
             });
 
-            console.log(smsText);
             console.log(smsResponse.data);
+            console.log(smsText);
 
           } catch (e) {
             if (e.data) {

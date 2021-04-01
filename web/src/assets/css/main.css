@@ -200,7 +200,7 @@ section {
     z-index: 9999;
     position: fixed;
     overflow: visible;
-    background: #fff url('../images/preloder.gif') no-repeat center center;
+    background: #fff url('../images/preloader.gif') no-repeat center center;
     animation: loader 5s infinite ease;
 }
 

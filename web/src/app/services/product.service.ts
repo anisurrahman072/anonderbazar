@@ -40,7 +40,7 @@ export class ProductService {
 
     getByIds(ids): Observable<any> {
         const url = `${this.EndPoint}/byIds?ids=${JSON.stringify(ids)}&populate=false`;
-        console.log('getByIds', url);
+        // console.log('getByIds', url);
 
         return this.http.get(url).map(response => response);
     }

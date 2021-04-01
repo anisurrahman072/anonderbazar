@@ -118,3 +118,72 @@
   background: transparent;
   color: #f04723;
 }
+
+//ngx-carousel
+.bannerStyle h1 {
+  background-color: #ccc;
+  min-height: 300px;
+  text-align: center;
+  line-height: 300px;
+}
+.leftRs {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  left: 25px;
+  color: white;
+  opacity: 0;
+  font-size: 50px;
+  background: none;
+  font-family: cursive;
+}
+.leftRs:hover {
+  opacity: 1;
+}
+
+.rightRs {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  right: 25px;
+  color: white;
+  opacity: 0;
+  font-size: 50px;
+  background: none;
+  font-family: cursive;
+}
+.rightRs:hover {
+  opacity: 1;
+}
+
+.carousel-side-section{
+  text-align: center;
+  align-items: center;
+  height: 500px;
+  padding-left: 0px;
+}
+
+.side-box{
+  padding: 10px;
+  background-color: white;
+}
+
+.box-title{
+  font-size: 20px; color: red; margin-bottom: 5px;
+}
+
+.learn-more{
+  align-items: baseline; align-self: center;
+}
+
+.lear-more-title{
+  color: red; font-size: 17px; background: none;
+}
+
+.learn-more-icon{
+  cursor: pointer; margin-left: 7px;
+}

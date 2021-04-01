@@ -44,10 +44,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
+            console.log(' this.id',  this.id);
+
            this.orderSub = this.orderService.getById(this.id)
                 .subscribe(order => {
 
                     this.data = order;
+
+                    console.log('this.orderService.getById(this.id)',  this.data);
 
                     if (this.data.user_id && this.data.user_id) {
                         this.userPhone = this.data.user_id.phone;

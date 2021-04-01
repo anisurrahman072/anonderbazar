@@ -8,6 +8,17 @@ export class LocalStorageService {
         return localStorage.getItem('token');
     }
 
+    setAuthToken(token) {
+        localStorage.setItem('token', token);
+    }
+
+    setCurrentUser(userData) {
+        localStorage.setItem('currentUser', JSON.stringify({
+            username: userData.username,
+            token: userData.token
+        }));
+    }
+
     setBkashTokens(idToken: string, refreshToken: string) {
         localStorage.setItem('bkash_id_token', idToken);
         localStorage.setItem('bkash_refresh_token', refreshToken);

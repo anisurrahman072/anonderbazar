@@ -178,7 +178,7 @@ export class MenuComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
         this.isDisplay = false
-        this.router.navigate(['/cms-details', categoryOfferId]);
+        this.router.navigate(['/cms/cms-details', categoryOfferId]);
     }
 
 }

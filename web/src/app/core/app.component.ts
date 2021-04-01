@@ -1,5 +1,4 @@
 import {
-    AfterViewChecked,
     AfterViewInit,
     ChangeDetectorRef,
     Component,
@@ -7,7 +6,6 @@ import {
     OnInit,
     PLATFORM_ID,
     Renderer2,
-    ViewChild
 } from '@angular/core';
 import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationStart, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
@@ -145,6 +143,5 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
         }
     }
-
 
 }
