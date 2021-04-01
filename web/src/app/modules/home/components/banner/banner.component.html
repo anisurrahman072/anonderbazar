@@ -1,12 +1,12 @@
 <section id="banner-section">
-    <div class="row" style="height: 500px;">
-        <div class="col-12" style="height: 500px">
+    <div class="row" style="">
+        <div class="col-12" style="">
 
-            <ngx-carousel [inputs]="carouselBanner" style="height: 500px;">
-                <ngx-item NgxCarouselItem class="bannerStyle" *ngFor="let slide of carouselBannerItems" style="height: 500px;">
-                    <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="height: 500px;">
+            <ngx-carousel [inputs]="carouselBanner" style="">
+                <ngx-item NgxCarouselItem class="bannerStyle" *ngFor="let slide of carouselBannerItems" style="">
+                    <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="">
                         <img [src]="IMAGE_ENDPOINT + slide?.image + IMAGE_EXT" alt="Anonder Bazar Banner Image"
-                             style="height: 500px; width: 100%;"/>
+                             style=" width: 100%;"/>
                     </a>
                 </ngx-item>
 
@@ -15,7 +15,7 @@
             </ngx-carousel>
 
         </div>
-        <div class="col-0 carousel-side-section">
+        <!--<div class="col-0 carousel-side-section">
             <div class="d-flex flex-column" style="height: 100%; justify-content: space-around;  padding-right: 15px !important;">
                 <div class="d-flex flex-column side-box">
                     <i class="fa fa-usd" style="color: red;"></i>
@@ -44,6 +44,6 @@
                     shopping experience.</p>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </section>
