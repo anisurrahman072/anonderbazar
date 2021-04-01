@@ -32,7 +32,7 @@ export class OrderService {
     }
 
     getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id);
+        return this.http.get(this.EndPoint + '/' + id );
     }
 
     customOrder(data): Observable<any> {
