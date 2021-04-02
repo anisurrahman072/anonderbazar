@@ -106,22 +106,22 @@ export class CraftsmanEditComponent implements OnInit {
             this.validateForm.controls[key].markAsDirty();
         }
         const formData: FormData = new FormData();
-        formData.append('username', value.username);
-        formData.append('email', value.email);
-        formData.append('first_name', value.first_name);
-        formData.append('last_name', value.last_name);
-        formData.append('phone', value.phone);
-        formData.append('gender', value.gender);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('division_id', value.division_id);
-        formData.append('active', '1');
+        formData.set('username', value.username);
+        formData.set('email', value.email);
+        formData.set('first_name', value.first_name);
+        formData.set('last_name', value.last_name);
+        formData.set('phone', value.phone);
+        formData.set('gender', value.gender);
+        formData.set('upazila_id', value.upazila_id);
+        formData.set('zila_id', value.zila_id);
+        formData.set('division_id', value.division_id);
+        formData.set('active', '1');
 
         if (this.ImageFile) {
-            formData.append('hasImage', 'true');
+            formData.set('hasImage', 'true');
             formData.append('avatar', this.ImageFile, this.ImageFile.name);
         } else {
-            formData.append('hasImage', 'false');
+            formData.set('hasImage', 'false');
         }
         this.craftsmanService.update(this.id, formData).subscribe(
             result => {
