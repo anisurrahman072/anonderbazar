@@ -302,6 +302,6 @@ export class UserComponent implements OnInit, OnDestroy {
             'Location'
         ];
 
-        this.exportService.downloadFile(excelData, header);
+        this.exportService.downloadFile(excelData, header, 'User');
     }
 }
