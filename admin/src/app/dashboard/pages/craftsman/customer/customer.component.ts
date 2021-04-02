@@ -220,7 +220,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
             'Location'
         ];
 
-        this.exportService.downloadFile(excelData, header);
+        this.exportService.downloadFile(excelData, header, 'Customer');
     }
 
     selectAllExcel($event) {
