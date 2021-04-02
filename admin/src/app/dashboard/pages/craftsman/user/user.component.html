@@ -1,7 +1,7 @@
 <section>
     <nz-card class="card-height" nzTitle=" User list" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
-            <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
+            <button nz-button *ngIf="'craftsman-download'|accessControl" [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
             <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
