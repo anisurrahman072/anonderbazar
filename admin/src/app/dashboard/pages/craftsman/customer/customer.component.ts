@@ -170,6 +170,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     };
 
     generateExcel($event: any, value: any) {
+        this.isUserVisible = false;
         if (!(this.storedExcelUsers.length > 0)){
             return false;
         }

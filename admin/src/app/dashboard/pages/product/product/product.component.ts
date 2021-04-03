@@ -719,6 +719,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     generateExcel($event: any, value: any) {
+        this.isProductVisible = false;
         if (!(this.storedExcelProducts.length > 0)){
             return false;
         }
