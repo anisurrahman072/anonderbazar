@@ -134,6 +134,7 @@ module.exports = {
                 description: req.body.description,
                 offers: [],
                 products: [],
+                image: body.image
               }
             ];
           }
@@ -223,6 +224,10 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       let body = req.body;
+      let prevOfferData = await CMS.findOne({
+        id: body.id
+      });
+
       if (body.hasImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
@@ -241,8 +246,8 @@ module.exports = {
               description: body.description,
               image: body.image,
               link: body.link,
-              offers: [],
-              products: [],
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         } else {
@@ -250,8 +255,9 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              offers: [],
-              products: [],
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
+              image: body.image
             }
           ];
         }
@@ -280,8 +286,9 @@ module.exports = {
               title: body.title,
               description: body.description,
               link: body.link,
-              offers: [],
-              products: [],
+              image: prevOfferData.data_value[0].image,
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         } else {
@@ -289,8 +296,9 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              offers: [],
-              products: [],
+              image: prevOfferData.data_value[0].image,
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         }
