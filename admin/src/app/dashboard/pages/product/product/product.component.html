@@ -3,6 +3,9 @@
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
+            <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
+                <i class="anticon anticon-download"></i><span> Download </span>
+            </button>&nbsp;
             <button *ngIf="'product-create'|accessControl" routerLink="/dashboard/product/create"
                     [queryParams]="{status: status}" nz-button
             >
@@ -33,8 +36,8 @@
                   [nzTotal]="total"
                   [nzPageIndex]="page"
                   [nzPageSize]="limit"
-                  (nzPageIndexChange)="getProductData($event, 'page')"
-                  (nzPageSizeChange)="getProductData($event, 'size')"
+                  (nzPageIndexChange)="getProductData($event, 'page', false)"
+                  (nzPageSizeChange)="getProductData($event, 'size', false)"
                   [nzScroll]="{ x:'2100px',y: '800px'  }"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
@@ -560,6 +563,90 @@
             </div>
         </form>
 
+    </ng-template>
+</nz-modal>
+
+<!--Excel Download-->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isProductVisible"
+          [nzTitle]="'Generate and Download Excel Document'"
+          [nzContent]="modalUserContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalUserContent>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
+              (ngSubmit)="generateExcel($event, validateProductForm.value)">
+
+            <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allProduct" [nzFrontPagination]="false"
+                      [nzLoading]="_isSpinning"
+                      [(nzPageIndex)]="productPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
+                      [nzTotal]="total"
+                      (nzPageIndexChange)="getProductData($event, 'page', true)"
+                      (nzPageSizeChange)="getProductData($event, 'size', true)"
+            >
+                <thead>
+                <tr>
+                    <th>
+                        <input  type="checkbox" id="order_check_all_pr" #excelSelectAll
+                                (change)="selectAllExcel($event)">
+                    </th>
+                    <th>
+                        Code
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    <th>
+                        Quantity
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        S-Category
+                    </th>
+                    <th>
+                        Brand
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of nzTableDownload.data;let i=index;">
+                    <td width="">
+                        <input type="checkbox" id="{{'order_checked_pr' + data.id}}"
+                               (change)="_refreshStatus($event, data)" [checked]="data.checked"/>
+                    </td>
+                    <td width="">{{data.code}}</td>
+                    <td width="">{{data.name}}</td>
+                    <td width="">
+                        <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
+                        <nz-tag *ngIf="data.promotion == 1">{{data.promo_price}}</nz-tag>
+                    </td>
+                    <td width="">{{data.quantity}}</td>
+                    <td width="">{{data.type_name}}</td>
+                    <td width="">{{data.category_name}}</td>
+                    <td width="">{{data.subcategory_name}}</td>
+                    <td width="">{{data.brand_name}}</td>
+                </tr>
+                </tbody>
+            </nz-table>
+            <div>
+                <div>
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateProductForm.valid ">
+                        Create Excel
+                    </button>
+                </div>
+            </div>
+        </form>
     </ng-template>
 </nz-modal>
 
