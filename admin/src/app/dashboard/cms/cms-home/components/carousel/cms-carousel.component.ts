@@ -12,6 +12,7 @@ import {environment} from "../../../../../../environments/environment";
 })
 export class CmsCarouselComponent implements OnInit {
     editImage: string = '';
+    editImageMobile: string = '';
     cmsCarouselData: any = [];
     isAddModalVisible = false;
     isEditModalVisible = false;
@@ -20,6 +21,7 @@ export class CmsCarouselComponent implements OnInit {
 
     validateForm: FormGroup;
     ImageFile: File;
+    ImageForMobileFile: File;
 
     _isSpinning: any = false;
     id: any;
@@ -66,6 +68,7 @@ export class CmsCarouselComponent implements OnInit {
                 this.cmsCarouselData.forEach(element => {
                     element.description = JSON.parse(element.description);
                 });
+                console.log('this.cmsCarouselData', this.cmsCarouselData);
             } else {
                 this.id = undefined;
                 this.cmsCarouselData = [];
@@ -84,7 +87,18 @@ export class CmsCarouselComponent implements OnInit {
     //Method for showing the edit modal
     showEditModal = i => {
         this.currentCarouselId = i;
-        this.editImage = this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image;
+        if (this.cmsCarouselData[i].image) {
+            this.editImage = this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image;
+        } else {
+            this.editImage = '';
+        }
+
+        if (this.cmsCarouselData[i].image_mobile) {
+            this.editImageMobile = this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image_mobile;
+        } else {
+            this.editImageMobile = '';
+        }
+
         let textDescription = this.cmsCarouselData[i].description;
         this.cmsCarouselData[i]['short1'] = textDescription.short1;
         this.cmsCarouselData[i]['short2'] = textDescription.short2;
@@ -97,6 +111,7 @@ export class CmsCarouselComponent implements OnInit {
 
     handleModalOk = e => {
         this.editImage = '';
+        this.editImageMobile = '';
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
     };
@@ -104,6 +119,7 @@ export class CmsCarouselComponent implements OnInit {
     handleModalCancel = e => {
         this.resetForm(e);
         this.editImage = '';
+        this.editImageMobile = '';
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
     };
@@ -118,6 +134,15 @@ export class CmsCarouselComponent implements OnInit {
         }
 
         let formData = new FormData();
+        if (this.ImageFile) {
+            formData.append('hasDesktopImage', 'true');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
+        }
+        if (this.ImageForMobileFile) {
+            formData.append('hasMobileImage', 'true');
+            formData.append('image', this.ImageForMobileFile, this.ImageForMobileFile.name);
+        }
+
         formData.append('title', value.title);
         formData.append('description', JSON.stringify({
             'short1': value.short1,
@@ -128,12 +153,6 @@ export class CmsCarouselComponent implements OnInit {
         }));
         formData.append('id', this.id.toString());
 
-        if (this.ImageFile) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        } else {
-            formData.append('hasImage', 'false');
-        }
 
         this.cmsService.customInsert(formData).subscribe(result => {
                 this.submitting = false;
@@ -176,6 +195,15 @@ export class CmsCarouselComponent implements OnInit {
         }
 
         let formData = new FormData();
+        if (this.ImageFile) {
+            formData.append('hasDesktopImage', 'true');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
+        }
+        if (this.ImageForMobileFile) {
+            formData.append('hasMobileImage', 'true');
+            formData.append('image', this.ImageForMobileFile, this.ImageForMobileFile.name);
+        }
+
         formData.append('title', value.title);
         formData.append('description', JSON.stringify({
             'short1': value.short1,
@@ -186,13 +214,6 @@ export class CmsCarouselComponent implements OnInit {
         }));
         formData.append('id', this.id.toString());
         formData.append('dataValueId', this.currentCarouselId.toString());
-
-        if (this.ImageFile) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        } else {
-            formData.append('hasImage', 'false');
-        }
 
         this.cmsService.customUpdate(formData).subscribe(result => {
             this.cmsCarouselData[this.currentCarouselId] = result.data;
@@ -213,9 +234,19 @@ export class CmsCarouselComponent implements OnInit {
         this.ImageFile = null;
     }
 
+    //Method for removing the image
+    onRemovedMobile(file: FileHolder) {
+        this.ImageForMobileFile = null;
+    }
+
     //Method for storing image in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
+        return metadata;
+    };
+
+    onBeforeUploadMobile = (metadata: UploadMetadata) => {
+        this.ImageForMobileFile = metadata.file;
         return metadata;
     };
 

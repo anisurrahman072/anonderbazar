@@ -539,21 +539,23 @@ module.exports = {
 
       let newDesktopImagePath = '';
       let newMobileImagePath = '';
-      if (req.body.hasDesktopImage === 'true') {
-        const uploaded = await uploadImages(req.file('desktopImage'));
+      if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
+        const uploaded = await uploadImages(req.file('image'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
-        newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-      }
+        if (req.body.hasDesktopImage === 'true' && req.body.hasMobileImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-      if (req.body.hasMobileImage === 'true') {
-        console.log('astece', req.file('mobileImage'));
-        const uploaded = await uploadImages(req.file('mobileImage'));
-        if (uploaded.length === 0) {
-          return res.badRequest('No file was uploaded');
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            newMobileImagePath = '/' + newPathMobile;
+          }
+        } else if (req.body.hasDesktopImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        } else if (req.body.hasMobileImage === 'true') {
+          newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         }
-        newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
       }
 
       let existingDataValue = cms.data_value;
@@ -563,8 +565,8 @@ module.exports = {
       existingDataValue.push({
         title: req.body.title,
         description: req.body.description,
-        desktopImage: newDesktopImagePath,
-        mobileImage: newMobileImagePath
+        image: newDesktopImagePath,
+        image_mobile: newMobileImagePath
       });
 
       _payload.data_value = existingDataValue;
@@ -593,12 +595,30 @@ module.exports = {
 
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      if (req.body.hasImage === 'true') {
+      console.log('req.body', req.body);
+
+      if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
+        let newDesktopImagePath = '';
+        let newMobileImagePath = '';
         const uploaded = await uploadImages(req.file('image'));
+
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+        if (req.body.hasDesktopImage === 'true' && req.body.hasMobileImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            newMobileImagePath = '/' + newPathMobile;
+          }
+        } else if (req.body.hasDesktopImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        } else if (req.body.hasMobileImage === 'true') {
+          newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        }
+
         const dataValueIndex = parseInt(req.body.dataValueId);
 
         let dataValue = cms.data_value;
@@ -608,8 +628,11 @@ module.exports = {
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: '/' + newPath
+          image: newDesktopImagePath,
+          image_mobile: newMobileImagePath
         };
+
+        console.log('dataValue[dataValueIndex]', dataValue);
 
         // cms.data_value = JSON.stringify(cms.data_value);
         let data = await CMS.updateOne({id: cms.id}).set({
@@ -622,12 +645,11 @@ module.exports = {
             message: 'cms updated successfully',
             data: cms.data_value[dataValueIndex]
           });
-        } else {
-          return res.json(400, {
-            success: false,
-            message: 'cms updated failed'
-          });
         }
+        return res.json(400, {
+          success: false,
+          message: 'cms updated failed'
+        });
 
       } else {
         const dataValueIndex = parseInt(req.body.dataValueId);
@@ -637,8 +659,10 @@ module.exports = {
         cms.data_value[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: cms.data_value[dataValueIndex].image
+          image: cms.data_value[dataValueIndex].image,
+          image_mobile: cms.data_value[dataValueIndex].image_mobile ? cms.data_value[dataValueIndex].image_mobile : ''
         };
+
         cms.data_value = JSON.stringify(cms.data_value);
         let data = await CMS.updateOne({id: cms.id}).set(cms);
         if (data) {
@@ -647,13 +671,14 @@ module.exports = {
             message: 'cms updated successfully',
             data: cms.data_value[dataValueIndex]
           });
-        } else {
-          return res.status(400).json({success: false, message: 'cms updated failed'});
         }
+
+        return res.status(400).json({success: false, message: 'cms updated failed'});
+
       }
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'Error Occurred',
         error
