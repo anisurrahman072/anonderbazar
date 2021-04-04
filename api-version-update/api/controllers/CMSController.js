@@ -537,13 +537,23 @@ module.exports = {
         _payload.sub_section = req.body.sub_section;
       }
 
-      let newImagePath = '';
-      if (req.body.hasImage === 'true') {
-        const uploaded = await uploadImages(req.file('image'));
+      let newDesktopImagePath = '';
+      let newMobileImagePath = '';
+      if (req.body.hasDesktopImage === 'true') {
+        const uploaded = await uploadImages(req.file('desktopImage'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
-        newImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+      }
+
+      if (req.body.hasMobileImage === 'true') {
+        console.log('astece', req.file('mobileImage'));
+        const uploaded = await uploadImages(req.file('mobileImage'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
       }
 
       let existingDataValue = cms.data_value;
@@ -553,7 +563,8 @@ module.exports = {
       existingDataValue.push({
         title: req.body.title,
         description: req.body.description,
-        image: newImagePath
+        desktopImage: newDesktopImagePath,
+        mobileImage: newMobileImagePath
       });
 
       _payload.data_value = existingDataValue;
