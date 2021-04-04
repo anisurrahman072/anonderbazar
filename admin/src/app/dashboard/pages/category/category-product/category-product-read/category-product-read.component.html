@@ -15,6 +15,7 @@
         <nz-spin [nzSpinning]="isLoading">
         <div class="col-md-4">
             <div class="profile-img">
+                <h5 style="margin-bottom: 5px;">Category Image (Desktop)</h5>
                 <img *ngIf="data.image; else ImagePlaceHolderTemplate" class="img img-responsive" style="margin: auto;" alt="category"
                      src="{{  IMAGE_ENDPOINT + data.image}}"/>
                 <ng-template #ImagePlaceHolderTemplate>
@@ -23,6 +24,16 @@
                 </ng-template>
             </div>
             <div class="profile-img">
+                <h5 style="margin-bottom: 5px;">Category Image (Mobile)</h5>
+                <img *ngIf="data.mobile_image; else ImagePlaceHolderTemplate2" class="img img-responsive" style="margin: auto;" alt="category banner"
+                     src="{{  IMAGE_ENDPOINT + data.mobile_image}}"/>
+                <ng-template #ImagePlaceHolderTemplate2>
+                    <img  class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                          src="/assets/images/general_placeholder.png"/>
+                </ng-template>
+            </div>
+            <div class="profile-img">
+                <h5 style="margin-bottom: 5px;">Category Banner Image</h5>
                 <img *ngIf="data.banner_image; else ImagePlaceHolderTemplate1" class="img img-responsive" style="margin: auto;" alt="category banner"
                      src="{{  IMAGE_ENDPOINT + data.banner_image}}"/>
                 <ng-template #ImagePlaceHolderTemplate1>

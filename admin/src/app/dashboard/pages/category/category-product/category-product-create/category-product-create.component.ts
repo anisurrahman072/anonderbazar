@@ -22,6 +22,7 @@ export class CategoryProductCreateComponent implements OnInit {
     offers: any = [];
     parentCheck = true;
     ImageFile: File;
+    ImageFileForMobile: File;
     BannerImageFile: File;
     categorySearchOptions = [];
     subCategorySearchOptions = [];
@@ -48,6 +49,7 @@ export class CategoryProductCreateComponent implements OnInit {
             sub_parent: ['', []],
             code: ['', [Validators.required]],
             image: [null, []],
+            mobile_image: [null, []],
             banner_image: [null, []],
         });
         this.categoryProductService.getAllCategory()
@@ -76,17 +78,6 @@ export class CategoryProductCreateComponent implements OnInit {
         }
 
         const formData: FormData = new FormData();
-        formData.append('name', value.name);
-        formData.append('code', value.code);
-        let parent_id = 0;
-        if (value.sub_parent) {
-            parent_id = value.sub_parent.id;
-        } else if (value.parent) {
-            parent_id = value.parent.id;
-        }
-        formData.append('parent_id', '' + parent_id);
-
-        formData.append('type_id', '2');
 
         if (value.offer_id) {
             formData.append('offer_id', value.offer_id);
@@ -97,10 +88,28 @@ export class CategoryProductCreateComponent implements OnInit {
             formData.append('image', this.ImageFile, this.ImageFile.name);
         }
 
+        if(this.ImageFileForMobile){
+            formData.append('hasMobileImage', 'true');
+            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
+        }
+
         if (this.BannerImageFile) {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         }
+
+        formData.append('name', value.name);
+        formData.append('code', value.code);
+
+        let parent_id = 0;
+        if (value.sub_parent) {
+            parent_id = value.sub_parent.id;
+        } else if (value.parent) {
+            parent_id = value.parent.id;
+        }
+        formData.append('parent_id', '' + parent_id);
+
+        formData.append('type_id', '2');
 
         this.isLoading = true;
         this.categoryProductService.insert(formData)
@@ -123,6 +132,10 @@ export class CategoryProductCreateComponent implements OnInit {
         this.ImageFile = null;
     }
 
+    onRemovedMobile(_file: FileHolder) {
+        this.ImageFileForMobile = null;
+    }
+
     //Event method for removing picture
     onRemovedBanner(_file: FileHolder) {
         this.BannerImageFile = null;
@@ -133,7 +146,10 @@ export class CategoryProductCreateComponent implements OnInit {
         this.ImageFile = metadata.file;
         return metadata;
     };
-
+    onBeforeUploadMobile = (metadata: UploadMetadata) => {
+        this.ImageFileForMobile = metadata.file;
+        return metadata;
+    };
     //Event method for storing imgae in variable
     onBeforeUploadBanner = (metadata: UploadMetadata) => {
         console.log('onBeforeUploadBanner', metadata);

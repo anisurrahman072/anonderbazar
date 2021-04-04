@@ -12,7 +12,7 @@
                 <div class="col-md-3">
                     <div nz-row>
                         <div nz-col [nzSpan]="16">
-                            <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select image"
+                            <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select Image for Desktop"
                                           dropBoxMessage="Drop image here"
                                           clearButtonCaption="remove it?" [uploadedFiles]="oldImages"
                                           [beforeUpload]="onBeforeUpload">
@@ -23,7 +23,18 @@
                             </div>
                         </div>
                         <div nz-col [nzSpan]="16">
-                            <image-upload [max]="1" (removed)="onRemovedBanner($event)" buttonCaption="Select banner image"
+                            <image-upload [max]="1" (removed)="onRemovedMobile($event)" buttonCaption="Select Image For Mobile"
+                                          dropBoxMessage="Drop image here"
+                                          clearButtonCaption="remove it?" [uploadedFiles]="existingMobileImage"
+                                          [beforeUpload]="onBeforeUploadMobile">
+                            </image-upload>
+                            <div
+                                    *ngIf="getFormControl('banner_image').dirty && getFormControl('banner_image').hasError('required')">
+                                Please upload a banner image here!
+                            </div>
+                        </div>
+                        <div nz-col [nzSpan]="16">
+                            <image-upload [max]="1" (removed)="onRemovedBanner($event)" buttonCaption="Select Banner Image"
                                           dropBoxMessage="Drop image here"
                                           clearButtonCaption="remove it?" [uploadedFiles]="existingBannerImage"
                                           [beforeUpload]="onBeforeUploadBanner">

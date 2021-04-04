@@ -40,6 +40,12 @@ module.exports = {
       required: false,
       allowNull: true,
     },
+    mobile_image: {
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
+    },
     banner_image: {
       type: 'string',
       columnType: 'text',
