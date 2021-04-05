@@ -1,0 +1,120 @@
+.breadcrumbs {
+  color: #aaa;
+  margin-bottom: 20px;
+}
+.breadcrumbs a {
+  color: #666;
+  display: inline-block;
+  padding: 8px 0;
+}
+.breadcrumbs a:hover {
+  color: #eec15b;
+}
+.breadcrumbs a:after {
+  content: '/';
+  display: inline-block;
+  padding: 0 5px;
+}
+.form-authentication {
+  margin: 0;
+  display: table;
+  border-bottom: 1px solid #ececec;
+  border-left: 1px solid #ececec;
+  max-width: 100%;
+  width: 100%;
+}
+input[type="text"], input[type="email"], textarea, input[type="password"], input[type="tel"], select {
+  border: 1px solid #e5e5e5;
+  padding: 8px 25px;
+}
+.form-authentication .form-login,
+.form-authentication .form-register {
+  display: table-cell;
+  padding: 35px 60px;
+  padding-bottom: 60px;
+  border-right: 1px solid #ececec;
+  border-top: 1px solid #ececec;
+  width: 50%;
+}
+.form-authentication .form-register {
+  background-color: #fafafa;
+}
+.form-authentication input[type="text"],
+.form-authentication input[type="email"],
+.form-authentication input[type="password"] {
+  width: 320px;
+  max-width: 100%;
+}
+.form-authentication p {
+  margin-bottom: 20px;
+}
+.form-authentication .title {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.form-authentication .title:after {
+  display: block;
+  font-family: 'FontAwesome';
+  content: "\f106\f106\f106\f106\f106\f106\f106\f106";
+  margin-top: 10px;
+  color: #888888;
+  font-size: 12px;
+}
+.form-authentication label.inline {
+  font-weight: normal;
+  display: block;
+  margin-bottom: 20px;
+}
+.form-authentication label.inline input[type=checkbox],
+.form-authentication label.inline input[type=radio] {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  margin-top: -2px;
+}
+.form-authentication-footer {
+  margin-bottom: 90px;
+  border-right: 1px solid #ececec;
+  border-bottom: 1px solid #ececec;
+  border-left: 1px solid #ececec;
+  text-align: center;
+  padding: 22px 0;
+}
+.button,
+input[type="submit"],
+button {
+  color: #444444;
+  display: inline-block;
+  padding: 13px 35px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-family: "SolaimanLipi";
+  -webkit-transition: all 0.5s ease 0s;
+  -o-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-top-color: rgb(229, 229, 229);
+  border-right-color: rgb(229, 229, 229);
+  border-bottom-color: rgb(229, 229, 229);
+  border-left-color: rgb(229, 229, 229);
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+  border-radius: 20px;
+}
+.button.primary,
+.single_add_to_cart_button {
+  background-color: #e9c77b;
+  color: #fff;
+  border-color: #e9c77b;
+}
+.button.primary:hover,
+.single_add_to_cart_button:hover {
+  background-color: #111;
+  color: #fff;
+  border-color: #111;
+}

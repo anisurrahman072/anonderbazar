@@ -34,34 +34,74 @@ module.exports = {
     try {
 
       let body = req.body;
-      if (body.hasImage && body.hasImage === 'true') {
-        try {
 
-          if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
-            const uploaded = await uploadImages(req.file('image'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No file was uploaded');
-            }
-            console.log('uploaded image: ', uploaded);
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
-              body.image = '/' + newPath;
-              if (typeof uploaded[1] !== 'undefined') {
-                const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
-                body.banner_image = '/' + newPathBanner;
-              }
-            } else if (body.hasImage && body.hasImage === 'true') {
-              body.image = '/' + newPath;
-            } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
-              body.banner_image = '/' + newPath;
-            }
+      try {
+
+        if ((body.hasImage && body.hasImage === 'true') ||
+          (body.hasMobileImage && body.hasMobileImage === 'true') ||
+          (body.hasBannerImage && body.hasBannerImage === 'true')) {
+
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
+          console.log('uploaded image: ', uploaded);
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
+          if (body.hasBannerImage && body.hasBannerImage === 'true' &&
+            body.hasMobileImage && body.hasMobileImage === 'true' &&
+            body.hasImage && body.hasImage === 'true') {
+
+            body.image = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              body.mobile_image = '/' + newPathMobile;
+            }
+            if (typeof uploaded[2] !== 'undefined') {
+              const newPathBanner = uploaded[2].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + newPathBanner;
+            }
+          } else if (body.hasMobileImage && body.hasMobileImage === 'true' &&
+            body.hasImage && body.hasImage === 'true') {
+
+            body.image = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              body.mobile_image = '/' + newPathMobile;
+            }
+
+          } else if (body.hasBannerImage && body.hasBannerImage === 'true' &&
+            body.hasImage && body.hasImage === 'true') {
+
+            body.image = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + newPathMobile;
+            }
+
+          } else if (body.hasBannerImage && body.hasBannerImage === 'true' &&
+            body.hasMobileImage && body.hasMobileImage === 'true') {
+
+            body.mobile_image = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + newPathMobile;
+            }
+
+          } else if (body.hasImage && body.hasImage === 'true') {
+            body.image = '/' + newPath;
+          } else if (body.hasMobileImage && body.hasMobileImage === 'true') {
+            body.mobile_image = '/' + newPath;
+          } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
+            body.banner_image = '/' + newPath;
+          }
         }
+
+      } catch (err) {
+        console.log('err', err);
+        return res.json(err.status, {err: err});
       }
+
 
       console.log('body', body);
       const returnCategory = await Category.create(body).fetch();
@@ -195,21 +235,60 @@ module.exports = {
     try {
       let body = req.body;
 
-      if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true')) {
+      console.log(body);
+
+      if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true') ||
+        (body.hasMobileImage && body.hasMobileImage === 'true')) {
         const uploaded = await uploadImages(req.file('image'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
         console.log('uploaded image: ', uploaded);
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true') {
+        if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true'
+          && body.hasMobileImage && body.hasMobileImage === 'true'  ) {
+
           body.image = '/' + newPath;
           if (typeof uploaded[1] !== 'undefined') {
-            const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            body.mobile_image = '/' + newPathMobile;
+          }
+
+          if (typeof uploaded[2] !== 'undefined') {
+            const newPathBanner = uploaded[2].fd.split(/[\\//]+/).reverse()[0];
             body.banner_image = '/' + newPathBanner;
           }
+        } else if (body.hasMobileImage && body.hasMobileImage === 'true' &&
+          body.hasImage && body.hasImage === 'true') {
+
+          body.image = '/' + newPath;
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            body.mobile_image = '/' + newPathMobile;
+          }
+
+        } else if (body.hasBannerImage && body.hasBannerImage === 'true' &&
+          body.hasImage && body.hasImage === 'true') {
+
+          body.image = '/' + newPath;
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + newPathMobile;
+          }
+
+        } else if (body.hasBannerImage && body.hasBannerImage === 'true' &&
+          body.hasMobileImage && body.hasMobileImage === 'true') {
+
+          body.mobile_image = '/' + newPath;
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + newPathMobile;
+          }
+
         } else if (body.hasImage && body.hasImage === 'true') {
           body.image = '/' + newPath;
+        } else if (body.hasMobileImage && body.hasMobileImage === 'true') {
+          body.mobile_image = '/' + newPath;
         } else if (body.hasBannerImage && body.hasBannerImage === 'true') {
           body.banner_image = '/' + newPath;
         }

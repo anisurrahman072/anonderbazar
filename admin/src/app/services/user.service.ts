@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
+import {st} from "@angular/core/src/render3";
 
 @Injectable({
     providedIn: 'root'
@@ -97,19 +98,19 @@ export class UserService {
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
 
-    checkUsername(username: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkUsername`, {username});
+    checkUsername(username: string, excludeId: number = 0): Observable<any> {
+        return this.http.post(`${this.EndPoint}/checkUsername`, {username, exclude_id: excludeId});
     }
 
-    checkEmail(email: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkEmail`, {email: email});
+    checkEmail(email: string, excludeId: number = 0): Observable<any> {
+        return this.http.post(`${this.EndPoint}/checkEmail`, {email: email, exclude_id: excludeId});
     }
 
-    checkPhone(phone: any): Observable<any> {
-        return this.http.post(`${this.EndPoint}/checkPhone`, {phone});
+    checkPhone(phone: string, excludeId: number = 0): Observable<any> {
+        return this.http.post(`${this.EndPoint}/checkPhone`, {phone, exclude_id: excludeId});
     }
 
-    checkEmailPhone(email: any, phone: any): Observable<any> {
+    checkEmailPhone(email: string, phone: string): Observable<any> {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`);
     }
 }

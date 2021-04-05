@@ -125,6 +125,8 @@ module.exports = {
                 link: body.link,
                 offers: [],
                 products: [],
+                showInCarousel: req.body.showInCarousel,
+                showInHome: req.body.showInHome
               }
             ];
           } else {
@@ -134,6 +136,9 @@ module.exports = {
                 description: req.body.description,
                 offers: [],
                 products: [],
+                image: body.image,
+                showInCarousel: req.body.showInCarousel,
+                showInHome: req.body.showInHome
               }
             ];
           }
@@ -164,6 +169,8 @@ module.exports = {
             description: req.body.description,
             offers: [],
             products: [],
+            showInCarousel: req.body.showInCarousel,
+            showInHome: req.body.showInHome
           }
         ];
 
@@ -223,6 +230,10 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       let body = req.body;
+      let prevOfferData = await CMS.findOne({
+        id: body.id
+      });
+
       if (body.hasImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
@@ -241,8 +252,8 @@ module.exports = {
               description: body.description,
               image: body.image,
               link: body.link,
-              offers: [],
-              products: [],
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         } else {
@@ -250,8 +261,9 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              offers: [],
-              products: [],
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
+              image: body.image
             }
           ];
         }
@@ -280,8 +292,9 @@ module.exports = {
               title: body.title,
               description: body.description,
               link: body.link,
-              offers: [],
-              products: [],
+              image: prevOfferData.data_value[0].image,
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         } else {
@@ -289,8 +302,9 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              offers: [],
-              products: [],
+              image: prevOfferData.data_value[0].image,
+              offers: prevOfferData.data_value[0].offers,
+              products: prevOfferData.data_value[0].products,
             }
           ];
         }
@@ -307,6 +321,7 @@ module.exports = {
         }
 
         let data = await CMS.updateOne({id: body.id}).set(_payload);
+        console.log('data', data);
         return res.status(201).json({
           success: true,
           message: 'cms updated successfully',
@@ -528,13 +543,25 @@ module.exports = {
         _payload.sub_section = req.body.sub_section;
       }
 
-      let newImagePath = '';
-      if (req.body.hasImage === 'true') {
+      let newDesktopImagePath = '';
+      let newMobileImagePath = '';
+      if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
         const uploaded = await uploadImages(req.file('image'));
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
-        newImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        if (req.body.hasDesktopImage === 'true' && req.body.hasMobileImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            newMobileImagePath = '/' + newPathMobile;
+          }
+        } else if (req.body.hasDesktopImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        } else if (req.body.hasMobileImage === 'true') {
+          newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        }
       }
 
       let existingDataValue = cms.data_value;
@@ -544,7 +571,8 @@ module.exports = {
       existingDataValue.push({
         title: req.body.title,
         description: req.body.description,
-        image: newImagePath
+        image: newDesktopImagePath,
+        image_mobile: newMobileImagePath
       });
 
       _payload.data_value = existingDataValue;
@@ -573,12 +601,30 @@ module.exports = {
 
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      if (req.body.hasImage === 'true') {
+      console.log('req.body', req.body);
+
+      if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
+        let newDesktopImagePath = '';
+        let newMobileImagePath = '';
         const uploaded = await uploadImages(req.file('image'));
+
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+        if (req.body.hasDesktopImage === 'true' && req.body.hasMobileImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          if (typeof uploaded[1] !== 'undefined') {
+            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+            newMobileImagePath = '/' + newPathMobile;
+          }
+        } else if (req.body.hasDesktopImage === 'true') {
+          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        } else if (req.body.hasMobileImage === 'true') {
+          newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        }
+
         const dataValueIndex = parseInt(req.body.dataValueId);
 
         let dataValue = cms.data_value;
@@ -588,8 +634,11 @@ module.exports = {
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: '/' + newPath
+          image: newDesktopImagePath,
+          image_mobile: newMobileImagePath
         };
+
+        console.log('dataValue[dataValueIndex]', dataValue);
 
         // cms.data_value = JSON.stringify(cms.data_value);
         let data = await CMS.updateOne({id: cms.id}).set({
@@ -602,12 +651,11 @@ module.exports = {
             message: 'cms updated successfully',
             data: cms.data_value[dataValueIndex]
           });
-        } else {
-          return res.json(400, {
-            success: false,
-            message: 'cms updated failed'
-          });
         }
+        return res.json(400, {
+          success: false,
+          message: 'cms updated failed'
+        });
 
       } else {
         const dataValueIndex = parseInt(req.body.dataValueId);
@@ -617,8 +665,10 @@ module.exports = {
         cms.data_value[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: cms.data_value[dataValueIndex].image
+          image: cms.data_value[dataValueIndex].image,
+          image_mobile: cms.data_value[dataValueIndex].image_mobile ? cms.data_value[dataValueIndex].image_mobile : ''
         };
+
         cms.data_value = JSON.stringify(cms.data_value);
         let data = await CMS.updateOne({id: cms.id}).set(cms);
         if (data) {
@@ -627,13 +677,14 @@ module.exports = {
             message: 'cms updated successfully',
             data: cms.data_value[dataValueIndex]
           });
-        } else {
-          return res.status(400).json({success: false, message: 'cms updated failed'});
         }
+
+        return res.status(400).json({success: false, message: 'cms updated failed'});
+
       }
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'Error Occurred',
         error

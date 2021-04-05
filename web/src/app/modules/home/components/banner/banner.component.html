@@ -1,14 +1,31 @@
 <section id="banner-section">
-    <div class="row">
-        <div class="col-12">
-            <carousel [interval]="myInterval" [(activeSlide)]="activeSlideIndex">
-                <slide *ngFor="let slide of carousalList; let index=index">
-                    <a href="{{slide.description.link}}" title="{{slide.description.linktext}}">
+    <div class="row" style="">
+        <div class="col-sm-12 col-md-10 col-lg-10 col-xl-10 carousel-section">
+
+            <ngx-carousel [inputs]="carouselBanner" style="margin-bottom: 0px;">
+                <ngx-item NgxCarouselItem class="bannerStyle" *ngFor="let slide of carouselBannerItems" style="">
+                    <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="">
                         <img [src]="IMAGE_ENDPOINT + slide?.image + IMAGE_EXT" alt="Anonder Bazar Banner Image"
-                             style="width: 100%; height: auto; text-align: center;"/>
+                             style=" width: 100%;"/>
                     </a>
-                </slide>
-            </carousel>
+                </ngx-item>
+
+                <button NgxCarouselPrev class='leftRs'>&lt;</button>
+                <button NgxCarouselNext class='rightRs'>&gt;</button>
+            </ngx-carousel>
+
+        </div>
+        <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 offer-section" style="">
+            <div class="" style="height: 100%;" class="image-control">
+                <div class="image-contain">
+                    <div *ngFor="let data of carouselOffers">
+                        <a routerLink="/cms/cms-details/{{data.id}}">
+                            <img src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].image + IMAGE_EXT_CAROUSEL}}"
+                                 alt="offered product image" class="sideImage" >
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

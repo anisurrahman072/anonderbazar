@@ -571,7 +571,17 @@ module.exports = {
   },
   uniqueCheckCode: async (req, res) => {
     try {
-      let exists = await Product.find({code: req.param('code')});
+      console.log(req.query);
+      const where = {
+        code: req.param('code'),
+        deletedAt: null
+      };
+      if(req.query.exclude_id){
+        where.id = {'!=': req.query.exclude_id};
+      }
+      console.log(where);
+
+      let exists = await Product.find(where);
       if (exists && exists.length > 0) {
         return res.status(200).json({isunique: false});
       } else {

@@ -81,9 +81,11 @@ export class ProductService {
         // get users from api
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
-    uniqueCheckProductCode(productCode: string): Observable<any> {
-        return this.http.get(`${this.EndPoint}/unique-check-code/${encodeURIComponent(productCode)}`);
+
+    uniqueCheckProductCode(productCode: string, excludeId: number = 0): Observable<any> {
+        return this.http.get(`${this.EndPoint}/unique-check-code/${encodeURIComponent(productCode)}?exclude_id=${excludeId}`);
     }
+
     approveByAdmin(id): Observable<any> {
         // get users from api
         return this.http.put(this.EndPoint + '/' + id, {approval_status: 2});
@@ -137,9 +139,9 @@ export class ProductService {
         return this.http.post(this.EndPoint2 + '/bulk-upload?isApproved=' + isApproved, data);
     }
 
-    productExcel(value):Observable<any>{
+    productExcel(value): Observable<any> {
         console.log(value);
-        return this.http.get(this.EndPoint2 +`/product-excel?type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
+        return this.http.get(this.EndPoint2 + `/product-excel?type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
     }
 
     submitDataForBulkUpdate(data): Observable<any> {

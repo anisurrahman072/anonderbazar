@@ -1,5 +1,5 @@
 import {ActivatedRoute} from '@angular/router';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ProductService} from '../../../../services/product.service';
 import {ProductVariantService} from '../../../../services/product-variant.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -15,6 +15,8 @@ import {DesignImagesService} from '../../../../services/design-images.service';
 import {environment} from "../../../../../environments/environment";
 import {NzNotificationService} from "ng-zorro-antd";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import * as ___ from 'lodash';
+import {ExportService} from "../../../../services/export.service";
 
 type SearchSubject = { field: string, query: string };
 
@@ -89,6 +91,15 @@ export class ProductComponent implements OnInit, OnDestroy {
     subcategorySearchOptions: any;
     private currentWarehouseId: string = '';
 
+    isProductVisible: boolean = false;
+    validateProductForm: FormGroup;
+    allProduct: any;
+    productPage: number = 1;
+    productTotal: number;
+    private storedExcelProducts: any = [];
+    private excelPageSelectAll = [];
+    @ViewChild('excelSelectAll') excelSelectAll;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -102,9 +113,12 @@ export class ProductComponent implements OnInit, OnDestroy {
         private categoryProductService: CategoryProductService,
         private brandService: BrandService,
         private warehouseVariantService: WarehouseVariantService,
-        private productVariantService: ProductVariantService
+        private productVariantService: ProductVariantService,
+        private exportService: ExportService
     ) {
-
+        this.validateProductForm = this.fb.group({
+            userChecked: ['', []],
+        });
     }
 
     onSearchChange(query: string, field: string) {
@@ -115,7 +129,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     // Method called in brand option change
-    getProductData(event?: any, type?: string) {
+    getProductData(event?: any, type?: string, forExcel?: boolean) {
         if (event && type) {
             console.log('getProductData', event, type);
             if (type === 'page') {
@@ -146,10 +160,44 @@ export class ProductComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 result => {
-                    this.data = result.data;
-                    console.log('getProductData', result);
                     this.total = result.total;
                     this._isSpinning = false;
+
+                    if(!forExcel){
+                        this.data = result.data;
+                    }
+                    else {
+                        this.allProduct = result.data.map(data => {
+                            return {
+                                ...data,
+                                checked: false
+                            }
+                        });
+
+                        const thisTotal = this.allProduct.length;
+
+                        if (typeof this.storedExcelProducts[this.page - 1] === 'undefined') {
+                            this.storedExcelProducts[this.page - 1] = [];
+                        }
+                        if (typeof this.excelPageSelectAll[this.page - 1] === 'undefined') {
+                            this.excelPageSelectAll[this.page - 1] = false;
+                        }
+
+                        this.excelSelectAll.nativeElement.checked = !!this.excelPageSelectAll[this.page - 1];
+
+                        if (this.storedExcelProducts[this.page - 1].length) {
+                            for (let index = 0; index < thisTotal; index++) {
+                                const foundIndex = this.storedExcelProducts[this.page - 1].findIndex((storedProduct) => {
+                                    return storedProduct.id == this.allProduct[index].id;
+                                });
+                                this.allProduct[index].checked = foundIndex !== -1;
+                            }
+                        } else {
+                            for (let index = 0; index < thisTotal; index++) {
+                                this.allProduct[index].checked = false;
+                            }
+                        }
+                    }
                 },
                 result => {
                     this._isSpinning = false;
@@ -405,12 +453,14 @@ export class ProductComponent implements OnInit, OnDestroy {
     };
     // Modal method
     handleOk = e => {
+        this.isProductVisible = false;
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
         this.isBulkUploadModalVisible = false;
     };
     // Modal method
     handleCancel = e => {
+        this.isProductVisible = false;
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
         this.isBulkUploadModalVisible = false;
@@ -623,4 +673,89 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.getProductData();
     }
 
+    showProductModal = () => {
+
+        this.excelSelectAll.nativeElement.checked = false;
+        this.isProductVisible = true;
+        this.storedExcelProducts= [];
+        this.excelPageSelectAll = [];
+
+        this.getProductData(null, 'page', true);
+    };
+
+    selectAllExcel($event) {
+
+        const isChecked = !!$event.target.checked;
+        if (!isChecked) {
+            this.storedExcelProducts[this.productPage - 1] = [];
+        }
+        this.excelPageSelectAll[this.productPage - 1] = isChecked;
+        const len = this.allProduct.length;
+        for (let i = 0; i < len; i++) {
+            this.allProduct[i].checked = isChecked;
+
+            if (isChecked) {
+                const foundIndex = this.storedExcelProducts[this.productPage - 1].findIndex((storedProduct) => {
+                    return storedProduct.id == this.allProduct[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.storedExcelProducts[this.productPage - 1].push(this.allProduct[i]);
+                }
+            }
+        }
+    }
+
+    _refreshStatus($event, value) {
+        if ($event && $event.currentTarget.checked) {
+            this.storedExcelProducts[this.productPage - 1].push(value);
+        } else {
+            let findValue = this.storedExcelProducts[this.productPage - 1].findIndex((item) => {
+                return item.id == value.id
+            });
+            if (findValue !== -1) {
+                this.storedExcelProducts[this.productPage - 1].splice(findValue, 1);
+            }
+        }
+    }
+
+    generateExcel($event: any, value: any) {
+        this.isProductVisible = false;
+        if (!(this.storedExcelProducts.length > 0)){
+            return false;
+        }
+
+        let allStoredProducts = ___.flatten(this.storedExcelProducts);
+        let excelData = [];
+
+        allStoredProducts.forEach(product => {
+            if(product){
+                let price = product.promotion == 0 ? product.price : product.promo_price;
+                excelData.push({
+                    'Code': product.code,
+                    'Name': product.name,
+                    'Price': price,
+                    'Quantity': product.quantity,
+                    'Type': product.type_name,
+                    'Category': product.category_name,
+                    'S-Category': product.subcategory_name,
+                    'Brand': product.brand_name
+                });
+            }
+        });
+
+        const header = [
+            'Code',
+            'Name',
+            'Price',
+            'Quantity',
+            'Type',
+            'Category',
+            'S-Category',
+            'Brand'
+        ];
+
+        let fileName = this.status === 1 ? 'Fixed product' : 'Variable Product';
+
+        this.exportService.downloadFile(excelData, header, fileName);
+    }
 }

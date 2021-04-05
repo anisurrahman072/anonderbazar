@@ -5,23 +5,24 @@
             <span> List </span>
         </button>
     </ng-template>
-    <ng-template #body [ngIf]="data">
+    <nz-spin [nzSpinning]="_spinning">
+    <div *ngIf="data">
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
             <nz-steps [nzCurrent]="current">
                 <nz-step (click)="current=0" [nzTitle]="'Owner Info'"></nz-step>
                 <nz-step (click)="current=1" [nzTitle]="'Address'"></nz-step>
             </nz-steps>
             <div class="steps-content">
-                <div *ngIf="current === 0" class="step">
+                <div  class="step" [ngStyle]="{'display': current === 0 ? 'block': 'none'}">
                     <div nz-row>
                         <div nz-col [nzSpan]="7">
                             <label>Picture</label>
                         </div>
                         <div nz-col [nzSpan]="12">
                             <image-upload [max]="1" buttonCaption="Select picture" dropBoxMessage="Drop Picture here"
-                                          clearButtonCaption="remove it?" (removed)="onRemoved($event)"
+                                          clearButtonCaption="remove it?" (removed)="onRemovedAvatar($event)"
                                           [uploadedFiles]="ImageFileEdit"
-                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                                          [beforeUpload]="onBeforeUploadAvatar"></image-upload>
                         </div>
                     </div>
                     <!-- image -->
@@ -35,7 +36,7 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('first_name').dirty&&getFormControl('first_name').hasError('required')">
-                                Please enter the first part of the name!
+                                <span class="validation-error"> Please enter the first part of the name! </span>
                             </div>
                         </div>
                     </div>
@@ -50,7 +51,7 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('last_name').dirty&&getFormControl('last_name').hasError('required')">
-                                Last name is required!
+                                <span class="validation-error">   Last name is required! </span>
                             </div>
                         </div>
                     </div>
@@ -67,7 +68,7 @@
                                 </nz-option>
                             </nz-select>
                             <div *ngIf="getFormControl('gender').dirty&&getFormControl('gender').hasError('required')">
-                                Select gender !
+                                <span class="validation-error">    Select gender ! </span>
                             </div>
                         </div>
                     </div>
@@ -80,8 +81,14 @@
                             <input nz-input formControlName="phone" [placeholder]="'Please Enter Phone Number'"
                                    [nzSize]="'large'">
 
-                            <div *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('required')">
-                                Please insert your Phone Number!
+                            <div *ngIf="getFormControl('phone').dirty && getFormControl('phone').hasError('required')">
+                                <span class="validation-error">  Please insert your Phone Number! </span>
+                            </div>
+                            <div *ngIf="getFormControl('phone').dirty && getFormControl('phone').hasError('taken')">
+                                <span class="validation-error"> Phone Number already exists! </span>
+                            </div>
+                            <div *ngIf="getFormControl('phone').dirty && getFormControl('phone').pending">
+                                Validating...
                             </div>
                         </div>
                     </div>
@@ -94,8 +101,14 @@
                             <input nz-input formControlName="email" [placeholder]="'Please Enter Email'"
                                    [nzSize]="'large'">
 
-                            <div *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('required')">
-                                Email is required!
+                            <div *ngIf="getFormControl('email').dirty && getFormControl('email').hasError('required')">
+                                <span class="validation-error">  Email is required! </span>
+                            </div>
+                            <div *ngIf="getFormControl('email').dirty && getFormControl('email').hasError('taken')">
+                                <span class="validation-error"> Email already exists! </span>
+                            </div>
+                            <div *ngIf="getFormControl('email').dirty && getFormControl('email').pending">
+                                Validating...
                             </div>
                         </div>
                     </div>
@@ -109,7 +122,7 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('license_no').dirty&&getFormControl('license_no').hasError('required')">
-                                License no is required
+                                <span class="validation-error">  License no is required </span>
                             </div>
                         </div>
                     </div>
@@ -122,12 +135,12 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('tin_no').dirty&&getFormControl('tin_no').hasError('required')">
-                                Tin number is required!
+                                <span class="validation-error">   Tin number is required! </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="current === 1" class="step">
+                <div  class="step" [ngStyle]="{'display': current === 1 ? 'block': 'none'}">
                     <div nz-row>
                         <!--name start-->
                         <div nz-col [nzSpan]="7">
@@ -138,10 +151,10 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
-                                Name is required!
+                                <span class="validation-error">   Name is required!</span>
                             </div>
-                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
-                                Name already exists!
+                            <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('taken')">
+                                <span class="validation-error"> Name already exists! </span>
                             </div>
                             <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Validating...
@@ -158,10 +171,10 @@
                                    [nzSize]="'large'">
 
                             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
-                                required!
+                                <span class="validation-error">   required! </span>
                             </div>
                             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('taken')">
-                                "{{getFormControl('username').value}}" Already used!
+                                <span class="validation-error"> "{{getFormControl('username').value}}" Already used! </span>
                             </div>
                             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
                                 Verifying ...
@@ -299,16 +312,14 @@
                                 *ngIf="current < 1">
                             <span>Next</span>
                         </button>&nbsp;
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'"  >
                             Save
                         </button>&nbsp;
                         <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                     </div>
                 </div>
             </div>
-
-
         </form>
-
-    </ng-template>
+    </div>
+    </nz-spin>
 </nz-card>

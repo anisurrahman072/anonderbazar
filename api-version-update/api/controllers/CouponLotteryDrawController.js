@@ -240,7 +240,18 @@ module.exports = {
               product_purchased_coupon_code_id: randomCouponId
             }).usingConnection(db);
             if (alreadyGotPrize.length === 0) {
-              break;
+              let randomUser = await ProductPurchasedCouponCode.findOne({
+                id: randomCouponId,
+                deletedAt: null
+              });
+              let randomUserId = randomUser.user_id;
+              let alreadyWinnerUser = await CouponLotteryDraw.find({
+                user_id: randomUserId,
+                deletedAt: null
+              });
+              if(alreadyWinnerUser.length === 0){
+                break;
+              }
             }
           }
 

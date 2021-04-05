@@ -200,7 +200,7 @@ section {
     z-index: 9999;
     position: fixed;
     overflow: visible;
-    background: #fff url('../images/preloder.gif') no-repeat center center;
+    background: #fff url('../images/preloader.gif') no-repeat center center;
     animation: loader 5s infinite ease;
 }
 
@@ -2932,13 +2932,18 @@ footer - start
     font-weight: 500;
 }
 
-.shipping-contact {
+.shipping-contact, .cashback {
     padding-bottom: 20px;
     margin-bottom: 20px;
     border-bottom: 1px solid #D4D4D4;
 }
 
 .shipping-contact .conttag p {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.cashbackTitle{
     font-weight: 500;
     font-size: 16px;
 }

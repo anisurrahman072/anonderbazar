@@ -23,8 +23,10 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     oldImages = [];
     existingBannerImage = [];
+    existingMobileImage = [];
     validateForm: FormGroup;
     ImageFile: File;
+    ImageFileForMobile: File;
     BannerImageFile: File;
 
     isLoading: boolean = true;
@@ -47,6 +49,7 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
             offer_id: [null, []],
             code: ['', [Validators.required]],
             image: [null, []],
+            mobile_image: [null, []],
             banner_image: [null, []],
         });
 
@@ -56,10 +59,16 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
             this.categoryProductService.getById(this.id)
                 .subscribe((result: any) => {
                     this.data = result;
-                    this.oldImages = [];
                     this.validateForm.patchValue(this.data);
+
+                    this.oldImages = [];
                     if (this.data && this.data.image) {
                         this.oldImages.push(this.IMAGE_ENDPOINT + this.data.image);
+                    }
+
+                    this.existingMobileImage = [];
+                    if (this.data && this.data.mobile_image) {
+                        this.existingMobileImage.push(this.IMAGE_ENDPOINT + this.data.mobile_image);
                     }
 
                     this.existingBannerImage = [];
@@ -90,6 +99,22 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
             this.validateForm.controls[key].markAsDirty();
         }
         const formData: FormData = new FormData();
+
+        if (this.ImageFile) {
+            formData.append('hasImage', 'true');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
+        }
+
+        if (this.ImageFileForMobile) {
+            formData.append('hasMobileImage', 'true');
+            formData.append('image', this.ImageFileForMobile, this.ImageFileForMobile.name);
+        }
+
+        if (this.BannerImageFile) {
+            formData.append('hasBannerImage', 'true');
+            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
+        }
+
         formData.append('name', value.name);
         formData.append('code', value.code);
 
@@ -99,16 +124,6 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
 
         if (value.offer_id === 'true') {
             formData.append('offer_id', value.offer_id);
-        }
-
-        if (this.ImageFile) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        }
-
-        if (this.BannerImageFile) {
-            formData.append('hasBannerImage', 'true');
-            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         }
 
         this.isLoading = true;
@@ -160,9 +175,30 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
 
     }
 
+    onRemovedMobile(_file: FileHolder) {
+        if (this.data && this.data.mobile_image) {
+            this.isLoading = true;
+            this.categoryProductService.removeImages(this.id, 'mobile_image')
+                .subscribe((res) => {
+                    this.isLoading = false;
+                }, (err) => {
+                    console.log(err);
+                    this.isLoading = false;
+                    this._notification.create('error', 'Failed to remove the image', this.data.name);
+
+                });
+        }
+        this.ImageFileForMobile = null;
+
+    }
+
     //Event method for storing imgae in variable
-    onBeforeUpload = (metadata: UploadMetadata) =>{
+    onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
+        return metadata;
+    };
+    onBeforeUploadMobile = (metadata: UploadMetadata) => {
+        this.ImageFileForMobile = metadata.file;
         return metadata;
     };
 

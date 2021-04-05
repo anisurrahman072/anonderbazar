@@ -38,7 +38,12 @@
     background-color: #07c25f;
 
 }
-
+.form-row {
+    margin-bottom: 10px;
+}
+.validation-error {
+    color: red;
+}
 .login-wrapper .bg-pic > img {
     height: 100%;
     opacity: 0.6;

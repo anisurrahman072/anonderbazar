@@ -118,3 +118,149 @@
   background: transparent;
   color: #f04723;
 }
+
+//ngx-carousel
+.bannerStyle h1 {
+  background-color: #ccc;
+  min-height: 300px;
+  text-align: center;
+  line-height: 300px;
+}
+.leftRs {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  left: 25px;
+  color: white;
+  opacity: 0;
+  font-size: 50px;
+  background: none;
+  font-family: cursive;
+}
+.leftRs:hover {
+  opacity: 1;
+}
+
+.rightRs {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  right: 25px;
+  color: white;
+  opacity: 0;
+  font-size: 50px;
+  background: none;
+  font-family: cursive;
+}
+.rightRs:hover {
+  opacity: 1;
+}
+
+.carousel-side-section{
+  text-align: center;
+  align-items: center;
+  height: 500px;
+  padding-left: 0px;
+}
+
+.side-box{
+  padding: 10px;
+  background-color: white;
+}
+
+.box-title{
+  font-size: 20px; color: red; margin-bottom: 5px;
+}
+
+.learn-more{
+  align-items: baseline; align-self: center;
+}
+
+.lear-more-title{
+  color: red; font-size: 17px; background: none;
+}
+
+.learn-more-icon{
+  cursor: pointer; margin-left: 7px;
+}
+
+
+
+.offer-section{
+  padding-left: 0px; padding-right: 15px;
+}
+
+.sideImage{
+  width: 100%; height: 100px;
+}
+
+.image-contain{
+  display: flex; flex-direction: column; justify-content: space-between; height: 100%;
+  padding-right: 15px;
+}
+
+@media screen and (max-width: 320px) {
+  .sideImage{
+    padding: 5px !important;
+    height: 130px !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .offer-section{
+    padding-left: 15px;
+    width: 455px;
+    overflow-x: scroll;
+  }
+  .image-contain{
+    padding: 0px;
+    flex-direction: row;
+  }
+  .sideImage{
+    padding: 5px;
+    height: 150px;
+  }
+  .image-control{
+    min-width: 800px;
+  }
+
+  .carousel-section{
+    padding-right: 0px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .sideImage{
+    height: 69px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .sideImage{
+    height: 95px;
+  }
+}
+
+@media screen and (min-width: 1366px) {
+  .sideImage{
+    height: 129px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .sideImage{
+    height: 139px;
+  }
+}
+
+
+
+@media screen and (min-width: 2560px) {
+  .sideImage{
+    height: 253px;
+  }
+}

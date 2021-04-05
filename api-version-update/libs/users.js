@@ -6,7 +6,7 @@ exports.getAllUsers = async (req, groupId) => {
   let _pagination = pagination(req.query);
   let query = req.query;
   let rawSelect = `
-      SELECT customer.id as id, CONCAT(customer.first_name, ' ',customer.first_name) as customer_name,
+      SELECT customer.id as id, CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
       customer.username as username, customer.email as email, customer.last_login as last_login,
       customer.active as customer_active, customer.email as email, customer.active as customer_active,
       customer.phone as phone, customer.avatar as customer_avatar, customer.gender as customer_gender,

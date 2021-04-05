@@ -128,30 +128,42 @@ module.exports = {
       let userData = postBody.userdata;
       delete postBody.userdata;
 
+
+      try {
+
+        if ((postBody.hasLogo && postBody.hasLogo === 'true') || (postBody.hasAvatar && postBody.hasAvatar === 'true')) {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          if (postBody.hasLogo && postBody.hasLogo === 'true' && postBody.hasAvatar && postBody.hasAvatar === 'true') {
+            postBody.logo = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              userData.avatar = '/' + newPathBanner;
+            }
+          } else if (postBody.hasLogo && postBody.hasLogo === 'true') {
+            postBody.logo = '/' + newPath;
+          } else if (postBody.hasAvatar && postBody.hasAvatar === 'true') {
+            userData.avatar = '/' + newPath;
+          }
+        }
+
+      } catch (err) {
+        console.log('err', err);
+        return res.status(err.status).json({err: err});
+      }
+
       const {
         warehouse,
         user
       } = await sails.getDatastore()
         .transaction(async (db) => {
-          if (postBody.hasLogo === 'true') {
-            const uploaded = await uploadImages(req.file('logo'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No logo image was uploaded');
-            }
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            postBody.logo = '/' + newPath;
-          }
           postBody.status = 0;
           const warehouse = await Warehouse.create(postBody).fetch().usingConnection(db);
 
-          if (userData.hasImage === 'true') {
-            const uploaded = await uploadImages(req.file('user_avatar'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No user avatar was uploaded');
-            }
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            userData.avatar = '/' + newPath;
-          }
           userData.warehouse_id = warehouse.id;
           userData.active = 1;
           userData.group_id = 4; // 4 for owner / warehouse
@@ -163,17 +175,6 @@ module.exports = {
             user
           };
         });
-
-      /*      if (req.body.haslogo === 'true') {
-        const uploaded = await uploadImages(req.file('logo'));
-        if (uploaded.length === 0) {
-          return res.badRequest('No image was uploaded');
-        }
-        let newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        req.body.logo = '/' + newPath;
-      }
-      req.body.status = 0;
-      const warehouseCreate = await Warehouse.create(req.body).fetch();*/
 
       return res.status(200).json({
         user,
@@ -188,26 +189,73 @@ module.exports = {
 
   //Method called for updating a warehouse data
   //Model models/Warehouse.js
-  update: async (req, res) => {
+  updateCustom: async (req, res) => {
     try {
-      if (req.body.haslogo === 'true') {
-        try {
-          const uploaded = await uploadImages(req.file('logo'));
+      console.log(req.body);
+      let postBody = {...req.body};
+      // console.log(postBody);
+
+      try {
+        postBody.userdata = JSON.parse(postBody.userdata);
+      } catch (__) {
+        return res.status(422).json({
+          success: false,
+          message: 'Invalid User data'
+        });
+      }
+      let userData = postBody.userdata;
+      delete postBody.userdata;
+
+      try {
+
+        if ((postBody.hasLogo && postBody.hasLogo === 'true') || (postBody.hasAvatar && postBody.hasAvatar === 'true')) {
+          const uploaded = await uploadImages(req.file('image'));
           if (uploaded.length === 0) {
             return res.badRequest('No file was uploaded');
           }
+          console.log(uploaded);
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-          req.body.logo = '/' + newPath;
-
-        } catch (err) {
-          console.log('err', err);
-          return res.json(err.status, {err: err});
+          if (postBody.hasLogo && postBody.hasLogo === 'true' && postBody.hasAvatar && postBody.hasAvatar === 'true') {
+            postBody.logo = '/' + newPath;
+            if (typeof uploaded[1] !== 'undefined') {
+              const newPathBanner = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
+              userData.avatar = '/' + newPathBanner;
+            }
+          } else if (postBody.hasLogo && postBody.hasLogo === 'true') {
+            postBody.logo = '/' + newPath;
+          } else if (postBody.hasAvatar && postBody.hasAvatar === 'true') {
+            userData.avatar = '/' + newPath;
+          }
         }
-      }
-      const warehouse = await Warehouse.updateOne({id: req.param('id')}).set(req.body);
 
-      return res.json(200, warehouse);
+      } catch (err) {
+        console.log('err', err);
+        return res.status(err.status).json({err: err});
+      }
+
+      const {
+        warehouse,
+        user
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          postBody.status = 0;
+          const warehouse = await Warehouse.updateOne({id: req.param('id')}).set(postBody).usingConnection(db);
+
+          const userId = userData.id;
+          delete userData.id;
+
+          let user = await User.updateOne({id: userId}).set(userData).usingConnection(db);
+
+          return {
+            warehouse,
+            user
+          };
+        });
+
+      return res.status(200).json({
+        user,
+        warehouse
+      });
     } catch (error) {
       console.log(error);
       res.status(400).json({

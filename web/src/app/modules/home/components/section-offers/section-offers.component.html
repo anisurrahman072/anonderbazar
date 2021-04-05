@@ -1,19 +1,17 @@
 <section id="offer-section" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="category-head">
-            <div class="titel">
-                <h4>Offers</h4>
-            </div>
+        <div class="titel">
+            <h4>Offers</h4>
         </div>
         <div class="row">
             <ng-template ngFor let-data [ngForOf]="homeOfferData">
-                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 mb-4"
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4"
                      *ngIf="data && data.data_value && (( data.data_value[0].alloffers && data.data_value[0].alloffers.length > 0) || (data.data_value[0].allproducts && data.data_value[0].allproducts.length > 0))">
                     <div class="offer-details"
                          *ngIf='data.data_value[0].alloffers && data.data_value[0].alloffers.length > 0'>
                         <div class="offer-img">
                             <div class="row">
-                                <div class="col-md-8 col-8" id="img-1">
+                                <div class="col-md- col-8" id="img-1">
                                     <div class="mr-1">
                                         <img class="offer-mainimg"
                                              src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].alloffers[0]?.image + IMAGE_EXT}}"
@@ -44,14 +42,15 @@
                         <div class="offer-contant">
                             <h6>{{data.data_value[0]?.title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms-details/{{data.id}}">View All Offer<i
+                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i
                                     class="fa fa-angle-right text-center"></i></a>
                         </div>
                     </div>
+
                     <div class="offer-details"
                          *ngIf='data.data_value[0].allproducts && data.data_value[0].allproducts?.length > 0'>
                         <div class="offer-img">
-                            <a routerLink="/cms-details/{{data.id}}">
+                            <!--<a routerLink="/cms/cms-details/{{data.id}}">
                                 <div class="row">
                                     <div class="col-md-8 col-8 pr-0">
                                         <div class="mr-1">
@@ -80,12 +79,17 @@
                                         </div>
                                     </div>
                                 </div>
+                            </a>-->
+                            <a routerLink="/cms/cms-details/{{data.id}}">
+                                <img class="offer-mainimg"
+                                     src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].image + IMAGE_EXT}}"
+                                     alt="offered product image">
                             </a>
                         </div>
                         <div class="offer-contant">
                             <h6>{{data.data_value[0].title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms-details/{{data.id}}">View All Offer<i
+                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i
                                     class="fa fa-angle-right text-center"></i></a>
                         </div>
                     </div>

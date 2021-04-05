@@ -20,8 +20,8 @@
                         <div nz-col [nzSpan]="12">
                             <image-upload [max]="1" buttonCaption="Select Picture"
                                           dropBoxMessage="Drag here" clearButtonCaption="clear"
-                                          (removed)="onRemoved($event)"
-                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                                          (removed)="onRemovedAvatar($event)"
+                                          [beforeUpload]="onBeforeUploadAvatar"></image-upload>
                         </div>
                     </div>
                     <!-- image -->

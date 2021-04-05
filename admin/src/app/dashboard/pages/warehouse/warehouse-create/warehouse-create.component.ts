@@ -19,7 +19,7 @@ import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneVa
 export class WarehouseCreateComponent implements OnInit {
     @ViewChild('Image') Image;
     validateForm: FormGroup;
-    ImageFile: File;
+    AvatarImageFile: File;
     logoFile: File;
     pass: any;
     _spinning: boolean = false;
@@ -128,7 +128,7 @@ export class WarehouseCreateComponent implements OnInit {
 
         const formData: FormData = new FormData();
 
-        formData.append('userdata', JSON.stringify({
+        formData.set('userdata', JSON.stringify({
             username: value.username,
             password: value.password,
             email: value.email,
@@ -143,35 +143,35 @@ export class WarehouseCreateComponent implements OnInit {
             upazila_id: value.upazila_id,
             zila_id: value.zila_id,
             division_id: value.division_id,
-            hasImage: !!this.ImageFile,
+            hasImage: !!this.AvatarImageFile,
         }));
 
-        formData.append('name', value.name);
-        formData.append('phone', value.phone);
-        formData.append('email', value.email);
-        formData.append('code', '');
-        formData.append('buffer_time', '0');
-        formData.append('license_no', value.license_no);
-        formData.append('tin_no', value.tin_no);
-        formData.append('country', "Bangladesh");
-        formData.append('division_id', value.division_id);
-        formData.append('zila_id', value.zila_id);
-        formData.append('upazila_id', value.upazila_id);
-        formData.append('address', value.address);
-        formData.append('postal_code', value.postal_code);
-        formData.append('status', "1");
-
         if (this.logoFile) {
-            formData.append('logo', this.logoFile, this.logoFile.name);
-            formData.append('hasLogo', 'true');
-        } else {
-            formData.append('hasLogo', 'false');
-        }
-        if (this.ImageFile) {
-            formData.append('user_avatar', this.ImageFile, this.ImageFile.name);
+            formData.append('image', this.logoFile, this.logoFile.name);
+            formData.set('hasLogo', 'true');
         }
 
-        formData.append('invoice_footer', value.invoice_footer);
+        if (this.AvatarImageFile) {
+            formData.append('image', this.AvatarImageFile, this.AvatarImageFile.name);
+            formData.set('hasAvatar', 'true');
+        }
+
+        formData.set('name', value.name);
+        formData.set('phone', value.phone);
+        formData.set('email', value.email);
+        formData.set('code', '');
+        formData.set('buffer_time', '0');
+        formData.set('license_no', value.license_no);
+        formData.set('tin_no', value.tin_no);
+        formData.set('country', "Bangladesh");
+        formData.set('division_id', value.division_id);
+        formData.set('zila_id', value.zila_id);
+        formData.set('upazila_id', value.upazila_id);
+        formData.set('address', value.address);
+        formData.set('postal_code', value.postal_code);
+        formData.set('status', "1");
+
+        formData.set('invoice_footer', value.invoice_footer);
 
         this._spinning = true;
         this.warehouseService.insert(formData).subscribe(result => {
@@ -199,13 +199,13 @@ export class WarehouseCreateComponent implements OnInit {
     };
 
     //Event method for removing picture
-    onRemoved(file: FileHolder) {
-        this.ImageFile = null;
+    onRemovedAvatar(file: FileHolder) {
+        this.AvatarImageFile = null;
     }
 
     // Event method for storing imgae in variable
-    onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+    onBeforeUploadAvatar = (metadata: UploadMetadata) => {
+        this.AvatarImageFile = metadata.file;
 
         return metadata;
     }

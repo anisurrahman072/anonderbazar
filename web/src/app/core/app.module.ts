@@ -49,23 +49,21 @@ import {FormValidatorService} from "../services/validator/form-validator.service
 import {environment} from "../../environments/environment";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
-
 import {JwtHelper} from "angular2-jwt";
 import {LocalStorageService} from "../services/local-storage.service";
 import {BkashService} from "../services/bkash.service";
-// import {UiModule} from "../ui/ui.module";
+
 
 let imports = [];
 if (environment.production) {
     imports = [
-        ServiceWorkerModule.register('ngsw-worker.js'),
+        ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
         /*BrowserPrebootModule.replayEvents(),*/
         /*ServerPrebootModule.recordEvents({ appRoot: 'app-root' }),*/
     ];
 } else {
     imports = [];
 }
-
 
 @NgModule({
     declarations: [
