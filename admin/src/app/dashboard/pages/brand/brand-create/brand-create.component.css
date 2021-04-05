@@ -1,3 +1,9 @@
 .brand-create-img .img-ul-x-mark {
     display: none !important;
 }
+.form-row {
+    margin-bottom: 10px;
+}
+.validation-error {
+    color: red;
+}

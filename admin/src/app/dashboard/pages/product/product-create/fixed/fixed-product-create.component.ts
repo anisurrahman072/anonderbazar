@@ -15,13 +15,13 @@ import {CategoryProductService} from '../../../../../services/category-product.s
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {BrandService} from '../../../../../services/brand.service';
+import {UniqueProductCodeValidator} from "../../../../../services/validator/UniqueProductCodeValidator";
 
 @Component({
     selector: 'app-fixed-product-create',
     templateUrl: './fixed-product-create.component.html',
     styleUrls: ['./fixed-product-create.component.css']
 })
-
 export class FixedProductCreateComponent implements OnInit {
     @ViewChild('Image') Image;
     tagOptions: any = [];
@@ -30,21 +30,7 @@ export class FixedProductCreateComponent implements OnInit {
     ImageFile: File[] = [];
     ImageFrontFile: File[] = [];
     isSubmit: boolean = true;
-
-    /*    ckConfig = {
-            uiColor: '#662d91',
-            toolbarGroups: [
-                { name: 'document', groups: ['mode', 'document', 'doctools'] },
-                {
-                    name: 'editing',
-                    groups: ['find', 'selection', 'spellchecker', 'editing']
-                },
-                { name: 'forms', groups: ['forms'] }
-            ],
-            removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-        };
-    */
-
+    _spinning: boolean = false;
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -80,11 +66,9 @@ export class FixedProductCreateComponent implements OnInit {
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
     brandSearchOptions: any;
-    craftsmanSearchOptions: any;
     tag: any;
     tags = [];
     inputVisible = false;
-    inputValue = '';
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -103,7 +87,8 @@ export class FixedProductCreateComponent implements OnInit {
                 private authService: AuthService,
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
-                private productService: ProductService) {
+                private productService: ProductService,
+                private uniquProductCodeValidator: UniqueProductCodeValidator,) {
 
     }
 
@@ -111,11 +96,11 @@ export class FixedProductCreateComponent implements OnInit {
     ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code: [''],
+            code: ['', [Validators.required], [this.uniquProductCodeValidator]],
             image: [null, []],
             frontimage: [null, []],
             price: ['0', []],
-            vendor_price: ['', []],
+            vendor_price: ['0', []],
             min_unit: [1, [Validators.required]],
             alert_quantity: [10, []],
             brand_id: ['', []],
@@ -187,19 +172,22 @@ export class FixedProductCreateComponent implements OnInit {
             formData.append('hasImageFront', 'false');
         }
 
-        this.isSubmit = false;
+        this.isSubmit = false; this._spinning = true;
         this.productService.insert(formData).subscribe(result => {
+            this.isSubmit = true;
+            this._spinning = false;
             console.log(result);
-            if (result.id) {
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New fixed product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
         }, error => {
             this.isSubmit = true;
+            this._spinning = false;
             console.log('error', error);
             this._notification.create(
                 'error',
@@ -268,10 +256,6 @@ export class FixedProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-
-    categorySearchChange($event) {
-    }
-
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -300,12 +284,4 @@ export class FixedProductCreateComponent implements OnInit {
         }
     }
 
-    subcategorySearchChange($event) {
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
 }

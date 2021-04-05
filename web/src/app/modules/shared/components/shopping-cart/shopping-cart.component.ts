@@ -15,6 +15,7 @@ import {Product} from '../../../../models';
 import {NotificationsService} from 'angular2-notifications';
 import {AppSettings} from '../../../../config/app.config';
 import {type} from "os";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-shopping-cart',
@@ -34,6 +35,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     grandTotal: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     cart$: Observable<any>;
     cartData: any = null;
@@ -103,23 +105,19 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     //Method for update cart items
     updateCartItem(cartItem, action) {
         this.progress.start("mainLoader");
-        let updatedQty = cartItem.product_quantity;
-        let updatedTotalPrice = 0;
+        let currentQty = cartItem.product_quantity;
+
         let maxProductQuantity = cartItem.product_id.quantity;
 
         if (action == 'increase') {
-            if (updatedQty < maxProductQuantity) {
-                updatedQty += 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty >= maxProductQuantity) {
+                this.progress.complete("mainLoader");
                 this.toastr.error('Unable to increase quantity!', 'Sorry!');
                 return false;
             }
         } else {
-            if (updatedQty > 1) {
-                updatedQty -= 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty <= 1) {
+                this.progress.complete("mainLoader");
                 this.toastr.error('Unable to decrease quantity!', 'Sorry!');
                 return false;
             }
@@ -128,8 +126,8 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
         let data = {
             "cart_id": cartItem.cart_id,
             "product_id": cartItem.product_id.id,
-            "product_quantity": updatedQty,
-            "product_total_price": updatedTotalPrice
+            "action_name": action,
+            "quantity": 1
         };
 
         this.cartItemService.update(cartItem.id, data).subscribe(res => {

@@ -1,4 +1,14 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, PLATFORM_ID, Renderer2, ViewChild} from '@angular/core';
+import {
+    AfterViewChecked,
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    Inject, OnDestroy,
+    OnInit,
+    PLATFORM_ID,
+    Renderer2,
+    ViewChild
+} from '@angular/core';
 import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationStart, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import "rxjs/add/operator/filter";
@@ -16,6 +26,8 @@ import {SyncStorage} from "../state-management";
 import {UIService} from "../services/ui/ui.service";
 import {CompareService} from "../services/compare.service";
 import {LoaderService} from "../services/ui/loader.service";
+import {NotificationsService} from "angular2-notifications";
+import {Subscription} from "rxjs/Subscription";
 
 
 @Component({
@@ -23,7 +35,7 @@ import {LoaderService} from "../services/ui/loader.service";
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     title = 'app';
     currentUser: Observable<any>;
     cart: Observable<Cart>;
@@ -32,6 +44,8 @@ export class AppComponent implements AfterViewInit {
     loading;
     sidebarOpened$: any = false;
     panelOpenState: boolean = false;
+
+    private tokenExpiredNotiSub: Subscription;
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object,
                 private router: Router,
@@ -45,6 +59,7 @@ export class AppComponent implements AfterViewInit {
                 private compareService: CompareService,
                 private titleService: Title,
                 public loaderService: LoaderService,
+                private _notify: NotificationsService,
                 private cdr: ChangeDetectorRef) {
         this.loading = true;
     }
@@ -56,6 +71,15 @@ export class AppComponent implements AfterViewInit {
                 this.store.dispatch(new SyncStorage(event.key));
             }
         });
+
+        this.tokenExpiredNotiSub = this.uiService.tokenExpiredNotificationObservable.subscribe((message: string) => {
+            this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
+            this.store.dispatch(new fromStore.LoadCartSuccess(null));
+            this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
+            this._notify.error(message);
+        }, (err) => {
+            console.log(err);
+        })
 
         this.moadlProgressRef = this.progress.ref('loadingModal');
 
@@ -74,6 +98,25 @@ export class AppComponent implements AfterViewInit {
                 this.cdr.detectChanges();
             });
         }
+
+    }
+
+    ngOnDestroy(): void {
+        this.tokenExpiredNotiSub ? this.tokenExpiredNotiSub.unsubscribe() : "";
+    }
+
+    ngAfterViewInit() {
+        this.router.events
+            .subscribe((event) => {
+                if (event instanceof NavigationStart) {
+                    this.loading = true;
+                } else if (
+                    event instanceof NavigationEnd ||
+                    event instanceof NavigationCancel
+                ) {
+                    this.loading = false;
+                }
+            });
     }
 
     initialize() {
@@ -103,18 +146,5 @@ export class AppComponent implements AfterViewInit {
         }
     }
 
-    ngAfterViewInit() {
-        this.router.events
-            .subscribe((event) => {
-                if (event instanceof NavigationStart) {
-                    this.loading = true;
-                }
-                else if (
-                    event instanceof NavigationEnd ||
-                    event instanceof NavigationCancel
-                ) {
-                    this.loading = false;
-                }
-            });
-    }
+
 }

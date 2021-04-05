@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
+
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -13,8 +13,7 @@ export class CategoryTypeService {
     private EndPoint = `${environment.API_ENDPOINT}/category`;
     private EndPoint2 = `${environment.API_ENDPOINT}/typecategories`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient) {
     }
 
     getAll():any {

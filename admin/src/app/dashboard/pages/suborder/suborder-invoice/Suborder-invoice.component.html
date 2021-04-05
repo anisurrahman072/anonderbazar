@@ -1,28 +1,23 @@
 <section class="invoice">
     <nz-spin [nzSpinning]="_isSpinning">
-        <nz-card>
-            <ng-template #title>
-                INVOICE
-            </ng-template>
+        <nz-card nzTitle="INVOICE" [nzExtra]="extra">
             <ng-template #extra>
-
                 <button nz-button [nzType]="'primary'"
                         [nzSize]="'large'" (click)="getPDF()">
                     <i class="anticon anticon-download"></i><span> Save  </span>
-                </button>
+                </button>&nbsp;
                 <button nz-button [nzType]="'primary'"
                         [nzSize]="'large'" (click)="getPRINT()">
                     <i class="anticon anticon-printer"></i><span> Print  </span>
-                </button>
+                </button>&nbsp;
 
                 <button routerLink="/dashboard/suborder" nz-button [nzType]="'primary'"
                         [nzSize]="'large'">
                     <i class="anticon anticon-file-text"></i><span> List </span>
                 </button>
-
             </ng-template>
 
-            <ng-template #body *ngIf="data && order">
+            <ng-template [ngIf]="data && order">
                 <div id="print-section">
                     <div class="row">
                         <div class="col-md-6">

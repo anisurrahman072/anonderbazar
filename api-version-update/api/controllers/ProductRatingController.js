@@ -8,12 +8,15 @@
 module.exports = {
 
   // destroy a row
-  destroy: function (req, res) {
-    ProductRating.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, productRating) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(productRating[0]);
-            });
+  destroy: async (req, res) => {
+    try {
+      const productRating = await ProductRating.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(productRating);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+
   },
 
 };

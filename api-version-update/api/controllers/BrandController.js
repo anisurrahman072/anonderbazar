@@ -1,111 +1,116 @@
-const {initLogPlaceholder, pagination, uploadImgAsync} = require('../../libs');
-const {imageUploadConfig} = require('../../libs/helper');
-
 /**
  * BrandController
  *
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
+const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
   // destroy a row
-  destroy: function (req, res) {
-    Brand.update({id: req.param('id')}, {deletedAt: new Date()}).exec(
-      (err, user) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(user[0]);
-      }
-    );
+  destroy: async (req, res) => {
+    try {
+      const brand = await Brand.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, brand);
+    } catch (error) {
+      return res.json(400, {message: 'wrong', error});
+    }
   },
   // create a row
   //Method called for creating product brand
   //Model models/Brand.js
-  create: function (req, res) {
+  create: async (req, res) => {
+    const authUser = req.token.userInfo;
+    const isVendor = authUser.group_id.name === 'owner';
     try {
-      if (req.body.hasImage === 'true') {
-        let imageCounter = 1;
-        let i;
-        let body; let body1;
-        req.file('image').upload(imageUploadConfig(), (err, files) => {
-          // maxBytes: 10000000;
-          if (err) {
-            return res.serverError(err);
-          }
-          var newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body = req.body;
-          body.image = '/' + newPath;
-          Brand.create(body).exec((err, returnBrand) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (returnBrand) {
-              res.json(200, returnBrand);
-            }
-          });
-        });
+      let body = req.body;
+      if (body.hasImage === 'true') {
 
-      } else {
-        Brand.create(req.body).exec((err, returnBrand) => {
-          if (err) {
-            return res.json(err.status, {err: err});
+        try {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
-          if (returnBrand) {
-            res.json(200, returnBrand);
-          }
-        });
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+          body.image = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
+        }
+
       }
+      if (isVendor && authUser.warehouse_id && authUser.warehouse_id.id) {
+        body.warehouse_id = authUser.warehouse_id.id;
+      }
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
+      const returnBrand = await Brand.create(body).fetch();
+
+      return res.json(200, returnBrand);
+
     } catch (err) {
-      res.json(400, {message: 'wrong'});
+      res.json(400, {message: 'something wrong', err});
     }
   },
 
   // update a row
   //Method called for updating product brand
   //Model models/Brand.js
-  update: function (req, res) {
+  update: async (req, res) => {
 
+    try {
+      let body = req.body;
+      if (body.hasImage === 'true') {
 
-    if (req.body.hasImage == 'true') {
-
-      req.file('image').upload(imageUploadConfig(),
-        (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
+        try {
+          const uploaded = await uploadImages(req.file('image'));
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
           }
           const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          if (err) {
-            return res.serverError(err);
-          }
-          req.body.image = '/' + newPath;
-          Brand.update({id: req.param('id')}, req.body).exec((
-            err,
-            brand
-          ) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (brand) {
-              res.json(200, {
-                brand: brand,
-                token: jwToken.issue({id: brand.id})
-              });
-            }
-          });
+
+          body.image = '/' + newPath;
+        } catch (err) {
+          console.log('err', err);
+          return res.json(err.status, {err: err});
         }
-      );
-    } else {
-      Brand.update({id: req.param('id')}, req.body).exec((
-        err,
-        brand
-      ) => {
-        if (err) {
-          return res.json(err, 400);
-        }
-        return res.json(200, brand);
-      });
+      }
+      let stringForMakingSlug = body.name;
+      stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
+      stringForMakingSlug = stringForMakingSlug.toLowerCase();
+      body.slug = stringForMakingSlug;
+      const brand = await Brand.updateOne({id: req.param('id')}).set(body);
+
+      return res.status(200).json(brand);
+
+    } catch (err) {
+      return res.status(400).json({message: 'Something Went Wrong', err});
     }
   },
+  uniqueCheckName: async (req, res) => {
+    try {
+      const ignoreId = parseInt(req.body.ignore_id, 10);
+      const where = {
+        name: req.param('name')
+      };
+
+      if(ignoreId){
+        where.id = { '!=': ignoreId };
+      }
+
+      console.log(where, ignoreId);
+      let exists = await Brand.find(where);
+      if (exists && exists.length > 0) {
+        return res.status(200).json({isunique: false});
+      } else {
+        return res.status(200).json({isunique: true});
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({isunique: true});
+    }
+  }
 };

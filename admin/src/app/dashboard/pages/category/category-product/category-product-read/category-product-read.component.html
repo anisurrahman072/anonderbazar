@@ -1,54 +1,65 @@
-<nz-card>
-    <ng-template #title>
-        Product category Details
-    </ng-template>
+<nz-card nzTitle="Product category Details" [nzExtra]="extra">
     <ng-template #extra>
-        <button *ngIf="data && 'productcategory-edit'|accessControl" [routerLink]="['/dashboard/category/product/edit', data.id]"
-            nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <button *ngIf="data && 'productcategory-edit'|accessControl"
+                [routerLink]="['/dashboard/category/product/edit', data.id]"
+                nz-button [nzSize]="'large'">
             <i class="anticon anticon-edit"></i><span>Edit</span>
         </button>
 
         <button *ngIf="'productcategory-read'|accessControl" routerLink="/dashboard/category/product" nz-button
-            [nzType]="'primary'" [nzSize]="'large'">
+                [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
         </button>
     </ng-template>
-    <ng-template #body>
-        <div class="row" *ngIf="data">
-            <div class="col-md-4">
-                <div class="profile-img">
-                    <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.image}}" />
-                </div>
+    <div class="row" *ngIf="data">
+        <nz-spin [nzSpinning]="isLoading">
+        <div class="col-md-4">
+            <div class="profile-img">
+                <img *ngIf="data.image; else ImagePlaceHolderTemplate" class="img img-responsive" style="margin: auto;" alt="category"
+                     src="{{  IMAGE_ENDPOINT + data.image}}"/>
+                <ng-template #ImagePlaceHolderTemplate>
+                    <img  class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                         src="/assets/images/general_placeholder.png"/>
+                </ng-template>
             </div>
-            <div class="col-md-6">
-                <div class="profile-head">
-                    <h2>
-                        {{data.name}}
-                    </h2>
-                    <br>
-                    <hr>
-                    <div class="row about">
-                        <div class="col-md-8 h4">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label>Code</label>
-                                </div>
-                                <div class="col-md-6" *ngIf="data.code && data.code!=='undefined'; else notShow">
-                                    <p>{{data.code}}</p>
-                                </div>
-                                <ng-template #notShow>
-                                    <div class="col-md-6">
-                                        <p>
-                                            N/A
-                                        </p>
-                                    </div>
-                                </ng-template>
+            <div class="profile-img">
+                <img *ngIf="data.banner_image; else ImagePlaceHolderTemplate1" class="img img-responsive" style="margin: auto;" alt="category banner"
+                     src="{{  IMAGE_ENDPOINT + data.banner_image}}"/>
+                <ng-template #ImagePlaceHolderTemplate1>
+                    <img  class="img img-responsive" style="margin: auto;" alt="logo.jpg"
+                          src="/assets/images/general_placeholder.png"/>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="profile-head">
+                <h2>
+                    {{data.name}}
+                </h2>
+                <br>
+                <hr>
+                <div class="row about">
+                    <div class="col-md-8 h4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Code</label>
                             </div>
-
+                            <div class="col-md-6" *ngIf="data.code && data.code!=='undefined'; else notShow">
+                                <p>{{data.code}}</p>
+                            </div>
+                            <ng-template #notShow>
+                                <div class="col-md-6">
+                                    <p>
+                                        N/A
+                                    </p>
+                                </div>
+                            </ng-template>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
-    </ng-template>
+        </nz-spin>
+    </div>
 </nz-card>

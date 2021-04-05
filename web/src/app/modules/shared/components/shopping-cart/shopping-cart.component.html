@@ -34,7 +34,7 @@
                                             <tr *ngFor="let cartItem of cartData.cart_items">
                                                 <td class="product" *ngIf="cartItem">
                                                     <img style="width: 150px; height: 150px; object-fit: contain;"
-                                                         src="{{IMAGE_LIST_ENDPOINT + cartItem.product_id.image}}"
+                                                         src="{{IMAGE_LIST_ENDPOINT + cartItem.product_id.image + IMAGE_EXT}}"
                                                          alt="Cart Item">
                                                 </td>
                                                 <td>

@@ -7,32 +7,28 @@
 
 module.exports = {
   attributes: {
-    warehouse_id:{
-      model:'warehouse'
+    warehouse_id: {
+      model: 'warehouse'
     },
-    total_quantity:{
-      type:'number',
+    total_quantity: {
+      type: 'number',
       columnType: 'integer',
       required: false,
       allowNull: true
     },
-    total_amount:{
-      type:'number',
+    total_amount: {
+      type: 'number',
       columnType: 'double',
       required: false,
       allowNull: true
     },
-    info:{
-      type:'string',
-      columnType: 'text',
-      required: false,
-      allowNull: true
+    info: {
+      type: 'json',
+      columnType: 'text'
     },
-    items:{
-      type:'string',
-      columnType: 'text',
-      required: false,
-      allowNull: true
+    items: {
+      type: 'json',
+      columnType: 'text'
     },
     created_by: {
       model: 'user'
@@ -41,7 +37,6 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
   },
   tableName: 'pr_status',

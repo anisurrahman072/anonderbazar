@@ -11,6 +11,7 @@ import {AuthService, CartItemService, FavouriteProductService} from "../../../..
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item-flash-deals',
@@ -22,6 +23,8 @@ export class ProductItemFlashDealComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     product: Product;
     compare$: Observable<any>;
@@ -56,6 +59,7 @@ export class ProductItemFlashDealComponent implements OnInit {
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.cart$.subscribe(result => {
+
             if (result) {
                 this.cartId = result.data.id;
                 this.cartTotalprice = result.data.total_price;
@@ -77,7 +81,6 @@ export class ProductItemFlashDealComponent implements OnInit {
     }
 
     //Method for add to cart
-
     addToCartClickHandler(event: any, product: any) {
         event.stopPropagation();
         console.log('addToCartClickHandler');
@@ -112,7 +115,11 @@ export class ProductItemFlashDealComponent implements OnInit {
                     },
                     error => {
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if (error && error.error) {
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
                     }
                 );
         } else {
@@ -122,17 +129,16 @@ export class ProductItemFlashDealComponent implements OnInit {
     }
 
     //Method for direct buy
-
-    buyNow(product) {
+    buyNow(event: any, product) {
+        event.stopPropagation();
         this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }
 
     //Method for add to favourite
-
-    addToFavourite(product: Product) {
-
+    addToFavourite(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {
@@ -149,8 +155,8 @@ export class ProductItemFlashDealComponent implements OnInit {
     }
 
     //Method for remove from favourite
-
-    removeFromFavourite(favouriteProduct) {
+    removeFromFavourite(event: any, favouriteProduct) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             if (favouriteProduct) {
@@ -166,9 +172,8 @@ export class ProductItemFlashDealComponent implements OnInit {
     }
 
     //Method for add to compare
-
-    addToCompare(product: Product) {
-
+    addToCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
 
@@ -184,7 +189,8 @@ export class ProductItemFlashDealComponent implements OnInit {
     }
 
     //Method for remove from compare
-    removeFromCompare(product: Product) {
+    removeFromCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));

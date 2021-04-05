@@ -3,6 +3,7 @@ import {ProductService, ProductVariantService} from "../../../../services";
 import {Observable} from 'rxjs/Rx';
 import {AppSettings} from "../../../../config/app.config";
 import {Product} from "../../../../models";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'home-product-promo',
@@ -11,6 +12,7 @@ import {Product} from "../../../../models";
 })
 
 export class ProductPromoComponent implements OnInit {
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     selectedProduct: Product;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     promotionalProducts$: Observable<any>; 

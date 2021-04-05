@@ -30,11 +30,15 @@ module.exports = {
       columnType: 'decimal',
       required: true
     },
+    status: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 1
+    },
     date: {
       type: 'ref',
       columnType: 'datetime',
       required: false,
-      allowNull: true
     },
     suborderItemVariants: {
       collection: 'suborderItemVariant',

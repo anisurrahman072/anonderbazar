@@ -1,13 +1,11 @@
 import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
-/*import { ServerPrebootModule } from 'preboot/server';
-import { BrowserPrebootModule } from 'preboot/browser';*/
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SwiperModule} from "ngx-swiper-wrapper";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HeaderComponent} from "../layout/header/header.component";
 import {FooterComponent} from "../layout/footer/footer.component";
 import {MenuComponent} from "../layout/menu/menu.component";
@@ -15,7 +13,6 @@ import {TabsModule} from 'ngx-bootstrap';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {effects, reducers} from "../state-management";
-/* import {JasperoAlertsModule} from "@jaspero/ng2-alerts";*/
 import {NgProgressModule} from '@ngx-progressbar/core';
 import {SimpleNotificationsModule} from 'angular2-notifications';
 import {ServiceWorkerModule} from '@angular/service-worker';
@@ -23,7 +20,7 @@ import {
     AreaService, AuthService, CartItemService, CartItemVariantService, CartService, CategoryProductService,
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
     ProductVariantService, SuborderItemService, SuborderService, VariantService, WarehouseService, CraftsmanService,
-    UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService
+    UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService, LotteryService
 } from "../services";
 import {NgAisModule} from 'angular-instantsearch';
 import {MaterialModule} from "./material.module";
@@ -51,6 +48,11 @@ import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
 import {environment} from "../../environments/environment";
 import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
+import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
+
+import {JwtHelper} from "angular2-jwt";
+import {LocalStorageService} from "../services/local-storage.service";
+import {BkashService} from "../services/bkash.service";
 // import {UiModule} from "../ui/ui.module";
 
 let imports = [];
@@ -63,6 +65,7 @@ if (environment.production) {
 } else {
     imports = [];
 }
+
 
 @NgModule({
     declarations: [
@@ -93,10 +96,8 @@ if (environment.production) {
         SimpleNotificationsModule.forRoot(),
         StoreModule.forRoot({}, {metaReducers}),
         EffectsModule.forRoot(effects),
-
         StoreModule.forFeature('home', reducers),
         EffectsModule.forFeature(effects),
-
         StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
@@ -104,10 +105,16 @@ if (environment.production) {
         SwiperModule,
         JasperoAlertsModule,
     ],
-    providers: [{
-        provide: ErrorHandler,
-        useClass: GlobalErrorHandler
-    },
+    providers: [
+        {
+            provide: ErrorHandler,
+            useClass: GlobalErrorHandler
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: JwtTokenInterceptor,
+            multi: true
+        },
         IsLoggedIn,
         UIService,
         LoginModalService,
@@ -128,6 +135,7 @@ if (environment.production) {
         CartItemVariantService,
         AreaService,
         AuthService,
+        JwtHelper,
         OrderService,
         SuborderService,
         SuborderItemService,
@@ -143,6 +151,9 @@ if (environment.production) {
         LoaderService,
         BrandService,
         FormValidatorService,
+        LocalStorageService,
+        BkashService,
+        LotteryService
     ],
     bootstrap: [AppComponent]
 })

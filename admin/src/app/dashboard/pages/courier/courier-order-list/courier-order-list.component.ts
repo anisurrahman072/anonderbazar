@@ -4,12 +4,12 @@ import { UIService } from '../../../../services/ui/ui.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CourierService } from '../../../../services/courier.service';
 import { ActivatedRoute } from '@angular/router';
-import { NzNotificationService } from 'ng-zorro-antd';
 import { CourierPriceService } from '../../../../services/courier-price.service';
 import { StatusChangeService } from '../../../../services/statuschange.service';
 import { AuthService } from '../../../../services/auth.service';
 import { SuborderService } from '../../../../services/suborder.service';
 import { OrderService } from '../../../../services/order.service';
+import {NzNotificationService} from "ng-zorro-antd";
 
 
 @Component({
@@ -52,14 +52,37 @@ export class CourierOrderListComponent implements OnInit {
   currentUser: any;
   data1:any;
   constructor(private route: ActivatedRoute,
-    private uiService: UIService,
-    private suborderService: SuborderService,
-    private orderService: OrderService,
-    private courierPriceService: CourierPriceService,
-    private statusChangeService: StatusChangeService,
-    private fb: FormBuilder,private authService: AuthService,
-    private _notification: NzNotificationService,
-    private courierService: CourierService) {
+              private uiService: UIService,
+              private suborderService: SuborderService,
+              private orderService: OrderService,
+              private courierPriceService: CourierPriceService,
+              private statusChangeService: StatusChangeService,
+              private fb: FormBuilder,private authService: AuthService,
+              private _notification: NzNotificationService,
+              private courierService: CourierService) {
+
+  }
+  options1 = [
+    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
+    { value: 4, label: 'Pickup/Departure', icon: 'anticon-spin anticon-loading' },
+    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
+    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
+    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
+  ];
+  options2 = [
+    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
+    { value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading' },
+    { value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading' },
+    { value: 7, label: 'landed', icon: 'anticon-spin anticon-loading' },
+    { value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading' },
+    { value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass' },
+    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
+    { value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading' },
+    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
+    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
+  ];
+  ngOnInit() {
+
     this.validateForm = this.fb.group({
       order_id: ["", [Validators.required]],
       courier_id: ["", [Validators.required]],
@@ -80,34 +103,14 @@ export class CourierOrderListComponent implements OnInit {
       shipping_date: [""],
       arrival_date: [""]
     });
-  }
-  options1 = [
-            { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
-            { value: 4, label: 'Pickup/Departure', icon: 'anticon-spin anticon-loading' },
-            { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
-            { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
-            { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
-  ];
-  options2 = [
-    { value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading' },
-    { value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading' },
-    { value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading' },
-    { value: 7, label: 'landed', icon: 'anticon-spin anticon-loading' },
-    { value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading' },
-    { value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass' },
-    { value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle' },
-    { value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading' },
-    { value: 11, label: 'Delivered', icon: 'anticon-check-circle' },
-    { value: 12, label: 'Returned', icon: 'anticon-close-circle' }
-];
-  ngOnInit() { 
+
     this.currentUser = this.authService.getCurrentUser();
 
     this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-      warehouseId => { 
-        this.currentWarehouseId = warehouseId || '';
-        this.getCourierSettingsData();
-      }
+        warehouseId => {
+          this.currentWarehouseId = warehouseId || '';
+          this.getCourierSettingsData();
+        }
     );
   }
 
@@ -124,10 +127,10 @@ export class CourierOrderListComponent implements OnInit {
     this.courierService.updatecourierlistorder($event,id,oldStatus).subscribe(result=>{
       this.data1 = result[0].status;
       this.getCourierSettingsData();
-    }); 
-    
+    });
+
     this.statusChangeService.updateStatusCourier({ order_id: order_id, status: $event,changed_by: this.currentUser.id  })
-            .subscribe(arg => this.statusData = arg); 
+        .subscribe(arg => this.statusData = arg);
   }
   //Method for set status
   setStatus(index, status) {
@@ -139,7 +142,7 @@ export class CourierOrderListComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
 
     const formData: FormData = new FormData();
     formData.append("order_id", value.order_id);
@@ -147,42 +150,42 @@ export class CourierOrderListComponent implements OnInit {
     formData.append("courier_price_id", value.courier_price_id);
     formData.append("destination", value.destination);
     formData.append("shipping_date", value.shipping_date);
-    formData.append("arrival_date", value.arrival_date); 
+    formData.append("arrival_date", value.arrival_date);
     this.suborderService.getAllByOrderId(value.order_id)
-      .subscribe(result => {
-        result.forEach(element => {
-          let formDataSub: FormData = new FormData();
-          formDataSub.append("suborder_id", element.id);
-          formDataSub.append("courier_id", value.courier_id);
-          formDataSub.append("courier_price_id", value.courier_price_id);
-          formDataSub.append("destination", value.destination);
-          formDataSub.append("shipping_date", value.shipping_date);
-          formDataSub.append("arrival_date", value.arrival_date); 
-          formDataSub.append("warehouse_id", element.warehouse_id.id); 
-          this.courierService.insert(formDataSub).subscribe(
-            result => { 
-            }
-          );
+        .subscribe(result => {
+          result.forEach(element => {
+            let formDataSub: FormData = new FormData();
+            formDataSub.append("suborder_id", element.id);
+            formDataSub.append("courier_id", value.courier_id);
+            formDataSub.append("courier_price_id", value.courier_price_id);
+            formDataSub.append("destination", value.destination);
+            formDataSub.append("shipping_date", value.shipping_date);
+            formDataSub.append("arrival_date", value.arrival_date);
+            formDataSub.append("warehouse_id", element.warehouse_id.id);
+            this.courierService.insert(formDataSub).subscribe(
+                result => {
+                }
+            );
+          });
         });
-    });
-    
+
     this.courierService.insertOrder(formData).subscribe(
-      result => {
-        if (result.id) {
-          this._notification.create(
-            "success",
-            "Courier list has been successfully added.",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Courier list has been successfully added.",
+                result.name
+            );
+          }
+          this.isVisible = false;
+          this.getCourierSettingsData();
+          this.resetAllFilter();
+          this._isSpinning = false;
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isVisible = false;
-        this.getCourierSettingsData();
-        this.resetAllFilter();
-        this._isSpinning = false;
-      },
-      error => {
-        this._isSpinning = false;
-      }
     );
   };
   //Method for showing the modal
@@ -202,7 +205,7 @@ export class CourierOrderListComponent implements OnInit {
     this.isConfirmLoading = true;
     setTimeout(() => {
       this.isVisible = false;
-      this.isConfirmLoading = false; 
+      this.isConfirmLoading = false;
     }, 2000);
   };
 
@@ -214,24 +217,24 @@ export class CourierOrderListComponent implements OnInit {
       this.validateForm.controls[key].markAsPristine();
     }
   };
-  courierOrderChange($event) { 
+  courierOrderChange($event) {
     this.orderService.getById($event).subscribe(arg => {
       this.validateForm.controls.destination.patchValue(arg.shipping_address.address);
-      
+
     });
-    
-     
+
+
   }
 
-  courierOrderChangeEdit($event) { 
+  courierOrderChangeEdit($event) {
     this.orderService.getById($event).subscribe(arg => {
       this.validateEditForm.controls.destination.patchValue(arg.shipping_address.address);
-      
-    }); 
-     
+
+    });
+
   }
 
-  courierChange($event) { 
+  courierChange($event) {
     this.validateForm.controls.courier_price_id.patchValue(null);
     this.validateForm.controls.price.patchValue(null);
     this.validateEditForm.controls.courier_price_id.patchValue(null);
@@ -242,10 +245,10 @@ export class CourierOrderListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getAllCourierPricesByCourierId(query).subscribe(
-      result => {
-        this.listOfCourierPrice = result;
-      },
-      error => { }
+        result => {
+          this.listOfCourierPrice = result;
+        },
+        error => { }
     );
   }
 
@@ -258,10 +261,10 @@ export class CourierOrderListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getById(query).subscribe(
-      result => {
-        this.validateForm.controls.price.patchValue(result.price);
-      },
-      error => { }
+        result => {
+          this.validateForm.controls.price.patchValue(result.price);
+        },
+        error => { }
     );
   }
   courierPriceEditChange($event) {
@@ -272,10 +275,10 @@ export class CourierOrderListComponent implements OnInit {
       return;
     }
     this.courierPriceService.getById(query).subscribe(
-      result => {
-        this.validateEditForm.controls.price.patchValue(result.price);
-      },
-      error => { }
+        result => {
+          this.validateEditForm.controls.price.patchValue(result.price);
+        },
+        error => { }
     );
   }
   //Event method for setting up form in validation
@@ -290,9 +293,9 @@ export class CourierOrderListComponent implements OnInit {
     return false;
   }
   //Event method for deleting courier order list
-  deleteConfirm(id) { 
-    this.courierService.deleteCourierOrderList(id).subscribe(result => { 
-      this.getCourierSettingsData(); 
+  deleteConfirm(id) {
+    this.courierService.deleteCourierOrderList(id).subscribe(result => {
+      this.getCourierSettingsData();
       this._notification.create('warning', 'Delete', 'Courier has been removed successfully');
 
     });
@@ -324,7 +327,7 @@ export class CourierOrderListComponent implements OnInit {
     $event.preventDefault();
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
-    } 
+    }
     const formData: FormData = new FormData();
     formData.append("suborder_id", value.suborder_id);
     formData.append("courier_id", value.courier_id);
@@ -335,20 +338,20 @@ export class CourierOrderListComponent implements OnInit {
     formData.append("warehouse_id", this.currentWarehouseId);
 
     this.courierService.updateCourierList(this.id, formData).subscribe(
-      result => {
-        if (result.id) {
-          this._notification.create(
-            "success",
-            "Successful Message",
-            result.name
-          );
+        result => {
+          if (result.id) {
+            this._notification.create(
+                "success",
+                "Successful Message",
+                result.name
+            );
+          }
+          this.isEditVisible = false;
+          this.getCourierSettingsData();
+        },
+        error => {
+          this._isSpinning = false;
         }
-        this.isEditVisible = false;
-        this.getCourierSettingsData();
-      },
-      error => {
-        this._isSpinning = false;
-      }
     );
   };
   //Event method for resetting all filters

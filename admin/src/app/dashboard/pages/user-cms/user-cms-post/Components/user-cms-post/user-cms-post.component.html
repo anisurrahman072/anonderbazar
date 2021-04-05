@@ -1,72 +1,84 @@
 <!--Update Carousel Modal-->
-<nz-modal [nzFooter]="null" class="create-modal-2" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Carousel'" [nzContent]="editmodalContent"
-    (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
+<nz-modal [nzFooter]="null"
+          class="create-modal-2"
+          [nzVisible]="isEditModalVisible"
+          [nzTitle]="'Edit Carousel'"
+          [nzContent]="editmodalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="editValidateForm" id="editValidateForm" (ngSubmit)="submitEditForm($event,editValidateForm.value)">
+                <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
+                      (ngSubmit)="submitEditForm($event,editValidateForm.value)">
 
-                    <div nz-form-item nz-row>
+                    <div nz-row>
                         <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
+                        <div nz-col [nzSpan]="7">
                             <label>Title</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'Enter Title'"
-                                [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="title" [placeholder]="'Enter Title'"
+                                   [nzSize]="'large'">
+
+                            <div *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
                                 Please input title !
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            <div *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
                                 Name already exists!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            <div *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--Title -->
 
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Picture</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12">
                             <image-upload [max]="1" (removed)="onRemoved($event)" buttonCaption="Select picture"
-                                dropBoxMessage="Drop Picture here" clearButtonCaption="Clear"
-                                (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div nz-form-explain *ngIf="!ImageFile">
+                                          dropBoxMessage="Drop Picture here" clearButtonCaption="Clear"
+                                          (uploadStateChanged)="onUploadStateChanged($event)"
+                                          [beforeUpload]="onBeforeUpload"></image-upload>
+                            <div *ngIf="!ImageFile">
                                 Please upload an image here!
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--image-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
                             <label>Details</label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12">
 
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
+                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
+                                      debounce="500 ">
 
                             </ckeditor>
 
-                            <div nz-form-explain *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            <div *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>
                         </div>
                     </div>
+                    <br>
                     <!--description-->
 
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
                             <nz-button-group>
-                                <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!editValidateForm.valid">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                        [disabled]="!editValidateForm.valid">
                                     Save
-                                </button>
-                                <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
+                                </button>&nbsp;
+                                <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>&nbsp;
                                 <button nz-button [nzSize]="'large'" (click)="handleModalCancel($event)">Cancel</button>
                             </nz-button-group>
                         </div>
@@ -80,7 +92,7 @@
 
 <div class="row">
     <div class="col-md-6" *ngFor="let post of cmsPostData; let i = index" [attr.data-index]="post.id">
-        <nz-card style="margin-bottom: 5px;">
+        <nz-card style="margin-bottom: 5px;" [nzTitle]="title" [nzExtra]="extra">
             <ng-template #title>
                 <h4>
                     Title: {{post.data_value[0].title}}
@@ -92,9 +104,9 @@
                         <span>
                             <i class="anticon anticon-edit">Edit</i>
                         </span>
-                    </button>
+                    </button>&nbsp;
                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                        [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,post.id)">
+                                   [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,post.id)">
                         <a nz-popconfirm>
                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                 <i class="anticon anticon-delete "> Delete </i>
@@ -103,7 +115,7 @@
                     </nz-popconfirm>
                 </div>
             </ng-template>
-            <ng-template #body>
+            <ng-container>
                 <div class="col-md-6">
                     <div> Details:
                         <div [innerHTML]="post.data_value[0].description"></div>
@@ -112,12 +124,13 @@
 
                 <div class="col-md-6">
                     <div>
-                        <img class="img img-responsive " alt="{{post.data_value[0].image}}" src="{{ IMAGE_ENDPOINT + post.data_value[0].image}}" />
+                        <img class="img img-responsive " alt="{{post.data_value[0].image}}"
+                             src="{{ IMAGE_ENDPOINT + post.data_value[0].image}}"/>
                     </div>
                 </div>
                 <br>
 
-            </ng-template>
+            </ng-container>
         </nz-card>
     </div>
 </div>

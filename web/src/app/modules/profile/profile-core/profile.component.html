@@ -38,13 +38,14 @@
                         <div class="conttag">
                             <p>Profile<a routerLink="/profile/profile-tab">View</a></p>
                             <small>Phone</small>
-                            <span>{{ addresses[0]?.phone }}</span>
+                            <span>{{ user?.phone }}</span>
                         </div>
                         <div class="conttag">
                             <small>Email</small>
                             <span>{{ user?.email }}</span>
                         </div>
                     </div>
+                    <button class="btn btn-block text-center btn-profile" routerLink="/profile/bkash-accounts">My bKash Accounts</button>
                     <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders">MY ORDERS
                     </button>
                     <button class="btn btn-block text-center btn-profile" routerLink="/profile/favourites"> MY

@@ -7,59 +7,76 @@ import {HttpClient} from "@angular/common/http";
 import {UserService} from "./user.service";
 import {catchError} from "rxjs/operators";
 import {of} from "rxjs/observable/of";
+import {LocalStorageService} from "./local-storage.service";
 
 @Injectable()
 export class AuthService {
-    jwtHelper: JwtHelper = new JwtHelper();
+    private EndPoint = `${AppSettings.API_ENDPOINT}/auth`;
     public token: string;
 
-    constructor(private http: HttpClient, private userService: UserService) {
+    constructor(
+        private http: HttpClient,
+        private jwtHelper: JwtHelper,
+        private userService: UserService,
+        private localStorageService: LocalStorageService
+    ) {
     }
 
     login(username: string, password: string): Observable<any> {
         return this.http.post(AppSettings.API_ENDPOINT + '/auth/customerLogin', {
-                username: username,
-                password: password
-            })
+            username: username,
+            password: password
+        })
             .map((response) => response);
     }
 
     logout(): void {
         // clear token remove user from local storage to log user out
         this.token = null;
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('token');
+        this.localStorageService.clearAllUserData();
+        /*        localStorage.removeItem('currentUser');
+                localStorage.removeItem('token');*/
     }
 
     clearLocalStorege(): void {
         // clear token remove user from local storage to log user out
         this.token = null;
-        localStorage.clear();
+        /*localStorage.clear();*/
+        this.localStorageService.clearAll();
     }
 
 
     getToken() {
-        const token = localStorage.getItem('token');
+        /*const token = localStorage.getItem('token');*/
+        const token = this.localStorageService.getAuthToken();
         if (token) {
             return token;
         }
-        return false;
+        return '';
     }
 
 
+    isTokenExpired() {
+        const token = this.getToken();
+        if (token) {
+            return this.jwtHelper.isTokenExpired(token);
+        } else {
+            return true;
+        }
+    }
+
     getCurrentUserId() {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
             return jwtPayload.id;
         } else {
             return false;
         }
-
     }
 
     getCurrentUser(): Observable<any> {
-        const token = localStorage.getItem('token');
+        const token = this.getToken();
         if (token) {
             const jwtPayload = this.jwtHelper.decodeToken(token);
 
@@ -96,9 +113,14 @@ export class AuthService {
             .post(AppSettings.API_ENDPOINT + '/auth/signup', data)
             .map(response => response);
     }
+
     usernameUnique(data): Observable<any> {
         return this.http
             .post(AppSettings.API_ENDPOINT + '/auth/usernameUnique', data)
             .map(response => response);
+    }
+
+    forgetPassword(data: any): Observable<any> {
+        return this.http.put(`${this.EndPoint}/forgetPassword`, data).map((response) => response);
     }
 }

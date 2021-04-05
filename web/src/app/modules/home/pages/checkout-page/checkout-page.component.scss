@@ -187,3 +187,12 @@ select {
 .validation-feedback {
   color: red;
 }
+
+ul.termsList {
+  margin-top: 10px;
+}
+
+ul.termsList li {
+  list-style-type: circle;
+  margin-top: 5px;
+}

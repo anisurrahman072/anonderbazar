@@ -21,7 +21,7 @@ module.exports = {
     },
     offer_id: {
       model: 'CMS',
-      required: false
+      required: false,
     },
     code: {
       type: 'string',
@@ -40,6 +40,18 @@ module.exports = {
       required: false,
       allowNull: true,
     },
+    mobile_image: {
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
+    },
+    banner_image: {
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true,
+    },
     slug: {
       type: 'string',
       columnType: 'varchar',
@@ -50,7 +62,7 @@ module.exports = {
 
   // generating slug from name before creating a row
   beforeCreate: function (req, next) {
-    var stringForMakingSlug = req.name;
+    let stringForMakingSlug = req.name;
     stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
     stringForMakingSlug = stringForMakingSlug.toLowerCase();
     req.slug = stringForMakingSlug;
@@ -60,7 +72,7 @@ module.exports = {
   // generating slug from name before creating a row
   beforeUpdate: function (req, next) {
     if (req.name) {
-      var stringForMakingSlug = req.name;
+      let stringForMakingSlug = req.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
       stringForMakingSlug = stringForMakingSlug.toLowerCase();
       req.slug = stringForMakingSlug;
@@ -68,4 +80,3 @@ module.exports = {
     next();
   }
 };
-

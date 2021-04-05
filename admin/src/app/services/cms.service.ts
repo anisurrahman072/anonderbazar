@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
-import {AuthService} from './auth.service';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 
@@ -11,31 +10,16 @@ import {HttpClient} from '@angular/common/http';
 export class CmsService {
     private EndPoint = `${environment.API_ENDPOINT}/cms`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
-    }
-
-    getAll(): Observable<any> {
-        return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null}')
-            .map(response => response);
+    constructor(private http: HttpClient) {
     }
 
     getAllSearch(option: {
-        page?: String;
-        section?: String;
-        subsection?: String;
-    } = {}): Observable<any> {
+        page?: String,
+        section?: String,
+        subsection?: String
+    } = {}, homeOfferLimit = 10, homeOfferPage = 1): Observable<any> {
         return this.http
-            .get(
-                this.EndPoint +
-                `?where={"deletedAt":null
-      ${option.page ? ',"page":"' + option.page + '"' : ''}
-      ${option.section ? ',"section":"' + option.section + '"' : ''}
-      ${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}
-  
-      }`
-            )
+            .get(this.EndPoint + `/getAll?where={"deletedAt":null${option.page ? ',"page":"' + option.page + '"' : ''}${option.section ? ',"section":"' + option.section + '"' : ''}${option.subsection ? ',"sub_section":"' + option.subsection + '"' : ''}}&limit=${homeOfferLimit}&page=${homeOfferPage}`)
             .map(response => response);
     }
 
@@ -52,8 +36,7 @@ export class CmsService {
             .get(
                 this.EndPoint +
                 `?where={"sub_section":"${subSectionName}","deletedAt":null}`
-            )
-            .map(response => response);
+            );
     }
 
     getByUserId(userID: any): Observable<any> {
@@ -62,14 +45,12 @@ export class CmsService {
             .map(response => response);
     }
 
-    getValueById(id): Observable<any> {
-        return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "id":${id}}`)
-            .map(response => response);
+    getById(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id ).map(response => response);
     }
 
-    getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id).map(response => response);
+    getByIds(ids: any){
+        return this.http.get(this.EndPoint + '/byIds?ids=' + JSON.stringify(ids) ).map(response => response);
     }
 
     insert(data): Observable<any> {

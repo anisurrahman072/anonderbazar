@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {Store} from "@ngrx/store";
@@ -12,15 +12,19 @@ import {AppSettings} from '../../../../config/app.config';
 import {PaymentAddressService} from '../../../../services/payment-address.service';
 import {LoaderService} from "../../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
-
-const defaultAddress = {}
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import {BsModalService} from 'ngx-bootstrap/modal';
+import {BkashService} from "../../../../services/bkash.service";
 
 @Component({
     selector: 'app-checkout-page',
     templateUrl: './checkout-page.component.html',
     styleUrls: ['./checkout-page.component.scss']
 })
-export class CheckoutPageComponent implements OnInit, AfterViewInit {
+export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
+
+    bKashWalletModalRef: BsModalRef;
     currentUser$: Observable<User>;
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
@@ -28,11 +32,15 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shippingUpazilaSearchOptions: any = [];
     upazilaSearchOptions: any = [];
     prevoius_address: any;
-    prevoius_address_id: any;
     checkoutForm: FormGroup;
+
+    /*
+    prevoius_address_id: any;
     help1Show: boolean = false;
     help2Show: boolean = false;
     isAddNew = false;
+    */
+
     isDelivery = true;
     isPickup = false;
     cart$: Observable<Cart>;
@@ -41,6 +49,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     user_id: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
+    enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
+
     shippingFirstName: string;
     shippingLastName: string;
     shippingPhone: string;
@@ -52,16 +63,17 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     shipping_upazila_id: string;
     shippingAddress: string;
     shippingPostCode: string;
-    billshippingFirstName: string;
-    billshippingLastName: string;
-    billshippingPhone: string;
-    billdivision_id: string;
-    billzila_id: string;
-    billupazila_id: string;
-    billaddress: string;
-    billpostCode: string;
+    /*    billshippingFirstName: string;
+        billshippingLastName: string;
+        billshippingPhone: string;
+        billdivision_id: string;
+        billzila_id: string;
+        billupazila_id: string;
+        billaddress: string;
+        billpostCode: string;*/
     private currentUser: User;
     private currentUserSub: Subscription;
+    private mainSubscription: Subscription;
     newShippingAddress: boolean = false;
     newBillingAddress: boolean = false;
     isCopy: boolean = true;
@@ -72,18 +84,30 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     orderId;
     noShippingCharge: boolean = false;
 
-    constructor(private route: ActivatedRoute,
-                private router: Router,
-                private areaService: AreaService,
-                private authService: AuthService,
-                private fb: FormBuilder,
-                private orderService: OrderService,
-                private PaymentAddressService: PaymentAddressService,
-                private store: Store<fromStore.HomeState>,
-                private cartItemService: CartItemService,
-                private cartService: CartService,
-                private toastr: ToastrService,
-                public loaderService: LoaderService) {
+    authUserWallets: any;
+    bKashWalletNumber: string;
+
+    showBKashAgreementTerm: boolean = false;
+    agreedToBKashTermsConditions: boolean = false;
+
+    couponCashbackAmount: number = 0;
+
+    constructor(
+        private cdr: ChangeDetectorRef,
+        private route: ActivatedRoute,
+        private router: Router,
+        private areaService: AreaService,
+        private authService: AuthService,
+        private fb: FormBuilder,
+        private orderService: OrderService,
+        private PaymentAddressService: PaymentAddressService,
+        private store: Store<fromStore.HomeState>,
+        private cartItemService: CartItemService,
+        private cartService: CartService,
+        private toastr: ToastrService,
+        private modalService: BsModalService,
+        private bKashService: BkashService,
+        public loaderService: LoaderService) {
 
     }
 
@@ -119,11 +143,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             paymentType: ['SSLCommerce', []]
         });
 
-        let queryParams = this.route.snapshot.queryParams;
-
-        if (queryParams['order']) {
-            this.successOrderId = queryParams['order'];
-        }
 
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
 
@@ -131,6 +150,10 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.currentUser = user;
             if (this.currentUser) {
                 this.user_id = this.currentUser.id;
+                if (this.currentUser.couponLotteryCashback && this.currentUser.couponLotteryCashback.length > 0) {
+                    this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
+                }
+
             } else {
                 this.user_id = null;
             }
@@ -138,27 +161,33 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
             this.user_id = null;
         });
 
-        this.areaService.getAllDivision().subscribe((result) => {
-            this.divisionSearchOptions = result;
-            console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
-        }, (err) => {
-            console.log(err);
-        });
-
-
         this.cart$ = this.store.select<any>(fromStore.getCart);
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
-        this.cartService.getCourierCharges().subscribe((globalConfig) => {
-
-            console.log('globalConfig', globalConfig);
-
-            if (Array.isArray(globalConfig) && globalConfig.length > 0) {
-                this.courierCharges = globalConfig[0]
-            }
-
-            this.cart$.subscribe((cartData) => {
+        this.mainSubscription = this.cartService.getCourierCharges()
+            .concatMap((globalConfig: any) => {
+                console.log('globalConfig', globalConfig);
+                if (Array.isArray(globalConfig) && globalConfig.length > 0) {
+                    this.courierCharges = globalConfig[0];
+                    return this.areaService.getAllDivision();
+                }
+                return Observable.throw(new Error('Problem in getting global config.'));
+            })
+            .concatMap((divisionList: any) => {
+                if (Array.isArray(divisionList) && divisionList.length > 0) {
+                    this.divisionSearchOptions = divisionList;
+                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
+                    return this.PaymentAddressService.getAuthUserPaymentAddresses();
+                }
+                return Observable.throw(new Error('Problem in getting division list.'));
+            })
+            .concatMap((previousAddresses: any) => {
+                console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses;
+                return this.cart$;
+            })
+            .subscribe((cartData) => {
                 console.log('cartData', cartData);
                 if (cartData) {
                     this.cartData = cartData;
@@ -167,35 +196,55 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 }
                 this.updateGrandTotal();
                 this.loaderService.hideLoader();
+
             }, (err) => {
+                console.log(err);
                 this.loaderService.hideLoader();
-                this.toastr.error('Unable to load cart data', 'Sorry!');
+                this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
+
+    }
+
+    //Method for previous address change
+    previousAddressChange() {
+        // var prevoius_address_id = $event.target.value;
+        this.PaymentAddressService.getAuthUserPaymentAddresses().subscribe(result => {
+            this.prevoius_address = result;
         }, (err) => {
-            this.cart$.subscribe((cartData) => {
-                console.log('err-cartData', cartData);
-                if (cartData) {
-                    this.cartData = cartData;
-                } else {
-                    this.cartData = null;
-                }
-                this.updateGrandTotal();
-                this.loaderService.hideLoader();
-
-            }, (err) => {
-                this.loaderService.hideLoader();
-                this.toastr.error('Unable to load cart data', 'Sorry!');
-            });
+            console.log(err);
         });
+    }
 
-        this.prevoius_address_change(this.user_id);
+    ngOnDestroy() {
+        if (this.mainSubscription) {
+            this.mainSubscription.unsubscribe();
+        }
+        if (this.currentUserSub) {
+            this.currentUserSub.unsubscribe();
+        }
+    }
 
-        /*
+    ngAfterViewInit() {
         this.loaderService.hideLoader();
-        this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-            this.cartData = cartData;
-        });
-        */
+
+        let queryParams = this.route.snapshot.queryParams;
+
+        if (queryParams['order']) {
+            this.successOrderId = queryParams['order'];
+        } else if (queryParams['bKashError']) {
+            setTimeout(() => {
+                this.toastr.error(queryParams['bKashError'], 'Oppss!');
+                this.cdr.detectChanges();
+            }, 500);
+        } else if (queryParams['bkashURL']) {
+            window.location.href = queryParams['bkashURL'];
+        }
+    }
+
+    onAgreedToBKashTerms(event: any) {
+        console.log('onAgreedToBKashTerms', event);
+        this.agreedToBKashTermsConditions = event;
+
     }
 
     // Method for update cart
@@ -203,24 +252,18 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         this.loaderService.showLoader();
 
-        let updatedQty = cartItem.product_quantity;
-        let updatedTotalPrice = 0;
+        let currentQty = cartItem.product_quantity;
+
         let maxProductQuantity = cartItem.product_id.quantity;
 
         if (action == 'increase') {
-            if (updatedQty < maxProductQuantity) {
-                updatedQty += 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty >= maxProductQuantity) {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to increase quantity!', 'Sorry!');
                 return false;
             }
         } else {
-            if (updatedQty > 1) {
-                updatedQty -= 1;
-                updatedTotalPrice = cartItem.product_unit_price * updatedQty;
-            } else {
+            if (currentQty <= 1) {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to decrease quantity!', 'Sorry!');
                 return false;
@@ -230,19 +273,15 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         let data = {
             "cart_id": cartItem.cart_id,
             "product_id": cartItem.product_id.id,
-            "product_quantity": updatedQty,
-            "product_total_price": updatedTotalPrice
+            "action_name": action,
+            "quantity": 1
         };
 
         this.loaderService.showLoader();
         this.cartItemService.update(cartItem.id, data).subscribe(res => {
             this.store.dispatch(new fromStore.LoadCart());
-            // this.updateGrandTotal();
             this.loaderService.hideLoader();
             this.toastr.info("Cart Item updated Successfully", 'Note');
-            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                            this.cartData = cartData;
-                        });*/
         }, () => {
             this.loaderService.hideLoader();
             this.toastr.error("Cart Item has not been updated Successfully", 'Error');
@@ -251,16 +290,9 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
     //Event method for removing cart items
     removeCartItem(cartItemId) {
-        // this._progress.start("mainLoader");
+
         this.loaderService.showLoader();
         this.cartItemService.delete(cartItemId).subscribe(res => {
-            /*            this.cartService.getByUserId(this.user_id).subscribe(cartData => {
-                            this.cartData = cartData;
-                            this.updateGrandTotal();
-                            // this._progress.complete("mainLoader");
-                            this.loaderService.hideLoader();
-                            this.toastr.info("Item removed from cart successfully", 'Note');
-                        });*/
             this.store.dispatch(new fromStore.LoadCart());
             this.toastr.info("Item removed from cart successfully", 'Note');
             this.loaderService.hideLoader();
@@ -298,13 +330,20 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
                 if (AppSettings.IS_PRODUCTION) {
                     this.hideCashonDelivery = foundCouponProduct;
+                    if (!this.hideCashonDelivery) {
+                        // TODO: Temporary Solution
+                        console.log('this.cartData.data.cart_items', this.cartData.data.cart_items);
+                        this.hideCashonDelivery = this.cartData.data.cart_items.find((item) => {
+                            return item.product_id && item.product_id.subcategory_id == GLOBAL_CONFIGS.cashPaymentOffFor;
+                        });
+                    }
                 }
             }
 
             if (selectedZilaId > 0 && !this.noShippingCharge) {
 
                 if (this.courierCharges) {
-                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                    // this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
                 }
 
                 if (this.shippingCharge) {
@@ -314,10 +353,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         }
     }
 
-    //Method for loader hide
-    ngAfterViewInit() {
-        this.loaderService.hideLoader();
-    }
 
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
@@ -335,7 +370,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     //Event method for submitting the form
-    public formCheckout = ($event, value) => {
+    public formCheckout = ($event, value, modalTemplate: TemplateRef<any>) => {
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
@@ -362,7 +397,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
                 postCode: this.noShippingCharge ? '1212' : value.postCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
                 division_id: this.noShippingCharge ? '68' : value.division_id
             },
             shipping_address: {
@@ -374,7 +409,7 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
                 postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
                 upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
-                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
             paymentType: value.paymentType,
@@ -383,33 +418,61 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        // this._progress.start("mainLoader");
-        this.loaderService.showLoader();
-        if (value.paymentType == "SSLCommerce") {
-            this.orderService.sslcommerzInsert(requestPayload).subscribe(result => {
-                // this._progress.complete("mainLoader");
+        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack') {
+            this.loaderService.showLoader();
+            this.orderService.placeOrder(requestPayload).subscribe(result => {
+
+                console.log('result-SSLCommerce', result);
                 this.loaderService.hideLoader();
-                this.store.dispatch(new fromStore.LoadCart());
-                window.location.href = result.GatewayPageURL;
+                if (result && result.GatewayPageURL) {
+                    this.store.dispatch(new fromStore.LoadCart());
+                    window.location.href = result.GatewayPageURL;
+                } else if(result && result.order_id){
+                    this.successOrderId = result.order_id;
+                    this.store.dispatch(new fromStore.LoadCurrentUser());
+                    this.store.dispatch(new fromStore.LoadCart());
+                } else {
+                    this.toastr.error("Problem in placing your order.", "Oppppps!", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                }
             }, (error) => {
                 this.loaderService.hideLoader();
-                console.log('sslcommerzInsert', error);
+                console.log('sslcommerz error', error);
                 if (error && error.error) {
-                    this.toastr.error(error.error, "Problem", {
+                    this.toastr.error(error.error.message, "Problem in placing your order!", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                } else if(error && error.additionalMessage) {
+                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
-                    this.toastr.error("Problem in placing your order.", "Problem", {
+                    this.toastr.error("Problem in placing your order.", "Oppppps!", {
                         positionClass: 'toast-bottom-right'
                     });
                 }
             });
+
+        } else if (value.paymentType === 'bKash') {
+
+            this.loaderService.showLoader();
+            this.bKashService.getAuthUserWallets()
+                .subscribe((res) => {
+                    console.log(res);
+                    this.authUserWallets = res;
+                    this.loaderService.hideLoader();
+                    this.bKashWalletModalRef = this.modalService.show(modalTemplate);
+                }, (err) => {
+                    console.log(err);
+                    this.loaderService.hideLoader();
+                });
+
         } else {
-            this.orderService.customInsert(requestPayload).subscribe(result => {
-                // this._progress.complete("mainLoader");
+            this.loaderService.showLoader();
+            this.orderService.placeCashOnDeliveryOrder(requestPayload).subscribe(result => {
                 this.loaderService.hideLoader();
                 this.store.dispatch(new fromStore.LoadCart());
-                // this.router.navigate(['/profile/orders/invoice/', result.order.id]);
                 this.successOrderId = result.order.id;
                 this.toastr.success("Your order has been successfully placed.", "Note", {
                     positionClass: 'toast-bottom-right'
@@ -418,7 +481,11 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
                 this.loaderService.hideLoader();
                 console.log('cash', error);
                 if (error && error.error) {
-                    this.toastr.error(error.error, "Problem", {
+                    this.toastr.error(error.error, "Problem in placing your order!", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                }  else if(error && error.additionalMessage) {
+                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
@@ -430,18 +497,95 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         }
     }
 
-    //Method for previous address change
+    proceedWithBkash($event, value, authUserWallet = null) {
+        $event.preventDefault();
+        let requestPayload: any = {};
 
-    prevoius_address_change(user_id: number) {
-        // var prevoius_address_id = $event.target.value;
-        this.PaymentAddressService.getpaymentaddress(user_id).subscribe(result => {
-            this.prevoius_address = result;
+        if (authUserWallet) {
+            requestPayload.agreement_id = authUserWallet.agreement_id;
+            requestPayload.payerReference = authUserWallet.wallet_no;
+
+        } else if (this.bKashWalletNumber) {
+            requestPayload.payerReference = this.bKashWalletNumber;
+        } else {
+            this.toastr.error("Please choose a bkash wallet to proceed.", "Error", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
+        if (this.cartData && this.cartData.data.cart_items.length <= 0) {
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+        console.log('formCheckout', value)
+        if (!(value && value.paymentType)) {
+            this.toastr.error("Please a payment method in order to proceed", "Error", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
+        requestPayload = {
+            ...requestPayload,
+            billing_address: {
+                id: this.newBillingAddress ? '' : value.billing_id,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.firstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.lastName,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.address,
+                country: value.country,
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
+                postCode: this.noShippingCharge ? '1212' : value.postCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                division_id: this.noShippingCharge ? '68' : value.division_id
+            },
+            shipping_address: {
+                id: this.newShippingAddress ? '' : value.shipping_id,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.shippingFirstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.shippingAddress,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.shippingAddress,
+                country: value.shipping_country,
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
+                postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
+                // zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                division_id: this.noShippingCharge ? '68' : value.shipping_division_id
+            },
+            paymentType: value.paymentType,
+            is_copy: this.isCopy,
+        };
+
+
+        this.loaderService.showLoader();
+        this.orderService.placeOrder(requestPayload).subscribe(result => {
+            this.loaderService.hideLoader();
+            // this.store.dispatch(new fromStore.LoadCart());
+            if (result && result.bkashURL) {
+                window.location.href = result.bkashURL;
+            } else {
+                this.toastr.error("Problem in placing your order.", "Problem", {
+                    positionClass: 'toast-bottom-right'
+                });
+            }
+        }, (error) => {
+            this.loaderService.hideLoader();
+            console.log('bKash place order ', error);
+            if (error && error.error) {
+                this.toastr.error(error.error, "Problem", {
+                    positionClass: 'toast-bottom-right'
+                });
+            } else {
+                this.toastr.error("Problem in placing your order.", "Problem", {
+                    positionClass: 'toast-bottom-right'
+                });
+            }
         });
     }
 
-
     //Method for division change
-
     divisionChange($event, type) {
         var divisionId = $event.target.value;
         if (type == 'shipping') {
@@ -459,7 +603,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     // Method for zila change
-
     zilaChange($event, type) {
         var zilaId = $event.target.value;
         if (type == 'shipping') {
@@ -475,14 +618,12 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     //Method for showing delivery section
-
     showDelivarySection() {
         this.isDelivery = true;
         this.isPickup = false;
     }
 
     //Method for showing pickup location in front view
-
     showPickupSection() {
         this.isDelivery = false;
         this.isPickup = true;
@@ -516,7 +657,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     //Method for address change
-
     onAddressChange(id, type) {
         let address = this.prevoius_address.find(x => x.id == id);
         if (type == 'shipping') {
@@ -551,7 +691,6 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     //Method for address toggle in checkout page
-
     onAddressToggle(event, type) {
         event.preventDefault();
         if (type == 'shipping') {
@@ -601,32 +740,28 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
     }
 
     //Method for get all addresses for current user
-
     getAddress(type) {
         let formValue = this.checkoutForm.getRawValue();
         if (type == 'shipping') {
             let division = this.divisionSearchOptions.find(x => x.id == formValue.shipping_division_id);
             let shipping_upazila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
             let shipping_zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
-            let fullAddress = formValue.shippingAddress + ', ' +
-                division.name + ', ' +
-                shipping_upazila.name + ', ' +
-                shipping_zila.name;
-            return fullAddress;
+            return formValue.shippingAddress + ', ' +
+                (division ? division.name : '') + ', ' +
+                (shipping_upazila ? shipping_upazila.name : '') + ', ' +
+                (shipping_zila ? shipping_zila.name : '');
         } else {
             let division = this.divisionSearchOptions.find(x => x.id == formValue.division_id);
             let shipping_upazila = this.upazilaSearchOptions.find(x => x.id == formValue.upazila_id);
             let shipping_zila = this.zilaSearchOptions.find(x => x.id == formValue.zila_id);
-            let fullAddress = formValue.address + ', ' +
-                division.name + ', ' +
-                shipping_upazila.name + ', ' +
-                shipping_zila.name;
-            return fullAddress;
+            return formValue.address + ', ' +
+                (division ? division.name : '') + ', ' +
+                (shipping_upazila ? shipping_upazila.name : '') + ', ' +
+                (shipping_zila ? shipping_zila.name : '');
         }
     }
 
     //Method for proceed to pay
-
     processToPay() {
         console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
         if (!this.noShippingCharge && this.isCopy) {
@@ -691,8 +826,12 @@ export class CheckoutPageComponent implements OnInit, AfterViewInit {
         }
     }
 
-//Event method for setting up form in validation
+    //Event method for setting up form in validation
     getSignUpFormControl(type) {
         return this.checkoutForm.controls[type];
+    }
+
+    hideBkashWalletModal(template: TemplateRef<any>) {
+        this.bKashWalletModalRef = this.modalService.show(template);
     }
 }

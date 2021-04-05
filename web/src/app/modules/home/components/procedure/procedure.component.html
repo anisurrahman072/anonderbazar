@@ -4,7 +4,7 @@
 
             <div *ngFor="let carousel of cmsCarouselData" class="col-sm-12 col-md-4 padding-0" mat-ripple >
                 <div class="block-banner-text">
-                    <img src="{{IMAGE_ENDPOINT + carousel?.image}}" class="img-responsive" alt="{{carousel?.title}}">
+                    <img src="{{IMAGE_ENDPOINT + carousel?.image + IMAGE_EXT}}" class="img-responsive" alt="{{carousel?.title}}">
                     <div class="content">
                         <h3 class="title">{{carousel?.title}}</h3>
                         <h4 class="subtitle"  [innerHTML]="carousel?.description"></h4>

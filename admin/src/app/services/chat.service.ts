@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -12,8 +11,7 @@ export class ChatService {
   private EndPoint1 = `${environment.API_ENDPOINT}/chat`;
   private EndPoint2 = `${environment.API_ENDPOINT}/chats`;
   private EndPoint3 = `${environment.API_ENDPOINT}/chatuser`;
-  constructor(private http: HttpClient,
-    private authenticationService: AuthService) { }
+  constructor(private http: HttpClient) { }
 
   getAllChatByWarehouse(currentWarehouseId: number): Observable<any> {
     return this.http.get(`${this.EndPoint3}/getNotification?deletedAt=null&warehouse_id=${currentWarehouseId}`);

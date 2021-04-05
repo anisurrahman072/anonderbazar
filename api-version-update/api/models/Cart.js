@@ -41,6 +41,6 @@ module.exports = {
   },
   tableName: 'carts',
   customToJSON: function () {
-    return this.toObject();
+    return this;
   }
 };

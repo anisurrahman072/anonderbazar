@@ -1,22 +1,18 @@
-<nz-card>
-    <ng-template #title>
-        Product Attibute Details
-    </ng-template>
+<nz-card nzTitle="Product Attibute Details" [nzExtra]="extra">
     <ng-template #extra>
-
         <button *ngIf="data"
                 [routerLink]="['/dashboard/variant/edit', data.id]" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
             <i class="anticon anticon-edit"></i><span>Edit</span>
-        </button>
+        </button>&nbsp;
 
         <button routerLink="/dashboard/variant" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i><span> List </span>
-        </button>
+        </button>&nbsp;
 
     </ng-template>
-    <ng-template #body>
+    <div>
         <ul class="list-group list" *ngIf="data">
             <li class="list-group-item list-item">
                 <div class="row">
@@ -46,6 +42,6 @@
             </li>
 
         </ul>
-    </ng-template>
+    </div>
 </nz-card>
-    
+

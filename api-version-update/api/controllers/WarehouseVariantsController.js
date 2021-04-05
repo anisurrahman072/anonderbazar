@@ -1,26 +1,20 @@
-const {asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
-
 /**
  * WarehouseVariantsController
- *
  * @description :: Server-side logic for managing warehousevariants
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
+ **/
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all warehouse variant data
   //Model models/WarehouseVariant.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'warehouseVariants');
 
       let _pagination = pagination(req.query);
 
-      /* WHERE condition for .......START.....................*/
       let _where = {};
       _where.deletedAt = null;
-
-
 
       if (req.query.searchTermName) {
         _where.name = {'like': `%${req.query.searchTermName}%`};
@@ -29,21 +23,14 @@ module.exports = {
         _where.warehouse_id = req.query.warehouse_id;
       }
 
-
-
-      /* WHERE condition..........END................*/
-
-      /*sort................*/
-      let _sort = {};
-      if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+      let _sort = [];
+      if (req.query.sortKey && req.query.sortValue) {
+        _sort.push({[req.query.sortKey]: req.query.sortValue});
+      } else {
+        _sort.push({createdAt: 'DESC'});
       }
 
-
-      /*.....SORT END..............................*/
-
-
-      let totalWarehouseVariant = await  WarehouseVariant.count().where(_where);
+      let totalWarehouseVariant = await WarehouseVariant.count().where(_where);
       _pagination.limit = _pagination.limit ? _pagination.limit : totalWarehouseVariant;
       let warehouseVariants = await WarehouseVariant.find(
         {
@@ -51,7 +38,9 @@ module.exports = {
           limit: _pagination.limit,
           skip: _pagination.skip,
           sort: _sort,
-        }).populateAll();
+        })
+        .populate('variant_id')
+        .populate('brand_id');
 
 
       res.status(200).json({
@@ -63,13 +52,13 @@ module.exports = {
         message: 'Get All WarehouseVariant with pagination',
         data: warehouseVariants
       });
-    } catch
-    (error) {
+    } catch (error) {
       let message = 'Error in Get All WarehouseVariant  with pagination';
-
+      console.log('error', error);
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

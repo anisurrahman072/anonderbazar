@@ -1,12 +1,16 @@
-const { asyncForEach, initLogPlaceholder, pagination } = require('../../libs');
+/**
+ * CraftmanPricesController
+ *
+ * @description :: Server-side logic for managing categories
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
   //Method called for getting all craftsman price list data
   //Model models/CraftmanPrice.js
   getAll: async (req, res) => {
     try {
-      initLogPlaceholder(req, 'CraftmanPrice ');
-
       let _pagination = pagination(req.query);
 
       /* WHERE condition for .......START.....................*/
@@ -19,7 +23,7 @@ module.exports = {
       }
       //for craft man username
       if (req.query.nameSearchValue) {
-        _where.craftman_id = { like: `%${req.query.nameSearchValue}%` };
+        _where.craftman_id = {like: `%${req.query.nameSearchValue}%`};
       }
 
       if (req.query.productClassSearchValue) {
@@ -28,7 +32,7 @@ module.exports = {
         };
       }
       if (req.query.categorySearchValue) {
-        _where.total_quantity = { like: `%${req.query.categorySearchValue}%` };
+        _where.total_quantity = {like: `%${req.query.categorySearchValue}%`};
       }
       if (req.query.subCategorySearchValue) {
         _where.total_quantity = {
@@ -36,10 +40,10 @@ module.exports = {
         };
       }
       if (req.query.partSearchValue) {
-        _where.part_id = { like: `%${req.query.partSearchValue}%` };
+        _where.part_id = {like: `%${req.query.partSearchValue}%`};
       }
       if (req.query.genreSearchValue) {
-        _where.genre_id = { like: `%${req.query.genreSearchValue}%` };
+        _where.genre_id = {like: `%${req.query.genreSearchValue}%`};
       }
       if (req.query.designCategorySearchValue) {
         _where.design_category_id = {
@@ -52,28 +56,28 @@ module.exports = {
         };
       }
       if (req.query.designSearchValue) {
-        _where.total_quantity = { like: `%${req.query.designSearchValue}%` };
+        _where.total_quantity = {like: `%${req.query.designSearchValue}%`};
       }
       if (req.query.priceSearchValue) {
-        _where.price = { like: `%${req.query.priceSearchValue}%` };
+        _where.price = {like: `%${req.query.priceSearchValue}%`};
       }
       if (req.query.timeSearchValue) {
-        _where.time = { like: `%${req.query.timeSearchValue}%` };
+        _where.time = {like: `%${req.query.timeSearchValue}%`};
       }
 
       if (req.query.category_id) {
-        _where.category_id = { like: `%${req.query.category_id}%` };
+        _where.category_id = {like: `%${req.query.category_id}%`};
       }
       if (req.query.subcategory_id) {
-        _where.subcategory_id = { like: `%${req.query.subcategory_id}%` };
+        _where.subcategory_id = {like: `%${req.query.subcategory_id}%`};
       }
 
       /* WHERE condition..........END................*/
 
       /*sort................*/
-      let _sort = {};
+      let _sort = [];
       if (req.query.sortName) {
-        _sort.name = req.query.sortName;
+        _sort.push({name: req.query.sortName});
       }
 
       /*.....SORT END..............................*/
@@ -85,7 +89,17 @@ module.exports = {
         limit: _pagination.limit,
         skip: _pagination.skip,
         sort: _sort
-      }).populateAll();
+      })
+        .populate('craftman_id')
+        .populate('type_id')
+        .populate('category_id')
+        .populate('subcategory_id')
+        .populate('part_id')
+        .populate('design_category_id')
+        .populate('design_subcategory_id')
+        .populate('design_id')
+        .populate('genre_id')
+        .populate('warehouse_id');
 
       res.status(200).json({
         success: true,
@@ -97,10 +111,12 @@ module.exports = {
         data: craftmanPrices
       });
     } catch (error) {
-      let message = 'Error in Get All CraftmanPrice with pagination';
+      console.log(error);
+      let message = 'Error in Getting All CraftmanPrice with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   }

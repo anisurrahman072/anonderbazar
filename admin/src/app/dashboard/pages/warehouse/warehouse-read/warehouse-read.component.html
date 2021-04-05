@@ -1,12 +1,9 @@
-<nz-card>
-    <ng-template #title>
-        Shop details
-    </ng-template>
+<nz-card nzTitle="Shop details" [nzExtra]="extra">
     <ng-template #extra>
         <button routerLink="/dashboard/warehouse" nz-button [nzType]="'primary'" [nzSize]="'large'">
             <i class="anticon anticon-file-text"></i>
             <span> List </span>
-        </button>
+        </button>&nbsp;
         <button *ngIf="data" [routerLink]="['/dashboard/warehouse/edit', data.id]" nz-button [nzType]="'primary'"
             [nzSize]="'large'">
             <i class="fa fa-edit"></i>
@@ -14,8 +11,8 @@
         </button>
     </ng-template>
 
-    <ng-template #body>
-        <div class="row" *ngIf="data">
+    <ng-template [ngIf]="data">
+        <div class="row">
             <div class="col-md-4">
                 <div class="profile-img">
                     <img class="img img-responsive" style="margin: auto;" alt="logo.jpg" src="{{  IMAGE_ENDPOINT + data.logo}}" />

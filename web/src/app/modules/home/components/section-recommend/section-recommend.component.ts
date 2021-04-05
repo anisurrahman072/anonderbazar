@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AppSettings} from "../../../../config/app.config";
 import {ProductService} from "../../../../services";
 import {ToastrService} from "ngx-toastr";
 
@@ -9,10 +8,6 @@ import {ToastrService} from "ngx-toastr";
     styleUrls: ['./section-recommend.component.scss']
 })
 export class RecommendComponent implements OnInit {
-
-    private middleblogList: any;
-    private IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-
     dataProductList: any[] = [];
     limit: number = 24;
     skip: number = 6;

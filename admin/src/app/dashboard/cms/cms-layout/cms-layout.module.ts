@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImageUploadModule } from 'angular2-image-upload';
@@ -15,7 +14,7 @@ import { CmsFeatureFooterComponent } from './components/footer/cms-feature-foote
 
 const routes: Routes = [
   {
-    path: '' /* /dashboard/ */,
+    path: '',
     component: CmsLayoutComponent
   }
 ];
@@ -27,7 +26,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     FileUploadModule,
     ImageUploadModule.forRoot(),
-    NgZorroAntdModule.forRoot(),
+    NgZorroAntdModule,
     RouterModule.forChild(routes),
     UiModule
   ],

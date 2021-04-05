@@ -15,6 +15,7 @@ import {CategoryProductService} from '../../../../../services/category-product.s
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {BrandService} from '../../../../../services/brand.service';
+import {UniqueProductCodeValidator} from "../../../../../services/validator/UniqueProductCodeValidator";
 
 @Component({
     selector: 'app-custom-product-create',
@@ -26,17 +27,12 @@ export class CustomProductCreateComponent implements OnInit {
 
     tagOptions: any = [];
     validateForm: FormGroup;
-
     ImageBlukArray: any = [];
-
     ImageFile: File[] = [];
     ImageFrontFile: File[] = [];
-
     tag: any;
     tags = [];
-
     isSubmit: boolean = true;
-
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
@@ -72,12 +68,9 @@ export class CustomProductCreateComponent implements OnInit {
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
     };
+
     brandSearchOptions: any;
-
-    craftsmanSearchOptions: any;
-
     inputVisible = false;
-    inputValue = '';
     statusOptions = [
         {label: 'Inactive Product', value: 0},
         {label: 'Fixed Product', value: 1},
@@ -96,7 +89,8 @@ export class CustomProductCreateComponent implements OnInit {
                 private authService: AuthService,
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
-                private productService: ProductService) {
+                private productService: ProductService,
+                private uniquProductCodeValidator: UniqueProductCodeValidator) {
 
     }
 
@@ -104,12 +98,12 @@ export class CustomProductCreateComponent implements OnInit {
     ngOnInit() {
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
-            code: [''],
+            code: ['', [Validators.required], [this.uniquProductCodeValidator]],
             image: [null, []],
-            price: ['', []],
-            vendor_price: ['', []],
-            min_unit: [0, [Validators.required]],
-            alert_quantity: [0, []],
+            price: ['0', [Validators.required]],
+            vendor_price: ['0', []],
+            min_unit: [1, [Validators.required]],
+            alert_quantity: [1, []],
             brand_id: ['', []],
             category_id: ['', [Validators.required]],
             subcategory_id: ['', []],
@@ -181,17 +175,25 @@ export class CustomProductCreateComponent implements OnInit {
 
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
-            if (result.id) {
+            this.isSubmit = true;
+            console.log('result', result);
+            if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',
                     'New product has been successfully added.',
-                    result.name
+                    result.data.name
                 );
-                this.router.navigate(['/dashboard/product/details/', result.id], {queryParams: {status: this.queryStatus}});
+                this.router.navigate(['/dashboard/product/details/', result.data.id], {queryParams: {status: this.queryStatus}});
             }
+
+        }, (error) => {
+            console.log('error', error);
             this.isSubmit = true;
-        }, (error)=> {
-            this.isSubmit = true;
+            this._notification.create(
+                'error',
+                'Ooops!',
+                'Problem in creating the product'
+            );
         });
     };
 
@@ -252,10 +254,6 @@ export class CustomProductCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-
-    categorySearchChange($event) {
-    }
-
     // Method called on product type change
     onTypeChange($event) {
         const query = encodeURI($event);
@@ -283,17 +281,5 @@ export class CustomProductCreateComponent implements OnInit {
             this.subcategorySearchOptions = {};
         }
     }
-
-    subcategorySearchChange($event) {
-    }
-
-    typeSearchChange($event: string) {
-    }
-
-    craftsmanSearchChange($event) {
-    }
-
-
-
 
 }

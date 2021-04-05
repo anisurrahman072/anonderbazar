@@ -12,12 +12,13 @@ module.exports = {
     last_ip_address: {
       type: 'string',
       columnType: 'varchar',
+      required: false,
       allowNull: true
     },
     ip_address: {
       type: 'string',
       columnType: 'varchar',
-      allowNull: true
+      defaultsTo: '::1'
     },
     username: {
       type: 'string',
@@ -69,12 +70,14 @@ module.exports = {
     active: {
       type: 'number',
       columnType: 'integer',
-      required: false
+      required: false,
+      allowNull: true
     },
     first_name: {
       type: 'string',
       columnType: 'varchar',
-      required: false
+      required: false,
+      allowNull: true
     },
     last_name: {
       type: 'string',
@@ -121,7 +124,6 @@ module.exports = {
       type: 'ref',
       columnType: 'date',
       required: false,
-      allowNull: true
     },
     avatar: {
       type: 'string',
@@ -134,8 +136,7 @@ module.exports = {
       required: true
     },
     warehouse_id: {
-      model: 'warehouse',
-      required: true
+      model: 'warehouse'
     },
     address: {
       type: 'string',
@@ -144,16 +145,13 @@ module.exports = {
       allowNull: true
     },
     upazila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     zila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     division_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_address: {
       type: 'string',
@@ -162,16 +160,13 @@ module.exports = {
       allowNull: true
     },
     permanent_upazila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_zila_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     permanent_division_id: {
-      model: 'area',
-      required: true
+      model: 'area'
     },
     award_points: {
       type: 'number',
@@ -179,10 +174,14 @@ module.exports = {
       required: false,
       defaultsTo: 0
     },
+    couponLotteryCashback: {
+      collection: 'couponLotteryCashback',
+      via: 'user_id'
+    }
   },
   tableName: 'users',
   customToJSON: function () {
-    var obj = this.toObject();
+    var obj = {...this};
     delete obj['password'];
     delete obj['forgotten_password_code'];
     delete obj['forgotten_password_time'];
@@ -191,9 +190,13 @@ module.exports = {
   // Encrypt password before creating a User
   beforeCreate: function (values, next) {
     bcrypt.genSalt(10, (err, salt) => {
-      if (err) {return next(err);}
+      if (err) {
+        return next(err);
+      }
       bcrypt.hash(values.password, 10, (err, hash) => {
-        if (err) {return next(err);}
+        if (err) {
+          return next(err);
+        }
         values.password = hash;
         next();
       });
@@ -203,10 +206,15 @@ module.exports = {
   // Comparing passwords
   comparePassword: function (password, userPassword, cb) {
     bcrypt.compare(password, userPassword, (err, match) => {
-      if (err) {cb(err);}
+      // eslint-disable-next-line callback-return
+      if (err) {
+        cb(err);
+      }
       if (match) {
+        // eslint-disable-next-line callback-return
         cb(null, true);
       } else {
+        // eslint-disable-next-line callback-return
         cb(err);
       }
     });

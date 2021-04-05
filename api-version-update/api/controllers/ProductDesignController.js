@@ -4,8 +4,9 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const {asyncForEach} = require('../../libs');
 
+
+const {asyncForEach} = require('../../libs/helper');
 module.exports = {
 
   //Method called for creating a product design
@@ -13,10 +14,20 @@ module.exports = {
   create: async (req, res) => {
     try {
 
-      let productDesign = await ProductDesign.create(req.body);
+      let productDesign = await ProductDesign.create(req.body).fetch();
       if (productDesign) {
 
-        let newProductDesign = await ProductDesign.findOne({id: productDesign.id,}).populateAll();
+        let newProductDesign = await ProductDesign.findOne({id: productDesign.id,})
+          .populate('type_id')
+          .populate('category_id')
+          .populate('subcategory_id')
+          .populate('product_id')
+          .populate('part_id')
+          .populate('design_category_id')
+          .populate('design_subcategory_id')
+          .populate('design_id')
+          .populate('genre_id')
+          .populate('warehouse_id');
 
         return res.status(200).json({
           status: true,
@@ -41,12 +52,22 @@ module.exports = {
   //Model models/ProductDesign.js
   update: async (req, res) => {
     try {
-      let productDesign = await ProductDesign.update({id: req.param('id')}, req.body);
+      let productDesign = await ProductDesign.updateOne({id: req.param('id')}, req.body);
       if (productDesign) {
 
         let newProductDesign = [];
         await asyncForEach(productDesign, async (_productDesign) => {
-          let tmp = await ProductDesign.findOne({id: _productDesign.id,}).populateAll();
+          let tmp = await ProductDesign.findOne({id: _productDesign.id,})
+            .populate('type_id')
+            .populate('category_id')
+            .populate('subcategory_id')
+            .populate('product_id')
+            .populate('part_id')
+            .populate('design_category_id')
+            .populate('design_subcategory_id')
+            .populate('design_id')
+            .populate('genre_id')
+            .populate('warehouse_id');
           newProductDesign.push(tmp);
 
         });
@@ -71,14 +92,15 @@ module.exports = {
 
   // destroy a row
   destroy: function (req, res) {
-    ProductDesign.update({id: req.param('id')}, {deletedAt: new Date()})
-      .exec((err, productDesign) => {
-        if (err) {return res.json(err, 400);}
-        return res.json(productDesign[0]);
-      });
-  }
+    try {
+      const productDesign = ProductDesign.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(200, {productDesign: productDesign});
+    } catch (error) {
+      console.log(error);
+      res.status(error.status).json({error: error});
+    }
+  },
 
-  ,
 };
 
 

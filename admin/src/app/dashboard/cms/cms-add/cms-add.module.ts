@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImageUploadModule } from 'angular2-image-upload';
@@ -13,7 +12,7 @@ const routes: Routes = [
   {
     path: '',
     component: CmsAddComponent,
-    children: [ 
+    children: [
     ]
   }
 ];
@@ -25,7 +24,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     FileUploadModule,
     ImageUploadModule.forRoot(),
-    NgZorroAntdModule.forRoot(),
+    NgZorroAntdModule,
     RouterModule.forChild(routes),
     UiModule
   ],

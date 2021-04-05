@@ -14,23 +14,25 @@ export class UserService {
     constructor(private http: HttpClient) {
     }
 
-    getAllCraftsman(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"group_id":6}`)
-            .map((response) => response);
-    }
-
     getById(id: number): Observable<any> {
-      return this.http.get<User>(`${this.EndPoint}/${id}`)
-             .pipe(catchError((error: any) => Observable.throw(error.json())));
+/*        return this.http.get<User>(`${this.EndPoint}/${id}`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));*/
+        return this.getAuthUser();
     }
 
     getAuthUser(): Observable<any> {
-        return this.http.get<User>(`${this.EndPoint}/getAuthUser`)
+        return this.http.get<User>(`${this.EndPoint}/authUser`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 
     getByIdForDashBoard(id: number): Observable<any> {
-        return this.http.get<User>(`${this.EndPoint}/getUserWithDashboardData/${id}`)
+/*        return this.http.get(`${this.EndPoint}/getUserWithDashboardData/${id}`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));*/
+        return this.getAuthUserCustomerData();
+    }
+
+    getAuthUserCustomerData(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAuthCustomerData`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 
@@ -65,12 +67,11 @@ export class UserService {
     }
 
     checkEmailPhone(email: any, phone: any): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`).map((response) => response)
-            ;
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`).map((response) => response);
     }
 
+
     updatepassword(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/updatepassword/' + id, data)
-            ;
+        return this.http.put(this.EndPoint + '/updatepassword/' + id, data);
     }
 }

@@ -12,6 +12,10 @@ import {AuthService, UserService, AreaService} from "../../../../services";
 import {AppSettings} from "../../../../config/app.config";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 import {User} from "../../../../models";
+import * as fromStore from "../../../../state-management";
+import {Store} from "@ngrx/store";
+import {LoaderService} from "../../../../services/ui/loader.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
     selector: "Profile-tab",
@@ -20,7 +24,7 @@ import {User} from "../../../../models";
 })
 export class ProfileTabComponent implements OnInit {
     @ViewChild("Image") Image;
-    user: User;
+    user: any;
     email: any;
     value: any;
     buttonShowHide: any;
@@ -50,10 +54,13 @@ export class ProfileTabComponent implements OnInit {
     constructor(
         private userService: UserService,
         private authService: AuthService,
+        private store: Store<fromStore.HomeState>,
         private fb: FormBuilder,
         private router: Router,
+        private loaderService: LoaderService,
         private _notify: NotificationsService,
-        private areaService: AreaService
+        private areaService: AreaService,
+        private toastService: ToastrService,
     ) {
         this.email = new FormControl("", [Validators.required, Validators.email]);
 
@@ -94,11 +101,19 @@ export class ProfileTabComponent implements OnInit {
 
     //Event called for updating profile data
     public formUpdateProfile = ($event, value) => {
+        this.loaderService.showLoader();
         this.userService
             .update(this.authService.getCurrentUserId(), value)
             .subscribe(result => {
-                this._notify.success("Profile update successful");
+                this.user = result;
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.toastService.success("Profile updated successful", 'Success');
+                this.loaderService.hideLoader();
                 this.router.navigate([`/profile/orders`]);
+            }, (error)=> {
+                console.log(error);
+                this.loaderService.hideLoader();
+                this.toastService.error('Problem in updating profile', 'Problem!');
             });
     };
 
@@ -143,11 +158,18 @@ export class ProfileTabComponent implements OnInit {
         } else {
             formData.append('hasImage', 'false');
         }
+        this.loaderService.showLoader();
         this.userService
             .update(this.authService.getCurrentUserId(), formData)
             .subscribe(result => {
-                this._notify.success("Profile update successful");
-                this.getPageData();
+                this.loaderService.hideLoader();
+                this.user = result;
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.toastService.success("Profile Image updated successful", 'Success');
+            }, (error) => {
+                console.log(error);
+                this.loaderService.hideLoader();
+                this.toastService.error('Problem in updating profile Image', 'Problem!');
             });
         this.imageShow = true;
         this.imageUpload = false;

@@ -1,4 +1,4 @@
-const commonUrl = 'https://web.bitspeek.com';
+const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
 module.exports = {
   sendPasswordResetMailUpdated: function (obj, password) {
@@ -77,8 +77,8 @@ module.exports = {
   },
   orderSubmitMail: function (obj, emailTo = null) {
     let receiverEmail = emailTo;
-    if (!receiverEmail && obj[0].user_id.email) {
-      receiverEmail = obj[0].user_id.email;
+    if (!receiverEmail && obj.user_id.email) {
+      receiverEmail = obj.user_id.email;
     }
     if (!receiverEmail) {
       return;
@@ -86,14 +86,14 @@ module.exports = {
     sails.hooks.email.send(
       'orderSubmitEmail',
       {
-        recipientName: obj[0].user_id.first_name,
+        recipientName: obj.user_id.first_name,
         senderName: senderName,
         orderDetail: obj,
         commonUrl: commonUrl,
       },
       {
         to: receiverEmail,
-        subject: 'Your Order has been Placed (#' + obj[0].id + ')'
+        subject: 'Your Order has been Placed (#' + obj.id + ')'
       },
       (err) => {
         console.log(err || 'It worked!');

@@ -13,7 +13,7 @@
   display: inline-block;
   padding: 0px 5px;
 }
-.search_panel { 
+.search_panel {
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 20px;
@@ -39,7 +39,7 @@
 .filter_text {
   border: 1px solid #959595;
   padding: 5px;
-} 
+}
 
 .form-group {
   display: block;
@@ -87,4 +87,8 @@
   border: solid #442169;
   border-width: 0 4px 4px 0;
   transform: rotate(45deg);
-} 
+}
+.category-img-wrapper {
+  width: 100%;
+  margin-bottom: 15px;
+}

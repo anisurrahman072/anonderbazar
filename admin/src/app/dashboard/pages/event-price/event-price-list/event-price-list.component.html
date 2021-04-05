@@ -13,33 +13,41 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <div class="table-operations">
                 </div>
-                <nz-table [nzTotal]="total" [nzIsPagination]="false" #nzTable [nzDataSource]="data" [nzPageSize]="limit"
-                    [nzSize]="'middle'" [nzShowTitle]="true">
-                    <thead nz-thead>
+                <nz-table #nzTable
+                          (nzPageIndexChange)="getEventPriceData()"
+                          [(nzPageIndex)]="page"
+                          [(nzPageSize)]="limit"
+                          [nzData]="data"
+                          [nzFrontPagination]="false"
+                          [nzLoading]="loading"
+                          [nzTotal]="total"
+                          nzShowSizeChanger
+                >
+                    <thead  >
                         <tr>
-                            <th nz-th>
+                            <th   >
                                 <span> Title </span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Price</span>
                             </th>
-                            <th nz-th>
+                            <th   >
                                 <span>Details</span>
                             </th>
 
                         </tr>
                     </thead>
-                    <tbody nz-tbody>
+                    <tbody   >
                         <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
-                            <tr nz-tbody-tr>
+                            <tr   >
 
-                                <td nz-td>
+                                <td   >
                                     {{data.name}}
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     <nz-tag>{{data.price}}</nz-tag>
                                 </td>
-                                <td nz-td>
+                                <td   >
                                     <nz-tag>{{data.remarks}}</nz-tag>
                                 </td>
                                 <td>
@@ -67,12 +75,12 @@
             </nz-spin>
             <div class="row">
                 <div class="col-md-offset-5" style="margin-top: 10px">
-                    <span nz-table-title class="col-md-6">
+                    <span    class="col-md-6">
                         <nz-pagination (nzPageIndexClickChange)="changePage($event,limit)" (nzPageSizeChange)="changePage(1,$event)"
-                            nzShowTotal [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
+                               [nzPageIndex]="page" [nzTotal]="total" nzShowSizeChanger [nzPageSize]="limit">
                         </nz-pagination>
                     </span>
-                    <span nz-table-title class="pull-right col-md-6">
+                    <span    class="pull-right col-md-6">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </span>
                 </div>
@@ -89,57 +97,57 @@
         <div class="row">
             <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Title </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="name" [nzType]="'text'" [nzPlaceHolder]="'Title লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="name"  [placeholder]="'Title লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
+
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')">
                                 দয়া করে Title লিপিবদ্ধ করুন!
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('duplicated')">
                                 Title ইতিমধ্যে ব্যবহার করা হয়েছে
                             </div>
-                            <div nz-form-explain *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                            <div    *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--name -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="price" [nzType]="'number'" [nzPlaceHolder]="'Price লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="price"  [placeholder]="'Price লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
+
+                            <div    *ngIf="getFormControl('price').dirty&&getFormControl('price').hasError('required')">
                                 দয়া করে Price লিপিবদ্ধ করুন!
                             </div>
                         </div>
                     </div>
                     <!--price -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> Details </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <textarea nz-input formControlName="remarks" [nzSize]="'large'" placeholder="Details লিপিবদ্ধ করুন">
                                                 </textarea>
-                            <div nz-form-explain *ngIf="getFormControl('remarks').dirty&&getFormControl('remarks').hasError('required')">
+                            <div    *ngIf="getFormControl('remarks').dirty&&getFormControl('remarks').hasError('required')">
                                 required!
                             </div>
                         </div>
                     </div>
                     <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleCancel($event)">
                                     Cancel
@@ -165,55 +173,55 @@
         <div class="row">
             <form nz-form [formGroup]="validateEditForm" id="validateEditForm" (ngSubmit)="submitEditForm($event,validateEditForm.value)">
                 <div class="col-md-12">
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Title </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="editName" [nzType]="'text'" [ngModel]="editName" [nzPlaceHolder]="'Title লিপিবদ্ধ করুন'"
+                        <div nz-col [nzSpan]="12"      >
+                               <input nz-input  formControlName="editName"  [ngModel]="editName" [placeholder]="'Title লিপিবদ্ধ করুন'"
                                 [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('required')">
+
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('required')">
                                 দয়া করে Title লিপিবদ্ধ করুন!
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('duplicated')">
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').hasError('duplicated')">
                                 Title ইতিমধ্যে ব্যবহার করা হয়েছে
                             </div>
-                            <div nz-form-explain *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').pending">
+                            <div    *ngIf="getEditFormControl('editName').dirty&&getEditFormControl('editName').pending">
                                 Verifying ...
                             </div>
                         </div>
                     </div>
                     <!--name -->
-                    <div nz-form-item nz-row>
-                        <div nz-form-label nz-col [nzSpan]="4">
+                    <div    nz-row>
+                        <div    nz-col [nzSpan]="4">
                             <label> Price </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="editPrice" [nzType]="'number'" [ngModel]="editPrice"
-                                [nzPlaceHolder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain *ngIf="getEditFormControl('editPrice').dirty&&getEditFormControl('editPrice').hasError('required')">
+                        <div nz-col [nzSpan]="12"      >
+                              <input nz-input  formControlName="editPrice"  [ngModel]="editPrice"
+                                [placeholder]="'Price লিপিবদ্ধ করুন'" [nzSize]="'large'">
+
+                            <div    *ngIf="getEditFormControl('editPrice').dirty&&getEditFormControl('editPrice').hasError('required')">
                                 দয়া করে স্থান লিপিবদ্ধ করুন!
                             </div>
                         </div>
                     </div>
                     <!--price -->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                             <label> Details </label>
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <textarea nz-input formControlName="editRemarks" [ngModel]="editRemarks" [nzSize]="'large'"
                                 placeholder="Details লিপিবদ্ধ করুন">
                                                     </textarea>
                         </div>
                     </div>
                     <!--description-->
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="4" nz-form-label>
+                    <div    nz-row>
+                        <div nz-col [nzSpan]="4"   >
                         </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <div nz-col [nzSpan]="12"      >
                             <nz-button-group>
                                 <button nz-button type="button" [nzSize]="'large'" (click)="handleEditCancel($event)">
                                     Cancel

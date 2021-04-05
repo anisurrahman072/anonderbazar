@@ -1,18 +1,22 @@
 <ul nz-menu [nzMode]="isCollapsed?'vertical':'inline'">
 
-    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard">
+    <li nz-menu-item>
+        <a routerLink="/dashboard" routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}">
         <span>
             <i class="fa fa-file-o"></i>
             <span class="nav-text">Dashboard</span>
         </span>
+        </a>
     </li>
 
-    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/warehouse"
-        *ngIf="'warehouse'|accessControl">
+    <li nz-menu-item *ngIf="'warehouse'|accessControl">
+        <a routerLink="/dashboard/warehouse" routerLinkActive="ant-menu-item-selected"
+           [routerLinkActiveOptions]="{exact:true}">
         <span>
             <i class="fa fa-shopping-basket"></i>
             <span class="nav-text">Shop</span>
         </span>
+        </a>
     </li>
 
     <li nz-submenu *ngIf="'user'|accessControl">
@@ -21,15 +25,19 @@
             <span class="nav-text">User</span>
         </span>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/shop-user" *ngIf="'shop-user'|accessControl">
-                <i class="anticon anticon-user"></i>
-                Shop user
+            <li nz-menu-item *ngIf="'shop-user'|accessControl">
+                <a routerLink="/dashboard/shop-user" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-user"></i>
+                    Shop User
+                </a>
             </li>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/customer" *ngIf="'customer'|accessControl">
-                <i class="anticon anticon-user"></i>
-                Customer
+            <li nz-menu-item *ngIf="'customer'|accessControl">
+                <a routerLink="/dashboard/customer" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-user"></i>
+                    Customer
+                </a>
             </li>
         </ul>
     </li>
@@ -39,16 +47,20 @@
             <span class="nav-text">Attributes</span>
         </span>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/variant" *ngIf="'variant-list'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Attributes
+            <li nz-menu-item *ngIf="'variant-list'|accessControl">
+                <a routerLink="/dashboard/variant" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Attributes
+                </a>
             </li>
 
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/warehousevariant" *ngIf="'warehousevariant'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Attribute's Variant
+            <li nz-menu-item *ngIf="'warehousevariant'|accessControl">
+                <a routerLink="/dashboard/warehousevariant" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Attribute's Variant
+                </a>
             </li>
         </ul>
     </li>
@@ -56,20 +68,22 @@
     <li nz-submenu *ngIf="'producttype'|accessControl">
         <span title>
             <i class="fa fa-th-large"></i>
-            <span class="nav-text">Product</span>
+            <span class="nav-text">Category & Brand</span>
         </span>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/category/product" *ngIf="'productcategory'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Product Category
+            <li nz-menu-item *ngIf="'productcategory'|accessControl">
+                <a routerLink="/dashboard/category/product" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Product Category
+                </a>
             </li>
-
-
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/brand" *ngIf="'brand'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Brand
+            <li nz-menu-item *ngIf="'brand'|accessControl">
+                <a routerLink="/dashboard/brand" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Brand
+                </a>
             </li>
         </ul>
     </li>
@@ -78,16 +92,18 @@
     <li nz-submenu *ngIf="'product'|accessControl">
         <span title>
             <i class="fa fa-th-list "></i>
-            <span class="nav-text">Product list</span>
+            <span class="nav-text">Product</span>
         </span>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/product" [queryParams]="{status: '1'}" *ngIf="'product'|accessControl">
-                Fixed Product
+            <li nz-menu-item *ngIf="'product'|accessControl">
+                <a routerLink="/dashboard/product" [queryParams]="{status: '1'}"
+                   routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}">Fixed Product</a>
             </li>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/product" [queryParams]="{status: '2'}" *ngIf="'product'|accessControl">
-                Variable Product
+            <li nz-menu-item *ngIf="'product'|accessControl">
+                <a routerLink="/dashboard/product" [queryParams]="{status: '2'}"
+                   routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}">
+                    Variable Product
+                </a>
             </li>
         </ul>
     </li>
@@ -98,30 +114,53 @@
             <span class="nav-text">Order</span>
         </span>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/order" *ngIf="'order-list'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Order
+            <li nz-menu-item *ngIf="'order-list'|accessControl">
+                <a routerLink="/dashboard/order" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Order
+                </a>
             </li>
 
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/suborder" *ngIf="'suborder'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Vendor's order
+            <li nz-menu-item *ngIf="'suborder'|accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                   routerLink="/dashboard/suborder">
+                    <i class="anticon anticon-file"></i>
+                    Vendor Order
+                </a>
             </li>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-                routerLink="/dashboard/requisition" *ngIf="'requisition'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Product Requisition
+            <li nz-menu-item *ngIf="'requisition'|accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                   routerLink="/dashboard/requisition">
+                    <i class="anticon anticon-file"></i>
+                    Product Requisition
+                </a>
             </li>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
-                routerLink="/dashboard/payment" *ngIf="'payment'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Financial Transactions
+            <li nz-menu-item *ngIf="'payment'|accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                   routerLink="/dashboard/payment">
+                    <i class="anticon anticon-file"></i>
+                    Financial Transactions
+                </a>
             </li>
         </ul>
     </li>
-    <li nz-submenu *ngIf="'courier'|accessControl">
+    <li nz-submenu *ngIf="'coupon-lottery'|accessControl">
+        <span title>
+            <i class="fa fa-truck"></i>
+            <span class="nav-text">Coupon Lottery</span>
+        </span>
+        <ul>
+            <li nz-menu-item *ngIf="'coupon-lottery-list'|accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                   routerLink="/dashboard/coupon-lottery">
+                    <i class="anticon anticon-file"></i>
+                    Lottery List
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>
             <span class="nav-text">Courier</span>
@@ -148,33 +187,40 @@
             </li>
         </ul>
         <ul>
-            <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
-                routerLink="/dashboard/courier/suborderlist" *ngIf="'courier-suborder-list'|accessControl">
-                <i class="anticon anticon-file"></i>
-                Courier Sub-Order List
+            <li nz-menu-item *ngIf="'courier-suborder-list'|accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
+                   routerLink="/dashboard/courier/suborderlist">
+                    <i class="anticon anticon-file"></i>
+                    Courier Sub-Order List
+                </a>
             </li>
         </ul>
-
     </li>
-    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/cms/home"
-        *ngIf="'cms'|accessControl">
+    <li nz-menu-item *ngIf="'cms'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/cms/home">
         <span>
             <i class="fa fa-ravelry"></i>
             <span class="nav-text">CMS</span>
         </span>
+        </a>
     </li>
-    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" *ngIf="'offer'|accessControl" routerLink="/dashboard/offer">
+    <li nz-menu-item *ngIf="'offer'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/offer">
         <span>
             <i class="fa fa-ravelry"></i>
             <span class="nav-text">Offer</span>
         </span>
+        </a>
     </li>
-    <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}" routerLink="/dashboard/usercms/post">
+    <li nz-menu-item>
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/usercms/post">
         <span>
             <i class="fa fa-ravelry"></i>
             <span class="nav-text">User CMS</span>
         </span>
+        </a>
     </li>
-
-
 </ul>

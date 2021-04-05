@@ -21,16 +21,19 @@ module.exports = {
       allowNull: true,
     },
     total: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: false,
       allowNull: true,
     },
     reg_fee: {
-      type: 'float',
+      type: 'number',
+      columnType: 'float',
       required: true,
     },
     entry_number: {
-      type: 'integer',
+      type: 'number',
+      columnType: 'integer',
       required: true,
     },
     exhibition_products: {
@@ -39,5 +42,5 @@ module.exports = {
     },
   },
   tableName: 'event_registration',
-};
 
+};

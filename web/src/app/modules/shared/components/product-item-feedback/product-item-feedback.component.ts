@@ -11,6 +11,7 @@ import {AuthService, CartItemService, FavouriteProductService} from "../../../..
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item-feedback',
@@ -22,6 +23,7 @@ export class ProductItemFeedbackComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
 
     product: Product;
     compare$: Observable<any>;
@@ -31,6 +33,7 @@ export class ProductItemFeedbackComponent implements OnInit {
     cartId: any;
     discountBadgeIcon: any;
     discountPercentage: number;
+
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
                 private authService: AuthService,
@@ -40,10 +43,11 @@ export class ProductItemFeedbackComponent implements OnInit {
                 private toastr: ToastrService,
                 public _progress: NgProgress,
                 private cartItemService: CartItemService,) {
-                    this.isDisplay = false;
+        this.isDisplay = false;
         this.discountBadgeIcon = AppSettings.IMAGE_ENDPOINT + '/images/discount-icon.svg'
     }
-  //Event method for getting all the data for the page
+
+    //Event method for getting all the data for the page
     ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
@@ -56,8 +60,8 @@ export class ProductItemFeedbackComponent implements OnInit {
         });
 
         this.discountPercentage = 0
-        if(this.product.promotion){
-            this.discountPercentage  =  (( this.product.price - this.product.promo_price ) / this.product.price) * 100.0
+        if (this.product.promotion) {
+            this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
         }
     }
 
@@ -66,7 +70,8 @@ export class ProductItemFeedbackComponent implements OnInit {
     clickToImage(event, productId) {
         this.router.navigate(['/product-details/', productId]);
     }
-  //Method for add to cart
+
+    //Method for add to cart
     addToCartClickHandler(event: any, product: any) {
         event.stopPropagation();
         console.log('addToCartClickHandler');
@@ -80,9 +85,9 @@ export class ProductItemFeedbackComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
-            const cartItemData={
-                cart_id:  this.cartId,
+            let product_total_price: number = this.product.promotion ? this.product.promo_price : this.product.price;
+            const cartItemData = {
+                cart_id: this.cartId,
                 product_id: this.product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
@@ -95,13 +100,17 @@ export class ProductItemFeedbackComponent implements OnInit {
                         this._progress.complete("mainLoader");
                         this.toastr.success("Product Successfully Added To cart: " + product.name + " - ৳" + product_total_price, 'Note');
 
-                        if(callback){
+                        if (callback) {
                             callback();
                         }
                     },
                     error => {
                         this._progress.complete("mainLoader");
-                        this._notify.error("something went wrong");
+                        if (error && error.error) {
+                            this._notify.error("Oooops! Product was not added to the cart.", error.error);
+                        } else {
+                            this._notify.error("Oooops! Product was not added to the cart.");
+                        }
                     }
                 );
         } else {
@@ -109,18 +118,18 @@ export class ProductItemFeedbackComponent implements OnInit {
             this.loginModalService.showLoginModal(true);
         }
     }
-  //Method for direct buy
 
-    buyNow(product){
-        this.addToCart(product, ()=>{
+    //Method for direct buy
+    buyNow(event: any, product) {
+        event.stopPropagation();
+        this.addToCart(product, () => {
             this.router.navigate([`/checkout`]);
         });
     }
 
-  //Method for add to favourite
-
-    addToFavourite(product: Product) {
-
+    //Method for add to favourite
+    addToFavourite(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             let f = {
@@ -135,9 +144,10 @@ export class ProductItemFeedbackComponent implements OnInit {
 
         }
     }
-  //Method for remove from favourite
 
-    removeFromFavourite(favouriteProduct) {
+    //Method for remove from favourite
+    removeFromFavourite(event: any, favouriteProduct) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             if (favouriteProduct) {
@@ -152,39 +162,37 @@ export class ProductItemFeedbackComponent implements OnInit {
         }
     }
 
-  //Method for add to compare
-
-    addToCompare(product: Product) {
-
+    //Method for add to compare
+    addToCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
 
             this.store.dispatch(new fromStore.AddToCompare(product));
             this.compareService.addToCompare(product);
             this._notify.success('add to compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
 
             this.loginModalService.showLoginModal(true)
 
         }
     }
-  //Method for remove from compare
 
-
-    removeFromCompare(product: Product) {
+    //Method for remove from compare
+    removeFromCompare(event: any, product: Product) {
+        event.stopPropagation();
         let userId = this.authService.getCurrentUserId();
         if (userId) {
             this.store.dispatch(new fromStore.RemoveFromCompare(product));
             this.compareService.removeFromCompare(product);
             this._notify.success('remove from compare succeeded');
-        }
-        else {
+        } else {
             this._notify.create("warning", "Please Login First");
             this.loginModalService.showLoginModal(true)
         }
     }
+
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
     }

@@ -1,95 +1,95 @@
-<nz-card>
-  <ng-template #title>
-      Add Offers
-  </ng-template>
-  <ng-template #extra>
-      <button routerLink="/dashboard/offer" nz-button [nzType]="'primary'"
-              [nzSize]="'large'">
-          <i class="anticon anticon-file-text"></i><span> Offer List </span>
-      </button>
-  </ng-template>
-  <ng-template #body>
-      <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+<nz-card nzTitle="Add Offers" [nzExtra]="extra">
+    <ng-template #extra>
+        <button routerLink="/dashboard/offer" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> Offer List </span>
+        </button>
+    </ng-template>
+    <nz-spin [nzSpinning]="_isSpinning">
+        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <div nz-row><!--name start-->
+                <div nz-col [nzSpan]="7">
+                    <label> Title </label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <input nz-input formControlName="title" [placeholder]="'Enter title'"
+                           [nzSize]="'large'">
 
-          <div nz-form-item nz-row><!--name start-->
-              <div nz-form-label nz-col [nzSpan]="7">
-                  <label> Title </label>
-              </div>
-              <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                  <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'Enter title'"
-                            [nzSize]="'large'">
-                  </nz-input>
-                  <div nz-form-explain
-                       *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">
-                       Title is required!
-                  </div> 
-              </div>
-          </div><!--name -->
-          <div nz-form-item nz-row>
-            <!--title start-->
-            <div nz-form-label nz-col [nzSpan]="7">
-                <label>Offer Type</label>
-            </div>
+                    <div
+                            *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">
+                        Title is required!
+                    </div>
+                </div>
+            </div><!--name -->
+            <div nz-row>
+                <!--title start-->
+                <div nz-col [nzSpan]="7">
+                    <label>Offer Type</label>
+                </div>
 
-            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                <div nz-col [nzSpan]="12">
 
 
-                <nz-select formControlName="offer_type" (ngModelChange)="typeChange($event)" [nzPlaceHolder]=" 'input search text'">
+                    <nz-select formControlName="offer_type" (ngModelChange)="typeChange($event)"
+                               [nzPlaceHolder]=" 'input search text'">
 
-                    <nz-option *ngFor="let option of [{value:'PARENTOFFER', label: 'Parent Offer'}, {value:'OFFER', label: 'Offer'}]" [nzLabel]="option.label" [nzValue]="option.value">
-                    </nz-option>
-                </nz-select>
-                <div nz-form-explain
-                        *ngIf="getFormControl('offer_type').dirty&&getFormControl('offer_type').hasError('required')">
+                        <nz-option
+                                *ngFor="let option of [{value:'PARENTOFFER', label: 'Parent Offer'}, {value:'OFFER', label: 'Offer'}]"
+                                [nzLabel]="option.label" [nzValue]="option.value">
+                        </nz-option>
+                    </nz-select>
+                    <div
+                            *ngIf="getFormControl('offer_type').dirty&&getFormControl('offer_type').hasError('required')">
                         Offer type is required!
+                    </div>
                 </div>
             </div>
-        </div>
-        <div nz-form-item nz-row>
-            <div nz-col [nzSpan]="7" nz-form-label>
-                <label>Image</label>
-            </div>
-            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]='ImageFileEdit' (uploadStateChanged)="onUploadStateChanged($event)"
-                    [beforeUpload]="onBeforeUpload"></image-upload>
-                <div nz-form-explain *ngIf="!ImageFile">
-                    Please upload an image here!
+            <div nz-row *ngIf="ImageFileEdit">
+                <div nz-col [nzSpan]="7">
+                    <label>Image</label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]='ImageFileEdit'
+                                  [beforeUpload]="onBeforeUpload"></image-upload>
+                    <div *ngIf="!ImageFile">
+                        Please upload an image here!
+                    </div>
                 </div>
             </div>
-        </div>
-        <!--image-->
-        <div nz-form-item nz-row *ngIf="linkVisible">
-            <div nz-col [nzSpan]="7" nz-form-label>
-                <label>Link</label>
-            </div>
-            <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                <nz-input formControlName="link" [nzType]="'text'" [nzPlaceHolder]="'Insert Link'" [nzSize]="'large'">
-                </nz-input>
-                <div nz-form-explain *ngIf="getFormControl('link').dirty&&getFormControl('link').hasError('required')">
-                    Please insert Link!
+            <!--image-->
+            <div nz-row *ngIf="linkVisible">
+                <div nz-col [nzSpan]="7">
+                    <label>Link</label>
                 </div>
-            </div>
-        </div>
-          <div nz-form-item nz-row>
-              <div nz-col [nzSpan]="7" nz-form-label>
-                  <label>  Short description </label>
-              </div>
-              <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                <div nz-col [nzSpan]="12">
+                    <input nz-input formControlName="link" [placeholder]="'Insert Link'" [nzSize]="'large'">
 
-                <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 "></ckeditor>
-                <div nz-form-explain *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
-                  Please enter short description !
+                    <div *ngIf="getFormControl('link').dirty&&getFormControl('link').hasError('required')">
+                        Please insert Link!
+                    </div>
                 </div>
-              </div>
-          </div><!--type-->
+            </div>
+            <div nz-row>
+                <div nz-col [nzSpan]="7">
+                    <label> Short description </label>
+                </div>
+                <div nz-col [nzSpan]="12">
 
-          <div nz-form-item nz-row>
-              <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                  <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
-                  </button>
-                  <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
-              </div>
-          </div>
-      </form>
-  </ng-template>
+                    <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
+                              debounce="500 "></ckeditor>
+                    <div *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
+                        Please enter short description !
+                    </div>
+                </div>
+            </div><!--type-->
+
+            <div nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
+                    </button>
+                    <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                </div>
+            </div>
+        </form>
+    </nz-spin>
 </nz-card>

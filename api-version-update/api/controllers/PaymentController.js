@@ -1,18 +1,22 @@
 /**
  * PaymentController
- *
  * @description :: Server-side logic for managing payments
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 module.exports = {
-  // destroy a row
-  destroy: function (req, res) {
-    Payment.update({id: req.param('id')}, {deletedAt: new Date()})
-            .exec((err, payment) => {
-              if (err) {return res.json(err, 400);}
-              return res.json(payment[0]);
-            });
+
+  destroy: async (req, res) => {
+    try {
+      const payment = await Payment.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.json(payment);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Problems!',
+        error
+      });
+    }
   },
 };
 

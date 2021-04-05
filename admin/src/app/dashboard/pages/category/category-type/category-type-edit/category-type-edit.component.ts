@@ -1,19 +1,19 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable, Subscription} from 'rxjs';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Subscription} from 'rxjs';
 import {CategoryTypeService} from '../../../../../services/category-type.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
-
 import {environment} from "../../../../../../environments/environment";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-category-type-edit',
     templateUrl: './category-type-edit.component.html',
     styleUrls: ['./category-type-edit.component.css']
 })
-export class CategoryTypeEditComponent implements OnInit, OnDestroy{
+export class CategoryTypeEditComponent implements OnInit, OnDestroy {
+    @ViewChild('Image') Image;
     categoryType: any;
     categoryTypeId: number;
     sub: Subscription;
@@ -21,7 +21,16 @@ export class CategoryTypeEditComponent implements OnInit, OnDestroy{
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: File;
-    @ViewChild('Image') Image;
+
+    constructor(private router: Router, private route: ActivatedRoute, private _notification: NzNotificationService,
+                private fb: FormBuilder, private categoryTypeService: CategoryTypeService) {
+        this.validateForm = this.fb.group({
+            name: ['15', [Validators.required]],
+            code: [''],
+            image: ['']
+        });
+    }
+
     submitForm = ($event, value) => {
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
@@ -58,14 +67,6 @@ export class CategoryTypeEditComponent implements OnInit, OnDestroy{
         return this.validateForm.controls[name];
     }
 
-    constructor(private router: Router, private route: ActivatedRoute, private _notification: NzNotificationService,
-                private fb: FormBuilder, private categoryTypeService: CategoryTypeService) {
-        this.validateForm = this.fb.group({
-            name: ['15', [Validators.required]],
-            code:[''],
-            image: ['']
-        });
-    }
 
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
@@ -79,22 +80,22 @@ export class CategoryTypeEditComponent implements OnInit, OnDestroy{
                         this.oldImages.push(this.IMAGE_ENDPOINT + this.categoryType.image);
                     }
                     this.oldImages.push(this.categoryType.image);
-                    
-                    
+
+
                 });
         });
     }
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
 
-    onBeforeUpload = (metadata: UploadMetadata) => { 
+    onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
     }

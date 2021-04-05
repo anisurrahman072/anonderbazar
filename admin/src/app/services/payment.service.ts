@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -12,8 +11,7 @@ export class PaymentService {
     private EndPoint = `${environment.API_ENDPOINT}/payment`;
     private EndPoint2 = `${environment.API_ENDPOINT}/payments`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
+    constructor(private http: HttpClient) {
     }
 
     getAll(): Observable<any> {
@@ -23,7 +21,7 @@ export class PaymentService {
 
     getAllPayment(page: number,
                   limit: number,
-                  searchTerm: string,
+                  nameSearchValue: string,
                   orderNumberSearchValue: string,
                   suborderNumberSearchValue: string,
                   userIdSearchValue: string,
@@ -33,11 +31,12 @@ export class PaymentService {
                   dateSearchValue: string,
                   statusSearchValue: string,
                   receiver_id: number,
-                  sortName: string,
-                  sortPrice: String): Observable<any> {
+                  sortKey: string,
+                  sortValue:string): Observable<any> {
+
         return this.http.get(`${this.EndPoint2}?page=${page
             }&limit=${limit
-            }&search_term=${searchTerm
+            }&nameSearchValue=${nameSearchValue
             }&orderNumberSearchValue=${orderNumberSearchValue
             }&suborderNumberSearchValue=${suborderNumberSearchValue
             }&userIdSearchValue=${userIdSearchValue
@@ -47,10 +46,9 @@ export class PaymentService {
             }&dateSearchValue=${dateSearchValue
             }&statusSearchValue=${statusSearchValue
             }&receiver_id=${receiver_id
-            }&sortName=${sortName
-            }&sortPrice=${sortPrice}`
-        )
-            ;
+            }&sortKey=${sortKey
+            }&sortValue=${sortValue}`
+        );
     }
 
 
@@ -61,10 +59,12 @@ export class PaymentService {
 
 
     getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id)
-            ;
+        return this.http.get(this.EndPoint + '/' + id) ;
     }
 
+    getByIdNoPop(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id + '?populate=receiver_id,user_id') ;
+    }
     insert(data): Observable<any> {
         return this.http.post(this.EndPoint, data)
             ;

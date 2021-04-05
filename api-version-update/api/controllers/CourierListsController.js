@@ -4,8 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const {Helper, asyncForEach, initLogPlaceholder, pagination} = require('../../libs');
 
+const {pagination} = require('../../libs/pagination');
 module.exports = {
 
   //Method called for getting all courier suborder list data
@@ -14,7 +14,6 @@ module.exports = {
 
 
     try {
-      initLogPlaceholder(req, 'CourierList');
 
       let _pagination = pagination(req.query);
 
@@ -31,9 +30,10 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierList.find({
         where: _where,
-      }).populate('suborder_id', {deletedAt: null})
-        .populate('courier_id', {deletedAt: null})
-        .populate('courier_price_id', {deletedAt: null});
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,
@@ -48,7 +48,8 @@ module.exports = {
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },
@@ -60,9 +61,10 @@ module.exports = {
         where: {
           id: req.params.id
         }
-      }).populate('suborder_id', {deletedAt: null})
-        .populate('courier_id', {deletedAt: null})
-        .populate('courier_price_id', {deletedAt: null});
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,
@@ -73,8 +75,8 @@ module.exports = {
       let message = 'error in read single courier';
       res.status(400).json({
         success: false,
-        message
-        // error:error.toJSON()
+        message,
+        error
       });
     }
   },
@@ -82,9 +84,7 @@ module.exports = {
   //Model models/CourierList.js
   courierorder: async (req, res) => {
 
-
     try {
-      initLogPlaceholder(req, 'CourierList');
 
       let _pagination = pagination(req.query);
 
@@ -96,9 +96,10 @@ module.exports = {
       _pagination.limit = _pagination.limit ? _pagination.limit : totalCourierPrice;
       let courierprices = await CourierListOrder.find({
         where: _where,
-      }).populate('order_id', {deletedAt: null})
-        .populate('courier_id', {deletedAt: null})
-        .populate('courier_price_id', {deletedAt: null});
+      })
+        .populate('suborder_id')
+        .populate('courier_id')
+        .populate('courier_price_id');
 
       res.status(200).json({
         success: true,
@@ -113,7 +114,8 @@ module.exports = {
       let message = 'Error in Get All couriers with pagination';
       res.status(400).json({
         success: false,
-        message
+        message,
+        error
       });
     }
   },

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Router, CanActivate} from '@angular/router';
 import {JwtHelper} from 'angular2-jwt';
 import {LoginModalService} from "../services/ui/loginModal.service";
+import {AuthService} from "../services";
 
 @Injectable()
 export class IsLoggedIn implements CanActivate {
@@ -9,13 +10,14 @@ export class IsLoggedIn implements CanActivate {
 
 
     constructor(private router: Router,
+                private authService: AuthService,
                 private loginModalService: LoginModalService) {
     }
 
     canActivate() {
 
         try {
-            const token = localStorage.getItem('token');
+            const token = this.authService.getToken();
             if (token) {
                 const jwtPayload = this.jwtHelper.decodeToken(token);
 
@@ -27,7 +29,6 @@ export class IsLoggedIn implements CanActivate {
                     this.router.navigate(['/']);
                     return false;
                 }
-
 
             } else {
                 this.loginModalService.showLoginModal(true);

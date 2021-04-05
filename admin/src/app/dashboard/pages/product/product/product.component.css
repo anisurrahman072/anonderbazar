@@ -19,3 +19,6 @@
     background: #fde3cf;
     border-color: #fde3cf;
 }
+.ant-table-thead>tr>th.ant-table-column-has-actions.ant-table-column-has-filters, .ant-table-thead>tr>th.ant-table-column-has-actions.ant-table-column-has-sorters {
+    padding-right: 16px;
+}

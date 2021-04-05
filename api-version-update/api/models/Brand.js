@@ -30,6 +30,12 @@ module.exports = {
       required: false,
       allowNull: true,
     },
+    frontend_position: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 111,
+    },
     slug: {
       type: 'string',
       columnType: 'varchar',
@@ -38,10 +44,10 @@ module.exports = {
   },
   tableName: 'brands',
 
-  // generating slug from name before creating a row
+/*  // generating slug from name before creating a row
   beforeCreate: function (req, next) {
     if (req.name) {
-      var stringForMakingSlug = req.name;
+      let stringForMakingSlug = req.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
       stringForMakingSlug = stringForMakingSlug.toLowerCase();
       req.slug = stringForMakingSlug;
@@ -52,12 +58,12 @@ module.exports = {
   // generating slug from name before updating a row
   beforeUpdate: function (req, next) {
     if (req.name) {
-      var stringForMakingSlug = req.name;
+      let stringForMakingSlug = req.name;
       stringForMakingSlug = stringForMakingSlug.replace(' ', '-');
       stringForMakingSlug = stringForMakingSlug.toLowerCase();
       req.slug = stringForMakingSlug;
     }
     next();
-  }
+  }*/
 };
 

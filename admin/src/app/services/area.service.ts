@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
+import {Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
@@ -11,11 +10,7 @@ export class AreaService {
 
     private EndPoint = `${environment.API_ENDPOINT}/area`;
 
-    constructor(private http: HttpClient, private authenticationService: AuthService) {
-    }
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}');
+    constructor(private http: HttpClient) {
     }
 
     getById(id): Observable<any> {
@@ -34,18 +29,6 @@ export class AreaService {
         return this.http.put(`${this.EndPoint}/${id}`, data);
     }
 
-    getAllMinistry(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null,"type_id":1}');
-    }
-
-    getMinistryById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/${id}`);
-    }
-
-    getAllMinistryDepartment(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"type_id":2}`);
-    }
-
     getMinistryDepartmentById(id): Observable<any> {
         return this.http.get(`${this.EndPoint}/${id}`);
     }
@@ -54,39 +37,23 @@ export class AreaService {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"type_id":3}`);
     }
 
-    getDirectorateById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/${id}`);
-    }
-
     getAllDivision(): Observable<any> {
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"type_id":4}`);
     }
 
-    getDivisionById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/${id}`);
-    }
-
-    getAllZila(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"type_id":5}`);
-    }
-
-    getZilaById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/${id}`);
-    }
-
     getAllZilaByDivisionId(id): Observable<any> {
+        console.log('getAllZilaByDivisionId', id);
+        if(!id || id === 'undefined'){
+            return of([]);
+        }
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"parent_id":${id}}`);
     }
 
-    getAllUpazila(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"type_id":6}`);
-    }
-
-    getUpazilaById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/${id}`);
-    }
-
     getAllUpazilaByZilaId(id): Observable<any> {
+        console.log('getAllUpazilaByZilaId', id);
+        if(!id || id === 'undefined'){
+            return of([]);
+        }
         return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"parent_id":${id}}`);
     }
 

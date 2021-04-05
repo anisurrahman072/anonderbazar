@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit {
     ) {
         this.stateCtrl = new FormControl();
 
-        this.products = this.productService.getAll();
+        // this.products = this.productService.getAll();
     }
 
     // init the component
@@ -132,13 +132,13 @@ export class HeaderComponent implements OnInit {
         }
     }
 
-    filter(val: string) {
+/*    filter(val: string) {
         return this.products.map(response =>
             response.filter(option => {
                 return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
             })
         );
-    }
+    }*/
 
     //Event method for logout
     logOut() {

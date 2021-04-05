@@ -7,7 +7,7 @@
                 [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-edit"></i><span>Edit</span>
             </button>
-    
+
             <button routerLink="/dashboard/event" [queryParams]="{status: status_id}" nz-button [nzType]="'primary'" [nzSize]="'large'">
                 <i class="anticon anticon-file-text"></i><span>List</span>
             </button>
@@ -77,7 +77,7 @@
                                             তারিখ</label>
                                     </div>
                                     <div class="col-md-8">
-                                        <p>{{data.registration_lastdate | date}}</p> 
+                                        <p>{{data.registration_lastdate | date}}</p>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -88,10 +88,10 @@
                                         <p>{{data.description}}</p>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div class="col-md-12" *ngIf="data.event_type===1 || data.event_type===2">
-                                    <nz-table #basicTable [nzIsPagination]="false" [nzSize]="'large'" [nzDataSource]="addedPrices">
+                                    <nz-table #basicTable [nzFrontPagination]="false" [nzSize]="'large'" [nzData]="addedPrices">
                                             <thead>
                                                 <tr>
                                                     <th>Title</th>

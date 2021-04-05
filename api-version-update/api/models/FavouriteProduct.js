@@ -18,6 +18,5 @@ module.exports = {
     },
   },
   tableName: 'favourite_products',
-
 };
 

@@ -15,6 +15,7 @@ import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import {ToastrService} from "ngx-toastr";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-item-min',
@@ -22,6 +23,7 @@ import {ToastrService} from "ngx-toastr";
     styleUrls: ['./product-item-min.component.scss']
 })
 export class ProductItemMinComponent implements OnInit {
+    IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     @Input() dataProduct;
     @Input() imgHeight:string;

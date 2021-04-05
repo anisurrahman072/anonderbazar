@@ -1,10 +1,10 @@
 <section>
     <div class="row" style="display: flex; justify-content: center;">
-        <nz-card class="card-height" style="width: 50%;">
+        <nz-card class="card-height" style="width: 50%;" [nzTitle]="title">
             <ng-template #title>
                 {{status == 1 ? ' Fixed' : (status == 2) ? 'Variable' : 'Fully Customize'}} Product Bulk Upload
             </ng-template>
-            <ng-template #body>
+            <ng-container #body>
                 <div class="form-group">
                     <button [disabled]="isLoading" type="button" id="download_bulk_excel" (click)="downloadExcel()">
                         <span>Download Product Upload Excel File</span>
@@ -14,17 +14,19 @@
                     <label for="upload_bulk_import">Upload Product Upload Excel File</label>
                     <input  #uploadFileInputField type="file" id="upload_bulk_import" (change)="onFileChange($event)"/>
                 </div>
-                <div nz-form-item nz-row>
+                <div    nz-row>
                     <div style="display: flex; justify-content: center; ">
-                        <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)">
+                        <button *ngIf="isAdminUser" style="margin-right: 10px;" nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(1)"
+                                [disabled]="submitting">
                             Save & Approve
                         </button>
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(0)">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="saveImportedProducts(0)"
+                                [disabled]="submitting">
                             Save
                         </button>
                     </div>
                 </div>
-            </ng-template>
+            </ng-container>
         </nz-card>
 
     </div>

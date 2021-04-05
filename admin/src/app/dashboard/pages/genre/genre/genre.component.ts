@@ -30,6 +30,7 @@ export class GenreComponent implements OnInit {
 
   subcategorySearchOptions: any;
   categorySearchOptions: any[] = [];
+  loading: boolean = false;
 
   constructor(
     private genreService: GenreService,
@@ -43,6 +44,7 @@ export class GenreComponent implements OnInit {
   }
   // Event method for getting all the data for the page
   getPageData() {
+    this.loading = true;
     this.genreService
       .getAllgenre(
         this.page,
@@ -54,11 +56,13 @@ export class GenreComponent implements OnInit {
       )
       .subscribe(
         result => {
+          this.loading = false;
           this.data = result.data;
           this.total = result.total;
           this._isSpinning = false;
         },
         error => {
+          this.loading = false;
           this._isSpinning = false;
         }
       );
@@ -100,7 +104,7 @@ export class GenreComponent implements OnInit {
     this.limit = limit;
     this.getPageData();
     return false;
-  }  
+  }
   // Event method for deleting genre
   deleteConfirm(id) {
     this.genreService.delete(id).subscribe(result => {

@@ -11,23 +11,36 @@ module.exports = {
   attributes: {
     name: {
       type: 'string',
+      columnType: 'varchar',
       required: true,
     },
     type_id: {
       model: 'Category',
+      required: false,
     },
     category_id: {
       model: 'Category',
+      required: false,
     },
     subcategory_id: {
       model: 'Category',
+      required: false,
     },
     image: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
     details: {
-      type: 'string'
+      type: 'string',
+      columnType: 'text',
+      required: false,
+      allowNull: true
     },
   },
   tableName: 'parts',
+  customToJSON: function () {
+    return this;
+  }
 };

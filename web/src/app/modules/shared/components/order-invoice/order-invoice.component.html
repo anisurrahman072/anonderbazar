@@ -58,7 +58,7 @@
                                 </ng-container>
                                 <br>
 
-                                <ng-container *ngIf="data && data.couponProductCodes.length > 0">
+                                <ng-container *ngIf="data && data.couponProductCodes && data.couponProductCodes.length > 0">
                                     <h6>Coupon Codes</h6>
                                     <p style="background-color: #ffffff; padding: 5px; border-radius: 10px;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
                                 </ng-container>

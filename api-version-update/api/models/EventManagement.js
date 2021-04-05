@@ -50,32 +50,32 @@ module.exports = {
     event_startdate: {
       type: 'ref',
       columnType: 'date',
-      required: false
+      required: false,
     },
     event_enddate: {
       type: 'ref',
       columnType: 'date',
-      required: false
+      required: false,
     },
     event_starttime: {
       type: 'ref',
       columnType: 'datetime',
-      required: false
+      required: false,
     },
     event_endtime: {
       type: 'ref',
       columnType: 'datetime',
-      required: false
+      required: false,
     },
     registration_lastdate: {
       type: 'ref',
       columnType: 'date',
-      required: false
+      required: false,
     },
     event_price_ids: {
       type: 'json',
       columnType: 'text',
-      required: false
+      required: false,
     },
   },
   tableName: 'events',

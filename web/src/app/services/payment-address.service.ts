@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
 import {of} from 'rxjs/observable/of';
 import {Observable} from 'rxjs/Observable';
-import {AuthService} from './auth.service';
 import {AppSettings} from '../config/app.config';
 import {HttpClient} from '@angular/common/http';
 
@@ -11,13 +10,7 @@ export class PaymentAddressService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/paymentaddress`;
 
-    constructor(private http: HttpClient,
-                private authenticationService: AuthService) {
-    }
-
-    getAll(): Observable<any> {
-        return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
-            .map((response) => response);
+    constructor(private http: HttpClient) {
     }
 
     getAllByWarehouseId(id): Observable<any> {
@@ -31,6 +24,10 @@ export class PaymentAddressService {
                 .map((response) => response);
         }
         return of(false);
+    }
+
+    getAuthUserPaymentAddresses(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/auth-user-payment-addresses`);
     }
 
     getPaymentaddressWithoutOrderid(user_id: number): Observable<any> {
@@ -50,7 +47,6 @@ export class PaymentAddressService {
         return this.http.post(this.EndPoint, data)
             .map((response) => response);
     }
-
 
     delete(id): Observable<any> {
         // get users from api

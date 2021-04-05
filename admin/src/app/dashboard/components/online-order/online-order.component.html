@@ -18,41 +18,41 @@
         </div>
       </div>
       <div class="col-md-12">
-        <nz-table #nzTable [nzPageSize]="5" [nzDataSource]="data">
-          <thead nz-thead>
+        <nz-table #nzTable [nzPageSize]="5" [nzData]="data">
+          <thead  >
             <tr>
-              <th nz-th><span> Order number </span></th>
-              <th nz-th><span> Buyer </span></th>
-              <th nz-th><span> Amount </span></th>
-              <th nz-th><span> Total Amount </span></th>
-              <th nz-th><span> Status </span></th>
-              <th nz-th></th>
+              <th   ><span> Order number </span></th>
+              <th   ><span> Buyer </span></th>
+              <th   ><span> Amount </span></th>
+              <th   ><span> Total Amount </span></th>
+              <th   ><span> Status </span></th>
+              <th   ></th>
             </tr>
           </thead>
-          <tbody nz-tbody>
+          <tbody   >
             <tr
-              nz-tbody-tr
+
               #dataFor
               *ngFor="let data of nzTable.data; let i = index"
             >
-              <td nz-td>
+              <td   >
                 <ng-container
                   *ngIf="('order-read' | accessControl); else elseTemplate"
                 >
                   {{ data.product_order_id[0].id }}
                 </ng-container>
                 <ng-template #elseTemplate>
-                  {{ data.product_order_id[0].id }} / {{ data.id }} 
+                  {{ data.product_order_id[0].id }} / {{ data.id }}
                 </ng-template>
               </td>
-              <td nz-td>
+              <td   >
                 <nz-tag>{{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}</nz-tag>
               </td>
-              <td nz-td>{{ data.total_quantity }}</td>
-              <td nz-td>{{ data.total_price }}</td>
+              <td   >{{ data.total_quantity }}</td>
+              <td   >{{ data.total_price }}</td>
               <!-- trying -->
-              <td nz-td>
-                <span>{{ options[data.status - 1].label }}</span> 
+              <td   >
+                <span>{{ options[data.status - 1].label }}</span>
               --></td>
               <!-- trying -->
               <td>
@@ -63,7 +63,7 @@
                   [nzSize]="'default'"
                 >
                   <i class="anticon anticon-file-text"> </i>
-                </button> 
+                </button>
               </td>
             </tr>
           </tbody>
@@ -84,40 +84,40 @@
   (nzOnOk)="handleOk($event)"
 >
   <ng-template #modalContent>
-      <nz-table #nzTable [nzDataSource]="allDataOnline">
-          <thead nz-thead>
+      <nz-table #nzTable [nzData]="allDataOnline">
+          <thead  >
             <tr>
-              <th nz-th><span> Order number </span></th>
-              <th nz-th><span> Buyer </span></th>
-              <th nz-th><span> Amount </span></th>
-              <th nz-th><span> Total Amount </span></th>
-              <th nz-th><span> Status </span></th>
-              <th nz-th></th>
+              <th   ><span> Order number </span></th>
+              <th   ><span> Buyer </span></th>
+              <th   ><span> Amount </span></th>
+              <th   ><span> Total Amount </span></th>
+              <th   ><span> Status </span></th>
+              <th   ></th>
             </tr>
           </thead>
-          <tbody nz-tbody>
+          <tbody   >
             <tr
-              nz-tbody-tr
+
               #dataFor
               *ngFor="let data of nzTable.data; let i = index"
             >
-              <td nz-td>
+              <td   >
                 <ng-container
                   *ngIf="('order-read' | accessControl); else elseTemplate"
                 >
                   {{ data.product_order_id[0].id }}
                 </ng-container>
                 <ng-template #elseTemplate>
-                  {{ data.product_order_id[0].id }} / {{ data.id }} 
+                  {{ data.product_order_id[0].id }} / {{ data.id }}
                 </ng-template>
               </td>
-              <td nz-td>
+              <td   >
                 <nz-tag>{{ data.product_order_id[0].user_id.first_name }} {{data.product_order_id[0].user_id.last_name}}</nz-tag>
               </td>
-              <td nz-td>{{ data.total_quantity }}</td>
-              <td nz-td>{{ data.total_price }}</td>
+              <td   >{{ data.total_quantity }}</td>
+              <td   >{{ data.total_price }}</td>
               <!-- trying -->
-              <td nz-td>
+              <td   >
                 <span>{{ options[data.status - 1].label }}</span> </td>
               <!-- trying -->
               <td>

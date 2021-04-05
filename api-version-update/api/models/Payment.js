@@ -14,7 +14,7 @@ module.exports = {
     },
     order_id: {
       model: 'order',
-      required: true
+      required: true,
     },
     suborder_id: {
       model: 'suborder',
@@ -49,7 +49,7 @@ module.exports = {
     payment_date: {
       type: 'ref',
       columnType: 'datetime',
-      required: false
+      required: false,
     },
     status: {
       type: 'number',
@@ -58,6 +58,9 @@ module.exports = {
     },
   },
   tableName: 'payments',
+  customToJSON: function () {
+    return this;
+  },
 
   // generating transection key before creating a row
   beforeCreate: function (req, next) {

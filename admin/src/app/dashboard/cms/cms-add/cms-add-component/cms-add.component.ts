@@ -12,13 +12,15 @@ import {environment} from "../../../../../environments/environment";
   styleUrls: ['./cms-add.component.css']
 })
 export class CmsAddComponent implements OnInit {
+  @ViewChild('Image')
   cmsAddData: any;
   isEditModalVisible = false;
   editValidateForm: FormGroup;
   IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+  IMAGE_THUMB_ENDPOINT = environment.IMAGE_THUMB_ENDPOINT;
 
   ImageFile: File;
-  @ViewChild('Image')
+
   Image: any;
   _isSpinning: any = false;
   id: any;
@@ -83,7 +85,7 @@ export class CmsAddComponent implements OnInit {
     }
 
     this.cmsService.customUpdate(formData).subscribe(result => {
-      this.getData(); 
+      this.getData();
       this._isSpinning = false;
       this.isEditModalVisible = false;
       this.resetForm(null);

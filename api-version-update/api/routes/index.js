@@ -1,3 +1,5 @@
+const {categoryRoutes} = require('./category');
+const {eventsRoutes} = require('./events');
 const {warehousevariantRoute} = require('./warehousevariant');
 const {designcategoriesRoute} = require('./designcategories');
 const {productCategoryRoute} = require('./productCategory');
@@ -13,8 +15,17 @@ const {PaymentsRoute} = require('./payment');
 const {craftsmanPriceRoute} = require('./craftmenprice');
 const {designImageRoute} = require('./designImage');
 const {favouriteproductRoute} = require('./favouriteProduct');
+const {userRoutes} = require('./user');
+const {brandRoute} = require('./brands');
+const {orderRoutes} = require('./orders');
+const {courierPricesRoute} = require('./courierprices');
+const {paymentGatewayRoutes} = require('./payment_gateway');
+const {paymentAddressesRoute} = require('./payment-addresses');
+const {CouponLotteryRoute} = require('./couponLottery');
+const {warehouseRoute} = require('./warehouse');
 
 exports.allRouter = {
+  ...categoryRoutes,
   ...warehousevariantRoute,
   ...designcategoriesRoute,
   ...productCategoryRoute,
@@ -29,5 +40,14 @@ exports.allRouter = {
   ...suborderRoute,
   ...PaymentsRoute,
   ...designImageRoute,
-  ...favouriteproductRoute
+  ...favouriteproductRoute,
+  ...userRoutes,
+  ...eventsRoutes,
+  ...brandRoute,
+  ...orderRoutes,
+  ...courierPricesRoute,
+  ...paymentGatewayRoutes,
+  ...CouponLotteryRoute,
+  ...paymentAddressesRoute,
+  ...warehouseRoute
 };

@@ -21,6 +21,7 @@ export class EventListComponent implements OnInit {
   _isSpinning: boolean;
   IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
   currentUser: any;
+  loading: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private uiService: UIService,
@@ -37,6 +38,7 @@ export class EventListComponent implements OnInit {
   }
     //Event method for getting all the data for the page
   getEventData(): void {
+    this.loading = true;
     this.currentUser = this.authService.getCurrentUser();
 
     this.eventService
@@ -48,12 +50,14 @@ export class EventListComponent implements OnInit {
       )
       .subscribe(
         result => {
+          this.loading = false;
           this.data = result.data;
           this.total = result.total;
           this._isSpinning = false;
           // temporary
         },
         result => {
+          this.loading = false;
           this._isSpinning = false;
         }
       );

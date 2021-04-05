@@ -3,9 +3,8 @@ const fs = require('fs');
 
 exports.Helper = {
   deleteImages: async (imageList, path) => {
-    asyncForEach(imageList, (item) => {
+    await asyncForEach(imageList, (item) => {
       console.log(item);
-
       const dir = __dirname.split('/libs');
       const assestsdir = `${dir[0]}/assets`;
       console.log(assestsdir);
@@ -13,14 +12,12 @@ exports.Helper = {
         fs.unlinkSync(assestsdir + item);
         console.log(`successfully deleted${item}`);
       } catch (err) {
-
-        console.log(`error to delete${item}`);
+        console.log(`error to delete${item}`, err);
         // handle the error
       }
     });
   },
   pagination: async (reqBody) => {
-    /* ............PAGINATION........................START............. */
     let limit;
     let skip;
     let page;

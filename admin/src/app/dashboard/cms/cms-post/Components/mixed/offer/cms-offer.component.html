@@ -1,170 +1,151 @@
 <nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Offer'" [nzContent]="editmodalContent"
           (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
-        <div class="spinning">
-            <nz-spin [nzSpinning]="_isSpinning">
-                <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
-                      (ngSubmit)="submitEditForm($event,editValidateForm.value)">
-                    <div nz-form-item nz-row *ngIf="sectionoptionsData">
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Section</label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-select formControlName="section" [nzPlaceHolder]=""
-                                       (ngModelChange)="sectionChange($event)">
-                                <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section"
-                                           [nzValue]="option.section">
+        <nz-spin [nzSpinning]="_isSpinning">
+            <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
+                  (ngSubmit)="submitEditForm($event,editValidateForm.value)">
+                <div nz-row *ngIf="sectionoptionsData">
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>Section</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <nz-select formControlName="section" [nzPlaceHolder]=""
+                                   (ngModelChange)="sectionChange($event)">
+                            <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section"
+                                       [nzValue]="option.section">
 
-                                </nz-option>
-                            </nz-select>
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                </div>
+                <div nz-row *ngIf="subsectionOptions">
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>SubSection</label>
+                    </div>
+
+                    <div nz-col [nzSpan]="12">
+                        <nz-select formControlName="sub_section"
+                                   [nzPlaceHolder]=" 'input search text'">
+
+                            <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option"
+                                       [nzValue]="option">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                </div>
+                <div nz-row *ngIf="subsectionOptions">
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>Category</label>
+                    </div>
+
+                    <div nz-col [nzSpan]="12">
+                        <nz-select formControlName="category_id" [nzPlaceHolder]=" 'input search text'">
+
+                            <nz-option *ngFor="let option of allcategories" [nzLabel]="option.name"
+                                       [nzValue]="option.id">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                </div>
+                <div nz-row>
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>Lower Limit</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <input nz-input formControlName="lowerlimit"
+                               [placeholder]=" 'insert lower price'" [nzSize]=" 'large'">
+                        <div
+                                *ngIf="getEditFormControl( 'lowerlimit').dirty&&getEditFormControl('lowerlimit').pending">
+                            Validating...
                         </div>
                     </div>
-                    <div nz-form-item nz-row *ngIf="subsectionOptions">
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>SubSection</label>
-                        </div>
+                </div>
+                <div nz-row>
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>Upper Limit</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
 
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
+                        <input nz-input formControlName="upperlimit"
+                               [placeholder]=" 'insert upper price'" [nzSize]=" 'large'">
 
-
-                            <nz-select formControlName="sub_section"
-                                       [nzPlaceHolder]=" 'input search text'">
-
-                                <nz-option *ngFor="let option of subsectionOptions" [nzLabel]="option"
-                                           [nzValue]="option">
-                                </nz-option>
-                            </nz-select>
-
+                        <div
+                                *ngIf="getEditFormControl( 'upperlimit').dirty&&getEditFormControl('upperlimit').pending">
+                            Validating...
                         </div>
                     </div>
-                    <div nz-form-item nz-row *ngIf="subsectionOptions">
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Category</label>
+                </div>
+                <div nz-row>
+                    <!--title start-->
+                    <div nz-col [nzSpan]="7">
+                        <label>Title</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <input nz-input formControlName="title" [placeholder]="'insert title'"
+                               [nzSize]="'large'">
+
+                        <div
+                                *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
+                            Please input title !
                         </div>
-
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-
-                            <nz-select formControlName="category_id" [nzPlaceHolder]=" 'input search text'">
-
-                                <nz-option *ngFor="let option of allcategories" [nzLabel]="option.name"
-                                           [nzValue]="option.id">
-                                </nz-option>
-                            </nz-select>
-
+                        <div
+                                *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
+                            Name already exists!
+                        </div>
+                        <div
+                                *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
+                            Validating...
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Lower Limit</label>
-                        </div>
+                </div>
+                <!--Title -->
+                <!--image-->
 
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Description</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
+                                  debounce="500 ">
 
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-                            <nz-input formControlName="lowerlimit" [nzType]=" 'text'"
-                                      [nzPlaceHolder]=" 'insert lower price'" [nzSize]=" 'large'">
-                            </nz-input>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl( 'lowerlimit').dirty&&getEditFormControl('lowerlimit').pending">
-                                Validating...
-                            </div>
+                        </ckeditor>
+                        <div
+                                *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
+                            Please input description !
                         </div>
                     </div>
-                    <div nz-form-item nz-row>
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Upper Limit</label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-
-                            <nz-input formControlName="upperlimit" [nzType]=" 'text'"
-                                      [nzPlaceHolder]=" 'insert upper price'" [nzSize]=" 'large'">
-                            </nz-input>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl( 'upperlimit').dirty&&getEditFormControl('upperlimit').pending">
-                                Validating...
-                            </div>
-                        </div>
+                </div>
+                <div nz-row>
+                    <div nz-col [nzOffset]="7" [nzSpan]="12">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                [disabled]="!editValidateForm.valid">
+                            Submit
+                        </button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
                     </div>
-                    <div nz-form-item nz-row>
-                        <!--title start-->
-                        <div nz-form-label nz-col [nzSpan]="7">
-                            <label>Title</label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <nz-input formControlName="title" [nzType]="'text'" [nzPlaceHolder]="'insert title'"
-                                      [nzSize]="'large'">
-                            </nz-input>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('required')">
-                                Please input title !
-                            </div>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').hasError('duplicated')">
-                                Name already exists!
-                            </div>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl('title').dirty&&getEditFormControl('title').pending">
-                                Validating...
-                            </div>
-                        </div>
-                    </div>
-                    <!--Title -->
-                    <!--image-->
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzSpan]="7" nz-form-label>
-                            <label>Description</label>
-                        </div>
-                        <div nz-col [nzSpan]="12" nz-form-control nzHasFeedback>
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
-                                      debounce="500 ">
-
-                            </ckeditor>
-                            <div nz-form-explain
-                                 *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
-                                Please input description !
-                            </div>
-                        </div>
-                    </div>
-                    <!--description-->
-
-
-                    <div nz-form-item nz-row>
-                        <div nz-col [nzOffset]="7" [nzSpan]="12" nz-form-control>
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'"
-                                    [disabled]="!editValidateForm.valid">
-                                Submit
-                            </button>
-                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)">Reset</button>
-                        </div>
-                    </div>
-                </form>
-            </nz-spin>
-        </div>
+                </div>
+            </form>
+        </nz-spin>
     </ng-template>
 </nz-modal>
 
-<section id="product-section" *ngIf="cmsFeatureData.length > 0">
+<section id="product-section" *ngIf="cmsFeatureData && cmsFeatureData.length >= 3">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-7 col-md-12 mb-4">
-                <nz-card style="margin-bottom: 5px;">
-                    <ng-template #title>
-                        <h4>
-                            Title: {{cmsFeatureData[0].data_value[0].title}}
-                        </h4>
-                    </ng-template>
-                    <ng-template #extra>
+                <nz-card [nzExtra]="extraTitle" [nzTitle]="'Title: ' + cmsFeatureData[0].data_value[0].title"
+                         style="margin-bottom: 5px;">
+                    <ng-template #extraTitle>
                         <div class="pull-right">
                             <button nz-button [nzType]="'primary'" (click)="showEditModal(cmsFeatureData[0].id,0)">
                                 <span>
-                                    <i class="anticon anticon-edit">Edit </i>
+                                    <i class="anticon anticon-edit"></i>
                                 </span>
                             </button>
                             <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
@@ -172,47 +153,42 @@
                                            (nzOnConfirm)="deleteConfirm(0,cmsFeatureData[0].id)">
                                 <a nz-popconfirm>
                                     <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                        <i class="anticon anticon-delete "> Delete </i>
+                                        <i class="anticon anticon-delete "></i>
                                     </button>
                                 </a>
                             </nz-popconfirm>
                         </div>
                     </ng-template>
-                    <ng-template #body>
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-6 col-pro" style="padding-right: 0px;height: 547px;">
-                                <div class="product-details">
-                                    <h2 class="proh1first">{{cmsFeatureData[0]?.data_value[0].category_id.name}}</h2>
-                                    <h2 class="proh12nd">{{(cmsFeatureData[0]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[0]?.data_value[0].lowerlimit}}
-                                        - ৳{{cmsFeatureData[0]?.data_value[0].upperlimit}}</h2>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-6" style="padding-left: 0px;">
-                                <div class="product-img">
-                                    <img src="{{IMAGE_ENDPOINT + cmsFeatureData[0]?.data_value[0].category_id.image}}"
-                                         alt="">
-                                </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-6 col-pro" style="padding-right: 0;height: 547px;">
+                            <div class="product-details" *ngIf="cmsFeatureData[0]?.data_value[0].category_id">
+                                <h2 class="proh1first">{{cmsFeatureData[0]?.data_value[0].category_id.name}}</h2>
+                                <h2 class="proh12nd">{{(cmsFeatureData[0]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[0]?.data_value[0].lowerlimit}}
+                                    - ৳{{cmsFeatureData[0]?.data_value[0].upperlimit}}</h2>
                             </div>
                         </div>
-                    </ng-template>
+                        <div class="col-lg-6 col-md-6 col-6" style="padding-left: 0;">
+                            <div class="product-img" *ngIf="cmsFeatureData[0]?.data_value[0].category_id">
+                                <img src="{{IMAGE_ENDPOINT + cmsFeatureData[0]?.data_value[0].category_id.image}}"
+                                     alt="Image">
+                            </div>
+                        </div>
+                    </div>
                 </nz-card>
             </div>
 
             <div class="col-lg-5 col-md-12">
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        <nz-card style="margin-bottom: 5px;">
-                            <ng-template #title>
-                                <h4>
-                                    Title: {{cmsFeatureData[0].data_value[0].title}}
-                                </h4>
-                            </ng-template>
-                            <ng-template #extra>
+                        <nz-card style="margin-bottom: 5px;" [nzExtra]="extraTitle1"
+                                 [nzTitle]="'Title: ' + cmsFeatureData[0].data_value[0].title">
+                            <ng-template #extraTitle1>
                                 <div class="pull-right">
                                     <button nz-button [nzType]="'primary'"
                                             (click)="showEditModal(cmsFeatureData[1].id,1)">
                                         <span>
-                                            <i class="anticon anticon-edit">Edit </i>
+                                            <i class="anticon anticon-edit"></i>
                                         </span>
                                     </button>
                                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
@@ -220,45 +196,39 @@
                                                    (nzOnConfirm)="deleteConfirm(1,cmsFeatureData[1].id)">
                                         <a nz-popconfirm>
                                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                <i class="anticon anticon-delete "> Delete </i>
+                                                <i class="anticon anticon-delete "></i>
                                             </button>
                                         </a>
                                     </nz-popconfirm>
                                 </div>
                             </ng-template>
-                            <ng-template #body>
-                                <div class="row">
-                                    <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0px;height: 266px;">
-                                        <div class="productsub-details">
-                                            <h4 class="proh1first">{{cmsFeatureData[1]?.data_value[0].category_id.name}}</h4>
-                                            <h4 class="proh12nd">{{(cmsFeatureData[1]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[1]?.data_value[0].lowerlimit}}
-                                                - ৳{{cmsFeatureData[1]?.data_value[0].upperlimit}}</h4>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-6 pl-0" style="padding-left:0px">
-                                        <div class="productsub-img">
-                                            <img src="{{IMAGE_ENDPOINT + cmsFeatureData[1]?.data_value[0].category_id.image}}"
-                                                 alt="">
-                                        </div>
+                            <div class="row">
+                                <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0;height: 266px;">
+                                    <div class="productsub-details" *ngIf="cmsFeatureData[1]?.data_value[0].category_id">
+                                        <h4 class="proh1first">{{cmsFeatureData[1]?.data_value[0].category_id.name}}</h4>
+                                        <h4 class="proh12nd">{{(cmsFeatureData[1]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[1]?.data_value[0].lowerlimit}}
+                                            - ৳{{cmsFeatureData[1]?.data_value[0].upperlimit}}</h4>
                                     </div>
                                 </div>
-                            </ng-template>
+                                <div class="col-md-6 col-6 pl-0" style="padding-left:0;">
+                                    <div class="productsub-img" *ngIf="cmsFeatureData[1]?.data_value[0].category_id">
+                                        <img src="{{IMAGE_ENDPOINT + cmsFeatureData[1]?.data_value[0].category_id.image}}"
+                                             alt="Image">
+                                    </div>
+                                </div>
+                            </div>
                         </nz-card>
-
                     </div>
                     <div class="col-md-12">
-                        <nz-card style="margin-bottom: 5px;">
-                            <ng-template #title>
-                                <h4>
-                                    Title: {{cmsFeatureData[0].data_value[0].title}}
-                                </h4>
-                            </ng-template>
-                            <ng-template #extra>
+                        <nz-card style="margin-bottom: 5px;" [nzExtra]="extraTitle2"
+                                 [nzTitle]="'Title: '+ cmsFeatureData[0].data_value[0].title">
+
+                            <ng-template #extraTitle2>
                                 <div class="pull-right">
                                     <button nz-button [nzType]="'primary'"
                                             (click)="showEditModal(cmsFeatureData[2].id,2)">
                                         <span>
-                                            <i class="anticon anticon-edit">Edit </i>
+                                            <i class="anticon anticon-edit"></i>
                                         </span>
                                     </button>
                                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
@@ -266,31 +236,29 @@
                                                    (nzOnConfirm)="deleteConfirm(2,cmsFeatureData[2].id)">
                                         <a nz-popconfirm>
                                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                                <i class="anticon anticon-delete "> Delete </i>
+                                                <i class="anticon anticon-delete "></i>
                                             </button>
                                         </a>
                                     </nz-popconfirm>
                                 </div>
                             </ng-template>
-                            <ng-template #body>
-                                <div class="row">
-                                    <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0px;height: 266px;">
-                                        <div class="productsub-details">
-                                            <h4 class="proh1first">{{cmsFeatureData[2]?.data_value[0].category_id.name}}</h4>
-                                            <h4 class="proh12nd">{{(cmsFeatureData[2]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[2]?.data_value[0].lowerlimit}}
-                                                - ৳{{cmsFeatureData[2]?.data_value[0].upperlimit}}</h4>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-6 pl-0" style="padding-left: 0px;">
-                                        <div class="productsub-img">
-                                            <img src="{{IMAGE_ENDPOINT + cmsFeatureData[2]?.data_value[0].category_id.image}}"
-                                                 alt="">
-                                        </div>
+
+                            <div class="row">
+                                <div class="col-md-6 col-6 col-pro pr-0" style="padding-right: 0px;height: 266px;">
+                                    <div class="productsub-details" *ngIf="cmsFeatureData[2]?.data_value[0].category_id">
+                                        <h4 class="proh1first">{{cmsFeatureData[2]?.data_value[0].category_id.name}}</h4>
+                                        <h4 class="proh12nd">{{(cmsFeatureData[2]?.data_value[0].lowerlimit == 0) ? 'Under' : cmsFeatureData[2]?.data_value[0].lowerlimit}}
+                                            - ৳{{cmsFeatureData[2]?.data_value[0].upperlimit}}</h4>
                                     </div>
                                 </div>
-                            </ng-template>
+                                <div class="col-md-6 col-6 pl-0" style="padding-left: 0px;">
+                                    <div class="productsub-img" *ngIf="cmsFeatureData[2]?.data_value[0].category_id">
+                                        <img src="{{IMAGE_ENDPOINT + cmsFeatureData[2]?.data_value[0].category_id.image}}"
+                                             alt="Image">
+                                    </div>
+                                </div>
+                            </div>
                         </nz-card>
-
                     </div>
                 </div>
             </div>
