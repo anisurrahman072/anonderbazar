@@ -52,6 +52,9 @@ export class OfferCreateComponent implements OnInit {
 _isSpinning: any = false;
     submitting: boolean = false;
 
+    isShowHomepage: boolean = false;
+    isShowCarousel: boolean = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -59,12 +62,14 @@ _isSpinning: any = false;
     private fb: FormBuilder,
     private cmsService: CmsService,
   ) {
-    this.validateForm = this.fb.group({
-      title: ['', [Validators.required]],
-      offer_type: ['', [Validators.required]],
-      link: ['', ''],
-      description: ['', [Validators.required]]
-    });
+      this.validateForm = this.fb.group({
+          title: ['', [Validators.required]],
+          offer_type: ['', [Validators.required]],
+          link: ['', ''],
+          description: ['', [Validators.required]],
+          showHome: ['',[]],
+          showCarousel: ['',[]]
+      });
   }
 
   ngOnInit() {
@@ -80,10 +85,14 @@ _isSpinning: any = false;
     }
 
     let formData = new FormData();
+      let showInCarousel = this.isShowCarousel ? 'true' : 'false';
+      let showInHome = this.isShowHomepage ? 'true' : 'false';
     formData.append('title', value.title);
     formData.append('subsection', value.offer_type);
     formData.append('link', value.link);
     formData.append('description', value.description);
+    formData.append('showInCarousel', showInCarousel);
+    formData.append('showInHome', showInHome);
     if (this.ImageFile) {
         formData.append('hasImage', 'true');
         formData.append('image', this.ImageFile, this.ImageFile.name);
@@ -136,4 +145,11 @@ typeChange($event){
     this.linkVisible = false;
   }
 }
+
+    changeShowHomepage(){
+        this.isShowHomepage = !this.isShowHomepage;
+    }
+    changeShowCarousel(){
+        this.isShowCarousel = !this.isShowCarousel;
+    }
 }

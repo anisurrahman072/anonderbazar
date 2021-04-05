@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
-import { NgxCarousel } from 'ngx-carousel';
+import {NgxCarousel} from 'ngx-carousel';
 
 import {
     SwiperComponent,
@@ -33,6 +33,11 @@ export class BannerComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = ''; //GLOBAL_CONFIGS.bannerImageExtension;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_EXT_CAROUSEL = GLOBAL_CONFIGS.productImageExtension;
+
+
+    carouselOffers: any;
 
     constructor(private cmsService: CmsService) {
     }
@@ -66,5 +71,25 @@ export class BannerComponent implements OnInit {
             touch: true,
             easing: 'ease-out',
         }
+
+        this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER')
+            .subscribe((offers) => {
+                let cnt = 0;
+                this.carouselOffers = offers.filter((offer) => {
+                    return (offer && offer.data_value && Array.isArray(offer.data_value) &&
+                        offer.data_value.length > 0 && offer.data_value[0].products &&
+                        offer.data_value[0].products.length > 0 && offer.data_value[0].showInCarousel === 'true')
+                }).reverse();
+
+                this.carouselOffers = this.carouselOffers.filter((offer) => {
+                    if(cnt < 3){
+                        cnt++;
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                })
+            });
     }
 }

@@ -55,6 +55,9 @@ export class OfferEditComponent implements OnInit {
     ImageFileEdit: any;
     data: any;
 
+    isShowHomepage: boolean = false;
+    isShowCarousel: boolean = false;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -71,7 +74,9 @@ export class OfferEditComponent implements OnInit {
             title: ['', [Validators.required]],
             offer_type: ['', [Validators.required]],
             link: ['', ''],
-            description: ['', [Validators.required]]
+            description: ['', [Validators.required]],
+            showHome: ['',[]],
+            showCarousel: ['',[]]
         });
         this.sub = this.route.params.subscribe(params => {
             this._isSpinning = true;
@@ -81,11 +86,16 @@ export class OfferEditComponent implements OnInit {
                     console.log(result);
                     this.ImageFileEdit = [];
                     this.data = result;
+
+                    let showHome = this.data.data_value[0].showInHome === 'true' ? true : false;
+                    let showCarousel = this.data.data_value[0].showInCarousel === 'true' ? true : false;
                     let payload = {
                         title: this.data.data_value[0].title,
                         offer_type: this.data.sub_section,
                         link: this.data.data_value[0].link,
-                        description: this.data.data_value[0].description
+                        description: this.data.data_value[0].description,
+                        showHome: showHome,
+                        showCarousel: showCarousel
                     };
                     this.validateForm.patchValue(payload);
                     if (this.data && this.data.data_value[0].image) {
@@ -108,11 +118,15 @@ export class OfferEditComponent implements OnInit {
         }
 
         let formData = new FormData();
+        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
+        let showInHome = this.isShowHomepage ? 'true' : 'false';
         formData.append('id', this.id);
         formData.append('title', value.title);
         formData.append('subsection', value.offer_type);
         formData.append('link', value.link);
         formData.append('description', value.description);
+        formData.append('showInCarousel', showInCarousel);
+        formData.append('showInHome', showInHome);
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
@@ -163,5 +177,12 @@ export class OfferEditComponent implements OnInit {
         } else {
             this.linkVisible = false;
         }
+    }
+
+    changeShowHomepage(){
+        this.isShowHomepage = !this.isShowHomepage;
+    }
+    changeShowCarousel(){
+        this.isShowCarousel = !this.isShowCarousel;
     }
 }

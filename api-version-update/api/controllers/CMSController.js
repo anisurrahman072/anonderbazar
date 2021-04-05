@@ -125,6 +125,8 @@ module.exports = {
                 link: body.link,
                 offers: [],
                 products: [],
+                showInCarousel: req.body.showInCarousel,
+                showInHome: req.body.showInHome
               }
             ];
           } else {
@@ -134,7 +136,9 @@ module.exports = {
                 description: req.body.description,
                 offers: [],
                 products: [],
-                image: body.image
+                image: body.image,
+                showInCarousel: req.body.showInCarousel,
+                showInHome: req.body.showInHome
               }
             ];
           }
@@ -165,6 +169,8 @@ module.exports = {
             description: req.body.description,
             offers: [],
             products: [],
+            showInCarousel: req.body.showInCarousel,
+            showInHome: req.body.showInHome
           }
         ];
 

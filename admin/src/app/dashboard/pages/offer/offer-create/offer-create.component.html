@@ -80,6 +80,19 @@
             </div>
         </div><!--type-->
 
+        <div nz-row>
+            <div nz-col [nzOffset]="7"  [nzSpan]="12">
+                <input formControlName="showHome" type="checkbox" [checked]="isShowHomepage" (change)="changeShowHomepage()">
+                Show in Homepage
+            </div>
+        </div>
+        <div nz-row>
+            <div nz-col [nzOffset]="7" [nzSpan]="12">
+                <input formControlName="showCarousel" type="checkbox" [checked]="isShowCarousel" (change)="changeShowCarousel()">
+                Show in Carousel
+            </div>
+        </div>
+
         <div    nz-row>
             <div nz-col [nzOffset]="7" [nzSpan]="12"   >
                 <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Save

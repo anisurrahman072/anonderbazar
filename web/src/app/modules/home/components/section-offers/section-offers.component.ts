@@ -18,6 +18,7 @@ export class OfferComponent implements OnInit {
 
     products: any = [];
     offers: any = [];
+    carouselOffers: any;
 
     constructor(private cmsService: CmsService, private productservice: ProductService) {
     }
@@ -29,6 +30,10 @@ export class OfferComponent implements OnInit {
             .subscribe(result => {
 
                 this.homeOfferData = result;
+                this.carouselOffers = this.homeOfferData.filter((offer) => {
+                    return offer.data_value[0].showInCarousel === 'true';
+                });
+
                 this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0))
                     .forEach(element => {
 
