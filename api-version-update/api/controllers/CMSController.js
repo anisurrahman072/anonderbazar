@@ -344,47 +344,47 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
-          if (err) {
-            return res.json(err.status, {err: err});
-          }
-          if (uploaded.length === 0) {
-            return res.badRequest('No file was uploaded');
-          }
-          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-          let data_value = [
-            {
-              title: req.body.title,
-              description: req.body.description,
-              slug: (req.body.title.toLowerCase()).replace(' ', '_'),
-              image: '/' + newPath
+            if (err) {
+              return res.json(err.status, {err: err});
             }
-          ];
+            if (uploaded.length === 0) {
+              return res.badRequest('No file was uploaded');
+            }
+            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+            let data_value = [
+              {
+                title: req.body.title,
+                description: req.body.description,
+                slug: (req.body.title.toLowerCase()).replace(' ', '_'),
+                image: '/' + newPath
+              }
+            ];
 
-          let _payload = {
-            page: 'POST',
-            section: req.body.section,
-            sub_section: req.body.sub_section,
-            data_value: data_value
-          };
+            let _payload = {
+              page: 'POST',
+              section: req.body.section,
+              sub_section: req.body.sub_section,
+              data_value: data_value
+            };
 
-          if (req.body.user_id) {
-            _payload.user_id = req.body.user_id;
+            if (req.body.user_id) {
+              _payload.user_id = req.body.user_id;
+            }
+
+            let data = await CMS.create(_payload).fetch();
+            if (data) {
+              return res.json({
+                success: true,
+                message: 'cms updated successfully',
+                data: data
+              });
+            } else {
+              return res.json(400, {
+                success: false,
+                message: 'cms updated failed'
+              });
+            }
           }
-
-          let data = await CMS.create(_payload).fetch();
-          if (data) {
-            return res.json({
-              success: true,
-              message: 'cms updated successfully',
-              data: data
-            });
-          } else {
-            return res.json(400, {
-              success: false,
-              message: 'cms updated failed'
-            });
-          }
-        }
         );
       } else {
         let data_value = [
@@ -594,14 +594,107 @@ module.exports = {
       });
     }
   },
+  uploadCarouselImage: async (req, res) => {
+    try {
+      let cms = await CMS.findOne({id: req.param('id'), deletedAt: null});
+
+      const uploaded = await uploadImages(req.file('image'));
+
+      if (uploaded.length === 0) {
+        return res.badRequest('No file was uploaded');
+      }
+      const image_mobile = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+      let dataValueIndex = parseInt(req.body.dataValueId, 10);
+      let dataValue = cms.data_value;
+      if (_.isUndefined(dataValue) || _.isEmpty(dataValue) || _.isUndefined(dataValue[dataValueIndex])) {
+        return res.status(422).json({message: 'Invalid request'});
+      }
+
+      let indexedDataValue = dataValue[dataValueIndex];
+      dataValue[dataValueIndex] = {
+        title: indexedDataValue.title,
+        description: indexedDataValue.description,
+        image: indexedDataValue.image,
+        image_mobile: image_mobile
+      };
+
+      await CMS.updateOne({id: cms.id}).set({
+        data_value: dataValue
+      });
+
+      return res.json({
+        success: true,
+        message: 'Image successfully uploaded and inserted',
+        data: dataValue[dataValueIndex]
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error Occurred',
+        error
+      });
+    }
+  },
+  deleteCarouselImage: async (req, res) => {
+
+    try {
+      let cms = await CMS.findOne({id: req.param('id'), deletedAt: null});
+      let dataValueIndex = parseInt(req.body.dataValueId, 10);
+      let dataValue = cms.data_value;
+      if (_.isUndefined(dataValue) || _.isEmpty(dataValue) || _.isUndefined(dataValue[dataValueIndex])) {
+        return res.status(422).json({message: 'Invalid request'});
+      }
+      let indexedDataValue = dataValue[dataValueIndex];
+      dataValue[dataValueIndex] = {
+        title: indexedDataValue.title,
+        description: indexedDataValue.description,
+        image: req.body.column === 'image' ? '' : indexedDataValue.image,
+        image_mobile: req.body.column === 'image_mobile' ? '' : indexedDataValue.image_mobile
+      };
+
+      await CMS.updateOne({id: cms.id}).set({
+        data_value: dataValue
+      });
+
+      return res.json({
+        success: true,
+        message: 'Image successfully removed',
+        data: dataValue[dataValueIndex]
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error Occurred',
+        error
+      });
+    }
+  },
   //Method called for updating cms post data
   //Model models/CMS.js
   customUpdate: async (req, res) => {
     try {
+      console.log('req.body', req.body);
+      if (!req.body.id) {
+        return res.status(422).json({
+          message: 'Invalid Request'
+        });
+      }
 
       let cms = await CMS.findOne({id: req.body.id, deletedAt: null});
 
-      console.log('req.body', req.body);
+      let dataValue = cms.data_value;
+      let dataValueIndex = parseInt(req.body.dataValueId, 10);
+
+      if (_.isUndefined(dataValue) || _.isEmpty(dataValue) || _.isUndefined(dataValue[dataValueIndex])) {
+        return res.status(422).json({message: 'Invalid request'});
+      }
+
+      let indexedDataValue = dataValue[dataValueIndex];
 
       if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
         let newDesktopImagePath = '';
@@ -625,12 +718,6 @@ module.exports = {
           newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         }
 
-        const dataValueIndex = parseInt(req.body.dataValueId);
-
-        let dataValue = cms.data_value;
-        if (!dataValue) {
-          dataValue = [];
-        }
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
@@ -638,48 +725,33 @@ module.exports = {
           image_mobile: newMobileImagePath
         };
 
-        console.log('dataValue[dataValueIndex]', dataValue);
-
-        // cms.data_value = JSON.stringify(cms.data_value);
-        let data = await CMS.updateOne({id: cms.id}).set({
+        await CMS.updateOne({id: cms.id}).set({
           data_value: dataValue
         });
 
-        if (data) {
-          return res.json({
-            success: true,
-            message: 'cms updated successfully',
-            data: cms.data_value[dataValueIndex]
-          });
-        }
-        return res.json(400, {
-          success: false,
-          message: 'cms updated failed'
+        return res.json({
+          success: true,
+          message: 'cms updated successfully',
+          data: dataValue[dataValueIndex]
         });
 
       } else {
-        const dataValueIndex = parseInt(req.body.dataValueId);
-        if (!cms.data_value) {
-          cms.data_value = [];
-        }
-        cms.data_value[dataValueIndex] = {
+        dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: cms.data_value[dataValueIndex].image,
-          image_mobile: cms.data_value[dataValueIndex].image_mobile ? cms.data_value[dataValueIndex].image_mobile : ''
+          image: indexedDataValue.image,
+          image_mobile: indexedDataValue.image_mobile
         };
 
-        cms.data_value = JSON.stringify(cms.data_value);
-        let data = await CMS.updateOne({id: cms.id}).set(cms);
-        if (data) {
-          return res.status(201).json({
-            success: true,
-            message: 'cms updated successfully',
-            data: cms.data_value[dataValueIndex]
-          });
-        }
+        await CMS.updateOne({id: cms.id}).set({
+          data_value: dataValue
+        });
 
-        return res.status(400).json({success: false, message: 'cms updated failed'});
+        return res.status(201).json({
+          success: true,
+          message: 'cms updated successfully',
+          data: dataValue[dataValueIndex]
+        });
 
       }
     } catch (error) {

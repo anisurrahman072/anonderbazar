@@ -18,28 +18,43 @@ module.exports = {
     try {
       const couponNativeQuery = Promise.promisify(ProductPurchasedCouponCode.getDatastore().sendNativeQuery);
       let _rawSelect = `
-    SELECT
-    ProductPurchasedCouponCode.user_id as user_id,
-    GROUP_CONCAT(ProductPurchasedCouponCode.id) as id`;
-      let _fromSQL = ` FROM product_purchased_coupon_codes as ProductPurchasedCouponCode`;
-      let _where = ` WHERE ProductPurchasedCouponCode.product_id = ${product_id}`;
-      _where += ` AND ProductPurchasedCouponCode.deleted_at IS NULL`;
-      _where += ` AND ProductPurchasedCouponCode.coupon_lottery_draw_id IS NULL`;
-      _where += ` GROUP BY user_id`;
-      let allPurchasedCouponCode = await couponNativeQuery(_rawSelect + _fromSQL + _where + []);
+              SELECT
+                  purchasedCoupon.user_id as user_id,
+                  COUNT(purchasedCoupon.id) as coupon_count
+
+              FROM product_purchased_coupon_codes as purchasedCoupon
+
+              LEFT JOIN users as customer ON customer.id = purchasedCoupon.user_id
+              LEFT JOIN product_orders as orders ON orders.id = purchasedCoupon.order_id
+              LEFT JOIN product_suborders as suborders ON suborders.id = purchasedCoupon.suborder_id
+
+              WHERE
+                  purchasedCoupon.product_id = ${product_id} AND
+                  purchasedCoupon.deleted_at IS NULL AND
+                  purchasedCoupon.coupon_lottery_draw_id IS NULL AND
+                  orders.deleted_at IS NULL AND
+                  orders.status != '12' AND
+                  suborders.deleted_at IS NULL AND
+                  suborders.status != '12'
+
+              GROUP BY purchasedCoupon.user_id
+      `;
+
+      let allPurchasedCouponCode = await couponNativeQuery(_rawSelect + []);
 
       let product = await Product.findOne({
         deletedAt: null,
         id: product_id
       });
+
       let price = product.price;
 
       await sails.getDatastore()
         .transaction(async (db) => {
           for (let i = 0; i < allPurchasedCouponCode.rows.length; i++) {
             let data = allPurchasedCouponCode.rows[i];
-            let count = data.id.split(',').length;
-            let amount = count * ((120 * price) / 100);
+            let count = parseInt(data.coupon_count, 10);
+            let amount = count * ((120.0 * price) / 100.0);
 
             let cashBackInfo = await CouponLotteryCashback.findOne({
               deletedAt: null,
@@ -64,8 +79,7 @@ module.exports = {
           }
         });
       return exits.success();
-    }
-    catch (error){
+    } catch (error) {
       console.log('Coupon Lottery Cashback failed to load!');
       if (error.data) {
         console.log(error.data);

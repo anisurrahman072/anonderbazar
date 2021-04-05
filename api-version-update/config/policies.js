@@ -90,6 +90,8 @@ module.exports.policies = {
     'byIds': true,
     'getAll': true,
     'destroy': ['isAuthorized', 'isAdmin'],
+    'uploadCarouselImage': ['isAuthorized', 'isAdmin'],
+    'deleteCarouselImage': ['isAuthorized', 'isAdmin'],
     'offerInsert': ['isAuthorized', 'isAdmin'],
     'offerProductUpdate': ['isAuthorized', 'isAdmin'],
     'updateOffer': ['isAuthorized', 'isAdmin'],

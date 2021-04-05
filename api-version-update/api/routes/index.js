@@ -23,6 +23,7 @@ const {paymentGatewayRoutes} = require('./payment_gateway');
 const {paymentAddressesRoute} = require('./payment-addresses');
 const {CouponLotteryRoute} = require('./couponLottery');
 const {warehouseRoute} = require('./warehouse');
+const {cmsRoutes} = require('./cms');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -49,5 +50,6 @@ exports.allRouter = {
   ...paymentGatewayRoutes,
   ...CouponLotteryRoute,
   ...paymentAddressesRoute,
-  ...warehouseRoute
+  ...warehouseRoute,
+  ...cmsRoutes
 };

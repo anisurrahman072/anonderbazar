@@ -11,8 +11,9 @@ import {environment} from "../../../../../../environments/environment";
     styleUrls: ['./cms-carousel.component.css']
 })
 export class CmsCarouselComponent implements OnInit {
-    editImage: string = '';
-    editImageMobile: string = '';
+    editImage: any = [];
+    editImageMobile: any = [];
+
     cmsCarouselData: any = [];
     isAddModalVisible = false;
     isEditModalVisible = false;
@@ -61,6 +62,7 @@ export class CmsCarouselComponent implements OnInit {
 
     //Event method for getting all the data for the page
     getData() {
+        this._isSpinning = true;
         this.cmsService.getBySectionName('CAROUSEL').subscribe(result => {
             if (result && result.length > 0) {
                 this.id = result[0].id;
@@ -68,6 +70,7 @@ export class CmsCarouselComponent implements OnInit {
                 this.cmsCarouselData.forEach(element => {
                     element.description = JSON.parse(element.description);
                 });
+                this._isSpinning = false;
                 console.log('this.cmsCarouselData', this.cmsCarouselData);
             } else {
                 this.id = undefined;
@@ -75,8 +78,8 @@ export class CmsCarouselComponent implements OnInit {
                 this.cmsCarouselData.forEach(element => {
                     element.description = JSON.parse(element.description);
                 });
+                this._isSpinning = false;
             }
-            console.log('this.cmsCarouselData', this.cmsCarouselData);
         });
     }
 
@@ -87,16 +90,13 @@ export class CmsCarouselComponent implements OnInit {
     //Method for showing the edit modal
     showEditModal = i => {
         this.currentCarouselId = i;
+        this.editImage = [];
         if (this.cmsCarouselData[i].image) {
-            this.editImage = this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image;
-        } else {
-            this.editImage = '';
+            this.editImage.push(this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image);
         }
-
+        this.editImageMobile = [];
         if (this.cmsCarouselData[i].image_mobile) {
-            this.editImageMobile = this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image_mobile;
-        } else {
-            this.editImageMobile = '';
+            this.editImageMobile.push(this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image_mobile);
         }
 
         let textDescription = this.cmsCarouselData[i].description;
@@ -110,16 +110,18 @@ export class CmsCarouselComponent implements OnInit {
     };
 
     handleModalOk = e => {
-        this.editImage = '';
-        this.editImageMobile = '';
+        this.editImage = [];
+        this.editImageMobile = [];
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
     };
 
     handleModalCancel = e => {
         this.resetForm(e);
-        this.editImage = '';
-        this.editImageMobile = '';
+
+        this.editImage = [];
+        this.editImageMobile = [];
+
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
     };
@@ -134,14 +136,7 @@ export class CmsCarouselComponent implements OnInit {
         }
 
         let formData = new FormData();
-        if (this.ImageFile) {
-            formData.append('hasDesktopImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        }
-        if (this.ImageForMobileFile) {
-            formData.append('hasMobileImage', 'true');
-            formData.append('image', this.ImageForMobileFile, this.ImageForMobileFile.name);
-        }
+        formData.append('id', this.id.toString());
 
         formData.append('title', value.title);
         formData.append('description', JSON.stringify({
@@ -151,8 +146,11 @@ export class CmsCarouselComponent implements OnInit {
             'linktext': value.linktext,
             'link': value.link
         }));
-        formData.append('id', this.id.toString());
 
+        if (this.ImageFile) {
+            formData.append('hasDesktopImage', 'true');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
+        }
 
         this.cmsService.customInsert(formData).subscribe(result => {
                 this.submitting = false;
@@ -188,22 +186,14 @@ export class CmsCarouselComponent implements OnInit {
             this.editValidateForm.controls[key].markAsDirty();
         }
 
-        console.log('this.editValidateForm', this.editValidateForm);
-
         if (this.editValidateForm.invalid) {
             return false;
         }
 
         let formData = new FormData();
-        if (this.ImageFile) {
-            formData.append('hasDesktopImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        }
-        if (this.ImageForMobileFile) {
-            formData.append('hasMobileImage', 'true');
-            formData.append('image', this.ImageForMobileFile, this.ImageForMobileFile.name);
-        }
 
+        formData.append('id', this.id.toString());
+        formData.append('dataValueId', this.currentCarouselId.toString());
         formData.append('title', value.title);
         formData.append('description', JSON.stringify({
             'short1': value.short1,
@@ -212,8 +202,11 @@ export class CmsCarouselComponent implements OnInit {
             'linktext': value.linktext,
             'link': value.link
         }));
-        formData.append('id', this.id.toString());
-        formData.append('dataValueId', this.currentCarouselId.toString());
+
+        if (this.ImageFile) {
+            formData.append('hasDesktopImage', 'true');
+            formData.append('image', this.ImageFile, this.ImageFile.name);
+        }
 
         this.cmsService.customUpdate(formData).subscribe(result => {
             this.cmsCarouselData[this.currentCarouselId] = result.data;
@@ -236,7 +229,21 @@ export class CmsCarouselComponent implements OnInit {
 
     //Method for removing the image
     onRemovedMobile(file: FileHolder) {
+        this._isSpinning = true;
         this.ImageForMobileFile = null;
+        this.cmsService.deleteCarouselImage(this.id.toString(), {
+            type: 'image_mobile',
+            dataValueId: this.currentCarouselId.toString()
+        })
+            .subscribe((result: any) => {
+                this.cmsCarouselData[this.currentCarouselId] = result.data;
+                this._notification.success('success', 'Carousel Update Succeeded');
+                this._isSpinning = false;
+                this.isEditModalVisible = false;
+            }, (error) => {
+                this._isSpinning = false;
+                this._notification.error('Ohpps!', 'There was a problem updating the content.');
+            });
     }
 
     //Method for storing image in variable
@@ -246,15 +253,38 @@ export class CmsCarouselComponent implements OnInit {
     };
 
     onBeforeUploadMobile = (metadata: UploadMetadata) => {
+        console.log('onBeforeUploadMobile');
         this.ImageForMobileFile = metadata.file;
+
+        this._isSpinning = true;
+        let formData = new FormData();
+        formData.append('dataValueId', this.currentCarouselId.toString());
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.cmsService.uploadCarouselMobileImage(this.id.toString(), formData)
+            .subscribe((result: any) => {
+                console.log('result', result);
+                this.cmsCarouselData[this.currentCarouselId] = result.data;
+                this._notification.success('success', 'Carousel Update Succeeded');
+                this._isSpinning = false;
+            }, (error) => {
+                this._isSpinning = false;
+                this._notification.error('Ohpps!', 'There was a problem updating the content.');
+            });
         return metadata;
     };
 
+    onUploadFinishedMobile(file: FileHolder) {
+        console.log('onUploadFinishedMobile', file);
+    }
+
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
-        this.ImageFile = null;
-        this.editImage = '';
         $event ? $event.preventDefault() : null;
+        this.ImageFile = null;
+        this.editImage = [];
+        this.editImageMobile = [];
+
         this.validateForm.reset();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsPristine();

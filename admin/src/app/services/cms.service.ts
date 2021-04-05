@@ -3,6 +3,7 @@ import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
+import {RequestOptionsArgs} from "@angular/http";
 
 @Injectable({
     providedIn: 'root'
@@ -46,11 +47,11 @@ export class CmsService {
     }
 
     getById(id): Observable<any> {
-        return this.http.get(this.EndPoint + '/' + id ).map(response => response);
+        return this.http.get(this.EndPoint + '/' + id).map(response => response);
     }
 
-    getByIds(ids: any){
-        return this.http.get(this.EndPoint + '/byIds?ids=' + JSON.stringify(ids) ).map(response => response);
+    getByIds(ids: any) {
+        return this.http.get(this.EndPoint + '/byIds?ids=' + JSON.stringify(ids)).map(response => response);
     }
 
     insert(data): Observable<any> {
@@ -89,14 +90,27 @@ export class CmsService {
 
     customUpdate(data): Observable<any> {
         return this.http
-            .post(this.EndPoint + '/customUpdate', data) //, {headers: headers})
-            .map(response => response);
+            .post(this.EndPoint + '/customUpdate', data);
     }
 
     customPostUpdate(data): Observable<any> {
+        // const headers = { 'Content-Type': 'multipart/form-data' };
+
         return this.http
             .post(this.EndPoint + '/customPostUpdate', data)
             .map(response => response);
+    }
+
+    deleteCarouselImage(id: string, data: any) {
+
+        return this.http
+            .put(this.EndPoint + '/deleteCarouselImage/' + id, data);
+    }
+
+    uploadCarouselMobileImage(id: string, data: any) {
+
+        return this.http
+            .put(this.EndPoint + '/uploadCarouselImage/' + id, data);
     }
 
     customDelete(data): Observable<any> {
