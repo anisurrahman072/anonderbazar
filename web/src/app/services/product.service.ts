@@ -170,4 +170,10 @@ export class ProductService {
             })
             .map(response => response);
     }
+
+    getAllByBrandId(brand_id: number): Observable<any>{
+        return this.http
+            .get(`${this.EndPoint}?where={"deletedAt":null,"brand_id":${brand_id} }`)
+            .map(response => response);
+    }
 }
