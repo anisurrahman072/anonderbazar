@@ -38,6 +38,11 @@ export class MenuComponent implements OnInit {
     favourites$: Observable<FavouriteProduct>;
     compare$: Observable<any>;
 
+    subSubCategoryList: any[];
+    mobileSubCategoryList: any[];
+    selectedSubSubCategoryId = null;
+    showSubSubCategoryList: boolean[];
+
     /*
     * constructor for MenuComponent
     */
@@ -111,6 +116,54 @@ export class MenuComponent implements OnInit {
         ele.checked = false;
     }
 
+
+    mobileCategoryClickEvent(category: any) {
+        if(category.id === this.selectedCategoryId){
+            this.mobileSubCategoryList = null;
+            this.selectedCategoryId = null;
+            this.subSubCategoryList = null;
+        }
+        else{
+            this.showSubSubCategoryList = [];
+            this.subSubCategoryList = null;
+            this.selectedCategoryId = category.id;
+            this.mobileSubCategoryList = category.subCategories;
+            this.mobileSubCategoryList.forEach(subCat => {
+                this.showSubSubCategoryList[subCat.id] = false;
+            });
+        }
+    }
+
+    subCategoryClickEvent(subCategory: any){
+        if(subCategory.id === this.selectedSubSubCategoryId){
+            this.subSubCategoryList = null;
+            this.selectedSubSubCategoryId = null;
+        }
+        else{
+            this.mobileSubCategoryList.forEach(subCat => {
+                this.showSubSubCategoryList[subCat.id] = false;
+            });
+            this.showSubSubCategoryList[subCategory.id] = true;
+
+            this.selectedSubSubCategoryId = subCategory.id;
+            this.categoryProductService.getSubcategoryByCategoryId(subCategory.id)
+                .subscribe(subSubCategory => {
+                    this.subSubCategoryList = subSubCategory;
+                    if(this.subSubCategoryList.length === 0){
+                        this.mobileSubCategoryList = null;
+                        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
+                            queryParams: {
+                                category: this.selectedCategoryId,
+                                sub: subCategory.id
+                            }
+                        });
+                    }
+                }, error => {
+                    console.log('Error while finding subSubCategory: ', error);
+                });
+        }
+    }
+
     //Call if change in category
     changeCurrentCategory(id: number, type: String, name: String) {
         this.filterUIService.changeCurrentCategories(id);
@@ -145,6 +198,17 @@ export class MenuComponent implements OnInit {
         this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
                 category: category.id,
+                sub: subCategory.id,
+                subsub: subSubCategory.id
+            }
+        });
+    }
+
+    navigateFromMobile(event, subCategory, subSubCategory){
+        this.mobileSubCategoryList = null;
+        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
+            queryParams: {
+                category: this.selectedCategoryId,
                 sub: subCategory.id,
                 subsub: subSubCategory.id
             }

@@ -291,17 +291,8 @@ button {
     transform: translateY(4px);
 }
 
-
-
-@media screen and (max-width: 767px) {
-    .mobile-menu{
-        display: none;
-    }
-
-    .mobile-bottom{
-        z-index: 1000;
-        display: block;
-        position: fixed;
-        bottom: 0px;
-    }
+.mobile-menu{
+    max-height: 90vh;
+    overflow-y: scroll;
 }
+

@@ -75,7 +75,7 @@
 <!-- mobile menu start -->
 <div class="mobile-menu">
     <nav>
-        <div class="con">
+        <!--<div class="con">
             <div class="mobile-nav"></div>
             <input id="responsive-menu" type="checkbox">
             <label for="responsive-menu">
@@ -96,7 +96,7 @@
                     <span class='badge badge-warning countLabel'> {{(compare$|async)?.length}} </span>
                 </a>
 
-                <!-- Button trigger modal -->
+                &lt;!&ndash; Button trigger modal &ndash;&gt;
                 <button type="button" (click)="showShoppingCartModal()" class="btn" data-toggle="modal">
                     <a class="cart">
                         <img src="assets/images/cart-black.svg" alt="cart">
@@ -128,28 +128,74 @@
                     <a href="#" [routerLink]="['/products/category/',category.id]" style="text-transform: capitalize;">{{category.name}}</a>
                 </li>
             </ul>
+        </div>-->
+        <div class="Category" style="display: flex; flex-direction: row; overflow-x: scroll; background-color: black;"
+             *ngIf="categoryList">
+            <div *ngFor='let category of categoryList' style="white-space: nowrap; padding: 5px;"
+                 (click)="mobileCategoryClickEvent(category)">
+                <p style="font-weight: bold; color: white !important;"> {{category.name}} </p>
+            </div>
+        </div>
+        <div *ngIf="mobileSubCategoryList" style="width: 100%; z-index: 1000">
+            <div *ngFor='let subCategory of mobileSubCategoryList'
+                 style="width: 100%; background-color: #ac1313; padding: 5px;">
+                <p style="background: none; border: none; width: 100%; text-align: left; color: white; font-weight: bold;"
+                   (click)="subCategoryClickEvent(subCategory)">
+                    {{subCategory.name}}
+                </p>
+
+                <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">
+                    <div *ngFor="let subSubCategory of subSubCategoryList" (click)="navigateFromMobile($event,subCategory,subSubCategory)">
+                        <a class="dropdown-item" href="#" [routerLink]="['/products/category/',subSubCategory.id]"
+                           style="margin-left: 10px; text-align: left; color: white;">
+                            {{subSubCategory.name}}
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
-</div>
 
-<div class="mobile-bottom">
-    <div class="row" style="background-color: white;">
-        <div class="mobile-cart">
-            Cart
-        </div>
-        <div class="mobile-category">
-            Category
-        </div>
-        <div class="mobile-logo">
-            Logo
-        </div>
-        <div class="mobile-offers">
-            Offers
-        </div>
-        <div class="mobile-account">
-            Account
+    <div class="mobile-bottom">
+        <div class="row" style="background-color: white; margin-left: 0px;margin-right: 0px;
+position: fixed; bottom: 0px; display: flex; flex-direction: row; justify-content: space-around; width: 100%; z-index: 1000; padding-top: 10px;
+-webkit-box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
+  -moz-box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
+  box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
+border-top-right-radius: 10px; border-top-left-radius: 10px; ">
+            <div (click)="showShoppingCartModal()" class="mobile-cart" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
+                <a>
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    <p>Cart</p>
+                </a>
+            </div>
+            <div class="mobile-category" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
+                <a routerLink="/products" >
+                    <i class="fa fa-list" aria-hidden="true"></i>
+                    <p>Category</p>
+                </a>
+            </div>
+            <div class="mobile-logo" style="display: flex; flex-direction: column; text-align: center; margin-top: -35px;">
+                <a href="#" routerLink="/">
+                    <img src="favicon.ico" alt="logo" style="background: white; border-radius: 50%; width: 60px; padding: 5px;">
+                </a>
+            </div>
+            <div class="mobile-offers" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
+                <a routerLink="/cms" style="outline: 0;">
+                    <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                    <p>Offers</p>
+                </a>
+            </div>
+            <div class="mobile-account" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
+                <a routerLink="/profile/orders" style="outline: 0;">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    <p>Account</p>
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+
 
 
