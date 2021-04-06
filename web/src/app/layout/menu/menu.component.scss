@@ -290,3 +290,18 @@ button {
     display: inline-block;
     transform: translateY(4px);
 }
+
+
+
+@media screen and (max-width: 767px) {
+    .mobile-menu{
+        display: none;
+    }
+
+    .mobile-bottom{
+        z-index: 1000;
+        display: block;
+        position: fixed;
+        bottom: 0px;
+    }
+}

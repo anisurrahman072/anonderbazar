@@ -297,3 +297,23 @@ form.advanced-search {
   vertical-align: top;
   margin-left: -10px;
 }
+
+.src-box{
+  border-left: 2px solid #c60505;
+  border-top: 2px solid #c60505;
+  border-bottom: 2px solid #c60505;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.search-icon{
+  background-color: #c60505;
+  display: flex;
+  align-items: center;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.icon{
+  color: white;
+}
