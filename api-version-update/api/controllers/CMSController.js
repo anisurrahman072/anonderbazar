@@ -696,33 +696,26 @@ module.exports = {
 
       let indexedDataValue = dataValue[dataValueIndex];
 
-      if (req.body.hasDesktopImage === 'true' || req.body.hasMobileImage === 'true') {
+      if (req.body.hasDesktopImage === 'true') {
         let newDesktopImagePath = '';
-        let newMobileImagePath = '';
         const uploaded = await uploadImages(req.file('image'));
 
         if (uploaded.length === 0) {
           return res.badRequest('No file was uploaded');
         }
 
-        if (req.body.hasDesktopImage === 'true' && req.body.hasMobileImage === 'true') {
-          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-          if (typeof uploaded[1] !== 'undefined') {
-            const newPathMobile = uploaded[1].fd.split(/[\\//]+/).reverse()[0];
-            newMobileImagePath = '/' + newPathMobile;
-          }
-        } else if (req.body.hasDesktopImage === 'true') {
-          newDesktopImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-        } else if (req.body.hasMobileImage === 'true') {
-          newMobileImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        let mobileImage = indexedDataValue.image_mobile ? indexedDataValue.image_mobile : '';
+        if (req.body.isMobileImageRemoved === 'true') {
+          mobileImage = '';
         }
 
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
           image: newDesktopImagePath,
-          image_mobile: newMobileImagePath
+          image_mobile: mobileImage
         };
 
         await CMS.updateOne({id: cms.id}).set({
@@ -736,11 +729,21 @@ module.exports = {
         });
 
       } else {
+        let desktopImage = indexedDataValue.image;
+        if (req.body.isDesktopImageRemoved === 'true') {
+            desktopImage = '';
+        }
+
+        let mobileImage = indexedDataValue.image_mobile;
+        if (req.body.isMobileImageRemoved === 'true') {
+          mobileImage = '';
+        }
+
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
-          image: indexedDataValue.image,
-          image_mobile: indexedDataValue.image_mobile
+          image: desktopImage,
+          image_mobile: mobileImage
         };
 
         await CMS.updateOne({id: cms.id}).set({

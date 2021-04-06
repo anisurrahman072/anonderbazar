@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {CmsService} from '../../../../../services/cms.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FileHolder, UploadMetadata} from 'angular2-image-upload';
+import {FileHolder, ImageUploadComponent, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../../environments/environment";
 
@@ -11,6 +11,10 @@ import {environment} from "../../../../../../environments/environment";
     styleUrls: ['./cms-carousel.component.css']
 })
 export class CmsCarouselComponent implements OnInit {
+    @ViewChild('desktopImageUploadCreate') desktopImageUpload: ImageUploadComponent;
+    @ViewChild('desktopImageUploadEdit') desktopImageUploadEdit: ImageUploadComponent;
+    @ViewChild('mobileImageUploadEdit') mobileImageUpload: ImageUploadComponent;
+
     editImage: any = [];
     editImageMobile: any = [];
 
@@ -29,6 +33,9 @@ export class CmsCarouselComponent implements OnInit {
 
     currentCarouselId: any;
     submitting: boolean = false;
+
+    isMobileImageRemoved: boolean = false;
+    isDesktopImageRemoved: boolean = false;
 
     constructor(
         private cmsService: CmsService,
@@ -90,6 +97,8 @@ export class CmsCarouselComponent implements OnInit {
     //Method for showing the edit modal
     showEditModal = i => {
         this.currentCarouselId = i;
+        this.isMobileImageRemoved = false;
+        this.isDesktopImageRemoved = false;
         this.editImage = [];
         if (this.cmsCarouselData[i].image) {
             this.editImage.push(this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image);
@@ -98,6 +107,8 @@ export class CmsCarouselComponent implements OnInit {
         if (this.cmsCarouselData[i].image_mobile) {
             this.editImageMobile.push(this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image_mobile);
         }
+        this.desktopImageUploadEdit.deleteAll();
+        this.mobileImageUpload.deleteAll();
 
         let textDescription = this.cmsCarouselData[i].description;
         this.cmsCarouselData[i]['short1'] = textDescription.short1;
@@ -110,10 +121,12 @@ export class CmsCarouselComponent implements OnInit {
     };
 
     handleModalOk = e => {
+
         this.editImage = [];
         this.editImageMobile = [];
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
+
     };
 
     handleModalCancel = e => {
@@ -206,6 +219,12 @@ export class CmsCarouselComponent implements OnInit {
         if (this.ImageFile) {
             formData.append('hasDesktopImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
+        } else if (this.isDesktopImageRemoved) {
+            formData.append('isDesktopImageRemoved', 'true');
+        }
+
+        if(this.isMobileImageRemoved){
+            formData.append('isMobileImageRemoved', 'true');
         }
 
         this.cmsService.customUpdate(formData).subscribe(result => {
@@ -225,25 +244,27 @@ export class CmsCarouselComponent implements OnInit {
     //Method for removing the image
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
+        this.isDesktopImageRemoved = true;
     }
 
     //Method for removing the image
     onRemovedMobile(file: FileHolder) {
-        this._isSpinning = true;
+        // this._isSpinning = true;
         this.ImageForMobileFile = null;
-        this.cmsService.deleteCarouselImage(this.id.toString(), {
-            type: 'image_mobile',
-            dataValueId: this.currentCarouselId.toString()
-        })
-            .subscribe((result: any) => {
-                this.cmsCarouselData[this.currentCarouselId] = result.data;
-                this._notification.success('success', 'Carousel Update Succeeded');
-                this._isSpinning = false;
-                this.isEditModalVisible = false;
-            }, (error) => {
-                this._isSpinning = false;
-                this._notification.error('Ohpps!', 'There was a problem updating the content.');
-            });
+        this.isMobileImageRemoved = true;
+        /*        this.cmsService.deleteCarouselImage(this.id.toString(), {
+                    type: 'image_mobile',
+                    dataValueId: this.currentCarouselId.toString()
+                })
+                    .subscribe((result: any) => {
+                        this.cmsCarouselData[this.currentCarouselId] = result.data;
+                        this._notification.success('success', 'Carousel Update Succeeded');
+                        this._isSpinning = false;
+                        this.isEditModalVisible = false;
+                    }, (error) => {
+                        this._isSpinning = false;
+                        this._notification.error('Ohpps!', 'There was a problem updating the content.');
+                    });*/
     }
 
     //Method for storing image in variable
@@ -293,6 +314,7 @@ export class CmsCarouselComponent implements OnInit {
         for (const key in this.editValidateForm.controls) {
             this.editValidateForm.controls[key].markAsPristine();
         }
+
     }
 
     //Event method for setting up form in validation

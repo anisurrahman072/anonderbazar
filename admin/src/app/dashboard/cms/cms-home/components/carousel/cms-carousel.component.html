@@ -37,7 +37,7 @@
 </div>
 <nz-modal [nzFooter]="null"
           [nzVisible]="isAddModalVisible"
-          [nzTitle]="'Create Modal'"
+          [nzTitle]="'Create Carousel Modal'"
           nzWidth="960"
           [nzContent]="modalContent"
           (nzOnCancel)="handleModalCancel($event)"
@@ -133,8 +133,9 @@
                         <label>Image</label>
                     </div>
                     <div nz-col [nzSpan]="12">
-                        <image-upload [max]="1"
+                        <image-upload #desktopImageUploadCreate [max]="1"
                                       (removed)="onRemoved($event)"
+                                      [maxFileSize]="524288"
                                       [extensions]="['jpeg','png', 'jpg', 'webp']"
                                       [beforeUpload]="onBeforeUpload"></image-upload>
                         <div *ngIf="!ImageFile">
@@ -161,7 +162,7 @@
 </nz-modal>
 <nz-modal [nzFooter]="null" nzWidth="960"
           [nzVisible]="isEditModalVisible"
-          [nzTitle]="'Edit Modal'"
+          [nzTitle]="'Edit Carousel Modal'"
           [nzContent]="editmodalContent"
           (nzOnCancel)="handleModalCancel($event)"
           (nzOnOk)="handleModalOk($event)">
@@ -257,10 +258,13 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <image-upload
-                                [uploadedFiles]="editImage"
-                                [max]="1" (removed)="onRemoved($event)"
-                                [extensions]="['jpeg','png', 'jpg', 'webp']"
-                                [beforeUpload]="onBeforeUpload"
+                            #desktopImageUploadEdit
+                            [uploadedFiles]="editImage && editImage.length ? editImage: ''"
+                            [max]="1"
+                            (removed)="onRemoved($event)"
+                            [maxFileSize]="524288"
+                            [extensions]="['jpeg','png', 'jpg', 'webp']"
+                            [beforeUpload]="onBeforeUpload"
                         ></image-upload>
                         <div *ngIf="!ImageFile">
                             Please upload an image here!
@@ -273,11 +277,14 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <image-upload
-                                [uploadedFiles]="editImageMobile"
-                                [max]="1" (removed)="onRemovedMobile($event)"
-                                [extensions]="['jpeg','png', 'jpg', 'webp']"
-                                [beforeUpload]="onBeforeUploadMobile"
-                                (uploadFinished)="onUploadFinishedMobile($event)"
+                            #mobileImageUploadEdit
+                            [uploadedFiles]="editImageMobile && editImageMobile.length ? editImageMobile: ''"
+                            [max]="1"
+                            (removed)="onRemovedMobile($event)"
+                            [extensions]="['jpeg','png', 'jpg', 'webp']"
+                            [beforeUpload]="onBeforeUploadMobile"
+                            [maxFileSize]="524288"
+                            (uploadFinished)="onUploadFinishedMobile($event)"
                         ></image-upload>
                         <div *ngIf="!ImageForMobileFile">
                             Please upload an image here!
