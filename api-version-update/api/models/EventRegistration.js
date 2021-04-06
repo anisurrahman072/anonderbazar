@@ -44,4 +44,3 @@ module.exports = {
   tableName: 'event_registration',
 
 };
-

@@ -24,8 +24,6 @@ module.exports = {
     },
   },
   tableName: 'event_price',
-  /*  autoCreatedAt: true,
-    autoUpdatedAt: true,
-    autoDeletedAt: true,*/
+
 };
 
