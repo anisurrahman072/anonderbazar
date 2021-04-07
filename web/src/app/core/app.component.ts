@@ -27,7 +27,6 @@ import {LoaderService} from "../services/ui/loader.service";
 import {NotificationsService} from "angular2-notifications";
 import {Subscription} from "rxjs/Subscription";
 
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',

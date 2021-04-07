@@ -1,6 +1,5 @@
 import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
-import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -94,7 +93,6 @@ if (environment.production) {
         EffectsModule.forRoot(effects),
         StoreModule.forFeature('home', reducers),
         EffectsModule.forFeature(effects),
-        StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
         SharedModule
