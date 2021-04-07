@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {AppSettings} from "../../../../config/app.config";
-import {SwiperComponent, SwiperDirective} from "ngx-swiper-wrapper";
+// import {SwiperComponent, SwiperDirective} from "ngx-swiper-wrapper";
 
 @Component({
     selector: 'coupon-product-banners',
@@ -11,11 +11,11 @@ export class CouponBannersComponent implements OnInit {
     @Input() bannerImages: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
-    @ViewChild(SwiperComponent)
+/*    @ViewChild(SwiperComponent)
     componentRef: SwiperComponent;
 
     @ViewChild(SwiperDirective)
-    directiveRef: SwiperDirective;
+    directiveRef: SwiperDirective;*/
 
     activeSlideIndex = 0;
     myInterval = 1500;

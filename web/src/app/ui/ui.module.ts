@@ -1,7 +1,6 @@
 import {ImageUploadModule} from "angular2-image-upload";
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {SwiperModule} from "ngx-swiper-wrapper";
 import {AccordionModule} from "ngx-bootstrap/accordion";
 import {ImageZoomModule} from "angular2-image-zoom";
 import {
@@ -30,7 +29,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
 @NgModule({
     imports: [
         CommonModule,
-        SwiperModule,
         FormsModule,
         ImageZoomModule,
         TabsModule.forRoot(),
@@ -58,7 +56,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        SwiperModule,
         ImageZoomModule,
         TabsModule,
         ButtonsModule,
@@ -77,7 +74,6 @@ import {NgSelectModule} from "@ng-select/ng-select";
         ImageUploadModule,
         NgSelectModule,
     ],
-    // declarations: [],
     providers: []
 })
 export class UiModule {

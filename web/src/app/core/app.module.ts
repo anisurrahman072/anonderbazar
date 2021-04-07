@@ -3,7 +3,6 @@ import {ErrorHandler, NgModule} from '@angular/core';
 import {StoreDevtoolsModule, StoreDevtoolsOptions} from '@ngrx/store-devtools';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import {SwiperModule} from "ngx-swiper-wrapper";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HeaderComponent} from "../layout/header/header.component";
@@ -47,7 +46,6 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {LoaderService} from "../services/ui/loader.service";
 import {FormValidatorService} from "../services/validator/form-validator.service";
 import {environment} from "../../environments/environment";
-import {JasperoAlertsModule} from "@jaspero/ng2-alerts";
 import {JwtTokenInterceptor} from "../http-interceptors/Jwt-Token-Interceptor";
 import {JwtHelper} from "angular2-jwt";
 import {LocalStorageService} from "../services/local-storage.service";
@@ -99,9 +97,7 @@ if (environment.production) {
         StoreDevtoolsModule.instrument(<StoreDevtoolsOptions>{maxAge: 25}),
         NgAisModule.forRoot(),
         BrowserTransferStateModule,
-        SharedModule,
-        SwiperModule,
-        JasperoAlertsModule,
+        SharedModule
     ],
     providers: [
         {

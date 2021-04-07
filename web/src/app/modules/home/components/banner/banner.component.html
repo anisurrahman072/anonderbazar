@@ -1,7 +1,6 @@
 <section id="banner-section">
     <div class="row" style="">
         <div class="col-sm-12 col-md-10 col-lg-10 col-xl-10 carousel-section">
-
             <ngx-carousel [inputs]="carouselBanner" style="margin-bottom: 0px;">
                 <ngx-item NgxCarouselItem class="bannerStyle" *ngFor="let slide of carouselBannerItems" style="">
                     <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="">
@@ -13,10 +12,9 @@
                 <button NgxCarouselPrev class='leftRs'>&lt;</button>
                 <button NgxCarouselNext class='rightRs'>&gt;</button>
             </ngx-carousel>
-
         </div>
         <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 offer-section" style="">
-            <div class="" style="height: 100%;" class="image-control">
+            <div style="height: 100%;" class="image-control">
                 <div class="image-contain">
                     <div *ngFor="let data of carouselOffers">
                         <a routerLink="/cms/cms-details/{{data.id}}">

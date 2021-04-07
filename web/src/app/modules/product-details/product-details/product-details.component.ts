@@ -4,7 +4,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {AlertsService} from "@jaspero/ng2-alerts";
 import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {FavouriteProduct, Product} from "../../../models";
@@ -101,7 +100,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private title: Title,
         private meta: Meta,
         private _notify: NotificationsService,
-        private _alert: AlertsService,
         public _progress: NgProgress,
         private store: Store<fromStore.HomeState>,
         private productVariantService: ProductVariantService,

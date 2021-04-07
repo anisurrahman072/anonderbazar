@@ -4,7 +4,6 @@ import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {AlertsService} from "@jaspero/ng2-alerts";
 import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {ToastrService} from "ngx-toastr";
@@ -54,7 +53,6 @@ export class ProductSpecialComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private _notify: NotificationsService,
-        private _alert: AlertsService,
         public _progress: NgProgress,
         private cmsService: CmsService,
         private store: Store<fromStore.HomeState>,

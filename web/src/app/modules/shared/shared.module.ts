@@ -19,9 +19,7 @@ import {LoginMinComponent} from "./components/login-min/login-min.component";
 import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.component";
 import {MaterialModule} from "../../core/material.module";
 import {OrderStatusPipe} from "../../pipes/order-status";
-import { SwiperModule } from "ngx-swiper-wrapper";
 import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
-
 
 const sharedComponents = [
     ProductItemComponent,
@@ -60,7 +58,6 @@ const sharedComponents1 = [
     SuborderInvoiceComponent,
     OrderInvoiceComponent,
     ProductItemCompareComponent,
-    SwiperModule
 ];
 
 @NgModule({
@@ -70,7 +67,6 @@ const sharedComponents1 = [
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
-        SwiperModule
     ],
     declarations: sharedComponents,
     exports: sharedComponents1

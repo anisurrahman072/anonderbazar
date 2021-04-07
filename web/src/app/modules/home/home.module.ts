@@ -29,7 +29,7 @@ import {SharedModule} from "../shared/shared.module";
 import {SimilarProductComponent} from "./components/similar-product/similar-product.component";
 import {ProductPromoComponent} from "./components/product-promo/product-promo.component";
 import {ProductSpecialComponent} from "./components/product-special/product-special.component";
-import {SWIPER_CONFIG, SwiperConfigInterface} from "ngx-swiper-wrapper";
+// import {SWIPER_CONFIG, SwiperConfigInterface} from "ngx-swiper-wrapper";
 import {RightSideFilterSearchComponent} from "../category-nsearch/category-page/right-side-filter-search/right-side-filter-search.component";
 import {NgxPaginationModule} from "ngx-pagination";
 import {ModalModule} from 'ngx-bootstrap/modal';
@@ -49,93 +49,9 @@ const routes: Routes = [
             title: "Home"
         }
     },
-  /*  {
-        path: "cms",
-        component: CmsPageComponent,
-        data: {
-            title: "OFFERS"
-        }
-    },
-    {
-        path: "cms/none",
-        component: CmsPageComponent,
-        data: {
-            title: "CMS"
-        }
-    },
-    {
-        path: "cms-details/:id",
-        component: CmsDetailsPageComponent,
-        data: {
-            title: "Cms Details"
-        }
-    },
-*/
-/*    {
-        path: "product-details/:id",
-        component: ProductDetailsComponent,
-        data: {
-            title: "Product Details"
-        }
-    },*/
-/*    {
-        path: "cart",
-        component: ShoppingCartComponent,
-        data: {
-            title: "Cart"
-        }
-    },*/
-/*    {
-        path: "request",
-        component: RequestPageComponent,
-        data: {
-            title: "Request"
-        }
-    },*/
-/*    {
-        path: "compare",
-        component: ComparePageComponent,
-        data: {
-            title: "Compare"
-        }
-    }*/
-    /*    {
-            path: "products",
-            component: CategoryPageComponent,
-            data: {
-                title: "Products"
-            }
-        },*/
-/*    {
-        path: "categories",
-        component: CategoryListComponent,
-        data: {
-            title: "Categories"
-        }
-    },*/
-    /*    {
-            path: "products/:type/:id",
-            component: CategoryPageComponent,
-            data: {
-                title: "Products"
-            }
-        },*/
-    /*    {
-            path: "checkout",
-            component: CheckoutPageComponent,
-            data: {
-                title: "Checkout"
-            }
-        },*/
-    /*    {
-            path: "lottery",
-            component: LotteryComponent,
-            data: {
-                title: "Lottery"
-            }
-        }*/
 ];
 
+/*
 export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     direction: "horizontal",
     slidesPerView: "auto",
@@ -158,6 +74,7 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         }
     }
 };
+*/
 
 @NgModule({
     imports: [
@@ -211,10 +128,10 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         RecentlyViewesComponent
     ],
     providers: [
-        {
+        /*{
             provide: SWIPER_CONFIG,
             useValue: DEFAULT_SWIPER_CONFIG
-        }
+        }*/
     ]
 })
 export class HomeModule {

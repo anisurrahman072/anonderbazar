@@ -1,13 +1,13 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {NgxCarousel} from 'ngx-carousel';
 
-import {
+/*import {
     SwiperComponent,
     SwiperDirective
-} from "ngx-swiper-wrapper";
+} from "ngx-swiper-wrapper";*/
 
 @Component({
     selector: 'home-banner',
@@ -22,11 +22,11 @@ export class BannerComponent implements OnInit {
     // Swiper config
     // public config: SwiperConfigInterface;
 
-    @ViewChild(SwiperComponent)
+/*    @ViewChild(SwiperComponent)
     componentRef: SwiperComponent;
 
     @ViewChild(SwiperDirective)
-    directiveRef: SwiperDirective;
+    directiveRef: SwiperDirective;*/
 
     cmsBANNERData: any;
     cmsHEADERData: any;
