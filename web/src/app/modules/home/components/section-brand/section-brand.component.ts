@@ -16,7 +16,7 @@ export class SectionBrandComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.brandService.getAll()
+        this.brandService.getAll(true)
             .subscribe(brands => {
                 brands.map(brand => {
                     this.productService.getAllByBrandId(brand.id)

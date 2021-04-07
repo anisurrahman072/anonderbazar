@@ -12,8 +12,12 @@ export class BrandService {
   constructor(private http: HttpClient) {
   }
 
-  getAll(): Observable<any> {
-    return this.http.get(this.EndPoint + '?where={"deletedAt":null}')
+  getAll(frontEndPosition?: any): Observable<any> {
+    let _where = `?where={"deletedAt":null}`;
+    if(frontEndPosition){
+      _where += `&sort=frontend_position%20ASC`
+    }
+    return this.http.get(this.EndPoint + `${_where}`)
       .map((response) => response);
   }
 
