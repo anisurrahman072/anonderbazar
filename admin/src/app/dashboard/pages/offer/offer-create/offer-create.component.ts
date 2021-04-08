@@ -65,6 +65,7 @@ _isSpinning: any = false;
       this.validateForm = this.fb.group({
           title: ['', [Validators.required]],
           offer_type: ['', [Validators.required]],
+          frontend_position: ['', ''],
           link: ['', ''],
           description: ['', [Validators.required]],
           showHome: ['',[]],
@@ -93,6 +94,10 @@ _isSpinning: any = false;
     formData.append('description', value.description);
     formData.append('showInCarousel', showInCarousel);
     formData.append('showInHome', showInHome);
+    if(value.frontend_position){
+        console.log('hhh', value.frontend_position);
+        formData.append('frontend_position', value.frontend_position);
+    }
     if (this.ImageFile) {
         formData.append('hasImage', 'true');
         formData.append('image', this.ImageFile, this.ImageFile.name);

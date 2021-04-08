@@ -29,7 +29,7 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
     ImageFileForMobile: File;
     BannerImageFile: File;
 
-    isLoading: boolean = true;
+    isLoading: boolean;
 
     constructor(
         private router: Router,
@@ -55,10 +55,11 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
 
         this.sub = this.route.params.subscribe((params: any) => {
             this.id = +params['id'];
-            this.isLoading = true;
             this.categoryProductService.getById(this.id)
                 .subscribe((result: any) => {
                     this.data = result;
+                    this.isLoading = false;
+
                     this.validateForm.patchValue(this.data);
 
                     this.oldImages = [];
@@ -68,7 +69,9 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
 
                     this.existingMobileImage = [];
                     if (this.data && this.data.mobile_image) {
+
                         this.existingMobileImage.push(this.IMAGE_ENDPOINT + this.data.mobile_image);
+
                     }
 
                     this.existingBannerImage = [];
@@ -76,7 +79,6 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
                         this.existingBannerImage.push(this.IMAGE_ENDPOINT + this.data.banner_image);
                     }
 
-                    this.isLoading = false;
                 }, (err) => {
                     this.isLoading = false;
                 });

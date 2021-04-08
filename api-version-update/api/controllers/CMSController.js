@@ -150,6 +150,10 @@ module.exports = {
             data_value: data_value
           };
 
+          if(body.frontend_position){
+            _payload.frontend_position = body.frontend_position;
+          }
+
           if (req.body.user_id) {
             _payload.user_id = req.body.user_id;
           }
@@ -183,6 +187,10 @@ module.exports = {
 
         if (req.body.user_id) {
           _payload.user_id = req.body.user_id;
+        }
+
+        if(req.body.frontend_position){
+          _payload.frontend_position = req.body.frontend_position;
         }
 
         let data = await CMS.create(_payload).fetch();
@@ -234,6 +242,9 @@ module.exports = {
         id: body.id
       });
 
+      let showInCarousel = body.showInCarousel ? body.showInCarousel : prevOfferData.data_value[0].showInCarousel;
+      let showInHome = body.showInHome ? body.showInHome : prevOfferData.data_value[0].showInHome;
+
       if (body.hasImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
@@ -254,6 +265,8 @@ module.exports = {
               link: body.link,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
+              showInCarousel: showInCarousel,
+              showInHome: showInHome,
             }
           ];
         } else {
@@ -263,7 +276,9 @@ module.exports = {
               description: body.description,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
-              image: body.image
+              image: body.image,
+              showInCarousel: showInCarousel,
+              showInHome: showInHome,
             }
           ];
         }
@@ -274,6 +289,10 @@ module.exports = {
           sub_section: body.subsection,
           data_value: data_value
         };
+
+        if(body.frontend_position){
+          _payload.frontend_position = parseInt(body.frontend_position);
+        }
 
         if (body.user_id) {
           _payload.user_id = body.user_id;
@@ -295,6 +314,8 @@ module.exports = {
               image: prevOfferData.data_value[0].image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
+              showInCarousel: showInCarousel,
+              showInHome: showInHome,
             }
           ];
         } else {
@@ -305,6 +326,8 @@ module.exports = {
               image: prevOfferData.data_value[0].image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
+              showInCarousel: showInCarousel,
+              showInHome: showInHome,
             }
           ];
         }
@@ -318,6 +341,10 @@ module.exports = {
 
         if (body.user_id) {
           _payload.user_id = body.user_id;
+        }
+
+        if(body.frontend_position){
+          _payload.frontend_position = parseInt(body.frontend_position);
         }
 
         let data = await CMS.updateOne({id: body.id}).set(_payload);
@@ -344,47 +371,47 @@ module.exports = {
     try {
       if (req.body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(), async (err, uploaded) => {
-            if (err) {
-              return res.json(err.status, {err: err});
-            }
-            if (uploaded.length === 0) {
-              return res.badRequest('No file was uploaded');
-            }
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            let data_value = [
-              {
-                title: req.body.title,
-                description: req.body.description,
-                slug: (req.body.title.toLowerCase()).replace(' ', '_'),
-                image: '/' + newPath
-              }
-            ];
-
-            let _payload = {
-              page: 'POST',
-              section: req.body.section,
-              sub_section: req.body.sub_section,
-              data_value: data_value
-            };
-
-            if (req.body.user_id) {
-              _payload.user_id = req.body.user_id;
-            }
-
-            let data = await CMS.create(_payload).fetch();
-            if (data) {
-              return res.json({
-                success: true,
-                message: 'cms updated successfully',
-                data: data
-              });
-            } else {
-              return res.json(400, {
-                success: false,
-                message: 'cms updated failed'
-              });
-            }
+          if (err) {
+            return res.json(err.status, {err: err});
           }
+          if (uploaded.length === 0) {
+            return res.badRequest('No file was uploaded');
+          }
+          const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+          let data_value = [
+            {
+              title: req.body.title,
+              description: req.body.description,
+              slug: (req.body.title.toLowerCase()).replace(' ', '_'),
+              image: '/' + newPath
+            }
+          ];
+
+          let _payload = {
+            page: 'POST',
+            section: req.body.section,
+            sub_section: req.body.sub_section,
+            data_value: data_value
+          };
+
+          if (req.body.user_id) {
+            _payload.user_id = req.body.user_id;
+          }
+
+          let data = await CMS.create(_payload).fetch();
+          if (data) {
+            return res.json({
+              success: true,
+              message: 'cms updated successfully',
+              data: data
+            });
+          } else {
+            return res.json(400, {
+              success: false,
+              message: 'cms updated failed'
+            });
+          }
+        }
         );
       } else {
         let data_value = [
@@ -731,7 +758,7 @@ module.exports = {
       } else {
         let desktopImage = indexedDataValue.image;
         if (req.body.isDesktopImageRemoved === 'true') {
-            desktopImage = '';
+          desktopImage = '';
         }
 
         let mobileImage = indexedDataValue.image_mobile;

@@ -26,7 +26,7 @@ export class OfferComponent implements OnInit {
     //Event method for getting all the data for the page
     ngOnInit() {
         this.cmsService
-            .getBySubSectionName('POST', 'HOME', 'PARENTOFFER')
+            .getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)
             .subscribe(result => {
 
                 this.homeOfferData = result;
@@ -34,7 +34,8 @@ export class OfferComponent implements OnInit {
                     return offer.data_value[0].showInCarousel === 'true';
                 });
 
-                this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0))
+                this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0
+                && element.data_value[0].showInHome === "true"))
                     .forEach(element => {
 
                         if (element.data_value[0].offers && element.data_value[0].offers.length > 0) {

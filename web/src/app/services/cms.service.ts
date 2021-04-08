@@ -41,9 +41,13 @@ export class CmsService {
             .map(response => response[0]);
     }
 
-    getBySubSectionName(pageName: String, sectionName: String, subSectionName: any): Observable<any> {
+    getBySubSectionName(pageName: String, sectionName: String, subSectionName: any, frontend_position?:boolean): Observable<any> {
 
-        return this.http.get(this.EndPoint + `?where={"page":"${pageName}","section":"${sectionName}","sub_section":"${subSectionName}","deletedAt":null}&populate=false`)
+        let _where = `?where={"page":"${pageName}","section":"${sectionName}","sub_section":"${subSectionName}","deletedAt":null}&populate=false`
+        if(frontend_position){
+            _where += `&sort=frontend_position%20ASC`
+        }
+        return this.http.get(this.EndPoint + _where)
             .map(response => response);
     }
 
