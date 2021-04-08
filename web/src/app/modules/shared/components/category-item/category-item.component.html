@@ -3,7 +3,7 @@
         <div class="cate-img mb-4" *ngIf="category.image; else mainImageTmp">
             <img *ngIf="category.mobile_image; else mobileImageTmp"
                  srcset="{{IMAGE_ENDPOINT +  category.mobile_image }} 223w, {{IMAGE_ENDPOINT + category.image}} 294w"
-                 sizes="(max-width: 500px) 223px, 294px"
+
                  src="{{IMAGE_ENDPOINT + category?.image}}" alt="{{category.name}}">
             <ng-template #mobileImageTmp>
                 <img src="{{IMAGE_ENDPOINT + category?.image}}" alt="{{category.name}}">
