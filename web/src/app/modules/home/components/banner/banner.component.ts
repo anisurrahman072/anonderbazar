@@ -72,14 +72,14 @@ export class BannerComponent implements OnInit {
             easing: 'ease-out',
         }
 
-        this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER')
+        this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)
             .subscribe((offers) => {
                 let cnt = 0;
                 this.carouselOffers = offers.filter((offer) => {
                     return (offer && offer.data_value && Array.isArray(offer.data_value) &&
                         offer.data_value.length > 0 && offer.data_value[0].products &&
                         offer.data_value[0].products.length > 0 && offer.data_value[0].showInCarousel === 'true')
-                }).reverse();
+                });
 
                 this.carouselOffers = this.carouselOffers.filter((offer) => {
                     if(cnt < 3){

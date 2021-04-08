@@ -55,8 +55,8 @@ export class OfferEditComponent implements OnInit {
     ImageFileEdit: any;
     data: any;
 
-    isShowHomepage: boolean = false;
-    isShowCarousel: boolean = false;
+    isShowHomepage: boolean;
+    isShowCarousel: boolean;
 
     constructor(
         private router: Router,
@@ -73,6 +73,7 @@ export class OfferEditComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             offer_type: ['', [Validators.required]],
+            frontend_position: ['', ''],
             link: ['', ''],
             description: ['', [Validators.required]],
             showHome: ['',[]],
@@ -83,19 +84,22 @@ export class OfferEditComponent implements OnInit {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.cmsService.getById(this.id)
                 .subscribe(result => {
-                    console.log(result);
                     this.ImageFileEdit = [];
                     this.data = result;
 
                     let showHome = this.data.data_value[0].showInHome === 'true' ? true : false;
                     let showCarousel = this.data.data_value[0].showInCarousel === 'true' ? true : false;
+                    this.isShowHomepage = showHome;
+                    this.isShowCarousel = showCarousel;
+
                     let payload = {
                         title: this.data.data_value[0].title,
                         offer_type: this.data.sub_section,
                         link: this.data.data_value[0].link,
                         description: this.data.data_value[0].description,
                         showHome: showHome,
-                        showCarousel: showCarousel
+                        showCarousel: showCarousel,
+                        frontend_position: this.data.frontend_position
                     };
                     this.validateForm.patchValue(payload);
                     if (this.data && this.data.data_value[0].image) {
@@ -118,8 +122,8 @@ export class OfferEditComponent implements OnInit {
         }
 
         let formData = new FormData();
-        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
-        let showInHome = this.isShowHomepage ? 'true' : 'false';
+        let showInCarousel = this.isShowCarousel ? "true" : "false";
+        let showInHome = this.isShowHomepage ? "true" : "false";
         formData.append('id', this.id);
         formData.append('title', value.title);
         formData.append('subsection', value.offer_type);
@@ -127,6 +131,7 @@ export class OfferEditComponent implements OnInit {
         formData.append('description', value.description);
         formData.append('showInCarousel', showInCarousel);
         formData.append('showInHome', showInHome);
+        formData.append('frontend_position', value.frontend_position);
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);

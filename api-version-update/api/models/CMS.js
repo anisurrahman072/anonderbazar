@@ -26,7 +26,8 @@ module.exports = {
     frontend_position: {
       type: 'number',
       columnType: 'integer',
-      defaultsTo: 111
+      required: false,
+      defaultsTo: 111,
     },
     data_value: {
       type: 'json',
