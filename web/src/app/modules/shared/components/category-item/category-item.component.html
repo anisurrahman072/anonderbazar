@@ -1,11 +1,23 @@
 <div class="category-contant">
-  <a routerLink="/products/category/{{category.id}}">
-      <div class="cate-img mb-4">
-          <img src="{{IMAGE_ENDPOINT + category?.image}}" alt="{{category.name}}">
-      </div>
-      <div class="cate-text text-center">
-         <h6>{{category.name}}</h6>
-      </div>
-  </a> 
+    <a routerLink="/products/category/{{category.id}}">
+        <div class="cate-img mb-4" *ngIf="category.image; else mainImageTmp">
+            <img *ngIf="category.mobile_image; else mobileImageTmp"
+                 srcset="{{IMAGE_ENDPOINT +  category.mobile_image }} 223w, {{IMAGE_ENDPOINT + category.image}} 294w"
+                 sizes="(max-width: 500px) 223px, 294px"
+                 src="{{IMAGE_ENDPOINT + category?.image}}" alt="{{category.name}}">
+            <ng-template #mobileImageTmp>
+                <img src="{{IMAGE_ENDPOINT + category?.image}}" alt="{{category.name}}">
+            </ng-template>
+        </div>
+        <ng-template #mainImageTmp>
+            <div class="cate-img mb-4" >
+                <img src="assets/images/placeholder.jpg" alt="{{category.name}}">
+            </div>
+        </ng-template>
+
+        <div class="cate-text text-center">
+            <h6>{{category.name}}</h6>
+        </div>
+    </a>
 </div>
 

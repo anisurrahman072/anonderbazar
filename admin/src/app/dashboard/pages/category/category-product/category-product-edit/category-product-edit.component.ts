@@ -14,7 +14,6 @@ import {NzNotificationService} from "ng-zorro-antd";
     styleUrls: ['./category-product-edit.component.css']
 })
 export class CategoryProductEditComponent implements OnInit, OnDestroy {
-    @ViewChild('Image') Image;
     id: number;
     data: any;
     sub: Subscription;
@@ -85,7 +84,11 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         this.cmsService
             .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'})
             .subscribe(result => {
-                this.offers = result;
+                this.offers = [];
+                if(result && result.data){
+                    this.offers = result.data;
+                }
+
                 this.isLoading = false;
             }, (err) => {
                 this.isLoading = false;
