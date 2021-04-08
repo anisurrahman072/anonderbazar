@@ -1,16 +1,16 @@
 <div class="category-contant">
     <a routerLink="/products/category/{{category.id}}">
 
-        <div *ngIf="category.mobile_image; else mainImageTmp">
+        <div *ngIf="category.mobile_image; else mainImageTmp" class="cate-img mb-4" >
             <picture>
                 <source srcset="{{IMAGE_ENDPOINT + category?.image}}" media="(min-width: 600px)" />
-                <img src="{{IMAGE_ENDPOINT +  category.mobile_image }}" />
+                <img src="{{IMAGE_ENDPOINT +  category.mobile_image }}" [alt]="category.name" />
             </picture>
         </div>
 
         <ng-template #mainImageTmp>
             <div class="cate-img mb-4" >
-                <img src="{{IMAGE_ENDPOINT +  category?.image }}" alt="{{category.name}}">
+                <img src="{{IMAGE_ENDPOINT +  category?.image }}" [alt]="category.name">
             </div>
         </ng-template>
 
