@@ -24,20 +24,21 @@ export class SectionBrandComponent implements OnInit {
         this.brandService.getAll(true)
             .subscribe((brands) =>{
                 allBrands = brands;
+                console.log('All brands:', allBrands);
 
-                let currentBrand;
-                from(allBrands)
-                    .concatMap((brand:any) => {
-                        currentBrand = brand;
-                        return this.productService.getAllByBrandId(brand.id)
-                    })
-                    .subscribe(products => {
-                        if(products.length !== 0){
-                            if(!this.dataBrandList) this.dataBrandList = [];
-                            if(this.dataBrandList.length < 8) this.dataBrandList.push(currentBrand);
-                        }}, error => {
-                        console.log('Error occurred', error);
-                    })
+                let allBrandIds = allBrands.map(brand => {
+                    return brand.id;
+                });
+
+                this.productService.getCountByBrandIds(allBrandIds)
+                    .subscribe((counts) => {
+                        console.log('data asce', counts);
+                        this.dataBrandList = counts.data.map((count, index) => {
+                            if(count){
+                                return allBrands[index];
+                            }
+                        }).filter(data => data);
+                    });
             })
     }
 }

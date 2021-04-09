@@ -591,6 +591,31 @@ module.exports = {
       console.log(error);
       return res.status(400).json({isunique: true});
     }
+  },
+
+  getCountByBrandIds: async (req, res) => {
+    try {
+      let all_ids = req.query.brand_ids.split(',').map(id => parseInt(id));
+
+      let countOfProducts = [];
+
+      await asyncForEach(all_ids,async id => {
+        let count = await Product.count({brand_id: id, deletedAt: null});
+        countOfProducts.push(count);
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully counted all products by brand id',
+        data: countOfProducts
+      });
+
+    }
+    catch (error) {
+      res.status(400).json({
+        message: 'Error occurred: '+error
+      });
+    }
   }
 
 };

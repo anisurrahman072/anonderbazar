@@ -176,4 +176,10 @@ export class ProductService {
             .get(`${this.EndPoint}?where={"deletedAt":null,"brand_id":${brand_id} }`)
             .map(response => response);
     }
+
+    getCountByBrandIds(brand_ids: number[]): Observable<any>{
+        return this.http
+            .get(`${this.EndPoint}/getCountByBrandIds?brand_ids=${brand_ids}`)
+            .map(response => response);
+    }
 }
