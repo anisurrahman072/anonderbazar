@@ -6,11 +6,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xl-2 col-lg-2 col-md-3 col-2"  *ngFor="let brand of dataBrandList">
+            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"  *ngFor="let brand of dataBrandList">
                 <div class="brand-image">
                     <a routerLink="/brand/brand-product/{{brand.id}}" >
                         <img src="{{IMAGE_ENDPOINT + brand.image}}"
-                             alt="brand logo" style="">
+                             alt="brand logo" style="max-height: 100%;">
                     </a>
                 </div>
                 <p style="font-size: 16px; margin-top: 10px;">{{brand.name}}</p>
