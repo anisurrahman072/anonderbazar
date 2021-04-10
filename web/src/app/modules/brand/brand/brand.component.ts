@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {BrandService, ProductService} from "../../../services";
+import {AppSettings} from "../../../config/app.config";
 
 @Component({
   selector: 'app-brand',
@@ -9,7 +10,7 @@ import {BrandService, ProductService} from "../../../services";
 export class BrandComponent implements OnInit {
 
   dataBrandList: any = [];
-  IMAGE_ENDPOINT = 'https://anonderbazar.s3-ap-southeast-1.amazonaws.com';
+  IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
   constructor(private brandService: BrandService,
               private productService: ProductService) {
