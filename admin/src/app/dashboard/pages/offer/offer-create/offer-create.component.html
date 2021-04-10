@@ -47,7 +47,7 @@
                 <label> Frontend Position </label>
             </div>
             <div nz-col [nzSpan]="12"      >
-                <input nz-input  formControlName="frontend_position"  [placeholder]="'Enter order number'"
+                <input nz-input type="number"  formControlName="frontend_position"  [placeholder]="'Enter order number'"
                        [nzSize]="'large'">
 
             </div>
@@ -61,6 +61,18 @@
                               [beforeUpload]="onBeforeUpload"></image-upload>
                 <div    *ngIf="!ImageFile">
                     Please upload an image here!
+                </div>
+            </div>
+        </div>
+        <div    nz-row>
+            <div nz-col [nzSpan]="7"   >
+                <label>Banner Image</label>
+            </div>
+            <div nz-col [nzSpan]="12"      >
+                <image-upload [max]="1" (removed)="onBannerRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)"
+                              [beforeUpload]="onBeforeBannerUpload"></image-upload>
+                <div    *ngIf="!ImageFile">
+                    Please upload a banner image here!
                 </div>
             </div>
         </div>

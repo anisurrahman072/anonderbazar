@@ -113,6 +113,11 @@ module.exports = {
 
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
+          if(files.length === 2){
+            let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/'+bannerImagePath;
+          }
+
           body.image = '/' + newPath;
           let data_value = [];
 
@@ -122,6 +127,7 @@ module.exports = {
                 title: req.body.title,
                 description: req.body.description,
                 image: body.image,
+                banner_image: body.banner_image,
                 link: body.link,
                 offers: [],
                 products: [],
@@ -137,6 +143,7 @@ module.exports = {
                 offers: [],
                 products: [],
                 image: body.image,
+                banner_image: body.banner_image,
                 showInCarousel: req.body.showInCarousel,
                 showInHome: req.body.showInHome
               }
@@ -245,7 +252,7 @@ module.exports = {
       let showInCarousel = body.showInCarousel ? body.showInCarousel : prevOfferData.data_value[0].showInCarousel;
       let showInHome = body.showInHome ? body.showInHome : prevOfferData.data_value[0].showInHome;
 
-      if (body.hasImage === 'true') {
+      if (body.hasImage === 'true' || body.hasBannerImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
         if (files.length === 0) {
@@ -253,7 +260,21 @@ module.exports = {
         }
         const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
-        body.image = '/' + newPath;
+        if(files.length === 2){
+          body.image = '/' + newPath;
+          let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+          body.banner_image = '/'+bannerImagePath;
+        }
+        else if(files.length === 1){
+          if(body.hasImage === 'true'){
+            body.image = '/' + newPath;
+          }
+          else{
+            body.banner_image = '/' + newPath;
+          }
+        }
+
+
         let data_value = [];
 
         if (body.subsection === 'OFFER') {
@@ -261,7 +282,8 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              image: body.image,
+              image: body.image ? body.image : prevOfferData.data_value[0].image,
+              banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               link: body.link,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
@@ -276,7 +298,8 @@ module.exports = {
               description: body.description,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
-              image: body.image,
+              image: body.image ? body.image : prevOfferData.data_value[0].image,
+              banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               showInCarousel: showInCarousel,
               showInHome: showInHome,
             }
@@ -312,6 +335,7 @@ module.exports = {
               description: body.description,
               link: body.link,
               image: prevOfferData.data_value[0].image,
+              banner_image: prevOfferData.data_value[0].banner_image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
               showInCarousel: showInCarousel,
@@ -324,6 +348,7 @@ module.exports = {
               title: body.title,
               description: body.description,
               image: prevOfferData.data_value[0].image,
+              banner_image: prevOfferData.data_value[0].banner_image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
               showInCarousel: showInCarousel,
