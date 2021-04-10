@@ -24,7 +24,6 @@ export class SectionBrandComponent implements OnInit {
         this.brandService.getAll(true)
             .subscribe((brands) =>{
                 allBrands = brands;
-                console.log('All brands:', allBrands);
 
                 let allBrandIds = allBrands.map(brand => {
                     return brand.id;
@@ -32,12 +31,14 @@ export class SectionBrandComponent implements OnInit {
 
                 this.productService.getCountByBrandIds(allBrandIds)
                     .subscribe((counts) => {
-                        console.log('data asce', counts);
                         this.dataBrandList = counts.data.map((count, index) => {
                             if(count){
                                 return allBrands[index];
                             }
                         }).filter(data => data);
+                        this.dataBrandList.length = 12;
+                    }, error => {
+                        console.log('Error occurred while fetching brands', error);
                     });
             })
     }

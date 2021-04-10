@@ -12,7 +12,7 @@ const routes: Routes = [
     {path: 'lottery', loadChildren: '../modules/coupon-lottery/coupon-lottery.module#CouponLotteryModule'},
     {path: 'checkout', loadChildren: '../modules/checkout/checkout.module#CheckoutModule'},
     {path: 'cms', loadChildren: '../modules/cms/cms.module#CmsModule'},
-    {path: 'brand', loadChildren: '../modules/brand/brand.module#BrandModule'},
+    {path: 'brands', loadChildren: '../modules/brand/brand.module#BrandModule'},
     {path: 'categories', loadChildren: '../modules/category-list/category-list.module#CategoryListModule'},
     {path: 'profile', canActivate: [IsLoggedIn], loadChildren: '../modules/profile/profile.module#ProfileModule'},
     {path: 'request', canActivate: [IsLoggedIn], loadChildren: '../modules/request/request.module#RequestModule'},

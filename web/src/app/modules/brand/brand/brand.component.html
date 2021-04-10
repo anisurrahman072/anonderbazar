@@ -1,14 +1,14 @@
-<section id="brand-section" *ngIf="dataBrandList" style="padding-top: 20px; padding-bottom: 20px;">
+<section id="brand-section" *ngIf="dataBrandList.length > 0; else noData" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home</a>
+            <a routerLink="/brands" routerLinkActive="active">Brands</a>
+        </nav>
+        <div class="page-bar-right"></div>
         <div class="category-head justify-content-between d-flex">
             <div class="titel">
                 <h4>Shop By Brand</h4>
             </div>
-            <button class="">
-                <a [routerLink]="['/brands']">View All
-                    <i class="fa fa-angle-right text-center"></i>
-                </a>
-            </button>
         </div>
         <div class="row">
             <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"  *ngFor="let brand of dataBrandList">
@@ -23,3 +23,7 @@
         </div>
     </div>
 </section>
+
+<ng-template #noData>
+    <h4 class="mt-5 text-center">No brands exist</h4>
+</ng-template>
