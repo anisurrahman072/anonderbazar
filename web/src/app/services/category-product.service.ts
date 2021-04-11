@@ -22,7 +22,7 @@ export class CategoryProductService {
 
     getById(id): Observable<any> {
         // get users from api
-        if(!id){
+        if (!id) {
             return of(null);
         }
         return this.http.get(this.EndPoint + '/' + id);
@@ -88,7 +88,19 @@ export class CategoryProductService {
 
     getCategoriesWithSubcategories() {
         return this.http
-            .get(`${this.EndPoint}/withsubcategories`)
+            .get(`${this.EndPoint}/withSubcategories`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
+    }
+
+    getAllCategories() {
+        return this.http
+            .get(`${this.EndPoint}/all-categories-v2`)
+            .pipe(catchError((error: any) => Observable.throw(error.json())));
+    }
+
+    getCategoriesWithSubcategoriesV2() {
+        return this.http
+            .get(`${this.EndPoint}/with-subcategories-v2`)
             .pipe(catchError((error: any) => Observable.throw(error.json())));
     }
 }

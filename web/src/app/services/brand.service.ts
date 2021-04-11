@@ -7,37 +7,35 @@ import {HttpClient} from '@angular/common/http';
 @Injectable()
 export class BrandService {
 
-  private EndPoint = `${AppSettings.API_ENDPOINT}/brand`;
+    private EndPoint = `${AppSettings.API_ENDPOINT}/brand`;
 
-  constructor(private http: HttpClient) {
-  }
-
-  getAll(frontEndPosition?: any): Observable<any> {
-    let _where = `?where={"deletedAt":null}`;
-    if(frontEndPosition){
-      _where += `&sort=frontend_position%20ASC`
+    constructor(private http: HttpClient) {
     }
-    return this.http.get(this.EndPoint + `${_where}`)
-      .map((response) => response);
-  }
 
-  getAllByWarehouseId(id): Observable<any> {
-    return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`)
-      .map((response) => response);
-  }
+    getAll(frontEndPosition?: any): Observable<any> {
+        let _where = `?where={"deletedAt":null}`;
+        if (frontEndPosition) {
+            _where += `&sort=frontend_position%20ASC`
+        }
+        return this.http.get(this.EndPoint + `${_where}`);
+    }
 
+    getAllByWarehouseId(id): Observable<any> {
+        return this.http.get(`${this.EndPoint}?where={"deletedAt":null,"warehouse_id":${id}}`);
+    }
 
-  getById(id): Observable<any> {
+    getById(id): Observable<any> {
+        return this.http.get(this.EndPoint + '/' + id);
+    }
 
-    return this.http.get(this.EndPoint + '/' + id)
-      .map((response) => response);
-  }
+    shopByBrand(categoryId) {
+        let data = {
+            category_id: categoryId
+        };
+        return this.http.post(`${AppSettings.API_ENDPOINT}/brands/shopbybrand`, data);
+    }
 
-  shopByBrand(categoryId){
-    let data = {
-      category_id: categoryId
-    };
-    return this.http.post(`${AppSettings.API_ENDPOINT}/brands/shopbybrand`, data)
-        .map((response) => response);
-  }
+    brandsByCategories() {
+        return this.http.get(`${AppSettings.API_ENDPOINT}/brands/by-categories`);
+    }
 }

@@ -6,6 +6,7 @@
  */
 const {asyncForEach} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
+const _ = require('lodash');
 
 module.exports = {
   removeImage: async (req, res) => {
@@ -246,7 +247,7 @@ module.exports = {
         console.log('uploaded image: ', uploaded);
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true'
-          && body.hasMobileImage && body.hasMobileImage === 'true'  ) {
+          && body.hasMobileImage && body.hasMobileImage === 'true') {
 
           body.image = '/' + newPath;
           if (typeof uploaded[1] !== 'undefined') {
@@ -347,6 +348,14 @@ module.exports = {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+  allCategories: async (req, res) => {
+    try {
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
+      return res.json(categories);
+    } catch (error) {
+      return res.status(error.status).json({message: '', error, success: false});
+    }
+  },
   //Method called for getting a category with subcategories data
   //Model models/Category.js
   withSubcategories: async (req, res) => {
@@ -364,6 +373,29 @@ module.exports = {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+
+  //Method called for getting a category with subcategories data
+  //Model models/Category.js
+  withSubcategoriesV2: async (req, res) => {
+    try {
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2});
+
+      const parentCategoryIds = categories.map((cat) => cat.id);
+
+      const allSubCategories = await Category.find({deletedAt: null, parent_id: parentCategoryIds, type_id: 2});
+      const subCategoryIndexes = _.groupBy(allSubCategories, 'parent_id');
+
+      const allSubCategoriesIds = allSubCategories.map((cat) => cat.id);
+      const allSubSubCategories = await Category.find({deletedAt: null, parent_id: allSubCategoriesIds, type_id: 2});
+      const subSubCategoryIndexes = _.groupBy(allSubSubCategories, 'parent_id');
+
+      const allCategories = _.merge(subCategoryIndexes, subSubCategoryIndexes);
+      return res.json(allCategories);
+    } catch (error) {
+      return res.status(error.status).json({message: '', error, success: false});
+    }
+  },
+
   //Method called for getting a product category with subcategories data
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {

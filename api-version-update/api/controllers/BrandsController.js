@@ -4,51 +4,126 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const Promise = require('bluebird');
+const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
+
 module.exports = {
-  //Method called for getting shopbybrand data
+  //Method called for getting brandsByCategories data
   //Model models/Brand.js
-  shopbybrand: async (req, res) => {
-    let _where = {};
+  brandsByCategories: async (req, res) => {
+    /*    let _where = {};
 
     if (req.body && req.body.category_id) {
       _where.type_id = req.body.category_id;
-    }
-
-    let products = await Product.find(
-      {where: _where}
-    );
-
+    }*/
     try {
-      let notDistinctBrand = [];
-      let distinctBrand = [];
-      let modifiedBrands = [];
-      products.forEach(element => {
-        notDistinctBrand.push(element.brand_id);
+
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            category_id,
+            GROUP_CONCAT(brand_id) as brand_ids
+    `;
+      let fromSQL = ` FROM products `;
+
+      let _where = ` WHERE deleted_at IS NULL  GROUP BY category_id `;
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return exits.error(new Error('No Coupon code found'));
+      }
+
+      console.log('numberOfUser: ', rawResult.rows.length);
+      const allRows = rawResult.rows.map((row) => {
+        return {
+          category_id: row.category_id,
+          brand_ids: _.uniq(row.brand_ids.split(','))
+        };
       });
-      notDistinctBrand.forEach(element => {
-        if (!distinctBrand.includes(element) && element !== null) {
-          distinctBrand.push(element);
+
+      console.log('allRows', allRows);
+
+      let allBrandIds = [];
+      allRows.forEach((row) => {
+        allBrandIds = allBrandIds.concat(row.brand_ids);
+      });
+      allBrandIds = _.uniq(allBrandIds);
+
+      const brandIdsByCategory = _.keyBy(allRows, 'category_id');
+
+      console.log('brandIdsByCategory', brandIdsByCategory);
+
+      let brands = await Brand.find({
+        where: {
+          id: allBrandIds
         }
       });
-      for (const iterator of distinctBrand) {
-        let brand = await Brand.findOne({
-          where: {
-            id: iterator
-          }
-        });
-        modifiedBrands.push(brand);
-      }
+
       return res.status(200).json({
-        data: modifiedBrands,
+        data: brands,
+        message: 'success'
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json(400, {message: 'Something went wrong!', error});
+    }
+  },
+  //Method called for getting shopbybrand data
+  //Model models/Brand.js
+  shopbybrand: async (req, res) => {
+    /*    let _where = {};
+
+    if (req.body && req.body.category_id) {
+      _where.type_id = req.body.category_id;
+    }*/
+    try {
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            COUNT(*) as productCount,
+            brand_id as brand_id
+    `;
+      let fromSQL = ` FROM products `;
+
+      let _where = ` WHERE deleted_at IS NULL `;
+      if (req.body && req.body.category_id) {
+        _where += ` AND category_id = ${req.body.category_id} `;
+      }
+      _where += ' GROUP BY brand_id ';
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return exits.error(new Error('No Coupon code found'));
+      }
+
+      console.log('numberOfUser: ', rawResult.rows.length);
+      const allBrandIds = rawResult.rows.map((item) => item.id);
+      /*
+
+      let products = await Product.find(
+      {where: _where}
+      );
+
+*/
+      let brands = await Brand.find({
+        where: {
+          id: allBrandIds
+        }
+      });
+
+      return res.status(200).json({
+        data: brands,
         message: req.body.category_id,
       });
     } catch (error) {
       console.log(error);
       return res.json(400, {message: 'Something went wrong!', error});
     }
-
   },
   //Method called for getting all brand data
   //Model models/Brand.js

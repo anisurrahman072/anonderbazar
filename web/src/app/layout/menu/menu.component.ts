@@ -1,19 +1,16 @@
-import {Component, Inject, Input, OnInit} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
-import {AuthService} from "../../services";
-import {CategoryTypeService} from "../../services";
 import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../state-management";
-import {Observable} from "rxjs/Observable";
 import {AppSettings} from "../../config/app.config";
 import {FilterUiService} from "../../services/ui/filterUi.service";
 import {BrandService} from "../../services";
-import {FavouriteProduct} from '../../models';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
-import {LoginModalService} from '../../services/ui/loginModal.service';
 import {GLOBAL_CONFIGS} from "../../../environments/global_config";
+import * as ___ from 'lodash';
+import {forkJoin} from "rxjs/observable/forkJoin";
 
 @Component({
     selector: "app-menu",
@@ -21,62 +18,66 @@ import {GLOBAL_CONFIGS} from "../../../environments/global_config";
     styleUrls: ["./menu.component.scss"]
 })
 export class MenuComponent implements OnInit {
-    currentUser$: Observable<any>;
+
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    productTypeList: any;
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
+
     categoryList: any[];
     subCategoryList: any[];
     brandList: any[];
+    brandListIndex: any;
     selectedCategoryId: any;
-    @Input()
-    isCollapsed: boolean;
     isDisplay: boolean;
     isMobileMenuOpen: boolean = false;
-    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
-
-    cart$: Observable<any>;
-    favourites$: Observable<FavouriteProduct>;
-    compare$: Observable<any>;
 
     subSubCategoryList: any[];
     mobileSubCategoryList: any[];
     selectedSubSubCategoryId = null;
     showSubSubCategoryList: boolean[];
 
-    /*
-    * constructor for MenuComponent
-    */
+    private subCategoryIndexes: any;
+
+    /**
+     * constructor for MenuComponent
+     */
     constructor(
         @Inject(DOCUMENT) document,
-        private authService: AuthService,
-        private categoryTypeService: CategoryTypeService,
         private categoryProductService: CategoryProductService,
         private router: Router,
         private store: Store<fromStore.HomeState>,
         private filterUIService: FilterUiService,
         private brandService: BrandService,
-        private shoppingModalService: ShoppingModalService,
-        private loginModalService: LoginModalService,
+        private shoppingModalService: ShoppingModalService
     ) {
         this.isDisplay = false;
     }
 
     // init the component
     ngOnInit() {
-
-        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
-
-        this.categoryTypeService.getAll().subscribe(result => {
-            this.productTypeList = result;
-        });
-
-        this.cart$ = this.store.select<any>(fromStore.getCart);
-        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
-        this.compare$ = this.store.select<any>(fromStore.getCompare);
+        /*
+                this.categoryTypeService.getAll().subscribe(result => {
+                    this.productTypeList = result;
+                });
+        */
         this.categoryProductService
-            .getCategoriesWithSubcategories()
-            .subscribe(result => {
+            .getAllCategories()
+            .concatMap((result: any) => {
                 this.categoryList = result;
+                return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
+            })
+            .subscribe((result: any) => {
+
+                if (!___.isUndefined(result[0])) {
+                    console.log('getCategoriesWithSubcategoriesV2', result[0]);
+                    this.subCategoryIndexes = result[0];
+                    for (const category of this.categoryList) {
+                        this.populateSubCategories(category);
+                    }
+                }
+                if (!___.isUndefined(result[1])) {
+                    console.log('brandListIndex', result[1]);
+                    this.brandListIndex = result[1];
+                }
             });
 
         this.router.events.subscribe(event => {
@@ -88,18 +89,11 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    showHideMobileMenu() {
-        this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    }
-
     //Event method for category hover from menu
     categoryHover(category: any) {
-        this.subCategoryList = category.subCategories;
-        for (const sub of this.subCategoryList) {
-            this.categoryProductService.getSubcategoryByCategoryId(sub.id)
-                .subscribe(arg => sub.subCategory = arg);
-        }
-        this.brandList = []
+        this.subCategoryList = category.subCategory;
+
+        this.brandList = [];
         this.brandService.shopByBrand(category.id).subscribe(res => {
             this.brandList = res['data'];
         })
@@ -108,7 +102,8 @@ export class MenuComponent implements OnInit {
     //Event method for category click from menu
     categoryClickEvent(category: any) {
         this.selectedCategoryId = category.id;
-        this.subCategoryList = category.subCategories;
+        // this.populateSubCategories(category);
+        this.subCategoryList = category.subCategory;
         this.isDisplay = false;
         this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
@@ -116,30 +111,38 @@ export class MenuComponent implements OnInit {
         ele.checked = false;
     }
 
-
     mobileCategoryClickEvent(category: any) {
-        if(category.id === this.selectedCategoryId){
+        if (category.id === this.selectedCategoryId) {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
-        }
-        else{
+        } else {
+            let subCategoryList = [];
+            if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
+                subCategoryList = this.subCategoryIndexes[category.id];
+                for (const subCategory of subCategoryList) {
+                    subCategory.subCategory = [];
+                    if (!___.isEmpty(this.subCategoryIndexes[subCategory.id])) {
+                        subCategory.subCategory = this.subCategoryIndexes[subCategory.id];
+                    }
+                }
+            }
+
             this.showSubSubCategoryList = [];
             this.subSubCategoryList = null;
             this.selectedCategoryId = category.id;
-            this.mobileSubCategoryList = category.subCategories;
+            this.mobileSubCategoryList = subCategoryList;
             this.mobileSubCategoryList.forEach(subCat => {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
         }
     }
 
-    subCategoryClickEvent(subCategory: any){
-        if(subCategory.id === this.selectedSubSubCategoryId){
+    subCategoryClickEvent(subCategory: any) {
+        if (subCategory.id === this.selectedSubSubCategoryId) {
             this.subSubCategoryList = null;
             this.selectedSubSubCategoryId = null;
-        }
-        else{
+        } else {
             this.mobileSubCategoryList.forEach(subCat => {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
@@ -149,7 +152,7 @@ export class MenuComponent implements OnInit {
             this.categoryProductService.getSubcategoryByCategoryId(subCategory.id)
                 .subscribe(subSubCategory => {
                     this.subSubCategoryList = subSubCategory;
-                    if(this.subSubCategoryList.length === 0){
+                    if (this.subSubCategoryList.length === 0) {
                         this.mobileSubCategoryList = null;
                         this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
                             queryParams: {
@@ -204,7 +207,7 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    navigateFromMobile(event, subCategory, subSubCategory){
+    navigateFromMobile(event, subCategory, subSubCategory) {
         this.mobileSubCategoryList = null;
         this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
@@ -228,9 +231,20 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    //Event method for showing login modal
-    showLoginModal() {
-        this.loginModalService.showLoginModal(true);
+    showHideMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
+
+    private populateSubCategories(category: any) {
+        if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
+            category.subCategory = this.subCategoryIndexes[category.id];
+            for (const subCategory of category.subCategory) {
+                subCategory.subCategory = [];
+                if (!___.isEmpty(this.subCategoryIndexes[subCategory.id])) {
+                    subCategory.subCategory = this.subCategoryIndexes[subCategory.id];
+                }
+            }
+        }
     }
 
     //Event method for showing shopping cart

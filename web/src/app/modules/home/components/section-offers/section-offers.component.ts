@@ -42,7 +42,6 @@ export class OfferComponent implements OnInit {
                             element.data_value[0].alloffers = [];
                             this.cmsService.getByIds(element.data_value[0].offers)
                                 .subscribe(result => {
-                                    console.log(' this.cmsService.getByIds', result);
                                     element.data_value[0].alloffers = result;
                                 }, (err) => {
                                     console.log(err);

@@ -52,7 +52,6 @@ export class CmsDetailsPageComponent implements OnInit {
 
                     this.cmsService.getByIds(this.cms_detail.offers)
                         .subscribe(result => {
-                            console.log(' this.cmsService.getByIds', result);
                             this.cms_detail.alloffers = result;
                         }, (err) => {
                             console.log(err);

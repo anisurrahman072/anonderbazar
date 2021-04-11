@@ -9,8 +9,12 @@ import {AppSettings} from '../config/app.config';
 export class CmsService {
     private EndPoint = `${AppSettings.API_ENDPOINT}/cms`;
 
+
+
     constructor(private http: HttpClient) {
     }
+
+
 
     getByIds(ids: number[]): Observable<any> {
         const url = `${this.EndPoint}/byIds?ids=${JSON.stringify(ids)}&populate=false`;
