@@ -12,32 +12,36 @@ module.exports = {
   //Method called for getting brandsByCategories data
   //Model models/Brand.js
   brandsByCategories: async (req, res) => {
-    /*    let _where = {};
-
-    if (req.body && req.body.category_id) {
-      _where.type_id = req.body.category_id;
-    }*/
     try {
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
+
+      let categoryIds = categories.map((cat)=> {
+        return cat.id;
+      });
 
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let rawSelect = `
         SELECT
-            category_id,
+            type_id as category_id,
             GROUP_CONCAT(brand_id) as brand_ids
     `;
       let fromSQL = ` FROM products `;
 
-      let _where = ` WHERE deleted_at IS NULL  GROUP BY category_id `;
+      let _where = ` WHERE deleted_at IS NULL AND type_id IN (${categoryIds.join(',')}) GROUP BY type_id `;
 
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
       if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
-        return exits.error(new Error('No Coupon code found'));
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
       }
 
       console.log('numberOfUser: ', rawResult.rows.length);
-      const allRows = rawResult.rows.map((row) => {
+
+      let allRows = rawResult.rows.map((row) => {
         return {
           category_id: row.category_id,
           brand_ids: _.uniq(row.brand_ids.split(','))
@@ -50,11 +54,8 @@ module.exports = {
       allRows.forEach((row) => {
         allBrandIds = allBrandIds.concat(row.brand_ids);
       });
+
       allBrandIds = _.uniq(allBrandIds);
-
-      const brandIdsByCategory = _.keyBy(allRows, 'category_id');
-
-      console.log('brandIdsByCategory', brandIdsByCategory);
 
       let brands = await Brand.find({
         where: {
@@ -62,8 +63,26 @@ module.exports = {
         }
       });
 
+      brands = _.keyBy(brands, 'id');
+
+      allRows = allRows.map((row) => {
+        let brandObjects = [];
+
+        if (Array.isArray(row.brand_ids) && row.brand_ids.length) {
+          row.brand_ids.forEach((branId) => {
+            if (!_.isUndefined(brands[branId])) {
+              brandObjects.push(brands[branId]);
+            }
+          });
+        }
+        return {
+          category_id: row.category_id,
+          brand_ids: brandObjects
+        };
+      });
+
       return res.status(200).json({
-        data: brands,
+        data: _.keyBy(allRows, 'category_id'),
         message: 'success'
       });
     } catch (error) {
@@ -74,11 +93,7 @@ module.exports = {
   //Method called for getting shopbybrand data
   //Model models/Brand.js
   shopbybrand: async (req, res) => {
-    /*    let _where = {};
 
-    if (req.body && req.body.category_id) {
-      _where.type_id = req.body.category_id;
-    }*/
     try {
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
@@ -90,6 +105,7 @@ module.exports = {
       let fromSQL = ` FROM products `;
 
       let _where = ` WHERE deleted_at IS NULL `;
+
       if (req.body && req.body.category_id) {
         _where += ` AND category_id = ${req.body.category_id} `;
       }
@@ -98,18 +114,14 @@ module.exports = {
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
       if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
-        return exits.error(new Error('No Coupon code found'));
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
       }
 
-      console.log('numberOfUser: ', rawResult.rows.length);
       const allBrandIds = rawResult.rows.map((item) => item.id);
-      /*
 
-      let products = await Product.find(
-      {where: _where}
-      );
-
-*/
       let brands = await Brand.find({
         where: {
           id: allBrandIds
@@ -118,7 +130,7 @@ module.exports = {
 
       return res.status(200).json({
         data: brands,
-        message: req.body.category_id,
+        message: 'success'
       });
     } catch (error) {
       console.log(error);

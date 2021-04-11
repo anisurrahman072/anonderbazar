@@ -54,11 +54,7 @@ export class MenuComponent implements OnInit {
 
     // init the component
     ngOnInit() {
-        /*
-                this.categoryTypeService.getAll().subscribe(result => {
-                    this.productTypeList = result;
-                });
-        */
+
         this.categoryProductService
             .getAllCategories()
             .concatMap((result: any) => {
@@ -74,9 +70,9 @@ export class MenuComponent implements OnInit {
                         this.populateSubCategories(category);
                     }
                 }
-                if (!___.isUndefined(result[1])) {
-                    console.log('brandListIndex', result[1]);
-                    this.brandListIndex = result[1];
+                if (!___.isUndefined(result[1]) && !___.isUndefined(result[1].data)) {
+                    console.log('brandListIndex', result[1].data);
+                    this.brandListIndex = result[1].data;
                 }
             });
 
@@ -91,12 +87,18 @@ export class MenuComponent implements OnInit {
 
     //Event method for category hover from menu
     categoryHover(category: any) {
-        this.subCategoryList = category.subCategory;
+
+        this.subCategoryList = [];
+        if (!___.isUndefined(category.subCategory)) {
+            this.subCategoryList = category.subCategory;
+        }
 
         this.brandList = [];
-        this.brandService.shopByBrand(category.id).subscribe(res => {
-            this.brandList = res['data'];
-        })
+        if (!___.isUndefined(this.brandListIndex[category.id]) && !___.isUndefined(this.brandListIndex[category.id].brand_ids)) {
+            this.brandList = this.brandListIndex[category.id].brand_ids;
+        }
+        console.log('this.brandList', category.id, this.brandList);
+
     }
 
     //Event method for category click from menu
@@ -117,6 +119,7 @@ export class MenuComponent implements OnInit {
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
         } else {
+
             let subCategoryList = [];
             if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
                 subCategoryList = this.subCategoryIndexes[category.id];
@@ -173,6 +176,7 @@ export class MenuComponent implements OnInit {
         this.filterUIService.changeCategoryId(id);
         this.filterUIService.changeCategoryType(type);
         this.filterUIService.changeCategoryName(name);
+
         this.router.navigate(['/products', {type: 'category', id: id}], {
             queryParams: {
                 category: id
