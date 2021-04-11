@@ -122,9 +122,9 @@ export class ProductService {
             .map(response => response);
     }
 
-    getByCategory(catId: number, productID: number): Observable<any> {
+    getByCategory(catId: number, subCatID: number): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"id":{"!":${productID}},"category_id":${catId}}&sort=createdAt%20DESC`)
+            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC`)
             .map(response => response);
     }
 

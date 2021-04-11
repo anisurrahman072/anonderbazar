@@ -36,7 +36,7 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
     couponProductModalRef: BsModalRef;
-    similarProducts;
+    similarProducts: null;
     id: any;
     data: Product;
     productVariants: any;
@@ -261,18 +261,18 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                     this.tag = JSON.parse(result.tag);
                 }
                 this.updateFinalprice();
-                this.getSimilarProductData(result.category_id.id, result.id);
+                this.getSimilarProductData(result.category_id.id, result.subcategory_id.id);
             }
         }, (error) => {
             this._notify.error('Problem!', "Problem in loading the product");
         });
     }
 
-    getSimilarProductData(categotyId, productId) {
-        this.similarProducts = this.productService.getByCategory(
-            categotyId,
-            productId
-        );
+    getSimilarProductData(categotyId, subcategory) {
+        this.productService.getByCategory( categotyId, subcategory )
+            .subscribe(relatedProduct => {
+                this.similarProducts = relatedProduct;
+            });
     }
 
     updateFinalprice() {
