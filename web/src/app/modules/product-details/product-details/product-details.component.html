@@ -180,8 +180,7 @@
 </section>
 
 <app-product-description [data]="data" (onRatingChange)="ratingChange($event)"></app-product-description>
-<app-similar-item [products]="similarProducts"></app-similar-item>
-<app-recently-viewes [dataProductList]="recentlyViewedProducts"></app-recently-viewes>
+<app-related-product *ngIf="similarProducts" [products]="similarProducts"></app-related-product>
 
 <!--<ng-template #couponProductModalTemplate>
     <div class="modal-header">

@@ -39,6 +39,7 @@ import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
 import {NgxCarouselModule} from "ngx-carousel";
 import { SectionBrandComponent } from './components/section-brand/section-brand.component';
+import { RelatedProductComponent } from './components/related-product/related-product.component';
 
 
 const routes: Routes = [
@@ -121,11 +122,13 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         RightSideFilterSearchComponent,
         RecentlyViewesComponent,
         SectionBrandComponent,
+        RelatedProductComponent,
     ],
     exports: [
         ProductDescriptionComponent,
         SimilarProductComponent,
-        RecentlyViewesComponent
+        RecentlyViewesComponent,
+        RelatedProductComponent
     ],
     providers: [
         /*{
