@@ -73,6 +73,7 @@ export class BrandEditComponent implements OnInit, OnDestroy {
         const formData: FormData = new FormData();
         formData.append('name', value.name);
         formData.append('code', value.code);
+        formData.append('frontend_position', value.frontend_position);
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);

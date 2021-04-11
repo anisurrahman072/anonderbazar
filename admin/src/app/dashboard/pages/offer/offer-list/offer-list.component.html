@@ -30,6 +30,9 @@
                                         <span> Title </span>
                                     </th>
                                     <th>
+                                        <span> Frontend Position </span>
+                                    </th>
+                                    <th>
                                         <span> Description </span>
                                     </th>
                                     <th>
@@ -42,6 +45,9 @@
                                     <td>{{datum.id}}</td>
                                     <td>
                                         <nz-tag>{{datum.data_value[0].title}}</nz-tag>
+                                    </td>
+                                    <td>
+                                        <nz-tag>{{datum.frontend_position}}</nz-tag>
                                     </td>
                                     <td [innerHTML]="datum.data_value[0].description"></td>
                                     <td>
