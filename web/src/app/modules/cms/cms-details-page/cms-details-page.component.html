@@ -9,16 +9,18 @@
             <div class="col-sm-12 col-md-12 main-content">
                 <div class="blog-single">
                     <div class="post-item">
-                        <div class="post-thumb" *ngIf="cms_detail.banner_image; else image">
-                            <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.banner_image}}"
-                                 alt="{{cms_detail.title}}">
-                        </div>
-                        <ng-template #image>
-                            <div class="post-thumb" *ngIf="cms_detail.image">
-                                <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.image}}"
+                        <div style="height:450px; overflow: hidden;">
+                            <div class="post-thumb" *ngIf="cms_detail.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.banner_image}}"
                                      alt="{{cms_detail.title}}">
                             </div>
-                        </ng-template>
+                            <ng-template #image>
+                                <div class="post-thumb" *ngIf="cms_detail.image">
+                                    <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.image}}"
+                                         alt="{{cms_detail.title}}">
+                                </div>
+                            </ng-template>
+                        </div>
 
                         <div class="post-info" style="margin-top:40px">
                             <span class="post-title h1">{{cms_detail.title}}</span>

@@ -74,7 +74,7 @@
 </div>
 <!-- mobile menu start -->
 <div class="mobile-menu">
-    <nav>
+    <nav style="border-top: 0px;">
         <!--<div class="con">
             <div class="mobile-nav"></div>
             <input id="responsive-menu" type="checkbox">
@@ -166,30 +166,33 @@ position: fixed; bottom: 0px; display: flex; flex-direction: row; justify-conten
 border-top-right-radius: 10px; border-top-left-radius: 10px; ">
             <div (click)="showShoppingCartModal()" class="mobile-cart" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
                 <a>
-                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    <i class="fa fa-shopping-cart" aria-hidden="true" style="font-size: 20px;"></i>
                     <p>Cart</p>
                 </a>
             </div>
             <div class="mobile-category" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
                 <a routerLink="/categories" >
-                    <i class="fa fa-list" aria-hidden="true"></i>
+                    <i class="fa fa-list" aria-hidden="true" style="font-size: 20px;"></i>
                     <p>Category</p>
                 </a>
             </div>
             <div class="mobile-logo" style="display: flex; flex-direction: column; text-align: center; margin-top: -35px;">
                 <a href="#" routerLink="/">
-                    <img src="favicon.ico" alt="logo" style="background: white; border-radius: 50%; width: 60px; padding: 5px;">
+                    <img src="favicon.ico" alt="logo" style="background: white; border-radius: 50%; width: 60px; padding: 5px;
+-webkit-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
+  -moz-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
+  box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);">
                 </a>
             </div>
             <div class="mobile-offers" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
                 <a routerLink="/cms" style="outline: 0;">
-                    <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                    <i class="fa fa-bullhorn" aria-hidden="true" style="font-size: 20px;"></i>
                     <p>Offers</p>
                 </a>
             </div>
             <div class="mobile-account" style="display: flex; flex-direction: column; text-align: center; margin-bottom: 5px;">
                 <a routerLink="/profile/orders" style="outline: 0;">
-                    <i class="fa fa-user" aria-hidden="true"></i>
+                    <i class="fa fa-user" aria-hidden="true" style="font-size: 20px;"></i>
                     <p>Account</p>
                 </a>
             </div>

@@ -565,6 +565,7 @@ export class SuborderComponent implements OnInit {
                                                             varients += element.product_variant_id.name + ','
                                                         });
                             */
+                            let price = item.vendor_price === 0.0000 ? item.price : item.vendor_price;
                             const itemData = {
                                 'SL': i + 1,
                                 'Vendor': item.vendor_name,
@@ -572,7 +573,7 @@ export class SuborderComponent implements OnInit {
                                 'SKU': item.product_code,
                                 'Size': varients,
                                 'Count': item.product_quantity,
-                                'Rate': item.price,
+                                'Rate': price,
                                 'Amount': item.product_total_price,
                             };
                             pdfDataMine.push(itemData);
