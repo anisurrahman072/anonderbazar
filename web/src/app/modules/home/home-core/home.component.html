@@ -1,5 +1,5 @@
 <home-banner *ngIf="cmsData" [carouselBannerData]="cmsData['HOME_CAROUSEL']"></home-banner>
-<app-flash-deals [dataProductList]="featureProducts$"></app-flash-deals>
+<app-flash-deals *ngIf="featureProducts" [dataProductList]="featureProducts"></app-flash-deals>
 <app-section-offers></app-section-offers>
 <home-product-special></home-product-special>
 <app-section-feedback></app-section-feedback>

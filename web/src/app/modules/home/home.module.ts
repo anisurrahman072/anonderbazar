@@ -40,6 +40,7 @@ import {BusinessOportunitiesComponent} from "./components/business-oportunity/bu
 import {NgxCarouselModule} from "ngx-carousel";
 import { SectionBrandComponent } from './components/section-brand/section-brand.component';
 import { RelatedProductComponent } from './components/related-product/related-product.component';
+import {ProductItemFlashDealComponent} from "../shared/components/product-item-flash-deals/product-item-flash-deals.component";
 
 
 const routes: Routes = [
@@ -128,7 +129,8 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         ProductDescriptionComponent,
         SimilarProductComponent,
         RecentlyViewesComponent,
-        RelatedProductComponent
+        RelatedProductComponent,
+        ProductItemFlashDealComponent
     ],
     providers: [
         /*{

@@ -9,7 +9,7 @@ import {Observable} from "rxjs/Observable";
 })
 export class HomeComponent implements OnInit {
 
-    featureProducts$: Observable<any>;
+    featureProducts: any = null;
     cmsData: any;
 
     constructor(
@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
 
     //Event method for getting all the data for the page
     private getFeatureProducts() {
-        this.featureProducts$ = this.productService.getFlashDealsProducts();
+        this.featureProducts = this.productService.fetchFlashDealsProducts();
     }
 
 }

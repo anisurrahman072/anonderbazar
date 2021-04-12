@@ -13,6 +13,7 @@ const routes: Routes = [
     {path: 'checkout', loadChildren: '../modules/checkout/checkout.module#CheckoutModule'},
     {path: 'cms', loadChildren: '../modules/cms/cms.module#CmsModule'},
     {path: 'brands', loadChildren: '../modules/brand/brand.module#BrandModule'},
+    {path: 'featured-product', loadChildren: '../modules/featured/featured.module#FeaturedModule'},
     {path: 'categories', loadChildren: '../modules/category-list/category-list.module#CategoryListModule'},
     {path: 'profile', canActivate: [IsLoggedIn], loadChildren: '../modules/profile/profile.module#ProfileModule'},
     {path: 'request', canActivate: [IsLoggedIn], loadChildren: '../modules/request/request.module#RequestModule'},

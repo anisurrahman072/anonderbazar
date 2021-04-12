@@ -9,8 +9,10 @@ import {DatePipe} from '@angular/common';
 export class ProductService {
     private EndPoint = `${AppSettings.API_ENDPOINT}/product`;
     private EndPoint2 = `${AppSettings.API_ENDPOINT}/products`;
+    private allFlashDealsProducts;
 
     constructor(private http: HttpClient) {
+        this.getFlashDealsProducts();
     }
 
     filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
@@ -80,10 +82,18 @@ export class ProductService {
             .map(response => response);
     }
 
-    getFlashDealsProducts(): Observable<any> {
-        return this.http
+    getFlashDealsProducts() {
+        this.http
             .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
-            .map(response => response);
+            .subscribe(data => {
+                this.allFlashDealsProducts = data;
+            }, error => {
+                console.log('Error while fetching flashDealsProducts');
+            })
+    }
+
+    fetchFlashDealsProducts() {
+        return this.allFlashDealsProducts;
     }
 
     getRewardProducts(): Observable<any> {

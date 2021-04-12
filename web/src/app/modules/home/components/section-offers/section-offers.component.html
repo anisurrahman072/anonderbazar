@@ -1,7 +1,10 @@
 <section id="offer-section" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="titel mb-4">
+        <div class="category-head cate-flash justify-content-between d-flex">
             <h4>Offers</h4>
+            <button class="">
+                <a [routerLink]="['/cms']">View All<i class="fa fa-angle-right text-center"></i></a>
+            </button>
         </div>
         <div class="row">
             <ng-template ngFor let-data [ngForOf]="homeOfferData">
