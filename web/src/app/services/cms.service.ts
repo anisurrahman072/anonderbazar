@@ -31,9 +31,14 @@ export class CmsService {
             .put(`${this.EndPoint}/${id}`, data);
     }
 
-    getByPageNSection(){
+    getByPageNSection() {
         return this.http
             .get(`${this.EndPoint2}/by-page-section`);
+    }
+
+    getByPageNSectionNSubSection() {
+        return this.http
+            .get(`${this.EndPoint2}/by-page-section-subsection`);
     }
 
     getBySectionName(pageName: String, sectionName: String): Observable<any> {
@@ -43,10 +48,10 @@ export class CmsService {
             );
     }
 
-    getBySubSectionName(pageName: String, sectionName: String, subSectionName: any, frontend_position?:boolean): Observable<any> {
+    getBySubSectionName(pageName: String, sectionName: String, subSectionName: any, frontend_position?: boolean): Observable<any> {
 
         let _where = `?where={"page":"${pageName}","section":"${sectionName}","sub_section":"${subSectionName}","deletedAt":null}&populate=false`
-        if(frontend_position){
+        if (frontend_position) {
             _where += `&sort=frontend_position%20ASC`
         }
 

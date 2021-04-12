@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {CmsService, ProductService} from "../../../services";
 import {Observable} from "rxjs/Observable";
+import {forkJoin} from "rxjs/observable/forkJoin";
+import * as ___ from "lodash";
 
 @Component({
     selector: 'app-home-page',
@@ -10,7 +12,8 @@ import {Observable} from "rxjs/Observable";
 export class HomeComponent implements OnInit {
 
     featureProducts$: Observable<any>;
-    cmsData: any;
+    cmsDataForPageSection: any;
+    cmsDataForPageSectionSubsection: any;
 
     constructor(
         private productService: ProductService,
@@ -26,10 +29,18 @@ export class HomeComponent implements OnInit {
 
     //get all cms data that are need in the home page
     private fetchCmsData() {
-        this.cmsService.getByPageNSection()
+        forkJoin([this.cmsService.getByPageNSection(), this.cmsService.getByPageNSectionNSubSection()])
             .subscribe((results: any) => {
-                this.cmsData = results;
                 console.log('Combined CMS API: ', results);
+
+                if (!___.isUndefined(results[0])) {
+                    console.log('getByPageNSection', results[0]);
+                    this.cmsDataForPageSection = results[0];
+                }
+                if (!___.isUndefined(results[1])) {
+                    console.log('getByPageNSectionNSubSection', results[1]);
+                    this.cmsDataForPageSectionSubsection = results[1];
+                }
             });
     }
 
