@@ -3,11 +3,7 @@ import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {NgxCarousel} from 'ngx-carousel';
-
-/*import {
-    SwiperComponent,
-    SwiperDirective
-} from "ngx-swiper-wrapper";*/
+import * as ___ from 'lodash';
 
 @Component({
     selector: 'home-banner',
@@ -18,15 +14,6 @@ export class BannerComponent implements OnInit {
 
     public carouselBannerItems = null;
     public carouselBanner: NgxCarousel;
-
-    // Swiper config
-    // public config: SwiperConfigInterface;
-
-/*    @ViewChild(SwiperComponent)
-    componentRef: SwiperComponent;
-
-    @ViewChild(SwiperDirective)
-    directiveRef: SwiperDirective;*/
 
     cmsBANNERData: any;
     cmsHEADERData: any;
@@ -45,19 +32,27 @@ export class BannerComponent implements OnInit {
     //Event method for getting all the data for the page
     ngOnInit() {
         this.cmsService.getBySectionName('HOME', 'BANNER').subscribe(result => {
-            this.cmsBANNERData = result.data_value[0];
-
+            this.cmsBANNERData = [];
+            if (!___.isUndefined(result) && !___.isUndefined(result.data_value) && ___.isArray(result.data_value)) {
+                this.cmsBANNERData = result.data_value[0];
+            }
         });
+
         this.cmsService.getBySectionName('LAYOUT', 'HEADER').subscribe(result => {
-            this.cmsHEADERData = result.data_value;
+            this.cmsHEADERData = [];
+            if (!___.isUndefined(result) && !___.isUndefined(result.data_value) && ___.isArray(result.data_value)) {
+                this.cmsHEADERData = result.data_value;
+            }
         });
-        this.cmsService.getBySectionName('HOME', "CAROUSEL").subscribe(result => {
-            this.carouselBannerItems = result.data_value;
-            this.carouselBannerItems.forEach(element => {
-                element.description = JSON.parse(element.description);
 
-                // console.log('this.carousalList-element ', element.description.link, element)
-            });
+        this.cmsService.getBySectionName('HOME', "CAROUSEL").subscribe(result => {
+            this.carouselBannerItems = [];
+            if (!___.isUndefined(result) && !___.isUndefined(result.data_value) && ___.isArray(result.data_value)) {
+                this.carouselBannerItems = result.data_value;
+                this.carouselBannerItems.forEach(element => {
+                    element.description = JSON.parse(element.description);
+                });
+            }
         });
 
         this.carouselBanner = {
@@ -82,11 +77,10 @@ export class BannerComponent implements OnInit {
                 });
 
                 this.carouselOffers = this.carouselOffers.filter((offer) => {
-                    if(cnt < 3){
+                    if (cnt < 3) {
                         cnt++;
                         return true;
-                    }
-                    else{
+                    } else {
                         return false;
                     }
                 })

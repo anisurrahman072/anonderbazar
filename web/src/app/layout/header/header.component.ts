@@ -19,10 +19,8 @@ import {CmsService} from '../../services';
 import {FilterUiService} from '../../services/ui/filterUi.service';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {DOCUMENT} from "@angular/common";
+import * as ___ from 'lodash';
 
-export interface DialogData {
-    user: 'user A' | 'user B' | 'user C';
-}
 
 // import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 @Component({
@@ -31,42 +29,14 @@ export interface DialogData {
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-    states: any[] = [
-        {
-            name: 'Arkansas',
-            population: '2.978M',
-            // https://commons.wikimedia.org/wiki/File:Flag_of_Arkansas.svg
-            flag:
-                'https://upload.wikimedia.org/wikipedia/commons/9/9d/Flag_of_Arkansas.svg'
-        },
-        {
-            name: 'California',
-            population: '39.14M',
-            // https://commons.wikimedia.org/wiki/File:Flag_of_California.svg
-            flag:
-                'https://upload.wikimedia.org/wikipedia/commons/0/01/Flag_of_California.svg'
-        },
-        {
-            name: 'Florida',
-            population: '20.27M',
-            // https://commons.wikimedia.org/wiki/File:Flag_of_Florida.svg
-            flag:
-                'https://upload.wikimedia.org/wikipedia/commons/f/f7/Flag_of_Florida.svg'
-        },
-        {
-            name: 'Texas',
-            population: '27.47M',
-            // https://commons.wikimedia.org/wiki/File:Flag_of_Texas.svg
-            flag:
-                'https://upload.wikimedia.org/wikipedia/commons/f/f7/Flag_of_Texas.svg'
-        }
-    ];
+
     stateCtrl: FormControl;
     filteredProducts: Observable<Product[]>;
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     ADMIN_ENDPOINT = AppSettings.ADMIN_ENDPOINT;
     ADMIN_ENDPOINT1 = AppSettings.ADMIN_ENDPOINT;
+
     user_id: any;
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -74,10 +44,8 @@ export class HeaderComponent implements OnInit {
     currentUser$: Observable<any>;
     cartShow: boolean = false;
     clicked: false;
-    navCollapsed: boolean = false;
-    private products: Observable<Product[]>;
     private cmsLogoData: any;
-    serach_result: any;
+
     isUser: boolean = false;
 
     /*
@@ -96,7 +64,6 @@ export class HeaderComponent implements OnInit {
                 private loginModalService: LoginModalService,
                 private shoppingModalService: ShoppingModalService,
                 private cmsService: CmsService,
-                // private modalService: NgbModal,
 
                 private FilterUiService: FilterUiService
     ) {
@@ -116,8 +83,12 @@ export class HeaderComponent implements OnInit {
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
         this.compare$ = this.store.select<any>(fromStore.getCompare);
 
-        this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe(result => {
-            this.cmsLogoData = result.data_value[0].image;
+        this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe((result: any) => {
+            console.log('Header Component: ', result);
+            this.cmsLogoData = '';
+            if (!___.isUndefined(result) && !___.isUndefined(result.data_value) && ___.isArray(result.data_value)) {
+                this.cmsLogoData = result.data_value[0].image;
+            }
         });
     }
 

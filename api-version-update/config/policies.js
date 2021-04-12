@@ -106,6 +106,9 @@ module.exports.policies = {
     'customUpdate': ['isAuthorized', 'isAdmin'],
     'customDelete': ['isAuthorized', 'isAdmin'],
   },
+  Cms2Controller: {
+    'byPageNSection': true,
+  },
   DesignCategoriesController: {
     '*': false,
     'getAll': true,

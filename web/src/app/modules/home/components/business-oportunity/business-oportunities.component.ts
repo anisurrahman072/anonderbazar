@@ -17,7 +17,6 @@ export class BusinessOportunitiesComponent implements OnInit {
     //Event method for getting all the data for the page
     ngOnInit() {
         this.cmsService.getBySectionName('LAYOUT', 'HEADER').subscribe(result => {
-            console.log('getBySectionName', result)
             this.serviceFooterList = result.data_value;
         });
 

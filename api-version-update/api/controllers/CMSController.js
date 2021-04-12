@@ -4,12 +4,14 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const Promise = require('bluebird');
+const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
+
 
   // Method for getting all the parent offer and child offer
   getAll: async (req, res) => {

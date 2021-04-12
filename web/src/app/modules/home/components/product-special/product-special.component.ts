@@ -22,7 +22,6 @@ import * as fromStore from "../../../../state-management";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
-
 @Component({
     selector: "home-product-special",
     templateUrl: "./product-special.component.html",
@@ -38,6 +37,7 @@ export class ProductSpecialComponent implements OnInit {
     id: any;
     cart$: Observable<any>;
     cartId: any;
+
     cartTotalprice: any;
     cartTotalquantity: any;
     currentUser: Observable<any>;

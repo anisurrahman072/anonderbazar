@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ProductService} from "../../../services";
+import {CmsService, ProductService} from "../../../services";
 import {Observable} from "rxjs/Observable";
 
 @Component({
@@ -10,23 +10,24 @@ import {Observable} from "rxjs/Observable";
 export class HomeComponent implements OnInit {
     featureProducts$: Observable<any>;
 
-    /*    hotProducts$: Observable<any>;
-        categories$: Observable<any>;
-        rewardProducts$: Observable<any>;
-        wholesaleProducts$: Observable<any>;*/
-
     constructor(
-        private productService: ProductService
+        private productService: ProductService,
+        private cmsService: CmsService
     ) {
     }
 
     // init the component
     ngOnInit() {
         this.getFeatureProducts();
-        /*        this.getHotProducts();
-                this.getProductCategory();
-                this.getRewardProducts();
-                this.getWholeSaleProducts();*/
+        this.fetchCmsData();
+    }
+
+    //get all cms data that are need in the home page
+    private fetchCmsData() {
+        this.cmsService.getByPageNSection()
+            .subscribe((results: any) => {
+                console.log('Combined CMS API: ', results);
+            });
     }
 
     //Event method for getting all the data for the page
@@ -34,20 +35,4 @@ export class HomeComponent implements OnInit {
         this.featureProducts$ = this.productService.getFlashDealsProducts();
     }
 
-    /*    //Event method for getting all the data for the page
-        private getHotProducts() {
-            this.hotProducts$ = this.productService.getAllHotProducts();
-        }
-        //Event method for getting all the data for the page
-        private getRewardProducts() {
-            this.rewardProducts$ = this.productService.getRewardProducts();
-        }
-        //Event method for getting all the data for the page
-        private getWholeSaleProducts() {
-            this.wholesaleProducts$ = this.productService.getWholeSaleProducts();
-        }
-        //Event method for getting all the data for the page
-        private getProductCategory(){
-            this.categories$ = this.categoryProductService.getAllHomeCategory();
-        }*/
 }

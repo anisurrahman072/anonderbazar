@@ -35,8 +35,8 @@ export class OfferComponent implements OnInit {
                 });
 
                 this.homeOfferData.filter((element) => (element && element.data_value && Array.isArray(element.data_value) && element.data_value.length > 0
-                && element.data_value[0].showInHome === "true"))
-                    .forEach(element => {
+                    && element.data_value[0].showInHome === "true"))
+                    .forEach((element: any) => {
 
                         if (element.data_value[0].offers && element.data_value[0].offers.length > 0) {
                             element.data_value[0].alloffers = [];
