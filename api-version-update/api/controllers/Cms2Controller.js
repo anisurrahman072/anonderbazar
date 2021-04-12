@@ -10,10 +10,7 @@ module.exports = {
   byPageNSection: async (req, res) => {
     try {
       const cmsNativeQuery = Promise.promisify(CMS.getDatastore().sendNativeQuery);
-      let rawSelect = `
-        SELECT
-            *
-    `;
+      let rawSelect = ` SELECT  *  `;
       let fromSQL = ` FROM cms `;
 
       let _where = `
