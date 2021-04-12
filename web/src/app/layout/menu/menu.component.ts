@@ -150,23 +150,17 @@ export class MenuComponent implements OnInit {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
             this.showSubSubCategoryList[subCategory.id] = true;
-
             this.selectedSubSubCategoryId = subCategory.id;
-            this.categoryProductService.getSubcategoryByCategoryId(subCategory.id)
-                .subscribe(subSubCategory => {
-                    this.subSubCategoryList = subSubCategory;
-                    if (this.subSubCategoryList.length === 0) {
-                        this.mobileSubCategoryList = null;
-                        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
-                            queryParams: {
-                                category: this.selectedCategoryId,
-                                sub: subCategory.id
-                            }
-                        });
+            this.subSubCategoryList = this.subCategoryIndexes[this.selectedSubSubCategoryId];
+            if (!this.subSubCategoryList) {
+                this.mobileSubCategoryList = null;
+                this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
+                    queryParams: {
+                        category: this.selectedCategoryId,
+                        sub: subCategory.id
                     }
-                }, error => {
-                    console.log('Error while finding subSubCategory: ', error);
                 });
+            }
         }
     }
 
