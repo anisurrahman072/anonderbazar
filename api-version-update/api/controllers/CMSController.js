@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-const Promise = require('bluebird');
 const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');

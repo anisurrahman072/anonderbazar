@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BrandService, ProductService} from "../../../../services";
 import {AppSettings} from "../../../../config/app.config";
-
+import * as ___ from 'lodash';
 @Component({
     selector: 'app-section-brand',
     templateUrl: './section-brand.component.html',
@@ -19,14 +19,24 @@ export class SectionBrandComponent implements OnInit {
     ngOnInit() {
         this.brandService.getAll(true)
             .concatMap((brands: any) => {
+                this.dataBrandList = brands;
                 let allBrandIds = brands.map(brand => {
                     return brand.id;
                 });
                 return this.productService.getCountByBrandIds(allBrandIds);
             })
-            .subscribe((counts: any) => {
-                this.dataBrandList = counts.data.filter(count => count);
-                this.dataBrandList.length = 12;
+            .subscribe((result: any) => {
+                const brandCount = result.data;
+
+                if(!___.isEmpty(brandCount)){
+                    this.dataBrandList = this.dataBrandList.filter((brand: any) => {
+                        return !___.isUndefined(brandCount[brand.id]);
+                    });
+                    this.dataBrandList =  this.dataBrandList.slice(0, 12);
+                } else {
+                    this.dataBrandList = [];
+                }
+
             }, error => {
                 console.log('Error occurred while fetching brands', error);
             })

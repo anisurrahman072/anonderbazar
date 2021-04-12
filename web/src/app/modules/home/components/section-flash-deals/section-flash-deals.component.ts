@@ -8,7 +8,7 @@ import {Product} from '../../../../models';
     styleUrls: ['./section-flash-deals.component.scss']
 })
 export class FlashDealsComponent implements OnInit {
-    @Input() dataProductList: Observable<any>;
+    @Input() private dataProductList: Observable<any>;
 
     productList: Product[] = [];
 

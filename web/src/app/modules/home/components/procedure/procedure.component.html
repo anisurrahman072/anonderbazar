@@ -1,8 +1,7 @@
 <div class="margin-top-60">
     <div class="container">
         <div class="row margin-0" style="overflow: hidden;">
-
-            <div *ngFor="let carousel of cmsCarouselData" class="col-sm-12 col-md-4 padding-0" mat-ripple >
+            <div *ngFor="let carousel of cmsCarouselList" class="col-sm-12 col-md-4 padding-0" mat-ripple >
                 <div class="block-banner-text">
                     <img src="{{IMAGE_ENDPOINT + carousel?.image + IMAGE_EXT}}" class="img-responsive" alt="{{carousel?.title}}">
                     <div class="content">
@@ -11,7 +10,7 @@
                         <a class="link-more" href="#"><i class="fa fa-long-arrow-right"></i></a>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>

@@ -18,9 +18,8 @@ module.exports = {
 
       let _where = `
         WHERE deleted_at IS NULL AND
-        (page = 'LAYOUT' AND section = 'LOGO') OR (page = 'LAYOUT' AND section = 'HEADER') or
-        (page = 'HOME' AND section = 'CAROUSEL') or
-        (page = 'HOME' AND section = 'BANNER')
+        (page = 'LAYOUT' AND section = 'HEADER') or
+        (page = 'HOME' AND section = 'CAROUSEL')
       `;
 
       const rawResult = await cmsNativeQuery(rawSelect + fromSQL + _where, []);

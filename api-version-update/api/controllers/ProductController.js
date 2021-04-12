@@ -11,6 +11,7 @@ const {removeCacheForProduct} = require('../../libs/cache-manage');
 const {asyncForEach} = require('../../libs/helper');
 const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
+const _ = require('lodash');
 
 module.exports = {
 
@@ -576,7 +577,7 @@ module.exports = {
         code: req.param('code'),
         deletedAt: null
       };
-      if(req.query.exclude_id){
+      if (req.query.exclude_id) {
         where.id = {'!=': req.query.exclude_id};
       }
       console.log(where);
@@ -594,26 +595,37 @@ module.exports = {
   },
 
   getCountByBrandIds: async (req, res) => {
+
     try {
-      let all_ids = req.query.brand_ids.split(',').map(id => parseInt(id));
+      let allIds = req.query.brand_ids.split(',').map(id => parseInt(id));
 
-      let countOfProducts = [];
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
-      await asyncForEach(all_ids,async id => {
-        let count = await Product.count({brand_id: id, deletedAt: null});
-        countOfProducts.push(count);
-      });
+      let rawSelect = `
+            SELECT COUNT(*) as productCount, brand_id   FROM products
+            WHERE deleted_at IS NULL AND brand_id IN (${allIds.join(',')})
+            GROUP BY brand_id
+      `;
+
+      const rawResult = await productNativeQuery(rawSelect, []);
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
+      }
+
+      const finalBrandCounts = _.keyBy(rawResult.rows, 'brand_id');
 
       res.status(200).json({
         success: true,
         message: 'Successfully counted all products by brand id',
-        data: countOfProducts
+        data: finalBrandCounts
       });
 
-    }
-    catch (error) {
+    } catch (error) {
       res.status(400).json({
-        message: 'Error occurred: '+error
+        message: 'Error occurred: ' + error
       });
     }
   }

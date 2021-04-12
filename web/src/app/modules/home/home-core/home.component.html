@@ -6,5 +6,5 @@
 <app-section-brand></app-section-brand>
 <app-section-recommend></app-section-recommend>
 <app-special-look></app-special-look>
-<app-business-oportunities></app-business-oportunities>
+<app-business-oportunities *ngIf="cmsData" [serviceFooterData]="cmsData['LAYOUT_HEADER']"></app-business-oportunities>
 <app-section-service></app-section-service>
