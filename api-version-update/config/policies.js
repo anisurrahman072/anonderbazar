@@ -108,6 +108,7 @@ module.exports.policies = {
   },
   Cms2Controller: {
     'byPageNSection': true,
+    'byPageNSectionNSubsection': true,
   },
   DesignCategoriesController: {
     '*': false,
