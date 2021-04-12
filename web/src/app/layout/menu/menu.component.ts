@@ -240,6 +240,7 @@ export class MenuComponent implements OnInit {
     }
 
     private populateSubCategories(category: any) {
+
         if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
             category.subCategory = this.subCategoryIndexes[category.id];
             for (const subCategory of category.subCategory) {
@@ -249,6 +250,7 @@ export class MenuComponent implements OnInit {
                 }
             }
         }
+
     }
 
     //Event method for showing shopping cart
