@@ -31,7 +31,11 @@ module.exports = {
         });
       }
 
-      return res.status(200).json(rawResult.rows);
+      const finalRows = _.keyBy(rawResult.rows, (row) => {
+        return row.page + '_' + row.section;
+      });
+
+      return res.status(200).json(finalRows);
 
     } catch (error) {
       console.log(error);

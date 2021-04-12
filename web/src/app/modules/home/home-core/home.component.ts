@@ -8,7 +8,9 @@ import {Observable} from "rxjs/Observable";
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+
     featureProducts$: Observable<any>;
+    cmsData: any;
 
     constructor(
         private productService: ProductService,
@@ -26,6 +28,7 @@ export class HomeComponent implements OnInit {
     private fetchCmsData() {
         this.cmsService.getByPageNSection()
             .subscribe((results: any) => {
+                this.cmsData = results;
                 console.log('Combined CMS API: ', results);
             });
     }
