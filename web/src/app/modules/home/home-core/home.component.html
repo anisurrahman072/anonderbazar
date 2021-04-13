@@ -1,4 +1,7 @@
-<home-banner *ngIf="cmsDataForPageSection" [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"></home-banner>
+<home-banner *ngIf="cmsDataForPageSection && cmsDataForPageSectionSubsection"
+             [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"
+             [carouselOffers]="cmsDataForPageSectionSubsection['POST_HOME_PARENTOFFER']"
+></home-banner>
 <app-flash-deals [dataProductList]="featureProducts"></app-flash-deals>
 <app-section-offers *ngIf="cmsDataForPageSectionSubsection" [homeOfferData]="cmsDataForPageSectionSubsection"></app-section-offers>
 <home-product-special></home-product-special>

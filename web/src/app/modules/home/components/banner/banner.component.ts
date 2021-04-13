@@ -12,6 +12,7 @@ import * as ___ from 'lodash';
 })
 export class BannerComponent implements OnInit {
     @Input() carouselBannerData: any;
+    @Input() carouselOffers: any;
     public carouselBannerItems = null;
     public carouselBanner: NgxCarousel;
     /*
@@ -23,8 +24,6 @@ export class BannerComponent implements OnInit {
     IMAGE_EXT = ''; //GLOBAL_CONFIGS.bannerImageExtension;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT_CAROUSEL = GLOBAL_CONFIGS.productImageExtension;
-
-    carouselOffers: any;
 
     constructor(private cmsService: CmsService) {
     }
@@ -84,7 +83,13 @@ export class BannerComponent implements OnInit {
             easing: 'ease-out',
         }
 
-        this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)
+        if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
+            this.carouselOffers = this.carouselOffers.filter(offer => {
+                return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");
+            });
+        }
+
+        /*this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)
             .subscribe((offers) => {
                 let cnt = 0;
                 this.carouselOffers = offers.filter((offer) => {
@@ -101,6 +106,6 @@ export class BannerComponent implements OnInit {
                         return false;
                     }
                 })
-            });
+            });*/
     }
 }
