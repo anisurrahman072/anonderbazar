@@ -20,6 +20,7 @@ export class OfferComponent implements OnInit {
     products: any = [];
     offers: any = [];
     carouselOffers: any;
+    allOffers: any;
 
     constructor(private cmsService: CmsService, private productservice: ProductService) {
     }
@@ -29,12 +30,28 @@ export class OfferComponent implements OnInit {
 
         console.log('this.homeOfferData', this.homeOfferData);
 
-        if (!___.isEmpty(this.homeOfferData) && !___.isEmpty(this.homeOfferData.data_value) && this.homeOfferData.data_value[0].showInHome === 'true') {
-            if (this.homeOfferData.data_value[0].offers && this.homeOfferData.data_value[0].offers.length > 0) {
+        if (!___.isUndefined(this.homeOfferData) && !___.isEmpty(this.homeOfferData['POST_HOME_PARENTOFFER'])) {
+            this.allOffers = this.homeOfferData['POST_HOME_PARENTOFFER'];
+            this.allOffers = this.allOffers.filter(offer => {
+                 return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInHome === "true");
+            });
+
+            /*if (this.homeOfferData.data_value[0].offers && this.homeOfferData.data_value[0].offers.length > 0) {
                 this.homeOfferData.data_value[0].alloffers = [];
                 this.cmsService.getByIds(this.homeOfferData.data_value[0].offers)
                     .subscribe(result => {
                         this.homeOfferData.data_value[0].alloffers = result;
+                    }, (err) => {
+                        console.log(err);
+                    });
+            }
+
+            if (!___.isEmpty(this.homeOfferData['POST_HOME_PARENTOFFER']) && this.homeOfferData['POST_HOME_BOTTOM'].length > 0) {
+                console.log('aaaannn', this.homeOfferData['POST_HOME_BOTTOM']);
+                this.homeOfferData.data_value[0].allproducts = [];
+                this.productservice.getByIds(this.homeOfferData.data_value[0].products)
+                    .subscribe(result => {
+                        this.homeOfferData.data_value[0].allproducts = result;
                     }, (err) => {
                         console.log(err);
                     });
@@ -48,8 +65,7 @@ export class OfferComponent implements OnInit {
                     }, (err) => {
                         console.log(err);
                     });
-            }
+            }*/
         }
     }
-
 }
