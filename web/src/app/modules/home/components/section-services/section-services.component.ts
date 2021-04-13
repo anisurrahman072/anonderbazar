@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 
@@ -9,7 +9,7 @@ import {AppSettings} from "../../../../config/app.config";
 })
 
 export class ServiceComponent implements OnInit {
-    serviceFooterList: any;
+    @Input() serviceFooterList: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     constructor(private cmsService: CmsService) {
@@ -17,8 +17,11 @@ export class ServiceComponent implements OnInit {
 
     // Event method for getting all the data for the page
     ngOnInit() {
-        this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', "FEATURE").subscribe(result => {
+        this.serviceFooterList = this.serviceFooterList[0].data_value;
+
+        /*this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', "FEATURE").subscribe(result => {
             this.serviceFooterList = result[0].data_value;
-        });
+            console.log('aaarrrr', this.serviceFooterList);
+        });*/
     }
 }

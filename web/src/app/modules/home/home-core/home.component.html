@@ -10,4 +10,4 @@
 <app-section-recommend></app-section-recommend>
 <app-special-look *ngIf="cmsDataForPageSectionSubsection" [middleblogList]="cmsDataForPageSectionSubsection['POST_HOME_MIDDLE']"></app-special-look>
 <app-business-oportunities *ngIf="cmsDataForPageSection" [serviceFooterData]="cmsDataForPageSection['LAYOUT_HEADER']"></app-business-oportunities>
-<app-section-service></app-section-service>
+<app-section-service *ngIf="cmsDataForPageSectionSubsection"  [serviceFooterList]="cmsDataForPageSectionSubsection['LAYOUT_FOOTER_FEATURE']"></app-section-service>
