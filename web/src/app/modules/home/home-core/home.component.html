@@ -8,6 +8,6 @@
 <app-section-feedback></app-section-feedback>
 <app-section-brand></app-section-brand>
 <app-section-recommend></app-section-recommend>
-<app-special-look></app-special-look>
+<app-special-look *ngIf="cmsDataForPageSectionSubsection" [middleblogList]="cmsDataForPageSectionSubsection['POST_HOME_MIDDLE']"></app-special-look>
 <app-business-oportunities *ngIf="cmsDataForPageSection" [serviceFooterData]="cmsDataForPageSection['LAYOUT_HEADER']"></app-business-oportunities>
 <app-section-service></app-section-service>
