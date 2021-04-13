@@ -1,10 +1,13 @@
-<home-banner *ngIf="cmsDataForPageSection" [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"></home-banner>
+<home-banner *ngIf="cmsDataForPageSection && cmsDataForPageSectionSubsection"
+             [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"
+             [carouselOffers]="cmsDataForPageSectionSubsection['POST_HOME_PARENTOFFER']"
+></home-banner>
 <app-flash-deals [dataProductList]="featureProducts"></app-flash-deals>
 <app-section-offers *ngIf="cmsDataForPageSectionSubsection" [homeOfferData]="cmsDataForPageSectionSubsection"></app-section-offers>
 <home-product-special></home-product-special>
 <app-section-feedback></app-section-feedback>
 <app-section-brand></app-section-brand>
 <app-section-recommend></app-section-recommend>
-<app-special-look></app-special-look>
+<app-special-look *ngIf="cmsDataForPageSectionSubsection" [middleblogList]="cmsDataForPageSectionSubsection['POST_HOME_MIDDLE']"></app-special-look>
 <app-business-oportunities *ngIf="cmsDataForPageSection" [serviceFooterData]="cmsDataForPageSection['LAYOUT_HEADER']"></app-business-oportunities>
-<app-section-service></app-section-service>
+<app-section-service *ngIf="cmsDataForPageSectionSubsection"  [serviceFooterList]="cmsDataForPageSectionSubsection['LAYOUT_FOOTER_FEATURE']"></app-section-service>
