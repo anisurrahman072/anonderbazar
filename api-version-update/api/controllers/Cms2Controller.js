@@ -33,22 +33,16 @@ module.exports = {
         });
       }
 
-      console.log('firsttt', rawResult);
-
-
       const finalRows = _.groupBy(rawResult.rows, (row) => {
         return row.page + '_' + row.section + '_' + row.sub_section;
       });
 
-      console.log('annnfnf', finalRows);
 
       _.forEach(finalRows, (collection) => {
         _.forEach(collection, (row) => {
           row.data_value = JSON.parse(row.data_value);
         });
       });
-
-      console.log('finalll', finalRows);
 
       return res.status(200).json(finalRows);
 
