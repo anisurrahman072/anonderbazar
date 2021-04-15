@@ -19,6 +19,7 @@ class ProductBulk {
     vendor_price: number = 0;
     quantity: number = 0;
     weight: number = 0;
+    frontend_position: number = 111;
     tag: string = "";
     image: string = "";
     image1: string = "";

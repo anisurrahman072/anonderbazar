@@ -1,5 +1,5 @@
 import {AppSettings} from "../../../../config/app.config";
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import {Store} from "@ngrx/store";
@@ -21,6 +21,7 @@ import {
 import * as fromStore from "../../../../state-management";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import * as ___ from 'lodash';
 
 @Component({
     selector: "home-product-special",
@@ -46,7 +47,7 @@ export class ProductSpecialComponent implements OnInit {
     tag: any;
     compare$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
-    promoCategories: any[];
+    @Input() promoCategories: any[];
     counter: any;
     clock: any;
 
@@ -99,7 +100,15 @@ export class ProductSpecialComponent implements OnInit {
 
     //Event method for getting all promo category
     private getPromoCategoey() {
-        this.cmsService
+        if(!___.isUndefined(this.promoCategories) && !___.isEmpty(this.promoCategories)){
+            this.promoCategories.forEach(element => {
+                this.categoryProductService.getById(element.data_value[0].category_id).subscribe(category => {
+                    element.data_value[0].category_id = category;
+                });
+            });
+        }
+
+        /*this.cmsService
             .getBySubSectionName('POST', 'HOME', 'CATEGORY')
             .subscribe(result => {
                 this.promoCategories = result;
@@ -109,7 +118,7 @@ export class ProductSpecialComponent implements OnInit {
                     });
 
                 });
-            });
+            });*/
 
     }
 

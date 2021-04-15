@@ -110,19 +110,19 @@ export class ProductService {
 
     getFeedbackProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort=rating%20DESC')
+            .get(this.EndPoint + '/getFeedbackProducts?approval_status=2&limit=4')
             .map(response => response);
     }
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
+            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2&limit=4')
             .map(response => response);
     }
 
     getRecommendedProducts(limit, offset): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2 }&limit=${limit}&skip=${offset}&sort=createdAt%20DESC`)
+            .get(`${this.EndPoint}/getRecommendedProducts?approval_status=2&limit=${limit}&skip=${offset}`)
             .map(response => response);
     }
 
@@ -183,7 +183,7 @@ export class ProductService {
 
     getAllByBrandId(brand_id: number): Observable<any>{
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null,"brand_id":${brand_id} }`)
+            .get(`${this.EndPoint}/getAllByBrandId?brand_id=${brand_id}`)
             .map(response => response);
     }
 

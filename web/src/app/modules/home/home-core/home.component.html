@@ -4,7 +4,7 @@
 ></home-banner>
 <app-flash-deals [dataProductList]="featureProducts"></app-flash-deals>
 <app-section-offers *ngIf="cmsDataForPageSectionSubsection" [homeOfferData]="cmsDataForPageSectionSubsection"></app-section-offers>
-<home-product-special></home-product-special>
+<home-product-special *ngIf="cmsDataForPageSectionSubsection" [promoCategories]="cmsDataForPageSectionSubsection['POST_HOME_CATEGORY']"></home-product-special>
 <app-section-feedback></app-section-feedback>
 <app-section-brand></app-section-brand>
 <app-section-recommend></app-section-recommend>
