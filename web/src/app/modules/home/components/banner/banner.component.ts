@@ -86,7 +86,7 @@ export class BannerComponent implements OnInit {
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
                 return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");
-            });
+            }).slice(0,3);
         }
 
         /*this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)
