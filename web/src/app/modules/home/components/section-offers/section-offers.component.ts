@@ -34,7 +34,7 @@ export class OfferComponent implements OnInit {
             this.allOffers = this.homeOfferData['POST_HOME_PARENTOFFER'];
             this.allOffers = this.allOffers.filter(offer => {
                  return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInHome === "true");
-            });
+            }).slice(0, 4);
 
             /*if (this.homeOfferData.data_value[0].offers && this.homeOfferData.data_value[0].offers.length > 0) {
                 this.homeOfferData.data_value[0].alloffers = [];
