@@ -149,6 +149,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             alert_quantity: [0, []],
             category_id: ['', [Validators.required]],
             brand_id: ['', []],
+            frontend_position: ['', []],
             subcategory_id: ['', []],
             quantity: ['', [Validators.required]],
             product_details: ['', [Validators.required]],
@@ -290,6 +291,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         formData.append('is_coupon_product', value.is_coupon_product ? '1' : '0');
         formData.append('weight', value.weight);
         formData.append('status', value.status);
+        formData.append('frontend_position', value.frontend_position);
 
         if (value.subcategory_id) {
             formData.append('subcategory_id', value.subcategory_id);

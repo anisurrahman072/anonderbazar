@@ -39,6 +39,10 @@ exports.columnListForBulkUpload = {
     width: 10,
     validation: 'decimal'
   },
+  'Frontend Position': {
+    width: 20,
+    validation: 'decimal'
+  },
   'Tags': {width: 15},
   'Main Image': {width: 15},
   'Image 1': {width: 15},
@@ -93,6 +97,10 @@ exports.columnListForBulkUpdate = function (isAdmin) {
     },
     'Weight': {
       width: 10,
+      validation: 'decimal'
+    },
+    'Frontend Position': {
+      width: 20,
       validation: 'decimal'
     },
     'Tags': {width: 15}

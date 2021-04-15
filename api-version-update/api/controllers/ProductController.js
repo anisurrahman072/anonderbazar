@@ -84,7 +84,17 @@ module.exports = {
           id: req.query.ids,
           deletedAt: null
         });
-        return res.status(200).json(products);
+        let productsById = _.keyBy(products, 'id');
+
+        let productsByFrontendPosition = products.map(product => {
+          return {id: product.id, frontend_position: product.frontend_position};
+        })
+          .sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1)
+          .map(product => {
+            return productsById[`${product.id}`];
+          });
+
+        return res.status(200).json(productsByFrontendPosition);
       }
 
       return res.status(422).json({
@@ -627,6 +637,111 @@ module.exports = {
       res.status(400).json({
         message: 'Error occurred: ' + error
       });
+    }
+  },
+
+  getAllByBrandId: async (req, res) => {
+    try {
+      let brandId = req.param('brand_id');
+
+      let allProducts = await Product.find({
+        deletedAt: null,
+        brand_id: brandId
+      }).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all products by brand ID',
+        data: allProducts
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all products by brand ID',
+        error
+      });
+    }
+  },
+
+  getRecommendedProducts: async (req, res) => {
+    try{
+      let params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).skip(params.skip).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all recommended products',
+        data: allProducts
+      });
+    }
+    catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all recommended products',
+        error
+      });
+    }
+  },
+
+  getFeedbackProducts: async (req, res) => {
+    try{
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {rating: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all Feedback products',
+        error
+      });
+    }
+  },
+
+  getNewProducts: async (req, res) => {
+    try {
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {createdAt: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    }
+    catch (error){
+
     }
   }
 
