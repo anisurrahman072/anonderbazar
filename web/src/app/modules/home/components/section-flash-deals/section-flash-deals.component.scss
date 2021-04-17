@@ -67,3 +67,9 @@
 .box-icon:hover:hover .icon {
   background-color: #eec15b;
 }
+
+@media screen and (min-width: 425px) {
+  .category-head{
+    margin-top: 35px;
+  }
+}
