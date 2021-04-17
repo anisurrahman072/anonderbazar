@@ -68,3 +68,8 @@
   background-color: #eec15b;
 }
 
+@media screen and (max-width: 425px) {
+  .offer-container{
+    width: 50%;
+  }
+}
