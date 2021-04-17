@@ -317,3 +317,16 @@ form.advanced-search {
 .icon{
   color: white;
 }
+
+@media screen and (max-width: 425px) {
+  .container-fluid{
+    padding-left: 12px !important;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .container-fluid{
+    padding-left: 12px !important;
+    padding-right: 30px !important;
+  }
+}
