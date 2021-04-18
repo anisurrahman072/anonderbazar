@@ -755,5 +755,46 @@ module.exports = {
         error
       });
     }
+  },
+
+  update: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set(req.body);
+
+      let paymentDetail = await Payment.find({
+        order_id: updatedOrder.id,
+        deletedAt: null
+      });
+
+      if(paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12){
+        let returnCashbackAmount = updatedOrder.total_price;
+
+        let prevCashbackDetail = await CouponLotteryCashback.findOne({
+          deletedAt: null,
+          user_id: paymentDetail[0].user_id
+        });
+
+        await CouponLotteryCashback.updateOne({
+          user_id: paymentDetail[0].user_id
+        }).set({
+          amount: prevCashbackDetail.amount + returnCashbackAmount
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated status of order',
+        data: updatedOrder
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating Order'
+      });
+    }
   }
 };

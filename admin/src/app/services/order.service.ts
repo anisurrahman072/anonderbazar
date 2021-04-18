@@ -49,6 +49,6 @@ export class OrderService {
     }
 
     update(id: number, data: any) {
-        return this.http.put(`${this.EndPoint}/${id}`, data);
+        return this.http.put(`${this.EndPoint}/update?id=${id}`, data);
     }
 }
