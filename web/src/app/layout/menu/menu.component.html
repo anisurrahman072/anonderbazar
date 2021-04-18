@@ -25,11 +25,11 @@
                         <a (click)="categoryClickEvent(category)" style="text-transform: capitalize;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
-                    <div class="dropdown-menu" style="overflow: hidden; height: auto;"  (mouseleave)="isDisplay = false"
+                    <div class="dropdown-menu" style="height: 400px; width: 100%;"
                          *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
-                        <div class-="row">
-                            <div class="col-md-8" style="display: flex; flex-wrap: wrap; max-width: 100%;">
-                                <div class="submenu" *ngFor='let sub of subCategoryList'>
+                        <div class-="row" style="height: 400px;">
+                            <div class="col-md-8 d-inline-flex flex-column flex-wrap" style="min-width: 100%; height: 400px;" >
+                                <div class="submenu" *ngFor='let sub of subCategoryList' style="width: fit-content;">
                                     <ul class="mb-3" *ngIf='sub'>
                                         <li class="text-th">
                                             <a style="text-transform: capitalize;"
