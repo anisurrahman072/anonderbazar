@@ -4,14 +4,14 @@
             <div class="col-xl-6 col-lg-12 col-md-12">
                 <div class="category-head justify-content-between d-flex">
                     <div class="titel">
-                        <h4>Top selection with feedback</h4>
+                        <h4>Top selling product</h4>
                     </div>
                     <button class="">
                         <a [routerLink]="['/products']" [queryParams]="{filter:'rating'}" >View All<i class="fa fa-angle-right text-center"></i></a>
                     </button>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-6 col-6 mb-4" *ngFor="let product of feedbackProducts">
+                    <div class="col-lg-6 col-md-6 col-6 mb-4" *ngFor="let product of topSellProducts">
                         <app-product-item-feedback [dataProductFeedback]="product"></app-product-item-feedback>
                     </div>
                 </div>

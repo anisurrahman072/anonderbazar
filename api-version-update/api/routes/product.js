@@ -5,6 +5,7 @@ exports.productRoute = {
   'GET /api/v1/product/getAllByBrandId': 'ProductController.getAllByBrandId',
   'GET /api/v1/product/getRecommendedProducts': 'ProductController.getRecommendedProducts',
   'GET /api/v1/product/getFeedbackProducts': 'ProductController.getFeedbackProducts',
+  'GET /api/v1/product/getTopSellProducts': 'ProductController.getTopSellProducts',
   'GET /api/v1/product/getNewProducts': 'ProductController.getNewProducts',
   'GET /api/v1/products/:_id': 'ProductsController.findOne',
   'GET /api/v1/products/getbysearchterm': 'ProductsController.getBySearchTerm',
