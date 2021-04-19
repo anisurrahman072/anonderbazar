@@ -60,3 +60,15 @@ input[type="text"], input[type="email"], textarea, input[type="password"], input
 
 }
 
+@media screen and (max-width: 425px) {
+    .banner-image{
+        max-height: 90px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .banner-image{
+        max-height: 66px;
+    }
+}
+

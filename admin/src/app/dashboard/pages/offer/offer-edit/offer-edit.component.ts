@@ -77,7 +77,7 @@ export class OfferEditComponent implements OnInit {
             offer_type: ['', [Validators.required]],
             frontend_position: ['', ''],
             link: ['', ''],
-            description: ['', [Validators.required]],
+            description: ['', []],
             showHome: ['',[]],
             showCarousel: ['',[]]
         });
