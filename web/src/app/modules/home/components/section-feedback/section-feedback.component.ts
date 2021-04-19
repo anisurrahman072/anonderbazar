@@ -16,7 +16,7 @@ export class FeedbackComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.productService.getTopSellProducts().subscribe(arg => this.topSellProducts = arg.data);
+        this.productService.getTopSellProducts().subscribe(arg => this.topSellProducts = arg.data.slice(0, 4));
         this.productService.getNewProducts().subscribe(arg => this.newProducts = arg.data);
     }
 
