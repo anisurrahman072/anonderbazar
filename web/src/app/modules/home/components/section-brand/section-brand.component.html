@@ -1,12 +1,11 @@
 <section id="brand-section" *ngIf="dataBrandList" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="category-head justify-content-between d-flex">
+        <div class="category-head justify-content-between d-flex" style="border-bottom: 2px solid #ed1c24;">
             <div class="titel">
-                <h4>Shop By Brand</h4>
+                <h4  class="section-title">Shop By Brand</h4>
             </div>
-            <button class="">
-                <a [routerLink]="['/brands']">View All
-                    <i class="fa fa-angle-right text-center"></i>
+            <button  style="align-self: flex-end;">
+                <a style="text-decoration: none;" [routerLink]="['/brands']">View All
                 </a>
             </button>
         </div>

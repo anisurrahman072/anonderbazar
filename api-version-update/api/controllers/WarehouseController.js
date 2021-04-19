@@ -193,7 +193,6 @@ module.exports = {
     try {
       console.log(req.body);
       let postBody = {...req.body};
-      // console.log(postBody);
 
       try {
         postBody.userdata = JSON.parse(postBody.userdata);
