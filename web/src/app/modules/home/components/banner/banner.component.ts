@@ -34,9 +34,9 @@ export class BannerComponent implements OnInit {
         this.carouselBannerItems = [];
         if (!___.isUndefined(this.carouselBannerData) && !___.isUndefined(this.carouselBannerData.data_value)) {
             if (___.isString(this.carouselBannerData.data_value)) {
-                this.carouselBannerItems = JSON.parse(this.carouselBannerData.data_value);
+                this.carouselBannerItems = JSON.parse(this.carouselBannerData.data_value).sort((a, b) => (parseInt(a.frontend_position) > parseInt(b.frontend_position)) ? 1 : -1);
             } else if (___.isArray(this.carouselBannerData.data_value)) {
-                this.carouselBannerItems = this.carouselBannerData.data_value;
+                this.carouselBannerItems = this.carouselBannerData.data_value.sort((a, b) => (parseInt(a.frontend_position) > parseInt(b.frontend_position)) ? 1 : -1);
             }
 
             this.carouselBannerItems.forEach(element => {
