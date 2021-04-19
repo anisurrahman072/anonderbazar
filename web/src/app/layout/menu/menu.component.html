@@ -28,7 +28,8 @@
                     <div class="dropdown-menu" style="height: 400px; width: 100%;" (mouseleave)="isDisplay = false"
                          *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
                         <div class-="row" style="height: 400px;">
-                            <div class="col-md-8 d-inline-flex flex-column flex-wrap" style="min-width: 100%; height: 400px;" >
+                            <div class="col-md-8 d-inline-flex flex-column flex-wrap"
+                                 style="min-width: 100%; height: 400px;">
                                 <div class="submenu" *ngFor='let sub of subCategoryList' style="width: fit-content;">
                                     <ul class="mb-3" *ngIf='sub'>
                                         <li class="text-th">
@@ -53,7 +54,8 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-md-4" *ngIf="desktopCurrentCategory && desktopCurrentCategory.offer_id" style="display: none;">
+                            <div class="col-md-4" *ngIf="desktopCurrentCategory && desktopCurrentCategory.offer_id"
+                                 style="display: none;">
                                 <div class="row">
                                     <a href="#" (click)="navigateToCms($event,  desktopCurrentCategory.offer_id.id)">
                                         <div class="col-md-12 mb-3">
@@ -75,91 +77,42 @@
 </div>
 <!-- mobile menu start -->
 <div class="mobile-menu">
-    <nav style="border-top: 0;">
-        <!--<div class="con">
-            <div class="mobile-nav"></div>
-            <input id="responsive-menu" type="checkbox">
-            <label for="responsive-menu">
-                <a routerLink="/" href="">
-                    <img class="img-1" src="assets/images/logo-white.png" alt="Logo">
-                    <img class="img-2" src="assets/images/logo.png" alt="Logo">
-                </a>
-                <span id="menu-icon" (click)="showHideMobileMenu()"></span>
-            </label>
-            <div class="widget-cart">
-                <a routerLink="/profile/favourites">
-                    <img src="assets/images/heart-black.svg" alt="heart">
-                    <span class='badge badge-warning countLabel'> {{(favourites$|async)?.length}} </span>
-                </a>
-
-                <a routerLink="/compare" title="compare">
-                    <img src="assets/images/compare-black.svg" alt="compare">
-                    <span class='badge badge-warning countLabel'> {{(compare$|async)?.length}} </span>
-                </a>
-
-                &lt;!&ndash; Button trigger modal &ndash;&gt;
-                <button type="button" (click)="showShoppingCartModal()" class="btn" data-toggle="modal">
-                    <a class="cart">
-                        <img src="assets/images/cart-black.svg" alt="cart">
-                        <span class='badge badge-warning countLabel'
-                              *ngIf="(cart$|async)?.data.total_quantity"> {{(cart$|async)?.data.total_quantity}} </span>
-                        <span class='badge badge-warning countLabel'
-                              *ngIf="!(cart$|async)?.data.total_quantity"> 0 </span>
-                    </a>
-                </button>
-                    <span *ngIf="(currentUser$|async); else log_in">
-                        <a routerLink="/profile/orders">
-                        My Account
-                        </a>
-                    </span>
-                    <ng-template #log_in>
-                            <a type="button" (click)="showLoginModal()">
-                            <i class="" id="user-icon"></i>
-                                Sign in
-                            </a>
-                    </ng-template>
-            </div>
-            <ul>
-                <li>
-                    <a href="#"> Home </a>
-                </li>
-                <li *ngFor="let category of categoryList"
-                    (mouseenter)="categoryHover(category)"
-                    (click)="categoryClickEvent(category)">
-                    <a href="#" [routerLink]="['/products/category/',category.id]" style="text-transform: capitalize;">{{category.name}}</a>
-                </li>
-            </ul>
-        </div>-->
-        <div class="Category" style="display: flex; flex-direction: row; overflow-x: scroll; background-color: black;"
-             *ngIf="categoryList">
-            <div *ngFor='let category of categoryList' style="white-space: nowrap; padding: 5px;"
-                 (click)="mobileCategoryClickEvent(category)">
-                <p style="font-weight: bold; color: white !important;"> {{category.name}} </p>
-            </div>
-        </div>
-        <div *ngIf="mobileSubCategoryList" style="width: 100%; z-index: 1000">
-            <div *ngFor='let subCategory of mobileSubCategoryList'
-                 style="width: 100%; background-color: #ac1313; padding: 5px;">
-                <p style="background: none; border: none; width: 100%; text-align: left; color: white; font-weight: bold;"
-                   (click)="subCategoryClickEvent(subCategory)">
-                    {{subCategory.name}}
-                    <i class="fa fa-chevron-down" aria-hidden="true" style="float: right;"></i>
-                </p>
-
-                <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">
-                    <div *ngFor="let subSubCategory of subSubCategoryList"
-                         (click)="navigateFromMobile($event,subCategory,subSubCategory)">
-                        <a class="dropdown-item" href="#" [routerLink]="['/products/category/',subSubCategory.id]"
-                           style="margin-left: 10px; text-align: left; color: white;">
-                            {{subSubCategory.name}}
-                        </a>
-                    </div>
+    <nav style="border-top: 0; padding-top: 0px;">
+        <div class="scrollable-menu">
+            <i class="fa fa-chevron-left left-right-arrow" aria-hidden="true" style=" left: 0px; top: 50%;"></i>
+            <i class="fa fa-chevron-right left-right-arrow" aria-hidden="true" style="right: 0px; top: 50%;"></i>
+            <div class="Category"
+                 *ngIf="categoryList">
+                <div *ngFor='let category of categoryList' style="white-space: nowrap; padding: 5px;"
+                     (click)="mobileCategoryClickEvent(category)">
+                    <p style="font-weight: bold; color: white !important;"> {{category.name}} </p>
                 </div>
             </div>
         </div>
     </nav>
+    <div *ngIf="mobileSubCategoryList" class="subcategory-section" style="">
+        <div *ngFor='let subCategory of mobileSubCategoryList'
+             style="background-color: #ac1313; padding: 5px 5px 0 5px; width: 90%;">
+            <p class="subcategory-name" style=" "
+               (click)="subCategoryClickEvent(subCategory)">
+                {{subCategory.name}}
+                <i class="fa fa-chevron-down" aria-hidden="true"
+                   style="float: right;top: 50%; transform: translate(0%, 36%);"></i>
+            </p>
 
-    <div class="mobile-bottom">
+            <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">
+                <div *ngFor="let subSubCategory of subSubCategoryList"
+                     (click)="navigateFromMobile($event,subCategory,subSubCategory)">
+                    <a class="dropdown-item" href="#" [routerLink]="['/products/category/',subSubCategory.id]"
+                       style="margin-left: 10px; text-align: left; color: white;">
+                        {{subSubCategory.name}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-bottom" style="">
         <div class="row mobile-menu-container">
             <div (click)="showShoppingCartModal()" class="mobile-cart icon-style" style="">
                 <a>

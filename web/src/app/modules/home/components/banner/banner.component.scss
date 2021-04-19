@@ -194,7 +194,7 @@
 
 
 .offer-section{
-  padding-left: 0px; padding-right: 15px;
+  padding-left: 0px; padding-right: 0px;
 }
 
 .sideImage{
@@ -214,6 +214,10 @@
 }
 
 @media screen and (max-width: 767px) {
+  .container-fluid{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
   .offer-section{
     padding-left: 15px;
     width: 455px;
@@ -256,7 +260,7 @@
 
 @media screen and (min-width: 1440px) {
   .sideImage{
-    height: 139px;
+    height: 121px;
   }
 }
 
@@ -264,6 +268,6 @@
 
 @media screen and (min-width: 2560px) {
   .sideImage{
-    height: 253px;
+    height: 221px;
   }
 }

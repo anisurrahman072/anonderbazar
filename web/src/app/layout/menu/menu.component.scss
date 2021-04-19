@@ -319,7 +319,7 @@ button {
 }
 
 .mobile-menu {
-  max-height: 90vh;
+  max-height: 68vh;
   overflow-y: scroll;
 }
 
@@ -352,6 +352,13 @@ button {
   box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
 }
 
+.scrollable-menu {
+  position: relative;
+  background-color: darkgray;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .icon-style {
   display: flex;
   flex-direction: column;
@@ -359,3 +366,37 @@ button {
   margin-bottom: 5px;
 }
 
+.left-right-arrow {
+  position: absolute;
+  color: white;
+  transform: translate(0%, -50%);
+}
+
+.subcategory-section {
+  z-index: 1000;
+  position: absolute;
+  width: 90%;
+  overflow: scroll;
+  height: 68vh;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.subcategory-section::-webkit-scrollbar {
+  display: none;
+}
+
+.Category {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+}
+
+.subcategory-name {
+  background: none;
+  border: none;
+  text-align: left;
+  color: white;
+  font-weight: bold;
+  border-bottom: 1px solid darkgray;
+}

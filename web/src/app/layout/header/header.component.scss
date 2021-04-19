@@ -319,6 +319,9 @@ form.advanced-search {
 }
 
 @media screen and (max-width: 425px) {
+  .header_top_area{
+    padding-bottom: 20px;
+  }
   .container-fluid{
     padding-left: 12px !important;
   }
