@@ -10,7 +10,7 @@ import {ToastrService} from "ngx-toastr";
 export class RecommendComponent implements OnInit {
     dataProductList: any[] = [];
     limit: number = 24;
-    skip: number = 6;
+    skip: number = 0;
     productDataTrue: boolean = true;
 
     constructor(private productService: ProductService,
@@ -25,7 +25,7 @@ export class RecommendComponent implements OnInit {
     //Event method for getting all the data for the page
     private getRecommendedProducts(limit, skip) {
         this.productService.getRecommendedProducts(limit, skip).subscribe(products => {
-            this.dataProductList.push(...products);
+            this.dataProductList.push(...products.data);
             if (products.length < 8) {
                 this.productDataTrue = false;
                 this.toastr.info("No more products", 'Note');

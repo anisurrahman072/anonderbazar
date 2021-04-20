@@ -6,6 +6,7 @@
  */
 const {asyncForEach} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
+const _ = require('lodash');
 
 module.exports = {
   removeImage: async (req, res) => {
@@ -347,6 +348,14 @@ module.exports = {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+  allCategories: async (req, res) => {
+    try {
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
+      return res.json(categories);
+    } catch (error) {
+      return res.status(error.status).json({message: '', error, success: false});
+    }
+  },
   //Method called for getting a category with subcategories data
   //Model models/Category.js
   withSubcategories: async (req, res) => {
@@ -364,29 +373,29 @@ module.exports = {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+
   //Method called for getting a category with subcategories data
   //Model models/Category.js
-  withSubcategoriesforSpecific: async (req, res) => {
+  withSubcategoriesV2: async (req, res) => {
     try {
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2});
 
-      let categoryIds = JSON.parse(req.query.category_ids);
+      const parentCategoryIds = categories.map((cat) => cat.id);
 
-      if (!(categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0)) {
-        return res.status(422).json({
-          message: false
-        });
-      }
+      const allSubCategories = await Category.find({deletedAt: null, parent_id: parentCategoryIds, type_id: 2});
+      const subCategoryIndexes = _.groupBy(allSubCategories, 'parent_id');
 
-      let where = {deletedAt: null, type_id: 2};
-      where.parent_id = categoryIds;
+      const allSubCategoriesIds = allSubCategories.map((cat) => cat.id);
+      const allSubSubCategories = await Category.find({deletedAt: null, parent_id: allSubCategoriesIds, type_id: 2});
+      const subSubCategoryIndexes = _.groupBy(allSubSubCategories, 'parent_id');
 
-      let categories = await Category.find(where);
-
-      return res.json(categories);
+      const allCategories = _.merge(subCategoryIndexes, subSubCategoryIndexes);
+      return res.json(allCategories);
     } catch (error) {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+
   //Method called for getting a product category with subcategories data
   //Model models/Category.js
   withProductSubcategory: async (req, res) => {

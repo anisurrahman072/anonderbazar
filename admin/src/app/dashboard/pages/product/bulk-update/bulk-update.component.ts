@@ -19,6 +19,7 @@ class ProductBulk {
     vendor_price: number = 0;
     quantity: number = 0;
     weight: number = 0;
+    frontend_position: number = 111;
     tag: string = "";
 }
 
@@ -168,6 +169,7 @@ export class BulkUpdateComponent implements OnInit {
             const productOb = new ProductBulk();
 
             if (this.currentUser.group_id === 'owner') {
+                delete productOb.frontend_position;
                 delete productOb.warehouse_id;
             }
             const header: string[] = Object.getOwnPropertyNames(productOb);

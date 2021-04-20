@@ -34,6 +34,9 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  BrandsController: {
+    '*': true,
+  },
   CartController: {
     '*': false,
     'find': ['isAuthorized', 'isCustomer'],
@@ -71,9 +74,11 @@ module.exports.policies = {
     'withSubcategoriesforSpecific': true,
     'getProduct': true,
     'getSingleType': true,
+    'allCategories': true,
     'getSingleProduct': true,
     'withSubcategories': true,
     'withProductSubcategory': true,
+    'withSubcategoriesV2': true,
   },
   CraftmanPricesController: {
     'getAll': true
@@ -101,6 +106,10 @@ module.exports.policies = {
     'customInsert': ['isAuthorized', 'isAdmin'],
     'customUpdate': ['isAuthorized', 'isAdmin'],
     'customDelete': ['isAuthorized', 'isAdmin'],
+  },
+  Cms2Controller: {
+    'byPageNSection': true,
+    'byPageNSectionNSubsection': true,
   },
   DesignCategoriesController: {
     '*': false,

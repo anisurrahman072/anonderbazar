@@ -4,12 +4,13 @@
  * @description :: Server-side logic for managing categories
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
 const {uploadImages} = require('../../libs/helper');
 const {imageUploadConfig} = require('../../libs/helper');
 
 module.exports = {
+
 
   // Method for getting all the parent offer and child offer
   getAll: async (req, res) => {
@@ -113,6 +114,11 @@ module.exports = {
 
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
+          if(files.length === 2){
+            let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/'+bannerImagePath;
+          }
+
           body.image = '/' + newPath;
           let data_value = [];
 
@@ -122,6 +128,7 @@ module.exports = {
                 title: req.body.title,
                 description: req.body.description,
                 image: body.image,
+                banner_image: body.banner_image,
                 link: body.link,
                 offers: [],
                 products: [],
@@ -137,6 +144,7 @@ module.exports = {
                 offers: [],
                 products: [],
                 image: body.image,
+                banner_image: body.banner_image,
                 showInCarousel: req.body.showInCarousel,
                 showInHome: req.body.showInHome
               }
@@ -245,7 +253,7 @@ module.exports = {
       let showInCarousel = body.showInCarousel ? body.showInCarousel : prevOfferData.data_value[0].showInCarousel;
       let showInHome = body.showInHome ? body.showInHome : prevOfferData.data_value[0].showInHome;
 
-      if (body.hasImage === 'true') {
+      if (body.hasImage === 'true' || body.hasBannerImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
         if (files.length === 0) {
@@ -253,7 +261,21 @@ module.exports = {
         }
         const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
-        body.image = '/' + newPath;
+        if(files.length === 2){
+          body.image = '/' + newPath;
+          let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+          body.banner_image = '/'+bannerImagePath;
+        }
+        else if(files.length === 1){
+          if(body.hasImage === 'true'){
+            body.image = '/' + newPath;
+          }
+          else{
+            body.banner_image = '/' + newPath;
+          }
+        }
+
+
         let data_value = [];
 
         if (body.subsection === 'OFFER') {
@@ -261,7 +283,8 @@ module.exports = {
             {
               title: body.title,
               description: body.description,
-              image: body.image,
+              image: body.image ? body.image : prevOfferData.data_value[0].image,
+              banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               link: body.link,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
@@ -276,7 +299,8 @@ module.exports = {
               description: body.description,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
-              image: body.image,
+              image: body.image ? body.image : prevOfferData.data_value[0].image,
+              banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               showInCarousel: showInCarousel,
               showInHome: showInHome,
             }
@@ -312,6 +336,7 @@ module.exports = {
               description: body.description,
               link: body.link,
               image: prevOfferData.data_value[0].image,
+              banner_image: prevOfferData.data_value[0].banner_image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
               showInCarousel: showInCarousel,
@@ -324,6 +349,7 @@ module.exports = {
               title: body.title,
               description: body.description,
               image: prevOfferData.data_value[0].image,
+              banner_image: prevOfferData.data_value[0].banner_image,
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
               showInCarousel: showInCarousel,
@@ -599,7 +625,8 @@ module.exports = {
         title: req.body.title,
         description: req.body.description,
         image: newDesktopImagePath,
-        image_mobile: newMobileImagePath
+        image_mobile: newMobileImagePath,
+        frontend_position: req.body.frontend_position
       });
 
       _payload.data_value = existingDataValue;
@@ -738,11 +765,14 @@ module.exports = {
           mobileImage = '';
         }
 
+        let frontend_position = req.body.frontend_position ? req.body.frontend_position : indexedDataValue.frontend_position;
+
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
           image: newDesktopImagePath,
-          image_mobile: mobileImage
+          image_mobile: mobileImage,
+          frontend_position: frontend_position
         };
 
         await CMS.updateOne({id: cms.id}).set({
@@ -766,11 +796,14 @@ module.exports = {
           mobileImage = '';
         }
 
+        let frontend_position = req.body.frontend_position ? req.body.frontend_position : indexedDataValue.frontend_position;
+
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
           image: desktopImage,
-          image_mobile: mobileImage
+          image_mobile: mobileImage,
+          frontend_position: frontend_position
         };
 
         await CMS.updateOne({id: cms.id}).set({

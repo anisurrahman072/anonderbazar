@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BrandProductComponent } from './brand-product/brand-product.component';
 import { BrandRoutingModule } from './brand-routing.module';
 import {SharedModule} from "../shared/shared.module";
+import { BrandComponent } from './brand/brand.component';
 
 @NgModule({
   imports: [
@@ -10,6 +11,6 @@ import {SharedModule} from "../shared/shared.module";
     BrandRoutingModule,
     SharedModule,
   ],
-  declarations: [BrandProductComponent]
+  declarations: [BrandProductComponent, BrandComponent]
 })
 export class BrandModule { }

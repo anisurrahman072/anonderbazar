@@ -35,4 +35,10 @@ exports.categoryRoutes = {
   'DELETE /api/v1/category/remove-image/:id/:type': [
     {controller: 'CategoryController', action: 'removeImage'}
   ],
+  'GET /api/v1/category/with-subcategories-v2': [
+    {controller: 'CategoryController', action: 'withSubcategoriesV2'}
+  ],
+  'GET /api/v1/category/all-categories-v2': [
+    {controller: 'CategoryController', action: 'allCategories'}
+  ],
 };

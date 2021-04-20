@@ -11,6 +11,8 @@ const {removeCacheForProduct} = require('../../libs/cache-manage');
 const {asyncForEach} = require('../../libs/helper');
 const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
+const _ = require('lodash');
+const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 
 module.exports = {
 
@@ -83,7 +85,17 @@ module.exports = {
           id: req.query.ids,
           deletedAt: null
         });
-        return res.status(200).json(products);
+        let productsById = _.keyBy(products, 'id');
+
+        let productsByFrontendPosition = products.map(product => {
+          return {id: product.id, frontend_position: product.frontend_position};
+        })
+          .sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1)
+          .map(product => {
+            return productsById[`${product.id}`];
+          });
+
+        return res.status(200).json(productsByFrontendPosition);
       }
 
       return res.status(422).json({
@@ -576,7 +588,7 @@ module.exports = {
         code: req.param('code'),
         deletedAt: null
       };
-      if(req.query.exclude_id){
+      if (req.query.exclude_id) {
         where.id = {'!=': req.query.exclude_id};
       }
       console.log(where);
@@ -590,6 +602,202 @@ module.exports = {
     } catch (error) {
       console.log(error);
       return res.status(400).json({isunique: true});
+    }
+  },
+
+  getCountByBrandIds: async (req, res) => {
+
+    try {
+      let allIds = req.query.brand_ids.split(',').map(id => parseInt(id));
+
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+            SELECT COUNT(*) as productCount, brand_id   FROM products
+            WHERE deleted_at IS NULL AND brand_id IN (${allIds.join(',')})
+            GROUP BY brand_id
+      `;
+
+      const rawResult = await productNativeQuery(rawSelect, []);
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
+      }
+
+      const finalBrandCounts = _.keyBy(rawResult.rows, 'brand_id');
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully counted all products by brand id',
+        data: finalBrandCounts
+      });
+
+    } catch (error) {
+      res.status(400).json({
+        message: 'Error occurred: ' + error
+      });
+    }
+  },
+
+  getAllByBrandId: async (req, res) => {
+    try {
+      let brandId = req.param('brand_id');
+
+      let allProducts = await Product.find({
+        deletedAt: null,
+        brand_id: brandId
+      }).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all products by brand ID',
+        data: allProducts
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all products by brand ID',
+        error
+      });
+    }
+  },
+
+  getRecommendedProducts: async (req, res) => {
+    try{
+      let params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).skip(params.skip).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all recommended products',
+        data: allProducts
+      });
+    }
+    catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all recommended products',
+        error
+      });
+    }
+  },
+
+  getFeedbackProducts: async (req, res) => {
+    try{
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {rating: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all Feedback products',
+        error
+      });
+    }
+  },
+
+  getTopSellProducts: async (req, res) => {
+    try {
+      const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = `SELECT
+                       product_id as productId,
+                       GROUP_CONCAT (product_quantity) as quantity`;
+
+      let fromSQL = ' FROM product_suborder_items as subOrderItems';
+      fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id';
+
+      let _where = ` WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled} AND subOrders.deleted_at IS NULL
+      AND subOrderItems.deleted_at IS NULL`;
+      _where += ' GROUP BY productId';
+
+      const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
+
+      /** Count the quantity of each product that were sold */
+      let countOrderProduct = rawResult.rows.map(order => {
+        let orderCount =   order.quantity.split(',').reduce((prev, current) => {
+          return parseInt(prev) + parseInt(current);
+        }, 0);
+        return {...order, count: orderCount};
+      }).sort((a, b) => (a.count > b.count) ? -1 : 1);
+
+      let productIds = countOrderProduct.map(data => {
+        return data.productId;
+      });
+
+      let allProducts = await Product.find({
+        id: productIds
+      });
+
+      let keyByProducts = _.keyBy(allProducts, 'id');
+      let products = [];
+
+      productIds.map(id => {
+        products.push(keyByProducts[`${id}`]);
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all sold products with Top Sell Order',
+        data: products
+      });
+
+    }
+    catch (error){
+      return res.status(200).json({
+        success: false,
+        message: 'Error while fetching products'
+      });
+    }
+  },
+
+  getNewProducts: async (req, res) => {
+    try {
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {createdAt: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    }
+    catch (error){
+
     }
   }
 

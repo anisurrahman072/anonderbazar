@@ -1,18 +1,16 @@
 import {Component, Inject, OnInit} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
-import {CategoryTypeService} from "../../services";
 import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../state-management";
-import {Observable} from "rxjs/Observable";
 import {AppSettings} from "../../config/app.config";
 import {FilterUiService} from "../../services/ui/filterUi.service";
 import {BrandService} from "../../services";
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
-import {LoginModalService} from '../../services/ui/loginModal.service';
 import {GLOBAL_CONFIGS} from "../../../environments/global_config";
-import * as _ from "lodash";
+import * as ___ from 'lodash';
+import {forkJoin} from "rxjs/observable/forkJoin";
 
 @Component({
     selector: "app-menu",
@@ -20,14 +18,14 @@ import * as _ from "lodash";
     styleUrls: ["./menu.component.scss"]
 })
 export class MenuComponent implements OnInit {
-    private currentUser$: Observable<any>;
-    private categoryCache: any;
+
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
-    private productTypeList: any;
+
     categoryList: any[];
     subCategoryList: any[];
     brandList: any[];
+    brandListIndex: any;
     selectedCategoryId: any;
     isDisplay: boolean;
     isMobileMenuOpen: boolean = false;
@@ -37,19 +35,20 @@ export class MenuComponent implements OnInit {
     selectedSubSubCategoryId = null;
     showSubSubCategoryList: boolean[];
 
-    /*
-    * constructor for MenuComponent
-    */
+    private subCategoryIndexes: any;
+    desktopCurrentCategory: any;
+
+    /**
+     * constructor for MenuComponent
+     */
     constructor(
         @Inject(DOCUMENT) document,
-        private categoryTypeService: CategoryTypeService,
         private categoryProductService: CategoryProductService,
         private router: Router,
         private store: Store<fromStore.HomeState>,
         private filterUIService: FilterUiService,
         private brandService: BrandService,
-        private shoppingModalService: ShoppingModalService,
-        private loginModalService: LoginModalService,
+        private shoppingModalService: ShoppingModalService
     ) {
         this.isDisplay = false;
     }
@@ -57,22 +56,25 @@ export class MenuComponent implements OnInit {
     // init the component
     ngOnInit() {
 
-        this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
-
-        this.categoryTypeService.getAll().subscribe(result => {
-            console.log('productTypeList', result.map((item) => item.name));
-            this.productTypeList = result;
-        });
-
         this.categoryProductService
-            .getCategoriesWithSubcategories()
-            .subscribe(result => {
-                console.log('getCategoriesWithSubcategories', result);
+            .getAllCategories()
+            .concatMap((result: any) => {
                 this.categoryList = result;
-                this.categoryCache = {};
-                result.forEach((item) => {
-                    this.categoryCache[item.id] = item.subCategories;
-                })
+                return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
+            })
+            .subscribe((result: any) => {
+
+                if (!___.isUndefined(result[0])) {
+                    console.log('getCategoriesWithSubcategoriesV2', result[0]);
+                    this.subCategoryIndexes = result[0];
+                    for (const category of this.categoryList) {
+                        this.populateSubCategories(category);
+                    }
+                }
+                if (!___.isUndefined(result[1]) && !___.isUndefined(result[1].data)) {
+                    console.log('brandListIndex', result[1].data);
+                    this.brandListIndex = result[1].data;
+                }
             });
 
         this.router.events.subscribe(event => {
@@ -84,36 +86,28 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    showHideMobileMenu() {
-        this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    }
-
     //Event method for category hover from menu
     categoryHover(category: any) {
-        this.subCategoryList = category.subCategories;
-        const ids = this.subCategoryList.map((cat) => cat.id);
-        this.categoryProductService.getSubcategoryByCategoryIdsV2(ids)
-            .subscribe(arg => {
-                this.categoryCache = _.merge(this.categoryCache, _.groupBy(arg, 'parent_id'));
-                console.log('this.categoryCache', this.categoryCache);
-            });
+        this.desktopCurrentCategory = category;
 
-        for (const sub of this.subCategoryList) {
-            this.categoryProductService.getSubcategoryByCategoryId(sub.id)
-                .subscribe(arg => {
-                    sub.subCategory = arg
-                });
+        this.subCategoryList = [];
+        if (!___.isUndefined(category.subCategory)) {
+            this.subCategoryList = category.subCategory;
         }
-        this.brandList = []
-        this.brandService.shopByBrand(category.id).subscribe(res => {
-            this.brandList = res['data'];
-        })
+
+        this.brandList = [];
+        if (!___.isUndefined(this.brandListIndex[category.id]) && !___.isUndefined(this.brandListIndex[category.id].brand_ids)) {
+            this.brandList = this.brandListIndex[category.id].brand_ids;
+        }
+        console.log('this.brandList', category.id, this.brandList);
+
     }
 
     //Event method for category click from menu
     categoryClickEvent(category: any) {
         this.selectedCategoryId = category.id;
-        this.subCategoryList = category.subCategories;
+        // this.populateSubCategories(category);
+        this.subCategoryList = category.subCategory;
         this.isDisplay = false;
         this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
@@ -121,17 +115,28 @@ export class MenuComponent implements OnInit {
         ele.checked = false;
     }
 
-
     mobileCategoryClickEvent(category: any) {
         if (category.id === this.selectedCategoryId) {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
         } else {
+
+            let subCategoryList = [];
+            if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
+                subCategoryList = this.subCategoryIndexes[category.id];
+                for (const subCategory of subCategoryList) {
+                    subCategory.subCategory = [];
+                    if (!___.isEmpty(this.subCategoryIndexes[subCategory.id])) {
+                        subCategory.subCategory = this.subCategoryIndexes[subCategory.id];
+                    }
+                }
+            }
+
             this.showSubSubCategoryList = [];
             this.subSubCategoryList = null;
             this.selectedCategoryId = category.id;
-            this.mobileSubCategoryList = category.subCategories;
+            this.mobileSubCategoryList = subCategoryList;
             this.mobileSubCategoryList.forEach(subCat => {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
@@ -147,23 +152,17 @@ export class MenuComponent implements OnInit {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
             this.showSubSubCategoryList[subCategory.id] = true;
-
             this.selectedSubSubCategoryId = subCategory.id;
-            this.categoryProductService.getSubcategoryByCategoryId(subCategory.id)
-                .subscribe(subSubCategory => {
-                    this.subSubCategoryList = subSubCategory;
-                    if (this.subSubCategoryList.length === 0) {
-                        this.mobileSubCategoryList = null;
-                        this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
-                            queryParams: {
-                                category: this.selectedCategoryId,
-                                sub: subCategory.id
-                            }
-                        });
+            this.subSubCategoryList = this.subCategoryIndexes[this.selectedSubSubCategoryId];
+            if (!this.subSubCategoryList) {
+                this.mobileSubCategoryList = null;
+                this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
+                    queryParams: {
+                        category: this.selectedCategoryId,
+                        sub: subCategory.id
                     }
-                }, error => {
-                    console.log('Error while finding subSubCategory: ', error);
                 });
+            }
         }
     }
 
@@ -173,6 +172,7 @@ export class MenuComponent implements OnInit {
         this.filterUIService.changeCategoryId(id);
         this.filterUIService.changeCategoryType(type);
         this.filterUIService.changeCategoryName(name);
+
         this.router.navigate(['/products', {type: 'category', id: id}], {
             queryParams: {
                 category: id
@@ -231,9 +231,22 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    //Event method for showing login modal
-    showLoginModal() {
-        this.loginModalService.showLoginModal(true);
+    showHideMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
+
+    private populateSubCategories(category: any) {
+
+        if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
+            category.subCategory = this.subCategoryIndexes[category.id];
+            for (const subCategory of category.subCategory) {
+                subCategory.subCategory = [];
+                if (!___.isEmpty(this.subCategoryIndexes[subCategory.id])) {
+                    subCategory.subCategory = this.subCategoryIndexes[subCategory.id];
+                }
+            }
+        }
+
     }
 
     //Event method for showing shopping cart

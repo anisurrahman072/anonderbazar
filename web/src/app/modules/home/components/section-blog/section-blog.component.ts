@@ -19,16 +19,17 @@ export class SectionBlogComponent implements OnInit {
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        this.cmsService.getBySubSectionName('POST', 'HOME', "BOTTOM").subscribe(result => {
-            this.bottomblogList = result;
-            for (let i = 0; i < this.bottomblogList.length; i++) {
-                let inputWords = this.bottomblogList[i].data_value[0].description.replace(/<[^>]*>/g, '').split(' ');
-                if (inputWords.length > 50)
-                    this.bottomblogList[i].data_value[0].description = inputWords.slice(0, 50).join(' ') + ' ...';
-                else
-                    this.bottomblogList[i].data_value[0].description = inputWords.join(' ');
-            }
-        });
+        this.cmsService.getBySubSectionName('POST', 'HOME', "BOTTOM")
+            .subscribe(result => {
+                this.bottomblogList = result;
+                for (let i = 0; i < this.bottomblogList.length; i++) {
+                    let inputWords = this.bottomblogList[i].data_value[0].description.replace(/<[^>]*>/g, '').split(' ');
+                    if (inputWords.length > 50)
+                        this.bottomblogList[i].data_value[0].description = inputWords.slice(0, 50).join(' ') + ' ...';
+                    else
+                        this.bottomblogList[i].data_value[0].description = inputWords.join(' ');
+                }
+            });
     }
 
 }

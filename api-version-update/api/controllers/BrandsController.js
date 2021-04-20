@@ -4,51 +4,138 @@
  * @description :: Server-side logic for managing brands
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+const Promise = require('bluebird');
+const _ = require('lodash');
 const {pagination} = require('../../libs/pagination');
+
 module.exports = {
-  //Method called for getting shopbybrand data
+  //Method called for getting brandsByCategories data
   //Model models/Brand.js
-  shopbybrand: async (req, res) => {
-    let _where = {};
-
-    if (req.body && req.body.category_id) {
-      _where.type_id = req.body.category_id;
-    }
-
-    let products = await Product.find(
-      {where: _where}
-    );
-
+  brandsByCategories: async (req, res) => {
     try {
-      let notDistinctBrand = [];
-      let distinctBrand = [];
-      let modifiedBrands = [];
-      products.forEach(element => {
-        notDistinctBrand.push(element.brand_id);
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
+
+      let categoryIds = categories.map((cat)=> {
+        return cat.id;
       });
-      notDistinctBrand.forEach(element => {
-        if (!distinctBrand.includes(element) && element !== null) {
-          distinctBrand.push(element);
+
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            type_id as category_id,
+            GROUP_CONCAT(brand_id) as brand_ids
+    `;
+      let fromSQL = ` FROM products `;
+
+      let _where = ` WHERE deleted_at IS NULL AND type_id IN (${categoryIds.join(',')}) GROUP BY type_id `;
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
+      }
+
+      console.log('numberOfUser: ', rawResult.rows.length);
+
+      let allRows = rawResult.rows.map((row) => {
+        return {
+          category_id: row.category_id,
+          brand_ids: _.uniq(row.brand_ids.split(','))
+        };
+      });
+
+      console.log('allRows', allRows);
+
+      let allBrandIds = [];
+      allRows.forEach((row) => {
+        allBrandIds = allBrandIds.concat(row.brand_ids);
+      });
+
+      allBrandIds = _.uniq(allBrandIds);
+
+      let brands = await Brand.find({
+        where: {
+          id: allBrandIds
         }
       });
-      for (const iterator of distinctBrand) {
-        let brand = await Brand.findOne({
-          where: {
-            id: iterator
-          }
-        });
-        modifiedBrands.push(brand);
-      }
+
+      brands = _.keyBy(brands, 'id');
+
+      allRows = allRows.map((row) => {
+        let brandObjects = [];
+
+        if (Array.isArray(row.brand_ids) && row.brand_ids.length) {
+          row.brand_ids.forEach((branId) => {
+            if (!_.isUndefined(brands[branId])) {
+              brandObjects.push(brands[branId]);
+            }
+          });
+        }
+        return {
+          category_id: row.category_id,
+          brand_ids: brandObjects
+        };
+      });
+
       return res.status(200).json({
-        data: modifiedBrands,
-        message: req.body.category_id,
+        data: _.keyBy(allRows, 'category_id'),
+        message: 'success'
       });
     } catch (error) {
       console.log(error);
       return res.json(400, {message: 'Something went wrong!', error});
     }
+  },
+  //Method called for getting shopbybrand data
+  //Model models/Brand.js
+  shopbybrand: async (req, res) => {
 
+    try {
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            COUNT(*) as productCount,
+            brand_id as brand_id
+    `;
+      let fromSQL = ` FROM products `;
+
+      let _where = ` WHERE deleted_at IS NULL `;
+
+      if (req.body && req.body.category_id) {
+        _where += ` AND category_id = ${req.body.category_id} `;
+      }
+      _where += ' GROUP BY brand_id ';
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
+        return res.status(200).json({
+          data: [],
+          message: 'success'
+        });
+      }
+
+      const allBrandIds = rawResult.rows.map((item) => item.id);
+
+      let brands = await Brand.find({
+        where: {
+          id: allBrandIds
+        }
+      });
+
+      return res.status(200).json({
+        data: brands,
+        message: 'success'
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json(400, {message: 'Something went wrong!', error});
+    }
   },
   //Method called for getting all brand data
   //Model models/Brand.js

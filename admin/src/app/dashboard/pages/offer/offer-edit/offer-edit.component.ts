@@ -14,6 +14,7 @@ import {environment} from "../../../../../environments/environment";
 export class OfferEditComponent implements OnInit {
     validateForm: FormGroup;
     ImageFile: File;
+    BannerImageFile: File;
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -53,6 +54,7 @@ export class OfferEditComponent implements OnInit {
     sub: any;
     id: any;
     ImageFileEdit: any;
+    BannerImageFileEdit: any;
     data: any;
 
     isShowHomepage: boolean;
@@ -75,7 +77,7 @@ export class OfferEditComponent implements OnInit {
             offer_type: ['', [Validators.required]],
             frontend_position: ['', ''],
             link: ['', ''],
-            description: ['', [Validators.required]],
+            description: ['', []],
             showHome: ['',[]],
             showCarousel: ['',[]]
         });
@@ -85,6 +87,7 @@ export class OfferEditComponent implements OnInit {
             this.cmsService.getById(this.id)
                 .subscribe(result => {
                     this.ImageFileEdit = [];
+                    this.BannerImageFileEdit = [];
                     this.data = result;
 
                     let showHome = this.data.data_value[0].showInHome === 'true' ? true : false;
@@ -104,6 +107,9 @@ export class OfferEditComponent implements OnInit {
                     this.validateForm.patchValue(payload);
                     if (this.data && this.data.data_value[0].image) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.data_value[0].image);
+                    }
+                    if (this.data && this.data.data_value[0].banner_image) {
+                        this.BannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.data_value[0].banner_image);
                     }
                     this._isSpinning = false;
                 }, () => {
@@ -137,7 +143,13 @@ export class OfferEditComponent implements OnInit {
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
             formData.append('hasImage', 'false');
+        }
 
+        if (this.BannerImageFile) {
+            formData.append('hasBannerImage', 'true');
+            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
+        } else {
+            formData.append('hasBannerImage', 'false');
         }
 
         this.cmsService.updateOffer(formData).subscribe(result => {
@@ -168,10 +180,18 @@ export class OfferEditComponent implements OnInit {
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
+    onBannerRemoved(file: FileHolder) {
+        this.BannerImageFile = null;
+    }
 
 //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
+        return metadata;
+    }
+
+    onBeforeBannerUpload = (metadata: UploadMetadata) => {
+        this.BannerImageFile = metadata.file;
         return metadata;
     }
 

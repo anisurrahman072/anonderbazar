@@ -1,0 +1,25 @@
+<section id="brand-section" *ngIf="dataBrandList.length > 0" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="container-fluid">
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home</a>
+            <a routerLink="/brands" routerLinkActive="active">Brands</a>
+        </nav>
+        <div class="page-bar-right"></div>
+        <div class="category-head justify-content-between d-flex">
+            <div class="titel">
+                <h4>Shop By Brand</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"  *ngFor="let brand of dataBrandList">
+                <div class="brand-image">
+                    <a routerLink="/brands/{{brand.id}}/brand-products" >
+                        <img src="{{IMAGE_ENDPOINT + brand.image}}"
+                             alt="brand logo" style="max-height: 100%;">
+                    </a>
+                </div>
+                <p style="font-size: 16px; margin-top: 10px;">{{brand.name}}</p>
+            </div>
+        </div>
+    </div>
+</section>

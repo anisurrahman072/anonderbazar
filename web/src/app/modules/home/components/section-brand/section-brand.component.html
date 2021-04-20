@@ -1,19 +1,23 @@
 <section id="brand-section" *ngIf="dataBrandList" style="padding-top: 20px; padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="category-head">
+        <div class="category-head justify-content-between d-flex" style="border-bottom: 2px solid #ed1c24;">
             <div class="titel">
-                <h4>Popular Brands</h4>
+                <h4  class="section-title">Shop By Brand</h4>
             </div>
+            <button  style="align-self: flex-end;">
+                <a style="text-decoration: none;" [routerLink]="['/brands']">View All
+                </a>
+            </button>
         </div>
         <div class="row">
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mb-4"  *ngFor="let brand of dataBrandList">
+            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"  *ngFor="let brand of dataBrandList">
                 <div class="brand-image">
-                    <a routerLink="/brand/brand-product/{{brand.id}}" >
+                    <a routerLink="/brands/{{brand.id}}/brand-products" >
                         <img src="{{IMAGE_ENDPOINT + brand.image}}"
-                             alt="brand logo" height="300" width="300">
+                             alt="brand logo" style="max-height: 100%;">
                     </a>
                 </div>
-                <p style="font-size: 20px; font-weight: bold; margin-top: 10px;">{{brand.name}}</p>
+                <p style="font-size: 16px; margin-top: 10px; text-align: center;">{{brand.name}}</p>
             </div>
         </div>
     </div>

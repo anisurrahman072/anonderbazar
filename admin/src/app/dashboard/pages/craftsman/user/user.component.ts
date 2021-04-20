@@ -303,6 +303,6 @@ export class UserComponent implements OnInit, OnDestroy {
             'Location'
         ];
 
-        this.exportService.downloadFile(excelData, header, 'User');
+        this.exportService.downloadFile(excelData, header, 'Shop User');
     }
 }

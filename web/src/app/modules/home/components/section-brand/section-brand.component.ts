@@ -1,10 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BrandService, ProductService} from "../../../../services";
-import {concatMap, debounceTime} from 'rxjs/operators';
-import {from} from "rxjs/observable/from";
-import {error} from "util";
-
-
+import {AppSettings} from "../../../../config/app.config";
+import * as ___ from 'lodash';
 @Component({
     selector: 'app-section-brand',
     templateUrl: './section-brand.component.html',
@@ -13,31 +10,35 @@ import {error} from "util";
 export class SectionBrandComponent implements OnInit {
 
     dataBrandList: any = [];
-    IMAGE_ENDPOINT = 'https://anonderbazar.s3-ap-southeast-1.amazonaws.com';
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     constructor(private brandService: BrandService,
                 private productService: ProductService) {
     }
 
     ngOnInit() {
-        let allBrands;
         this.brandService.getAll(true)
-            .subscribe((brands) =>{
-                allBrands = brands;
+            .concatMap((brands: any) => {
+                this.dataBrandList = brands;
+                let allBrandIds = brands.map(brand => {
+                    return brand.id;
+                });
+                return this.productService.getCountByBrandIds(allBrandIds);
+            })
+            .subscribe((result: any) => {
+                const brandCount = result.data;
 
-                let currentBrand;
-                from(allBrands)
-                    .concatMap((brand:any) => {
-                        currentBrand = brand;
-                        return this.productService.getAllByBrandId(brand.id)
-                    })
-                    .subscribe(products => {
-                        if(products.length !== 0){
-                            if(!this.dataBrandList) this.dataBrandList = [];
-                            if(this.dataBrandList.length < 8) this.dataBrandList.push(currentBrand);
-                        }}, error => {
-                        console.log('Error occurred', error);
-                    })
+                if(!___.isEmpty(brandCount)){
+                    this.dataBrandList = this.dataBrandList.filter((brand: any) => {
+                        return !___.isUndefined(brandCount[brand.id]);
+                    });
+                    this.dataBrandList =  this.dataBrandList.slice(0, 12);
+                } else {
+                    this.dataBrandList = [];
+                }
+
+            }, error => {
+                console.log('Error occurred while fetching brands', error);
             })
     }
 }

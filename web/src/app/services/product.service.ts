@@ -9,8 +9,10 @@ import {DatePipe} from '@angular/common';
 export class ProductService {
     private EndPoint = `${AppSettings.API_ENDPOINT}/product`;
     private EndPoint2 = `${AppSettings.API_ENDPOINT}/products`;
+    private allFlashDealsProducts;
 
     constructor(private http: HttpClient) {
+        this.getFlashDealsProducts();
     }
 
     filter_result(searchTerm: string, typeList: number[], categoryList: number[], warehouses: number[], craftsmanList: number[], subcategoryList: number[], brandList: number[], subsubcategoryList: number[], priceRange: number[], sortTitle: string, sortTerm: String, pageno: number, isFeatured: any = null): Observable<any> {
@@ -80,10 +82,18 @@ export class ProductService {
             .map(response => response);
     }
 
-    getFlashDealsProducts(): Observable<any> {
-        return this.http
+    getFlashDealsProducts() {
+        this.http
             .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
-            .map(response => response);
+            .subscribe(data => {
+                this.allFlashDealsProducts = data;
+            }, error => {
+                console.log('Error while fetching flashDealsProducts');
+            })
+    }
+
+    fetchFlashDealsProducts() {
+        return this.allFlashDealsProducts;
     }
 
     getRewardProducts(): Observable<any> {
@@ -100,19 +110,24 @@ export class ProductService {
 
     getFeedbackProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "approval_status": 2 }&limit=4&sort=rating%20DESC')
+            .get(this.EndPoint + '/getFeedbackProducts?approval_status=2&limit=4')
             .map(response => response);
+    }
+
+    getTopSellProducts(): Observable<any> {
+        return this.http
+            .get(this.EndPoint+'/getTopSellProducts')
     }
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '?where={ "deletedAt":null, "featured":0, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
+            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2&limit=4')
             .map(response => response);
     }
 
     getRecommendedProducts(limit, offset): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2 }&limit=${limit}&skip=${offset}&sort=createdAt%20DESC`)
+            .get(`${this.EndPoint}/getRecommendedProducts?approval_status=2&limit=${limit}&skip=${offset}`)
             .map(response => response);
     }
 
@@ -122,9 +137,9 @@ export class ProductService {
             .map(response => response);
     }
 
-    getByCategory(catId: number, productID: number): Observable<any> {
+    getByCategory(catId: number, subCatID: number): Observable<any> {
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"id":{"!":${productID}},"category_id":${catId}}&sort=createdAt%20DESC`)
+            .get(`${this.EndPoint}?where={"deletedAt":null, "approval_status": 2,"category_id":${catId},"subcategory_id":${subCatID}}&sort=createdAt%20DESC`)
             .map(response => response);
     }
 
@@ -173,7 +188,13 @@ export class ProductService {
 
     getAllByBrandId(brand_id: number): Observable<any>{
         return this.http
-            .get(`${this.EndPoint}?where={"deletedAt":null,"brand_id":${brand_id} }`)
+            .get(`${this.EndPoint}/getAllByBrandId?brand_id=${brand_id}`)
+            .map(response => response);
+    }
+
+    getCountByBrandIds(brand_ids: number[]): Observable<any>{
+        return this.http
+            .get(`${this.EndPoint}/getCountByBrandIds?brand_ids=${brand_ids}`)
             .map(response => response);
     }
 }

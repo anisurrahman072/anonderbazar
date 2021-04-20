@@ -32,8 +32,7 @@ export class BrandProductComponent implements OnInit {
 
     this.productService.getAllByBrandId(this.id)
         .subscribe((products) => {
-          this.allProducts = products;
-          console.log('Ansss', this.allProducts);
+          this.allProducts = products.data;
         }, error => {
           console.log('Error while getting all products by Brand Id', error);
         });

@@ -7,12 +7,12 @@
         </nav>
         <div class="row" *ngIf="offerpage && homeOfferData.length > 0">
             <ng-template ngFor let-data [ngForOf]="homeOfferData">
-                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 mb-4"
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container"
                      *ngIf="data.data_value && data.data_value.length > 0 && ((data.data_value[0].alloffers && data.data_value[0].alloffers?.length > 0) || (data.data_value[0].allproducts && data.data_value[0].allproducts?.length > 0))">
                     <div class="offer-details"
                          *ngIf='data.data_value && data.data_value[0].alloffers && data.data_value[0].alloffers?.length > 0'>
                         <div class="offer-img">
-                            <div class="row">
+                            <!--<div class="row">
                                 <div class="col-md-8 col-8 pr-0">
                                     <div class="offer-mainimg mr-1">
                                         <img class="offer-mainimg"
@@ -38,18 +38,22 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
+                            <a routerLink="/cms/cms-details/{{data.id}}">
+                                <img src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].image + IMAGE_EXT}}"
+                                     alt="offered product image">
+                            </a>
                         </div>
                         <div class="offer-contant">
                             <h6>{{data.data_value[0]?.title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i class="fa fa-angle-right"></i></a>
+                            <a routerLink="/cms/cms-details/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
                         </div>
                     </div>
                     <div class="offer-details"
                          *ngIf='data.data_value && data.data_value[0].allproducts && data.data_value[0].allproducts?.length > 0'>
                         <div class="offer-img">
-                            <div class="row">
+                            <!--<div class="row">
                                 <div class="col-md-8 col-8 pr-0">
                                     <div class="mr-1">
                                         <img class="offer-mainimg"
@@ -75,12 +79,16 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
+                            <a routerLink="/cms/cms-details/{{data.id}}">
+                                <img src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].image + IMAGE_EXT}}"
+                                     alt="offered product image">
+                            </a>
                         </div>
                         <div class="offer-contant">
                             <h6>{{data.data_value[0].title}}</h6>
                             <p [innerHTML]='data.data_value[0].description'></p>
-                            <a routerLink="/cms/cms-details/{{data.id}}">View All Offer<i class="fa fa-angle-right"></i></a>
+                            <a routerLink="/cms/cms-details/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -121,10 +129,11 @@
 
 
             </div>
+            <div class="row text-center">
+                <pagination-controls (pageChange)="p = $event" previousLabel="Previous" nextLabel="Next">
+                </pagination-controls>
+            </div>
         </div>
-        <div class="row text-center">
-            <pagination-controls (pageChange)="p = $event" previousLabel="Previous" nextLabel="Next">
-            </pagination-controls>
-        </div>
+
     </div>
 </div>

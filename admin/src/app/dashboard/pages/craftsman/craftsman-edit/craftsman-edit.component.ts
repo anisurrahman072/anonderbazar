@@ -125,9 +125,19 @@ export class CraftsmanEditComponent implements OnInit {
         }
         this.craftsmanService.update(this.id, formData).subscribe(
             result => {
+                let title = '';
+                if(this.data.group_id.id === 2){
+                    title += 'Customer Update successful';
+                }
+                else if(this.data.group_id.id === 4) {
+                    title += 'Shop User Update successful';
+                }
+                else {
+                    title += 'Craftsman Update successful';
+                }
                 this._notification.create(
                     'success',
-                    'Craftsman Update successful',
+                    `${title}`,
                     this.data.name
                 );
 
