@@ -246,7 +246,7 @@ module.exports = {
         console.log('uploaded image: ', uploaded);
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
         if (body.hasBannerImage && body.hasBannerImage === 'true' && body.hasImage && body.hasImage === 'true'
-          && body.hasMobileImage && body.hasMobileImage === 'true'  ) {
+          && body.hasMobileImage && body.hasMobileImage === 'true') {
 
           body.image = '/' + newPath;
           if (typeof uploaded[1] !== 'undefined') {
@@ -360,6 +360,29 @@ module.exports = {
       }));
 
       return res.json(allCategories);
+    } catch (error) {
+      return res.status(error.status).json({message: '', error, success: false});
+    }
+  },
+  //Method called for getting a category with subcategories data
+  //Model models/Category.js
+  withSubcategoriesforSpecific: async (req, res) => {
+    try {
+
+      let categoryIds = JSON.parse(req.query.category_ids);
+
+      if (!(categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0)) {
+        return res.status(422).json({
+          message: false
+        });
+      }
+
+      let where = {deletedAt: null, type_id: 2};
+      where.parent_id = categoryIds;
+
+      let categories = await Category.find(where);
+
+      return res.json(categories);
     } catch (error) {
       return res.status(error.status).json({message: '', error, success: false});
     }

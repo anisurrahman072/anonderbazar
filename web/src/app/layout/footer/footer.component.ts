@@ -5,6 +5,8 @@ import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import * as fromStore from "../../state-management";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
+import {forkJoin} from "rxjs/observable/forkJoin";
+import * as _ from "lodash";
 
 @Component({
     selector: 'app-footer',
@@ -36,6 +38,26 @@ export class FooterComponent implements OnInit {
 
     // init the component
     ngOnInit() {
+
+        forkJoin([
+            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE'),
+            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER')
+        ]).subscribe((results: any) => {
+
+            if (!_.isNil(results[0]) && !_.isNil(results[0][0])) {
+                this.cmsFeatureData = results[0][0].data_value;
+            }
+
+            if (!_.isNil(results[1]) && !_.isNil(results[1][0])) {
+                this.cmsFooterData = results[1][0].data_value[0];
+                this.cmsFooterDataFurther = results[1][0].data_value[1];
+                this.cmsFooterDataCustomer = results[1][0].data_value[2];
+                this.cmsFooterDataShops = results[1][0].data_value[3];
+                this.cmsFooterDataBrands = results[1][0].data_value[4];
+                this.cmsFooterDataSocial = results[1][0].data_value[5];
+            }
+        });
+
         //getting the footer feature data
         this.getFeatureData();
 

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
-import {AuthService} from './auth.service';
 import {HttpClient} from '@angular/common/http';
 import {AppSettings} from '../config/app.config';
 
@@ -33,7 +32,6 @@ export class CmsService {
     }
 
     getBySectionName(pageName: String, sectionName: String): Observable<any> {
-        console.log(this.EndPoint + `?where={"page":"${pageName}","section":"${sectionName}","deletedAt":null}&populate=false`);
         return this.http
             .get(
                 this.EndPoint + `?where={"page":"${pageName}","section":"${sectionName}","deletedAt":null}&populate=false`
@@ -51,9 +49,4 @@ export class CmsService {
             .map(response => response);
     }
 
-    getRecentPost(pageName: String, limit: number, column: String, orderby: String): Observable<any> {
-
-        return this.http.get(this.EndPoint + `?where={"page":"${pageName}","deletedAt":null}&limit=${limit}&sort=${column}%20${orderby}&populate=false`)
-            .map(response => response);
-    }
 }

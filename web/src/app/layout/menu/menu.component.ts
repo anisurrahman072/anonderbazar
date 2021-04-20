@@ -1,6 +1,5 @@
-import {Component, Inject, Input, OnInit} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
-import {AuthService} from "../../services";
 import {CategoryTypeService} from "../../services";
 import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
@@ -10,10 +9,10 @@ import {Observable} from "rxjs/Observable";
 import {AppSettings} from "../../config/app.config";
 import {FilterUiService} from "../../services/ui/filterUi.service";
 import {BrandService} from "../../services";
-import {FavouriteProduct} from '../../models';
 import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {LoginModalService} from '../../services/ui/loginModal.service';
 import {GLOBAL_CONFIGS} from "../../../environments/global_config";
+import * as _ from "lodash";
 
 @Component({
     selector: "app-menu",
@@ -21,22 +20,17 @@ import {GLOBAL_CONFIGS} from "../../../environments/global_config";
     styleUrls: ["./menu.component.scss"]
 })
 export class MenuComponent implements OnInit {
-    currentUser$: Observable<any>;
+    private currentUser$: Observable<any>;
+    private categoryCache: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    productTypeList: any;
+    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
+    private productTypeList: any;
     categoryList: any[];
     subCategoryList: any[];
     brandList: any[];
     selectedCategoryId: any;
-    @Input()
-    isCollapsed: boolean;
     isDisplay: boolean;
     isMobileMenuOpen: boolean = false;
-    IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
-
-    cart$: Observable<any>;
-    favourites$: Observable<FavouriteProduct>;
-    compare$: Observable<any>;
 
     subSubCategoryList: any[];
     mobileSubCategoryList: any[];
@@ -48,7 +42,6 @@ export class MenuComponent implements OnInit {
     */
     constructor(
         @Inject(DOCUMENT) document,
-        private authService: AuthService,
         private categoryTypeService: CategoryTypeService,
         private categoryProductService: CategoryProductService,
         private router: Router,
@@ -67,16 +60,19 @@ export class MenuComponent implements OnInit {
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
 
         this.categoryTypeService.getAll().subscribe(result => {
+            console.log('productTypeList', result.map((item) => item.name));
             this.productTypeList = result;
         });
 
-        this.cart$ = this.store.select<any>(fromStore.getCart);
-        this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
-        this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.categoryProductService
             .getCategoriesWithSubcategories()
             .subscribe(result => {
+                console.log('getCategoriesWithSubcategories', result);
                 this.categoryList = result;
+                this.categoryCache = {};
+                result.forEach((item) => {
+                    this.categoryCache[item.id] = item.subCategories;
+                })
             });
 
         this.router.events.subscribe(event => {
@@ -95,9 +91,18 @@ export class MenuComponent implements OnInit {
     //Event method for category hover from menu
     categoryHover(category: any) {
         this.subCategoryList = category.subCategories;
+        const ids = this.subCategoryList.map((cat) => cat.id);
+        this.categoryProductService.getSubcategoryByCategoryIdsV2(ids)
+            .subscribe(arg => {
+                this.categoryCache = _.merge(this.categoryCache, _.groupBy(arg, 'parent_id'));
+                console.log('this.categoryCache', this.categoryCache);
+            });
+
         for (const sub of this.subCategoryList) {
             this.categoryProductService.getSubcategoryByCategoryId(sub.id)
-                .subscribe(arg => sub.subCategory = arg);
+                .subscribe(arg => {
+                    sub.subCategory = arg
+                });
         }
         this.brandList = []
         this.brandService.shopByBrand(category.id).subscribe(res => {
@@ -118,12 +123,11 @@ export class MenuComponent implements OnInit {
 
 
     mobileCategoryClickEvent(category: any) {
-        if(category.id === this.selectedCategoryId){
+        if (category.id === this.selectedCategoryId) {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
-        }
-        else{
+        } else {
             this.showSubSubCategoryList = [];
             this.subSubCategoryList = null;
             this.selectedCategoryId = category.id;
@@ -134,12 +138,11 @@ export class MenuComponent implements OnInit {
         }
     }
 
-    subCategoryClickEvent(subCategory: any){
-        if(subCategory.id === this.selectedSubSubCategoryId){
+    subCategoryClickEvent(subCategory: any) {
+        if (subCategory.id === this.selectedSubSubCategoryId) {
             this.subSubCategoryList = null;
             this.selectedSubSubCategoryId = null;
-        }
-        else{
+        } else {
             this.mobileSubCategoryList.forEach(subCat => {
                 this.showSubSubCategoryList[subCat.id] = false;
             });
@@ -149,7 +152,7 @@ export class MenuComponent implements OnInit {
             this.categoryProductService.getSubcategoryByCategoryId(subCategory.id)
                 .subscribe(subSubCategory => {
                     this.subSubCategoryList = subSubCategory;
-                    if(this.subSubCategoryList.length === 0){
+                    if (this.subSubCategoryList.length === 0) {
                         this.mobileSubCategoryList = null;
                         this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
                             queryParams: {
@@ -204,7 +207,7 @@ export class MenuComponent implements OnInit {
         });
     }
 
-    navigateFromMobile(event, subCategory, subSubCategory){
+    navigateFromMobile(event, subCategory, subSubCategory) {
         this.mobileSubCategoryList = null;
         this.router.navigate(['/products', {type: 'category', id: this.selectedCategoryId}], {
             queryParams: {
