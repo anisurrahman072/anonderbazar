@@ -288,7 +288,7 @@ section {
 }
 
 .header-search-wrapper .icon-search i {
-    color: #ED1C24;
+    color: #F83831;
 }
 
 .header_chart {
@@ -321,7 +321,7 @@ section {
 }
 
 .header_chart .checkout {
-    background: #ED1C24;
+    background: #F83831;
     padding: 10px 15px;
     margin-right: 0px;
     border-radius: 5px;
@@ -448,7 +448,7 @@ section {
 }
 
 .menu-sticky {
-    background: #ED1C24;
+    background: #F83831;
 }
 
 .nav-item {
@@ -809,7 +809,7 @@ category - start
 
 .category-head button a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #F83831;
 }
 
 .category-head button {

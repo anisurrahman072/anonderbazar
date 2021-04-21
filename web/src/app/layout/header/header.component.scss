@@ -124,11 +124,11 @@ form.advanced-search {
 }
 
 .cl-red {
-  color: red;
+  color: #F83831;
 }
 
 .cl-orange {
-  color: #F44336;
+  color: #F83831;
 }
 
 .btn-search {
@@ -210,7 +210,7 @@ form.advanced-search {
   position: absolute;
   top: 0;
   left: -29px;
-  color: #F44336;
+  color: #F83831;
   z-index: 9;
 }
 
@@ -219,7 +219,7 @@ form.advanced-search {
     position: absolute;
     top: -10px;
     left: 47%;
-    background: #F44336;
+    background: #F83831;
     border: 4px solid #fff;
     border-radius: 25px;
     color: #fff;
@@ -233,17 +233,17 @@ form.advanced-search {
 
 .cross-btn {
   background: transparent;
-  color: #F44336;
+  color: #F83831;
   padding: 2px;
   height: 30px;
   width: 30px;
   border: 2px;
-  border: 2px solid #F44336;
+  border: 2px solid #F83831;
   border-radius: 25px;
 }
 
 .cross-btn:hover {
-  background: #F44336;
+  background: #F83831;
   height: 30px;
   width: 30px;
   border: 2px;
@@ -269,7 +269,7 @@ form.advanced-search {
 }
 
 .btn-search {
-  background: #F44336;
+  background: #F83831;
   color: #fff;
 }
 .mat-card{
@@ -291,7 +291,7 @@ form.advanced-search {
 }
 .countLabel {
   font-size: 11px;
-  background: #ff0000;
+  background: #F83831;
   color: #fff;
   //padding: 0 5px;
   vertical-align: top;
@@ -299,15 +299,15 @@ form.advanced-search {
 }
 
 .src-box{
-  border-left: 2px solid #c60505;
-  border-top: 2px solid #c60505;
-  border-bottom: 2px solid #c60505;
+  border-left: 2px solid #F83831;
+  border-top: 2px solid #F83831;
+  border-bottom: 2px solid #F83831;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
 .search-icon{
-  background-color: #c60505;
+  background-color: #F83831;
   display: flex;
   align-items: center;
   border-top-right-radius: 5px;

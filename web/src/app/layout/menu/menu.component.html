@@ -83,17 +83,17 @@
             <i class="fa fa-chevron-right left-right-arrow" aria-hidden="true" style="right: 0px; top: 50%;"></i>
             <div class="Category"
                  *ngIf="categoryList">
-                <div *ngFor='let category of categoryList' style="white-space: nowrap; padding: 5px;"
+                <div *ngFor='let category of categoryList' style="white-space: nowrap;  padding: 5px 7px;"
                      (click)="mobileCategoryClickEvent(category)">
-                    <p style="font-weight: bold; color: white !important;"> {{category.name}} </p>
+                    <p style=" color: white !important;font-weight: 400; text-transform: uppercase;"> {{category.name}} </p>
                 </div>
             </div>
         </div>
     </nav>
     <div *ngIf="mobileSubCategoryList" class="subcategory-section" style="">
         <div *ngFor='let subCategory of mobileSubCategoryList'
-             style="background-color: #ac1313; padding: 5px 5px 0 5px; width: 90%;">
-            <p class="subcategory-name" style=" "
+             style="background-color: whitesmoke; width: 90%;">
+            <p class="subcategory-name" style=" color: black;  padding: 5px;"
                (click)="subCategoryClickEvent(subCategory)">
                 {{subCategory.name}}
                 <i class="fa fa-chevron-down" aria-hidden="true"
@@ -102,9 +102,9 @@
 
             <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">
                 <div *ngFor="let subSubCategory of subSubCategoryList"
-                     (click)="navigateFromMobile($event,subCategory,subSubCategory)">
+                     (click)="navigateFromMobile($event,subCategory,subSubCategory)" style="background-color: white;">
                     <a class="dropdown-item" href="#" [routerLink]="['/products/category/',subSubCategory.id]"
-                       style="margin-left: 10px; text-align: left; color: white;">
+                       style="margin-left: 10px; text-align: left; color: black;">
                         {{subSubCategory.name}}
                     </a>
                 </div>
