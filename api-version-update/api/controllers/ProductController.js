@@ -724,10 +724,14 @@ module.exports = {
     try {
       const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
-      //TODO: change GROUP_CONCAT to SUM
       let rawSelect = `
             SELECT
-
+                 products.id as id,
+                 products.promotion as promotion,
+                 products.image as image,
+                 products.promo_price as promo_price,
+                 products.price as price,
+                 products.name as name,
                  subOrderItems.product_id as productId,
                  SUM (subOrderItems.product_quantity) as total_quantity`;
 
@@ -740,31 +744,14 @@ module.exports = {
           AND subOrders.deleted_at IS NULL
           AND subOrderItems.deleted_at IS NULL
         `;
-      _where += ' GROUP BY subOrderItems.productId ORDER BY SUM (subOrderItems.product_quantity) DESC ';
+      _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
-
-      let orderedProduct = rawResult.rows.sort((a, b) => (a.total_quantity > b.total_quantity) ? -1 : 1);
-
-      let productIds = orderedProduct.map(data => {
-        return data.productId;
-      });
-
-      let allProducts = await Product.find({
-        id: productIds
-      });
-
-      let keyByProducts = _.keyBy(allProducts, 'id');
-      let products = [];
-
-      productIds.map(id => {
-        products.push(keyByProducts[`${id}`]);
-      });
 
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all sold products with Top Sell Order',
-        data: products
+        data: rawResult.rows
       });
 
     } catch (error) {
