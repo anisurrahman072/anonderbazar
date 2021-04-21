@@ -668,7 +668,7 @@ module.exports = {
   },
 
   getRecommendedProducts: async (req, res) => {
-    try{
+    try {
       let params = req.allParams();
 
       let allProducts = await Product.find({
@@ -684,8 +684,7 @@ module.exports = {
         message: 'Successfully fetched all recommended products',
         data: allProducts
       });
-    }
-    catch (error) {
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error while fetching all recommended products',
@@ -695,7 +694,7 @@ module.exports = {
   },
 
   getFeedbackProducts: async (req, res) => {
-    try{
+    try {
       const params = req.allParams();
 
       let allProducts = await Product.find({
@@ -712,8 +711,7 @@ module.exports = {
         message: 'Successfully fetched all Feedback products',
         data: allProducts
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error while fetching all Feedback products',
@@ -727,16 +725,22 @@ module.exports = {
       const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
       //TODO: change GROUP_CONCAT to SUM
-      let rawSelect = `SELECT
-                       product_id as productId,
-                       SUM (product_quantity) as total_quantity`;
+      let rawSelect = `
+            SELECT
+
+                 subOrderItems.product_id as productId,
+                 SUM (subOrderItems.product_quantity) as total_quantity`;
 
       let fromSQL = ' FROM product_suborder_items as subOrderItems';
-      fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id';
+      fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id ';
+      fromSQL += ' LEFT JOIN products as products ON products.id = subOrderItems.product_id ';
 
-      let _where = ` WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled} AND subOrders.deleted_at IS NULL
-      AND subOrderItems.deleted_at IS NULL`;
-      _where += ' GROUP BY productId';
+      let _where = `
+          WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled}
+          AND subOrders.deleted_at IS NULL
+          AND subOrderItems.deleted_at IS NULL
+        `;
+      _where += ' GROUP BY subOrderItems.productId ORDER BY SUM (subOrderItems.product_quantity) DESC ';
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
 
@@ -763,8 +767,7 @@ module.exports = {
         data: products
       });
 
-    }
-    catch (error){
+    } catch (error) {
       console.log(error);
       return res.status(200).json({
         success: false,
@@ -791,8 +794,7 @@ module.exports = {
         message: 'Successfully fetched all Feedback products',
         data: allProducts
       });
-    }
-    catch (error){
+    } catch (error) {
 
     }
   }
