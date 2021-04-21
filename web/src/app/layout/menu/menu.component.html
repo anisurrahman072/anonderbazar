@@ -1,3 +1,4 @@
+<div class="remove-menu" (mouseenter)="isDisplay = false" style="height: 15px;"></div>
 <div class="menu-sticky">
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg px-0">
@@ -9,7 +10,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="responsive-menu">
-                    <li class="has-child c-1">
+                    <li class="has-child c-1" (mouseenter)="isDisplay = false">
                         <span class="mr-1 burger_menu"><i class="fa fa-bars"></i></span>
                         <ul class="dropdown-menu_burger_menu">
                             <li *ngFor="let category of categoryList" (click)="categoryClickEvent(category)"

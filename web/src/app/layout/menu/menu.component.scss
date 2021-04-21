@@ -400,3 +400,9 @@ button {
   font-weight: bold;
   border-bottom: 1px solid darkgray;
 }
+
+@media screen and (max-width: 425px) {
+  .remove-menu{
+    display: none;
+  }
+}
