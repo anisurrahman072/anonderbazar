@@ -726,6 +726,7 @@ module.exports = {
     try {
       const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
+      //TODO: change GROUP_CONCAT to SUM
       let rawSelect = `SELECT
                        product_id as productId,
                        GROUP_CONCAT (product_quantity) as quantity`;
@@ -770,6 +771,7 @@ module.exports = {
 
     }
     catch (error){
+      console.log(error);
       return res.status(200).json({
         success: false,
         message: 'Error while fetching products'

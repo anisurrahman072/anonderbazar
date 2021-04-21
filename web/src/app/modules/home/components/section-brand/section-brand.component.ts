@@ -9,7 +9,7 @@ import * as ___ from 'lodash';
 })
 export class SectionBrandComponent implements OnInit {
 
-    dataBrandList: any = [];
+    dataBrandList: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     constructor(private brandService: BrandService,
