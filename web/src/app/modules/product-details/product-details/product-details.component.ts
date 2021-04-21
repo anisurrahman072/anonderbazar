@@ -29,6 +29,8 @@ import {DesignimageService} from "../../../services/designimage.service";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 
+// TODO: optimize the api calls
+
 @Component({
     selector: "page-product-details",
     templateUrl: "./product-details.component.html",

@@ -76,14 +76,12 @@ export class MenuComponent implements OnInit {
             .subscribe((result: any) => {
 
                 if (!___.isUndefined(result[0])) {
-                    console.log('getCategoriesWithSubcategoriesV2', result[0]);
                     this.subCategoryIndexes = result[0];
                     for (const category of this.categoryList) {
                         this.populateSubCategories(category);
                     }
                 }
                 if (!___.isUndefined(result[1]) && !___.isUndefined(result[1].data)) {
-                    console.log('brandListIndex', result[1].data);
                     this.brandListIndex = result[1].data;
                 }
             });

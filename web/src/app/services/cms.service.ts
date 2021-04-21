@@ -49,12 +49,10 @@ export class CmsService {
     }
 
     getBySubSectionName(pageName: String, sectionName: String, subSectionName: any, frontend_position?: boolean): Observable<any> {
-
         let _where = `?where={"page":"${pageName}","section":"${sectionName}","sub_section":"${subSectionName}","deletedAt":null}&populate=false`
         if (frontend_position) {
             _where += `&sort=frontend_position%20ASC`
         }
-
         return this.http.get(this.EndPoint + _where);
     }
 
