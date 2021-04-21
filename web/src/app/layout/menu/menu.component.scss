@@ -392,6 +392,12 @@ button {
   overflow-x: scroll;
 }
 
+.categoryName {
+  color: white;
+  font-weight: 400 !important;
+  text-transform: uppercase;
+}
+
 .subcategory-name {
   background: none;
   border: none;
@@ -402,7 +408,7 @@ button {
 }
 
 @media screen and (max-width: 425px) {
-  .remove-menu{
+  .remove-menu {
     display: none;
   }
 }

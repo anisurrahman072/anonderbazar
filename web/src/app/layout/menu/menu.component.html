@@ -23,7 +23,7 @@
                         (mouseover)="isDisplay = true"
                         (mouseenter)="categoryHover(category)"
                         [ngClass]="category.id == selectedCategoryId? 'active':''">
-                        <a (click)="categoryClickEvent(category)" style="text-transform: capitalize;"
+                        <a (click)="categoryClickEvent(category)" style="font-weight: 400; text-transform: uppercase;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
                     <div class="dropdown-menu" style="height: 400px; width: 100%;" (mouseleave)="isDisplay = false"
@@ -34,7 +34,7 @@
                                 <div class="submenu" *ngFor='let sub of subCategoryList' style="width: fit-content;">
                                     <ul class="mb-3" *ngIf='sub'>
                                         <li class="text-th">
-                                            <a style="text-transform: capitalize;"
+                                            <a style="text-transform: uppercase;"
                                                (click)="navigateBySubCategory($event,desktopCurrentCategory,sub)">{{sub.name}}</a>
                                         </li>
                                         <ng-container *ngFor='let subC of sub.subCategory'>
@@ -84,9 +84,13 @@
             <i class="fa fa-chevron-right left-right-arrow" aria-hidden="true" style="right: 0px; top: 50%;"></i>
             <div class="Category"
                  *ngIf="categoryList">
-                <div *ngFor='let category of categoryList' style="white-space: nowrap;  padding: 5px 7px;"
+                <div *ngFor='let category of categoryList'
+                     [ngStyle]="focusCategory[category.id] ? {'background-color': 'white'} : null "
+                     style="white-space: nowrap;  padding: 5px 7px;"
                      (click)="mobileCategoryClickEvent(category)">
-                    <p style=" color: white !important;font-weight: 400; text-transform: uppercase;"> {{category.name}} </p>
+                    <p class="categoryName"
+                       [ngStyle]="focusCategory[category.id] ? {'color': 'black'} : {'color': 'white'} "
+                    > {{category.name}} </p>
                 </div>
             </div>
         </div>
@@ -94,11 +98,11 @@
     <div *ngIf="mobileSubCategoryList" class="subcategory-section" style="">
         <div *ngFor='let subCategory of mobileSubCategoryList'
              style="background-color: whitesmoke; width: 90%;">
-            <p class="subcategory-name" style=" color: black;  padding: 5px;"
+            <p class="subcategory-name" style=" color: black;  padding: 5px; font-weight: 400; text-transform: uppercase;"
                (click)="subCategoryClickEvent(subCategory)">
                 {{subCategory.name}}
                 <i class="fa fa-chevron-down" aria-hidden="true"
-                   style="float: right;top: 50%; transform: translate(0%, 36%);"></i>
+                   style="float: right;top: 50%; transform: translate(0%, 36%); text-transform: uppercase;"></i>
             </p>
 
             <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">

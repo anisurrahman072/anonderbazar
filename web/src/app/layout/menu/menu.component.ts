@@ -38,6 +38,8 @@ export class MenuComponent implements OnInit {
     private subCategoryIndexes: any;
     desktopCurrentCategory: any;
 
+    focusCategory: boolean[] = [];
+
     /**
      * constructor for MenuComponent
      */
@@ -60,6 +62,15 @@ export class MenuComponent implements OnInit {
             .getAllCategories()
             .concatMap((result: any) => {
                 this.categoryList = result;
+                console.log('final result',result );
+                result.forEach((data, i) => {
+                    console.log('asceee',i, data);
+                    console.log(this.focusCategory);
+                    this.focusCategory[parseInt(data.id)] = false;
+                    console.log(this.focusCategory);
+
+                });
+                console.log('initial focus ctegory: ', this.focusCategory);
                 return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
             })
             .subscribe((result: any) => {
@@ -120,9 +131,12 @@ export class MenuComponent implements OnInit {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
+            this.focusCategory = [];
         } else {
 
             let subCategoryList = [];
+            this.focusCategory = [];
+            this.focusCategory[category.id] = true;
             if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
                 subCategoryList = this.subCategoryIndexes[category.id];
                 for (const subCategory of subCategoryList) {

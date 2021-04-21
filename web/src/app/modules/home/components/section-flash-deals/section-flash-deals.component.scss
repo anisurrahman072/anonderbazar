@@ -6,7 +6,8 @@
   border-top-left-radius: 5px;
   margin-bottom: 0px;
   font-size: 17px;
-  font-weight: bold;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .section-daily-deal {
@@ -82,5 +83,12 @@
 @media screen and (min-width: 425px) {
   .category-head {
     margin-top: 35px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .section-title {
+    font-size: 15px;
+    padding: 10px;
   }
 }
