@@ -26,18 +26,18 @@ export class BrandProductComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.id = +params['id'];
-
-            this.loaderService.showLoader();
-            forkJoin([this.brandService.getById(this.id), this.productService.getAllByBrandId(this.id)])
-                .subscribe(arr => {
-                    this.brand = arr[0];
-                    this.allProducts = arr[1].data;
-                    this.loaderService.hideLoader();
-                }, error => {
-                    console.log('Error occurred while fetching brand products. Error: ', error);
-                })
-        });
+        this.loaderService.showLoader();
+        this.route.params
+            .concatMap(params => {
+                this.id = +params['id'];
+                return forkJoin([this.brandService.getById(this.id), this.productService.getAllByBrandId(this.id)])
+            })
+            .subscribe(arr => {
+                this.brand = arr[0];
+                this.allProducts = arr[1].data;
+                this.loaderService.hideLoader();
+            }, error => {
+                console.log('Error occurred while fetching brand products. Error: ', error);
+            })
     }
 }
