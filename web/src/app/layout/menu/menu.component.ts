@@ -36,6 +36,7 @@ export class MenuComponent implements OnInit {
     showSubSubCategoryList: boolean[];
 
     private subCategoryIndexes: any;
+    desktopCurrentCategory: any;
 
     /**
      * constructor for MenuComponent
@@ -87,6 +88,7 @@ export class MenuComponent implements OnInit {
 
     //Event method for category hover from menu
     categoryHover(category: any) {
+        this.desktopCurrentCategory = category;
 
         this.subCategoryList = [];
         if (!___.isUndefined(category.subCategory)) {

@@ -14,6 +14,7 @@ export class CmsPageComponent implements OnInit {
     array = [];
     all_cms_post: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
+    IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     start: number;
     end: number;
     cms_length: number;

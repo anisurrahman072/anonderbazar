@@ -34,9 +34,9 @@ export class BannerComponent implements OnInit {
         this.carouselBannerItems = [];
         if (!___.isUndefined(this.carouselBannerData) && !___.isUndefined(this.carouselBannerData.data_value)) {
             if (___.isString(this.carouselBannerData.data_value)) {
-                this.carouselBannerItems = JSON.parse(this.carouselBannerData.data_value);
+                this.carouselBannerItems = JSON.parse(this.carouselBannerData.data_value).sort((a, b) => (parseInt(a.frontend_position) > parseInt(b.frontend_position)) ? 1 : -1);
             } else if (___.isArray(this.carouselBannerData.data_value)) {
-                this.carouselBannerItems = this.carouselBannerData.data_value;
+                this.carouselBannerItems = this.carouselBannerData.data_value.sort((a, b) => (parseInt(a.frontend_position) > parseInt(b.frontend_position)) ? 1 : -1);
             }
 
             this.carouselBannerItems.forEach(element => {
@@ -86,7 +86,7 @@ export class BannerComponent implements OnInit {
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
                 return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");
-            });
+            }).slice(0,3);
         }
 
         /*this.cmsService.getBySubSectionName('POST', 'HOME', 'PARENTOFFER', true)

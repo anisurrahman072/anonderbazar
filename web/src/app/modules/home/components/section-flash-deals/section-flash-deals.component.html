@@ -1,9 +1,11 @@
 <section id="flashdeal" *ngIf="productList && productList.length > 0" style="padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="category-head cate-flash justify-content-between d-flex mt-5">
-            <h4>Featured Products</h4>
-            <button class="">
-                <a [routerLink]="['/featured-product']">View All<i class="fa fa-angle-right text-center"></i></a>
+
+
+        <div class="category-head cate-flash justify-content-between d-flex" style="border-bottom: 2px solid #F83831;">
+            <h4 class="section-title" style="">Featured Products</h4>
+            <button style="align-self: flex-end;">
+                <a style="text-decoration: none;" [routerLink]="['/featured-product']">View All</a>
             </button>
         </div>
         <div class="row">

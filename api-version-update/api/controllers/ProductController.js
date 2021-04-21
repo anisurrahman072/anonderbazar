@@ -12,6 +12,7 @@ const {asyncForEach} = require('../../libs/helper');
 const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
+const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 
 module.exports = {
 
@@ -717,6 +718,61 @@ module.exports = {
         success: false,
         message: 'Error while fetching all Feedback products',
         error
+      });
+    }
+  },
+
+  getTopSellProducts: async (req, res) => {
+    try {
+      const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = `SELECT
+                       product_id as productId,
+                       GROUP_CONCAT (product_quantity) as quantity`;
+
+      let fromSQL = ' FROM product_suborder_items as subOrderItems';
+      fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id';
+
+      let _where = ` WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled} AND subOrders.deleted_at IS NULL
+      AND subOrderItems.deleted_at IS NULL`;
+      _where += ' GROUP BY productId';
+
+      const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
+
+      /** Count the quantity of each product that were sold */
+      let countOrderProduct = rawResult.rows.map(order => {
+        let orderCount =   order.quantity.split(',').reduce((prev, current) => {
+          return parseInt(prev) + parseInt(current);
+        }, 0);
+        return {...order, count: orderCount};
+      }).sort((a, b) => (a.count > b.count) ? -1 : 1);
+
+      let productIds = countOrderProduct.map(data => {
+        return data.productId;
+      });
+
+      let allProducts = await Product.find({
+        id: productIds
+      });
+
+      let keyByProducts = _.keyBy(allProducts, 'id');
+      let products = [];
+
+      productIds.map(id => {
+        products.push(keyByProducts[`${id}`]);
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all sold products with Top Sell Order',
+        data: products
+      });
+
+    }
+    catch (error){
+      return res.status(200).json({
+        success: false,
+        message: 'Error while fetching products'
       });
     }
   },

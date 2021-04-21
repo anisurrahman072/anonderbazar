@@ -96,9 +96,6 @@
             <div nz-col [nzSpan]="12"      >
 
                 <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 "></ckeditor>
-                <div    *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
-                    Please enter short description !
-                </div>
             </div>
         </div><!--type-->
 

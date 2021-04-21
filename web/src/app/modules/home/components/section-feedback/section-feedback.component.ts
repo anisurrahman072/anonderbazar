@@ -8,7 +8,7 @@ import {ProductService} from '../../../../services';
     styleUrls: ['./section-feedback.component.scss']
 })
 export class FeedbackComponent implements OnInit {
-    feedbackProducts: any;
+    topSellProducts: any;
     newProducts: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
@@ -16,7 +16,7 @@ export class FeedbackComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.productService.getFeedbackProducts().subscribe(arg => this.feedbackProducts = arg.data);
+        this.productService.getTopSellProducts().subscribe(arg => this.topSellProducts = arg.data.slice(0, 4));
         this.productService.getNewProducts().subscribe(arg => this.newProducts = arg.data);
     }
 

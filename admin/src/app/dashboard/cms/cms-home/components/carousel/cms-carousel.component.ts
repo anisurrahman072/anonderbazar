@@ -36,6 +36,7 @@ export class CmsCarouselComponent implements OnInit {
 
     isMobileImageRemoved: boolean = false;
     isDesktopImageRemoved: boolean = false;
+    frontendPosition: number = 111;
 
     constructor(
         private cmsService: CmsService,
@@ -49,6 +50,7 @@ export class CmsCarouselComponent implements OnInit {
     ngOnInit() {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
+            frontend_position: ['111'],
             short1: ['', [Validators.required]],
             short2: ['', [Validators.required]],
             short3: ['', [Validators.required]],
@@ -58,6 +60,7 @@ export class CmsCarouselComponent implements OnInit {
 
         this.editValidateForm = this.fb.group({
             title: ['', [Validators.required]],
+            frontend_position: [''],
             short1: ['', [Validators.required]],
             short2: ['', [Validators.required]],
             short3: ['', [Validators.required]],
@@ -92,6 +95,7 @@ export class CmsCarouselComponent implements OnInit {
 
     //Method for showing the modal
     showCreateModal = () => {
+        this.desktopImageUpload.deleteAll();
         this.isAddModalVisible = true;
     };
     //Method for showing the edit modal
@@ -107,8 +111,6 @@ export class CmsCarouselComponent implements OnInit {
         if (this.cmsCarouselData[i].image_mobile) {
             this.editImageMobile.push(this.IMAGE_ENDPOINT + this.cmsCarouselData[i].image_mobile);
         }
-        this.desktopImageUploadEdit.deleteAll();
-        this.mobileImageUpload.deleteAll();
 
         let textDescription = this.cmsCarouselData[i].description;
         this.cmsCarouselData[i]['short1'] = textDescription.short1;
@@ -124,6 +126,8 @@ export class CmsCarouselComponent implements OnInit {
 
         this.editImage = [];
         this.editImageMobile = [];
+        this.desktopImageUploadEdit.deleteAll();
+        this.mobileImageUpload.deleteAll();
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
 
@@ -134,7 +138,8 @@ export class CmsCarouselComponent implements OnInit {
 
         this.editImage = [];
         this.editImageMobile = [];
-
+        this.desktopImageUploadEdit.deleteAll();
+        this.mobileImageUpload.deleteAll();
         this.isAddModalVisible = false;
         this.isEditModalVisible = false;
     };
@@ -152,6 +157,7 @@ export class CmsCarouselComponent implements OnInit {
         formData.append('id', this.id.toString());
 
         formData.append('title', value.title);
+        formData.append('frontend_position', value.frontend_position ? value.frontend_position : 111);
         formData.append('description', JSON.stringify({
             'short1': value.short1,
             'short2': value.short2,
@@ -208,6 +214,7 @@ export class CmsCarouselComponent implements OnInit {
         formData.append('id', this.id.toString());
         formData.append('dataValueId', this.currentCarouselId.toString());
         formData.append('title', value.title);
+        formData.append('frontend_position', value.frontend_position);
         formData.append('description', JSON.stringify({
             'short1': value.short1,
             'short2': value.short2,
@@ -231,6 +238,8 @@ export class CmsCarouselComponent implements OnInit {
             this.cmsCarouselData[this.currentCarouselId] = result.data;
             this._notification.success('success', 'Carousel Update Succeeded');
             this._isSpinning = false;
+            this.desktopImageUploadEdit.deleteAll();
+            this.mobileImageUpload.deleteAll();
             this.isEditModalVisible = false;
             this.resetForm(null);
             this.getData();

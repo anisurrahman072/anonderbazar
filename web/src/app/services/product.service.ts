@@ -114,6 +114,11 @@ export class ProductService {
             .map(response => response);
     }
 
+    getTopSellProducts(): Observable<any> {
+        return this.http
+            .get(this.EndPoint+'/getTopSellProducts')
+    }
+
     getNewProducts(): Observable<any> {
         return this.http
             .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2&limit=4')
