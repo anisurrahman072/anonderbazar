@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {BrandService, ProductService} from "../../../services";
 import {LoaderService} from "../../../services/ui/loader.service";
+import {forkJoin} from "rxjs/observable/forkJoin";
+import {error} from "util";
 
 @Component({
     selector: 'app-brand-product',
@@ -13,6 +15,7 @@ export class BrandProductComponent implements OnInit {
     id: number;
     brand: any = null;
     allProducts: any;
+    p: any;
 
     constructor(
         private route: ActivatedRoute,
@@ -27,24 +30,14 @@ export class BrandProductComponent implements OnInit {
             this.id = +params['id'];
 
             this.loaderService.showLoader();
-            // TODO: use something like ForkJoin and show loader properly
-            this.brandService.getById(this.id)
-                .subscribe(brand => {
-                    this.brand = brand;
+            forkJoin([this.brandService.getById(this.id), this.productService.getAllByBrandId(this.id)])
+                .subscribe(arr => {
+                    this.brand = arr[0];
+                    this.allProducts = arr[1].data;
+                    this.loaderService.hideLoader();
                 }, error => {
-                    console.log('Error while getting the brand by ID', error);
-                });
-
-            this.productService.getAllByBrandId(this.id)
-                .subscribe((products) => {
-                    this.allProducts = products.data;
-                }, error => {
-                    console.log('Error while getting all products by Brand Id', error);
-                });
+                    console.log('Error occurred while fetching brand products. Error: ', error);
+                })
         });
-
-        // console.log('brand id is: ', this.id);
-
-
     }
 }
