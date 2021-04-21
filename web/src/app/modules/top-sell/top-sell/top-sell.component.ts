@@ -9,6 +9,7 @@ import {ProductService} from "../../../services";
 export class TopSellComponent implements OnInit {
 
   topSellProducts: any;
+  p: any;
 
   constructor(private productService: ProductService) { }
 

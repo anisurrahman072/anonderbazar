@@ -81,9 +81,13 @@
             </div>
         </div>
         <div class="row" *ngIf='cms_detail.allproducts && cms_detail.allproducts.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (cms_detail.allproducts)">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (cms_detail.allproducts | paginate: { itemsPerPage: 12, currentPage: p }) ; let i=index">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
+        </div>
+        <div class="row text-center">
+            <pagination-controls (pageChange)="p = $event" previousLabel="Previous" nextLabel="Next">
+            </pagination-controls>
         </div>
     </div>
 </div>
