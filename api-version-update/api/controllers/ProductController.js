@@ -728,7 +728,7 @@ module.exports = {
 
       let rawSelect = `SELECT
                        product_id as productId,
-                       GROUP_CONCAT (product_quantity) as quantity`;
+                       SUM (product_quantity) as total_quantity`;
 
       let fromSQL = ' FROM product_suborder_items as subOrderItems';
       fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id';
@@ -739,15 +739,9 @@ module.exports = {
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
 
-      /** Count the quantity of each product that were sold */
-      let countOrderProduct = rawResult.rows.map(order => {
-        let orderCount =   order.quantity.split(',').reduce((prev, current) => {
-          return parseInt(prev) + parseInt(current);
-        }, 0);
-        return {...order, count: orderCount};
-      }).sort((a, b) => (a.count > b.count) ? -1 : 1);
+      let orderedProduct = rawResult.rows.sort((a, b) => (a.total_quantity > b.total_quantity) ? -1 : 1);
 
-      let productIds = countOrderProduct.map(data => {
+      let productIds = orderedProduct.map(data => {
         return data.productId;
       });
 

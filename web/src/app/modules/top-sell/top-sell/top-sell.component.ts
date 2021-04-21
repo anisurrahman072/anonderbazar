@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ProductService} from "../../../services";
 
 @Component({
   selector: 'app-top-sell',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TopSellComponent implements OnInit {
 
-  constructor() { }
+  topSellProducts: any;
+
+  constructor(private productService: ProductService) { }
 
   ngOnInit() {
+    this.productService.getTopSellProducts().subscribe(arg => this.topSellProducts = arg.data);
   }
 
 }

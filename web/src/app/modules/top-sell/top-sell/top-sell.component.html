@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <h1>Heeee</h1>
-</head>
-<body>
+<section id="flashdeal" *ngIf="topSellProducts && topSellProducts.length > 0" style="padding-bottom: 20px;">
+    <div class="container-fluid">
 
-</body>
-</html>
+        <div class="category-head cate-flash justify-content-between d-flex">
+            <h4 class="section-title" style="">Top Selling Products</h4>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-6 mb-4" *ngFor="let product of topSellProducts">
+                <app-product-item [dataProduct]="product"></app-product-item>
+            </div>
+        </div>
+
+    </div>
+</section>
