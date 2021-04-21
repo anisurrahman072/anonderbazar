@@ -87,7 +87,6 @@
         </div>
     </div>
     <p><a routerLink="/product-details/{{product.id}}">{{product?.name}}</a></p>
-    <small>471 Positive Feedback</small>
     <span *ngIf="!product.promotion">৳. {{product.price}}</span>
     <span *ngIf="product.promotion">৳. <del>{{product.price}}</del>
         {{product.promo_price}}</span>
