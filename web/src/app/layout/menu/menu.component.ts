@@ -100,7 +100,8 @@ export class MenuComponent implements OnInit {
         if (!___.isUndefined(category.subCategory)) {
             this.subCategoryList = category.subCategory;
         }
-
+        console.log('isDisplay', this.isDisplay);
+        console.log('this.subCategoryList', this.subCategoryList);
         this.brandList = [];
         if (!___.isUndefined(this.brandListIndex[category.id]) && !___.isUndefined(this.brandListIndex[category.id].brand_ids)) {
             this.brandList = this.brandListIndex[category.id].brand_ids;

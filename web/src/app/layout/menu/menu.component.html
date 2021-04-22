@@ -26,7 +26,7 @@
                         <a (click)="categoryClickEvent(category)" style="font-weight: 400; text-transform: uppercase;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
-                    <div class="dropdown-menu" style="height: 400px; width: 100%;" (mouseleave)="isDisplay = false"
+                    <div class="dropdown-menu" style="height: 400px; width: 100%; display: block;" (mouseleave)="isDisplay = false"
                          *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
                         <div class="row" style="height: 400px;">
                             <div class="col-md-8 d-inline-flex flex-column flex-wrap"
@@ -35,11 +35,11 @@
                                     <ul class="mb-3" *ngIf='sub'>
                                         <li class="text-th">
                                             <a style="text-transform: uppercase;"
-                                               (click)="navigateBySubCategory($event,desktopCurrentCategory,sub)">{{sub.name}}</a>
+                                               (click)="navigateBySubCategory($event,desktopCurrentCategory, sub)">{{sub.name}}</a>
                                         </li>
                                         <ng-container *ngFor='let subC of sub.subCategory'>
                                             <li class="text-ot"
-                                                (click)="navigateBySubSubCategory($event,desktopCurrentCategory,sub,subC)">
+                                                (click)="navigateBySubSubCategory($event,desktopCurrentCategory, sub,subC)">
                                                 <a style="text-transform: capitalize;">{{subC.name}}</a>
                                             </li>
                                         </ng-container>
