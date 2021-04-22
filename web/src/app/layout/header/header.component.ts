@@ -158,7 +158,7 @@ export class HeaderComponent implements OnInit {
     }
 
     //Event method for search filter
-    main_search(event: any) {
+    mainSearch(event: any) {
         if (event.target.value && event.target.value.length > 0) {
             this.FilterUiService.changesearchterm(event.target.value);
             this.get_search_result(event.target.value)

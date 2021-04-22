@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import {Component, Inject, OnInit, ViewChild} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
 import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
@@ -11,6 +11,7 @@ import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {GLOBAL_CONFIGS} from "../../../environments/global_config";
 import * as ___ from 'lodash';
 import {forkJoin} from "rxjs/observable/forkJoin";
+import {ElementRef} from '@angular/core';
 
 @Component({
     selector: "app-menu",
@@ -18,6 +19,7 @@ import {forkJoin} from "rxjs/observable/forkJoin";
     styleUrls: ["./menu.component.scss"]
 })
 export class MenuComponent implements OnInit {
+    @ViewChild('responsiveMenu') responsiveMenu:ElementRef;
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
@@ -38,7 +40,7 @@ export class MenuComponent implements OnInit {
     private subCategoryIndexes: any;
     desktopCurrentCategory: any;
 
-    focusCategory: boolean[] = [];
+    focusCategory: any = {};
 
     /**
      * constructor for MenuComponent
@@ -64,13 +66,8 @@ export class MenuComponent implements OnInit {
                 this.categoryList = result;
                 console.log('final result',result );
                 result.forEach((data, i) => {
-                    console.log('asceee',i, data);
-                    console.log(this.focusCategory);
                     this.focusCategory[parseInt(data.id)] = false;
-                    console.log(this.focusCategory);
-
                 });
-                console.log('initial focus ctegory: ', this.focusCategory);
                 return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
             })
             .subscribe((result: any) => {
@@ -108,8 +105,6 @@ export class MenuComponent implements OnInit {
         if (!___.isUndefined(this.brandListIndex[category.id]) && !___.isUndefined(this.brandListIndex[category.id].brand_ids)) {
             this.brandList = this.brandListIndex[category.id].brand_ids;
         }
-        console.log('this.brandList', category.id, this.brandList);
-
     }
 
     //Event method for category click from menu
@@ -120,8 +115,12 @@ export class MenuComponent implements OnInit {
         this.isDisplay = false;
         this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
-        const ele = document.getElementById("responsive-menu") as HTMLInputElement;
-        ele.checked = false;
+        // const ele = document.getElementById("responsive-menu") as HTMLInputElement;
+        // this.responsiveMenu.nativeElement.focus();
+        if(this.responsiveMenu.nativeElement){
+            this.responsiveMenu.nativeElement.checked = false;
+        }
+
     }
 
     mobileCategoryClickEvent(category: any) {
@@ -129,11 +128,11 @@ export class MenuComponent implements OnInit {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
-            this.focusCategory = [];
+            this.focusCategory = {};
         } else {
 
             let subCategoryList = [];
-            this.focusCategory = [];
+            this.focusCategory = {};
             this.focusCategory[category.id] = true;
             if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
                 subCategoryList = this.subCategoryIndexes[category.id];
