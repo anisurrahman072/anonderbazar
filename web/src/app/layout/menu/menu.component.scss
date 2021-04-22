@@ -1,3 +1,9 @@
+body{
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.5rem !important;
+}
+
 .main-menu {
   margin-left: 0%;
 }
@@ -394,8 +400,10 @@ button {
 
 .categoryName {
   color: white;
+  font-size: 13px !important;
   font-weight: 400 !important;
   text-transform: uppercase;
+  margin-bottom: 0px !important;
 }
 
 .subcategory-name {
@@ -405,6 +413,7 @@ button {
   color: white;
   font-weight: bold;
   border-bottom: 1px solid darkgray;
+  margin-bottom: 0px;
 }
 
 @media screen and (max-width: 425px) {
