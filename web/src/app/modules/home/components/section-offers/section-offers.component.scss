@@ -1,12 +1,13 @@
 .section-title {
-  background-color: #ed1c24;
+  background-color: #F83831;
   padding: 10px 20px;
   color: white;
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
   margin-bottom: 0px;
   font-size: 17px;
-  font-weight: bold;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .section-daily-deal {
@@ -82,5 +83,12 @@
 @media screen and (max-width: 425px) {
   .offer-container{
     width: 50%;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .section-title {
+    font-size: 15px;
+    padding: 6px 10px;
   }
 }

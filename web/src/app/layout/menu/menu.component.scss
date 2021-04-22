@@ -335,9 +335,9 @@ button {
   width: 100%;
   z-index: 1000;
   padding-top: 10px;
-  -webkit-box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
-  -moz-box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
-  box-shadow: 10px -10px 20px rgba(50, 50, 50, 0.10);
+  -webkit-box-shadow: 0px 1px 12px rgba(50, 50, 50, 0.15);
+  -moz-box-shadow: 0px 1px 12px rgba(50, 50, 50, 0.15);
+  box-shadow: 0px 1px 12px rgba(50, 50, 50, 0.15);
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
 }
@@ -347,14 +347,14 @@ button {
   border-radius: 50%;
   width: 60px;
   padding: 5px;
-  -webkit-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
-  -moz-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
-  box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.10);
+  -webkit-box-shadow: 0px 1px 6px rgba(50, 50, 50, 0.30);
+  -moz-box-shadow: 0px 1px 6px rgba(50, 50, 50, 0.30);
+  box-shadow: 0px 1px 6px rgba(50, 50, 50, 0.30);
 }
 
 .scrollable-menu {
   position: relative;
-  background-color: darkgray;
+  background-color: #2f2727;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -375,7 +375,7 @@ button {
 .subcategory-section {
   z-index: 1000;
   position: absolute;
-  width: 90%;
+  width: 100%;
   overflow: scroll;
   height: 68vh;
   -ms-overflow-style: none;
@@ -392,6 +392,12 @@ button {
   overflow-x: scroll;
 }
 
+.categoryName {
+  color: white;
+  font-weight: 400 !important;
+  text-transform: uppercase;
+}
+
 .subcategory-name {
   background: none;
   border: none;
@@ -399,4 +405,10 @@ button {
   color: white;
   font-weight: bold;
   border-bottom: 1px solid darkgray;
+}
+
+@media screen and (max-width: 425px) {
+  .remove-menu {
+    display: none;
+  }
 }

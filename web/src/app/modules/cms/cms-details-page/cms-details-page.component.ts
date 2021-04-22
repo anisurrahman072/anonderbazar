@@ -15,6 +15,7 @@ export class CmsDetailsPageComponent implements OnInit {
     cms_detail: any;
     products: any = [];
     offers: any = [];
+    p: any;
 
     constructor(
         private route: ActivatedRoute,

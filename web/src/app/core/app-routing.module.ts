@@ -8,6 +8,7 @@ const routes: Routes = [
     {path: 'products', loadChildren: '../modules/category-nsearch/category-nsearch.module#CategoryNsearchModule'},
     {path: 'product-details', loadChildren: '../modules/product-details/product-details.module#ProductDetailsModule'},
     {path: 'cart', loadChildren: '../modules/shopping-cart/shopping-cart.module#ShoppingCartModule'},
+    {path: 'topSell', loadChildren: '../modules/top-sell/top-sell.module#TopSellModule'},
     {path: 'compare', loadChildren: '../modules/compare-product/compare-product.module#CompareProductModule'},
     {path: 'lottery', loadChildren: '../modules/coupon-lottery/coupon-lottery.module#CouponLotteryModule'},
     {path: 'checkout', loadChildren: '../modules/checkout/checkout.module#CheckoutModule'},

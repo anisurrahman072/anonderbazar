@@ -7,9 +7,13 @@
 }
 #banner-section {
   padding: 0;
-  -webkit-box-shadow: 0px 20px 50px rgba(50, 50, 50, 0.10);
+  /*-webkit-box-shadow: 0px 20px 50px rgba(50, 50, 50, 0.10);
   -moz-box-shadow: 0px 20px 50px rgba(50, 50, 50, 0.10);
-  box-shadow: 0px 20px 50px rgba(50, 50, 50, 0.10);
+  box-shadow: 0px 20px 50px rgba(50, 50, 50, 0.10);*/
+
+  -webkit-box-shadow:  0px 3px 5px 0px rgba(0, 0, 0, .15);
+  -moz-box-shadow:  0px 3px 5px 0px rgba(0, 0, 0,  .15);
+  box-shadow:  0px 3px 5px 0px rgba(0, 0, 0, .15);
 }
 .sec-banner-img img {
   height: 449px;

@@ -38,6 +38,8 @@ export class MenuComponent implements OnInit {
     private subCategoryIndexes: any;
     desktopCurrentCategory: any;
 
+    focusCategory: boolean[] = [];
+
     /**
      * constructor for MenuComponent
      */
@@ -60,19 +62,26 @@ export class MenuComponent implements OnInit {
             .getAllCategories()
             .concatMap((result: any) => {
                 this.categoryList = result;
+                console.log('final result',result );
+                result.forEach((data, i) => {
+                    console.log('asceee',i, data);
+                    console.log(this.focusCategory);
+                    this.focusCategory[parseInt(data.id)] = false;
+                    console.log(this.focusCategory);
+
+                });
+                console.log('initial focus ctegory: ', this.focusCategory);
                 return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
             })
             .subscribe((result: any) => {
 
                 if (!___.isUndefined(result[0])) {
-                    console.log('getCategoriesWithSubcategoriesV2', result[0]);
                     this.subCategoryIndexes = result[0];
                     for (const category of this.categoryList) {
                         this.populateSubCategories(category);
                     }
                 }
                 if (!___.isUndefined(result[1]) && !___.isUndefined(result[1].data)) {
-                    console.log('brandListIndex', result[1].data);
                     this.brandListIndex = result[1].data;
                 }
             });
@@ -120,9 +129,12 @@ export class MenuComponent implements OnInit {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
+            this.focusCategory = [];
         } else {
 
             let subCategoryList = [];
+            this.focusCategory = [];
+            this.focusCategory[category.id] = true;
             if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
                 subCategoryList = this.subCategoryIndexes[category.id];
                 for (const subCategory of subCategoryList) {

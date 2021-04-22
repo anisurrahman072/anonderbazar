@@ -6,7 +6,7 @@
             <a>{{cms_detail.title}}</a>
         </nav>
         <div class="row">
-            <div class="col-sm-12 col-md-12 main-content">
+            <div class="col-sm-6 col-md-12 main-content">
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
@@ -61,8 +61,9 @@
             <div class="titel">
             </div>
         </div>
-        <div class="row" *ngIf='cms_detail.alloffers && cms_detail.alloffers.length > 0'>
 
+
+        <div class="row" *ngIf='cms_detail.alloffers && cms_detail.alloffers.length > 0'>
             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4" *ngFor="let offer of (cms_detail.alloffers)">
                 <div class="category-contant">
                     <a routerLink="/cms/cms-details/{{offer.id}}">
@@ -80,9 +81,13 @@
             </div>
         </div>
         <div class="row" *ngIf='cms_detail.allproducts && cms_detail.allproducts.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4" *ngFor="let product of (cms_detail.allproducts)">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (cms_detail.allproducts | paginate: { itemsPerPage: 12, currentPage: p }) ; let i=index">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
+        </div>
+        <div class="row text-center">
+            <pagination-controls (pageChange)="p = $event" previousLabel="Previous" nextLabel="Next">
+            </pagination-controls>
         </div>
     </div>
 </div>

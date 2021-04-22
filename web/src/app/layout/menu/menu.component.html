@@ -1,3 +1,4 @@
+<div class="remove-menu" (mouseenter)="isDisplay = false" style="height: 15px; background-color: white;"></div>
 <div class="menu-sticky">
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg px-0">
@@ -9,7 +10,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="responsive-menu">
-                    <li class="has-child c-1">
+                    <li class="has-child c-1" (mouseenter)="isDisplay = false">
                         <span class="mr-1 burger_menu"><i class="fa fa-bars"></i></span>
                         <ul class="dropdown-menu_burger_menu">
                             <li *ngFor="let category of categoryList" (click)="categoryClickEvent(category)"
@@ -22,7 +23,7 @@
                         (mouseover)="isDisplay = true"
                         (mouseenter)="categoryHover(category)"
                         [ngClass]="category.id == selectedCategoryId? 'active':''">
-                        <a (click)="categoryClickEvent(category)" style="text-transform: capitalize;"
+                        <a (click)="categoryClickEvent(category)" style="font-weight: 400; text-transform: uppercase;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
                     <div class="dropdown-menu" style="height: 400px; width: 100%;" (mouseleave)="isDisplay = false"
@@ -33,7 +34,7 @@
                                 <div class="submenu" *ngFor='let sub of subCategoryList' style="width: fit-content;">
                                     <ul class="mb-3" *ngIf='sub'>
                                         <li class="text-th">
-                                            <a style="text-transform: capitalize;"
+                                            <a style="text-transform: uppercase;"
                                                (click)="navigateBySubCategory($event,desktopCurrentCategory,sub)">{{sub.name}}</a>
                                         </li>
                                         <ng-container *ngFor='let subC of sub.subCategory'>
@@ -83,28 +84,32 @@
             <i class="fa fa-chevron-right left-right-arrow" aria-hidden="true" style="right: 0px; top: 50%;"></i>
             <div class="Category"
                  *ngIf="categoryList">
-                <div *ngFor='let category of categoryList' style="white-space: nowrap; padding: 5px;"
+                <div *ngFor='let category of categoryList'
+                     [ngStyle]="focusCategory[category.id] ? {'background-color': 'white'} : null "
+                     style="white-space: nowrap;  padding: 5px 7px;"
                      (click)="mobileCategoryClickEvent(category)">
-                    <p style="font-weight: bold; color: white !important;"> {{category.name}} </p>
+                    <p class="categoryName"
+                       [ngStyle]="focusCategory[category.id] ? {'color': 'black'} : {'color': 'white'} "
+                    > {{category.name}} </p>
                 </div>
             </div>
         </div>
     </nav>
     <div *ngIf="mobileSubCategoryList" class="subcategory-section" style="">
         <div *ngFor='let subCategory of mobileSubCategoryList'
-             style="background-color: #ac1313; padding: 5px 5px 0 5px; width: 90%;">
-            <p class="subcategory-name" style=" "
+             style="background-color: whitesmoke; width: 90%;">
+            <p class="subcategory-name" style=" color: black;  padding: 5px; font-weight: 400; text-transform: uppercase;"
                (click)="subCategoryClickEvent(subCategory)">
                 {{subCategory.name}}
                 <i class="fa fa-chevron-down" aria-hidden="true"
-                   style="float: right;top: 50%; transform: translate(0%, 36%);"></i>
+                   style="float: right;top: 50%; transform: translate(0%, 36%); text-transform: uppercase;"></i>
             </p>
 
             <div *ngIf="mobileSubCategoryList && showSubSubCategoryList[subCategory.id]">
                 <div *ngFor="let subSubCategory of subSubCategoryList"
-                     (click)="navigateFromMobile($event,subCategory,subSubCategory)">
+                     (click)="navigateFromMobile($event,subCategory,subSubCategory)" style="background-color: white;">
                     <a class="dropdown-item" href="#" [routerLink]="['/products/category/',subSubCategory.id]"
-                       style="margin-left: 10px; text-align: left; color: white;">
+                       style="margin-left: 10px; text-align: left; color: black;">
                         {{subSubCategory.name}}
                     </a>
                 </div>
