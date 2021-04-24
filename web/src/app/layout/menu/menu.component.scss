@@ -1,4 +1,4 @@
-body{
+body {
   font-size: 13px !important;
   font-weight: 400 !important;
   line-height: 1.5rem !important;
@@ -327,6 +327,12 @@ button {
 .mobile-menu {
   max-height: 68vh;
   overflow-y: scroll;
+  z-index: 3000 !important;
+}
+
+.mobile-menu-nav {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .mobile-menu-container {
@@ -376,6 +382,14 @@ button {
   position: absolute;
   color: white;
   transform: translate(0%, -50%);
+}
+
+.left-arrow{
+  left: 0; top: 50%;
+}
+
+.right-arrow{
+  right: 0; top: 50%;
 }
 
 .subcategory-section {
