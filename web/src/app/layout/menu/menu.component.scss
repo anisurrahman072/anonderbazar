@@ -326,8 +326,7 @@ button {
 
 .mobile-menu {
   max-height: 68vh;
-  overflow-y: scroll;
-  z-index: 3000 !important;
+  position: relative;
 }
 
 .mobile-menu-nav {
@@ -393,12 +392,12 @@ button {
 }
 
 .subcategory-section {
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  z-index: 2000;
   position: absolute;
+  top: 34px;
+  z-index: 2;
   width: 100%;
   overflow: scroll;
+  -webkit-overflow-scrolling: auto !important;
   height: 68vh;
   -ms-overflow-style: none;
   scrollbar-width: none;
