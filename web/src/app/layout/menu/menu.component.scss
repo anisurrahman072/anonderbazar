@@ -366,7 +366,7 @@ button {
 
 .scrollable-menu {
   position: relative;
-  background-color: blue;
+  background-color: red;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -393,6 +393,8 @@ button {
 }
 
 .subcategory-section {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   z-index: 2000;
   position: absolute;
   width: 100%;
@@ -400,6 +402,7 @@ button {
   height: 68vh;
   -ms-overflow-style: none;
   scrollbar-width: none;
+
 }
 
 .subcategory-section::-webkit-scrollbar {
