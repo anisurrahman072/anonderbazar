@@ -743,6 +743,7 @@ module.exports = {
           WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled}
           AND subOrders.deleted_at IS NULL
           AND subOrderItems.deleted_at IS NULL
+          AND products.deleted_at IS NULL
         `;
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
 
