@@ -479,7 +479,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         const variantId = encodeURI($event.id);
         this.validateForm.controls.warehouses_variant_id.patchValue(null);
         if (variantId !== 'null' && variantId !== 'undefined') {
-            this.warehouseVariantService.getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId, this.currentUser.warehouse.id).subscribe(result => {
+            this.warehouseVariantService.getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId, this.currentUser).subscribe(result => {
                 this.warehouseVariantOptions = result;
             });
         } else {
