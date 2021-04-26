@@ -6,6 +6,7 @@ import {IsLoggedIn} from "./isLoggedIn";
 const routes: Routes = [
     {path: '', loadChildren: '../modules/home/home.module#HomeModule'},
     {path: 'products', loadChildren: '../modules/category-nsearch/category-nsearch.module#CategoryNsearchModule'},
+    {path: 'investor', loadChildren: '../modules/investor/investor.module#InvestorModule'},
     {path: 'product-details', loadChildren: '../modules/product-details/product-details.module#ProductDetailsModule'},
     {path: 'cart', loadChildren: '../modules/shopping-cart/shopping-cart.module#ShoppingCartModule'},
     {path: 'topSell', loadChildren: '../modules/top-sell/top-sell.module#TopSellModule'},

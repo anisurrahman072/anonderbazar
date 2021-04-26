@@ -277,6 +277,11 @@ module.exports.policies = {
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  InvestorController: {
+    '*': true,
+    'updateInvestorStatus': ['isAuthorized', 'isAdmin'],
+    'getAllInvestor': ['isAuthorized', 'isAdmin']
+  },
   OrderController: {
     '*': ['isAuthorized'],
     'sslcommerzsuccess': true,

@@ -223,4 +223,13 @@
         </span>
         </a>
     </li>
+    <li nz-menu-item *ngIf="'investor'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/investor">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Investors</span>
+        </span>
+        </a>
+    </li>
 </ul>

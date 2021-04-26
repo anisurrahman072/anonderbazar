@@ -42,6 +42,10 @@ const routes: Routes = [
                 loadChildren: '../pages/product/product.module#ProductModule'
             },
             {
+                path: 'investor' /* /dashboard/investor   */,
+                loadChildren: '../pages/investor/investor.module#InvestorModule'
+            },
+            {
                 path: 'profile' /* /dashboard/profile   */,
                 loadChildren: '../pages/profile/profile.module#ProfileModule'
             },
