@@ -3,7 +3,7 @@
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
-            <button nz-button (click)='showShippingChargeModal()'>
+            <button *ngIf="'update-global-shipping-charge' | accessControl" nz-button (click)='showShippingChargeModal()'>
                 <span> Set Shipping Charge </span>
             </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
