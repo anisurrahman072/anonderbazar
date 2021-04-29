@@ -453,7 +453,7 @@
                                                   value="CashBack">
                                     <i class="fa fa-money"></i>By Using Cashback
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="!isInOffer && !hideCashonDelivery && enabledPaymentMethods['Cash']"
+                                <mat-radio-button *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods['Cash']"
                                                   value="Cash">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>

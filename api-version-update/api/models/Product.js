@@ -190,6 +190,30 @@ module.exports = {
       columnName: 'last_order_completed_date',
       required: false,
     },
+    pay_online: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
+    free_shipping: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
+    dhaka_charge: {
+      type: 'number',
+      columnType: 'decimal',
+      allowNull: true,
+      required: false
+    },
+    outside_dhaka_charge: {
+      type: 'number',
+      columnType: 'decimal',
+      allowNull: true,
+      required: false
+    },
     updated_by: {
       model: 'user',
       required: false

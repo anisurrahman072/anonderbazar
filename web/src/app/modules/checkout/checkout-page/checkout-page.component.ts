@@ -7,7 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../state-management";
 import {Cart, User} from "../../../models";
-import {AreaService, AuthService, CartItemService, CartService, CmsService, OrderService} from "../../../services";
+import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../services";
 import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
@@ -16,7 +16,6 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
-import {forkJoin} from "rxjs/observable/forkJoin";
 
 @Component({
     selector: 'app-checkout-page',
@@ -94,8 +93,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     couponCashbackAmount: number = 0;
 
-    private offerProductIds: any[] = null;
-    isInOffer: boolean = false;
+    isPayOnlineOnly: boolean = false;
+    isFreeShipping: boolean = true;
+    maxDhakaCharge: number = 0;
+    maxOutsideDhakaCharge: number = 0;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -112,8 +113,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         private toastr: ToastrService,
         private modalService: BsModalService,
         private bKashService: BkashService,
-        public loaderService: LoaderService,
-        private cmsService: CmsService) {
+        public loaderService: LoaderService) {
 
     }
 
@@ -187,27 +187,31 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
                     this.divisionSearchOptions = divisionList;
                     console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
-
-                    /** Temporal code forkJoin for Bike Offer. Bike Offer ID = 108 */
-                    return forkJoin([this.PaymentAddressService.getAuthUserPaymentAddresses(), this.cmsService.getById(108)]);
+                    return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
-            .concatMap((result: any) => {
-                this.prevoius_address = result[0];
-                this.offerProductIds = result[1].data_value[0].products;
+            .concatMap((previousAddresses: any) => {
+                console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses;
                 return this.cart$;
             })
             .subscribe((cartData) => {
                 console.log('cartData', cartData);
                 if (cartData) {
                     this.cartData = cartData;
-                    this.cartData.data.cart_items.map(product => {
-                        if(this.offerProductIds.includes(product.product_id.id)){
-                            this.isInOffer = true;
+                    this.cartData.data.cart_items.map(item => {
+                        if(item.product_id.pay_online){
+                            this.isPayOnlineOnly = true;
                         }
-                    })
-
+                        if(!item.product_id.free_shipping){
+                            this.isFreeShipping = false;
+                        }
+                        let itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
+                        this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
+                        let itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
+                        this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
+                    });
                 } else {
                     this.cartData = null;
                 }
@@ -362,8 +366,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             if (selectedZilaId > 0 && !this.noShippingCharge) {
-                if (this.courierCharges && !this.isInOffer) {
-                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                if (this.courierCharges && !this.isFreeShipping) {
+                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge;
                 }
                 if (this.shippingCharge) {
                     this.grantTotal = this.grantTotal + this.shippingCharge;

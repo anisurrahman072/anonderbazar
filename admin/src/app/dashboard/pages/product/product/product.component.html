@@ -3,6 +3,9 @@
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
+            <button nz-button (click)='showShippingChargeModal()'>
+                <span> Set Shipping Charge </span>
+            </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
@@ -300,6 +303,46 @@
     </ng-container>
 
 </section>
+
+<!-- Set global Shipping Charge -->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isShippingChargeVisible"
+          [nzTitle]="'Set Shipping Charge for all products'"
+          [nzContent]="modalShippingCharge"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalShippingCharge>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateShippingForm"
+              (ngSubmit)="submitFormShippingCharge($event,validateShippingForm.value)">
+            <div>
+                <div nz-col [nzSpan]="6" >
+                    <label >Charge inside dhaka</label>
+                </div>
+                <div nz-col [nzSpan]="18">
+                    <input  nz-input type="number" formControlName="dhaka_charge" placeholder="Enter charge inside Dhaka"
+                            [nzSize]="'large'">
+                </div>
+            </div>&nbsp;
+            <div nz-row>
+                <div nz-col [nzSpan]="6" >
+                    <label>Charge outside dhaka</label>
+                </div>
+                <div nz-col [nzSpan]="18">
+                    <input nz-input type="number" formControlName="outside_dhaka_charge" placeholder="Enter charge outside Dhaka"
+                           [nzSize]="'large'">
+                </div>
+            </div>&nbsp;
+            <div>
+                <button nz-button class="login-form-button" [nzSize]="'large'"
+                        [disabled]="!validateShippingForm.valid">
+                    Update global Shipping Charge
+                </button>
+            </div>
+        </form>
+    </ng-template>
+</nz-modal>
 
 <!--variant modal-->
 <nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isVariantVisible"
