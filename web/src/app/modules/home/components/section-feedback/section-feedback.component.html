@@ -12,7 +12,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-6 mb-4" *ngFor="let product of topSellProducts">
-                        <app-product-item-feedback [dataProductFeedback]="product"></app-product-item-feedback>
+                        <app-product-item [dataProduct]="product"></app-product-item>
                     </div>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-6 mb-4" *ngFor="let newItem of newProducts">
-                        <app-product-item-newarrival [dataProductNewArrival]="newItem"></app-product-item-newarrival>
+                        <app-product-item [dataProduct]="newItem"></app-product-item>
                     </div>
                 </div>
             </div>
