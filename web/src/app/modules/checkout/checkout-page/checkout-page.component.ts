@@ -204,12 +204,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                         if(item.product_id.pay_online){
                             this.isPayOnlineOnly = true;
                         }
-                        if(!item.product_id.free_shipping){
+                        let itemDhakaCharge = 0;
+                        let itemOutsideDhakaCharge = 0;
+                        if(item.product_id.free_shipping === 0){
+                            itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
+                            itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
                             this.isFreeShipping = false;
                         }
-                        let itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
                         this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
-                        let itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
                         this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
                     });
                 } else {
@@ -437,6 +439,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             },
             paymentType: value.paymentType,
             is_copy: this.isCopy,
+            courierCharge: value.shipping_zila_id === AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge
         };
 
         console.log('requestPayload', requestPayload);

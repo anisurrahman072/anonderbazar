@@ -189,7 +189,7 @@ module.exports = {
 
             }
             // eslint-disable-next-line eqeqeq
-            courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+            courierCharge = req.body.courierCharge;
           } else {
             courierCharge = globalConfigs.outside_dhaka_charge;
           }
@@ -501,7 +501,7 @@ module.exports = {
             req.param('shipping_address').id = shippingAddres.id;
           }
           // eslint-disable-next-line eqeqeq
-          courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+          courierCharge = req.body.courierCharge;
         } else {
           courierCharge = globalConfigs.outside_dhaka_charge;
         }
@@ -556,7 +556,8 @@ module.exports = {
             billingAddress: req.param('billing_address'),
             shippingAddress: req.param('shipping_address')
           },
-          globalConfigs
+          globalConfigs,
+          courierCharge
         );
 
         return res.status(201).json({
