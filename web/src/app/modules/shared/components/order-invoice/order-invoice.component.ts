@@ -9,6 +9,7 @@ import {AreaService, OrderService, SuborderItemService, SuborderService} from ".
 import {PaymentService} from "../../../../services/payment.service";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {ShippingAddressService} from "../../../../services/shipping-address.service";
+import * as _moment from 'moment';
 
 @Component({
     selector: 'order-invoice',
@@ -48,6 +49,7 @@ export class OrderInvoiceComponent implements OnInit {
             this.orderService.getById(this.id)
                 .subscribe(order => {
                     this.data = order;
+                    this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                     this.payment = this.data.payment[0];
                     // this.suborders = order.suborders;
                     for (let i = 0; i < order.suborders.length; i++) {
