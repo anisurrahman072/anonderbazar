@@ -9,6 +9,7 @@ import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
+import * as _moment from 'moment';
 
 @Component({
     selector: 'app-brand-read',
@@ -52,6 +53,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                 .subscribe(order => {
 
                     this.data = order;
+                    this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
 
                     console.log('this.orderService.getById(this.id)',  this.data);
 
