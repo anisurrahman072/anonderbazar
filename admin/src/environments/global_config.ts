@@ -95,5 +95,10 @@ export const GLOBAL_CONFIGS = {
         delivered: 11,
         canceled: 12,
         confirmed: 13
-    }
+    },
+    INVESTOR_STATUS: [
+        {value: 1, label: 'Pending'},
+        {value: 2, label: 'Processing'},
+        {value: 3, label: 'Confirmed'}
+    ]
 };
