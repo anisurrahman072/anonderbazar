@@ -200,20 +200,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 console.log('cartData', cartData);
                 if (cartData) {
                     this.cartData = cartData;
-                    this.cartData.data.cart_items.map(item => {
-                        if(item.product_id.pay_online){
-                            this.isPayOnlineOnly = true;
-                        }
-                        let itemDhakaCharge = 0;
-                        let itemOutsideDhakaCharge = 0;
-                        if(item.product_id.free_shipping === 0){
-                            itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
-                            itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
-                            this.isFreeShipping = false;
-                        }
-                        this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
-                        this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
-                    });
+                    this.setShippingCharge();
                 } else {
                     this.cartData = null;
                 }
@@ -308,6 +295,26 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         }, () => {
             this.loaderService.hideLoader();
             this.toastr.error("Cart Item has not been updated Successfully", 'Error');
+        });
+    }
+
+    setShippingCharge(){
+        this.isPayOnlineOnly = false;
+        this.maxDhakaCharge = 0;
+        this.maxOutsideDhakaCharge = 0;
+        this.cartData.data.cart_items.map(item => {
+            if(item.product_id.pay_online){
+                this.isPayOnlineOnly = true;
+            }
+            let itemDhakaCharge = 0;
+            let itemOutsideDhakaCharge = 0;
+            if(item.product_id.free_shipping === 0){
+                itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
+                itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
+                this.isFreeShipping = false;
+            }
+            this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
+            this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
         });
     }
 

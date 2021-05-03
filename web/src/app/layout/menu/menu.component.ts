@@ -185,6 +185,8 @@ export class MenuComponent implements OnInit {
         this.filterUIService.changeCategoryType(type);
         this.filterUIService.changeCategoryName(name);
 
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        this.router.onSameUrlNavigation = 'reload';
         this.router.navigate(['/products', {type: 'category', id: id}], {
             queryParams: {
                 category: id

@@ -1,6 +1,6 @@
 import {HttpClient} from "@angular/common/http";
 import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
 import {
     Component,
     Injector,
@@ -26,6 +26,7 @@ import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {concatMap} from "rxjs/operator/concatMap";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     selector: "app-category-page",
@@ -118,6 +119,17 @@ export class CategoryPageComponent implements OnInit {
     sortTerm: String = '0';
     isLoading: boolean = false;
 
+    private mainSubscription: Subscription;
+    private combineSub: Subscription;
+    private filterSub: Subscription;
+    private filterSearchSub: Subscription;
+    private categoryProductSub: Subscription;
+    private subCategoryByIdSub: Subscription;
+    private brandSub: Subscription;
+    private getAllCategorySub: Subscription;
+    private getMinPriceSub: Subscription;
+    private getMaxPriceSub: Subscription;
+
     constructor(
         private httpClient: HttpClient,
         private router: Router,
@@ -157,7 +169,7 @@ export class CategoryPageComponent implements OnInit {
         this.subsubcategoryB = null;
 
         this.loaderService.showLoader();
-        forkJoin([
+        this.mainSubscription = forkJoin([
             this.brandService.getAll(),
             this.categoryProductService.getAllCategory(),
             this.productService.getMinPrice(),
@@ -181,7 +193,7 @@ export class CategoryPageComponent implements OnInit {
             }
         });
 
-        combineLatest(
+        this.combineSub = combineLatest(
             this.route.params,
             this.route.queryParams
         ).subscribe((res: any) => {
@@ -200,7 +212,7 @@ export class CategoryPageComponent implements OnInit {
                 return false;
             }
 
-            this.FilterUiService.currentcategoryType
+            this.filterSub = this.FilterUiService.currentcategoryType
                 .switchMap((type: any) => {
                     this.currentCategoryType = type;
 
@@ -216,6 +228,7 @@ export class CategoryPageComponent implements OnInit {
                 .concatMap((results: any) => {
                     console.log('combine result for categories', results);
                     this.allSubSubCategory = results[0];
+                    this.categoryB = null;
                     this.categoryB = results[1];
                     this.allSubSubCategory = results[2];
                     this.subcategoryB = results[3];
@@ -245,6 +258,48 @@ export class CategoryPageComponent implements OnInit {
             this.toastr.error('Sorry! There was a problem!', 'Sorry!');
         });
 
+    }
+
+    ngOnDestroy() {
+        if (this.mainSubscription) {
+            this.mainSubscription.unsubscribe();
+        }
+
+        if (this.combineSub) {
+            this.combineSub.unsubscribe();
+        }
+
+        if (this.filterSub) {
+            this.filterSub.unsubscribe();
+        }
+
+        if (this.filterSearchSub) {
+            this.filterSearchSub.unsubscribe();
+        }
+
+        if (this.categoryProductSub) {
+            this.categoryProductSub.unsubscribe();
+        }
+
+        if (this.subCategoryByIdSub) {
+            this.subCategoryByIdSub.unsubscribe();
+        }
+
+        if (this.brandSub) {
+            this.brandSub.unsubscribe();
+        }
+
+        if (this.getAllCategorySub) {
+            this.getAllCategorySub.unsubscribe();
+        }
+
+        if (this.getMinPriceSub) {
+            this.getMinPriceSub.unsubscribe();
+        }
+
+        if (this.getMaxPriceSub) {
+            this.getMaxPriceSub.unsubscribe();
+        }
     }
 
     isNotEmptyObject(val) {
@@ -558,7 +613,7 @@ export class CategoryPageComponent implements OnInit {
     /** Event method for setting up filter data */
     private generateSearchFilterResult() {
         this.loaderService.showLoader();
-        this.filterSearchObservable()
+        this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
                 this.allProductsByCategory = result.data;
@@ -588,7 +643,7 @@ export class CategoryPageComponent implements OnInit {
     // Event method for getting all the subcategory data for the page
     private getAllSubcategory() {
         if (this.categoryList_ids.length > 0) {
-            this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids)
+            this.categoryProductSub = this.categoryProductService.getSubcategoryByCategoryIds(this.categoryList_ids)
                 .concatMap((result: any) => {
                     this.allsubCategory = result;
 
@@ -618,7 +673,7 @@ export class CategoryPageComponent implements OnInit {
     //Event method for getting all sub sub category data
     private getAllSubSubcategory() {
         if (this.subCategory_ids.length != 0) {
-            this.categoryProductService.getSubcategoryByCategoryIds(this.subCategory_ids).subscribe(result => {
+            this.subCategoryByIdSub = this.categoryProductService.getSubcategoryByCategoryIds(this.subCategory_ids).subscribe(result => {
                 this.allSubSubCategory = result;
             });
         } else {
@@ -628,7 +683,7 @@ export class CategoryPageComponent implements OnInit {
 
     //Event method for getting all brands
     private getAllBrands() {
-        this.brandService.getAll().subscribe(result => {
+        this.brandSub = this.brandService.getAll().subscribe(result => {
             this.allBrand = result;
         }, (err) => {
             console.log(err);
@@ -637,7 +692,7 @@ export class CategoryPageComponent implements OnInit {
 
     //Event method for getting all category
     private getAllCategories() {
-        this.categoryProductService.getAllCategory().subscribe(result => {
+        this.getAllCategorySub = this.categoryProductService.getAllCategory().subscribe(result => {
             this.allCategory = result;
         }, (err) => {
             console.log(err);
@@ -646,7 +701,7 @@ export class CategoryPageComponent implements OnInit {
 
     //Event method for product min price
     private getMinPriceOfProduct() {
-        this.productService.getMinPrice().subscribe(result => {
+        this.getMinPriceSub = this.productService.getMinPrice().subscribe(result => {
             this.minPrice = result.min;
             this.min = this.minPrice;
         }, (err) => {
@@ -656,7 +711,7 @@ export class CategoryPageComponent implements OnInit {
 
     //Event method for product max price
     private getMaxPriceOfProduct() {
-        this.productService.getMaxPrice().subscribe(result => {
+        this.getMaxPriceSub = this.productService.getMaxPrice().subscribe(result => {
             this.maxPrice = result.max;
             this.max = this.maxPrice;
         }, (err) => {

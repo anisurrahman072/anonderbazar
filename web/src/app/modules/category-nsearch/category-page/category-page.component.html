@@ -2,10 +2,10 @@
     <div class="container-fluid">
         <nav class="woocommerce-breadcrumb breadcrumbs">
             <a routerLink="/" routerLinkActive="active">Home</a>
-            <a routerLink="/products" routerLinkActive="active">OUR PRODUCTS</a>
-            <a *ngIf="isNotEmptyObject(categoryB)" style="text-transform: uppercase;"
+            <a routerLink="/products" routerLinkActive="active">Our Products</a>
+            <a *ngIf="isNotEmptyObject(categoryB)" style="text-transform: capitalize;"
                routerLink="/products/category/{{categoryB?.id}}" [queryParams]="{category: categoryB?.id}"
-               routerLinkActive="active"> {{categoryB?.name}}
+               routerLinkActive="active"> {{categoryB.name}}
             </a>
             <a *ngIf="isNotEmptyObject(categoryB) && isNotEmptyObject(subcategoryB)" style="text-transform: uppercase;"
                routerLink="/products/category/{{categoryB?.id}}"
