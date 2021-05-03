@@ -12,6 +12,7 @@ const {asyncForEach} = require('../../libs/helper');
 const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
+const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 
 module.exports = {
 
@@ -84,7 +85,17 @@ module.exports = {
           id: req.query.ids,
           deletedAt: null
         });
-        return res.status(200).json(products);
+        let productsById = _.keyBy(products, 'id');
+
+        let productsByFrontendPosition = products.map(product => {
+          return {id: product.id, frontend_position: product.frontend_position};
+        })
+          .sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1)
+          .map(product => {
+            return productsById[`${product.id}`];
+          });
+
+        return res.status(200).json(productsByFrontendPosition);
       }
 
       return res.status(422).json({
@@ -627,6 +638,152 @@ module.exports = {
       res.status(400).json({
         message: 'Error occurred: ' + error
       });
+    }
+  },
+
+  getAllByBrandId: async (req, res) => {
+    try {
+      let brandId = req.param('brand_id');
+
+      let allProducts = await Product.find({
+        deletedAt: null,
+        brand_id: brandId
+      }).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all products by brand ID',
+        data: allProducts
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all products by brand ID',
+        error
+      });
+    }
+  },
+
+  getRecommendedProducts: async (req, res) => {
+    try {
+      let params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).skip(params.skip).sort([
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all recommended products',
+        data: allProducts
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all recommended products',
+        error
+      });
+    }
+  },
+
+  getFeedbackProducts: async (req, res) => {
+    try {
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {rating: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error while fetching all Feedback products',
+        error
+      });
+    }
+  },
+
+  getTopSellProducts: async (req, res) => {
+    try {
+      const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+            SELECT
+                 products.id as id,
+                 products.promotion as promotion,
+                 products.image as image,
+                 products.promo_price as promo_price,
+                 products.price as price,
+                 products.name as name,
+                 subOrderItems.product_id as productId,
+                 SUM (subOrderItems.product_quantity) as total_quantity`;
+
+      let fromSQL = ' FROM product_suborder_items as subOrderItems';
+      fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id ';
+      fromSQL += ' LEFT JOIN products as products ON products.id = subOrderItems.product_id ';
+
+      let _where = `
+          WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled}
+          AND subOrders.deleted_at IS NULL
+          AND subOrderItems.deleted_at IS NULL
+          AND products.deleted_at IS NULL
+        `;
+      _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
+
+      const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all sold products with Top Sell Order',
+        data: rawResult.rows
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(200).json({
+        success: false,
+        message: 'Error while fetching products'
+      });
+    }
+  },
+
+  getNewProducts: async (req, res) => {
+    try {
+      const params = req.allParams();
+
+      let allProducts = await Product.find({
+        approval_status: params.approval_status,
+        deletedAt: null
+      }).limit(params.limit).sort([
+        {createdAt: 'DESC'},
+        {frontend_position: 'ASC'},
+        {updatedAt: 'DESC'},
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all Feedback products',
+        data: allProducts
+      });
+    } catch (error) {
+
     }
   }
 

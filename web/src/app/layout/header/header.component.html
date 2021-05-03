@@ -14,7 +14,7 @@
                             <input  type="search" class="col-11 form-control src-box" name="q" id="q"
                                    placeholder="Search products and more..."
                                    [matAutocomplete]="auto"
-                                   [formControl]="stateCtrl" (keyup)="main_search($event)"
+                                   [formControl]="stateCtrl" (keyup)="mainSearch($event)"
                                    (keydown.enter)="onPressEnter($event)"
                             >
                             <div class="search-icon">

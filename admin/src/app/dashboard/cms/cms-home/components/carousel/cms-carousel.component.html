@@ -65,6 +65,14 @@
                 </div>
                 <div nz-row>
                     <div nz-col [nzSpan]="7">
+                        <label> Frontend Position </label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <input nz-input formControlName="frontend_position" placeholder="Enter Frontend Position" [nzSize]="'large'" [(ngModel)]="frontendPosition">
+                    </div>
+                </div>
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
                         <label>Short text 1</label>
                     </div>
                     <div nz-col [nzSpan]="12">
@@ -186,6 +194,14 @@
                         <div *ngIf="getEditFormControl('title').dirty && getEditFormControl('title').pending">
                             Validating...
                         </div>
+                    </div>
+                </div>
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label> Frontend Position </label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <input nz-input formControlName="frontend_position" placeholder="Enter Frontend Position" [nzSize]="'large'">
                     </div>
                 </div>
                 <div nz-row>

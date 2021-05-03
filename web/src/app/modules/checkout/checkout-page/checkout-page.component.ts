@@ -93,6 +93,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     couponCashbackAmount: number = 0;
 
+    isPayOnlineOnly: boolean = false;
+    isFreeShipping: boolean = true;
+    maxDhakaCharge: number = 0;
+    maxOutsideDhakaCharge: number = 0;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -195,6 +200,20 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 console.log('cartData', cartData);
                 if (cartData) {
                     this.cartData = cartData;
+                    this.cartData.data.cart_items.map(item => {
+                        if(item.product_id.pay_online){
+                            this.isPayOnlineOnly = true;
+                        }
+                        let itemDhakaCharge = 0;
+                        let itemOutsideDhakaCharge = 0;
+                        if(item.product_id.free_shipping === 0){
+                            itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
+                            itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
+                            this.isFreeShipping = false;
+                        }
+                        this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
+                        this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
+                    });
                 } else {
                     this.cartData = null;
                 }
@@ -349,8 +368,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             if (selectedZilaId > 0 && !this.noShippingCharge) {
-                if (this.courierCharges) {
-                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.courierCharges.dhaka_charge : this.courierCharges.outside_dhaka_charge
+                if (this.courierCharges && !this.isFreeShipping) {
+                    this.shippingCharge = selectedZilaId == AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge;
                 }
                 if (this.shippingCharge) {
                     this.grantTotal = this.grantTotal + this.shippingCharge;
@@ -420,6 +439,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             },
             paymentType: value.paymentType,
             is_copy: this.isCopy,
+            courierCharge: value.shipping_zila_id === AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge
         };
 
         console.log('requestPayload', requestPayload);

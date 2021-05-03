@@ -68,7 +68,7 @@ _isSpinning: any = false;
           offer_type: ['', [Validators.required]],
           frontend_position: ['', ''],
           link: ['', ''],
-          description: ['', [Validators.required]],
+          description: ['', []],
           showHome: ['',[]],
           showCarousel: ['',[]]
       });

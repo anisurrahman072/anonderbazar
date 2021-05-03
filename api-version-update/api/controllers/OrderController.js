@@ -189,7 +189,7 @@ module.exports = {
 
             }
             // eslint-disable-next-line eqeqeq
-            courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+            courierCharge = req.body.courierCharge;
           } else {
             courierCharge = globalConfigs.outside_dhaka_charge;
           }
@@ -501,7 +501,7 @@ module.exports = {
             req.param('shipping_address').id = shippingAddres.id;
           }
           // eslint-disable-next-line eqeqeq
-          courierCharge = req.param('shipping_address').zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+          courierCharge = req.body.courierCharge;
         } else {
           courierCharge = globalConfigs.outside_dhaka_charge;
         }
@@ -556,7 +556,8 @@ module.exports = {
             billingAddress: req.param('billing_address'),
             shippingAddress: req.param('shipping_address')
           },
-          globalConfigs
+          globalConfigs,
+          courierCharge
         );
 
         return res.status(201).json({
@@ -753,6 +754,47 @@ module.exports = {
         success: false,
         message,
         error
+      });
+    }
+  },
+
+  update: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set(req.body);
+
+      let paymentDetail = await Payment.find({
+        order_id: updatedOrder.id,
+        deletedAt: null
+      });
+
+      if(paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12){
+        let returnCashbackAmount = updatedOrder.total_price;
+
+        let prevCashbackDetail = await CouponLotteryCashback.findOne({
+          deletedAt: null,
+          user_id: paymentDetail[0].user_id
+        });
+
+        await CouponLotteryCashback.updateOne({
+          user_id: paymentDetail[0].user_id
+        }).set({
+          amount: prevCashbackDetail.amount + returnCashbackAmount
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated status of order',
+        data: updatedOrder
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating Order'
       });
     }
   }

@@ -16,8 +16,7 @@ export class CategoryProductService {
 
     getAll(): Observable<any> {
         // get users from api
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null}`);
     }
 
     getById(id): Observable<any> {
@@ -39,53 +38,47 @@ export class CategoryProductService {
     }
 
     update(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/' + id, data)
-            .map((response) => response);
+        return this.http.put(this.EndPoint + '/' + id, data);
     }
 
 
     getAllClass(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":1,"deletedAt":null,"parent_id":null}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":1,"deletedAt":null,"parent_id":null}`);
     }
 
     getAllCategory(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}`);
     }
 
     getAllHomeCategory(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}&limit=6`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}&limit=6`);
     }
 
     getAllsubCategory(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null}`);
     }
 
 
     categoryWithSubcategory(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?category/withProductSubcategory`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?category/withProductSubcategory`);
     }
 
     getHomeSubcategoryByCategory(): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}&limit=3`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":0}&limit=3`);
     }
 
     getSubcategoryByCategoryId(id: string): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":${id}}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":${id}}`);
     }
 
     getSubcategoryByCategoryIds(ids: number[]): Observable<any> {
 
-        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":[${ids}]}`)
-            .map((response) => response);
+        return this.http.get(`${this.EndPoint}?where={"type_id":2,"deletedAt":null,"parent_id":[${ids}]}`);
     }
+    getSubcategoryByCategoryIdsV2(category_ids: number[]): Observable<any> {
 
+        return this.http.get(`${this.EndPoint}/withSubcategoriesforSpecific?category_ids=[${category_ids}]`);
+    }
     getCategoriesWithSubcategories() {
         return this.http
             .get(`${this.EndPoint}/withSubcategories`)

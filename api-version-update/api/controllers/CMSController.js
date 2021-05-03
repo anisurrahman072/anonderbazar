@@ -625,7 +625,8 @@ module.exports = {
         title: req.body.title,
         description: req.body.description,
         image: newDesktopImagePath,
-        image_mobile: newMobileImagePath
+        image_mobile: newMobileImagePath,
+        frontend_position: req.body.frontend_position
       });
 
       _payload.data_value = existingDataValue;
@@ -764,11 +765,14 @@ module.exports = {
           mobileImage = '';
         }
 
+        let frontend_position = req.body.frontend_position ? req.body.frontend_position : indexedDataValue.frontend_position;
+
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
           image: newDesktopImagePath,
-          image_mobile: mobileImage
+          image_mobile: mobileImage,
+          frontend_position: frontend_position
         };
 
         await CMS.updateOne({id: cms.id}).set({
@@ -792,11 +796,14 @@ module.exports = {
           mobileImage = '';
         }
 
+        let frontend_position = req.body.frontend_position ? req.body.frontend_position : indexedDataValue.frontend_position;
+
         dataValue[dataValueIndex] = {
           title: req.body.title,
           description: req.body.description,
           image: desktopImage,
-          image_mobile: mobileImage
+          image_mobile: mobileImage,
+          frontend_position: frontend_position
         };
 
         await CMS.updateOne({id: cms.id}).set({

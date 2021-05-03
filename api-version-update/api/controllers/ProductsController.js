@@ -318,6 +318,7 @@ module.exports = {
       }
 
       let _sort = [];
+      _sort.push({frontend_position: 'ASC'});
       if (req.query.sortTitle) {
         let sortTitle = req.query.sortTitle;
         if (req.query.sortTitle === 'created_at') {
@@ -492,10 +493,14 @@ module.exports = {
       const columnNamesObject = columnListForBulkUpload;
 
       if (authUser.group_id.name === 'owner') {
+        delete columnNamesObject['Frontend Position'];
         delete columnNamesObject['Vendor Code'];
       }
 
       const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'];
+      if (authUser.group_id.name === 'admin') {
+        letters.push('S');
+      }
       const columnNameKeys = Object.keys(columnNamesObject);
 
       const cNLen = columnNameKeys.length;
@@ -574,6 +579,7 @@ module.exports = {
           min_unit: 1,
           alert_quantity: 1,
           weight: item.weight ? parseFloat(item.weight) : 0,
+          frontend_position: item.frontend_position ? item.frontend_position : 111,
           image: item.image ? item.image : null,
         };
         newItem.additional_images = [];
@@ -774,8 +780,14 @@ module.exports = {
       });
 
       const columnNamesObject = columnListForBulkUpdate(isAdmin);
+      if (authUser.group_id.name === 'owner') {
+        delete columnNamesObject['Frontend Position'];
+      }
 
-      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+      if (authUser.group_id.name === 'admin') {
+        letters.splice(letters.length, 0, 'L', 'M');
+      }
       const columnNameKeys = Object.keys(columnNamesObject);
 
       const cNLen = columnNameKeys.length;
@@ -818,6 +830,7 @@ module.exports = {
                 products.name as name,
                 products.price,
                 products.weight,
+                products.frontend_position,
                 products.vendor_price as vendor_price,
                 products.image as image,
                 products.tag as tag,
@@ -931,6 +944,10 @@ module.exports = {
           ws.cell(row, column++).number(0);
         }
 
+        if (authUser.group_id.name === 'admin') {
+          ws.cell(row, column++).number(item.frontend_position);
+        }
+
         if (item.tag) {
           ws.cell(row, column).string(item.tag).style(myStyle);
         } else {
@@ -1038,6 +1055,7 @@ module.exports = {
         product.name = req.body[i].name;
         product.quantity = req.body[i].quantity;
         product.vendor_price = parseFloat(req.body[i].vendor_price);
+        product.frontend_position = req.body[i].frontend_position;
 
         if (req.body[i].promo_price > 0) {
           product.promo_price = parseFloat(req.body[i].promo_price);
@@ -1072,6 +1090,7 @@ module.exports = {
           vendor_price: product.vendor_price,
           quantity: product.quantity,
           weight: product.weight,
+          frontend_position: product.frontend_position,
           tag: product.tag
         });
 

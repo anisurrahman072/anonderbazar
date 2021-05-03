@@ -14,12 +14,13 @@ module.exports = {
       let fromSQL = ` FROM cms `;
 
       let _where = `
-        WHERE deleted_at IS NULL AND
+        WHERE deleted_at IS NULL AND (
+        (page = 'POST' AND section = 'HOME' AND sub_section = 'CATEGORY') or
         (page = 'POST' AND section = 'HOME' AND sub_section = 'MIDDLE') or
         (page = 'LAYOUT' AND section = 'FOOTER' AND sub_section = 'FEATURE') or
         (page = 'POST' AND section = 'HOME' AND sub_section = 'PARENTOFFER') or
         (page = 'POST' AND section = 'HOME' AND sub_section = 'BOTTOM') or
-        (page = 'POST' AND section = 'HOME' AND sub_section = 'CATEGORY')
+        (page = 'POST' AND section = 'HOME' AND sub_section = 'CATEGORY') )
 
         ORDER BY frontend_position ASC
       `;
@@ -35,6 +36,7 @@ module.exports = {
       const finalRows = _.groupBy(rawResult.rows, (row) => {
         return row.page + '_' + row.section + '_' + row.sub_section;
       });
+
 
       _.forEach(finalRows, (collection) => {
         _.forEach(collection, (row) => {

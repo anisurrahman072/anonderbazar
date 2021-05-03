@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import {Component, Inject, OnInit, ViewChild} from "@angular/core";
 import {NavigationStart, Router} from "@angular/router";
 import {CategoryProductService} from "../../services";
 import {DOCUMENT} from '@angular/common';
@@ -11,6 +11,7 @@ import {ShoppingModalService} from '../../services/ui/shoppingModal.service';
 import {GLOBAL_CONFIGS} from "../../../environments/global_config";
 import * as ___ from 'lodash';
 import {forkJoin} from "rxjs/observable/forkJoin";
+import {ElementRef} from '@angular/core';
 
 @Component({
     selector: "app-menu",
@@ -18,6 +19,7 @@ import {forkJoin} from "rxjs/observable/forkJoin";
     styleUrls: ["./menu.component.scss"]
 })
 export class MenuComponent implements OnInit {
+    @ViewChild('responsiveMenu') responsiveMenu:ElementRef;
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.otherImageExtension;
@@ -36,6 +38,9 @@ export class MenuComponent implements OnInit {
     showSubSubCategoryList: boolean[];
 
     private subCategoryIndexes: any;
+    desktopCurrentCategory: any;
+
+    focusCategory: any = {};
 
     /**
      * constructor for MenuComponent
@@ -59,19 +64,21 @@ export class MenuComponent implements OnInit {
             .getAllCategories()
             .concatMap((result: any) => {
                 this.categoryList = result;
+                console.log('final result',result );
+                result.forEach((data, i) => {
+                    this.focusCategory[parseInt(data.id)] = false;
+                });
                 return forkJoin([this.categoryProductService.getCategoriesWithSubcategoriesV2(), this.brandService.brandsByCategories()])
             })
             .subscribe((result: any) => {
 
                 if (!___.isUndefined(result[0])) {
-                    console.log('getCategoriesWithSubcategoriesV2', result[0]);
                     this.subCategoryIndexes = result[0];
                     for (const category of this.categoryList) {
                         this.populateSubCategories(category);
                     }
                 }
                 if (!___.isUndefined(result[1]) && !___.isUndefined(result[1].data)) {
-                    console.log('brandListIndex', result[1].data);
                     this.brandListIndex = result[1].data;
                 }
             });
@@ -87,18 +94,18 @@ export class MenuComponent implements OnInit {
 
     //Event method for category hover from menu
     categoryHover(category: any) {
+        this.desktopCurrentCategory = category;
 
         this.subCategoryList = [];
         if (!___.isUndefined(category.subCategory)) {
             this.subCategoryList = category.subCategory;
         }
-
+        console.log('isDisplay', this.isDisplay);
+        console.log('this.subCategoryList', this.subCategoryList);
         this.brandList = [];
         if (!___.isUndefined(this.brandListIndex[category.id]) && !___.isUndefined(this.brandListIndex[category.id].brand_ids)) {
             this.brandList = this.brandListIndex[category.id].brand_ids;
         }
-        console.log('this.brandList', category.id, this.brandList);
-
     }
 
     //Event method for category click from menu
@@ -109,8 +116,12 @@ export class MenuComponent implements OnInit {
         this.isDisplay = false;
         this.isMobileMenuOpen = false;
         this.changeCurrentCategory(category.id, category.type_id, category.name);
-        const ele = document.getElementById("responsive-menu") as HTMLInputElement;
-        ele.checked = false;
+        // const ele = document.getElementById("responsive-menu") as HTMLInputElement;
+        // this.responsiveMenu.nativeElement.focus();
+        if(this.responsiveMenu.nativeElement){
+            this.responsiveMenu.nativeElement.checked = false;
+        }
+
     }
 
     mobileCategoryClickEvent(category: any) {
@@ -118,9 +129,12 @@ export class MenuComponent implements OnInit {
             this.mobileSubCategoryList = null;
             this.selectedCategoryId = null;
             this.subSubCategoryList = null;
+            this.focusCategory = {};
         } else {
 
             let subCategoryList = [];
+            this.focusCategory = {};
+            this.focusCategory[category.id] = true;
             if (!___.isEmpty(this.subCategoryIndexes[category.id])) {
                 subCategoryList = this.subCategoryIndexes[category.id];
                 for (const subCategory of subCategoryList) {

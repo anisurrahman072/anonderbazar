@@ -59,9 +59,9 @@
       "styles": [
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
         "../node_modules/ion-rangeslider/css/ion.rangeSlider.min.css",
+        "styles.scss",
         "assets/css/main.css",
-        "assets/css/responsive.css",
-        "styles.scss"
+        "assets/css/responsive.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",

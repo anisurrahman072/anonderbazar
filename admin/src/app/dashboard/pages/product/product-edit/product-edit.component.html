@@ -1,4 +1,4 @@
-<nz-card>
+<nz-card [nzTitle]="title" [nzExtra]="extra">
     <ng-template #title>
         Product Edit
         <span *ngIf="currentUser.group_id=== 'admin'">(Shop: {{warehouse_name}})</span>
@@ -193,6 +193,60 @@
                     </div>
                     <!--brand_id-->
 
+                </div>
+                <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="7">
+                            <label>Frontend Position</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input type="number" formControlName="frontend_position"
+                                   [placeholder]="'Enter Frontend Position'">
+                        </div>
+                    </div>
+                    <!--frontend_position-->
+                </div>
+                <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="12">
+                            <label nz-checkbox formControlName="pay_online">Pay online only</label>
+                        </div>
+                    </div>
+                    <!--pay online only-->
+                </div>
+                <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="12">
+                            <label nz-checkbox formControlName="free_shipping" [(ngModel)]="free_shipping">Free Shipping</label>
+                        </div>
+                    </div>
+                    <!--free shipping-->
+                </div>
+                <div *ngIf="!free_shipping">
+                    <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                        <div nz-row class="form-row">
+                            <div nz-col [nzSpan]="7">
+                                <label>Charge inside Dhaka</label>
+                            </div>
+                            <div nz-col [nzSpan]="12">
+                                <input nz-input type="number" formControlName="dhaka_charge"
+                                       [placeholder]="'Enter charge inside Dhaka'">
+                            </div>
+                        </div>
+                        <!--frontend_position-->
+                    </div>
+                    <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                        <div nz-row class="form-row">
+                            <div nz-col [nzSpan]="7">
+                                <label>Charge outside Dhaka</label>
+                            </div>
+                            <div nz-col [nzSpan]="12">
+                                <input nz-input type="number" formControlName="outside_dhaka_charge"
+                                       [placeholder]="'Enter charge outside Dhaka'">
+                            </div>
+                        </div>
+                        <!--frontend_position-->
+                    </div>
                 </div>
             </div>
 

@@ -11,14 +11,16 @@ import {ProductService} from "../../../../services";
 export class FlashDealsComponent implements OnInit {
     @Input() private dataProductList: any;
 
-    productList: Product[] = [];
+    productList: Product[] = null;
 
     constructor() {
     }
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        this.productList = this.dataProductList;
+        if(this.dataProductList && this.dataProductList.length > 0){
+            this.productList = this.dataProductList;
+        }
     }
 
 }

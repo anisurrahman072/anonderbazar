@@ -36,10 +36,12 @@ export class WarehouseVariantService {
         return this.http.delete(`${this.EndPoint}/${id}`);
     }
 
-    getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId: string, warehouseId: number) {
-        return this.http.get(`${this.EndPoint
-        }?where={"deletedAt":null,"warehouse_id":${warehouseId
-        },"variant_id":${variantId}}`);
+    getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId: string, currentUser: any) {
+        let _where = `"deletedAt":null,"variant_id":${variantId}`;
+        if(currentUser.group_id === "owner"){
+            _where += `,"warehouse_id":${currentUser.warehouse.id}`;
+        }
+        return this.http.get(`${this.EndPoint}?where={${_where}}`);
     }
 
     getAllWarehouseVariant(

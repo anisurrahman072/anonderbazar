@@ -172,6 +172,12 @@ module.exports = {
       required: false,
       allowNull: true
     },
+    frontend_position: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 111,
+    },
     produce_time: {
       type: 'number',
       columnType: 'integer',
@@ -183,6 +189,30 @@ module.exports = {
       columnType: 'datetime',
       columnName: 'last_order_completed_date',
       required: false,
+    },
+    pay_online: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
+    free_shipping: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
+    dhaka_charge: {
+      type: 'number',
+      columnType: 'decimal',
+      allowNull: true,
+      required: false
+    },
+    outside_dhaka_charge: {
+      type: 'number',
+      columnType: 'decimal',
+      allowNull: true,
+      required: false
     },
     updated_by: {
       model: 'user',

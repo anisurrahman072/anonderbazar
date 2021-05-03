@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ProductService} from "../../../../services";
 import {AppSettings} from "../../../../config/app.config";
 import {CmsService} from '../../../../services';
@@ -11,7 +11,7 @@ import {CmsService} from '../../../../services';
 export class SpecialLookComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     dataWarehouseList;
-    middleblogList: any;
+    @Input() middleblogList: any;
 
     constructor(private productService: ProductService,
                 private cmsService: CmsService) {
@@ -22,8 +22,19 @@ export class SpecialLookComponent implements OnInit {
         this.productService.getByMostSellingWarehouse().subscribe(result => {
             this.dataWarehouseList = result.data;
         });
-        this.cmsService.getBySubSectionName('POST', 'HOME', "MIDDLE").subscribe(result => {
+
+        for (let i = 0; i < this.middleblogList.length; i++) {
+            let inputWords = this.middleblogList[i].data_value[0].description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').split(' ');
+            if (inputWords.length > 50) {
+                this.middleblogList[i].data_value[0].description = inputWords.slice(0, 50).join(' ') + ' ...';
+            } else {
+                this.middleblogList[i].data_value[0].description = inputWords.join(' ');
+            }
+        }
+
+        /*this.cmsService.getBySubSectionName('POST', 'HOME', "MIDDLE").subscribe(result => {
             this.middleblogList = result;
+            console.log('ahhhhh', this.middleblogList);
             for (let i = 0; i < this.middleblogList.length; i++) {
                 let inputWords = this.middleblogList[i].data_value[0].description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').split(' ');
                 if (inputWords.length > 50) {
@@ -32,7 +43,7 @@ export class SpecialLookComponent implements OnInit {
                     this.middleblogList[i].data_value[0].description = inputWords.join(' ');
                 }
             }
-        });
+        });*/
     }
 
 }

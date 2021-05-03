@@ -9,7 +9,7 @@ const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
 module.exports = {
 
-  placeCouponCashbackOrder: async function (authUser, orderDetails, addresses, globalConfigs) {
+  placeCouponCashbackOrder: async function (authUser, orderDetails, addresses, globalConfigs, courierCharge) {
     const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
     const {paymentType, grandOrderTotal} = orderDetails;
 
@@ -69,7 +69,8 @@ module.exports = {
             billingAddressId: finalBillingAddressId,
             shippingAddressId: finalShippingAddressId
           },
-          globalConfigs
+          globalConfigs,
+          courierCharge
         );
 
         const cashBackAmount = couponLotteryCashback.amount;
@@ -99,7 +100,7 @@ module.exports = {
       }
 
       if (smsPhone) {
-        let smsText = 'anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।';
+        let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
         if (allCouponCodes && allCouponCodes.length > 0) {
           if (allCouponCodes.length === 1) {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
@@ -361,7 +362,7 @@ module.exports = {
     }
     throw new Error(JSON.stringify(bKashAgreementCreateResponse));
   },
-  createOrder: async function (db, customer, transDetails, addressIds, globalConfigs) {
+  createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
@@ -414,7 +415,7 @@ module.exports = {
     if (!noShippingCharge) {
       if (shippingAddress && shippingAddress.id) {
         // eslint-disable-next-line eqeqeq
-        courierCharge = shippingAddress.zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
+        courierCharge = productCourierCharge;
       } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }

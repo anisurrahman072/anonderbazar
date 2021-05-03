@@ -120,6 +120,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     currentUser: any;
     queryStatus: any;
 
+    free_shipping: any;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -149,6 +151,11 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             alert_quantity: [0, []],
             category_id: ['', [Validators.required]],
             brand_id: ['', []],
+            frontend_position: ['', []],
+            pay_online: ['', []],
+            free_shipping: ['', []],
+            dhaka_charge: ['', []],
+            outside_dhaka_charge: ['', []],
             subcategory_id: ['', []],
             quantity: ['', [Validators.required]],
             product_details: ['', [Validators.required]],
@@ -181,6 +188,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                 this.data = result;
 
                 this.uniqueProductCodeValidator.setExcludeId(this.data.id);
+                this.free_shipping = this.data.free_shipping;
                 this.validateForm.patchValue(this.data);
                 if (this.data && this.data.brand_id) {
                     this.brand_id = this.data.brand_id;
@@ -269,7 +277,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             this.validateForm.controls[key].markAsDirty();
         }
 
-        if(this.validateForm.invalid){
+        if (this.validateForm.invalid) {
             return false;
         }
 
@@ -290,7 +298,17 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         formData.append('is_coupon_product', value.is_coupon_product ? '1' : '0');
         formData.append('weight', value.weight);
         formData.append('status', value.status);
-
+        formData.append('frontend_position', value.frontend_position);
+        value.pay_online ? formData.append('pay_online', "1") : formData.append('pay_online', "0");
+        value.free_shipping ? formData.append('free_shipping', "1") : formData.append('free_shipping', "0");
+        if(!value.free_shipping){
+            if (value.dhaka_charge) {
+                formData.append('dhaka_charge', value.dhaka_charge);
+            }
+            if(value.outside_dhaka_charge){
+                formData.append('outside_dhaka_charge', value.outside_dhaka_charge);
+            }
+        }
         if (value.subcategory_id) {
             formData.append('subcategory_id', value.subcategory_id);
         }

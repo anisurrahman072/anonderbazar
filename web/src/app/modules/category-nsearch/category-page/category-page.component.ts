@@ -326,11 +326,11 @@ export class CategoryPageComponent implements OnInit {
             this.maxPrice = this.max;
         }
 
-        this.priceRange = [this.minPrice, this.maxPrice];
+        // this.priceRange = [this.minPrice, this.maxPrice];
 
         if (type == "price") {
             this.priceFilter = true;
-            this.priceRange = [this.minPrice, this.maxPrice];
+            // this.priceRange = [this.minPrice, this.maxPrice];
         }
 
         if (type == "search") {
@@ -529,8 +529,8 @@ export class CategoryPageComponent implements OnInit {
 
         this.minPrice = this.min;
         this.maxPrice = this.max;
-        this.priceRange = [this.minPrice, this.maxPrice];
-        this.priceRange = [this.min, this.max];
+        // this.priceRange = [this.minPrice, this.maxPrice];
+        // this.priceRange = [this.min, this.max];
         this.clearAll = true;
 
         this.generateSearchFilterResult();
@@ -763,7 +763,7 @@ export class CategoryPageComponent implements OnInit {
             this.isCollapsed_subsubclass = true;
         }
 
-        this.priceRange = [this.minPrice, this.maxPrice];
+        // this.priceRange = [this.minPrice, this.maxPrice];
 
         return true;
     }

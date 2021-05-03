@@ -8,6 +8,7 @@ import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {PaymentAddressService} from "../../../../services/payment-address.service";
 
 @Component({
     selector: 'app-brand-read',
@@ -35,7 +36,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
-                private suborderService: SuborderService) {
+                private suborderService: SuborderService,
+                private paymentAddressService: PaymentAddressService) {
     }
 
     // init the component
@@ -69,10 +71,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                         }
                     }
                     if (order && typeof order.billing_address !== 'undefined' && order.billing_address.id !== 75) {
-                        this.paymentAddress = order.billing_address;
+                        this.paymentAddressService.getById(this.data.billing_address.id).subscribe(paymentAddress => {
+                            this.paymentAddress = paymentAddress;
+                        });
                     }
                     if (order && typeof order.shipping_address !== 'undefined' && order.shipping_address.id !== 75) {
-                        this.shippingAddress = order.shipping_address;
+                        this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
+                            this.shippingAddress = shippingAddress;
+                        });
                     }
 
                     console.log('this.data', this.data, this.suborders);

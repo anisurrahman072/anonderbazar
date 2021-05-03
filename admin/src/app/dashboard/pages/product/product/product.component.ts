@@ -17,6 +17,7 @@ import {NzNotificationService} from "ng-zorro-antd";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as ___ from 'lodash';
 import {ExportService} from "../../../../services/export.service";
+import {GlobalConfigsService} from "../../../../services/global-configs.service";
 
 type SearchSubject = { field: string, query: string };
 
@@ -100,6 +101,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     private excelPageSelectAll = [];
     @ViewChild('excelSelectAll') excelSelectAll;
 
+    isShippingChargeVisible: boolean = false;
+    validateShippingForm: FormGroup;
+    shippingData: any;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -114,7 +119,8 @@ export class ProductComponent implements OnInit, OnDestroy {
         private brandService: BrandService,
         private warehouseVariantService: WarehouseVariantService,
         private productVariantService: ProductVariantService,
-        private exportService: ExportService
+        private exportService: ExportService,
+        private globalConfigsService: GlobalConfigsService
     ) {
         this.validateProductForm = this.fb.group({
             userChecked: ['', []],
@@ -253,6 +259,11 @@ export class ProductComponent implements OnInit, OnDestroy {
             warehouses_variant_id: ['', [Validators.required]]
         });
 
+        this.validateShippingForm = this.fb.group({
+            dhaka_charge: [''],
+            outside_dhaka_charge: ['']
+        })
+
         this.validatePromotionForm = this.fb.group({
             promotion: ['', [Validators.required]],
             promo_price: ['', [Validators.required]],
@@ -296,6 +307,12 @@ export class ProductComponent implements OnInit, OnDestroy {
                 this.page = 1;
                 this.getProductData();
             });
+
+        this.globalConfigsService.getShippingCharge()
+            .subscribe(data => {
+                this.shippingData = data.configData[0];
+                this.validateShippingForm.patchValue(data.configData[0]);
+            })
 
     }
 
@@ -453,6 +470,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     };
     // Modal method
     handleOk = e => {
+        this.isShippingChargeVisible = false;
         this.isProductVisible = false;
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
@@ -460,6 +478,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     };
     // Modal method
     handleCancel = e => {
+        this.isShippingChargeVisible = false;
         this.isProductVisible = false;
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
@@ -479,7 +498,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         const variantId = encodeURI($event.id);
         this.validateForm.controls.warehouses_variant_id.patchValue(null);
         if (variantId !== 'null' && variantId !== 'undefined') {
-            this.warehouseVariantService.getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId, this.currentUser.warehouse.id).subscribe(result => {
+            this.warehouseVariantService.getAllWarehouseVariantBy_VariantId_And_WarehouseId(variantId, this.currentUser).subscribe(result => {
                 this.warehouseVariantOptions = result;
             });
         } else {
@@ -757,5 +776,27 @@ export class ProductComponent implements OnInit, OnDestroy {
         let fileName = this.status === 1 ? 'Fixed product' : 'Variable Product';
 
         this.exportService.downloadFile(excelData, header, fileName);
+    }
+
+    showShippingChargeModal(){
+        this.isShippingChargeVisible = true;
+    }
+
+    submitFormShippingCharge($event, value){
+        this.globalConfigsService.updateShippingCharge(this.shippingData.id, value)
+            .subscribe(updatedConfig => {
+                this._notification.create(
+                    'success',
+                    'Successfully updated shipping charge',
+                    updatedConfig.message
+                );
+            }, error => {
+                this._notification.create(
+                    'info',
+                    'Error occurred while updating shipping charge',
+                    error.message
+                );
+            });
+        this.isShippingChargeVisible = false;
     }
 }

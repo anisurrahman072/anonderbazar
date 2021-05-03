@@ -71,6 +71,7 @@ module.exports.policies = {
     'updateProduct': ['isAuthorized', 'isAdmin'],
     'removeImage': ['isAuthorized', 'isAdmin'],
     'getType': true,
+    'withSubcategoriesforSpecific': true,
     'getProduct': true,
     'getSingleType': true,
     'allCategories': true,
@@ -180,6 +181,8 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
+    'getShippingCharge': ['isAuthorized', 'isAdmin'],
+    'updateShippingCharge': ['isAuthorized', 'isAdmin']
   },
   GroupController: {
     '*': false,
@@ -275,6 +278,11 @@ module.exports.policies = {
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  InvestorController: {
+    '*': true,
+    'updateInvestorStatus': ['isAuthorized', 'isAdmin'],
+    'getAllInvestor': ['isAuthorized', 'isAdmin']
   },
   OrderController: {
     '*': ['isAuthorized'],

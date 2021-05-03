@@ -1,0 +1,38 @@
+<div class="container-fluid">
+    <div class="row">
+        <mat-card class="form-card">
+            <mat-toolbar>
+                <span>Become an Investor</span>
+            </mat-toolbar>
+            <form [formGroup]="investorForm"  class="example-container mt-2" (ngSubmit)="onInvestorFormSubmit($event, investorForm.value)">
+                <mat-card-content>
+                    <div class="example-container">
+                        <mat-form-field>
+                            <input matInput placeholder="First name" formControlName="first_name" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput placeholder="Last name" formControlName="last_name" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input matInput placeholder="Email" formControlName="email" />
+                        </mat-form-field>
+                        <mat-form-field>
+                            <span matPrefix>+880 &nbsp;</span>
+                            <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
+                            <mat-error>
+                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('required')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('phoneNumber')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </mat-card-content>
+                <div class="button-row">
+                    <button mat-button color="primary" type="submit" [disabled]="investorForm.invalid">Submit</button>
+                </div>
+            </form>
+        </mat-card>
+
+    </div>
+</div>
