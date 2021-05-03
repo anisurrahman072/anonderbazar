@@ -22,8 +22,9 @@
                     <li *ngFor="let category of categoryList" class="has-child c-2"
                         (mouseover)="isDisplay = true"
                         (mouseenter)="categoryHover(category)"
+                        (click)="categoryClickEvent(category)"
                         [ngClass]="category.id == selectedCategoryId? 'active':''">
-                        <a (click)="categoryClickEvent(category)" style="font-weight: 400; text-transform: uppercase;"
+                        <a  style="font-weight: 400; text-transform: uppercase;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
                     <div class="dropdown-menu" style="height: 400px; width: 100%; display: block;" (mouseleave)="isDisplay = false"
