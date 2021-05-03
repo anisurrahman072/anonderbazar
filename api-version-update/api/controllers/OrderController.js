@@ -406,6 +406,7 @@ module.exports = {
       try {
         const smsPhone = authUser.phone;
         let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
+        console.log('smsTxt', smsText);
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       } catch (err) {
         console.log('SMS sending error');
