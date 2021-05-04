@@ -54,4 +54,8 @@ export class WarehouseService {
     update(id: number, data: any) {
         return this.http.put(this.EndPoint + '/update-custom/' + id, data);
     }
+
+    updateUserStatus(id: number, status: any) {
+        return this.http.put(this.EndPoint + '/updateUserStatus/' + id, status);
+    }
 }

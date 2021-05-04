@@ -191,7 +191,7 @@ module.exports = {
   //Model models/Warehouse.js
   updateCustom: async (req, res) => {
     try {
-      console.log(req.body);
+      console.log('update warehouse', req.body);
       let postBody = {...req.body};
 
       try {
@@ -232,10 +232,7 @@ module.exports = {
         return res.status(err.status).json({err: err});
       }
 
-      const {
-        warehouse,
-        user
-      } = await sails.getDatastore()
+      const {warehouse, user} = await sails.getDatastore()
         .transaction(async (db) => {
           postBody.status = 0;
           const warehouse = await Warehouse.updateOne({id: req.param('id')}).set(postBody).usingConnection(db);
@@ -263,7 +260,27 @@ module.exports = {
         error
       });
     }
+  },
 
+  updateUserStatus: async (req, res) => {
+    try {
+      const status = req.body.status;
+      await Warehouse.updateOne({id: req.param('id')}).set({status: status});
+
+      return res.status(200).json({
+        success: true,
+        message: 'Use status updated successfully'
+      });
+
+    } catch (error) {
+      console.log(error);
+
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update user status',
+        error: error
+      });
+    }
   }
 };
 

@@ -93,19 +93,19 @@ export class WarehouseComponent implements OnInit {
 
     changeStatus(id: any, status: any) {
         if (status != 2) {
-            this.warehouseService.update(id, {status: 2}).subscribe(result => {
+            this.warehouseService.updateUserStatus(id, {status: 2}).subscribe(result => {
                 this._notification.create(
                     'success',
-                    'Status change is declined',
+                    'Status change is successfully.',
                     ''
                 );
                 this.getAllData();
             })
         } else if (status == 2) {
-            this.warehouseService.update(id, {status: 3}).subscribe(result => {
+            this.warehouseService.updateUserStatus(id, {status: 3}).subscribe(result => {
                 this._notification.create(
                     'success',
-                    'Status change is successfully.',
+                    'Status change is declined',
                     ''
                 );
                 this.getAllData();

@@ -358,6 +358,7 @@ module.exports.policies = {
   },
   WarehouseController: {
     '*': false,
+    'updateUserStatus': true,
     'find': true,
     'findOne': true,
     'getAll': ['isAuthorized'],
