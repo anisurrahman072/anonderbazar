@@ -9,18 +9,13 @@ import {ProductService} from "../../../../services";
     styleUrls: ['./section-flash-deals.component.scss']
 })
 export class FlashDealsComponent implements OnInit {
-    @Input() private dataProductList: any;
-
-    productList: Product[] = null;
+    @Input() dataProductList;
 
     constructor() {
     }
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        if(this.dataProductList && this.dataProductList.length > 0){
-            this.productList = this.dataProductList;
-        }
     }
 
 }
