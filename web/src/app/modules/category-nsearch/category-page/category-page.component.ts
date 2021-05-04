@@ -168,7 +168,7 @@ export class CategoryPageComponent implements OnInit {
         this.subcategoryB = null;
         this.subsubcategoryB = null;
 
-        this.loaderService.showLoader();
+        // this.loaderService.showLoader();
         this.mainSubscription = forkJoin([
             this.brandService.getAll(),
             this.categoryProductService.getAllCategory(),
@@ -243,18 +243,18 @@ export class CategoryPageComponent implements OnInit {
                         this.allProductsByCategory = [];
                     }
                     this.isLoading = false;
-                    this.loaderService.hideLoader();
+                    // this.loaderService.hideLoader();
 
                 }, (err) => {
                     console.log(err);
                     this.isLoading = false;
-                    this.loaderService.hideLoader();
+                    // this.loaderService.hideLoader();
 
                     this.toastr.error('Sorry! There was a problem!', 'Sorry!');
                 });
         }, (err) => {
             console.log(err);
-            this.loaderService.hideLoader();
+            // this.loaderService.hideLoader();
             this.toastr.error('Sorry! There was a problem!', 'Sorry!');
         });
 
@@ -612,16 +612,16 @@ export class CategoryPageComponent implements OnInit {
 
     /** Event method for setting up filter data */
     private generateSearchFilterResult() {
-        this.loaderService.showLoader();
+        // this.loaderService.showLoader();
         this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
                 this.allProductsByCategory = result.data;
-                this.loaderService.hideLoader();
+                // this.loaderService.hideLoader();
             }, (err) => {
                 console.log('generateSearchFilterResult', err);
                 this.toastr.error('Sorry! There was a problem!', 'Sorry!');
-                this.loaderService.hideLoader();
+                // this.loaderService.hideLoader();
             });
     }
 
