@@ -212,7 +212,7 @@
   resolved "https://registry.yarnpkg.com/@jaspero/ng2-alerts/-/ng2-alerts-0.0.7.tgz#439141c6ff5a71d732f2dac5c88a6de56887e04e"
   integrity sha1-Q5FBxv9acdcy8trFyIpt5WiH4E4=
 
-"@ng-bootstrap/ng-bootstrap@^4.0.0":
+"@ng-bootstrap/ng-bootstrap@^4.2.2":
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-4.2.2.tgz#a1c3a9576656cb4f793bbc3df56dfbdeb098f2fb"
   integrity sha512-v8QmC17bv9he5Ep6zutaI9aQ2w/2NqySP0fejOKe7cacKpGUqsLIakpyd2FD7mfZu7pSCCtHYpRWR+h6yq+Ngg==

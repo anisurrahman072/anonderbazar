@@ -35,7 +35,6 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {ModalModule} from 'ngx-bootstrap/modal';
 import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {RecentlyViewesComponent} from './components/recently-viewes/recently-viewes.component';
-import {CarouselModule} from 'ngx-bootstrap/carousel';
 import {BusinessOportunitiesComponent} from "./components/business-oportunity/business-oportunities.component";
 import {NgxCarouselModule} from "ngx-carousel";
 import { SectionBrandComponent } from './components/section-brand/section-brand.component';
@@ -90,12 +89,10 @@ export const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
         TabsModule.forRoot(),
         TooltipModule.forRoot(),
         NguCarouselModule,
-        CarouselModule.forRoot(),
         ModalModule.forRoot(),
         NgAisModule,
         MaterialModule,
         Ng5SliderModule,
-        NgxCarouselModule
     ],
     declarations: [
         HomeComponent,

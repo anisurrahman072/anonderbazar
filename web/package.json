@@ -44,7 +44,7 @@
     "@angular/service-worker": "5.2.11",
     "@cloudinary/angular-5.x": "~1.1.0",
     "@jaspero/ng2-alerts": "0.0.7",
-    "@ng-bootstrap/ng-bootstrap": "^4.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^4.2.2",
     "@ng-select/ng-select": "^2.4.3",
     "@ngrx/effects": "^5.1.0",
     "@ngrx/store": "^4.1.1",

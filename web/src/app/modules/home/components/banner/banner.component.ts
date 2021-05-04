@@ -71,17 +71,6 @@ export class BannerComponent implements OnInit {
                     }
                 });
         */
-        this.carouselBanner = {
-            grid: {xs: 1, sm: 1, md: 1, lg: 1, all: 0},
-            slide: 1,
-            speed: 800,
-            interval: 4000,
-            point: {visible: false},
-            loop: true,
-            custom: 'banner',
-            touch: true,
-            easing: 'ease-out',
-        }
 
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
