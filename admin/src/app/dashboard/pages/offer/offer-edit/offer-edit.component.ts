@@ -15,6 +15,7 @@ export class OfferEditComponent implements OnInit {
     validateForm: FormGroup;
     ImageFile: File;
     BannerImageFile: File;
+    smallOfferImage: File;
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -55,6 +56,7 @@ export class OfferEditComponent implements OnInit {
     id: any;
     ImageFileEdit: any;
     BannerImageFileEdit: any;
+    smallOfferImageEdit: any;
     data: any;
 
     isShowHomepage: boolean;
@@ -88,7 +90,9 @@ export class OfferEditComponent implements OnInit {
                 .subscribe(result => {
                     this.ImageFileEdit = [];
                     this.BannerImageFileEdit = [];
+                    this.smallOfferImageEdit = [];
                     this.data = result;
+                    console.log('admin image rouzex: ', this.data.data_value[0]);
 
                     let showHome = this.data.data_value[0].showInHome === 'true' ? true : false;
                     let showCarousel = this.data.data_value[0].showInCarousel === 'true' ? true : false;
@@ -108,9 +112,15 @@ export class OfferEditComponent implements OnInit {
                     if (this.data && this.data.data_value[0].image) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.data_value[0].image);
                     }
+
                     if (this.data && this.data.data_value[0].banner_image) {
                         this.BannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.data_value[0].banner_image);
                     }
+
+                    if (this.data && this.data.data_value[0].small_image) {
+                        this.smallOfferImageEdit.push(this.IMAGE_ENDPOINT + this.data.data_value[0].small_image);
+                    }
+
                     this._isSpinning = false;
                 }, () => {
                     this._isSpinning = false;
@@ -143,6 +153,13 @@ export class OfferEditComponent implements OnInit {
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
             formData.append('hasImage', 'false');
+        }
+
+        if (this.smallOfferImage) {
+            formData.append('hasSmallImage', 'true');
+            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
+        } else {
+            formData.append('hasSmallImage', 'false');
         }
 
         if (this.BannerImageFile) {
@@ -184,6 +201,10 @@ export class OfferEditComponent implements OnInit {
         this.BannerImageFile = null;
     }
 
+    onRemoveSmallOfferImage(file: FileHolder) {
+        this.smallOfferImage = null;
+    }
+
 //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
@@ -192,6 +213,11 @@ export class OfferEditComponent implements OnInit {
 
     onBeforeBannerUpload = (metadata: UploadMetadata) => {
         this.BannerImageFile = metadata.file;
+        return metadata;
+    }
+
+    onBeforeUploadImage = (metadata: UploadMetadata) => {
+        this.smallOfferImage = metadata.file;
         return metadata;
     }
 
