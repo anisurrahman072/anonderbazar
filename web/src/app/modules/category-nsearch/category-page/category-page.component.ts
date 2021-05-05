@@ -27,7 +27,7 @@ import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {concatMap} from "rxjs/operator/concatMap";
 import {Subscription} from "rxjs/Subscription";
-
+import {a} from "@angular/core/src/render3";
 @Component({
     selector: "app-category-page",
     templateUrl: "./category-page.component.html",
@@ -92,6 +92,9 @@ export class CategoryPageComponent implements OnInit {
     categoryB = null;
     subcategoryB = null;
     subsubcategoryB = null;
+
+    categoryTitle: string = null;
+    categoryTitleName: string = null;
 
     options: Options = {
         floor: 1,
@@ -206,8 +209,8 @@ export class CategoryPageComponent implements OnInit {
 
             const queryParamRes = this.handleQueryParams(queryParams);
 
-            if(!paramRes && !queryParamRes) {
-                this.page = queryParams.page ? queryParams.page: 1;
+            if (!paramRes && !queryParamRes) {
+                this.page = queryParams.page ? queryParams.page : 1;
                 this.isLoading = false;
                 return false;
             }
@@ -230,9 +233,14 @@ export class CategoryPageComponent implements OnInit {
                     this.allSubSubCategory = results[0];
                     this.categoryB = null;
                     this.categoryB = results[1];
+                    this.categoryTitle = results[1].code;
+                    this.categoryTitleName = results[1].name;
+                    console.log('this.categoryTitle', this.categoryTitle);
+                    console.log('this.categoryTitleName', this.categoryTitleName);
                     this.allSubSubCategory = results[2];
                     this.subcategoryB = results[3];
                     this.subsubcategoryB = results[4];
+                    this.addPageTitle();
                     return this.filterSearchObservable();
                 })
                 .subscribe((result: any) => {
@@ -244,6 +252,7 @@ export class CategoryPageComponent implements OnInit {
                     }
                     this.isLoading = false;
                     // this.loaderService.hideLoader();
+
 
                 }, (err) => {
                     console.log(err);
@@ -833,6 +842,18 @@ export class CategoryPageComponent implements OnInit {
             imageUrl = this.IMAGE_ENDPOINT + this.categoryB.banner_image;
         }
         return imageUrl;
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('category - ' + this.categoryTitleName + ' - Anonderbazar')
+
+        /*if (this.categoryTitle && (typeof this.categoryTitle === "string")) {
+            this.title.setTitle('category - ' + this.categoryTitle);
+        } else if (this.categoryTitleName) {
+            this.title.setTitle('category - ' + this.categoryTitleName)
+        } else {
+            this.title.setTitle('Products');
+        }*/
     }
 }
 

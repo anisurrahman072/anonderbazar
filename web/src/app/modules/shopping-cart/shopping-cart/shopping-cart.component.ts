@@ -6,6 +6,7 @@ import * as fromStore from "../../../state-management";
 import {AuthService, CartItemService, CartService} from "../../../services";
 import {Observable} from "rxjs/Observable";
 import {Cart} from "../../../models";
+import {Title} from "@angular/platform-browser";
 
 
 @Component({
@@ -26,12 +27,19 @@ export class ShoppingCartComponent implements OnInit {
                 private router: Router,
                 private cartService: CartService,
                 private cartItemService: CartItemService,
-                private authservice: AuthService) {
+                private authservice: AuthService,
+                private title: Title) {
     }
+
     // init the component
     ngOnInit() {
         // Getting current user id
         this.user_id = this.authservice.getCurrentUserId();
         this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.addPageTitle()
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('Your Cart Items - Anonderbazar')
     }
 }

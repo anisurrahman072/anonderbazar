@@ -10,6 +10,7 @@ import {AuthService} from "../../../services";
 import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 import * as ___ from 'lodash';
 import {AppSettings} from "../../../config/app.config";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-lottery',
@@ -75,7 +76,8 @@ export class LotteryComponent implements OnInit {
 
     constructor(private lotteryService: LotteryService,
                 private _notify: NotificationsService,
-                private authService: AuthService) {
+                private authService: AuthService,
+                private title: Title) {
     }
 
     ngOnInit() {
@@ -134,6 +136,7 @@ export class LotteryComponent implements OnInit {
         if (this.authService.getCurrentUserId() === this.lotteryAdminId) {
             this.isAuthorized = true;
         }
+        this.addPageTitle();
     }
 
     ngOnDestroy(): void {
@@ -295,5 +298,9 @@ export class LotteryComponent implements OnInit {
     onPageChange(event) {
         window.scroll(0, 0);
         this.p = event
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('Live Lottery - Anonderbazar');
     }
 }

@@ -3,6 +3,7 @@ import {CmsService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-page-cms',
@@ -29,6 +30,7 @@ export class CmsPageComponent implements OnInit {
         private productservice: ProductService,
         private router: Router,
         private route: ActivatedRoute,
+        private title: Title
     ) {
         this.start = 0;
 
@@ -53,6 +55,7 @@ export class CmsPageComponent implements OnInit {
             this.offerpage = false;
 
         }
+        this.addPageTitle();
     }
 
     onScroll(event) {
@@ -121,6 +124,9 @@ export class CmsPageComponent implements OnInit {
                         }
                     });
             });
+    }
+    private addPageTitle() {
+        this.title.setTitle('Offers - Anonderbazar');
     }
 
 

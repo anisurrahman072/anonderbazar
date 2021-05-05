@@ -7,7 +7,7 @@ const routes: Routes = [
         path: "",
         component: TopSellComponent,
         data: {
-            title: "Top Sell"
+            title: "Top Selling products"
         }
     },
 ];

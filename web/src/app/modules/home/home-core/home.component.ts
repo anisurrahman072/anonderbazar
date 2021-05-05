@@ -3,6 +3,7 @@ import {CmsService, ProductService} from "../../../services";
 import {Observable} from "rxjs/Observable";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import * as ___ from "lodash";
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-home-page',
@@ -17,7 +18,8 @@ export class HomeComponent implements OnInit {
 
     constructor(
         private productService: ProductService,
-        private cmsService: CmsService
+        private cmsService: CmsService,
+        private title: Title,
     ) {
     }
 
@@ -25,6 +27,7 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.getFeatureProducts();
         this.fetchCmsData();
+        this.addPageTitleNMetaTag();
     }
 
     //get all cms data that are need in the home page
@@ -47,6 +50,10 @@ export class HomeComponent implements OnInit {
     //Event method for getting all the data for the page
     private getFeatureProducts() {
         this.featureProducts = this.productService.fetchFlashDealsProducts();
+    }
+
+    private addPageTitleNMetaTag() {
+        this.title.setTitle('Home - Anonderbazar');
     }
 
 }

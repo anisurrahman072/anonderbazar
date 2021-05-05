@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CmsService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-page-cms_details',
@@ -20,7 +21,8 @@ export class CmsDetailsPageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private cmsService: CmsService,
-        private productservice: ProductService
+        private productservice: ProductService,
+        private title: Title
     ) {
     }
 
@@ -28,7 +30,6 @@ export class CmsDetailsPageComponent implements OnInit {
     ngOnInit() {
         this.route.params.subscribe(params => {
             this.id = +params['id'];
-
             this.get_cms_by_id();
         });
     }
@@ -42,14 +43,16 @@ export class CmsDetailsPageComponent implements OnInit {
                 console.log('this.cms_post_by_id', this.cms_post_by_id);
 
                 if (!(this.cms_post_by_id && this.cms_post_by_id.data_value && Array.isArray(this.cms_post_by_id.data_value) && this.cms_post_by_id.data_value.length > 0)) {
-                        return false;
+                    return false;
                 }
 
                 this.cms_detail = this.cms_post_by_id.data_value[0];
                 console.log('this.cms_detail', this.cms_detail);
+                console.log('title', this.cms_detail.title);
+                this.addPageTitle();
 
                 if (this.cms_detail.offers.length > 0) {
-                    this.cms_detail.alloffers  = [];
+                    this.cms_detail.alloffers = [];
 
                     this.cmsService.getByIds(this.cms_detail.offers)
                         .subscribe(result => {
@@ -60,7 +63,7 @@ export class CmsDetailsPageComponent implements OnInit {
 
                 }
                 if (this.cms_detail.products.length > 0) {
-                    this.cms_detail.allproducts  = [];
+                    this.cms_detail.allproducts = [];
 
                     this.productservice.getByIds(this.cms_detail.products)
                         .subscribe(result => {
@@ -72,5 +75,13 @@ export class CmsDetailsPageComponent implements OnInit {
             });
         }
 
+    }
+
+    private addPageTitle() {
+        if (this.cms_detail) {
+            this.title.setTitle(this.cms_detail.title + ' - Anonderbazar');
+        }else {
+            this.title.setTitle('Offer Detail - Anonderbazar');
+        }
     }
 }

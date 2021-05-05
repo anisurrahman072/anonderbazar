@@ -28,54 +28,54 @@ const routes: Routes = [
         children: [
             {
                 path: 'orders', component: OrderTabComponent, data: {
-                    title: 'My Orders'
+                    title: 'My Orders - Anonderbazar'
                 }
             },
             {
                 path: 'favourites', component: FavouriteProductTabComponent, data: {
-                    title: 'My Favourites'
+                    title: 'My Favourites - Anonderbazar'
                 }
             },
             {
                 path: 'bkash-accounts', component: BKashAccountComponent, data: {
-                    title: 'My Bkash Accounts'
+                    title: 'My Bkash Accounts - Anonderbazar'
                 }
             },
             {
                 path: 'profile-tab', component: ProfileTabComponent, data: {
-                    title: 'My Profile'
+                    title: 'My Profile - Anonderbazar'
                 }
             },
             {
                 path: 'address-tab', component: AddressTabComponent, data: {
-                    title: 'My Addresses'
+                    title: 'My Addresses - Anonderbazar'
                 }
             },
             {
                 path: 'messaging-tab', component: MessagingTabComponent, data: {
-                    title: 'My Messages'
+                    title: 'My Messages - Anonderbazar'
                 }
             },
         ]
     },
     {
         path: 'orders/invoice/:id', component: OrderInvoiceComponent, data: {
-            title: 'Orders Invoice'
+            title: 'Orders Invoice - Anonderbazar'
         }
     },
     {
         path: 'suborders/invoice/:id', component: SuborderInvoiceComponent, data: {
-            title: 'Suborders Invoice'
+            title: 'Suborders Invoice - Anonderbazar'
         }
     },
     {
         path: 'suborders/details/:id', component: SuborderComponent, data: {
-            title: 'Suborders Details'
+            title: 'Suborders Details - Anonderbazar'
         }
     },
     {
         path: 'orders/details/:id', component: OrderComponent, data: {
-            title: 'Orders Details'
+            title: 'Orders Details - Anonderbazar'
         }
     },
 ];

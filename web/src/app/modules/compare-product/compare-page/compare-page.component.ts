@@ -6,6 +6,7 @@ import {AppSettings} from "../../../config/app.config";
 import {Product} from "../../../models";
 import {NotificationsService} from "angular2-notifications";
 import {CompareService} from "../../../services/compare.service";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'page-compare',
@@ -20,12 +21,15 @@ export class ComparePageComponent implements OnInit {
 
     constructor(private store: Store<fromStore.HomeState>,
                 private compareService: CompareService,
-                private _notify: NotificationsService,) {
+                private _notify: NotificationsService,
+                private title: Title
+    ) {
     }
 
     // init the component
     ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
+        this.addPageTitle();
     }
 
     //Method for all from compare section
@@ -52,5 +56,9 @@ export class ComparePageComponent implements OnInit {
         this.compare$.subscribe(c => {
             this.compareService.setFullCompare(c);
         })
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('Compare Products - Anonderbazar');
     }
 }

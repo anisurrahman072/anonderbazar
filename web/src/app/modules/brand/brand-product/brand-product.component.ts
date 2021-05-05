@@ -3,6 +3,7 @@ import {ActivatedRoute} from "@angular/router";
 import {BrandService, ProductService} from "../../../services";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {forkJoin} from "rxjs/observable/forkJoin";
+import {Title} from "@angular/platform-browser";
 import {error} from "util";
 
 @Component({
@@ -22,6 +23,8 @@ export class BrandProductComponent implements OnInit {
         private productService: ProductService,
         private brandService: BrandService,
         public loaderService: LoaderService,
+        private title: Title
+
     ) {
     }
 
@@ -34,10 +37,16 @@ export class BrandProductComponent implements OnInit {
             })
             .subscribe(arr => {
                 this.brand = arr[0];
+                console.log('brand',this.brand);
+                this.addPageTitle();
                 this.allProducts = arr[1].data;
                 this.loaderService.hideLoader();
             }, error => {
                 console.log('Error occurred while fetching brand products. Error: ', error);
             })
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('Brand: ' + this.brand.name + ' - Anonderbazar');
     }
 }

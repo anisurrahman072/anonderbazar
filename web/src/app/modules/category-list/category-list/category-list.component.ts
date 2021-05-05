@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CategoryProductService} from '../../../services';
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-category-list',
@@ -11,7 +12,10 @@ export class CategoryListComponent implements OnInit {
     dataCategoryList;
     @Input() dataTitle;
 
-    constructor(private categoryProductService: CategoryProductService) {
+    constructor(
+        private categoryProductService: CategoryProductService,
+        private title: Title
+    ) {
     }
 
     // init the component
@@ -19,5 +23,11 @@ export class CategoryListComponent implements OnInit {
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.dataCategoryList = result;
         });
+
+        this.addPageTitle();
+    }
+
+    private addPageTitle() {
+        this.title.setTitle('Categories - Anonderbazar');
     }
 }

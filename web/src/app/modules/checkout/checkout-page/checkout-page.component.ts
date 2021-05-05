@@ -16,6 +16,7 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
+import {Title} from "@angular/platform-browser";
 
 @Component({
     selector: 'app-checkout-page',
@@ -113,7 +114,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         private toastr: ToastrService,
         private modalService: BsModalService,
         private bKashService: BkashService,
-        public loaderService: LoaderService) {
+        public loaderService: LoaderService,
+        private title: Title) {
 
     }
 
@@ -201,6 +203,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (cartData) {
                     this.cartData = cartData;
                     this.setShippingCharge();
+                    this.addPageTitle();
                 } else {
                     this.cartData = null;
                 }
@@ -298,17 +301,17 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
     }
 
-    setShippingCharge(){
+    setShippingCharge() {
         this.isPayOnlineOnly = false;
         this.maxDhakaCharge = 0;
         this.maxOutsideDhakaCharge = 0;
         this.cartData.data.cart_items.map(item => {
-            if(item.product_id.pay_online){
+            if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
             }
             let itemDhakaCharge = 0;
             let itemOutsideDhakaCharge = 0;
-            if(item.product_id.free_shipping === 0){
+            if (item.product_id.free_shipping === 0) {
                 itemDhakaCharge = item.product_id.dhaka_charge ? item.product_id.dhaka_charge : this.courierCharges.dhaka_charge;
                 itemOutsideDhakaCharge = item.product_id.outside_dhaka_charge ? item.product_id.outside_dhaka_charge : this.courierCharges.outside_dhaka_charge;
                 this.isFreeShipping = false;
@@ -866,5 +869,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     hideBkashWalletModal(template: TemplateRef<any>) {
         this.bKashWalletModalRef = this.modalService.show(template);
+    }
+
+    private addPageTitle() {
+        if(this.cartData) {
+            this.title.setTitle('Checkout ' + this.cartData.data.total_quantity + ' item(s) - Anonderbazar');
+        }else {
+            this.title.setTitle('Checkout - Anonderbazar');
+        }
     }
 }
