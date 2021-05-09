@@ -8,6 +8,7 @@ export class GLOBAL_CONFIGS {
         Cash: true,
         SSLCommerce: true,
         bKash: true,
+        nagad: false
     };
     public static lotteryAdminId = 130;
 }

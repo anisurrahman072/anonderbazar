@@ -454,7 +454,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack') {
+        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack' || value.paymentType === 'nagad') {
             this.loaderService.showLoader();
             this.orderService.placeOrder(requestPayload).subscribe(result => {
 

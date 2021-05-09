@@ -26,6 +26,13 @@ const routes: Routes = [
             title: "Cms Details"
         }
     },
+    {
+        path: 'cms-details',
+        children: [
+            {path : '**' , component: CmsDetailsPageComponent}
+        ]
+    }
+
 ];
 
 @NgModule({

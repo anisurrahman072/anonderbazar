@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CmsService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
@@ -17,17 +17,25 @@ export class CmsDetailsPageComponent implements OnInit {
     products: any = [];
     offers: any = [];
     p: any;
+    private queryParams: any;
 
     constructor(
         private route: ActivatedRoute,
         private cmsService: CmsService,
         private productservice: ProductService,
-        private title: Title
+        private title: Title,
+        private router: Router
     ) {
     }
 
     // init the component
     ngOnInit() {
+        this.route.queryParams.subscribe(queryparams => {
+            if(queryparams['page']){
+                this.p = +queryparams['page'];
+            }
+        });
+
         this.route.params.subscribe(params => {
             this.id = +params['id'];
             this.get_cms_by_id();
@@ -83,5 +91,14 @@ export class CmsDetailsPageComponent implements OnInit {
         }else {
             this.title.setTitle('Offer Detail - Anonderbazar');
         }
+    }
+
+    onPageChange(event) {
+        window.scroll(0, 0);
+        let query: any = {};
+        query.page = event;
+
+        this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
+        this.p = event;
     }
 }

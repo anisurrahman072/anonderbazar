@@ -9,7 +9,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder} = require('../services/checkout');
+const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder, placeNagadPaymentOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach, calcCartTotal} = require('../../libs/helper');
 const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
@@ -599,6 +599,29 @@ module.exports = {
         });
 
         return res.status(200).json(bKashResponse);
+      }
+
+      if(req.param('paymentType') === 'nagad'){
+        console.log('dddd');
+        const nagadResponse = await placeNagadPaymentOrder(authUser,
+          {
+            paymentType: 'nagad',
+            grandOrderTotal,
+            totalQuantity: totalQty
+          },
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs,
+          courierCharge,
+          req.ip
+        );
+
+        return res.status(201).json({
+          nagadResponse: nagadResponse
+        });
       }
 
     } catch (finalError) {
