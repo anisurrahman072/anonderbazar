@@ -219,7 +219,7 @@
                     <tr *ngFor="let datum of nzTableCsv.data;let i=index;">
                         <td>
                             <input type="checkbox" id="{{'order_'+datum.id}}"
-                                   (change)="onCsvSelectionChange($event, datum.id)"
+                                   (change)="onCsvSelectionChange(i, datum.id)"
                                    [checked]="datum.checked">
                         </td>
                         <td>{{datum.product_order_id}} / {{datum.id}}</td>
