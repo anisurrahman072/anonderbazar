@@ -300,6 +300,9 @@ module.exports.policies = {
     'getAllOrder': ['isAuthorized', 'isAdmin'],
     'allOrders': ['isAuthorized', 'isAdmin'],
   },
+  MissingOrderController: {
+    '*': true
+  },
   ShippingAddressController: {
     '*': false,
     'find': true,

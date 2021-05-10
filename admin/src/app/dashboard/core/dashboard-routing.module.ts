@@ -46,6 +46,10 @@ const routes: Routes = [
                 loadChildren: '../pages/investor/investor.module#InvestorModule'
             },
             {
+                path: 'missing-orders' /* /dashboard/missing-orders   */,
+                loadChildren: '../pages/missing-orders/missing-orders.module#MissingOrdersModule'
+            },
+            {
                 path: 'profile' /* /dashboard/profile   */,
                 loadChildren: '../pages/profile/profile.module#ProfileModule'
             },
