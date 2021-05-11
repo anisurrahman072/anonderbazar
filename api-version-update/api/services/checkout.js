@@ -527,12 +527,14 @@ module.exports = {
       });
 
       let productFreeShippingFound = cartItems.filter(item => {
-        return item.free_shipping;
+        return (item.product_id && item.product_id.free_shipping);
       });
 
       noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
         productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
       );
+
+      console.log('noShippingCharge',noShippingCharge);
     }
 
     let shippingAddress = await PaymentAddress.findOne({
