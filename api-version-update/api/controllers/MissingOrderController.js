@@ -122,7 +122,7 @@ module.exports = {
 
       let total_price = await countTotalPrice(allProducts, req.body.shippingAddress.zila_id);
       console.log('asce2', total_price);
-
+      // TODO: totalquntity will count all items count
 
       await sails.getDatastore()
         .transaction(async (db) => {
@@ -145,6 +145,7 @@ module.exports = {
           console.log('cart result: ', cart);
 
           let cartItem;
+          // TODO: use for lop
           allProducts.map(async product => {
             let productUnitPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
             cartItem = await CartItem.create({
