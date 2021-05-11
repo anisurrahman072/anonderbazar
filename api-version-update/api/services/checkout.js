@@ -527,7 +527,7 @@ module.exports = {
       });
 
       let productFreeShippingFound = cartItems.filter(item => {
-        return parseInt(item.free_shipping, 10);
+        return item.free_shipping;
       });
 
       noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
@@ -558,6 +558,7 @@ module.exports = {
       }
     }
 
+    console.log('courierCharge', courierCharge);
     grandOrderTotal += courierCharge;
 
     console.log('paidAmount', paidAmount);
