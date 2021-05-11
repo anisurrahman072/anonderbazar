@@ -439,7 +439,6 @@ module.exports = {
             await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate}).usingConnection(db);
           }
 
-
           let smsPhone = user.phone;
 
           if (!noShippingCharge && shippingAddress.phone) {
