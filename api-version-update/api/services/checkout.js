@@ -518,7 +518,15 @@ module.exports = {
       const couponProductFound = cartItems.filter((cartItem) => {
         return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
       });
-      noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
+
+      let productFreeShipping = true;
+      cartItems.map(item => {
+        if(!parseInt(item.free_shipping)){
+          productFreeShipping = false;
+        }
+        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length && productFreeShipping;
+
+      });
     }
 
 
