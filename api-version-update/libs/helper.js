@@ -1,6 +1,8 @@
 const fetch = require('node-fetch');
 const {devEnv, bKash} = require('../config/softbd');
 const AbortController = require('node-abort-controller');
+const {dhakaZilaId} = require('../../config/softbd');
+const _ = require('lodash');
 
 exports.bKashModeConfigKey = function () {
   let bKashModeConfigKey = 'production';
@@ -196,4 +198,38 @@ exports.makeUniqueId = function (length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+exports.countTotalPrice = async function (allProducts, zila_id){
+  let total_price = 0;
+  let isFreeShipping = true;
+  let maxDhakaDeliveryCharge = 0;
+  let maxOutsideDhakaDeliveryCharge = 0;
+
+  let globalConfigs = await GlobalConfigs.findOne({
+    deletedAt: null
+  });
+
+  allProducts.map(product => {
+    if(!parseInt(product.free_shipping)){
+      isFreeShipping = false;
+    }
+    let productPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
+    total_price += productPrice;
+
+    let dhakaCharge = (_.isNull(product.dhaka_charge) || _.isUndefined(product.dhaka_charge)) ? globalConfigs.dhaka_charge : product.dhaka_charge;
+    let outsideDhakaCharge = (_.isNull(product.outside_dhaka_charge) || _.isUndefined(product.outside_dhaka_charge)) ? globalConfigs.outside_dhaka_charge : product.outside_dhaka_charge;
+
+    maxDhakaDeliveryCharge = Math.max(maxDhakaDeliveryCharge, dhakaCharge);
+    maxOutsideDhakaDeliveryCharge = Math.max(maxOutsideDhakaDeliveryCharge, outsideDhakaCharge);
+  });
+  if(!isFreeShipping){
+    if(zila_id === dhakaZilaId){
+      total_price += maxDhakaDeliveryCharge;
+    }
+    else {
+      total_price += maxOutsideDhakaDeliveryCharge;
+    }
+  }
+  return total_price;
 };

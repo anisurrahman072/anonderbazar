@@ -5,7 +5,9 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
+const {dhakaZilaId} = require('../../config/softbd');
 const _ = require('lodash');
+const countTotalPrice = require('../../libs/helper');
 
 module.exports = {
   findSSLTransaction: async (req, res) => {
@@ -121,6 +123,76 @@ module.exports = {
 
       const carts = await Cart.update({user_id: req.body.customerId}, {deletedAt: new Date()}).fetch();
       const cartIds = carts.map((cart) => cart.id);
+
+      if (cartIds && cartIds.length > 0) {
+        await CartItem.update({cart_id: cartIds}, {deletedAt: new Date()}).usingConnection(db);
+      }
+
+      let total_price = await countTotalPrice(allProducts, req.body.shippingAddress.zila_id);
+
+      let cart = await Cart.create({
+        user_id: req.body.customerId,
+        ip_address: '',
+        total_quantity: totalQty,
+        total_price: total_price,
+        status: 1
+      }).fetch();
+
+      let cartItem;
+      allProducts.map(async product => {
+        let productUnitPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
+        cartItem = await CartItem.create({
+          cart_id: cart.id,
+          product_id: product.id,
+          product_unit_price: productUnitPrice,
+          product_quantity: product.orderQuantity,
+          product_total_price: productUnitPrice * product.orderQuantity
+        }).fetch();
+      });
+
+      const order = await Order.create({
+        user_id: req.body.customerId,
+        cart_id: cart.id,
+        total_price: total_price,
+        total_quantity: totalQty,
+        billing_address: req.body.shippingAddress.id,
+        shipping_address: req.body.shippingAddress.id,
+        ssl_transaction_id: req.body.ssl_transaction_id,
+        status: 1,
+        courier_charge: 0,
+        courier_status: 0,
+      }).fetch();
+
+
+      let productsByWarehouseId = _.keyBy(allProducts, 'warehouse_id');
+
+      for (const warehouseProducts in productsByWarehouseId) {
+        let products = [...productsByWarehouseId[warehouseProducts]];
+        let totalPrice = await countTotalPrice(products, req.body.shippingAddress.zila_id);
+
+        const suborder = await Suborder.create({
+          product_order_id: order.id,
+          warehouse_id: products[0].warehouse_id,
+          total_price: totalPrice,
+          total_quantity: products.length,
+          status: 1
+        }).fetch();
+
+        products.map(async product => {
+          const suborderItem = await SuborderItem.create({
+            product_suborder_id: suborder.id,
+            product_id: product.id,
+            warehouse_id: products[0].warehouse_id,
+            product_quantity: product.orderQuantity,
+            product_total_price: product.orderQuantity,
+            status: 1
+          }).fetch();
+        });
+
+
+      }
+
+
     }
     catch (error){
 

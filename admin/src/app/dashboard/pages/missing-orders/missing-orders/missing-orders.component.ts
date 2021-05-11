@@ -25,6 +25,7 @@ export class MissingOrdersComponent implements OnInit {
     selectedProductIds: any[] = [];
 
     private customer: any;
+    private ssl_transaction_id: any;
 
     constructor(private fb: FormBuilder,
                 private orderService: OrderService,
@@ -54,6 +55,7 @@ export class MissingOrdersComponent implements OnInit {
     submitForm($event, value) {
         this.submitting = true;
         $event.preventDefault();
+        this.ssl_transaction_id = value.ssl_transaction_id;
         let formData = new FormData();
         formData.append('username', value.username);
         formData.append('ssl_transaction_id', value.ssl_transaction_id);
@@ -134,6 +136,7 @@ export class MissingOrdersComponent implements OnInit {
         formData.append('shippingAddress', value.shippingAddress);
         formData.append('products',JSON.stringify(this.selectedProducts));
         formData.append('customerId',this.customer.id);
+        formData.append('ssl_transaction_id', this.ssl_transaction_id);
 
 
         this.orderService.generateMissingOrders(formData)
