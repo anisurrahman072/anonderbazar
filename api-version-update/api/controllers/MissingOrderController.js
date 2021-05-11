@@ -118,6 +118,9 @@ module.exports = {
       let allProducts = JSON.parse(req.body.products);
       console.log('wwww', allProducts);
       let totalQty = allProducts.length;
+
+      const carts = await Cart.update({user_id: req.body.customerId}, {deletedAt: new Date()}).fetch();
+      const cartIds = carts.map((cart) => cart.id);
     }
     catch (error){
 
