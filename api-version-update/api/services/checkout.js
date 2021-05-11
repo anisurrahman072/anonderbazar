@@ -182,6 +182,7 @@ module.exports = {
     post_body['tran_id'] = randomstring;
 
     post_body['success_url'] = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+    post_body['ipn_url'] = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
     post_body['fail_url'] = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
     post_body['cancel_url'] = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
 
@@ -528,6 +529,7 @@ module.exports = {
     if (!shippingAddress) {
       throw new Error('Associated Shipping Address was not found!');
     }
+
     let courierCharge = 0;
     if (!noShippingCharge) {
       if (shippingAddress && shippingAddress.id) {
@@ -542,6 +544,7 @@ module.exports = {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
     }
+
     grandOrderTotal += courierCharge;
 
     console.log('paidAmount', paidAmount);
