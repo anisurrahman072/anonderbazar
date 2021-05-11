@@ -174,7 +174,6 @@ module.exports = {
           let allProducts = JSON.parse(req.body.products);
           let totalQuantity = 0;
           let total_price = 0;
-          let cartItems = [];
 
           for(let i = 0; i < allProducts.length; i++){
             totalQuantity += parseInt(allProducts[i].orderQuantity);
@@ -208,11 +207,17 @@ module.exports = {
               product_quantity: parseFloat(allProducts[i].orderQuantity),
               product_total_price: productUnitPrice * allProducts[i].orderQuantity
             };
-            cartItems.push(newCartItem);
             await CartItem.create({
               ...newCartItem
             }).fetch().usingConnection(db);
           }
+
+          let cartItems = await CartItem.find({
+            cart_id: cart.id,
+            deletedAt: null
+          }).populate('cart_item_variants')
+            .populate('product_id')
+            .usingConnection(db);
 
           let {
             grandOrderTotal,
