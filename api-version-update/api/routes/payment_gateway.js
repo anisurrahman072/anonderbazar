@@ -8,6 +8,7 @@ exports.paymentGatewayRoutes = {
   'GET /api/v1/bkash-payment/payment-callback/:userId/:paymentTransId': 'BkashPaymentController.paymentCallback',
   'GET /api/v1/nagad-payment/callback-checkout/:userId': 'NagadPaymentController.callbackCheckout',
   'POST /api/v1/ssl-commerz/success': 'SslCommerzController.sslCommerzSuccess',
+  'POST /api/v1/ssl-commerz/success-ipn': 'SslCommerzController.sslCommerzIpnSuccess',
   'POST /api/v1/ssl-commerz/failure': 'SslCommerzController.sslCommerzFailure',
   'POST /api/v1/ssl-commerz/error': 'SslCommerzController.sslCommerzError',
 };
