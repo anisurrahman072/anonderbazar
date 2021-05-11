@@ -6,7 +6,14 @@ const {calcCartTotal} = require('../../libs/helper');
 const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
 const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
-const {generateRandomString, EncryptDataWithPublicKey, SignatureGenerate, HttpPostMethod, DecryptDataWithPrivateKey, toHexString} = require('../services/nagad');
+const {
+  generateRandomString,
+  EncryptDataWithPublicKey,
+  SignatureGenerate,
+  HttpPostMethod,
+  DecryptDataWithPrivateKey,
+  toHexString
+} = require('../services/nagad');
 
 module.exports = {
 
@@ -412,7 +419,7 @@ module.exports = {
     currentDate = currentDate.replace(/[T]+/g, '');
     currentDate = currentDate.substring(0, 8);
 
-    let time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    let time = new Date().toLocaleTimeString('en-US', {hour12: false});
     time = time.replace(/:/g, '');
     time = time.replace(/[a-zA-Z]+/g, '');
     time = time.replace(/ /g, '');
@@ -519,16 +526,14 @@ module.exports = {
         return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
       });
 
-      let productFreeShipping = true;
-      cartItems.map(item => {
-        if(!parseInt(item.free_shipping)){
-          productFreeShipping = false;
-        }
-        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length && productFreeShipping;
-
+      let productFreeShippingFound = cartItems.filter(item => {
+        return parseInt(item.free_shipping, 10);
       });
-    }
 
+      noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
+        productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
+      );
+    }
 
     let shippingAddress = await PaymentAddress.findOne({
       id: shippingAddressId
@@ -543,9 +548,9 @@ module.exports = {
       if (shippingAddress && shippingAddress.id) {
         // eslint-disable-next-line eqeqeq
         courierCharge = globalConfigs.outside_dhaka_charge;
-        if(productCourierCharge){
+        if (productCourierCharge) {
           courierCharge = productCourierCharge;
-        } else if(shippingAddress.zila_id == dhakaZilaId){
+        } else if (shippingAddress.zila_id == dhakaZilaId) {
           courierCharge = globalConfigs.dhaka_charge;
         }
       } else {
