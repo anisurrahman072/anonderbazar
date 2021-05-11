@@ -197,7 +197,7 @@ module.exports = {
             total_price: total_price,
             status: 1
           }).fetch().usingConnection(db);
-          console.log('cart result: ', cart);
+        //  console.log('cart result: ', cart);
 
           for(let i = 0; i < allProducts.length; i++){
             let productUnitPrice = allProducts[i].promotion ? parseFloat(allProducts[i].promo_price) : parseFloat(allProducts[i].price);
@@ -205,7 +205,7 @@ module.exports = {
               cart_id: cart.id,
               product_id: allProducts[i].id,
               product_unit_price: productUnitPrice,
-              product_quantity: allProducts[i].orderQuantity,
+              product_quantity: parseFloat(allProducts[i].orderQuantity),
               product_total_price: productUnitPrice * allProducts[i].orderQuantity
             };
             cartItems.push(newCartItem);
