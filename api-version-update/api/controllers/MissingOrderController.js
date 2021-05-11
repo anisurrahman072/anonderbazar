@@ -47,7 +47,7 @@ module.exports = {
         .populate('zila_id')
         .populate('upazila_id');
 
-      if(_.isUndefined(shippingAddress) || _.isEmpty(shippingAddress)){
+      if (_.isUndefined(shippingAddress) || _.isEmpty(shippingAddress)) {
         return res.status(400).json({
           success: false,
           message: 'No shipping address found for the user!'
@@ -65,7 +65,7 @@ module.exports = {
       // const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
       const transResponse = await sslcommerz.transaction_status_id(req.body.ssl_transaction_id);
 
-      console.log('transResponse: ',transResponse);
+      console.log('transResponse: ', transResponse);
 
       if (transResponse && transResponse.no_of_trans_found) {
         const noOfTrans = parseInt(transResponse.no_of_trans_found, 10);
@@ -105,8 +105,7 @@ module.exports = {
         customer
       });
 
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching SSL Transaction ID info',
@@ -117,84 +116,94 @@ module.exports = {
 
   generateMissingOrders: async (req, res) => {
     try {
+      console.log('asce', req.body);
       let allProducts = JSON.parse(req.body.products);
-      console.log('wwww', allProducts);
       let totalQty = allProducts.length;
 
-      const carts = await Cart.update({user_id: req.body.customerId}, {deletedAt: new Date()}).fetch();
-      const cartIds = carts.map((cart) => cart.id);
-
-      if (cartIds && cartIds.length > 0) {
-        await CartItem.update({cart_id: cartIds}, {deletedAt: new Date()}).usingConnection(db);
-      }
-
       let total_price = await countTotalPrice(allProducts, req.body.shippingAddress.zila_id);
-
-      let cart = await Cart.create({
-        user_id: req.body.customerId,
-        ip_address: '',
-        total_quantity: totalQty,
-        total_price: total_price,
-        status: 1
-      }).fetch();
-
-      let cartItem;
-      allProducts.map(async product => {
-        let productUnitPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
-        cartItem = await CartItem.create({
-          cart_id: cart.id,
-          product_id: product.id,
-          product_unit_price: productUnitPrice,
-          product_quantity: product.orderQuantity,
-          product_total_price: productUnitPrice * product.orderQuantity
-        }).fetch();
-      });
-
-      const order = await Order.create({
-        user_id: req.body.customerId,
-        cart_id: cart.id,
-        total_price: total_price,
-        total_quantity: totalQty,
-        billing_address: req.body.shippingAddress.id,
-        shipping_address: req.body.shippingAddress.id,
-        ssl_transaction_id: req.body.ssl_transaction_id,
-        status: 1,
-        courier_charge: 0,
-        courier_status: 0,
-      }).fetch();
+      console.log('asce2', total_price);
 
 
-      let productsByWarehouseId = _.keyBy(allProducts, 'warehouse_id');
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          const carts = await Cart.update({user_id: req.body.customerId}, {deletedAt: new Date()}).fetch().usingConnection(db);
+          const cartIds = carts.map((cart) => cart.id);
+          console.log('cartIds', cartIds);
 
-      for (const warehouseProducts in productsByWarehouseId) {
-        let products = [...productsByWarehouseId[warehouseProducts]];
-        let totalPrice = await countTotalPrice(products, req.body.shippingAddress.zila_id);
 
-        const suborder = await Suborder.create({
-          product_order_id: order.id,
-          warehouse_id: products[0].warehouse_id,
-          total_price: totalPrice,
-          total_quantity: products.length,
-          status: 1
-        }).fetch();
+          if (cartIds && cartIds.length > 0) {
+            await CartItem.update({cart_id: cartIds}, {deletedAt: new Date()}).usingConnection(db);
+          }
 
-        products.map(async product => {
-          const suborderItem = await SuborderItem.create({
-            product_suborder_id: suborder.id,
-            product_id: product.id,
-            warehouse_id: products[0].warehouse_id,
-            product_quantity: product.orderQuantity,
-            product_total_price: product.orderQuantity,
+          let cart = await Cart.create({
+            user_id: req.body.customerId,
+            ip_address: '',
+            total_quantity: totalQty,
+            total_price: total_price,
             status: 1
-          }).fetch();
+          }).fetch().usingConnection(db);
+          console.log('cart result: ', cart);
+
+          let cartItem;
+          allProducts.map(async product => {
+            let productUnitPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
+            cartItem = await CartItem.create({
+              cart_id: cart.id,
+              product_id: product.id,
+              product_unit_price: productUnitPrice,
+              product_quantity: product.orderQuantity,
+              product_total_price: productUnitPrice * product.orderQuantity
+            }).fetch().usingConnection(db);
+          });
+          console.log('cartItem: ', cartItem);
+
+
+          const order = await Order.create({
+            user_id: req.body.customerId,
+            cart_id: cart.id,
+            total_price: total_price,
+            total_quantity: totalQty,
+            billing_address: req.body.shippingAddress.id,
+            shipping_address: req.body.shippingAddress.id,
+            ssl_transaction_id: req.body.ssl_transaction_id,
+            status: 1,
+            courier_charge: 0,
+            courier_status: 0,
+          }).fetch().usingConnection(db);
+          console.log('order: ', order);
+
+
+
+          let productsByWarehouseId = _.keyBy(allProducts, 'warehouse_id');
+          console.log('productsByWarehouseId: ',productsByWarehouseId);
+
+          for (const warehouseProducts in productsByWarehouseId) {
+            let products = [...productsByWarehouseId[warehouseProducts]];
+            let totalPrice = await countTotalPrice(products, req.body.shippingAddress.zila_id);
+
+            const suborder = await Suborder.create({
+              product_order_id: order.id,
+              warehouse_id: products[0].warehouse_id,
+              total_price: totalPrice,
+              total_quantity: products.length,
+              status: 1
+            }).fetch().usingConnection(db);
+
+            products.map(async product => {
+              const suborderItem = await SuborderItem.create({
+                product_suborder_id: suborder.id,
+                product_id: product.id,
+                warehouse_id: products[0].warehouse_id,
+                product_quantity: product.orderQuantity,
+                product_total_price: product.orderQuantity,
+                status: 1
+              }).fetch().usingConnection(db);
+            });
+          }
         });
 
 
-      }
-
-
-    }
-    catch (error){
+    } catch (error) {
 
     }
   }

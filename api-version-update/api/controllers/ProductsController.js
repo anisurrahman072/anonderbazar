@@ -1126,7 +1126,8 @@ module.exports = {
     products.outside_dhaka_charge as outside_dhaka_charge,
     products.free_shipping as free_shipping,
     products.promotion as promotion,
-    products.promo_price as promo_price
+    products.promo_price as promo_price,
+    products.warehouse_id as warehouse_id
     `;
 
       let fromSQL = ' FROM products as products  ';
