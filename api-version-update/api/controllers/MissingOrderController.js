@@ -165,7 +165,7 @@ module.exports = {
       }
 
       /** Start DB transaction **/
-      await sails.getDatastore()
+      let {smsPhone, orderForMail} = await sails.getDatastore()
         .transaction(async (db) => {
           let paymentType = 'SSLCommerce';
           let sslCommerztranId = req.body.ssl_transaction_id;
@@ -197,7 +197,7 @@ module.exports = {
             total_price: total_price,
             status: 1
           }).fetch().usingConnection(db);
-        //  console.log('cart result: ', cart);
+          //  console.log('cart result: ', cart);
 
           for(let i = 0; i < allProducts.length; i++){
             let productUnitPrice = allProducts[i].promotion ? parseFloat(allProducts[i].promo_price) : parseFloat(allProducts[i].price);
@@ -223,9 +223,10 @@ module.exports = {
 
           if (cartItems && cartItems.length > 0) {
 
-            let productFreeShippingFound = cartItems.filter(item => {
+            let productFreeShippingFound = allProducts.filter(item => {
               return item.free_shipping;
             });
+            console.log('productFreeShippingFound', productFreeShippingFound);
 
             noShippingCharge = productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length;
 
@@ -284,13 +285,13 @@ module.exports = {
           let allOrderedProductsInventory = [];
 
           /** Generate Necessary sub orders according to warehouse Start **/
-          let allGeneratedCouponCodes = [];
           for (i = 0; i < uniqueWarehouseIds.length; i++) {
             let thisWarehouseID = uniqueWarehouseIds[i];
 
             let cartItemsTemp = cartItems.filter(
               asset => asset.product_id.warehouse_id === thisWarehouseID
             );
+            console.log('cartItemsTemp', cartItemsTemp);
 
             let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
             let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -444,18 +445,32 @@ module.exports = {
           if (!noShippingCharge && shippingAddress.phone) {
             smsPhone = shippingAddress.phone;
           }
+          return {smsPhone, orderForMail};
 
-          if (smsPhone) {
-            let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-            console.log('smsTxt', smsText);
-            SmsService.sendingOneSmsToOne([smsPhone], smsText);
-          }
-          EmailService.orderSubmitMail(orderForMail);
+
         });
+
+      try {
+        /*if (smsPhone) {
+          let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
+          console.log('smsTxt', smsText);
+          SmsService.sendingOneSmsToOne([smsPhone], smsText);
+        }
+        EmailService.orderSubmitMail(orderForMail);*/
+      }
+      catch (error){
+        console.log(error);
+      }
+
+      return res.status(200).json(orderForMail);
 
     } catch (error) {
       console.log('Error occurred while sending SMS or Mail');
-      console.log(err);
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while generating order'
+      });
     }
   }
 
