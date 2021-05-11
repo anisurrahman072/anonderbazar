@@ -147,4 +147,8 @@ export class ProductService {
     submitDataForBulkUpdate(data): Observable<any> {
         return this.http.put(this.EndPoint2 + '/bulk-update', data);
     }
+
+    getProductsByName(name): Observable<any> {
+        return this.http.get(this.EndPoint2 + `/getProductsByName?name_search=${name}`);
+    }
 }

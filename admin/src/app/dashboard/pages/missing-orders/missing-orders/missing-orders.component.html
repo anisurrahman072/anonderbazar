@@ -1,7 +1,7 @@
 <section>
   <nz-card class="card-height" nzTitle="Generate Missing Orders">
 
-    <ng-template *ngIf="!foundTransaction">
+    <ng-container *ngIf="!foundTransaction">
       <form nz-form [formGroup]="validateForm" id="validateForm"  (ngSubmit)="submitForm($event,validateForm.value)">
         <div    nz-row><!--username start-->
           <div    nz-col [nzSpan]="7">
@@ -16,7 +16,7 @@
               Username is required!
             </div>
           </div>
-        </div><!--username -->
+        </div><!--username -->&nbsp;
 
         <div    nz-row><!--ssl_transaction_id start-->
           <div    nz-col [nzSpan]="7">
@@ -31,50 +31,51 @@
               SSL transaction ID is required!
             </div>
           </div>
-        </div><!--ssl_transaction_id -->
+        </div><!--ssl_transaction_id -->&nbsp;
 
         <div    nz-row>
           <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Save
-            </button>
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Submit
+            </button>&nbsp;
             <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
           </div>
         </div>
       </form>
-    </ng-template>
+    </ng-container>
 
-    <ng-template *ngIf="foundTransaction">
-      <form nz-form [formGroup]="validateOrderForm" id="validateOrderForm" (ngSubmit)="submitForm($event,validateOrderForm.value)">
+
+    <ng-container *ngIf="foundTransaction">
+      <form nz-form [formGroup]="validateOrderForm" id="validateOrderForm" (ngSubmit)="generateOrder($event,validateOrderForm.value)">
 
         <div    nz-row><!--Shipping address start-->
           <div    nz-col [nzSpan]="7">
             <label> Select Shipping address </label>
           </div>
           <div nz-col [nzSpan]="12">
-            <nz-select  nzPlaceHolder="Select Shipping address" [(ngModel)]="shippingAddress" nzAllowClear>
-              <nz-option *ngFor="let address of allShippingAddress" [nzLabel]="address.label" [nzValue]="address.value">
+            <nz-select formControlName="shippingAddress"  nzPlaceHolder="Select Shipping address" nzAllowClear [nzSize]="'large'">
+              <nz-option *ngFor="let address of allShippingAddress" [nzLabel]="address.address" [nzValue]="address">
               </nz-option>
             </nz-select>
           </div>
-        </div><!--Shipping address  -->
+        </div><!--Shipping address  -->&nbsp;
 
         <div    nz-row><!--Products start-->
           <div    nz-col [nzSpan]="7">
             <label> Add products to cart </label>
           </div>
           <div nz-col [nzSpan]="12"      >
-            <nz-select nzMode="tags"  nzPlaceHolder="Enter product name" [(ngModel)]="productName" nzAllowClear>
-              <nz-option *ngFor="let option of productList" [nzLabel]="option.label" [nzValue]="option.value">
+            <nz-select nzShowSearch formControlName="searchedProducts" nzPlaceHolder="Enter product name" nzAllowClear
+                       (nzOnSearch)="getProducts($event)" [nzServerSearch] id="dropdown" (ngModelChange)="addProduct($event)" [nzSize]="'large'">
+              <nz-option *ngFor="let product of productList" [nzLabel]="product.name" [nzValue]="product">
               </nz-option>
             </nz-select>
           </div>
-        </div><!--Product -->
+        </div><!--Product -->&nbsp;
 
 
         <div *ngIf="selectedProducts.length > 0">
           <nz-table #nzTable
                     [nzData]="selectedProducts"
-                    [nzLoading]="_isSpinning"
           >
             <thead>
               <tr>
@@ -82,7 +83,13 @@
                   <span> Name </span>
                 </th>
                 <th>
+                  <span> Code </span>
+                </th>
+                <th>
                   <span> Quantity </span>
+                </th>
+                <th>
+                  <span> Delete </span>
                 </th>
               </tr>
             </thead>
@@ -92,8 +99,21 @@
                   {{product.name}}
                 </td>
                 <td>
-                  <input nz-input type="number" [placeholder]="'Enter quantity for this product'" (change)="updateQuantity($event, product.id)"
-                         [nzSize]="'large'">
+                  {{product.code}}
+                </td>
+                <td>
+                  <input nz-input type="number" formControlName="quantity" [placeholder]="'Enter quantity for this product'"
+                         (change)="updateQuantity($event, product.id)" [nzSize]="'large'" [value]="product.orderQuantity">
+                </td>
+                <td>
+                  <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                 [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(product.id)">
+                    <a nz-popconfirm>
+                      <button nz-button [nzSize]="'default'">
+                        <i class="anticon anticon-delete"></i>
+                      </button>
+                    </a>
+                  </nz-popconfirm>
                 </td>
               </tr>
             </tbody>
@@ -103,14 +123,14 @@
 
         <div    nz-row>
           <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateOrderForm.valid || submittingOrderForm">Save
-            </button>
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateOrderForm.valid || submittingOrderForm || selectedProducts.length === 0">Generate order
+            </button>&nbsp;
             <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
           </div>
         </div>
       </form>
 
 
-    </ng-template>
+    </ng-container>
   </nz-card>
 </section>

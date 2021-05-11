@@ -53,7 +53,11 @@ export class OrderService {
         return this.http.put(`${this.EndPoint}/update?id=${id}`, data);
     }
 
-    findSSLTransaction(value){
-        return this.http.get(`${this.EndPoint2}/findSSLTransaction?username=${value.username}&ssl_transaction_id=${value.ssl_transaction_id}`);
+    findSSLTransaction(data): Observable<any>{
+        return this.http.post(`${this.EndPoint2}/findSSLTransaction`, data);
+    }
+
+    generateMissingOrders(data): Observable<any>{
+        return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
 }

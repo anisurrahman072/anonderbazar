@@ -220,6 +220,7 @@ module.exports.policies = {
     'bulkUpdate': ['isAuthorized', 'isOwnerOrAdmin'],
     'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
     'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getProductsByName': ['isAuthorized', 'isOwnerOrAdmin']
   },
   ProductCategoriesController: {
     'getAll': true,
