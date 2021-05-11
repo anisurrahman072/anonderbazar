@@ -520,7 +520,7 @@ module.exports = {
       noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
     }
 
-    let courierCharge = 0;
+
     let shippingAddress = await PaymentAddress.findOne({
       id: shippingAddressId
     }).usingConnection(db);
@@ -529,10 +529,17 @@ module.exports = {
       throw new Error('Associated Shipping Address was not found!');
     }
 
+    let courierCharge = 0;
+
     if (!noShippingCharge) {
       if (shippingAddress && shippingAddress.id) {
         // eslint-disable-next-line eqeqeq
-        courierCharge = productCourierCharge;
+        courierCharge = globalConfigs.outside_dhaka_charge;
+        if(productCourierCharge){
+          courierCharge = productCourierCharge;
+        } else if(shippingAddress.zila_id == dhakaZilaId){
+          courierCharge = globalConfigs.dhaka_charge;
+        }
       } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
