@@ -42,7 +42,8 @@ module.exports = {
       }
 
       const numberOfOrderFound = await Order.count().where({
-        ssl_transaction_id: req.body.tran_id
+        ssl_transaction_id: req.body.tran_id,
+        deletedAt: null
       });
 
       if (numberOfOrderFound > 0) {

@@ -53,7 +53,7 @@
           </div>
           <div nz-col [nzSpan]="12">
             <nz-select formControlName="shippingAddress"  nzPlaceHolder="Select Shipping address" nzAllowClear [nzSize]="'large'">
-              <nz-option *ngFor="let address of allShippingAddress" [nzLabel]="address.address" [nzValue]="address">
+              <nz-option *ngFor="let address of allShippingAddress" [nzLabel]="address.address" [nzValue]="address.id">
               </nz-option>
             </nz-select>
           </div>

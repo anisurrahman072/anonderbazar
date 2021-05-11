@@ -214,7 +214,7 @@ export class MissingOrdersComponent implements OnInit {
         $event.preventDefault();
 
         let formData = new FormData();
-        formData.append('shippingAddress', value.shippingAddress);
+        formData.append('shippingAddressId', value.shippingAddress);
         formData.append('products',JSON.stringify(this.selectedProducts));
         formData.append('customerId',this.customer.id);
         formData.append('ssl_transaction_id', this.ssl_transaction_id);
@@ -222,7 +222,11 @@ export class MissingOrdersComponent implements OnInit {
 
         this.orderService.generateMissingOrders(formData)
             .subscribe(response => {
+                this.submittingOrderForm = false;
                 console.log(response);
+            }, error => {
+                this.submittingOrderForm = false;
+
             })
     }
 
