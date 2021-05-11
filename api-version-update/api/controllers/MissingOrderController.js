@@ -7,7 +7,7 @@
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {dhakaZilaId} = require('../../config/softbd');
 const _ = require('lodash');
-const {countTotalPrice, calcCartTotal} = require('../../libs/helper');
+const {calculateCourierCharge, calcCartTotal} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 
@@ -17,13 +17,7 @@ module.exports = {
       console.log('req asce');
 
       let usernameTmp = req.body.username;
-      if (usernameTmp.charAt(0) === '+') {
-        usernameTmp = usernameTmp.substr(1);
-      } else if (usernameTmp.charAt(0) === '0') {
-        usernameTmp = '88' + usernameTmp;
-      } else if (!(usernameTmp.charAt(0) === '8' || usernameTmp.charAt(1) === '8')) {
-        usernameTmp = '0' + usernameTmp;
-      }
+
       console.log('-----------------------------------------');
       console.log(req.body.username, usernameTmp, req.body.ssl_transaction_id);
 
@@ -130,13 +124,24 @@ module.exports = {
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       console.log('sssl: ', req.body.ssl_transaction_id);
-      const validationResponse = await sslcommerz.validate_transaction_order(req.body.ssl_transaction_id);
+      const transResponse = await sslcommerz.transaction_status_id(req.body.ssl_transaction_id);
 
-      console.log('validationResponse-sslCommerzIpnSuccess', validationResponse);
+      console.log('validationResponse-sslCommerzIpnSuccess', transResponse);
 
-      if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
-        return res.status(422).json({
-          failure: true
+      if (transResponse && transResponse.no_of_trans_found) {
+        const noOfTrans = parseInt(transResponse.no_of_trans_found, 10);
+        if (!(noOfTrans > 0 && transResponse.element && transResponse.element.length > 0 &&
+          (transResponse.element[0].status &&
+            (transResponse.element[0].status === 'VALID' || transResponse.element[0].status === 'VALIDATED')))) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid SSL Commerz Transaction ID'
+          });
+        }
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid SSL Commerz Transaction ID'
         });
       }
 
@@ -165,7 +170,7 @@ module.exports = {
           let paymentType = 'SSLCommerce';
           let sslCommerztranId = req.body.ssl_transaction_id;
           let shippingAddressId = req.body.shippingAddressId;
-          const paidAmount = parseFloat(validationResponse.amount);
+          const paidAmount = parseFloat(transResponse.element[0].amount);
           let allProducts = JSON.parse(req.body.products);
           let totalQuantity = 0;
           let total_price = 0;
@@ -212,7 +217,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = calcCartTotal(cart, cartItems);
+          } = await calcCartTotal(cart, cartItems);
 
           let noShippingCharge = false;
 
@@ -238,18 +243,7 @@ module.exports = {
             });
           }
 
-          let courierCharge = 0;
-          if (!noShippingCharge) {
-            if (shippingAddress && shippingAddress.id) {
-              // eslint-disable-next-line eqeqeq
-              courierCharge = globalConfigs.outside_dhaka_charge;
-              if (shippingAddress.zila_id == dhakaZilaId) {
-                courierCharge = globalConfigs.dhaka_charge;
-              }
-            } else {
-              courierCharge = globalConfigs.outside_dhaka_charge;
-            }
-          }
+          let courierCharge = await calculateCourierCharge(noShippingCharge, allProducts, shippingAddress.zila_id);
 
           console.log('courierCharge', courierCharge);
           grandOrderTotal += courierCharge;

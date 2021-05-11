@@ -62,6 +62,7 @@ exports.calcCartTotal = function (cart, cartItems) {
   let totalQty = 0;
   cartItems.forEach((cartItem) => {
     if (cartItem.product_id && cartItem.product_id.id && cartItem.product_quantity > 0) {
+      console.log('ttttt', cartItem);
       grandOrderTotal += cartItem.product_total_price;
       totalQty += cartItem.product_quantity;
     }
@@ -199,9 +200,9 @@ exports.makeUniqueId = function (length) {
   return result;
 };
 
-exports.countTotalPrice = async function (allProducts, zila_id){
-  let total_price = 0;
-  let isFreeShipping = true;
+
+exports.calculateCourierCharge = async function(freeShipping, allProducts, zilaId){
+  let courierCharge = 0;
   let maxDhakaDeliveryCharge = 0;
   let maxOutsideDhakaDeliveryCharge = 0;
 
@@ -209,12 +210,7 @@ exports.countTotalPrice = async function (allProducts, zila_id){
     deletedAt: null
   });
 
-  allProducts.map(product => {
-    if(!parseInt(product.free_shipping)){
-      isFreeShipping = false;
-    }
-    let productPrice = product.promotion ? parseFloat(product.promo_price) : parseFloat(product.price);
-    total_price += productPrice;
+  allProducts.forEach(product => {
 
     let dhakaCharge = (_.isNull(product.dhaka_charge) || _.isUndefined(product.dhaka_charge)) ? globalConfigs.dhaka_charge : product.dhaka_charge;
     let outsideDhakaCharge = (_.isNull(product.outside_dhaka_charge) || _.isUndefined(product.outside_dhaka_charge)) ? globalConfigs.outside_dhaka_charge : product.outside_dhaka_charge;
@@ -222,13 +218,13 @@ exports.countTotalPrice = async function (allProducts, zila_id){
     maxDhakaDeliveryCharge = Math.max(maxDhakaDeliveryCharge, dhakaCharge);
     maxOutsideDhakaDeliveryCharge = Math.max(maxOutsideDhakaDeliveryCharge, outsideDhakaCharge);
   });
-  if(!isFreeShipping){
-    if(zila_id === dhakaZilaId){
-      total_price += maxDhakaDeliveryCharge;
+  if(!freeShipping){
+    if(zilaId === dhakaZilaId){
+      courierCharge = maxDhakaDeliveryCharge;
     }
     else {
-      total_price += maxOutsideDhakaDeliveryCharge;
+      courierCharge = maxOutsideDhakaDeliveryCharge;
     }
   }
-  return total_price;
+  return courierCharge;
 };
