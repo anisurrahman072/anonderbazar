@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {OrderService} from "../../../../services/order.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {ProductService} from "../../../../services/product.service";
+import {CategoryProductService} from "../../../../services/category-product.service";
 
 @Component({
     selector: 'app-missing-orders',
@@ -27,11 +28,20 @@ export class MissingOrdersComponent implements OnInit {
     private customer: any;
     private ssl_transaction_id: any;
 
+    type_id: any;
+    typeSearchOptions: any = null;
+    categorySearchOptions: any = null;
+    category_id: any = null;
+    subcategorySearchOptions: any = null;
+    subcategory_id: any = null;
+    data: any;
+    selectedProduct: any;
+
     constructor(private fb: FormBuilder,
                 private orderService: OrderService,
                 private _notification: NzNotificationService,
                 private productService: ProductService,
-                private cdr: ChangeDetectorRef
+                private categoryProductService: CategoryProductService
     ) {
     }
 
@@ -44,12 +54,24 @@ export class MissingOrdersComponent implements OnInit {
         this.validateOrderForm = this.fb.group({
             shippingAddress: [null, [Validators.required]],
             searchedProducts: null,
+            type_id: ['',[]],
+            category_id: ['',[]],
+            subcategory_id: ['',[]],
             quantity: null
+        });
+
+        this.categoryProductService.getAllCategory().subscribe(result => {
+            this.category_id = null;
+            this.categorySearchOptions = null;
+            this.typeSearchOptions = result;
         });
     }
 
     getFormControl(name) {
         return this.validateForm.controls[name];
+    }
+    getOrderFormControl(name) {
+        return this.validateOrderForm.controls[name];
     }
 
     submitForm($event, value) {
@@ -107,11 +129,13 @@ export class MissingOrdersComponent implements OnInit {
     }
 
     addProduct(product) {
-        product.orderQuantity = 1;
-        this.selectedProducts.push(product);
-        this.selectedProductIds.push(product.id);
-        console.log('after add', this.selectedProducts);
-
+        console.log('ddddqqqq', product);
+        if(product){
+            product.orderQuantity = 1;
+            this.selectedProducts.push(product);
+            this.selectedProductIds.push(product.id);
+            console.log('after add', this.selectedProducts);
+        }
     }
 
     updateQuantity($event, id) {
@@ -126,6 +150,63 @@ export class MissingOrdersComponent implements OnInit {
         this.selectedProductIds.splice(index, 1);
         console.log('after delete', this.selectedProducts);
 
+    }
+
+    onTypeChange($event) {
+
+        const query = encodeURI($event);
+        console.log('onTypeChange', $event);
+        this.type_id = $event;
+        this.categorySearchOptions = null;
+        this.category_id = null;
+        this.productList = null;
+        if (query !== 'null') {
+            this.categoryProductService
+                .getSubcategoryByCategoryId(query)
+                .subscribe(result => {
+                    this.categorySearchOptions = result;
+                });
+        } else {
+            this.categorySearchOptions = {};
+        }
+    }
+
+    categoryChange($event) {
+        const query = encodeURI($event);
+        console.log('categoryChange', $event);
+        this.category_id = $event;
+        this.subcategorySearchOptions = null;
+        this.subcategory_id = null;
+        if (query !== 'null') {
+            this.categoryProductService
+                .getSubcategoryByCategoryId(query)
+                .subscribe(result => {
+                    this.subcategorySearchOptions = result;
+                    if (
+                        this.data &&
+                        this.data.subcategory_id
+                    ) {
+                        this.subcategory_id = this.data.subcategory_id;
+                    }
+
+                    this.productList = null;
+                    this.productService.getByCategorySubCategory(this.type_id, this.category_id)
+                        .subscribe(response => {
+                            this.productList = response.products;
+                        })
+                });
+        } else {
+            this.subcategorySearchOptions = {};
+        }
+    }
+
+    changeSubSubCategory($event){
+        this.subcategory_id = $event;
+        this.productList = null;
+        this.productService.getByCategorySubCategory(this.type_id, this.category_id, this.subcategory_id)
+            .subscribe(response => {
+                this.productList = response.products;
+            })
     }
 
     generateOrder($event, value){

@@ -1,7 +1,6 @@
 const fetch = require('node-fetch');
-const {devEnv, bKash} = require('../config/softbd');
+const {devEnv, bKash, dhakaZilaId} = require('../config/softbd');
 const AbortController = require('node-abort-controller');
-const {dhakaZilaId} = require('../../config/softbd');
 const _ = require('lodash');
 
 exports.bKashModeConfigKey = function () {

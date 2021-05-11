@@ -179,6 +179,7 @@ module.exports = {
 
           for (const warehouseProducts in productsByWarehouseId) {
             let products = [...productsByWarehouseId[warehouseProducts]];
+            console.log;
             let totalPrice = await countTotalPrice(products, req.body.shippingAddress.zila_id);
 
             const suborder = await Suborder.create({

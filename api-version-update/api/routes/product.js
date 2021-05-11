@@ -17,4 +17,5 @@ exports.productRoute = {
   'POST /api/v1/products/bulk-upload': 'ProductsController.bulkUpload',
   'PUT /api/v1/products/bulk-update': 'ProductsController.bulkUpdate',
   'GET /api/v1/products/getProductsByName': 'ProductsController.getProductsByName',
+  'GET /api/v1/products/getByCategorySubCategory': 'ProductsController.getByCategorySubCategory',
 };
