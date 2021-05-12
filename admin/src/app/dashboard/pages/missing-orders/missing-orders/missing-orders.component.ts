@@ -118,7 +118,7 @@ export class MissingOrdersComponent implements OnInit {
             })
     }
 
-    resetForm($event: MouseEvent) {
+    resetForm($event?: MouseEvent) {
         $event ? $event.preventDefault() : null;
         this.validateForm.reset();
         this.validateOrderForm.reset();
