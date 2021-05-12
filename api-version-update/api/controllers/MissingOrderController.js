@@ -409,9 +409,11 @@ module.exports = {
               user_id: req.body.customerId,
               order_id: order.id,
               suborder_id: subordersTemp[i].id,
-              payment_type: paymentType,
+              payment_type: 'SSLCommerce',
               payment_amount: subordersTemp[i].total_price,
               transection_key: sslCommerztranId,
+              details: JSON.stringify(transResponse),
+              payment_date: transResponse.tran_date,
               status: 1
             }).fetch().usingConnection(db);
 
