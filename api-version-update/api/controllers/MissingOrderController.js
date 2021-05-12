@@ -83,7 +83,8 @@ module.exports = {
       const sslCommerzResponse = transResponse.element[0];
 
       const numberOfOrderFound = await Order.count().where({
-        ssl_transaction_id: req.body.ssl_transaction_id
+        ssl_transaction_id: req.body.ssl_transaction_id,
+        deletedAt: null
       });
 
       if (numberOfOrderFound > 0) {
@@ -152,7 +153,8 @@ module.exports = {
 
       if (numberOfOrderFound > 0) {
         return res.status(422).json({
-          failure: true
+          failure: true,
+          message: 'An order is already existed with this transaction id'
         });
       }
 
@@ -160,7 +162,8 @@ module.exports = {
 
       if (!user) {
         return res.status(400).json({
-          failure: true
+          failure: true,
+          message: 'User was not found'
         });
       }
 
@@ -243,10 +246,7 @@ module.exports = {
           }).usingConnection(db);
 
           if (!shippingAddress) {
-            return res.status(400).json({
-              success: false,
-              message: 'Associated Shipping Address was not found!'
-            });
+            throw new Error('Associated Shipping Address was not found!');
           }
 
           let courierCharge = await calculateCourierCharge(noShippingCharge, allProducts, shippingAddress.zila_id);
@@ -258,10 +258,7 @@ module.exports = {
           console.log('grandOrderTotal', grandOrderTotal);
 
           if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
-            return res.status(400).json({
-              success: false,
-              message: 'Paid amount and order amount are different.'
-            });
+           throw new Error('Paid amount and order amount are different.');
           }
 
           let order = await Order.create({
@@ -476,7 +473,7 @@ module.exports = {
       console.log(error);
       return res.status(400).json({
         success: false,
-        message: 'Error occurred while generating order'
+        message: 'Error occurred while generating order. ' + error.message
       });
     }
   }
