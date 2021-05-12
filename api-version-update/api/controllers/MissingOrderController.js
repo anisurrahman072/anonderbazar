@@ -168,7 +168,7 @@ module.exports = {
       }
 
       /** Start DB transaction **/
-      let {smsPhone, orderForMail} = await sails.getDatastore()
+      let {smsPhone, orderForMail, order} = await sails.getDatastore()
         .transaction(async (db) => {
           let paymentType = 'SSLCommerce';
           let sslCommerztranId = req.body.ssl_transaction_id;
@@ -258,7 +258,7 @@ module.exports = {
           console.log('grandOrderTotal', grandOrderTotal);
 
           if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
-           throw new Error('Paid amount and order amount are different.');
+            throw new Error('Paid amount and order amount are different.');
           }
 
           let order = await Order.create({
@@ -401,6 +401,8 @@ module.exports = {
 
           const allCouponCodes = [];
 
+          const sslCommerzResponse = transResponse.element[0];
+
           for (let i = 0; i < subordersTemp.length; i++) {
             let paymentObj = await Payment.create({
               user_id: req.body.customerId,
@@ -409,8 +411,8 @@ module.exports = {
               payment_type: 'SSLCommerce',
               payment_amount: subordersTemp[i].total_price,
               transection_key: sslCommerztranId,
-              details: JSON.stringify(transResponse),
-              payment_date: transResponse.tran_date,
+              details: JSON.stringify(sslCommerzResponse),
+              payment_date: sslCommerzResponse.tran_date,
               status: 1
             }).fetch().usingConnection(db);
 
@@ -449,18 +451,17 @@ module.exports = {
           if (!noShippingCharge && shippingAddress.phone) {
             smsPhone = shippingAddress.phone;
           }
-          return {smsPhone, orderForMail};
-
+          return {smsPhone, orderForMail, order};
 
         });
 
       try {
-        /*if (smsPhone) {
+        if (smsPhone) {
           let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
           console.log('smsTxt', smsText);
           SmsService.sendingOneSmsToOne([smsPhone], smsText);
         }
-        EmailService.orderSubmitMail(orderForMail);*/
+        EmailService.orderSubmitMail(orderForMail);
       }
       catch (error){
         console.log(error);

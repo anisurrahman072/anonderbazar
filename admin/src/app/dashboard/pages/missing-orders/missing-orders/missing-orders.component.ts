@@ -4,6 +4,7 @@ import {OrderService} from "../../../../services/order.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {ProductService} from "../../../../services/product.service";
 import {CategoryProductService} from "../../../../services/category-product.service";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-missing-orders',
@@ -41,7 +42,8 @@ export class MissingOrdersComponent implements OnInit {
                 private orderService: OrderService,
                 private _notification: NzNotificationService,
                 private productService: ProductService,
-                private categoryProductService: CategoryProductService
+                private categoryProductService: CategoryProductService,
+                private router: Router
     ) {
     }
 
@@ -53,11 +55,11 @@ export class MissingOrdersComponent implements OnInit {
 
         this.validateOrderForm = this.fb.group({
             shippingAddress: [null, [Validators.required]],
-            searchedProducts: null,
+            searchedProducts: ['',[]],
             type_id: ['',[]],
             category_id: ['',[]],
             subcategory_id: ['',[]],
-            quantity: null
+            quantity: ['',[]]
         });
 
         this.categoryProductService.getAllCategory().subscribe(result => {
@@ -84,25 +86,34 @@ export class MissingOrdersComponent implements OnInit {
 
         this.orderService.findSSLTransaction(formData)
             .subscribe(sslResponse => {
-                console.log('ressss', sslResponse);
                 this.submitting = false;
                 this.allShippingAddress = sslResponse.shippingAddress;
                 this.customer = sslResponse.customer;
                 this._notification.create(
                     'success',
                     'Success',
-                    sslResponse.message
+                    'Successfully found the ssl transaction'
                 );
 
                 this.foundTransaction = true;
 
             }, error => {
                 this.submitting = false;
-                this._notification.create(
-                    'error',
-                    'Error',
-                    error.message
-                );
+                if(error && error.error){
+                    this._notification.create(
+                        'error',
+                        'Error',
+                        error.error.message
+                    );
+                }
+                else {
+                    this._notification.create(
+                        'error',
+                        'Error',
+                        'Error occurred!'
+                    );
+                }
+
                 console.log('Error occurred.', error);
             })
     }
@@ -129,7 +140,6 @@ export class MissingOrdersComponent implements OnInit {
     }
 
     addProduct(product) {
-        console.log('ddddqqqq', product);
         if(product){
             product.orderQuantity = 1;
             this.selectedProducts.push(product);
@@ -219,14 +229,35 @@ export class MissingOrdersComponent implements OnInit {
         formData.append('customerId',this.customer.id);
         formData.append('ssl_transaction_id', this.ssl_transaction_id);
 
-
         this.orderService.generateMissingOrders(formData)
             .subscribe(response => {
                 this.submittingOrderForm = false;
+                this._notification.create(
+                    'success',
+                    'Success',
+                    'Order has been created Successfully.'
+                );
+                this.selectedProducts = [];
+                this.foundTransaction = false;
+                this.resetForm();
                 console.log(response);
+                this.router.navigate(['/dashboard/missing-orders']);
             }, error => {
+                if(error && error.error){
+                    this._notification.create(
+                        'error',
+                        'Error',
+                        error.error.message
+                    );
+                }
+                else {
+                    this._notification.create(
+                        'error',
+                        'Error',
+                        'Error occurred!'
+                    );
+                }
                 this.submittingOrderForm = false;
-
             })
     }
 

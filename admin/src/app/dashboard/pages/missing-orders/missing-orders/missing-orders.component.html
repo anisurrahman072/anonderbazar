@@ -59,12 +59,6 @@
           </div>
         </div><!--Shipping address  -->&nbsp;
 
-
-
-
-
-
-<!--1-->
         <div nz-row>
           <div nz-col [nzSpan]="7">
             <label>Product Category</label>
@@ -84,10 +78,6 @@
           </div>
         </div>&nbsp;
 
-
-
-
-<!--2-->
           <div nz-row *ngIf="categorySearchOptions && categorySearchOptions.length > 0">
             <div nz-col [nzSpan]="7">
               <label> Product S-category </label>
@@ -103,19 +93,10 @@
                 </nz-option>
               </nz-select>
 
-
-              <div
-                      *ngIf="getOrderFormControl('category_id').dirty&&getOrderFormControl('category_id').hasError('required')">
-                required!
-              </div>
             </div>
           </div>&nbsp;
           <!--category_id-->
 
-
-
-
-<!--3-->
           <div nz-row *ngIf="subcategorySearchOptions && subcategorySearchOptions.length>0">
             <div nz-col [nzSpan]="7">
               <label> Product subcategory </label>
@@ -131,16 +112,9 @@
                            [nzValue]="option.id">
                 </nz-option>
               </nz-select>
-              <div
-                      *ngIf="getOrderFormControl('subcategory_id').dirty&&getOrderFormControl('subcategory_id').hasError('required')">
-                required!
-              </div>
             </div>
           </div>&nbsp;
           <!--subcategory_id-->
-
-
-
 
 
         <div nz-row *ngIf="productList && productList.length>0">
@@ -154,27 +128,11 @@
                        [nzPlaceHolder]="'Enter product name'"
                        [nzNotFoundContent]="'Not found'" nzShowSearch [nzSize]="'large'"
                        (ngModelChange)="addProduct($event)">
-              <nz-option *ngFor="let product of productList" [nzLabel]="product.name" [nzValue]="product">
+              <nz-option *ngFor="let product of productList" [nzLabel]="product.name+' => '+product.code" [nzValue]="product">
               </nz-option>
             </nz-select>
           </div>
         </div>&nbsp;
-
-
-
-
-       <!-- <div    nz-row>&lt;!&ndash;Products start&ndash;&gt;
-          <div    nz-col [nzSpan]="7">
-            <label> Add products to cart </label>
-          </div>
-          <div nz-col [nzSpan]="12"      >
-            <nz-select nzShowSearch formControlName="searchedProducts" nzPlaceHolder="Enter product name" nzAllowClear
-                       (nzOnSearch)="getProducts($event)" [nzServerSearch] id="dropdown" (ngModelChange)="addProduct($event)" [nzSize]="'large'">
-              <nz-option *ngFor="let product of productList" [nzLabel]="product.name" [nzValue]="product">
-              </nz-option>
-            </nz-select>
-          </div>
-        </div>&lt;!&ndash;Product &ndash;&gt;&nbsp;-->
 
 
         <div *ngIf="selectedProducts.length > 0">
@@ -233,7 +191,6 @@
           </div>
         </div>
       </form>
-
 
     </ng-container>
   </nz-card>
