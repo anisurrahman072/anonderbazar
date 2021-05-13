@@ -6,7 +6,14 @@ const {calcCartTotal} = require('../../libs/helper');
 const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
 const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
-const {generateRandomString, EncryptDataWithPublicKey, SignatureGenerate, HttpPostMethod, DecryptDataWithPrivateKey, toHexString} = require('../services/nagad');
+const {
+  generateRandomString,
+  EncryptDataWithPublicKey,
+  SignatureGenerate,
+  HttpPostMethod,
+  DecryptDataWithPrivateKey,
+  toHexString
+} = require('../services/nagad');
 
 module.exports = {
 
@@ -130,6 +137,7 @@ module.exports = {
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
     console.log('################# placeSSlCommerzOrder ##################### ');
+
     const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
     const {grandOrderTotal, totalQuantity} = orderDetails;
     const sslcommerz = sslcommerzInstance(globalConfigs);
@@ -181,7 +189,7 @@ module.exports = {
     post_body['tran_id'] = randomstring;
 
     post_body['success_url'] = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
-    post_body['ipn_url'] = sslApiUrl + '/ssl-commerz/ipn-success/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
+    post_body['ipn_url'] = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
     post_body['fail_url'] = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
     post_body['cancel_url'] = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + finalBillingAddressId + '&shipping_address=' + finalShippingAddressId;
 
@@ -411,7 +419,7 @@ module.exports = {
     currentDate = currentDate.replace(/[T]+/g, '');
     currentDate = currentDate.substring(0, 8);
 
-    let time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    let time = new Date().toLocaleTimeString('en-US', {hour12: false});
     time = time.replace(/:/g, '');
     time = time.replace(/[a-zA-Z]+/g, '');
     time = time.replace(/ /g, '');
@@ -517,9 +525,17 @@ module.exports = {
       const couponProductFound = cartItems.filter((cartItem) => {
         return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
       });
-      noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
-    }
 
+      let productFreeShippingFound = cartItems.filter(item => {
+        return (item.product_id && item.product_id.free_shipping);
+      });
+
+      noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
+        productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
+      );
+
+      console.log('noShippingCharge',noShippingCharge);
+    }
 
     let shippingAddress = await PaymentAddress.findOne({
       id: shippingAddressId
@@ -530,20 +546,21 @@ module.exports = {
     }
 
     let courierCharge = 0;
-
     if (!noShippingCharge) {
       if (shippingAddress && shippingAddress.id) {
         // eslint-disable-next-line eqeqeq
         courierCharge = globalConfigs.outside_dhaka_charge;
-        if(productCourierCharge){
+        if (productCourierCharge) {
           courierCharge = productCourierCharge;
-        } else if(shippingAddress.zila_id == dhakaZilaId){
+        } else if (shippingAddress.zila_id == dhakaZilaId) {
           courierCharge = globalConfigs.dhaka_charge;
         }
       } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
     }
+
+    console.log('courierCharge', courierCharge);
     grandOrderTotal += courierCharge;
 
     console.log('paidAmount', paidAmount);

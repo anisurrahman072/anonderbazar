@@ -1,7 +1,3 @@
-/**
- * SslCommerzController.js
- * @help :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {createOrder} = require('../services/checkout');
@@ -33,7 +29,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse', validationResponse);
+      console.log('validationResponse-sslCommerzIpnSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.status(422).json({
@@ -42,7 +38,8 @@ module.exports = {
       }
 
       const numberOfOrderFound = await Order.count().where({
-        ssl_transaction_id: req.body.tran_id
+        ssl_transaction_id: req.body.tran_id,
+        deletedAt: null
       });
 
       if (numberOfOrderFound > 0) {
@@ -149,7 +146,6 @@ module.exports = {
   },
   //Method called when sslCommerzSuccess from frontend
   sslCommerzSuccess: async function (req, res) {
-
     console.log('################ sslcommerz success', req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
@@ -181,7 +177,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse', validationResponse);
+      console.log('validationResponse-sslCommerzSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
 
@@ -208,7 +204,8 @@ module.exports = {
       }
 
       const ordersFound = await Order.find({
-        ssl_transaction_id: req.body.tran_id
+        ssl_transaction_id: req.body.tran_id,
+        deletedAt: null
       });
 
       if (ordersFound && Array.isArray(ordersFound) && ordersFound.length > 0) {

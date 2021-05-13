@@ -1109,5 +1109,91 @@ module.exports = {
         error
       });
     }
+  },
+
+  getProductsByName: async (req, res) => {
+    try {
+      console.log('rrrr');
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+    SELECT
+    products.id as id,
+    products.name as name,
+    products.code as code,
+    products.quantity as quantity,
+    products.warehouse_id as warehouse_id,
+    products.dhaka_charge as dhaka_charge,
+    products.outside_dhaka_charge as outside_dhaka_charge,
+    products.free_shipping as free_shipping,
+    products.promotion as promotion,
+    products.promo_price as promo_price,
+    products.warehouse_id as warehouse_id
+    `;
+
+      let fromSQL = ' FROM products as products  ';
+      let _where = ` WHERE products.deleted_at IS NULL  `;
+      if (req.query.name_search) {
+        _where += ` AND products.name LIKE '%${req.query.name_search}%' `;
+      }
+      _where += ' LIMIT 30';
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+      console.log('products', rawResult.rows);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all products',
+        products: rawResult.rows
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while fetching all products',
+        error
+      });
+    }
+  },
+
+  getByCategorySubCategory: async (req, res) => {
+    try {
+      console.log('tttttaa');
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+        SELECT
+          products.id as id,
+          products.name as name,
+          products.code as code,
+          products.quantity as quantity,
+          products.warehouse_id as warehouse_id,
+          products.dhaka_charge as dhaka_charge,
+          products.outside_dhaka_charge as outside_dhaka_charge,
+          products.free_shipping as free_shipping,
+          products.promotion as promotion,
+          products.promo_price as promo_price,
+          products.warehouse_id as warehouse_id
+      `;
+      let fromSQL = ' FROM products as products  ';
+      let _where = ` WHERE products.deleted_at IS NULL  AND products.type_id = ${req.query.type_id} AND products.category_id = ${req.query.category_id} `;
+      if (req.query.subcategory_id) {
+        _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
+      }
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+      console.log('products', rawResult.rows);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all products',
+        products: rawResult.rows
+      });
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while fetching all products',
+        error
+      });
+    }
   }
 };

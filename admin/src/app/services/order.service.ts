@@ -9,6 +9,7 @@ import {environment} from "../../environments/environment";
 export class OrderService {
 
     private EndPoint = `${environment.API_ENDPOINT}/order`;
+    private EndPoint2 = `${environment.API_ENDPOINT}/missingOrder`;
 
     constructor(private http: HttpClient ) {
     }
@@ -50,5 +51,13 @@ export class OrderService {
 
     update(id: number, data: any) {
         return this.http.put(`${this.EndPoint}/update?id=${id}`, data);
+    }
+
+    findSSLTransaction(data): Observable<any>{
+        return this.http.post(`${this.EndPoint2}/findSSLTransaction`, data);
+    }
+
+    generateMissingOrders(data): Observable<any>{
+        return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
 }

@@ -1,0 +1,197 @@
+<section>
+  <nz-card class="card-height" nzTitle="Generate Missing Orders">
+
+    <ng-container *ngIf="!foundTransaction">
+      <form nz-form [formGroup]="validateForm" id="validateForm"  (ngSubmit)="submitForm($event,validateForm.value)">
+        <div    nz-row><!--username start-->
+          <div    nz-col [nzSpan]="7">
+            <label> Username </label>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <input nz-input  formControlName="username"  [placeholder]="'Enter username of customer'"
+                   [nzSize]="'large'">
+
+            <div
+                    *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('required')">
+              Username is required!
+            </div>
+          </div>
+        </div><!--username -->&nbsp;
+
+        <div    nz-row><!--ssl_transaction_id start-->
+          <div    nz-col [nzSpan]="7">
+            <label> SSL transaction Id </label>
+          </div>
+          <div nz-col [nzSpan]="12"      >
+            <input nz-input  formControlName="ssl_transaction_id"  [placeholder]="'Enter SSL transaction ID'"
+                   [nzSize]="'large'">
+
+            <div
+                    *ngIf="getFormControl('ssl_transaction_id').dirty&&getFormControl('ssl_transaction_id').hasError('required')">
+              SSL transaction ID is required!
+            </div>
+          </div>
+        </div><!--ssl_transaction_id -->&nbsp;
+
+        <div    nz-row>
+          <div nz-col [nzOffset]="7" [nzSpan]="12"   >
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || submitting">Submit
+            </button>&nbsp;
+            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+
+
+    <ng-container *ngIf="foundTransaction">
+      <form nz-form [formGroup]="validateOrderForm" id="validateOrderForm" (ngSubmit)="generateOrder($event,validateOrderForm.value)">
+
+        <div    nz-row><!--Shipping address start-->
+          <div    nz-col [nzSpan]="7">
+            <label> Select Shipping address </label>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-select formControlName="shippingAddress"  nzPlaceHolder="Select Shipping address" nzAllowClear [nzSize]="'large'">
+              <nz-option *ngFor="let address of allShippingAddress" [nzLabel]="address.address" [nzValue]="address.id">
+              </nz-option>
+            </nz-select>
+          </div>
+        </div><!--Shipping address  -->&nbsp;
+
+        <div nz-row>
+          <div nz-col [nzSpan]="7">
+            <label>Product Category</label>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-select formControlName="type_id" nzAllowClear (ngModelChange)="onTypeChange($event)"
+                       [ngModel]="type_id" [nzPlaceHolder]="'Select Product Category'"
+                       [nzNotFoundContent]="'Not found'" nzShowSearch [nzSize]="'large'">
+              <nz-option *ngFor="let option of typeSearchOptions" [nzLabel]="option.name"
+                         [nzValue]="option.id">
+              </nz-option>
+            </nz-select>
+            <div
+                    *ngIf="getOrderFormControl('type_id').dirty&&getOrderFormControl('type_id').hasError('required')">
+              required!
+            </div>
+          </div>
+        </div>&nbsp;
+
+          <div nz-row *ngIf="categorySearchOptions && categorySearchOptions.length > 0">
+            <div nz-col [nzSpan]="7">
+              <label> Product S-category </label>
+            </div>
+            <div nz-col [nzSpan]="12">
+
+              <nz-select [ngModel]="category_id" formControlName="category_id" nzAllowClear
+                         (ngModelChange)="categoryChange($event)"
+                         [nzPlaceHolder]="'Select Product s-category'"
+                         [nzNotFoundContent]="'Not found'" nzShowSearch [nzSize]="'large'">
+                <nz-option *ngFor="let option of categorySearchOptions" [nzLabel]="option.name"
+                           [nzValue]="option.id">
+                </nz-option>
+              </nz-select>
+
+            </div>
+          </div>&nbsp;
+          <!--category_id-->
+
+          <div nz-row *ngIf="subcategorySearchOptions && subcategorySearchOptions.length>0">
+            <div nz-col [nzSpan]="7">
+              <label> Product subcategory </label>
+            </div>
+            <div nz-col [nzSpan]="12">
+
+              <nz-select formControlName="subcategory_id" nzAllowClear
+                         [ngModel]="subcategory_id"
+                         [nzPlaceHolder]="'Select Product ss-category'"
+                         [nzNotFoundContent]="'Not found'" nzShowSearch [nzSize]="'large'"
+                         (ngModelChange)="changeSubSubCategory($event)">
+                <nz-option *ngFor="let option of subcategorySearchOptions" [nzLabel]="option.name"
+                           [nzValue]="option.id">
+                </nz-option>
+              </nz-select>
+            </div>
+          </div>&nbsp;
+          <!--subcategory_id-->
+
+
+        <div nz-row *ngIf="productList && productList.length>0">
+          <div nz-col [nzSpan]="7">
+            <label> Add products to cart </label>
+          </div>
+          <div nz-col [nzSpan]="12">
+
+            <nz-select formControlName="searchedProducts" nzAllowClear
+                       [ngModel]="selectedProduct"
+                       [nzPlaceHolder]="'Enter product name'"
+                       [nzNotFoundContent]="'Not found'" nzShowSearch [nzSize]="'large'"
+                       (ngModelChange)="addProduct($event)">
+              <nz-option *ngFor="let product of productList" [nzLabel]="product.name+' => '+product.code" [nzValue]="product">
+              </nz-option>
+            </nz-select>
+          </div>
+        </div>&nbsp;
+
+
+        <div *ngIf="selectedProducts.length > 0">
+          <nz-table #nzTable
+                    [nzData]="selectedProducts"
+          >
+            <thead>
+              <tr>
+                <th>
+                  <span> Name </span>
+                </th>
+                <th>
+                  <span> Code </span>
+                </th>
+                <th>
+                  <span> Quantity </span>
+                </th>
+                <th>
+                  <span> Delete </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of selectedProducts">
+                <td>
+                  {{product.name}}
+                </td>
+                <td>
+                  {{product.code}}
+                </td>
+                <td>
+                  <input nz-input type="number" formControlName="quantity" [placeholder]="'Enter quantity for this product'"
+                         (change)="updateQuantity($event, product.id)" [nzSize]="'large'" [value]="product.orderQuantity">
+                </td>
+                <td>
+                  <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                 [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(product.id)">
+                    <a nz-popconfirm>
+                      <button nz-button [nzSize]="'default'">
+                        <i class="anticon anticon-delete"></i>
+                      </button>
+                    </a>
+                  </nz-popconfirm>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+
+
+        <div    nz-row>
+          <div nz-col [nzOffset]="7" [nzSpan]="12"   >
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateOrderForm.valid || submittingOrderForm || selectedProducts.length === 0">Generate order
+            </button>&nbsp;
+            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset </button>
+          </div>
+        </div>
+      </form>
+
+    </ng-container>
+  </nz-card>
+</section>
