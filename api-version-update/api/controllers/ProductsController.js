@@ -1059,8 +1059,10 @@ module.exports = {
 
         if (req.body[i].promo_price > 0) {
           product.promo_price = parseFloat(req.body[i].promo_price);
+          product.promotion = 1;
         } else {
           product.promo_price = 0;
+          product.promotion = 0;
         }
 
         if (authUser.group_id.name === 'admin') {
@@ -1088,6 +1090,7 @@ module.exports = {
           price: product.price,
           promo_price: product.promo_price,
           vendor_price: product.vendor_price,
+          promotion: product.promotion,
           quantity: product.quantity,
           weight: product.weight,
           frontend_position: product.frontend_position,
