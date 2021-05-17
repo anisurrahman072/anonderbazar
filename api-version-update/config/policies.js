@@ -220,6 +220,8 @@ module.exports.policies = {
     'bulkUpdate': ['isAuthorized', 'isOwnerOrAdmin'],
     'generateExcel': ['isAuthorized', 'isOwnerOrAdmin'],
     'bulkUpload': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getProductsByName': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getByCategorySubCategory': ['isAuthorized', 'isOwnerOrAdmin']
   },
   ProductCategoriesController: {
     'getAll': true,
@@ -299,6 +301,9 @@ module.exports.policies = {
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
     'allOrders': ['isAuthorized', 'isAdmin'],
+  },
+  MissingOrderController: {
+    '*': true
   },
   ShippingAddressController: {
     '*': false,

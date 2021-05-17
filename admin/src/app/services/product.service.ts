@@ -147,4 +147,17 @@ export class ProductService {
     submitDataForBulkUpdate(data): Observable<any> {
         return this.http.put(this.EndPoint2 + '/bulk-update', data);
     }
+
+    getProductsByName(name): Observable<any> {
+        return this.http.get(this.EndPoint2 + `/getProductsByName?name_search=${name}`);
+    }
+
+    getByCategorySubCategory(type_id: number, category_id: number, subcategory_id?: number): Observable<any>{
+        console.log('wwwwwee', type_id, category_id, subcategory_id);
+        let query = `?type_id=${type_id}&category_id=${category_id}`;
+        if(subcategory_id){
+            query += `&subcategory_id=${subcategory_id}`;
+        }
+        return this.http.get(this.EndPoint2 + `/getByCategorySubCategory${query}`);
+    }
 }

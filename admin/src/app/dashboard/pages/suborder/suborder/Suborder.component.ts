@@ -350,25 +350,38 @@ export class SuborderComponent implements OnInit {
     //Event method for resetting all filters
     selectAllCsv($event) {
 
-        const isChecked = !!$event.target.checked;
+        const isChecked = this.pageAllCheckedStatusCsv[this.pageCsv] ? false : true;
         this.pageAllCheckedStatusCsv[this.pageCsv] = isChecked;
         const len = this.subOrdersForCsv.length;
         for (let i = 0; i < len; i++) {
             this.subOrdersForCsv[i].checked = isChecked;
-            this.onCsvSelectionChange(isChecked, this.subOrdersForCsv[i].id)
+            let findValue = this.selectedSubOrderIds.indexOf(this.subOrdersForCsv[i].id);
+            if(isChecked){
+                if(findValue === -1){
+                    this.selectedSubOrderIds.push(this.subOrdersForCsv[i].id);
+                }
+            }
+            else {
+                if(findValue !== -1){
+                    this.selectedSubOrderIds.splice(findValue, 1);
+                }
+            }
         }
     }
 
-    onCsvSelectionChange($event, value) {
+    onCsvSelectionChange(index, value) {
+        let findValue = this.selectedSubOrderIds.indexOf(value);
 
-        if ($event) {
-            this.selectedSubOrderIds.push(value);
-        } else {
-            let findValue = this.selectedSubOrderIds.indexOf(value);
-
-            if (findValue !== -1) {
-                this.selectedSubOrderIds.splice(findValue, 1);
+        if(findValue !== -1){
+            this.subOrdersForCsv[index].checked = false;
+            this.selectedSubOrderIds.splice(findValue, 1);
+            if(this.pageAllCheckedStatusCsv[this.pageCsv]){
+                this.pageAllCheckedStatusCsv[this.pageCsv] = false;
             }
+        }
+        else {
+            this.subOrdersForCsv[index].checked = true;
+            this.selectedSubOrderIds.push(value);
         }
     };
 
