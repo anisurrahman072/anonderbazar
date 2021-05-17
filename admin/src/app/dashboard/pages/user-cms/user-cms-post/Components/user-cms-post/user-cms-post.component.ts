@@ -213,6 +213,7 @@ export class UserCmsPostComponent implements OnInit {
     // Method for deleting user cms post
     deleteConfirm(index, id) {
         console.log(id);
+        this.cmsPostData = null;
         this.cmsService.delete(id).subscribe(result => {
             console.log('deleted', result);
             this.getData();

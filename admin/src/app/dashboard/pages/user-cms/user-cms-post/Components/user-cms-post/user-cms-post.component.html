@@ -90,47 +90,74 @@
 </nz-modal>
 
 
-<div class="row">
-    <div class="col-md-6" *ngFor="let post of cmsPostData; let i = index" [attr.data-index]="post.id">
-        <nz-card style="margin-bottom: 5px;" [nzTitle]="title" [nzExtra]="extra">
-            <ng-template #title>
-                <h4>
-                    Title: {{post.data_value[0].title}}
-                </h4>
-            </ng-template>
-            <ng-template #extra>
-                <div class="pull-right">
-                    <button nz-button [nzType]="'primary'" (click)="showEditModal(post.id,i)">
-                        <span>
-                            <i class="anticon anticon-edit">Edit</i>
-                        </span>
-                    </button>&nbsp;
-                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                   [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,post.id)">
-                        <a nz-popconfirm>
-                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                <i class="anticon anticon-delete "> Delete </i>
-                            </button>
-                        </a>
-                    </nz-popconfirm>
-                </div>
-            </ng-template>
-            <ng-container>
-                <div class="col-md-6">
-                    <div> Details:
-                        <div [innerHTML]="post.data_value[0].description"></div>
-                    </div>
-                </div>
+<section>
+    <nz-card class="card-height" >
+        <nz-table #nzTable
+                  [nzData]="cmsPostData"
+                  [nzLoading]="_isSpinning"
+        >
+            <thead>
+                <tr>
+                    <th nzWidth="10%">
+                        <span> Image </span>
+                    </th>
+                    <th nzWidth="20%">
+                        <span> Title </span>
+                    </th>
+                    <th nzWidth="50%">
+                        <span>Details</span>
+                    </th>
+                    <th nzWidth="20%">
+                        <span>Action</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody *ngIf="cmsPostData && cmsPostData.length > 0">
+            <tr *ngFor="let post of nzTable.data; let i = index">
+                <td style="text-align: center; width: 75px">
+                    <ng-container *ngIf="post.data_value[0].image; else noImage">
+                        <nz-avatar [nzShape]="'square'"
+                                   [nzSrc]="IMAGE_ENDPOINT + post.data_value[0].image" [nzSize]="'large'"
+                                   [nzIcon]="'question-circle'"  style="background-color:#1e241c;"></nz-avatar>
+                    </ng-container>
+                    <ng-template #noImage>
+                        <nz-tag>No Image</nz-tag>
+                    </ng-template>
+                </td>
+                <td>
+                    {{post.data_value[0].title}}
+                </td>
+                <td>
+                    <div [innerHTML]="post.data_value[0].description" style=" overflow: hidden; max-height: 125px; text-overflow: ellipsis;"></div>
+                </td>
+                <td style="text-align: center">
+                    <nz-button-group>
+                        <button [routerLink]="['/dashboard/usercms/post-read/', post.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <button (click)="showEditModal(post.id,i)"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                        <ng-container>
+                            <div class="pull-right">
+                                <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
+                                               [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirm(i,post.id)">
+                                    <a nz-popconfirm>
+                                        <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                            <i class="anticon anticon-delete ">
+                                            </i>
+                                        </button>
+                                    </a>
+                                </nz-popconfirm>
+                            </div>
+                        </ng-container>
+                    </nz-button-group>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+</section>
 
-                <div class="col-md-6">
-                    <div>
-                        <img class="img img-responsive " alt="{{post.data_value[0].image}}"
-                             src="{{ IMAGE_ENDPOINT + post.data_value[0].image}}"/>
-                    </div>
-                </div>
-                <br>
-
-            </ng-container>
-        </nz-card>
-    </div>
-</div>
