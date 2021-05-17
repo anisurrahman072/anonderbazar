@@ -25,6 +25,7 @@ export class FooterComponent implements OnInit {
     cmsFooterDataSocial: any;
     cart$: Observable<any>;
     showTopToBottom: boolean = false
+    cmsPostData: any;
 
     /*
     * constructor for footer component
@@ -64,6 +65,9 @@ export class FooterComponent implements OnInit {
         //getting the footer link data
         this.getFooterData();
 
+        //getting the footer post data
+        this.getPostData();
+
         //getting the cart value
         this.cart$ = this.store.select<any>(fromStore.getCart);
     }
@@ -82,6 +86,13 @@ export class FooterComponent implements OnInit {
         this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE').subscribe(result => {
             this.cmsFeatureData = result[0].data_value;
 
+        });
+    }
+
+    getPostData(){
+        this.cmsService.getBySubSectionName('POST', 'NONE', 'NONE').subscribe(result => {
+            this.cmsPostData = result;
+            console.log('rrrrrr', this.cmsPostData);
         });
     }
 

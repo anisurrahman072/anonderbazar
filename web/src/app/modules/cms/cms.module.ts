@@ -10,6 +10,7 @@ import {NgAisModule} from "angular-instantsearch";
 import {MaterialModule} from "../../core/material.module";
 import {CmsDetailsPageComponent} from "./cms-details-page/cms-details-page.component";
 import {CmsPageComponent} from "./cms-page/cms-page.component";
+import { CmsPostDetailsComponent } from './cms-post-details/cms-post-details.component';
 
 @NgModule({
     imports: [
@@ -24,7 +25,7 @@ import {CmsPageComponent} from "./cms-page/cms-page.component";
         NgAisModule,
         MaterialModule,
     ],
-    declarations: [CmsPageComponent, CmsDetailsPageComponent]
+    declarations: [CmsPageComponent, CmsDetailsPageComponent, CmsPostDetailsComponent]
 })
 export class CmsModule {
 }
