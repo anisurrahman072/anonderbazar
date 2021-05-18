@@ -6,6 +6,8 @@ import {environment} from "../../../../../environments/environment";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import * as ___ from 'lodash';
 import {ExportService} from "../../../../services/export.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {NzNotificationService} from "ng-zorro-antd";
 
 @Component({
     selector: 'app-customer',
@@ -48,12 +50,15 @@ export class CustomerComponent implements OnInit, OnDestroy {
     private excelPageSelectAll = [];
     @ViewChild('excelSelectAll') excelSelectAll;
 
+    options: any[] = GLOBAL_CONFIGS.CUSTOMER_STATUS;
+
     constructor(
         private userService: UserService,
         private uiService: UIService,
         private authService: AuthService,
         private exportService: ExportService,
         private fb: FormBuilder,
+        private _notification: NzNotificationService,
     ) {
         this.validateProductForm = this.fb.group({
             userChecked: ['', []],
@@ -70,6 +75,21 @@ export class CustomerComponent implements OnInit, OnDestroy {
                 this.getPageData();
             }
         );
+    }
+
+    //Method for status change
+    changeStatusConfirm($event, id, newStatus) {
+        this.userService.update(id, {
+            active: $event
+        }).subscribe((res) => {
+            console.log(res);
+            this._notification.create('success', 'Successful Message', 'Customer status has been updated successfully');
+
+            this.getPageData();
+        }, (err) => {
+            this._notification.create('error', 'Error', 'Something went wrong');
+            $event = newStatus;
+        });
     }
 
     ngOnDestroy(): void {
