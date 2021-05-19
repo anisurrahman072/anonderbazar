@@ -90,9 +90,8 @@ export class FooterComponent implements OnInit {
     }
 
     getPostData(){
-        this.cmsService.getBySubSectionName('POST', 'NONE', 'NONE').subscribe(result => {
-            this.cmsPostData = result;
-            console.log('rrrrrr', this.cmsPostData);
+        this.cmsService.getAllBottomFooter('FOOTER').subscribe(result => {
+            this.cmsPostData = result[0].data_value[6];
         });
     }
 
