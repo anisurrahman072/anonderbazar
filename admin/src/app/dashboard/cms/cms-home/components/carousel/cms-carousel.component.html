@@ -278,7 +278,7 @@
                             [uploadedFiles]="editImage && editImage.length ? editImage: ''"
                             [max]="1"
                             (removed)="onRemoved($event)"
-                            [maxFileSize]="524288"
+                            [maxFileSize]="2000000"
                             [extensions]="['jpeg','png', 'jpg', 'webp']"
                             [beforeUpload]="onBeforeUpload"
                         ></image-upload>

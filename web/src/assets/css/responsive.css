@@ -253,7 +253,7 @@
     /****************** NAVIGATION ******************/
     /************************************************/
     .mobile-menu nav {
-        background: #F83831;
+        background: #FF0000;
         color: #1d1f20;
         left: 0;
         position: relative;
@@ -990,7 +990,7 @@
     }
 
     .widget-cart a span {
-        background-color: #F83831 !important;
+        background-color: #FF0000 !important;
         color: #ffffff !important;
     }
 
@@ -1252,7 +1252,7 @@
 
     .add-cartbtn .addto1 {
         padding: 10px 95px;
-        color: #F83831;
+        color: #FF0000;
         margin-bottom: 20px;
         margin-right: 0px;
         display: block;
