@@ -1,0 +1,54 @@
+<nz-card nzTitle="Cms Post Details" [nzExtra]="extra">
+  <ng-template #extra>
+    <nz-button-group>
+      <button routerLink="/dashboard/usercms/post" nz-button [nzType]="'primary'" [nzSize]="'large'">
+        <i class="anticon anticon-file-text"></i><span> List </span>
+      </button>
+    </nz-button-group>
+  </ng-template>
+  <ng-template [ngIf]="cmsPostData">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="col-md-12">
+          <div class="images kt-images">
+            <div class="kt-main-image ">
+              <div class="custom-image">
+                <img height="250px" width="375px" class="img  img-responsive " alt="{{cmsPostData.name}}"
+                     style="margin: auto;" src="{{  IMAGE_ENDPOINT + cmsPostData.data_value[0].image}}" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <ul class="list-group list">
+
+          <li class="list-group-item list-item">
+            <div class="row">
+              <div class="col-md-2">
+                <p class="pull-right"> Title :</p>
+              </div>
+              <div class="col-md-9">
+                <p class="pull-left">{{cmsPostData.data_value[0].title}}</p>
+              </div>
+            </div>
+          </li>
+
+          <li class="list-group-item list-item">
+            <div class="row">
+              <div class="col-md-2">
+                <p class="pull-right"> Details :</p>
+              </div>
+              <div class="col-md-9">
+                <div [innerHTML]="cmsPostData.data_value[0].description"></div>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+
+  </ng-template>
+</nz-card>

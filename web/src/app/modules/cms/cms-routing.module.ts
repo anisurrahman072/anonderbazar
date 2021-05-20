@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {CmsPageComponent} from "./cms-page/cms-page.component";
 import {CmsDetailsPageComponent} from "./cms-details-page/cms-details-page.component";
+import {CmsPostDetailsComponent} from "./cms-post-details/cms-post-details.component";
 
 
 const routes: Routes = [
@@ -10,6 +11,13 @@ const routes: Routes = [
         component: CmsPageComponent,
         data: {
             title: "OFFERS"
+        }
+    },
+    {
+        path: "post-details/:id",
+        component: CmsPostDetailsComponent,
+        data: {
+            title: "post-details"
         }
     },
     {

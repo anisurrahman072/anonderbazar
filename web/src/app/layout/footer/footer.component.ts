@@ -25,6 +25,7 @@ export class FooterComponent implements OnInit {
     cmsFooterDataSocial: any;
     cart$: Observable<any>;
     showTopToBottom: boolean = false
+    cmsPostData: any;
 
     /*
     * constructor for footer component
@@ -41,7 +42,10 @@ export class FooterComponent implements OnInit {
 
         forkJoin([
             this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE'),
-            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER')
+            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER'),
+            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE'),
+            this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER'),
+            this.cmsService.getAllBottomFooter('FOOTER')
         ]).subscribe((results: any) => {
 
             if (!_.isNil(results[0]) && !_.isNil(results[0][0])) {
@@ -56,13 +60,36 @@ export class FooterComponent implements OnInit {
                 this.cmsFooterDataBrands = results[1][0].data_value[4];
                 this.cmsFooterDataSocial = results[1][0].data_value[5];
             }
+
+            if (!_.isNil(results[2]) && !_.isNil(results[2][0])){
+                this.cmsFeatureData = results[2][0].data_value;
+            }
+
+            if (!_.isNil(results[3]) && !_.isNil(results[3][0])){
+                this.cmsFooterData = results[3][0].data_value[0];
+                this.cmsFooterDataFurther = results[3][0].data_value[1];
+                this.cmsFooterDataCustomer = results[3][0].data_value[2];
+                this.cmsFooterDataShops = results[3][0].data_value[3];
+                this.cmsFooterDataBrands = results[3][0].data_value[4];
+                this.cmsFooterDataSocial = results[3][0].data_value[5];
+            }
+
+            if (!_.isNil(results[4]) && !_.isNil(results[4][0])){
+                this.cmsPostData = results[4][0].data_value[6];
+            }
+
+        }, error => {
+            console.log('Error occurred while fetching data, ',error);
         });
 
         //getting the footer feature data
-        this.getFeatureData();
+        // this.getFeatureData();
 
         //getting the footer link data
-        this.getFooterData();
+        // this.getFooterData();
+
+        //getting the footer post data
+        // this.getPostData();
 
         //getting the cart value
         this.cart$ = this.store.select<any>(fromStore.getCart);
@@ -78,20 +105,26 @@ export class FooterComponent implements OnInit {
     }
 
     //Event method for getting footer feature data
-    getFeatureData() {
+    /*getFeatureData() {
         this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FEATURE').subscribe(result => {
             this.cmsFeatureData = result[0].data_value;
 
         });
+    }*/
+
+    getPostData(){
+        this.cmsService.getAllBottomFooter('FOOTER').subscribe(result => {
+            this.cmsPostData = result[0].data_value[6];
+        });
     }
 
     //Method for showing shopping cart modal
-    showShoppingCartModal() {
+    /*showShoppingCartModal() {
         this.shoppingModalService.showshoppingModal(true);
-    }
+    }*/
 
     //Event method for getting footer links data
-    getFooterData() {
+    /*getFooterData() {
         this.cmsService.getBySubSectionName('LAYOUT', 'FOOTER', 'FOOTER').subscribe(result => {
             this.cmsFooterData = result[0].data_value[0];
             this.cmsFooterDataFurther = result[0].data_value[1];
@@ -100,7 +133,7 @@ export class FooterComponent implements OnInit {
             this.cmsFooterDataBrands = result[0].data_value[4];
             this.cmsFooterDataSocial = result[0].data_value[5];
         });
-    }
+    }*/
 
     //Event method for scrolling top to bottom
     bottom_to_top(event) {

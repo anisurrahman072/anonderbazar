@@ -56,4 +56,11 @@ export class CmsService {
         return this.http.get(this.EndPoint + _where);
     }
 
+    getAllBottomFooter(subSectionName): Observable<any>{
+        return this.http
+            .get(
+                this.EndPoint +
+                `?where={"sub_section":"${subSectionName}","deletedAt":null}`
+            );
+    }
 }

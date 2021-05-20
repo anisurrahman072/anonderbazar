@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { UserCmsComponent } from './core/user-cms.component';
+import {UserCmsPostReadComponent} from "./user-cms-post-read/user-cms-post-read.component";
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
       } //cms-working.module
     ]
   },
+  { path: 'post-read/:id', component: UserCmsPostReadComponent, children: [] },
   { path: '**', redirectTo: '/dashboard/usercms/post' }
 ];
 

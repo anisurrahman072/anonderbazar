@@ -100,5 +100,9 @@ export const GLOBAL_CONFIGS = {
         {value: 1, label: 'Pending'},
         {value: 2, label: 'Processing'},
         {value: 3, label: 'Confirmed'}
+    ],
+    CUSTOMER_STATUS: [
+        {value: 0, label: 'Banned'},
+        {value: 1, label: 'Unbanned'},
     ]
 };

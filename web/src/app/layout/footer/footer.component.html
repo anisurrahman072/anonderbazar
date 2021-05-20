@@ -42,13 +42,8 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="bottom-footer-list">
-                        <ul class="justify-content-center">
-                            <li><a href="#">Intellectual Property Protetion</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Sitemap</a></li>
-                            <li><a href="#">Terms of Use</a></li>
-                            <li><a href="#">User information Legal Enquiry Guide</a></li>
+                    <div class="bottom-footer-list" *ngIf="cmsPostData && cmsPostData.description">
+                        <ul class="row justify-content-center" [innerHTML]="cmsPostData.description">
                         </ul>
                     </div>
                 </div>
