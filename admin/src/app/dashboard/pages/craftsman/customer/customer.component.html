@@ -103,7 +103,7 @@
                 </td>
                 <td style="width: 200px;">
                     <nz-select style="width: 180px;" [(ngModel)]="data.customer_active" [nzPlaceHolder]="'choose option'"
-                               (ngModelChange)="changeStatusConfirm($event,data.id,data.customer_active)">
+                               (ngModelChange)="changeStatusConfirm($event,data.id)">
                         <nz-option *ngFor="let option of options" [nzLabel]="option.label"
                                    [nzValue]="option.value">
                             <ng-template #nzOptionTemplate>

@@ -78,17 +78,19 @@ export class CustomerComponent implements OnInit, OnDestroy {
     }
 
     //Method for status change
-    changeStatusConfirm($event, id, newStatus) {
+    changeStatusConfirm($event, id) {
+        this._isSpinning = true;
         this.userService.update(id, {
             active: $event
         }).subscribe((res) => {
             console.log(res);
+            this._isSpinning = false;
             this._notification.create('success', 'Successful Message', 'Customer status has been updated successfully');
 
             this.getPageData();
         }, (err) => {
+            this._isSpinning = false;
             this._notification.create('error', 'Error', 'Something went wrong');
-            $event = newStatus;
         });
     }
 
