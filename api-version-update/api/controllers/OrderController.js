@@ -63,7 +63,7 @@ module.exports = {
 
       const authUser = getAuthUser(req);
 
-      let globalConfigs = await payment.getGlobalConfig();
+      let globalConfigs = await getGlobalConfig();
 
       let cart = await Cart.findOne({
         user_id: authUser.id,
