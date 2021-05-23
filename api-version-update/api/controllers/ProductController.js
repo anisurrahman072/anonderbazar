@@ -35,7 +35,44 @@ module.exports = {
 
         await storeToCache(key, product);
       }
-      return res.status(200).json(product);
+
+      let questionRawSQL = `
+      SELECT
+            product_question_answer.*,
+            users.first_name,
+            users.last_name
+        FROM
+            product_question_answer
+        LEFT JOIN users ON product_question_answer.user_id = users.id
+        LEFT JOIN products ON product_question_answer.product_id = products.id
+        WHERE
+            products.id = ${req.param('id')} and users.first_name is not null
+            order by product_question_answer.id desc
+      `;
+
+      const questions = await sails.sendNativeQuery(questionRawSQL, []);
+
+      let ratingRawSQL = `
+      SELECT
+            product_rating_review.*,
+            users.first_name,
+            users.last_name
+        FROM
+            product_rating_review
+        LEFT JOIN users ON product_rating_review.user_id = users.id
+        LEFT JOIN products ON product_rating_review.product_id = products.id
+        WHERE
+            products.id = ${req.param('id')}
+            order by product_rating_review.id desc
+      `;
+
+      const rating = await sails.sendNativeQuery(ratingRawSQL, []);
+
+      return res.status(200).json({
+        success: true,
+        data: [product, questions.rows, rating.rows],
+        message: 'Detail of the requested product'
+      });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
@@ -783,7 +820,60 @@ module.exports = {
         data: allProducts
       });
     } catch (error) {
+      console.log(error);
+    }
+  },
 
+  /*Method called for saving review and ratings of a product by a user*/
+  saveRating: async (req, res) => {
+    try {
+      if (req.query.userId) {
+        const rating = await ProductRatingReview.create({
+          user_id: req.query.userId,
+          product_id: req.query.product_id,
+          rating: parseFloat(req.query.rating),
+          review: req.query.review,
+        }).fetch();
+
+        return res.status(201).json({
+          success: true,
+          message: 'Rating submitted successfully',
+          rating
+        });
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in saving user rating';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  /*Method called for saving questions related to a product by a user*/
+  saveQuestion: async (req, res) => {
+
+    try {
+      if (req.query.userId) {
+        const question = await ProductQuestionAnswer.create({
+          user_id: req.query.userId,
+          product_id: req.query.product_id,
+          question: req.query.question,
+        }).fetch();
+        return res.status(201).json(question);
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in saving user question';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
     }
   }
 

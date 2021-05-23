@@ -15,6 +15,8 @@ exports.productRoute = {
   'GET /api/v1/products/product-excel': 'ProductsController.productExcel',
   'GET /api/v1/products/getCountByBrandIds': 'ProductsController.getCountByBrandIds',
   'POST /api/v1/products/bulk-upload': 'ProductsController.bulkUpload',
+  'POST /api/v1/product/saveRating': 'ProductController.saveRating',
+  'POST /api/v1/product/saveQuestion': 'ProductController.saveQuestion',
   'PUT /api/v1/products/bulk-update': 'ProductsController.bulkUpdate',
   'GET /api/v1/products/getProductsByName': 'ProductsController.getProductsByName',
   'GET /api/v1/products/getByCategorySubCategory': 'ProductsController.getByCategorySubCategory',

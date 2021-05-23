@@ -165,7 +165,13 @@ export class ProductService {
 
     sendRating(data): Observable<any> {
         return this.http
-            .post(`${this.EndPoint}/${data.productId}`, data)
+            .post(`${this.EndPoint}/saveRating?product_id=${data.productId}&rating=${data.rating}&review=${data.review}&userId=${data.userId}`, data)
+            .map(response => response);
+    }
+
+    sendQuestion(data): Observable<any> {
+        return this.http
+            .post(`${this.EndPoint}/saveQuestion?userId=${data.userId}&product_id=${data.productId}&question=${data.question}`, data)
             .map(response => response);
     }
 

@@ -67,55 +67,73 @@
 
 /* try */
 
-.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #FF0000;
 }
 
 
-.tag-bg-color{
+.tag-bg-color {
   background-color: #f7f7f7;
   padding: 10px;
 }
 
-.tag-bg-color2{
+.tag-bg-color2 {
   background-color: #f7f7f7;
   padding: 0 10px;
 }
 
-.delivery-option-details .tag1 .add{
+.delivery-option-details .tag1 .add {
   width: 100%;
 }
-.delivery-option-details .tag1 p{
+
+.delivery-option-details .tag1 p {
   color: #736B6B;
 }
-.delivery-option-details .tag1 p a{
+
+.delivery-option-details .tag1 p a {
   margin-left: 165px;
 }
-.delivery-option-details .tag2{
+
+.delivery-option-details .tag2 {
   margin-bottom: 20px;
   padding-bottom: 20px;
 }
-.delivery-option-details .tag2 p a{
+
+.delivery-option-details .tag2 p a {
   margin-left: 205px;
 }
-.delivery-option-details .tag2 span{
+
+.delivery-option-details .tag2 span {
   color: #736B6B;
 }
-.delivery-option-details .tag2 span small a{
+
+.delivery-option-details .tag2 span small a {
   color: #DEDEDE;
 }
-.delivery-option-details .tag2 span small{
+
+.delivery-option-details .tag2 span small {
   display: inline-block;
 }
-.delivery-option-details .tag3 span{
+
+.delivery-option-details .tag3 span {
   display: block;
   color: #736B6B;
 }
-.delivery-option-tag1{
+
+.delivery-option-tag1 {
   padding: 15px 30px 0px 30px;
   background-color: #f7f7f7;
 }
-.delivery-option-details .tag3{
+
+.delivery-option-details .tag3 {
   padding: 15px 0px 15px 30px;
   background-color: #f7f7f7;
+}
+
+.submitBTN {
+  border: 1px solid #FF0000;
+  padding: 10px 56px;
+  color: #FF0000;
+  margin-top: 20px;
+  background-color: white;
 }

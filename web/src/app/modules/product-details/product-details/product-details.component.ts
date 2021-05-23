@@ -37,10 +37,28 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
     styleUrls: ["./product-details.component.scss"]
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
+    productRatingDetail: {
+        totalNumberOfRatings: number;
+        averageRating: number;
+        fiveStar: number;
+        fourStar: number;
+        threeStar: number;
+        twoStar: number;
+        oneStar: number;
+    } = {
+        totalNumberOfRatings: 0,
+        averageRating: 0,
+        fiveStar: 0,
+        fourStar: 0,
+        threeStar: 0,
+        twoStar: 0,
+        oneStar: 0,
+    };
     couponProductModalRef: BsModalRef;
     similarProducts: null;
     id: any;
     data: Product;
+    productDescriptionData: any = null;
     productVariants: any;
     private sub: Subscription;
     private sub1: Subscription;
@@ -130,6 +148,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Event method for getting all the data for the page
     ngOnInit() {
+        this.productRatingDetail.averageRating = 0;
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
@@ -216,13 +235,45 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     getProductData() {
         this.loaderService.showLoader();
+        this.productDescriptionData = null;
         this.productService.getByIdWithDetails(this.id).subscribe(result => {
             this.loaderService.hideLoader();
-            this.data = result;
+            /*data sent as response from api end => data: [product, questions.rows, rating.rows],*/
+            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]]
+            this.data = result.data[0];
 
-            console.log('product data', result);
+            /*rating section*/
+            this.productRatingDetail.totalNumberOfRatings = result.data[2].length;
 
-            if( !(result && result.approval_status == '2') ){
+            let totalRating = 0;
+            for (let i = 0; i < result.data[2].length; i++) {
+                totalRating += result.data[2][i].rating;
+
+                if (result.data[2][i].rating === 5) {
+                    this.productRatingDetail.fiveStar += 1;
+                }
+                if (result.data[2][i].rating === 4) {
+                    this.productRatingDetail.fourStar += 1;
+                }
+                if (result.data[2][i].rating === 3) {
+                    this.productRatingDetail.threeStar += 1;
+                }
+                if (result.data[2][i].rating === 2) {
+                    this.productRatingDetail.twoStar += 1;
+                }
+                if (result.data[2][i].rating === 1) {
+                    this.productRatingDetail.oneStar += 1;
+                }
+            }
+            if (totalRating !== 0) {
+                const num = totalRating / this.productRatingDetail.totalNumberOfRatings;
+                this.productRatingDetail.averageRating = Number((Math.round(num * 100) / 100).toFixed(2));
+            } else {
+                this.productRatingDetail.averageRating = 0;
+
+            }
+
+            if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');
                 this.router.navigate(['/']);
                 return;
@@ -236,7 +287,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
             }
 
-            if (result) {
+            if (result.data[0]) {
                 let allImages = [];
 
                 this.primaryPicture = AppSettings.IMAGE_ORIGINAL_RESIZED_ENDPOINT + this.data.image + this.IMAGE_EXT;
@@ -244,26 +295,26 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 if (this.data.image) {
                     allImages.push({'image_path': this.data.image});
                 }
-                if (result.product_images) {
-                    result.product_images.forEach(element => {
+                if (result.data[0].product_images) {
+                    result.data[0].product_images.forEach(element => {
                         allImages.push(element);
                     });
                 }
                 if (this.data.id == 6016) {
                     this.product_quantity = 2;
                 }
-                result.product_images = allImages;
+                result.data[0].product_images = allImages;
 
                 this.buffer_time = this.data.warehouse_id.buffer_time;
                 this.getProductAvailableDate(this.buffer_time);
 
                 this.mainImg = this.data.image;
-                this.tempRating = result.rating;
-                if (result.tag != "undefined") {
-                    this.tag = JSON.parse(result.tag);
+                this.tempRating = result.data[0].rating;
+                if (result.data[0].tag != "undefined") {
+                    this.tag = JSON.parse(result.data[0].tag);
                 }
                 this.updateFinalprice();
-                this.getSimilarProductData(result.category_id.id, result.subcategory_id.id);
+                this.getSimilarProductData(result.data[0].category_id.id, result.data[0].subcategory_id.id);
             }
         }, (error) => {
             this._notify.error('Problem!', "Problem in loading the product");
@@ -271,7 +322,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     getSimilarProductData(categotyId, subcategory) {
-        this.productService.getByCategory( categotyId, subcategory )
+        this.productService.getByCategory(categotyId, subcategory)
             .subscribe(relatedProduct => {
                 this.similarProducts = relatedProduct;
             });
