@@ -429,7 +429,6 @@ module.exports = {
         } else {
           courierCharge = globalConfigs.outside_dhaka_charge;
         }
-
       } else {
         adminPaymentAddress = await PaymentAddress.findOne({
           id: adminPaymentAddressId
