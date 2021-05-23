@@ -169,6 +169,18 @@ exports.comparePasswords = (passwordProvided, userPassword) => {
     });
   });
 };
+exports.getGlobalConfig = async () => {
+  let globalConfigs = await GlobalConfigs.findOne({
+    deletedAt: null
+  });
+
+  if (!globalConfigs) {
+    throw new Error('Global config was not found!');
+  }
+
+  return globalConfigs;
+};
+
 exports.getAuthUser = (req) => {
   if (!_.isUndefined(req.token) && !_.isUndefined(req.token.userInfo)) {
     return req.token.userInfo;

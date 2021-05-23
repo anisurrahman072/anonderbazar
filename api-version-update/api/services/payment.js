@@ -122,32 +122,32 @@ module.exports = {
     };
   },
 
-  getGlobalConfig: async () => {
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
 
-    if (!globalConfigs) {
-      throw new Error('Global config was not found!');
-    }
-
-    return globalConfigs;
-  },
 
   getCart: async (userId) => {
-    return await Cart.findOne({
+    const cart = await Cart.findOne({
       user_id: userId,
       deletedAt: null
     });
+
+    if (!cart) {
+      throw new Error('No cart was found against the requested user.');
+    }
+    return cart;
   },
 
   getCartItems: async (cartId) => {
-    return await CartItem.find({
+    const cartItems = await CartItem.find({
       cart_id: cartId,
       deletedAt: null
     })
       .populate('cart_item_variants')
       .populate('product_id');
+
+    if ( !(cartItems && cartItems.length > 0) ) {
+      throw new Error('No cart item was found against the requested user.');
+    }
+    return cartItems;
   },
 
   createAddress: async (address) => {

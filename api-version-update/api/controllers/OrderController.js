@@ -7,19 +7,11 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const SmsService = require('../services/SmsService');
-const EmailService = require('../services/EmailService');
+const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
-const {
-  createBKashPayment,
-  placeSSlCommerzOrder,
-  placeCouponCashbackOrder,
-  placeNagadPaymentOrder,
-  placeCashOnDeliveryOrder
-} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
-const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const {adminPaymentAddressId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -393,15 +385,9 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
 
-    const authUser = req.token.userInfo;
-
-    let globalConfigs = await payment.getGlobalConfig();
-
-    if (!globalConfigs) {
-      return res.badRequest('Global config was not found!');
-    }
-
     try {
+      const authUser = getAuthUser(req);
+      let globalConfigs = await getGlobalConfig();
 
       let cart = await payment.getCart(authUser.id);
 
@@ -422,6 +408,7 @@ module.exports = {
 
         if (req.param('paymentType') === 'Cash') {
           const notAllowedProductFound = cartItems.filter((cartItem) => {
+            // eslint-disable-next-line eqeqeq
             return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
           });
 
