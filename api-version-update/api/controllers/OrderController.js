@@ -9,7 +9,14 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder, placeNagadPaymentOrder, placeCashOnDeliveryOrder} = require('../services/checkout');
+const {getAuthUser} = require('../../libs/helper');
+const {
+  createBKashPayment,
+  placeSSlCommerzOrder,
+  placeCouponCashbackOrder,
+  placeNagadPaymentOrder,
+  placeCashOnDeliveryOrder
+} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach, calcCartTotal} = require('../../libs/helper');
 const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
@@ -18,18 +25,18 @@ module.exports = {
   findOne: async (req, res) => {
     try {
       const orders = await Order.findOne({id: req.param('id')})
-          .populate('user_id')
-          .populate('billing_address')
-          .populate('shipping_address')
-          .populate('payment')
-          .populate('couponProductCodes', {deletedAt: null})
-          .populate('suborders', {deletedAt: null});
+        .populate('user_id')
+        .populate('billing_address')
+        .populate('shipping_address')
+        .populate('payment')
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('suborders', {deletedAt: null});
 
       console.log('orders', orders.couponProductCodes);
 
       return res.status(200).json(orders);
 
-    } catch (error){
+    } catch (error) {
       console.log(error);
       return res.status(400).json({
         message: false,
@@ -56,71 +63,15 @@ module.exports = {
     }
   },
 
-  //Method called for creating a custom order data
-  //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js
-
-  customOrder: async function (req, res) {
-    try {
-      let cart = await Cart.findOne({
-        user_id: req.body.user_id,
-        deletedAt: null
-      });
-      let suborderitem = await sails.getDatastore()
-        .transaction(async (db) => {
-          let order = await Order.create({
-            user_id: req.body.user_id,
-            cart_id: cart.id,
-            total_price: req.body.price,
-            billing_address: req.body.payment_address_id,
-            total_quantity: req.body.quantity,
-            status: 1,
-            type: 1
-          }).fetch().usingConnection(db);
-
-          let suborder = await Suborder.create({
-            product_order_id: order.id,
-            warehouse_id: req.body.warehouse_id,
-            total_price: req.body.price,
-            total_quantity: req.body.quantity,
-            delivery_date: req.body.current_date,
-            status: 1
-          }).fetch().usingConnection(db);
-
-          return SuborderItem.create({
-            product_suborder_id: suborder.id,
-            product_id: req.body.product_id,
-            warehouse_id: req.body.warehouse_id,
-            product_quantity: req.body.quantity,
-            product_total_price: req.body.price
-          }).fetch().usingConnection(db);
-        });
-
-      if (suborderitem) {
-        return res.json(200, suborderitem);
-      } else {
-        return res.status(400).json({success: false});
-      }
-    } catch (error) {
-      console.log('error', error);
-      return res.status(400).json({success: false});
-    }
-
-  },
   //Method called for creating a custom order data from frontend
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   placeOrderForCashOnDelivery: async function (req, res) {
 
-    const authUser = req.token.userInfo;
-
     try {
 
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
+      const authUser = getAuthUser(req);
 
-      if (!globalConfigs) {
-        return res.badRequest('Global config was not found!');
-      }
+      let globalConfigs = await payment.getGlobalConfig();
 
       let cart = await Cart.findOne({
         user_id: authUser.id,
@@ -469,7 +420,7 @@ module.exports = {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
 
-        if(req.param('paymentType') === 'Cash'){
+        if (req.param('paymentType') === 'Cash') {
           const notAllowedProductFound = cartItems.filter((cartItem) => {
             // eslint-disable-next-line eqeqeq
             return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
@@ -606,7 +557,7 @@ module.exports = {
         return res.status(200).json(bKashResponse);
       }
 
-      if(req.param('paymentType') === 'nagad'){
+      if (req.param('paymentType') === 'nagad') {
         console.log('dddd');
         const nagadResponse = await placeNagadPaymentOrder(authUser,
           {
@@ -799,7 +750,7 @@ module.exports = {
         deletedAt: null
       });
 
-      if(paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12){
+      if (paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12) {
         let returnCashbackAmount = updatedOrder.total_price;
 
         let prevCashbackDetail = await CouponLotteryCashback.findOne({
@@ -819,8 +770,7 @@ module.exports = {
         message: 'Successfully updated status of order',
         data: updatedOrder
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating Order'

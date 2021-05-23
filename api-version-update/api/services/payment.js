@@ -7,29 +7,32 @@ module.exports = {
     let globalConfigs = await GlobalConfigs.findOne({
       deletedAt: null
     });
+
+    if (!globalConfigs) {
+      throw new Error('Global config was not found!');
+    }
+
     return globalConfigs;
   },
 
   getCart: async (userId) => {
-    let cart = await Cart.findOne({
+    return await Cart.findOne({
       user_id: userId,
       deletedAt: null
     });
-    return cart;
   },
 
   getCartItems: async (cartId) => {
-    let cartItems = await CartItem.find({
+    return await CartItem.find({
       cart_id: cartId,
       deletedAt: null
     })
       .populate('cart_item_variants')
       .populate('product_id');
-    return cartItems;
   },
 
   createAddress: async (address) => {
-    let shippingAddres = await PaymentAddress.create({
+    return await PaymentAddress.create({
       user_id: authUser.id,
       first_name: address.firstName,
       last_name: address.lastName,
@@ -42,8 +45,6 @@ module.exports = {
       division_id: address.division_id,
       status: 1
     }).fetch();
-
-    return shippingAddres;
   },
 
   placeOrder: async (userId, cartId, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId
@@ -59,7 +60,7 @@ module.exports = {
       courier_charge: courierCharge,
       courier_status: 1,
     };
-    if(sslCommerztranId){
+    if (sslCommerztranId) {
       orderDatPayload = {
         ...orderDatPayload,
         ssl_transaction_id: sslCommerztranId
