@@ -3,6 +3,125 @@ const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 
 module.exports = {
+  selectPaymentType: async (data) => {
+    if (req.param('paymentType') === 'CashBack') {
+
+      const orderId = await placeCouponCashbackOrder(
+        authUser,
+        {
+          paymentType: 'CashBack',
+          grandOrderTotal,
+          totalQuantity: totalQty
+        },
+        {
+          adminPaymentAddress,
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
+        },
+        globalConfigs,
+        courierCharge
+      );
+
+      return res.status(201).json({
+        order_id: orderId
+      });
+    }
+
+    if (req.param('paymentType') === 'Cash') {
+
+      const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
+        authUser,
+        {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
+        {
+          adminPaymentAddress,
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
+        },
+        globalConfigs,
+        cart,
+        courierCharge,
+        cartItems
+      );
+
+      return res.status(200).json(cashOnDeliveryResponse);
+
+    }
+
+    if (req.param('paymentType') === 'SSLCommerce') {
+
+      const sslResponse = await placeSSlCommerzOrder(
+        authUser,
+        {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
+        {
+          adminPaymentAddress,
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
+        },
+        globalConfigs
+      );
+
+      return res.status(200).json(sslResponse);
+
+    }
+
+    if (req.param('paymentType') === 'bKash') {
+      console.log(req.body);
+
+      const bKashResponse = await createBKashPayment(authUser, {
+        payerReference: req.body.payerReference,
+        agreement_id: req.body.agreement_id,
+        paymentType: 'bKash',
+        grandOrderTotal,
+        totalQuantity: totalQty
+      }, {
+        adminPaymentAddress,
+        billingAddress: req.param('billing_address'),
+        shippingAddress: req.param('shipping_address')
+      });
+
+      return res.status(200).json(bKashResponse);
+    }
+
+    if (req.param('paymentType') === 'nagad') {
+      console.log('dddd');
+      const nagadResponse = await placeNagadPaymentOrder(authUser,
+        {
+          paymentType: 'nagad',
+          grandOrderTotal,
+          totalQuantity: totalQty
+        },
+        {
+          adminPaymentAddress,
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
+        },
+        globalConfigs,
+        courierCharge,
+        req.ip
+      );
+
+      return res.status(201).json({
+        nagadResponse: nagadResponse
+      });
+    }
+  },
+
+  calcCartTotal: async (cart, cartItems) => {
+    let grandOrderTotal = 0;
+    let totalQty = 0;
+    cartItems.forEach((cartItem) => {
+      if (cartItem.product_quantity > 0) {
+        //  console.log('ttttt', cartItem);
+        grandOrderTotal += cartItem.product_total_price;
+        totalQty += cartItem.product_quantity;
+      }
+    });
+    return {
+      grandOrderTotal,
+      totalQty
+    };
+  },
+
   getGlobalConfig: async () => {
     let globalConfigs = await GlobalConfigs.findOne({
       deletedAt: null

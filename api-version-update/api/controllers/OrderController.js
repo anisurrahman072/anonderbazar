@@ -410,7 +410,7 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = calcCartTotal(cart, cartItems);
+      } = payment.calcCartTotal(cart, cartItems);
 
       let noShippingCharge = false;
       let onlyCouponProduct = false;
@@ -422,7 +422,6 @@ module.exports = {
 
         if (req.param('paymentType') === 'Cash') {
           const notAllowedProductFound = cartItems.filter((cartItem) => {
-            // eslint-disable-next-line eqeqeq
             return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
           });
 
@@ -479,106 +478,31 @@ module.exports = {
       console.log('Place Order - shipping_address: ', req.param('shipping_address'));
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
-      if (req.param('paymentType') === 'CashBack') {
-
-        const orderId = await placeCouponCashbackOrder(
-          authUser,
-          {
-            paymentType: 'CashBack',
-            grandOrderTotal,
-            totalQuantity: totalQty
-          },
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          courierCharge
-        );
-
-        return res.status(201).json({
-          order_id: orderId
-        });
-      }
-
-      if (req.param('paymentType') === 'Cash') {
-
-        const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
-          authUser,
-          {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          cart,
-          courierCharge,
-          cartItems
-        );
-
-        return res.status(200).json(cashOnDeliveryResponse);
-
-      }
-
-      if (req.param('paymentType') === 'SSLCommerce') {
-
-        const sslResponse = await placeSSlCommerzOrder(
-          authUser,
-          {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs
-        );
-
-        return res.status(200).json(sslResponse);
-
-      }
-
-      if (req.param('paymentType') === 'bKash') {
-        console.log(req.body);
-
-        const bKashResponse = await createBKashPayment(authUser, {
-          payerReference: req.body.payerReference,
-          agreement_id: req.body.agreement_id,
-          paymentType: 'bKash',
+      let dataPayloadForCreateOrder = {
+        dataBody: req.body,
+        params: req.allParams(),
+        authUser,
+        orderDetails: {
+          paymentType: req.param('paymentType'),
           grandOrderTotal,
           totalQuantity: totalQty
-        }, {
+        },
+        address: {
           adminPaymentAddress,
           billingAddress: req.param('billing_address'),
           shippingAddress: req.param('shipping_address')
-        });
+        },
+        globalConfigs,
+        courierCharge,
+        cart,
+        cartItems
+      };
 
-        return res.status(200).json(bKashResponse);
-      }
+      let response = await payment.selectPaymentType(dataPayloadForCreateOrder);
 
-      if (req.param('paymentType') === 'nagad') {
-        console.log('dddd');
-        const nagadResponse = await placeNagadPaymentOrder(authUser,
-          {
-            paymentType: 'nagad',
-            grandOrderTotal,
-            totalQuantity: totalQty
-          },
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          courierCharge,
-          req.ip
-        );
-
-        return res.status(201).json({
-          nagadResponse: nagadResponse
-        });
-      }
+      return res.status(200).json({
+        response
+      });
 
     } catch (finalError) {
       console.log('finalError', finalError);
