@@ -393,55 +393,17 @@ module.exports = {
 
       let cartItems = await payment.getCartItems(cart.id);
 
-      let {
-        grandOrderTotal,
-        totalQty
-      } = payment.calcCartTotal(cart, cartItems);
-
-      let noShippingCharge = false;
-
-      if (cartItems && cartItems.length > 0) {
-        const couponProductFound = cartItems.filter((cartItem) => {
-          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-        });
-
-        let productFreeShippingFound = cartItems.filter(item => {
-          return (item.product_id && item.product_id.free_shipping);
-        });
-
-        noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
-          productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
-        );
-      }
-
-      let courierCharge = 0;
-      let adminPaymentAddress = null;
-
-      if (!noShippingCharge) {
-        if (req.param('shipping_address')) {
-          if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
-            let shippingAddres = await payment.createAddress(req.param('shipping_address'));
-
-            req.param('shipping_address').id = shippingAddres.id;
-          }
-          // eslint-disable-next-line eqeqeq
-          courierCharge = req.body.courierCharge;
-        } else {
-          courierCharge = globalConfigs.outside_dhaka_charge;
+      if (req.param('shipping_address')) {
+        if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
+          let shippingAddres = await payment.createAddress(req.param('shipping_address'));
+          req.param('shipping_address').id = shippingAddres.id;
         }
-      } else {
-        adminPaymentAddress = await PaymentAddress.findOne({
-          id: adminPaymentAddressId
-        });
       }
 
-      grandOrderTotal += courierCharge;
-
-      if (!noShippingCharge && req.param('billing_address')) {
+      if (req.param('billing_address')) {
         if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
 
           let paymentAddress = await payment.createAddress(req.param('billing_address'));
-
           req.param('billing_address').id = paymentAddress.id;
 
         } else if (req.param('is_copy') === true && req.param('shipping_address')) {
@@ -454,21 +416,17 @@ module.exports = {
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
       let dataPayloadForCreateOrder = {
-        dataBody: req.body,
-        params: req.allParams(),
         authUser,
+        requestBody: req.body,
+        urlParams: req.allParams(),
         orderDetails: {
-          paymentType: req.param('paymentType'),
-          grandOrderTotal,
-          totalQuantity: totalQty
+          paymentType: req.param('paymentType')
         },
         address: {
-          adminPaymentAddress,
-          billingAddressId: req.param('billing_address'),
-          shippingAddressId: req.param('shipping_address')
+          billingAddress: req.param('billing_address'),
+          shippingAddress: req.param('shipping_address')
         },
         globalConfigs,
-        courierCharge,
         cart,
         cartItems
       };

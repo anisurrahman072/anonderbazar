@@ -1,106 +1,172 @@
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {adminPaymentAddressId} = require('../../config/softbd');
 
 module.exports = {
+
+  calcCourierCharge: async function(cartItems, requestBody, urlParams, globalConfigs) {
+    let noShippingCharge = false;
+
+    /** take decision for adding shipping charge */
+    if (cartItems && cartItems.length > 0) {
+      const couponProductFound = cartItems.filter((cartItem) => {
+        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+      });
+
+      let productFreeShippingFound = cartItems.filter(item => {
+        return (item.product_id && item.product_id.free_shipping);
+      });
+
+      noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
+        productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
+      );
+    }
+    /** END */
+
+    let courierCharge = 0;
+    let adminPaymentAddress = null;
+
+    if(!noShippingCharge){
+      if(urlParams['shipping_address']){
+        courierCharge = requestBody.courierCharge;
+      }
+      else{
+        courierCharge = globalConfigs.outside_dhaka_charge;
+      }
+    }
+    else{
+      adminPaymentAddress = await PaymentAddress.findOne({
+        id: adminPaymentAddressId
+      });
+    }
+
+    return {courierCharge, adminPaymentAddress};
+  },
+
   selectPaymentType: async (data) => {
-    if (data.orderDetails.paymentType === 'CashBack') {
+    try {
+      if (data.orderDetails.paymentType === 'CashBack') {
 
-      const orderId = await CashbackService.createOrder(
-        data.authUser,
-        data.orderDetails,
-        data.address,
-        data.globalConfigs,
-        data.courierCharge,
-        data.cart,
-        data.cartItems
-      );
+        const response = await CashbackService.createOrder(
+          data.authUser,
+          data.requestBody,
+          data.urlParams,
+          data.orderDetails,
+          data.address,
+          data.globalConfigs,
+          data.cart,
+          data.cartItems
+        );
 
-      return res.status(201).json({
-        order_id: orderId
-      });
-    }
+        return {
+          order_id: response.order.id
+        };
+      }
 
-    if (req.param('paymentType') === 'Cash') {
+      if (data.orderDetails.paymentType === 'Cash') {
 
-      const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
-        authUser,
-        {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
-        {
-          adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
-        },
-        globalConfigs,
-        cart,
-        courierCharge,
-        cartItems
-      );
+        const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
+          authUser,
+          {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs,
+          cart,
+          courierCharge,
+          cartItems
+        );
 
-      return res.status(200).json(cashOnDeliveryResponse);
+        return res.status(200).json(cashOnDeliveryResponse);
 
-    }
+      }
 
-    if (req.param('paymentType') === 'SSLCommerce') {
+      if (data.orderDetails.paymentType === 'SSLCommerce') {
 
-      const sslResponse = await placeSSlCommerzOrder(
-        authUser,
-        {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
-        {
-          adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
-        },
-        globalConfigs
-      );
+        const sslResponse = await placeSSlCommerzOrder(
+          authUser,
+          {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs
+        );
 
-      return res.status(200).json(sslResponse);
+        return res.status(200).json(sslResponse);
 
-    }
+      }
 
-    if (req.param('paymentType') === 'bKash') {
-      console.log(req.body);
+      /*if (req.param('paymentType') === 'bKash') {
+        console.log(req.body);
 
-      const bKashResponse = await createBKashPayment(authUser, {
-        payerReference: req.body.payerReference,
-        agreement_id: req.body.agreement_id,
-        paymentType: 'bKash',
-        grandOrderTotal,
-        totalQuantity: totalQty
-      }, {
-        adminPaymentAddress,
-        billingAddress: req.param('billing_address'),
-        shippingAddress: req.param('shipping_address')
-      });
-
-      return res.status(200).json(bKashResponse);
-    }
-
-    if (req.param('paymentType') === 'nagad') {
-      console.log('dddd');
-      const nagadResponse = await placeNagadPaymentOrder(authUser,
-        {
-          paymentType: 'nagad',
+        const bKashResponse = await createBKashPayment(authUser, {
+          payerReference: req.body.payerReference,
+          agreement_id: req.body.agreement_id,
+          paymentType: 'bKash',
           grandOrderTotal,
           totalQuantity: totalQty
-        },
-        {
+        }, {
           adminPaymentAddress,
           billingAddress: req.param('billing_address'),
           shippingAddress: req.param('shipping_address')
-        },
-        globalConfigs,
-        courierCharge,
-        req.ip
-      );
+        });
 
-      return res.status(201).json({
-        nagadResponse: nagadResponse
-      });
+        return res.status(200).json(bKashResponse);
+      }*/
+
+      /*if (req.param('paymentType') === 'nagad') {
+        console.log('dddd');
+        const nagadResponse = await placeNagadPaymentOrder(authUser,
+          {
+            paymentType: 'nagad',
+            grandOrderTotal,
+            totalQuantity: totalQty
+          },
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs,
+          courierCharge,
+          req.ip
+        );
+
+        return res.status(201).json({
+          nagadResponse: nagadResponse
+        });
+      }*/
+    }
+    catch (error){
+      console.log('Error occurred while placing order!');
     }
   },
 
-  calcCartTotal: async (cart, cartItems) => {
+  createPayment: async (db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId) => {
+    let paymentTemp = [];
+    for (let i = 0; i < subordersTemp.length; i++) {
+      let paymentObj = await Payment.create({
+        user_id: authUser.id,
+        order_id: order.id,
+        suborder_id: subordersTemp[i].id,
+        payment_type: paymentType,
+        payment_amount: subordersTemp[i].total_price,
+        details: JSON.stringify(paymentResponse),
+        transection_key: sslCommerztranId,
+        status: 1
+      }).fetch().usingConnection(db);
+
+      paymentTemp.push(paymentObj);
+    }
+    return paymentTemp;
+  },
+
+  calcCartTotal: async function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
     cartItems.forEach((cartItem) => {
@@ -115,8 +181,6 @@ module.exports = {
       totalQty
     };
   },
-
-
 
   getCart: async (userId) => {
     const cart = await Cart.findOne({
