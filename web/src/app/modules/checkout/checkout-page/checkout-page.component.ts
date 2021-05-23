@@ -454,7 +454,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack' || value.paymentType === 'nagad') {
+        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack' || value.paymentType === 'nagad' || value.paymentType === 'Cash') {
             this.loaderService.showLoader();
             this.orderService.placeOrder(requestPayload).subscribe(result => {
 
@@ -467,7 +467,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.successOrderId = result.order_id;
                     this.store.dispatch(new fromStore.LoadCurrentUser());
                     this.store.dispatch(new fromStore.LoadCart());
-                } else {
+                } else if (result && result.id) {
+                    this.successOrderId = result.id;
+                    this.store.dispatch(new fromStore.LoadCurrentUser());
+                    this.store.dispatch(new fromStore.LoadCart());
+                }else {
                     this.toastr.error("Problem in placing your order.", "Oppppps!", {
                         positionClass: 'toast-bottom-right'
                     });

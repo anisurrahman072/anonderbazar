@@ -9,7 +9,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder, placeNagadPaymentOrder} = require('../services/checkout');
+const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder, placeNagadPaymentOrder, placeCashOnDeliveryOrder} = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach, calcCartTotal} = require('../../libs/helper');
 const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
@@ -444,9 +444,7 @@ module.exports = {
 
     const authUser = req.token.userInfo;
 
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
+    let globalConfigs = await payment.getGlobalConfig();
 
     if (!globalConfigs) {
       return res.badRequest('Global config was not found!');
@@ -454,17 +452,9 @@ module.exports = {
 
     try {
 
-      let cart = await Cart.findOne({
-        user_id: authUser.id,
-        deletedAt: null
-      });
+      let cart = await payment.getCart(authUser.id);
 
-      let cartItems = await CartItem.find({
-        cart_id: cart.id,
-        deletedAt: null
-      })
-        .populate('cart_item_variants')
-        .populate('product_id');
+      let cartItems = await payment.getCartItems(cart.id);
 
       let {
         grandOrderTotal,
@@ -472,10 +462,29 @@ module.exports = {
       } = calcCartTotal(cart, cartItems);
 
       let noShippingCharge = false;
+      let onlyCouponProduct = false;
+      let paymentMethodNotAllowed = false;
       if (cartItems && cartItems.length > 0) {
         const couponProductFound = cartItems.filter((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
+
+        if(req.param('paymentType') === 'Cash'){
+          const notAllowedProductFound = cartItems.filter((cartItem) => {
+            // eslint-disable-next-line eqeqeq
+            return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
+          });
+
+          onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
+          paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
+
+          if (onlyCouponProduct || paymentMethodNotAllowed) {
+            return res.status(422).json({
+              message: 'Payment method is invalid for this particular order.'
+            });
+          }
+        }
+
         noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
       }
 
@@ -485,19 +494,7 @@ module.exports = {
       if (!noShippingCharge) {
         if (req.param('shipping_address')) {
           if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
-            let shippingAddres = await PaymentAddress.create({
-              user_id: authUser.id,
-              first_name: req.param('shipping_address').firstName,
-              last_name: req.param('shipping_address').lastName,
-              address: req.param('shipping_address').address,
-              country: req.param('shipping_address').address,
-              phone: req.param('shipping_address').phone,
-              postal_code: req.param('shipping_address').postCode,
-              upazila_id: req.param('shipping_address').upazila_id,
-              zila_id: req.param('shipping_address').zila_id,
-              division_id: req.param('shipping_address').division_id,
-              status: 1
-            }).fetch();
+            let shippingAddres = await payment.createAddress(req.param('shipping_address'));
 
             req.param('shipping_address').id = shippingAddres.id;
           }
@@ -518,19 +515,7 @@ module.exports = {
       if (!noShippingCharge && req.param('billing_address')) {
         if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
 
-          let paymentAddress = await PaymentAddress.create({
-            user_id: authUser.id,
-            first_name: req.param('billing_address').firstName,
-            last_name: req.param('billing_address').lastName,
-            address: req.param('billing_address').address,
-            country: req.param('billing_address').address,
-            phone: req.param('billing_address').phone,
-            postal_code: req.param('billing_address').postCode,
-            upazila_id: req.param('billing_address').upazila_id,
-            zila_id: req.param('billing_address').zila_id,
-            division_id: req.param('billing_address').division_id,
-            status: 1
-          }).fetch();
+          let paymentAddress = await payment.createAddress(req.param('billing_address'));
 
           req.param('billing_address').id = paymentAddress.id;
 
@@ -564,6 +549,26 @@ module.exports = {
         return res.status(201).json({
           order_id: orderId
         });
+      }
+
+      if (req.param('paymentType') === 'Cash') {
+
+        const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
+          authUser,
+          {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
+          {
+            adminPaymentAddress,
+            billingAddress: req.param('billing_address'),
+            shippingAddress: req.param('shipping_address')
+          },
+          globalConfigs,
+          cart,
+          courierCharge,
+          cartItems
+        );
+
+        return res.status(200).json(cashOnDeliveryResponse);
+
       }
 
       if (req.param('paymentType') === 'SSLCommerce') {
