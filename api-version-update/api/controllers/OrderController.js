@@ -140,7 +140,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = payment.calcCartTotal(cart, cartItems);
+          } = PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 
@@ -389,13 +389,13 @@ module.exports = {
       const authUser = getAuthUser(req);
       let globalConfigs = await getGlobalConfig();
 
-      let cart = await payment.getCart(authUser.id);
+      let cart = await PaymentService.getCart(authUser.id);
 
-      let cartItems = await payment.getCartItems(cart.id);
+      let cartItems = await PaymentService.getCartItems(cart.id);
 
       if (req.param('shipping_address')) {
         if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
-          let shippingAddres = await payment.createAddress(req.param('shipping_address'));
+          let shippingAddres = await PaymentService.createAddress(req.param('shipping_address'));
           req.param('shipping_address').id = shippingAddres.id;
         }
       }
@@ -403,7 +403,7 @@ module.exports = {
       if (req.param('billing_address')) {
         if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
 
-          let paymentAddress = await payment.createAddress(req.param('billing_address'));
+          let paymentAddress = await PaymentService.createAddress(req.param('billing_address'));
           req.param('billing_address').id = paymentAddress.id;
 
         } else if (req.param('is_copy') === true && req.param('shipping_address')) {
@@ -431,7 +431,7 @@ module.exports = {
         cartItems
       };
 
-      let response = await payment.selectPaymentType(dataPayloadForCreateOrder);
+      let response = await PaymentService.selectPaymentType(dataPayloadForCreateOrder);
 
       return res.status(200).json({
         ...response

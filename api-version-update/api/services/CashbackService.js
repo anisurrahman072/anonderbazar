@@ -9,12 +9,12 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = await payment.calcCartTotal(cart, cartItems);
+      } = await PaymentService.calcCartTotal(cart, cartItems);
 
       let {
         courierCharge,
         adminPaymentAddress
-      } = await payment.calcCourierCharge(cartItems, requestBody, urlParams, globalConfigs);
+      } = await PaymentService.calcCourierCharge(cartItems, requestBody, urlParams, globalConfigs);
 
       grandOrderTotal += courierCharge;
 
@@ -70,7 +70,7 @@ module.exports = {
         .transaction(async (db) => {
 
           /** Create order => suborders => suborders item variants */
-          let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await payment.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQty, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
+          let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await PaymentService.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQty, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
           /** END */
 
           /** .............Payment Section ........... */
@@ -79,7 +79,7 @@ module.exports = {
           };
           let sslCommerztranId = null;
 
-          let paymentTemp = await payment.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
+          let paymentTemp = await PaymentService.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
 
           const allCouponCodes = [];
 
@@ -94,12 +94,12 @@ module.exports = {
           }
 
           // Start/Delete Cart after submitting the order
-          let orderForMail = await payment.findAllOrderedProducts(order.id, db, subordersTemp);
+          let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
           orderForMail.payments = paymentTemp;
 
-          await payment.updateCart(cart.id, db, cartItems);
+          await PaymentService.updateCart(cart.id, db, cartItems);
 
-          await payment.updateProductInventory(allOrderedProductsInventory, db);
+          await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
           console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, shippingAddress);
 

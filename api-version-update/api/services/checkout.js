@@ -146,7 +146,7 @@ module.exports = {
         subordersTemp
       } = await sails.getDatastore()
         .transaction(async (db) => {
-          let {subordersTemp, order, allOrderedProductsInventory} = await payment.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQuantity, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
+          let {subordersTemp, order, allOrderedProductsInventory} = await PaymentService.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQuantity, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
 
           let paymentTemp = [];
 
@@ -163,11 +163,11 @@ module.exports = {
             paymentTemp.push(payment);
           }
 
-          let orderForMail = await payment.findAllOrderedProducts(order.id, db, subordersTemp);
+          let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
 
-          await payment.updateCart(cart.id, db, cartItems);
+          await PaymentService.updateCart(cart.id, db, cartItems);
 
-          await payment.updateProductInventory(allOrderedProductsInventory, db);
+          await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
           return {
             order,
@@ -176,9 +176,9 @@ module.exports = {
           };
         });
 
-      await payment.sendSms(authUser, order);
+      await PaymentService.sendSms(authUser, order);
 
-      await payment.sendEmail(orderForMail);
+      await PaymentService.sendEmail(orderForMail);
 
       // End /Delete Cart after submitting the order
       let d = Object.assign({}, order);
@@ -555,13 +555,13 @@ module.exports = {
 
     const {billingAddressId, shippingAddressId} = addressIds;
 
-    let cart = await payment.getCart(customer.id);
+    let cart = await PaymentService.getCart(customer.id);
 
     if (!cart) {
       throw new Error('Associated Shipping Cart was not found!');
     }
 
-    let cartItems = await payment.getCartItems(cart.id);
+    let cartItems = await PaymentService.getCartItems(cart.id);
 
     if (!cartItems || cartItems.length === 0) {
       throw new Error('Associated Shipping Cart Items were not found!');
@@ -624,7 +624,7 @@ module.exports = {
       throw new Error('Paid amount and order amount are different.');
     }
 
-    let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await payment.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
+    let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await PaymentService.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
 
     /** .............Payment Section ........... */
 
@@ -658,12 +658,12 @@ module.exports = {
     }
 
     // Start/Delete Cart after submitting the order
-    let orderForMail = await payment.findAllOrderedProducts(order.id, db, subordersTemp);
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
     orderForMail.payments = paymentTemp;
 
-    await payment.updateCart(cart.id, db, cartItems);
+    await PaymentService.updateCart(cart.id, db, cartItems);
 
-    await payment.updateProductInventory(allOrderedProductsInventory, db);
+    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
     console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, noShippingCharge, shippingAddress);
 
