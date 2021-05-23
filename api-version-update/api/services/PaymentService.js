@@ -66,21 +66,20 @@ module.exports = {
 
       else if (data.orderDetails.paymentType === 'Cash') {
 
-        const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
-          authUser,
-          {paymentType: 'Cash', grandOrderTotal, totalQuantity: totalQty},
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          cart,
-          courierCharge,
-          cartItems
+        const cashOnDeliveryResponse = await CashOnDeliveryService.createOrder(
+          data.authUser,
+          data.requestBody,
+          data.urlParams,
+          data.orderDetails,
+          data.address,
+          data.globalConfigs,
+          data.cart,
+          data.cartItems
         );
 
-        return res.status(200).json(cashOnDeliveryResponse);
+        return {
+          order_id: cashOnDeliveryResponse.order.id
+        };
 
       }
 

@@ -18,6 +18,27 @@ module.exports = {
 
       grandOrderTotal += courierCharge;
 
+      /** Check weather cashback is valid payment method for the customer */
+
+      let onlyCouponProduct;
+      let paymentMethodNotAllowed;
+
+      const notAllowedProductFound = cartItems.filter((cartItem) => {
+        return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
+      });
+
+      const couponProductFound = cartItems.filter((cartItem) => {
+        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+      });
+
+      onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
+      paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
+
+      if (onlyCouponProduct || paymentMethodNotAllowed) {
+        throw new Error('Payment method is invalid for this particular order.');
+      }
+      /** END */
+
       /** Check weather Shipping address & Billing address found or not */
 
       let finalBillingAddressId = null;
@@ -40,17 +61,6 @@ module.exports = {
       }
       /** END */
 
-      /** Customer is allowed for cashBack or not */
-      const couponLotteryCashback = await CouponLotteryCashback.findOne({
-        user_id: authUser.id,
-        deletedAt: null
-      });
-
-      if (!(couponLotteryCashback && grandOrderTotal <= couponLotteryCashback.amount)) {
-        throw new Error('The customer is not allowed to use cashback with this order.');
-      }
-      /** END */
-
       const {
         orderForMail,
         allCouponCodes,
@@ -65,7 +75,7 @@ module.exports = {
 
           /** .............Payment Section ........... */
           let paymentResponse = {
-            'purpose': 'Cashback Payment for coupon code purchase'
+            'purpose': 'CashOn Delivery Payment for product purchase'
           };
           let sslCommerztranId = null;
 
@@ -92,17 +102,6 @@ module.exports = {
           await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
           console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, shippingAddress);
-
-          /** Update customer cashback amount */
-          const cashBackAmount = couponLotteryCashback.amount;
-          const deductedCashBackAmount = (cashBackAmount - grandOrderTotal);
-
-          await CouponLotteryCashback.updateOne({
-            id: couponLotteryCashback.id
-          }).set({
-            amount: deductedCashBackAmount
-          }).usingConnection(db);
-          /** END */
 
           return {
             orderForMail,
