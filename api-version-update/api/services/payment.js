@@ -125,7 +125,7 @@ module.exports = {
     });
 
     if (!cart) {
-      throw new Error('No cart was found against the requested user.');
+      throw new Error('No Associated Shipping Cart was found!');
     }
     return cart;
   },
@@ -139,7 +139,7 @@ module.exports = {
       .populate('product_id');
 
     if ( !(cartItems && cartItems.length > 0) ) {
-      throw new Error('No cart item was found against the requested user.');
+      throw new Error('No Associated Shipping Cart Item was found!');
     }
     return cartItems;
   },

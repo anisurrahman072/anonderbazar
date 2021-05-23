@@ -389,17 +389,9 @@ module.exports = {
       const authUser = getAuthUser(req);
       let globalConfigs = await getGlobalConfig();
 
-      let cart = await payment.getCart(customer.id);
-
-      if (!cart) {
-        throw new Error('Associated Shipping Cart was not found!');
-      }
+      let cart = await payment.getCart(authUser.id);
 
       let cartItems = await payment.getCartItems(cart.id);
-
-      if (!cartItems || cartItems.length === 0) {
-        throw new Error('Associated Shipping Cart Items were not found!');
-      }
 
       let {
         grandOrderTotal,
