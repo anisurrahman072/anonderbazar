@@ -4,22 +4,14 @@ const EmailService = require('../services/EmailService');
 
 module.exports = {
   selectPaymentType: async (data) => {
-    if (req.param('paymentType') === 'CashBack') {
+    if (data.orderDetails.paymentType === 'CashBack') {
 
-      const orderId = await placeCouponCashbackOrder(
-        authUser,
-        {
-          paymentType: 'CashBack',
-          grandOrderTotal,
-          totalQuantity: totalQty
-        },
-        {
-          adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
-        },
-        globalConfigs,
-        courierCharge
+      const orderId = await CashbackService.createOrder(
+        data.authUser,
+        data.orderDetails,
+        data.address,
+        data.globalConfigs,
+        data.courierCharge
       );
 
       return res.status(201).json({

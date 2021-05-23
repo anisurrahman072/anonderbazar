@@ -389,9 +389,17 @@ module.exports = {
       const authUser = getAuthUser(req);
       let globalConfigs = await getGlobalConfig();
 
-      let cart = await payment.getCart(authUser.id);
+      let cart = await payment.getCart(customer.id);
+
+      if (!cart) {
+        throw new Error('Associated Shipping Cart was not found!');
+      }
 
       let cartItems = await payment.getCartItems(cart.id);
+
+      if (!cartItems || cartItems.length === 0) {
+        throw new Error('Associated Shipping Cart Items were not found!');
+      }
 
       let {
         grandOrderTotal,
@@ -399,30 +407,19 @@ module.exports = {
       } = payment.calcCartTotal(cart, cartItems);
 
       let noShippingCharge = false;
-      let onlyCouponProduct = false;
-      let paymentMethodNotAllowed = false;
+
       if (cartItems && cartItems.length > 0) {
         const couponProductFound = cartItems.filter((cartItem) => {
           return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
         });
 
-        if (req.param('paymentType') === 'Cash') {
-          const notAllowedProductFound = cartItems.filter((cartItem) => {
-            // eslint-disable-next-line eqeqeq
-            return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
-          });
+        let productFreeShippingFound = cartItems.filter(item => {
+          return (item.product_id && item.product_id.free_shipping);
+        });
 
-          onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
-          paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
-
-          if (onlyCouponProduct || paymentMethodNotAllowed) {
-            return res.status(422).json({
-              message: 'Payment method is invalid for this particular order.'
-            });
-          }
-        }
-
-        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
+        noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
+          productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
+        );
       }
 
       let courierCharge = 0;
@@ -476,8 +473,8 @@ module.exports = {
         },
         address: {
           adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
+          billingAddressId: req.param('billing_address'),
+          shippingAddressId: req.param('shipping_address')
         },
         globalConfigs,
         courierCharge,
