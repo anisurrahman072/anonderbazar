@@ -18,7 +18,7 @@ const {
   placeCashOnDeliveryOrder
 } = require('../services/checkout');
 const {pagination} = require('../../libs/pagination');
-const {asyncForEach, calcCartTotal} = require('../../libs/helper');
+const {asyncForEach} = require('../../libs/helper');
 const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
@@ -148,7 +148,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = calcCartTotal(cart, cartItems);
+          } = payment.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 

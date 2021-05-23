@@ -7,7 +7,7 @@
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {dhakaZilaId} = require('../../config/softbd');
 const _ = require('lodash');
-const {calculateCourierCharge, calcCartTotal} = require('../../libs/helper');
+const {calculateCourierCharge} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 
@@ -225,7 +225,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = await calcCartTotal(cart, cartItems);
+          } = await payment.calcCartTotal(cart, cartItems);
 
           let noShippingCharge = false;
 
