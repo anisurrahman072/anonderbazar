@@ -1,74 +1,36 @@
 module.exports = {
-  createOrder: async (customer, orderDetails, addressIds, globalConfigs, courierCharge) => {
-    const {paymentType, grandOrderTotal, totalQuantity} = orderDetails;
+  createOrder: async (customer, orderDetails, addressIds, globalConfigs, courierCharge, cart, cartItems) => {
+    let {paymentType, grandOrderTotal, totalQuantity} = orderDetails;
 
     let noShippingCharge = false;
     let onlyCouponProduct = false;
     let paymentMethodNotAllowed = false;
 
     const notAllowedProductFound = cartItems.filter((cartItem) => {
-      // eslint-disable-next-line eqeqeq
       return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
+    });
+
+    const couponProductFound = cartItems.filter((cartItem) => {
+      return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
     });
 
     onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
     paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
 
     if (onlyCouponProduct || paymentMethodNotAllowed) {
-      return res.status(422).json({
-        message: 'Payment method is invalid for this particular order.'
-      });
-    }
-
-    if (cartItems && cartItems.length > 0) {
-
-      const couponProductFound = cartItems.filter((cartItem) => {
-        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-      });
-
-      let productFreeShippingFound = cartItems.filter(item => {
-        return (item.product_id && item.product_id.free_shipping);
-      });
-
-      noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
-        productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
-      );
-
-      console.log('noShippingCharge',noShippingCharge);
+      throw new Error('Payment method is invalid for this particular order.');
     }
 
     let shippingAddress = await PaymentAddress.findOne({
-      id: shippingAddressId
-    }).usingConnection(db);
+      id: addressIds.shippingAddressId
+    });
 
     if (!shippingAddress) {
       throw new Error('Associated Shipping Address was not found!');
     }
 
-    let courierCharge = 0;
-    if (!noShippingCharge) {
-      if (shippingAddress && shippingAddress.id) {
-        // eslint-disable-next-line eqeqeq
-        courierCharge = globalConfigs.outside_dhaka_charge;
-        if (productCourierCharge) {
-          courierCharge = productCourierCharge;
-        } else if (shippingAddress.zila_id == dhakaZilaId) {
-          courierCharge = globalConfigs.dhaka_charge;
-        }
-      } else {
-        courierCharge = globalConfigs.outside_dhaka_charge;
-      }
-    }
-
     console.log('courierCharge', courierCharge);
     grandOrderTotal += courierCharge;
-
-    console.log('paidAmount', paidAmount);
-    console.log('grandOrderTotal', grandOrderTotal);
-
-    if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
-      throw new Error('Paid amount and order amount are different.');
-    }
 
     let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await payment.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
 

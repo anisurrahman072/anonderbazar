@@ -11,7 +11,7 @@ const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
-const {adminPaymentAddressId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const {adminPaymentAddressId, cashOnDeliveryNotAllowedForCategory, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
   findOne: async (req, res) => {

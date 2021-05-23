@@ -11,7 +11,9 @@ module.exports = {
         data.orderDetails,
         data.address,
         data.globalConfigs,
-        data.courierCharge
+        data.courierCharge,
+        data.cart,
+        data.cartItems
       );
 
       return res.status(201).json({
