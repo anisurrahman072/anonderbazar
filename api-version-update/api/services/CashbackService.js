@@ -16,6 +16,8 @@ module.exports = {
         adminPaymentAddress
       } = await payment.calcCourierCharge(cartItems, requestBody, urlParams, globalConfigs);
 
+      grandOrderTotal += courierCharge;
+
       /** Check weather cashback is valid payment method for the customer */
 
       let onlyCouponProduct;
@@ -64,7 +66,7 @@ module.exports = {
         allCouponCodes,
         order,
         subordersTemp
-      } = sails.getDatastore()
+      } = await sails.getDatastore()
         .transaction(async (db) => {
 
           /** Create order => suborders => suborders item variants */

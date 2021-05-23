@@ -434,7 +434,7 @@ module.exports = {
       let response = await payment.selectPaymentType(dataPayloadForCreateOrder);
 
       return res.status(200).json({
-        response
+        ...response
       });
 
     } catch (finalError) {

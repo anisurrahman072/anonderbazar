@@ -64,7 +64,7 @@ module.exports = {
         };
       }
 
-      if (data.orderDetails.paymentType === 'Cash') {
+      else if (data.orderDetails.paymentType === 'Cash') {
 
         const cashOnDeliveryResponse = await placeCashOnDeliveryOrder(
           authUser,
@@ -84,7 +84,7 @@ module.exports = {
 
       }
 
-      if (data.orderDetails.paymentType === 'SSLCommerce') {
+      else if (data.orderDetails.paymentType === 'SSLCommerce') {
 
         const sslResponse = await placeSSlCommerzOrder(
           authUser,
@@ -143,7 +143,7 @@ module.exports = {
       }*/
     }
     catch (error){
-      console.log('Error occurred while placing order!');
+      console.log('Error occurred while placing order!', error);
     }
   },
 
