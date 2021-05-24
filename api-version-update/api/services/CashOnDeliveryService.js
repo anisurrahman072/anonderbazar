@@ -63,7 +63,6 @@ module.exports = {
 
       const {
         orderForMail,
-        allCouponCodes,
         order,
         subordersTemp
       } = await sails.getDatastore()
@@ -81,18 +80,6 @@ module.exports = {
 
           let paymentTemp = await PaymentService.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
 
-          const allCouponCodes = [];
-
-          if (allGeneratedCouponCodes.length > 0) {
-            const couponCodeLen = allGeneratedCouponCodes.length;
-            for (let i = 0; i < couponCodeLen; i++) {
-              let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
-              if (couponObject && couponObject.id) {
-                allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
-              }
-            }
-          }
-
           // Start/Delete Cart after submitting the order
           let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
           orderForMail.payments = paymentTemp;
@@ -101,19 +88,24 @@ module.exports = {
 
           await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-          console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, shippingAddress);
+          console.log('successfully created:', orderForMail, order, subordersTemp, shippingAddress);
 
           return {
             orderForMail,
-            allCouponCodes,
             order,
             subordersTemp
           };
         });
+      let allCouponCodes = [];
+
+      if(authUser.phone || shippingAddress.phone){
+        await PaymentService.sendSms(authUser, order, allCouponCodes, shippingAddress);
+      }
+
+      await PaymentService.sendEmail(orderForMail);
 
       return {
         orderForMail,
-        allCouponCodes,
         order,
         subordersTemp,
         shippingAddress

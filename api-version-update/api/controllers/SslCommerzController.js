@@ -88,7 +88,7 @@ module.exports = {
               shippingAddressId: req.query.shipping_address
             },
             globalConfigs,
-            req.param('courierCharge')
+            req.query.courierCharge
           );
           return {
             orderForMail,
@@ -238,7 +238,7 @@ module.exports = {
             subordersTemp,
             noShippingCharge,
             shippingAddress
-          } = await createOrder(
+          } = await SslCommerzService.createOrder(
             db,
             user, {
               paymentType: 'SSLCommerce',
@@ -250,7 +250,8 @@ module.exports = {
               billingAddressId: req.query.billing_address,
               shippingAddressId: req.query.shipping_address
             },
-            globalConfigs
+            globalConfigs,
+            req.query.courierCharge
           );
           return {
             orderForMail,
@@ -261,39 +262,6 @@ module.exports = {
             shippingAddress
           };
         });
-
-      try {
-
-        let smsPhone = user.phone;
-
-        if (!noShippingCharge && shippingAddress.phone) {
-          smsPhone = shippingAddress.phone;
-        }
-
-        if (smsPhone) {
-          let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-          console.log('smsTxt', smsText);
-          if (allCouponCodes && allCouponCodes.length > 0) {
-            if (allCouponCodes.length === 1) {
-              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
-            } else {
-              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
-            }
-          }
-          SmsService.sendingOneSmsToOne([smsPhone], smsText);
-        }
-
-      } catch (err) {
-        console.log('order sms was not sent!');
-        console.log(err);
-      }
-
-      try {
-        EmailService.orderSubmitMail(orderForMail);
-      } catch (err) {
-        console.log('order email was not sent!');
-        console.log(err);
-      }
 
       let d = Object.assign({}, order);
       d.suborders = subordersTemp;

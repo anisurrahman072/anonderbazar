@@ -135,7 +135,7 @@ module.exports = {
     return order.id;
   },
 
-  placeCashOnDeliveryOrder: async (authUser, orderDetails, addresses, globalConfigs, cart, courierCharge, cartItems) => {
+  /*placeCashOnDeliveryOrder: async (authUser, orderDetails, addresses, globalConfigs, cart, courierCharge, cartItems) => {
     const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
     const {paymentType, grandOrderTotal, totalQuantity} = orderDetails;
 
@@ -194,7 +194,7 @@ module.exports = {
       });
     }
 
-  },
+  },*/
 
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 

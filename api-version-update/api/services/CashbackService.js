@@ -71,7 +71,7 @@ module.exports = {
 
           let paymentTemp = await PaymentService.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
 
-          const allCouponCodes = [];
+          let allCouponCodes = [];
 
           if (allGeneratedCouponCodes.length > 0) {
             const couponCodeLen = allGeneratedCouponCodes.length;
@@ -111,6 +111,12 @@ module.exports = {
             subordersTemp
           };
         });
+
+      if(authUser.phone || shippingAddress.phone){
+        await PaymentService.sendSms(authUser, order, allCouponCodes, shippingAddress);
+      }
+
+      await PaymentService.sendEmail(orderForMail);
 
       return {
         orderForMail,

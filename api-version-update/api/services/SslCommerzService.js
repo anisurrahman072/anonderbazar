@@ -164,6 +164,16 @@ module.exports = {
 
     console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp);
 
+    let shippingAddress = await PaymentAddress.find({
+      user_id: customer.id
+    }).usingConnection(db);
+
+    if(customer.phone || shippingAddress[0].phone){
+      await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+    }
+
+    await PaymentService.sendEmail(orderForMail);
+
     return {
       orderForMail,
       allCouponCodes,

@@ -408,12 +408,26 @@ module.exports = {
     }
   },
 
-  sendSms: async (authUser, order) => {
+  sendSms: async (authUser, order, allCouponCodes, shippingAddress) => {
     try {
-      const smsPhone = authUser.phone;
-      let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-      console.log('smsTxt', smsText);
-      SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      let smsPhone = authUser.phone;
+
+      if (!smsPhone && shippingAddress.phone) {
+        smsPhone = shippingAddress.phone;
+      }
+
+      if (smsPhone) {
+        let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
+        console.log('smsTxt', smsText);
+        if (allCouponCodes && allCouponCodes.length > 0) {
+          if (allCouponCodes.length === 1) {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
+          } else {
+            smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
+          }
+        }
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
     } catch (err) {
       console.log('SMS sending error');
       console.log(err);
