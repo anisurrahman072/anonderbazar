@@ -406,7 +406,7 @@ module.exports = {
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'));
 
-      let response = await paymentGatewayService.createOrder(
+      let response = await paymentGatewayService.placeOrder(
         authUser,
         req.body,
         req.allParams(),

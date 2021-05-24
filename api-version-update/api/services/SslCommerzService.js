@@ -1,18 +1,17 @@
-const {sslcommerzInstance} = require('../../libs/sslcommerz');
-const {sslApiUrl} = require('../../config/softbd');
+const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
 
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
+    const {
+      shippingAddress
+    } = addresses;
+
     let {
       grandOrderTotal,
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
 
-    const {
-      billingAddress,
-      shippingAddress
-    } = addresses;
     let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.id, globalConfigs);
 
     console.log('courierCharge', courierCharge);
@@ -24,49 +23,37 @@ module.exports = {
 
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
-    let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await PaymentService.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
+    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+    let string_length = 16;
+    let randomstring = '';
 
-    /** .............Payment Section ........... */
-
-    let paymentTemp = await PaymentService.createPayment(db, subordersTemp, customer, order, paymentType, paymentResponse, sslCommerztranId);
-
-    const allCouponCodes = [];
-
-    if (allGeneratedCouponCodes.length > 0) {
-      const couponCodeLen = allGeneratedCouponCodes.length;
-      for (let i = 0; i < couponCodeLen; i++) {
-        let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
-        if (couponObject && couponObject.id) {
-          allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
-        }
-      }
+    for (let i = 0; i < string_length; i++) {
+      let rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
     }
 
-    // Start/Delete Cart after submitting the order
-    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
-    orderForMail.payments = paymentTemp;
+    let finalPostalCode = shippingAddress.postal_code;
+    let finalAddress = shippingAddress.address;
 
-    await PaymentService.updateCart(cart.id, db, cartItems);
-
-    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
-
-    console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp);
-
-    let shippingAddress = await PaymentAddress.find({
-      user_id: customer.id
-    }).usingConnection(db);
-
-    if(customer.phone || shippingAddress[0].phone){
-      await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+    if (!finalPostalCode) {
+      throw new Error('No Post Code has been provided.');
     }
+    if (!finalAddress) {
+      throw new Error('No address has been provided.');
+    }
+    const postBody = preparePaymentRequest(authUser, shippingAddress.id, grandOrderTotal, totalQty, finalPostalCode, finalAddress, randomstring);
+    console.log('post_body', postBody);
 
-    await PaymentService.sendEmail(orderForMail);
+    const sslResponse = await sslcommerz.init_transaction(postBody);
+    console.log('sslcommerz.init_transaction success', sslResponse);
+    /**
+     * status: 'FAILED',
+     failedreason: "Invalid Information! 'cus_email' is missing or empty.",
 
-    return {
-      orderForMail,
-      allCouponCodes,
-      order,
-      subordersTemp
-    };
+     */
+    if (sslResponse && sslResponse.status === 'FAILED') {
+      throw new Error(sslResponse.failedreason);
+    }
+    return sslResponse;
   }
 };
