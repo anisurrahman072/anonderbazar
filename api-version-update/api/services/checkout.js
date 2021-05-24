@@ -549,7 +549,7 @@ module.exports = {
     }*/
   },
 
-  createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
+  /*createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
@@ -626,7 +626,7 @@ module.exports = {
 
     let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await PaymentService.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
 
-    /** .............Payment Section ........... */
+    /!** .............Payment Section ........... *!/
 
     let paymentTemp = [];
 
@@ -676,7 +676,8 @@ module.exports = {
       shippingAddress
     };
 
-  },
+  },*/
+
   bKashSaveOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
 
     await PaymentTransactionLog.updateOne({

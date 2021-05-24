@@ -85,18 +85,20 @@ module.exports = {
 
       else if (data.orderDetails.paymentType === 'SSLCommerce') {
 
-        const sslResponse = await placeSSlCommerzOrder(
-          authUser,
-          {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs
+        const sslResponse = await SslCommerzService.placeOrder(
+          data.authUser,
+          data.requestBody,
+          data.urlParams,
+          data.orderDetails,
+          data.address,
+          data.globalConfigs,
+          data.cart,
+          data.cartItems
         );
 
-        return res.status(200).json(sslResponse);
+        return {
+          order_id: sslResponse.order.id
+        };
 
       }
 

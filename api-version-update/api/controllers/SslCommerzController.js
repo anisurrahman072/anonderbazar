@@ -75,7 +75,7 @@ module.exports = {
             subordersTemp,
             noShippingCharge,
             shippingAddress
-          } = await createOrder(
+          } = await SslCommerzService.createOrder(
             db,
             user, {
               paymentType: 'SSLCommerce',
@@ -87,7 +87,8 @@ module.exports = {
               billingAddressId: req.query.billing_address,
               shippingAddressId: req.query.shipping_address
             },
-            globalConfigs
+            globalConfigs,
+            req.param('courierCharge')
           );
           return {
             orderForMail,
