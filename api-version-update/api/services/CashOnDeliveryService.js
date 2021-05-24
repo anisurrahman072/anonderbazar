@@ -13,7 +13,7 @@ module.exports = {
     let {
       courierCharge,
       adminPaymentAddress
-    } = await PaymentService.calcCourierCharge(cartItems, requestBody, urlParams, globalConfigs);
+    } = await PaymentService.calcCourierCharge(cartItems, urlParams, globalConfigs);
 
     grandOrderTotal += courierCharge;
 
@@ -109,10 +109,7 @@ module.exports = {
     await PaymentService.sendEmail(orderForMail);
 
     return {
-      orderForMail,
-      order,
-      subordersTemp,
-      shippingAddress
+      order
     };
 
   }

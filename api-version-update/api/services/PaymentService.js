@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
-const {adminPaymentAddressId} = require('../../config/softbd');
+const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
 
@@ -23,7 +23,7 @@ module.exports = {
     }
     return paymentGatewayService;
   },
-  calcCourierCharge: async function (cartItems, requestBody, urlParams, globalConfigs) {
+  calcCourierCharge: async function (cartItems, urlParams, globalConfigs) {
     let noShippingCharge = false;
 
     /** take decision for adding shipping charge */
@@ -46,8 +46,27 @@ module.exports = {
     let adminPaymentAddress = null;
 
     if (!noShippingCharge) {
+      let maxDhakaCharge = 0;
+      let maxOutsideDhakaCharge = 0;
+      let len = cartItems.length;
+      for (let i =0; i < len; i++){
+        let itemDhakaCharge = 0;
+        let itemOutsideDhakaCharge = 0;
+        if(cartItems[i].product_id.free_shipping === 0){
+          itemDhakaCharge = cartItems[i].product_id.dhaka_charge ? cartItems[i].product_id.dhaka_charge : globalConfigs.dhaka_charge;
+          itemOutsideDhakaCharge = cartItems[i].product_id.outside_dhaka_charge ? cartItems[i].product_id.outside_dhaka_charge : globalConfigs.outside_dhaka_charge;
+        }
+        maxDhakaCharge = Math.max(maxDhakaCharge, itemDhakaCharge);
+        maxOutsideDhakaCharge = Math.max(maxOutsideDhakaCharge, itemOutsideDhakaCharge);
+      }
+
       if (urlParams['shipping_address']) {
-        courierCharge = requestBody.courierCharge;
+        if(urlParams['shipping_address'].id === dhakaZilaId){
+          courierCharge = maxDhakaCharge;
+        }
+        else{
+          courierCharge = maxOutsideDhakaCharge;
+        }
       } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
