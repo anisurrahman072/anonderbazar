@@ -7,6 +7,7 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const {getPaymentService} = require('../../libs/paymentMethods');
 const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
@@ -416,7 +417,7 @@ module.exports = {
       console.log('Place Order - shipping_address: ', shippingAddressRequest);
       console.log('Place Order - billing_address: ', billingAddressRequest);
 
-      let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
+      let paymentGatewayService = getPaymentService(req.param('paymentType'));
 
       let response = await paymentGatewayService.createOrder(
         authUser,
