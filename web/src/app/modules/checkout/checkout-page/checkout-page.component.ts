@@ -35,6 +35,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     prevoius_address: any;
     checkoutForm: FormGroup;
 
+    termsAndPolicy: boolean = false;
+
     showBkashPayment: boolean = false;
     /*
     prevoius_address_id: any;

@@ -196,3 +196,7 @@ ul.termsList li {
   list-style-type: circle;
   margin-top: 5px;
 }
+
+button:disabled {
+  background-color: lightcoral;
+}
