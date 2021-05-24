@@ -395,7 +395,7 @@ module.exports = {
       const shippingAddressRequest = req.param('shipping_address');
       if (shippingAddressRequest) {
         if (!shippingAddressRequest.id || shippingAddressRequest.id === '') {
-          let shippingAddres = await PaymentService.createAddress(req.param('shipping_address'));
+          let shippingAddres = await PaymentService.createAddress(shippingAddressRequest);
           shippingAddressRequest.id = shippingAddres.id;
         }
       }
@@ -406,14 +406,14 @@ module.exports = {
           let paymentAddress = await PaymentService.createAddress(req.param('billing_address'));
           req.param('billing_address').id = paymentAddress.id;
 
-        } else if (req.param('is_copy') === true && req.param('shipping_address')) {
-          req.param('billing_address').id = req.param('shipping_address').id;
+        } else if (req.param('is_copy') === true && shippingAddressRequest) {
+          req.param('billing_address').id = shippingAddressRequest.id;
         }
       }
 
       console.log('Place Order - body: ', req.body);
-      console.log('Place Order - shipping_address: ', req.param('shipping_address'));
-      console.log('Place Order - billing_address: ', req.param('billing_address'));
+      console.log('Place Order - shipping_address: ', shippingAddressRequest);
+      console.log('Place Order - billing_address: ', shippingAddressRequest);
 
       let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
       let response = await paymentGatewayService.createOrder(
@@ -425,7 +425,7 @@ module.exports = {
         },
         {
           billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
+          shippingAddress: shippingAddressRequest
         },
         globalConfigs,
         cart,
