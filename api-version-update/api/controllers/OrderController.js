@@ -415,7 +415,6 @@ module.exports = {
       console.log('Place Order - shipping_address: ', req.param('shipping_address'));
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
-
       let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
       let response = paymentGatewayService.createOrder(
         authUser,
