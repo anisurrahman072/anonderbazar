@@ -416,7 +416,7 @@ module.exports = {
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
       let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
-      let response = paymentGatewayService.createOrder(
+      let response = await paymentGatewayService.createOrder(
         authUser,
         req.body,
         req.allParams(),
@@ -432,9 +432,7 @@ module.exports = {
         cartItems
       );
 
-      return res.status(200).json({
-        ...response
-      });
+      return res.status(200).json(response);
 
     } catch (finalError) {
       console.log('finalError', finalError);

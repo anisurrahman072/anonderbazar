@@ -15,6 +15,8 @@ module.exports = {
       adminPaymentAddress
     } = await PaymentService.calcCourierCharge(cartItems, urlParams, globalConfigs);
 
+    console.log('grandOrderTotal & courierCharge', grandOrderTotal, courierCharge, adminPaymentAddress);
+
     grandOrderTotal += courierCharge;
 
     /** Check weather cashback is valid payment method for the customer */
@@ -108,9 +110,7 @@ module.exports = {
 
     await PaymentService.sendEmail(orderForMail);
 
-    return {
-      order
-    };
+    return order;
 
   }
 };
