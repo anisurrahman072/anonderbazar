@@ -91,18 +91,13 @@ module.exports = {
     return courierCharge;
   },
 
-  createPayment: async (db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId) => {
+  createPayment: async (db, subordersTemp, additionalColumns = {}) => {
     let paymentTemp = [];
     for (let i = 0; i < subordersTemp.length; i++) {
       let paymentObj = await Payment.create({
-        user_id: authUser.id,
-        order_id: order.id,
         suborder_id: subordersTemp[i].id,
-        payment_type: paymentType,
         payment_amount: subordersTemp[i].total_price,
-        details: JSON.stringify(paymentResponse),
-        transection_key: sslCommerztranId,
-        status: 1
+        ...additionalColumns
       }).fetch().usingConnection(db);
 
       paymentTemp.push(paymentObj);
@@ -168,25 +163,8 @@ module.exports = {
     }).fetch();
   },
 
-  placeOrder: async (userId, cartId, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId
-  ) => {
-    let orderDatPayload = {
-      user_id: userId,
-      cart_id: cartId,
-      total_price: grandOrderTotal,
-      total_quantity: totalQty,
-      billing_address: billingAddressId,
-      shipping_address: shippingAddressId,
-      status: 1,
-      courier_charge: courierCharge,
-      courier_status: 1,
-    };
-    if (sslCommerztranId) {
-      orderDatPayload = {
-        ...orderDatPayload,
-        ssl_transaction_id: sslCommerztranId
-      };
-    }
+  createOrder: async (db, orderDatPayload, cartItems) => {
+
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
 
     /** Get unique warehouse Id for suborder................START......................... */
@@ -197,12 +175,12 @@ module.exports = {
 
     let subordersTemp = [];
 
-    let i = 0; // i init for loop
     let allOrderedProductsInventory = [];
 
     /** Generate Necessary sub orders according to warehouse Start **/
     let allGeneratedCouponCodes = [];
-    for (i = 0; i < uniqueWarehouseIds.length; i++) {
+
+    for (let i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
       let cartItemsTemp = cartItems.filter(
@@ -256,7 +234,7 @@ module.exports = {
             allGeneratedCouponCodes.push({
               quantity: thisCartItem.product_quantity,
               product_id: thisCartItem.product_id.id,
-              user_id: userId,
+              user_id: orderDatPayload.user_id,
               order_id: order.id,
               suborder_id: suborder.id,
               suborder_item_id: suborderItem.id
@@ -308,7 +286,7 @@ module.exports = {
     }
     /** Generate Necessary sub orders according to warehouse End **/
 
-    return {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes};
+    return {suborders: subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes};
   },
 
   findAllOrderedProducts: async (orderId, db, subordersTemp) => {

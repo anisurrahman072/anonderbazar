@@ -1,4 +1,4 @@
-const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
+const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
 
 module.exports = {
 
@@ -23,14 +23,7 @@ module.exports = {
 
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
-    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-    let string_length = 16;
-    let randomstring = '';
-
-    for (let i = 0; i < string_length; i++) {
-      let rnum = Math.floor(Math.random() * chars.length);
-      randomstring += chars.substring(rnum, rnum + 1);
-    }
+    const randomstring = generateRandomString();
 
     let finalPostalCode = shippingAddress.postal_code;
     let finalAddress = shippingAddress.address;
@@ -42,7 +35,7 @@ module.exports = {
       throw new Error('No address has been provided.');
     }
     const postBody = preparePaymentRequest(authUser, shippingAddress.id, grandOrderTotal, totalQty, finalPostalCode, finalAddress, randomstring);
-    console.log('post_body', postBody);
+    console.log('postBody', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
     console.log('sslcommerz.init_transaction success', sslResponse);
@@ -55,5 +48,84 @@ module.exports = {
       throw new Error(sslResponse.failedreason);
     }
     return sslResponse;
+  },
+  createOrder: async (db, customer, transDetails, addressIds, orderDetails) => {
+    const {paymentType, sslCommerztranId, paymentResponse} = transDetails;
+
+    const {billingAddressId, shippingAddressId} = addressIds;
+
+    const {
+      courierCharge,
+      grandOrderTotal,
+      totalQty,
+      cart,
+      cartItems
+    } = orderDetails;
+
+    let {
+      suborders,
+      order,
+      allOrderedProductsInventory,
+      allGeneratedCouponCodes
+    } = await PaymentService.createOrder(db, {
+      user_id: customer.id,
+      cart_id: cart.id,
+      total_price: grandOrderTotal,
+      total_quantity: totalQty,
+      billing_address: billingAddressId,
+      shipping_address: shippingAddressId,
+      courier_charge: courierCharge,
+      courier_status: 1,
+      ssl_transaction_id: sslCommerztranId
+    }, cartItems);
+
+    /** .............Payment Section ........... */
+    let paymentTemp = await PaymentService.createPayment(db, suborders, {
+      user_id: customer.id,
+      order_id: order.id,
+      payment_type: paymentType,
+      details: JSON.stringify(paymentResponse),
+      transection_key: sslCommerztranId,
+      status: 1
+    });
+
+    const allCouponCodes = [];
+
+    if (allGeneratedCouponCodes && allGeneratedCouponCodes.length > 0) {
+      const couponCodeLen = allGeneratedCouponCodes.length;
+      for (let i = 0; i < couponCodeLen; i++) {
+        let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
+        if (couponObject && couponObject.id) {
+          allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
+        }
+      }
+    }
+
+    // Start/Delete Cart after submitting the order
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, suborders);
+    orderForMail.payments = paymentTemp;
+
+    await PaymentService.updateCart(cart.id, db, cartItems);
+
+    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+    console.log('successfully created:', orderForMail, allCouponCodes, order, suborders);
+
+    let shippingAddress = await PaymentAddress.find({
+      user_id: customer.id
+    }).usingConnection(db);
+
+    if (customer.phone || shippingAddress[0].phone) {
+      await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+    }
+
+    await PaymentService.sendEmail(orderForMail);
+
+    return {
+      orderForMail,
+      allCouponCodes,
+      order,
+      suborders
+    };
   }
 };

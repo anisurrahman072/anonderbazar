@@ -1,6 +1,4 @@
-const SmsService = require('../services/SmsService');
-const EmailService = require('../services/EmailService');
-const {createOrder} = require('../services/checkout');
+const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
@@ -15,17 +13,17 @@ module.exports = {
       });
     }
 
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    if (!globalConfigs) {
-      return res.status(500).json({
-        failure: true
-      });
-    }
-
     try {
+      let globalConfigs = await getGlobalConfig();
+
+      let customer = await User.findOne({id: req.query.user_id, deletedAt: null});
+
+      if (!customer) {
+        return res.status(400).json({
+          failure: true
+        });
+      }
+
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
@@ -47,15 +45,26 @@ module.exports = {
           failure: true
         });
       }
+      let cart = await PaymentService.getCart(customer.id);
+      let cartItems = await PaymentService.getCartItems(cart.id);
+      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address, globalConfigs);
+
+      let {
+        grandOrderTotal,
+        totalQty
+      } = PaymentService.calcCartTotal(cart, cartItems);
+
+      /** adding shipping charge with grandtotal */
+      grandOrderTotal += courierCharge;
 
       const paidAmount = parseFloat(validationResponse.amount);
 
-      let user = await User.findOne({id: req.query.user_id, deletedAt: null});
+      console.log('paidAmount', paidAmount);
+      console.log('grandOrderTotal', grandOrderTotal);
 
-      if (!user) {
-        return res.status(400).json({
-          failure: true
-        });
+      if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
+        console.log('grandOrderTotal & paid amount miss matched');
+        throw new Error('Paid amount and order amount are different.');
       }
 
       const {
@@ -77,9 +86,9 @@ module.exports = {
             shippingAddress
           } = await SslCommerzService.createOrder(
             db,
-            user, {
+            customer,
+            {
               paymentType: 'SSLCommerce',
-              paidAmount,
               sslCommerztranId: req.body.tran_id,
               paymentResponse: req.body
             },
@@ -87,8 +96,14 @@ module.exports = {
               billingAddressId: req.query.billing_address,
               shippingAddressId: req.query.shipping_address
             },
+            {
+              courierCharge,
+              grandOrderTotal,
+              totalQty,
+              cart,
+              cartItems
+            },
             globalConfigs,
-            req.query.courierCharge
           );
           return {
             orderForMail,
