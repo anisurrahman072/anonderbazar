@@ -53,8 +53,7 @@ module.exports = {
     const {
       orderForMail,
       allCouponCodes,
-      order,
-      subordersTemp
+      order
     } = await sails.getDatastore()
       .transaction(async (db) => {
 
@@ -122,8 +121,6 @@ module.exports = {
 
     await PaymentService.sendEmail(orderForMail);
 
-    return {
-      order
-    };
+    return order;
   }
 };
