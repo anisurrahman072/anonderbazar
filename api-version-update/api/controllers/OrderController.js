@@ -392,11 +392,11 @@ module.exports = {
       let cart = await PaymentService.getCart(authUser.id);
 
       let cartItems = await PaymentService.getCartItems(cart.id);
-
-      if (req.param('shipping_address')) {
-        if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
+      const shippingAddressRequest = req.param('shipping_address');
+      if (shippingAddressRequest) {
+        if (!shippingAddressRequest.id || shippingAddressRequest.id === '') {
           let shippingAddres = await PaymentService.createAddress(req.param('shipping_address'));
-          req.param('shipping_address').id = shippingAddres.id;
+          shippingAddressRequest.id = shippingAddres.id;
         }
       }
 
