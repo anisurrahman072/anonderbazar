@@ -5,7 +5,25 @@ const {adminPaymentAddressId} = require('../../config/softbd');
 
 module.exports = {
 
-  calcCourierCharge: async function(cartItems, requestBody, urlParams, globalConfigs) {
+  getPaymentService: function (paymentType) {
+    let paymentGatewayService = null;
+    switch (paymentType) {
+      case 'CashBack': {
+        paymentGatewayService = CashbackService;
+        break;
+      }
+      case 'Cash': {
+        paymentGatewayService = CashOnDeliveryService;
+        break;
+      }
+      case 'SSLCommerce': {
+        paymentGatewayService = SslCommerzService;
+        break;
+      }
+    }
+    return paymentGatewayService;
+  },
+  calcCourierCharge: async function (cartItems, requestBody, urlParams, globalConfigs) {
     let noShippingCharge = false;
 
     /** take decision for adding shipping charge */
@@ -27,15 +45,13 @@ module.exports = {
     let courierCharge = 0;
     let adminPaymentAddress = null;
 
-    if(!noShippingCharge){
-      if(urlParams['shipping_address']){
+    if (!noShippingCharge) {
+      if (urlParams['shipping_address']) {
         courierCharge = requestBody.courierCharge;
-      }
-      else{
+      } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
-    }
-    else{
+    } else {
       adminPaymentAddress = await PaymentAddress.findOne({
         id: adminPaymentAddressId
       });
@@ -62,9 +78,7 @@ module.exports = {
         return {
           order_id: response.order.id
         };
-      }
-
-      else if (data.orderDetails.paymentType === 'Cash') {
+      } else if (data.orderDetails.paymentType === 'Cash') {
 
         const cashOnDeliveryResponse = await CashOnDeliveryService.createOrder(
           data.authUser,
@@ -81,9 +95,7 @@ module.exports = {
           order_id: cashOnDeliveryResponse.order.id
         };
 
-      }
-
-      else if (data.orderDetails.paymentType === 'SSLCommerce') {
+      } else if (data.orderDetails.paymentType === 'SSLCommerce') {
 
         const sslResponse = await SslCommerzService.placeOrder(
           data.authUser,
@@ -142,8 +154,7 @@ module.exports = {
           nagadResponse: nagadResponse
         });
       }*/
-    }
-    catch (error){
+    } catch (error) {
       console.log('Error occurred while placing order!', error);
     }
   },
@@ -203,7 +214,7 @@ module.exports = {
       .populate('cart_item_variants')
       .populate('product_id');
 
-    if ( !(cartItems && cartItems.length > 0) ) {
+    if (!(cartItems && cartItems.length > 0)) {
       throw new Error('No Associated Shipping Cart Item was found!');
     }
     return cartItems;

@@ -415,23 +415,23 @@ module.exports = {
       console.log('Place Order - shipping_address: ', req.param('shipping_address'));
       console.log('Place Order - billing_address: ', req.param('billing_address'));
 
-      let dataPayloadForCreateOrder = {
+
+      let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
+      let response = paymentGatewayService.createOrder(
         authUser,
-        requestBody: req.body,
-        urlParams: req.allParams(),
-        orderDetails: {
+        req.body,
+        req.allParams(),
+        {
           paymentType: req.param('paymentType')
         },
-        address: {
+        {
           billingAddress: req.param('billing_address'),
           shippingAddress: req.param('shipping_address')
         },
         globalConfigs,
         cart,
         cartItems
-      };
-
-      let response = await PaymentService.selectPaymentType(dataPayloadForCreateOrder);
+      );
 
       return res.status(200).json({
         ...response
