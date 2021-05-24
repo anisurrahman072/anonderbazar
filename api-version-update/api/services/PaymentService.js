@@ -2,20 +2,20 @@ const _ = require('lodash');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
-  getBillingAddress: async function (req, shippingAddressRequest) {
-    let billingAddressRequest = null;
+  getBillingAddress: async function (req, shippingAddress) {
+    let billingAddress = null;
     if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
-      billingAddressRequest = {...req.param('billing_address')};
-      if ((!billingAddressRequest.id || billingAddressRequest.id === '') && req.param('is_copy') === false) {
+      billingAddress = {...req.param('billing_address')};
+      if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') === false) {
 
-        let paymentAddress = await this.createAddress(billingAddressRequest);
-        billingAddressRequest.id = paymentAddress.id;
+        let paymentAddress = await this.createAddress(billingAddress);
+        billingAddress.id = paymentAddress.id;
 
-      } else if (req.param('is_copy') === true && _.isObject(shippingAddressRequest)) {
-        billingAddressRequest = {...shippingAddressRequest};
+      } else if (req.param('is_copy') === true && _.isObject(shippingAddress)) {
+        billingAddress = {...shippingAddress};
       }
     }
-    return billingAddressRequest;
+    return billingAddress;
   },
   getShippingAddress: async function (req, cartItems = []) {
     let shippingAddress = null;

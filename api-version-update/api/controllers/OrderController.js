@@ -394,7 +394,11 @@ module.exports = {
       let cartItems = await PaymentService.getCartItems(cart.id);
 
       const shippingAddress = PaymentService.getShippingAddress(req);
-      const billingAddress = PaymentService.getBillingAddress(req);
+      const billingAddress = PaymentService.getBillingAddress(req, shippingAddress);
+
+      if (_.isNull(shippingAddress) || _.isEmpty(shippingAddress)) {
+        throw new Error('No shipping address has been provided.');
+      }
 
       console.log('Place Order - body: ', req.body);
       console.log('Place Order - shipping_address: ', shippingAddress);
