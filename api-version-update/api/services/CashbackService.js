@@ -1,4 +1,4 @@
-const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+// const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
   createOrder: async (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) => {

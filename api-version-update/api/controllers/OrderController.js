@@ -393,29 +393,12 @@ module.exports = {
       let cart = await PaymentService.getCart(authUser.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
 
-      const shippingAddressRequest = req.param('shipping_address');
-      if (shippingAddressRequest) {
-        if (!shippingAddressRequest.id || shippingAddressRequest.id === '') {
-          let shippingAddres = await PaymentService.createAddress(shippingAddressRequest);
-          shippingAddressRequest.id = shippingAddres.id;
-        }
-      }
-
-      let billingAddressRequest = req.param('billing_address');
-      if (billingAddressRequest) {
-        if ((!billingAddressRequest.id || billingAddressRequest.id === '') && req.param('is_copy') === false) {
-
-          let paymentAddress = await PaymentService.createAddress(billingAddressRequest);
-          billingAddressRequest.id = paymentAddress.id;
-
-        } else if (req.param('is_copy') === true && shippingAddressRequest) {
-          billingAddressRequest = shippingAddressRequest;
-        }
-      }
+      const shippingAddress = PaymentService.getShippingAddress(req);
+      const billingAddress = PaymentService.getBillingAddress(req);
 
       console.log('Place Order - body: ', req.body);
-      console.log('Place Order - shipping_address: ', shippingAddressRequest);
-      console.log('Place Order - billing_address: ', billingAddressRequest);
+      console.log('Place Order - shipping_address: ', shippingAddress);
+      console.log('Place Order - billing_address: ', billingAddress);
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'));
 
@@ -427,8 +410,8 @@ module.exports = {
           paymentType: req.param('paymentType')
         },
         {
-          billingAddress: billingAddressRequest,
-          shippingAddress: shippingAddressRequest
+          billingAddress,
+          shippingAddress
         },
         globalConfigs,
         cart,

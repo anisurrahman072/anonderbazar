@@ -1,40 +1,75 @@
 const _ = require('lodash');
-const SmsService = require('../services/SmsService');
-const EmailService = require('../services/EmailService');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
+  getBillingAddress: async function (req, shippingAddressRequest) {
+    let billingAddressRequest = null;
+    if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
+      billingAddressRequest = {...req.param('billing_address')};
+      if ((!billingAddressRequest.id || billingAddressRequest.id === '') && req.param('is_copy') === false) {
 
-  calcCourierCharge: async function (cartItems, urlParams, globalConfigs) {
+        let paymentAddress = await this.createAddress(billingAddressRequest);
+        billingAddressRequest.id = paymentAddress.id;
+
+      } else if (req.param('is_copy') === true && _.isObject(shippingAddressRequest)) {
+        billingAddressRequest = {...shippingAddressRequest};
+      }
+    }
+    return billingAddressRequest;
+  },
+  getShippingAddress: async function (req, cartItems = []) {
+    let shippingAddress = null;
+    if (req.param('shipping_address')) {
+      shippingAddress = {...req.param('shipping_address')};
+      if (!shippingAddress.id || shippingAddress.id === '') {
+        let shippingAddres = await this.createAddress(shippingAddress);
+        shippingAddress.id = shippingAddres.id;
+      }
+    }
+    /** check whether shipping address is required or not and based on it we're using admin address in case shipping address is not provided */
+    if (this.isAllCouponProduct(cartItems)) {
+      if (!shippingAddress) {
+        return PaymentAddress.findOne({
+          id: adminPaymentAddressId
+        });
+      }
+    }
+    return shippingAddress;
+  },
+
+  isAllCouponProduct: function (cartItems) {
+    const couponProductFound = cartItems.filter((cartItem) => {
+      return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
+    });
+    return (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length);
+  },
+
+  calcCourierCharge: async function (cartItems, shippingAddressId, globalConfigs) {
     let noShippingCharge = false;
 
     /** take decision for adding shipping charge */
     if (cartItems && cartItems.length > 0) {
-      const couponProductFound = cartItems.filter((cartItem) => {
-        return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-      });
 
       let productFreeShippingFound = cartItems.filter(item => {
         return (item.product_id && item.product_id.free_shipping);
       });
 
-      noShippingCharge = (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length) || (
+      noShippingCharge = this.isAllCouponProduct(cartItems) || (
         productFreeShippingFound && productFreeShippingFound.length > 0 && cartItems.length === productFreeShippingFound.length
       );
     }
     /** END */
 
     let courierCharge = 0;
-    let adminPaymentAddress = null;
 
     if (!noShippingCharge) {
       let maxDhakaCharge = 0;
       let maxOutsideDhakaCharge = 0;
       let len = cartItems.length;
-      for (let i =0; i < len; i++){
+      for (let i = 0; i < len; i++) {
         let itemDhakaCharge = 0;
         let itemOutsideDhakaCharge = 0;
-        if(cartItems[i].product_id.free_shipping === 0){
+        if (!_.isUndefined(cartItems[i].product_id) && cartItems[i].product_id.free_shipping === 0) {
           itemDhakaCharge = cartItems[i].product_id.dhaka_charge ? cartItems[i].product_id.dhaka_charge : globalConfigs.dhaka_charge;
           itemOutsideDhakaCharge = cartItems[i].product_id.outside_dhaka_charge ? cartItems[i].product_id.outside_dhaka_charge : globalConfigs.outside_dhaka_charge;
         }
@@ -42,122 +77,18 @@ module.exports = {
         maxOutsideDhakaCharge = Math.max(maxOutsideDhakaCharge, itemOutsideDhakaCharge);
       }
 
-      if (urlParams['shipping_address']) {
-        if(urlParams['shipping_address'].id === dhakaZilaId){
+      if (shippingAddressId) {
+        if (shippingAddressId === dhakaZilaId) {
           courierCharge = maxDhakaCharge;
-        }
-        else{
+        } else {
           courierCharge = maxOutsideDhakaCharge;
         }
       } else {
         courierCharge = globalConfigs.outside_dhaka_charge;
       }
-    } else {
-      adminPaymentAddress = await PaymentAddress.findOne({
-        id: adminPaymentAddressId
-      });
     }
 
-    return {courierCharge, adminPaymentAddress};
-  },
-
-  selectPaymentType: async (data) => {
-    try {
-      if (data.orderDetails.paymentType === 'CashBack') {
-
-        const response = await CashbackService.createOrder(
-          data.authUser,
-          data.requestBody,
-          data.urlParams,
-          data.orderDetails,
-          data.address,
-          data.globalConfigs,
-          data.cart,
-          data.cartItems
-        );
-
-        return {
-          order_id: response.order.id
-        };
-      } else if (data.orderDetails.paymentType === 'Cash') {
-
-        const cashOnDeliveryResponse = await CashOnDeliveryService.createOrder(
-          data.authUser,
-          data.requestBody,
-          data.urlParams,
-          data.orderDetails,
-          data.address,
-          data.globalConfigs,
-          data.cart,
-          data.cartItems
-        );
-
-        return {
-          order_id: cashOnDeliveryResponse.order.id
-        };
-
-      } else if (data.orderDetails.paymentType === 'SSLCommerce') {
-
-        const sslResponse = await SslCommerzService.placeOrder(
-          data.authUser,
-          data.requestBody,
-          data.urlParams,
-          data.orderDetails,
-          data.address,
-          data.globalConfigs,
-          data.cart,
-          data.cartItems
-        );
-
-        return {
-          order_id: sslResponse.order.id
-        };
-
-      }
-
-      /*if (req.param('paymentType') === 'bKash') {
-        console.log(req.body);
-
-        const bKashResponse = await createBKashPayment(authUser, {
-          payerReference: req.body.payerReference,
-          agreement_id: req.body.agreement_id,
-          paymentType: 'bKash',
-          grandOrderTotal,
-          totalQuantity: totalQty
-        }, {
-          adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
-        });
-
-        return res.status(200).json(bKashResponse);
-      }*/
-
-      /*if (req.param('paymentType') === 'nagad') {
-        console.log('dddd');
-        const nagadResponse = await placeNagadPaymentOrder(authUser,
-          {
-            paymentType: 'nagad',
-            grandOrderTotal,
-            totalQuantity: totalQty
-          },
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          courierCharge,
-          req.ip
-        );
-
-        return res.status(201).json({
-          nagadResponse: nagadResponse
-        });
-      }*/
-    } catch (error) {
-      console.log('Error occurred while placing order!', error);
-    }
+    return courierCharge;
   },
 
   createPayment: async (db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId) => {

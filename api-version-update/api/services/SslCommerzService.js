@@ -100,7 +100,7 @@ module.exports = {
     return sslResponse;
   },
 
-  createOrder: async (db, customer, transDetails, addressIds, globalConfigs, paramQueryCharge) => {
+  createOrder: async (db, customer, transDetails, addressIds, globalConfigs) => {
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
     const {billingAddressId, shippingAddressId} = addressIds;
@@ -114,18 +114,11 @@ module.exports = {
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
 
-    let requestBody = {
-      courierCharge: paramQueryCharge
-    };
-    let urlParams = {
-      ['shipping_address']: addressIds.shippingAddressId
-    };
-    let {
-      courierCharge,
-      adminPaymentAddress
-    } = await PaymentService.calcCourierCharge(cartItems, requestBody, urlParams, globalConfigs);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddressId, globalConfigs);
 
     console.log('courierCharge', courierCharge);
+
+    /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
     console.log('paidAmount', paidAmount);
