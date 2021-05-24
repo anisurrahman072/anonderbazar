@@ -390,8 +390,8 @@ module.exports = {
       let globalConfigs = await getGlobalConfig();
 
       let cart = await PaymentService.getCart(authUser.id);
-
       let cartItems = await PaymentService.getCartItems(cart.id);
+
       const shippingAddressRequest = req.param('shipping_address');
       if (shippingAddressRequest) {
         if (!shippingAddressRequest.id || shippingAddressRequest.id === '') {
@@ -400,22 +400,24 @@ module.exports = {
         }
       }
 
-      if (req.param('billing_address')) {
-        if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
+      let billingAddressRequest = req.param('billing_address');
+      if (billingAddressRequest) {
+        if ((!billingAddressRequest.id || billingAddressRequest.id === '') && req.param('is_copy') === false) {
 
-          let paymentAddress = await PaymentService.createAddress(req.param('billing_address'));
-          req.param('billing_address').id = paymentAddress.id;
+          let paymentAddress = await PaymentService.createAddress(billingAddressRequest);
+          billingAddressRequest.id = paymentAddress.id;
 
         } else if (req.param('is_copy') === true && shippingAddressRequest) {
-          req.param('billing_address').id = shippingAddressRequest.id;
+          billingAddressRequest = shippingAddressRequest;
         }
       }
 
       console.log('Place Order - body: ', req.body);
       console.log('Place Order - shipping_address: ', shippingAddressRequest);
-      console.log('Place Order - billing_address: ', shippingAddressRequest);
+      console.log('Place Order - billing_address: ', billingAddressRequest);
 
       let paymentGatewayService = await PaymentService.getPaymentService(req.param('paymentType'));
+
       let response = await paymentGatewayService.createOrder(
         authUser,
         req.body,
@@ -424,7 +426,7 @@ module.exports = {
           paymentType: req.param('paymentType')
         },
         {
-          billingAddress: req.param('billing_address'),
+          billingAddress: billingAddressRequest,
           shippingAddress: shippingAddressRequest
         },
         globalConfigs,
