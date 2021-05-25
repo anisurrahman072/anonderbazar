@@ -6,7 +6,7 @@
                     <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
                        role="tab" aria-controls="pills-home" aria-selected="true">Specification</a>
                 </li>
-                <li class="nav-item .list1"><a class="nav-link" id="pills-profile-tab" data-toggle="pill"
+<!--                <li class="nav-item .list1"><a class="nav-link" id="pills-profile-tab" data-toggle="pill"
                                                href="#pills-profile" role="tab" aria-controls="pills-profile"
                                                aria-selected="true"><span class="semi">Reviews</span></a>
                 </li>
@@ -14,7 +14,7 @@
                                                href="#pills-planing" role="tab" aria-controls="pills-planing"
                                                aria-selected="true"><span
                         class="semi">Questions & Answers</span></a>
-                </li>
+                </li>-->
             </ul>
         </div>
         <div class="tab-content" id="pills-tabContent">
@@ -306,7 +306,7 @@
                 </div>
 
                 <ng-template #noQuestions>
-                    <div style="text-align: center">
+                    <div style="text-align: center" class="py-5">
                         <h5 class="text-center mb-3">NO questions and Answers to show for this product</h5>
                         <a style="border: 1px solid #FF0000; padding: 10px 56px; color: #FF0000;" *ngIf="questionButton"
                            (click)="questionButtonClicked()">Ask a
@@ -325,6 +325,7 @@
                 <!--pagination ends-->
             </div>
 
+            <!--EMI section-->
             <div class="tab-pane fade" id="pills-eastpay" role="tabpanel" aria-labelledby="pills-eastpay-tab">
                 <div class="row">
                     <div class="emi-details">
@@ -364,7 +365,7 @@
                 </div>
             </div>
         </div>
-        <hr>
+<!--        <hr>
         <div class="delivery-option-details my-4">
             <div class="delivery-option-tag1" style="max-width: 500px; margin: auto">
                 <div class="tag1">
@@ -385,6 +386,6 @@
                 <span>Money back guarantee</span>
             </div>
         </div>
-        <hr>
+        <hr>-->
     </div>
 </section>

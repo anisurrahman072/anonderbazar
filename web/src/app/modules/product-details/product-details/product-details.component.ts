@@ -314,7 +314,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                     this.tag = JSON.parse(result.data[0].tag);
                 }
                 this.updateFinalprice();
-                this.getSimilarProductData(result.data[0].category_id.id, result.data[0].subcategory_id.id);
+                if (result.data[0].subcategory_id !== undefined && result.data[0].subcategory_id !== null) {
+                    this.getSimilarProductData(result.data[0].category_id.id, result.data[0].subcategory_id.id);
+                }
             }
         }, (error) => {
             this._notify.error('Problem!', "Problem in loading the product");
