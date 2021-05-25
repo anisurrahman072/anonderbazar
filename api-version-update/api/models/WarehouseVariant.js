@@ -46,7 +46,7 @@ module.exports = {
     },
     brand_id: {
       model: 'brand',
-      required: true
+      /*required: true*/
     },
     rack: {
       type: 'string',
