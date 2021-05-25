@@ -68,22 +68,18 @@ module.exports = {
       }
 
       const {
-        orderForMail,
-        allCouponCodes,
         order,
-        subordersTemp,
-        noShippingCharge,
-        shippingAddress
+        suborders,
+        payments,
+        allCouponCodes,
       } = await sails.getDatastore()
         .transaction(async (db) => {
           /****** Finalize Order -------------------------- */
           const {
-            orderForMail,
-            allCouponCodes,
             order,
-            subordersTemp,
-            noShippingCharge,
-            shippingAddress
+            suborders,
+            payments,
+            allCouponCodes,
           } = await SslCommerzService.createOrder(
             db,
             customer,
@@ -106,50 +102,26 @@ module.exports = {
             globalConfigs,
           );
           return {
-            orderForMail,
-            allCouponCodes,
             order,
-            subordersTemp,
-            noShippingCharge,
-            shippingAddress
+            suborders,
+            payments,
+            allCouponCodes,
           };
         });
 
-      try {
+      let shippingAddress = await PaymentAddress.find({
+        user_id: customer.id
+      });
 
-        let smsPhone = user.phone;
+      let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+      orderForMail.payments = payments;
 
-        if (!noShippingCharge && shippingAddress.phone) {
-          smsPhone = shippingAddress.phone;
-        }
-
-        if (smsPhone) {
-          let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-          console.log('smsTxt', smsText);
-          if (allCouponCodes && allCouponCodes.length > 0) {
-            if (allCouponCodes.length === 1) {
-              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
-            } else {
-              smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
-            }
-          }
-          SmsService.sendingOneSmsToOne([smsPhone], smsText);
-        }
-
-      } catch (err) {
-        console.log('order sms was not sent!');
-        console.log(err);
+      if (customer.phone || (shippingAddress && shippingAddress.length > 0 && shippingAddress[0].phone)) {
+        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
       }
 
-      try {
-        EmailService.orderSubmitMail(orderForMail);
-      } catch (err) {
-        console.log('order email was not sent!');
-        console.log(err);
-      }
+      await PaymentService.sendEmail(orderForMail);
 
-      let d = Object.assign({}, order);
-      d.suborders = subordersTemp;
       return res.status(200).json({
         success: true
       });
@@ -175,48 +147,22 @@ module.exports = {
       return;
     }
 
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    if (!globalConfigs) {
-      res.writeHead(301,
-        {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
-        }
-      );
-      res.end();
-      return;
-    }
-
     try {
+      let globalConfigs = await getGlobalConfig();
+
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
       console.log('validationResponse-sslCommerzSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
-
-        res.writeHead(301,
-          {
-            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('SSL Commerz Payment Validation Failed!')
-          }
-        );
-        res.end();
-        return;
+        throw new Error('SSL Commerz Payment Validation Failed!');
       }
 
       let user = await User.findOne({id: req.query.user_id, deletedAt: null});
 
       if (!user) {
-
-        res.writeHead(301,
-          {
-            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request! Customer was not found!')
-          }
-        );
-        res.end();
-        return;
+        throw new Error('Invalid Request! Customer was not found!');
       }
 
       const ordersFound = await Order.find({
@@ -291,7 +237,7 @@ module.exports = {
 
       res.writeHead(301,
         {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Sorry! There was a problem in processing the order.')
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(finalError.message)
         }
       );
       res.end();

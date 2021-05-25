@@ -80,7 +80,7 @@ module.exports = {
     }, cartItems);
 
     /** .............Payment Section ........... */
-    let paymentTemp = await PaymentService.createPayment(db, suborders, {
+    const payments = await PaymentService.createPayment(db, suborders, {
       user_id: customer.id,
       order_id: order.id,
       payment_type: paymentType,
@@ -89,43 +89,19 @@ module.exports = {
       status: 1
     });
 
-    const allCouponCodes = [];
-
-    if (allGeneratedCouponCodes && allGeneratedCouponCodes.length > 0) {
-      const couponCodeLen = allGeneratedCouponCodes.length;
-      for (let i = 0; i < couponCodeLen; i++) {
-        let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
-        if (couponObject && couponObject.id) {
-          allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
-        }
-      }
-    }
-
-    // Start/Delete Cart after submitting the order
-    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, suborders);
-    orderForMail.payments = paymentTemp;
+    const allCouponCodes = await PaymentService.generateCouponCodes(allGeneratedCouponCodes);
 
     await PaymentService.updateCart(cart.id, db, cartItems);
 
     await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-    console.log('successfully created:', orderForMail, allCouponCodes, order, suborders);
-
-    let shippingAddress = await PaymentAddress.find({
-      user_id: customer.id
-    }).usingConnection(db);
-
-    if (customer.phone || shippingAddress[0].phone) {
-      await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
-    }
-
-    await PaymentService.sendEmail(orderForMail);
+    console.log('successfully created:', allCouponCodes, order, suborders);
 
     return {
-      orderForMail,
-      allCouponCodes,
       order,
-      suborders
+      suborders,
+      payments,
+      allCouponCodes,
     };
   }
 };

@@ -289,17 +289,16 @@ module.exports = {
     return {suborders: subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes};
   },
 
-  findAllOrderedProducts: async (orderId, db, subordersTemp) => {
+  findAllOrderedProducts: async (orderId, suborders) => {
     let orderForMail = await Order.findOne({id: orderId})
       .populate('user_id')
-      .populate('shipping_address')
-      .usingConnection(db);
+      .populate('shipping_address');
 
     let allOrderedProducts = [];
-    for (let i = 0; i < subordersTemp.length; i++) {
-      let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}})
-        .populate('product_id')
-        .usingConnection(db);
+    const subOrderLen = suborders.length;
+    for (let i = 0; i < subOrderLen; i++) {
+      let items = await SuborderItem.find({where: {product_suborder_id: suborders[i].id}})
+        .populate('product_id');
 
       for (let index = 0; index < items.length; index++) {
         allOrderedProducts.push(items[index]);
@@ -327,6 +326,20 @@ module.exports = {
       const quantityToUpdate = parseFloat(thisInventoryProd.existing_quantity) - parseFloat(thisInventoryProd.ordered_quantity);
       await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate}).usingConnection(db);
     }
+  },
+
+  generateCouponCodes: async function (allGeneratedCouponCodes) {
+    const allCouponCodes = [];
+    if (allGeneratedCouponCodes && allGeneratedCouponCodes.length > 0) {
+      const couponCodeLen = allGeneratedCouponCodes.length;
+      for (let i = 0; i < couponCodeLen; i++) {
+        let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
+        if (couponObject && couponObject.id) {
+          allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
+        }
+      }
+    }
+    return allCouponCodes;
   },
 
   sendSms: async (authUser, order, allCouponCodes, shippingAddress) => {
