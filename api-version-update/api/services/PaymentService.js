@@ -2,29 +2,6 @@ const _ = require('lodash');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
-  getFinalAddress: async function (billingAddressId, shippingAddressId) {
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
-    const adminPaymentAddress = await this.getAdminPaymentAddress();
-
-    if (billingAddressId) {
-      finalBillingAddressId = billingAddressId;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
-    }
-
-    if (shippingAddressId) {
-      finalShippingAddressId = shippingAddressId;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
-    }
-
-    if (finalShippingAddressId === null || finalBillingAddressId === null) {
-      throw new Error('No Shipping or Billing Address found!');
-    }
-
-    return {finalBillingAddressId, finalShippingAddressId};
-  },
 
   getBillingAddress: async function (req, shippingAddress) {
     let billingAddress = null;
