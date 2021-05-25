@@ -11,7 +11,7 @@ module.exports = {
     return (couponLotteryCashback && grandOrderTotal <= couponLotteryCashback.amount);
   },
 
-  createOrder: async function (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) {
+  placeOrder: async function (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) {
     const {billingAddress, shippingAddress} = address;
     let {paymentType} = orderDetails;
 
