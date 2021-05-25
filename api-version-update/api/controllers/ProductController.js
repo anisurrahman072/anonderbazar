@@ -17,6 +17,7 @@ const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 module.exports = {
 
   details: async (req, res) => {
+    console.log('rouzex now', req.params);
     try {
       let key = 'product-' + req.param('id') + '-details';
 
@@ -869,6 +870,43 @@ module.exports = {
     } catch (error) {
       console.log('error: ', error);
       let message = 'Error in saving user question';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  /*Method called to decide whether a user can rate a product or not*/
+  /*route: product/canRateProduct*/
+  canRateProduct: async (req, res) => {
+    try {
+      console.log('rozux then: ', req.query.userID);
+      if (req.query.userID) {
+        let rawSQL = `
+            SELECT
+                cart_items.id
+            FROM
+                cart_items
+            LEFT JOIN product_orders ON product_orders.cart_id = cart_items.cart_id
+            LEFT JOIN users ON users.id = product_orders.user_id
+            WHERE
+                cart_items.product_id = ${req.query.productID} AND users.id = ${req.query.userID} AND product_orders.status = 11
+        `;
+
+        const canRateProduct = await sails.sendNativeQuery(rawSQL, []);
+
+        return res.status(200).json({
+          success: true,
+          canRateProduct: canRateProduct.rows,
+          message: 'User can rate the product, data received'
+        });
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in canRateProduct api call';
       res.status(400).json({
         success: false,
         message,

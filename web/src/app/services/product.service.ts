@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../config/app.config';
 import {HttpClient} from '@angular/common/http';
 import {DatePipe} from '@angular/common';
+import {response} from "express";
 
 @Injectable()
 export class ProductService {
@@ -67,6 +68,11 @@ export class ProductService {
     update(id: number, data: any) {
         return this.http
             .put(this.EndPoint + '/' + id, data)
+            .map(response => response);
+    }
+
+    canRateProduct(userID, productID): Observable<any>{
+        return this.http.get(this.EndPoint + `/canRateProduct?userID=${userID}&productID=${productID}`)
             .map(response => response);
     }
 

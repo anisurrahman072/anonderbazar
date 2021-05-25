@@ -7,6 +7,7 @@ import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import * as moment from 'moment';
+import * as ___ from "lodash";
 
 @Component({
     selector: 'app-product-description',
@@ -26,9 +27,12 @@ export class ProductDescriptionComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     address: any;
 
+    pageLoaded: boolean = false;
+
     rating: any = null;
     review: string = null;
     question: string = null;
+    reviewSection: boolean = false;
     reviewButton: boolean = true;
     reviewBox: boolean = false;
     questionButton: boolean = true;
@@ -73,6 +77,8 @@ export class ProductDescriptionComponent implements OnInit {
             return {...data, created_at}
         });
         this.data = this.productDescriptionData;
+
+        this.canRateProduct(this.userId, this.productId);
     }
 
     /*Method called on Rating and Review Submit*/
@@ -181,6 +187,16 @@ export class ProductDescriptionComponent implements OnInit {
     onQuestionPageChange(event) {
         window.scroll(1, 1);
         this.q = event;
+    }
+
+    canRateProduct(userID, productID) {
+        this.productService.canRateProduct(userID, productID)
+            .subscribe(result => {
+                console.log('canRateProduct', result.canRateProduct);
+                if(!___.isUndefined(result) && !___.isUndefined(result.canRateProduct) && ___.isArray(result.canRateProduct) && result.canRateProduct.length >= 1) {
+                    this.reviewSection = true;
+                }
+            })
     }
 
 }

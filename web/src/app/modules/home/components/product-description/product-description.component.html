@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12" *ngIf="reviewBox">
+                    <div class="col-xl-6 col-lg-12 col-md-12" *ngIf="reviewBox && reviewSection">
                         <form (ngSubmit)="onRatingAndReviewSubmit()" [formGroup]="ratingForm">
                                     <textarea class="form-control animated mb-4" cols="25" id="new-review"
                                               formControlName="review"
@@ -150,7 +150,7 @@
                         </form>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12" style="margin: auto; text-align: center"
-                         *ngIf="reviewButton"
+                         *ngIf="reviewButton && reviewSection"
                          (click)="reviewButtonClicked()">
                         <button class="submitBTN" style="margin-top: 0">Write a review</button>
                     </div>
