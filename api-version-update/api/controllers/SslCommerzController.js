@@ -47,7 +47,7 @@ module.exports = {
       }
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
-      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address, globalConfigs);
+      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address.zila_id, globalConfigs);
 
       let {
         grandOrderTotal,
@@ -184,7 +184,7 @@ module.exports = {
 
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
-      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address, globalConfigs);
+      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address.zila_id, globalConfigs);
 
       let {
         grandOrderTotal,
