@@ -2,9 +2,8 @@ const moment = require('moment');
 const _ = require('lodash');
 const EmailService = require('./EmailService');
 const SmsService = require('./SmsService');
-const {calcCartTotal} = require('../../libs/helper');
 const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
-const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
+const {sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {
   generateRandomString,

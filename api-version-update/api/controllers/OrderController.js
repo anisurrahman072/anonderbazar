@@ -388,7 +388,7 @@ module.exports = {
 
     try {
       const authUser = getAuthUser(req);
-      let globalConfigs = await getGlobalConfig();
+      const globalConfigs = await getGlobalConfig();
 
       let cart = await PaymentService.getCart(authUser.id);
       let cartItems = await PaymentService.getCartItems(cart.id);

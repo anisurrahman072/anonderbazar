@@ -3,58 +3,39 @@
  *
  * @description :: Server-side logic for processing bkash payment method
  */
-const {fetchWithTimeout} = require('../../libs/helper');
-const {bKash} = require('../../config/softbd');
-const {bKashModeConfigKey} = require('../../libs/helper');
-
+const moment = require('moment');
+const _ = require('lodash');
+const {sslApiUrl} = require('../../config/softbd');
+const {bKashGrandToken, bKashCreatePayment, bKashCreateAgreement} = require('../../libs/bkashHelper');
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
-  },
-  createOrder: async (db, customer, transDetails, addressIds, orderDetails) => {
-  },
-  createBKashPayment: async (authUser, orderDetails, addresses) => {
+
+    const payerReference = requestBody.payerReference;
+    const agreementId = requestBody.agreement_id;
+    if (!(payerReference)) {
+      throw new Error('Invalid Bkash Payment Request');
+    }
 
     const {
-      payerReference,
-      agreement_id,
-      grandOrderTotal
-    } = orderDetails;
-
-    const {
-      adminPaymentAddress,
       billingAddress,
       shippingAddress
     } = addresses;
 
     let tokenRes = await bKashGrandToken();
 
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
+    let {
+      grandOrderTotal,
+    } = PaymentService.calcCartTotal(cart, cartItems);
 
-    if (billingAddress && billingAddress.id) {
-      finalBillingAddressId = billingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
-    }
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+    /** adding shipping charge with grandtotal */
+    grandOrderTotal += courierCharge;
 
-    if (shippingAddress && shippingAddress.id) {
-      finalShippingAddressId = shippingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
-    }
-
-    if (!(payerReference)) {
-      throw new Error('Invalid Request');
-    }
-
-    console.log('orderDetails', orderDetails);
-    console.log('addresses', addresses);
-
-    if (agreement_id) {
+    if (agreementId) {
       const userWallets = await BkashCustomerWallet.find({
         user_id: authUser.id,
-        agreement_id: agreement_id,
+        agreement_id: agreementId,
         wallet_no: payerReference,
         row_status: 3,
         deletedAt: null
@@ -73,14 +54,14 @@ module.exports = {
         details: JSON.stringify({
           id_token: tokenRes.id_token,
           payerReference,
-          agreement_id,
-          billingAddressId: finalBillingAddressId,
-          shippingAddressId: finalShippingAddressId
+          agreementId,
+          billingAddressId: billingAddress.id,
+          shippingAddressId: shippingAddress.id
         })
       }).fetch();
 
       const payloadData = {
-        'agreementID': agreement_id,
+        'agreementID': agreementId,
         'mode': '0001',
         'payerReference': payerReference,
         'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
@@ -100,9 +81,9 @@ module.exports = {
           details: JSON.stringify({
             id_token: tokenRes.id_token,
             payerReference,
-            agreement_id,
-            billingAddressId: finalBillingAddressId,
-            shippingAddressId: finalShippingAddressId,
+            agreementId,
+            billingAddressId: billingAddress.id,
+            shippingAddressId: shippingAddress.id,
             bKashResponse
           })
         });
@@ -116,9 +97,9 @@ module.exports = {
         details: JSON.stringify({
           id_token: tokenRes.id_token,
           payerReference,
-          agreement_id,
-          billingAddressId: finalBillingAddressId,
-          shippingAddressId: finalShippingAddressId,
+          agreementId,
+          billingAddressId: billingAddress.id,
+          shippingAddressId: shippingAddress.id,
           bKashResponse
         })
       });
@@ -148,8 +129,8 @@ module.exports = {
         payment_id: bKashAgreementCreateResponse.paymentID,
         full_response: JSON.stringify({
           id_token: tokenRes.id_token,
-          billingAddressId: finalBillingAddressId,
-          shippingAddressId: finalShippingAddressId,
+          billingAddressId: billingAddress.id,
+          shippingAddressId: shippingAddress.id,
           bKashAgreementCreateResponse,
         })
       });
