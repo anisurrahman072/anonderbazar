@@ -1,8 +1,8 @@
-const {fetchWithTimeout, bKashModeConfigKey} = require('../../libs/helper');
-const {bKash} = require('../../config/softbd');
-
+/**
+ * bkashHelper
+ *
+ */
 module.exports = {
-
   bKashGrandToken: async () => {
     let modeConfigKey = bKashModeConfigKey();
 
