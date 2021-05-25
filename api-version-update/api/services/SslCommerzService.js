@@ -89,7 +89,7 @@ module.exports = {
       status: 1
     });
 
-    const allCouponCodes = await PaymentService.generateCouponCodes(allGeneratedCouponCodes);
+    const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
 
     await PaymentService.updateCart(cart.id, db, cartItems);
 

@@ -14,6 +14,10 @@ module.exports = {
         paymentGatewayService = SslCommerzService;
         break;
       }
+      case 'nagad': {
+        paymentGatewayService = NagadService;
+        break;
+      }
     }
     return paymentGatewayService;
   }

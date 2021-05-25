@@ -2,6 +2,30 @@ const _ = require('lodash');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
+  getFinalAddress: async function (billingAddressId, shippingAddressId) {
+    let finalBillingAddressId = null;
+    let finalShippingAddressId = null;
+    const adminPaymentAddress = await this.getAdminPaymentAddress();
+
+    if (billingAddressId) {
+      finalBillingAddressId = billingAddressId;
+    } else if (adminPaymentAddress && adminPaymentAddress.id) {
+      finalBillingAddressId = adminPaymentAddress.id;
+    }
+
+    if (shippingAddressId) {
+      finalShippingAddressId = shippingAddressId;
+    } else if (adminPaymentAddress && adminPaymentAddress.id) {
+      finalShippingAddressId = adminPaymentAddress.id;
+    }
+
+    if (finalShippingAddressId === null || finalBillingAddressId === null) {
+      throw new Error('No Shipping or Billing Address found!');
+    }
+
+    return {finalBillingAddressId, finalShippingAddressId};
+  },
+
   getBillingAddress: async function (req, shippingAddress) {
     let billingAddress = null;
     if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
@@ -29,12 +53,16 @@ module.exports = {
     /** check whether shipping address is required or not and based on it we're using admin address in case shipping address is not provided */
     if (this.isAllCouponProduct(cartItems)) {
       if (!shippingAddress) {
-        return PaymentAddress.findOne({
-          id: adminPaymentAddressId
-        });
+        return await this.getAdminPaymentAddress();
       }
     }
     return shippingAddress;
+  },
+
+  getAdminPaymentAddress: async function () {
+    return await PaymentAddress.findOne({
+      id: adminPaymentAddressId
+    });
   },
 
   isAllCouponProduct: function (cartItems) {
@@ -328,7 +356,7 @@ module.exports = {
     }
   },
 
-  generateCouponCodes: async function (allGeneratedCouponCodes) {
+  generateCouponCodes: async function (db, allGeneratedCouponCodes) {
     const allCouponCodes = [];
     if (allGeneratedCouponCodes && allGeneratedCouponCodes.length > 0) {
       const couponCodeLen = allGeneratedCouponCodes.length;

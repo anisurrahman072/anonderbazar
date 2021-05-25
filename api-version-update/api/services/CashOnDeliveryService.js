@@ -1,8 +1,15 @@
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
-  createOrder: async (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) => {
-    const {billingAddress, shippingAddress} = address;
+  isCashOnDeliveryAllowed: function (cartItems) {
+    const notAllowedProductFound = cartItems.filter((cartItem) => {
+      return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
+    });
+    return (notAllowedProductFound && notAllowedProductFound.length > 0);
+  },
+
+  placeOrder: async function (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) {
+    let {billingAddress, shippingAddress} = address;
     let {paymentType} = orderDetails;
 
     let {
@@ -10,103 +17,79 @@ module.exports = {
       totalQty
     } = await PaymentService.calcCartTotal(cart, cartItems);
 
-    let {
-      courierCharge,
-      adminPaymentAddress
-    } = await PaymentService.calcCourierCharge(cartItems, urlParams, globalConfigs);
-
-    console.log('grandOrderTotal & courierCharge', grandOrderTotal, courierCharge, adminPaymentAddress);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.id, globalConfigs);
 
     grandOrderTotal += courierCharge;
 
     /** Check weather cashback is valid payment method for the customer */
-
-    let onlyCouponProduct;
-    let paymentMethodNotAllowed;
-
-    const notAllowedProductFound = cartItems.filter((cartItem) => {
-      return cartItem.product_id && cartItem.product_id.subcategory_id == cashOnDeliveryNotAllowedForCategory;
-    });
-
-    const couponProductFound = cartItems.filter((cartItem) => {
-      return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-    });
-
-    onlyCouponProduct = couponProductFound && couponProductFound.length > 0;
-    paymentMethodNotAllowed = notAllowedProductFound && notAllowedProductFound.length > 0;
-
-    if (onlyCouponProduct || paymentMethodNotAllowed) {
+    if (PaymentService.isAllCouponProduct(cartItems) || this.isCashOnDeliveryAllowed(cartItems)) {
       throw new Error('Payment method is invalid for this particular order.');
     }
     /** END */
 
-    /** Check weather Shipping address & Billing address found or not */
-
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
-
-    if (billingAddress && billingAddress.id) {
-      finalBillingAddressId = billingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
-    }
-
-    if (shippingAddress && shippingAddress.id) {
-      finalShippingAddressId = shippingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
-    }
-
-    if (finalShippingAddressId === null || finalBillingAddressId === null) {
-      throw new Error('No Shipping or Billing Address found!');
-    }
+    /** Check weather Shipping address & Billing address found or not & get final addresses */
+    const {
+      finalBillingAddressId,
+      finalShippingAddressId
+    } = await PaymentService.getFinalAddress(billingAddress.id, shippingAddress.id);
     /** END */
 
     const {
-      orderForMail,
       order,
-      subordersTemp
+      suborders,
+      paymentTemp
     } = await sails.getDatastore()
       .transaction(async (db) => {
 
         /** Create order => suborders => suborders item variants */
         let {
-          subordersTemp,
+          suborders,
           order,
-          allOrderedProductsInventory,
-          allGeneratedCouponCodes
-        } = await PaymentService.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQty, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
+          allOrderedProductsInventory
+        } = await PaymentService.createOrder(db, {
+          user_id: authUser.id,
+          cart_id: cart.id,
+          total_price: grandOrderTotal,
+          total_quantity: totalQty,
+          billing_address: finalBillingAddressId,
+          shipping_address: finalShippingAddressId,
+          courier_charge: courierCharge,
+          courier_status: 1
+        }, cartItems);
         /** END */
 
         /** .............Payment Section ........... */
         let paymentResponse = {
           'purpose': 'CashOn Delivery Payment for product purchase'
         };
-        let sslCommerztranId = null;
 
-        let paymentTemp = await PaymentService.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
+        let paymentTemp = await PaymentService.createPayment(db, suborders, {
+          user_id: authUser.id,
+          order_id: order.id,
+          payment_type: paymentType,
+          details: JSON.stringify(paymentResponse),
+          status: 1
+        });
 
         // Start/Delete Cart after submitting the order
-        let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
-        orderForMail.payments = paymentTemp;
 
         await PaymentService.updateCart(cart.id, db, cartItems);
 
         await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-        console.log('successfully created:', orderForMail, order, subordersTemp, shippingAddress);
-
         return {
-          orderForMail,
           order,
-          subordersTemp
+          suborders,
+          paymentTemp
         };
       });
-    let allCouponCodes = [];
 
     if (authUser.phone || shippingAddress.phone) {
-      await PaymentService.sendSms(authUser, order, allCouponCodes, shippingAddress);
+      await PaymentService.sendSms(authUser, order, [], shippingAddress);
     }
+
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+    orderForMail.payments = paymentTemp;
 
     await PaymentService.sendEmail(orderForMail);
 
