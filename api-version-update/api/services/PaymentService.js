@@ -3,6 +3,14 @@ const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
 
+  getTheCustomer: async function (userId){
+    let customer = await User.findOne({id: userId, deletedAt: null});
+
+    if (!customer) {
+      throw new Error('Invalid Request! Customer was not found!');
+    }
+    return customer;
+  },
   getBillingAddress: async function (req, shippingAddress) {
     let billingAddress = null;
     if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {

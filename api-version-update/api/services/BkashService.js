@@ -138,4 +138,104 @@ module.exports = {
     }
     throw new Error(JSON.stringify(bKashAgreementCreateResponse));
   },
+  createOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
+
+    await PaymentTransactionLog.updateOne({
+      id: transactionLogId
+    }).set({
+      status: 3,
+      details: JSON.stringify({
+        id_token: transactionDetails.id_token,
+        payerReference: bKashResponse.payerReference,
+        agreement_id: bKashResponse.agreementID,
+        billingAddressId: transactionDetails.billingAddressId,
+        shippingAddressId: transactionDetails.shippingAddressId,
+        bKashResponse
+      })
+    });
+
+    const {billingAddressId,shippingAddressId } = transactionDetails;
+    let shippingAddress = await PaymentAddress.findOne({
+      id: shippingAddressId
+    });
+
+    let cart = await PaymentService.getCart(customer.id);
+    let cartItems = await PaymentService.getCartItems(cart.id);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+
+    let {
+      grandOrderTotal,
+      totalQty
+    } = PaymentService.calcCartTotal(cart, cartItems);
+
+    /** adding shipping charge with grandtotal */
+    grandOrderTotal += courierCharge;
+
+    const {
+      order,
+      suborders,
+      payments,
+      allCouponCodes,
+    } = await sails.getDatastore()
+      .transaction(async (db) => {
+        /****** Finalize Order -------------------------- */
+
+        let {
+          suborders,
+          order,
+          allOrderedProductsInventory,
+          allGeneratedCouponCodes
+        } = await PaymentService.createOrder(db, {
+          user_id: customer.id,
+          cart_id: cart.id,
+          total_price: grandOrderTotal,
+          total_quantity: totalQty,
+          billing_address: billingAddressId,
+          shipping_address: shippingAddressId,
+          courier_charge: courierCharge,
+          courier_status: 1,
+        }, cartItems);
+
+        /** .............Payment Section ........... */
+        const payments = await PaymentService.createPayment(db, suborders, {
+          user_id: customer.id,
+          order_id: order.id,
+          payment_type: 'bKash',
+          details: JSON.stringify(bKashResponse),
+          transection_key: bKashResponse.trxID,
+          status: 1
+        });
+        const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
+
+        await PaymentService.updateCart(cart.id, db, cartItems);
+
+        await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+        await PaymentTransactionLog.updateOne({
+          id: transactionLogId
+        }).set({
+          order_id: order.id,
+        }).usingConnection(db);
+
+        return {
+          order,
+          suborders,
+          payments,
+          allCouponCodes,
+        };
+
+      });
+
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+    orderForMail.payments = payments;
+
+    if (customer.phone || (shippingAddress && shippingAddress.length > 0 && shippingAddress[0].phone)) {
+      await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+    }
+
+    await PaymentService.sendEmail(orderForMail);
+
+    return order;
+
+  }
 };

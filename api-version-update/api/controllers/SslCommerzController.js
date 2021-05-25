@@ -16,13 +16,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = await User.findOne({id: req.query.user_id, deletedAt: null});
-
-      if (!customer) {
-        return res.status(400).json({
-          failure: true
-        });
-      }
+      let customer = PaymentService.getTheCustomer(req.query.user_id);
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
@@ -150,11 +144,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = await User.findOne({id: req.query.user_id, deletedAt: null});
-
-      if (!customer) {
-        throw new Error('Invalid Request! Customer was not found!');
-      }
+      let customer = PaymentService.getTheCustomer(req.query.user_id);
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
