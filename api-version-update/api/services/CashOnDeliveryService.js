@@ -27,13 +27,6 @@ module.exports = {
     }
     /** END */
 
-    /** Check weather Shipping address & Billing address found or not & get final addresses */
-    const {
-      finalBillingAddressId,
-      finalShippingAddressId
-    } = await PaymentService.getFinalAddress(billingAddress.id, shippingAddress.id);
-    /** END */
-
     const {
       order,
       suborders,
@@ -51,8 +44,8 @@ module.exports = {
           cart_id: cart.id,
           total_price: grandOrderTotal,
           total_quantity: totalQty,
-          billing_address: finalBillingAddressId,
-          shipping_address: finalShippingAddressId,
+          billing_address: billingAddress,
+          shipping_address: shippingAddress,
           courier_charge: courierCharge,
           courier_status: 1
         }, cartItems);
