@@ -1,7 +1,17 @@
-// const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
-
 module.exports = {
-  createOrder: async (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) => {
+  getCouponLotteryCashback: async function (authUser) {
+    return await CouponLotteryCashback.findOne({
+      user_id: authUser.id,
+      deletedAt: null
+    });
+  },
+
+  isAllowedForCashback: async function (grandOrderTotal, authUser) {
+    let couponLotteryCashback = await this.getCouponLotteryCashback(authUser);
+    return (couponLotteryCashback && grandOrderTotal <= couponLotteryCashback.amount);
+  },
+
+  placeOrder: async function (authUser, requestBody, urlParams, orderDetails, address, globalConfigs, cart, cartItems) {
     const {billingAddress, shippingAddress} = address;
     let {paymentType} = orderDetails;
 
@@ -10,93 +20,67 @@ module.exports = {
       totalQty
     } = await PaymentService.calcCartTotal(cart, cartItems);
 
-    let {
-      courierCharge,
-      adminPaymentAddress
-    } = await PaymentService.calcCourierCharge(cartItems, urlParams, globalConfigs);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     grandOrderTotal += courierCharge;
 
-    /** Check weather Shipping address & Billing address found or not */
-
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
-
-    if (billingAddress && billingAddress.id) {
-      finalBillingAddressId = billingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
-    }
-
-    if (shippingAddress && shippingAddress.id) {
-      finalShippingAddressId = shippingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
-    }
-
-    if (finalShippingAddressId === null || finalBillingAddressId === null) {
-      throw new Error('No Shipping or Billing Address found!');
-    }
-    /** END */
-
     /** Customer is allowed for cashBack or not */
-    const couponLotteryCashback = await CouponLotteryCashback.findOne({
-      user_id: authUser.id,
-      deletedAt: null
-    });
-
-    if (!(couponLotteryCashback && grandOrderTotal <= couponLotteryCashback.amount)) {
+    if (!(await this.isAllowedForCashback(grandOrderTotal, authUser))) {
       throw new Error('The customer is not allowed to use cashback with this order.');
     }
     /** END */
 
     const {
-      orderForMail,
       allCouponCodes,
-      order
+      order,
+      suborders,
+      payments
     } = await sails.getDatastore()
       .transaction(async (db) => {
 
         /** Create order => suborders => suborders item variants */
         let {
-          subordersTemp,
+          suborders,
           order,
           allOrderedProductsInventory,
           allGeneratedCouponCodes
-        } = await PaymentService.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQty, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
+        } = await PaymentService.createOrder(db, {
+          user_id: authUser.id,
+          cart_id: cart.id,
+          total_price: grandOrderTotal,
+          total_quantity: totalQty,
+          billing_address: billingAddress.id,
+          shipping_address: shippingAddress.id,
+          courier_charge: courierCharge,
+          courier_status: 1
+        }, cartItems);
         /** END */
 
         /** .............Payment Section ........... */
         let paymentResponse = {
           'purpose': 'Cashback Payment for coupon code purchase'
         };
-        let sslCommerztranId = null;
 
-        let paymentTemp = await PaymentService.createPayment(db, subordersTemp, authUser, order, paymentType, paymentResponse, sslCommerztranId);
+        let payments = await PaymentService.createPayment(db, suborders, {
+          user_id: authUser.id,
+          order_id: order.id,
+          payment_type: paymentType,
+          details: JSON.stringify(paymentResponse),
+          status: 1
+        });
 
-        let allCouponCodes = [];
-
-        if (allGeneratedCouponCodes.length > 0) {
-          const couponCodeLen = allGeneratedCouponCodes.length;
-          for (let i = 0; i < couponCodeLen; i++) {
-            let couponObject = await ProductPurchasedCouponCode.create(allGeneratedCouponCodes[i]).fetch().usingConnection(db);
-            if (couponObject && couponObject.id) {
-              allCouponCodes.push('1' + _.padStart(couponObject.id, 6, '0'));
-            }
-          }
-        }
+        let allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
 
         // Start/Delete Cart after submitting the order
-        let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
-        orderForMail.payments = paymentTemp;
 
         await PaymentService.updateCart(cart.id, db, cartItems);
 
         await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-        console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, shippingAddress);
+        console.log('successfully created:', allCouponCodes, order, suborders, shippingAddress);
 
         /** Update customer cashback amount */
+        const couponLotteryCashback = await this.getCouponLotteryCashback(authUser);
         const cashBackAmount = couponLotteryCashback.amount;
         const deductedCashBackAmount = (cashBackAmount - grandOrderTotal);
 
@@ -108,16 +92,19 @@ module.exports = {
         /** END */
 
         return {
-          orderForMail,
           allCouponCodes,
           order,
-          subordersTemp
+          suborders,
+          payments
         };
       });
 
     if (authUser.phone || shippingAddress.phone) {
       await PaymentService.sendSms(authUser, order, allCouponCodes, shippingAddress);
     }
+
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+    orderForMail.payments = payments;
 
     await PaymentService.sendEmail(orderForMail);
 
