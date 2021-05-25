@@ -135,16 +135,19 @@
                     </div>
                     <div class="add-carts-detail" *ngIf="data.quantity > 0">
                         <div class="add-cart d-flex">
-                            <ul class="d-flex mt-1 coupon-qty-block" *ngIf="data.is_coupon_product; else productQtyBlock">
-                                <li class="cursor-pointer"><a class="minus-qty" (click)="decreaseProduct_quantity()">-</a></li>
-                                <li class="num" >
+                            <ul class="d-flex mt-1 coupon-qty-block"
+                                *ngIf="data.is_coupon_product; else productQtyBlock">
+                                <li class="cursor-pointer"><a class="minus-qty"
+                                                              (click)="decreaseProduct_quantity()">-</a></li>
+                                <li class="num">
                                     <input class="form-control qty-input" style="width: 80px;"
                                            [(ngModel)]="product_quantity" type="number" #productQuantity>
                                 </li>
-                                <li class="mr-0 cursor-pointer"><a class="plus-qty"  (click)="increaseProduct_quantity()">+</a></li>
+                                <li class="mr-0 cursor-pointer"><a class="plus-qty"
+                                                                   (click)="increaseProduct_quantity()">+</a></li>
                             </ul>
                             <ng-template #productQtyBlock>
-                                <ul class="d-flex mt-1" >
+                                <ul class="d-flex mt-1">
                                     <li class="cursor-pointer"><a (click)="decreaseProduct_quantity()">-</a></li>
                                     <li class="num"><a>{{product_quantity}}</a></li>
                                     <li class="mr-0 cursor-pointer"><a (click)="increaseProduct_quantity()">+</a></li>
@@ -179,7 +182,9 @@
     </div>
 </section>
 
-<app-product-description [data]="data" (onRatingChange)="ratingChange($event)"></app-product-description>
+<app-product-description *ngIf="productDescriptionData && productRatingDetail"
+                         [productDescriptionData]="productDescriptionData" [productRatingDetail]="productRatingDetail"
+                         [productId]="id" [currentUserId]="currentUserId"></app-product-description>
 <app-related-product *ngIf="similarProducts" [products]="similarProducts"></app-related-product>
 
 <!--<ng-template #couponProductModalTemplate>
