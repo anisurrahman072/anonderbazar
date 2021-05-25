@@ -150,6 +150,12 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
+      let customer = await User.findOne({id: req.query.user_id, deletedAt: null});
+
+      if (!customer) {
+        throw new Error('Invalid Request! Customer was not found!');
+      }
+
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
@@ -157,12 +163,6 @@ module.exports = {
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
-      }
-
-      let user = await User.findOne({id: req.query.user_id, deletedAt: null});
-
-      if (!user) {
-        throw new Error('Invalid Request! Customer was not found!');
       }
 
       const ordersFound = await Order.find({
@@ -182,26 +182,40 @@ module.exports = {
 
       const paidAmount = parseFloat(validationResponse.amount);
 
+      let cart = await PaymentService.getCart(customer.id);
+      let cartItems = await PaymentService.getCartItems(cart.id);
+      let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address, globalConfigs);
+
+      let {
+        grandOrderTotal,
+        totalQty
+      } = PaymentService.calcCartTotal(cart, cartItems);
+
+      /** adding shipping charge with grandtotal */
+      grandOrderTotal += courierCharge;
+
+      if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
+        console.log('grandOrderTotal & paid amount miss matched');
+        throw new Error('Paid amount and order amount are different.');
+      }
+
       const {
-        orderForMail,
-        allCouponCodes,
         order,
-        subordersTemp,
-        noShippingCharge,
-        shippingAddress
+        suborders,
+        payments,
+        allCouponCodes,
       } = await sails.getDatastore()
         .transaction(async (db) => {
           /****** Finalize Order -------------------------- */
           const {
-            orderForMail,
-            allCouponCodes,
             order,
-            subordersTemp,
-            noShippingCharge,
-            shippingAddress
+            suborders,
+            payments,
+            allCouponCodes,
           } = await SslCommerzService.createOrder(
             db,
-            user, {
+            customer,
+            {
               paymentType: 'SSLCommerce',
               paidAmount,
               sslCommerztranId: req.body.tran_id,
@@ -211,21 +225,35 @@ module.exports = {
               billingAddressId: req.query.billing_address,
               shippingAddressId: req.query.shipping_address
             },
-            globalConfigs,
-            req.query.courierCharge
+            {
+              courierCharge,
+              grandOrderTotal,
+              totalQty,
+              cart,
+              cartItems
+            },
+            globalConfigs
           );
           return {
-            orderForMail,
-            allCouponCodes,
             order,
-            subordersTemp,
-            noShippingCharge,
-            shippingAddress
+            suborders,
+            payments,
+            allCouponCodes,
           };
         });
 
-      let d = Object.assign({}, order);
-      d.suborders = subordersTemp;
+      let shippingAddress = await PaymentAddress.find({
+        user_id: customer.id
+      });
+      let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+      orderForMail.payments = payments;
+
+      if (customer.phone || (shippingAddress && shippingAddress.length > 0 && shippingAddress[0].phone)) {
+        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+      }
+
+      await PaymentService.sendEmail(orderForMail);
+
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?order=' + order.id
