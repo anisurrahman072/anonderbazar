@@ -23,7 +23,7 @@ module.exports = {
       totalQty
     } = await PaymentService.calcCartTotal(cart, cartItems);
 
-    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.id, globalConfigs);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     grandOrderTotal += courierCharge;
 

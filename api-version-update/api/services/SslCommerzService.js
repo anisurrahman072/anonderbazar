@@ -17,7 +17,7 @@ module.exports = {
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
 
-    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.id, globalConfigs);
+    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     console.log('courierCharge', courierCharge);
 
