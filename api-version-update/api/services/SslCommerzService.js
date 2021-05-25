@@ -1,3 +1,8 @@
+/**
+ * SslCommerzService
+ *
+ * @description :: Server-side logic for processing ssl commerz payment method
+ */
 const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
 
 module.exports = {

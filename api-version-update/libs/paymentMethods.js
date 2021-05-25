@@ -18,6 +18,10 @@ module.exports = {
         paymentGatewayService = NagadService;
         break;
       }
+      case 'bkash': {
+        paymentGatewayService = BkashService;
+        break;
+      }
     }
     return paymentGatewayService;
   }
