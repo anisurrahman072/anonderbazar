@@ -1,3 +1,8 @@
+/**
+ * CashOnDeliveryService
+ *
+ * @description :: Server-side logic for processing Cash on Delivery payment method
+ */
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 
 module.exports = {
