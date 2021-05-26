@@ -1,3 +1,10 @@
+const {
+  BKASH_PAYMENT_TYPE,
+  NAGAD_PAYMENT_TYPE,
+  CASH_PAYMENT_TYPE,
+  CASHBACK_PAYMENT_TYPE,
+  SSL_COMMERZ_PAYMENT_TYPE
+} = require('./constants');
 const {PARTIAL_ORDER_TYPE} = require('./orders');
 module.exports = {
   getPaymentService: function (paymentType, orderType) {
@@ -7,23 +14,23 @@ module.exports = {
 
     let paymentGatewayService = null;
     switch (paymentType) {
-      case 'CashBack': {
+      case CASHBACK_PAYMENT_TYPE: {
         paymentGatewayService = CashbackService;
         break;
       }
-      case 'Cash': {
+      case CASH_PAYMENT_TYPE: {
         paymentGatewayService = CashOnDeliveryService;
         break;
       }
-      case 'SSLCommerce': {
+      case SSL_COMMERZ_PAYMENT_TYPE: {
         paymentGatewayService = SslCommerzService;
         break;
       }
-      case 'nagad': {
+      case NAGAD_PAYMENT_TYPE: {
         paymentGatewayService = NagadService;
         break;
       }
-      case 'bkash': {
+      case BKASH_PAYMENT_TYPE: {
         paymentGatewayService = BkashService;
         break;
       }

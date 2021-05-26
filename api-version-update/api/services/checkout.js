@@ -2,6 +2,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const EmailService = require('./EmailService');
 const SmsService = require('./SmsService');
+const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
 const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('../../libs/bkashHelper.js');
 const {sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
@@ -343,7 +344,7 @@ module.exports = {
 
       const paymentTransactionLog = await PaymentTransactionLog.create({
         user_id: authUser.id,
-        payment_type: 'bKash',
+        payment_type: BKASH_PAYMENT_TYPE ,
         payment_amount: grandOrderTotal,
         payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
         status: '1',
@@ -713,7 +714,7 @@ module.exports = {
         } = await this.createOrder(
           db,
           customer, {
-            paymentType: 'bKash',
+            paymentType: BKASH_PAYMENT_TYPE,
             paidAmount: parseFloat(bKashResponse.amount),
             sslCommerztranId: null,
             paymentResponse: bKashResponse

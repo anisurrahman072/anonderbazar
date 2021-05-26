@@ -29,24 +29,25 @@ module.exports = {
       finalPostalCode,
       finalAddress,
       randomstring,
-      isPartialPayment = false
+      isPartialPayment = false,
+      orderId = null
     } = additionalParams;
 
     let successUrl = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     if (isPartialPayment) {
-      successUrl = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+      successUrl = sslApiUrl + '/ssl-commerz/success-partial/?user_id=' + authUser.id + '&order_id=' + orderId + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     }
     let ipnUrl = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     if (isPartialPayment) {
-      ipnUrl = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+      ipnUrl = sslApiUrl + '/ssl-commerz/success-ipn-partial/?user_id=' + authUser.id + '&order_id=' + orderId + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     }
     let failUrl = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     if (isPartialPayment) {
-      failUrl = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+      failUrl = sslApiUrl + '/ssl-commerz/failure-partial/?user_id=' + authUser.id + '&order_id=' + orderId + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     }
     let cancelUrl = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     if (isPartialPayment) {
-      cancelUrl = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+      cancelUrl = sslApiUrl + '/ssl-commerz/error-partial/?user_id=' + authUser.id + '&order_id=' + orderId + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
     }
 
     return {

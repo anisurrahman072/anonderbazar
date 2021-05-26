@@ -141,6 +141,7 @@ module.exports = {
       throw new Error('No address has been provided.');
     }
     const postBody = preparePaymentRequest(customer, {
+      orderId: order.id,
       shippingAddressId: shippingAddress.id,
       billingAddressId: billingAddress.id,
       amountToPay,

@@ -5,10 +5,10 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
 const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
 const {bKashCancelAgreement} = require('../../libs/bkashHelper.js');
-const {calcCartTotal} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl} = require('../../config/softbd');
 const {
   bKashGrandToken,
@@ -368,7 +368,6 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length === 1)) {
-
         res.writeHead(301, {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
         });
@@ -434,7 +433,7 @@ module.exports = {
             },
             req.allParams(),
             {
-              paymentType: 'bKash'
+              paymentType: BKASH_PAYMENT_TYPE
             },
             {
               billingAddress,

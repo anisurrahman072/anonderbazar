@@ -1,3 +1,5 @@
+const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
+const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
@@ -30,16 +32,14 @@ module.exports = {
         });
       }
 
-      const numberOfOrderFound = await Order.count().where({
-        ssl_transaction_id: req.body.tran_id,
-        deletedAt: null
-      });
+      const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
 
-      if (numberOfOrderFound > 0) {
+      if (hasAlreadyBeenUsed) {
         return res.status(422).json({
           failure: true
         });
       }
+
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
       let courierCharge = await PaymentService.calcCourierCharge(cartItems, req.query.shipping_address.zila_id, globalConfigs);
@@ -79,7 +79,7 @@ module.exports = {
             db,
             customer,
             {
-              paymentType: 'SSLCommerce',
+              paymentType: SSL_COMMERZ_PAYMENT_TYPE,
               sslCommerztranId: req.body.tran_id,
               paymentResponse: req.body
             },
@@ -207,7 +207,7 @@ module.exports = {
             db,
             customer,
             {
-              paymentType: 'SSLCommerce',
+              paymentType: SSL_COMMERZ_PAYMENT_TYPE,
               paidAmount,
               sslCommerztranId: req.body.tran_id,
               paymentResponse: req.body
@@ -277,7 +277,63 @@ module.exports = {
     res.end();
   },
   ipnPaymentSuccessForPartial: async function(req, res) {
+    console.log('################ SSLCOMMERZ success IPN (Partial)', req.body);
 
+    if (!(req.body.tran_id && req.query.user_id && req.query.order_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
+      return res.status(422).json({
+        failure: true
+      });
+    }
+    try {
+      let globalConfigs = await getGlobalConfig();
+
+      let customer = PaymentService.getTheCustomer(req.query.user_id);
+
+      const order = await Order.findOne({id: req.param('order_id'), deletedAt: null})
+        .populate('shipping_address');
+
+      if (!order) {
+        throw new Error('Order doesn\'t exist.');
+      }
+
+      const sslcommerz = sslcommerzInstance(globalConfigs);
+      const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
+
+      console.log('validationResponse-sslCommerzIpnSuccess', validationResponse);
+
+      if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
+        return res.status(422).json({
+          failure: true
+        });
+      }
+
+      const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
+
+      if (hasAlreadyBeenUsed) {
+        return res.status(422).json({
+          failure: true
+        });
+      }
+
+      const paidAmount = parseFloat(validationResponse.amount);
+
+      // TODO: save payment transaction
+
+      const shippingAddress = order.shipping_address;
+
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSms(customer, order, [], shippingAddress);
+      }
+
+      return res.status(200).json({
+        success: true
+      });
+    } catch (finalError) {
+      console.log('finalError', finalError);
+      return res.status(400).json({
+        failure: true
+      });
+    }
   },
   paymentSuccessPartial: async function(req, res) {
 

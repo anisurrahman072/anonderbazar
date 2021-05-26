@@ -3,7 +3,7 @@ const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 
 module.exports = {
 
-  getTheCustomer: async function (userId){
+  getTheCustomer: async function (userId) {
     let customer = await User.findOne({id: userId, deletedAt: null});
 
     if (!customer) {
@@ -50,6 +50,14 @@ module.exports = {
     });
   },
 
+  hasPaymentTransactionBeenUsed: async function (paymentMethod, transactionId) {
+    const numberOfTransaction = await Payment.count().where({
+      transection_key: transactionId,
+      payment_type: paymentMethod,
+      deletedAt: null
+    });
+    return numberOfTransaction > 0;
+  },
   isAllCouponProduct: function (cartItems) {
     const couponProductFound = cartItems.filter((cartItem) => {
       return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
@@ -388,6 +396,9 @@ module.exports = {
     } catch (err) {
       console.log('Email Sending Error', err);
     }
-  }
+  },
 
+  savePartialPayment: async function() {
+
+  }
 };
