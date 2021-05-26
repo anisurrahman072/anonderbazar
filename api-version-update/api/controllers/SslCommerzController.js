@@ -1,3 +1,4 @@
+const {getPaymentRowPartial} = require('../services/PaymentService');
 const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
 const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
 const {getGlobalConfig} = require('../../libs/helper');
@@ -289,7 +290,7 @@ module.exports = {
 
       let customer = PaymentService.getTheCustomer(req.query.user_id);
 
-      const order = await Order.findOne({id: req.param('order_id'), deletedAt: null})
+      const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
         .populate('shipping_address');
 
       if (!order) {
@@ -361,12 +362,117 @@ module.exports = {
     }
   },
   paymentSuccessPartial: async function (req, res) {
+    if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent('Invalid Payment Request')
+        }
+      );
+      res.end();
+      return;
+    }
+    try {
+      let globalConfigs = await getGlobalConfig();
+
+      let customer = PaymentService.getTheCustomer(req.query.user_id);
+
+      const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
+        .populate('shipping_address');
+
+      if (!order) {
+        throw new Error('Order doesn\'t exist.');
+      }
+
+      const sslcommerz = sslcommerzInstance(globalConfigs);
+      const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
+
+      console.log('validationResponse-sslCommerzSuccess', validationResponse);
+
+      if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
+        throw new Error('SSL Commerz Payment Validation Failed!');
+      }
+
+      const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
+
+      if (numberOfTransaction) {
+        res.writeHead(301,
+          {
+            Location: sslWebUrl + 'profile/orders/invoice/' + order.id
+          }
+        );
+        res.end();
+        return;
+      }
+
+      let paidAmount = parseFloat(validationResponse.amount);
+
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          await Payment.create({
+            payment_amount: paidAmount,
+            user_id: customer.id,
+            order_id: order.id,
+            payment_type: SSL_COMMERZ_PAYMENT_TYPE,
+            details: JSON.stringify(req.body),
+            transection_key: req.body.tran_id,
+            status: 1
+          }).fetch().usingConnection(db);
+
+          const totalPrice = parseFloat(order.total_price);
+          const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
+
+          let paymentStatus = 2;
+          if (totalPrice <= totalPaidAmount) {
+            paymentStatus = 3;
+          }
+
+          await Order.updateOne({id: order.id}).set({
+            paid_amount: totalPaidAmount,
+            payment_status: paymentStatus,
+          }).usingConnection(db);
+
+        });
+
+      const shippingAddress = order.shipping_address;
+
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSms(customer, order, [], shippingAddress);
+      }
+
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + 'profile/orders/invoice/' + order.id
+        }
+      );
+      res.end();
+
+    } catch (finalError) {
+      console.log(finalError);
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent(finalError.message)
+        }
+      );
+      res.end();
+    }
   },
   paymentFailurePartial: async function (req, res) {
-
+    console.log(finalError);
+    res.writeHead(301,
+      {
+        Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent('Payment Canceled')
+      }
+    );
+    res.end();
   },
   paymentErrorPartial: async function (req, res) {
-
+    console.log(finalError);
+    res.writeHead(301,
+      {
+        Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent('Payment Canceled')
+      }
+    );
+    res.end();
   },
 };

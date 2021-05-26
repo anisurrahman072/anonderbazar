@@ -58,6 +58,14 @@ module.exports = {
     });
     return numberOfTransaction > 0;
   },
+  getPaymentRowPartial: async function (paymentMethod, transactionId) {
+    return Payment.find({
+      transection_key: transactionId,
+      payment_type: paymentMethod,
+      order_type: 2,
+      deletedAt: null
+    });
+  },
   isAllCouponProduct: function (cartItems) {
     const couponProductFound = cartItems.filter((cartItem) => {
       return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
@@ -398,7 +406,7 @@ module.exports = {
     }
   },
 
-  savePartialPayment: async function() {
+  savePartialPayment: async function () {
 
   }
 };
