@@ -581,7 +581,7 @@ module.exports = {
       });
     }
   },
-
+  //Method called for updating order
   update: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
