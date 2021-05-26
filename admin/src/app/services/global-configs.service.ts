@@ -12,13 +12,12 @@ export class GlobalConfigsService {
 
   constructor(private http: HttpClient) { }
 
-  getShippingCharge(): Observable<any>{
-    return this.http.get(`${this.Endpoint}/getShippingCharge`);
+  getGlobalConfig(): Observable<any>{
+    return this.http.get(`${this.Endpoint}/getGlobalConfig`);
   }
 
-  updateShippingCharge(id: number, data: any): Observable<any>{
-    data = {...data, id};
-    return this.http.put(`${this.Endpoint}/updateShippingCharge`, data);
+  updateGlobalConfig(id: number, data: any): Observable<any>{
+    return this.http.put(`${this.Endpoint}/updateGlobalConfig?id=${id}`, data);
   }
 
 }

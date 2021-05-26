@@ -1,4 +1,4 @@
 exports.globalConfigsRoute = {
-  'GET /api/v1/globalConfigs/getShippingCharge': 'GlobalConfigsController.getShippingCharge',
-  'PUT /api/v1/globalConfigs/updateShippingCharge': 'GlobalConfigsController.updateShippingCharge',
+  'GET /api/v1/globalConfigs/getGlobalConfig': 'GlobalConfigsController.getGlobalConfig',
+  'PUT /api/v1/globalConfigs/updateGlobalConfig': 'GlobalConfigsController.updateGlobalConfig',
 };

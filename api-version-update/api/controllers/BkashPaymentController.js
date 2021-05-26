@@ -7,7 +7,7 @@
 
 const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
-const {bKashCancelAgreement} = require('../services/bKash');
+const {bKashCancelAgreement} = require('../../libs/bkashHelper.js');
 const {calcCartTotal} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl} = require('../../config/softbd');
 const {
@@ -16,7 +16,7 @@ const {
   bKashExecutePayment,
   bKashExecuteAgreement,
   bKasQueryPayment
-} = require('../services/bKash');
+} = require('../../libs/bkashHelper.js');
 
 module.exports = {
 

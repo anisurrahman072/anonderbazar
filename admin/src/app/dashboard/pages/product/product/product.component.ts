@@ -102,8 +102,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     @ViewChild('excelSelectAll') excelSelectAll;
 
     isShippingChargeVisible: boolean = false;
+    isPartialPaymentDurationVisible: boolean = false;
     validateShippingForm: FormGroup;
-    shippingData: any;
+    validatePartialPaymentForm: FormGroup;
+    globalConfig: any;
 
     constructor(
         private fb: FormBuilder,
@@ -264,6 +266,10 @@ export class ProductComponent implements OnInit, OnDestroy {
             outside_dhaka_charge: ['']
         })
 
+        this.validatePartialPaymentForm = this.fb.group({
+            partial_payment_duration: ['']
+        })
+
         this.validatePromotionForm = this.fb.group({
             promotion: ['', [Validators.required]],
             promo_price: ['', [Validators.required]],
@@ -308,10 +314,11 @@ export class ProductComponent implements OnInit, OnDestroy {
                 this.getProductData();
             });
 
-        this.globalConfigsService.getShippingCharge()
+        this.globalConfigsService.getGlobalConfig()
             .subscribe(data => {
-                this.shippingData = data.configData[0];
+                this.globalConfig = data.configData[0];
                 this.validateShippingForm.patchValue(data.configData[0]);
+                this.validatePartialPaymentForm.patchValue(data.configData[0]);
             })
 
     }
@@ -475,6 +482,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
         this.isBulkUploadModalVisible = false;
+        this.isPartialPaymentDurationVisible = false;
     };
     // Modal method
     handleCancel = e => {
@@ -483,6 +491,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.isVariantVisible = false;
         this.isPromotionVisible = false;
         this.isBulkUploadModalVisible = false;
+        this.isPartialPaymentDurationVisible = false;
     };
 
 
@@ -782,21 +791,27 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.isShippingChargeVisible = true;
     }
 
-    submitFormShippingCharge($event, value){
-        this.globalConfigsService.updateShippingCharge(this.shippingData.id, value)
+    showPartialPaymentDurationModal(){
+        this.isPartialPaymentDurationVisible = true;
+    }
+
+    submitFormUpdateGlobalConfig($event, value){
+
+        this.globalConfigsService.updateGlobalConfig(this.globalConfig.id, value)
             .subscribe(updatedConfig => {
                 this._notification.create(
                     'success',
-                    'Successfully updated shipping charge',
+                    'Successfully updated global partial payment duration',
                     updatedConfig.message
                 );
             }, error => {
                 this._notification.create(
                     'info',
-                    'Error occurred while updating shipping charge',
+                    'Error occurred while updating global partial payment duration',
                     error.message
                 );
             });
         this.isShippingChargeVisible = false;
+        this.isPartialPaymentDurationVisible = false;
     }
 }

@@ -3,6 +3,9 @@
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
+            <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button (click)='showPartialPaymentDurationModal()'>
+                <span> Set Partial Payment duration </span>
+            </button>&nbsp;
             <button *ngIf="'update-global-shipping-charge' | accessControl" nz-button (click)='showShippingChargeModal()'>
                 <span> Set Shipping Charge </span>
             </button>&nbsp;
@@ -315,7 +318,7 @@
 >
     <ng-template #modalShippingCharge>
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateShippingForm"
-              (ngSubmit)="submitFormShippingCharge($event,validateShippingForm.value)">
+              (ngSubmit)="submitFormUpdateGlobalConfig($event, validateShippingForm.value)">
             <div>
                 <div nz-col [nzSpan]="6" >
                     <label >Charge inside dhaka</label>
@@ -338,6 +341,37 @@
                 <button nz-button class="login-form-button" [nzSize]="'large'"
                         [disabled]="!validateShippingForm.valid">
                     Update global Shipping Charge
+                </button>
+            </div>
+        </form>
+    </ng-template>
+</nz-modal>
+
+<!--Partial payment duration update modal-->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isPartialPaymentDurationVisible"
+          [nzTitle]="'Set Partial payment duration for all products'"
+          [nzContent]="modalPartialPaymentDuration"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalPartialPaymentDuration>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validatePartialPaymentForm"
+              (ngSubmit)="submitFormUpdateGlobalConfig($event, validatePartialPaymentForm.value)">
+            <div>
+                <div nz-col [nzSpan]="6" >
+                    <label >Duration in hour</label>
+                </div>
+                <div nz-col [nzSpan]="18">
+                    <input  nz-input type="number" formControlName="partial_payment_duration" placeholder="Enter hour for partial payment duration"
+                            [nzSize]="'large'">
+                </div>
+            </div>&nbsp;
+            <div>
+                <button nz-button class="login-form-button" [nzSize]="'large'"
+                        [disabled]="!validatePartialPaymentForm.valid">
+                    Update global Partial Payment duration
                 </button>
             </div>
         </form>

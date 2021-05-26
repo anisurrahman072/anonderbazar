@@ -17,6 +17,7 @@ import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
+import {error} from "util";
 
 @Component({
     selector: 'app-checkout-page',
@@ -35,7 +36,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     prevoius_address: any;
     checkoutForm: FormGroup;
 
-    showBkashPayment: boolean = false;
+    showBkashPayment: boolean = true;
     /*
     prevoius_address_id: any;
     help1Show: boolean = false;
@@ -402,6 +403,60 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     //Event method for setting up form in validation
     getFormControl(name) {
         return this.checkoutForm.controls[name];
+    }
+
+    // method for confirm without payment
+    formConfirmWithoutPayment($event, value){
+        if (this.cartData && this.cartData.data.cart_items.length <= 0) {
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
+        let requestPayload = {
+            user_id: this.user_id,
+
+            billing_address: {
+                id: this.newBillingAddress ? '' : value.billing_id,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.firstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.lastName,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.address,
+                country: value.country,
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
+                postCode: this.noShippingCharge ? '1212' : value.postCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
+                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+                division_id: this.noShippingCharge ? '68' : value.division_id
+            },
+            shipping_address: {
+                id: this.newShippingAddress ? '' : value.shipping_id,
+                firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.shippingFirstName,
+                lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.shippingAddress,
+                address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.shippingAddress,
+                country: value.shipping_country,
+                phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
+                postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
+                upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
+                zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+                division_id: this.noShippingCharge ? '68' : value.shipping_division_id
+            },
+            paymentType: 'partial_payment',
+            is_copy: this.isCopy,
+            courierCharge: value.shipping_zila_id === AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge
+        };
+
+        this.orderService.placeOrder(requestPayload)
+            .subscribe(data => {
+                this.toastr.success("Your order has been placed without amount.", "Success!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.router.navigate(['/profile/orders/invoice/',data.id]);
+            }, error => {
+                this.toastr.error("Problem in placing your order.", "Oppppps!", {
+                    positionClass: 'toast-bottom-right'
+                });
+            })
     }
 
     //Event method for submitting the form

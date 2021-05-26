@@ -121,6 +121,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     queryStatus: any;
 
     free_shipping: any;
+    partially_payable: any;
 
     constructor(
         private router: Router,
@@ -154,6 +155,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             frontend_position: ['', []],
             pay_online: ['', []],
             free_shipping: ['', []],
+            partially_payable: ['', []],
             dhaka_charge: ['', []],
             outside_dhaka_charge: ['', []],
             subcategory_id: ['', []],
@@ -189,6 +191,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
                 this.uniqueProductCodeValidator.setExcludeId(this.data.id);
                 this.free_shipping = this.data.free_shipping;
+                this.partially_payable = this.data.partially_payable;
                 this.validateForm.patchValue(this.data);
                 if (this.data && this.data.brand_id) {
                     this.brand_id = this.data.brand_id;
@@ -301,6 +304,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         formData.append('frontend_position', value.frontend_position);
         value.pay_online ? formData.append('pay_online', "1") : formData.append('pay_online', "0");
         value.free_shipping ? formData.append('free_shipping', "1") : formData.append('free_shipping', "0");
+        value.partially_payable ? formData.append('partially_payable', "1") : formData.append('partially_payable', "0");
         if(!value.free_shipping){
             if (value.dhaka_charge) {
                 formData.append('dhaka_charge', value.dhaka_charge);

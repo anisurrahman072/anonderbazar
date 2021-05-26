@@ -222,6 +222,14 @@
                     </div>
                     <!--free shipping-->
                 </div>
+                <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="12">
+                            <label nz-checkbox formControlName="partially_payable" [(ngModel)]="partially_payable">Partially payable</label>
+                        </div>
+                    </div>
+                    <!--Partially payable-->
+                </div>
                 <div *ngIf="!free_shipping">
                     <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
                         <div nz-row class="form-row">

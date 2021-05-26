@@ -181,8 +181,8 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'getShippingCharge': ['isAuthorized', 'isAdmin'],
-    'updateShippingCharge': ['isAuthorized', 'isAdmin']
+    'getGlobalConfig': ['isAuthorized', 'isAdmin'],
+    'updateGlobalConfig': ['isAuthorized', 'isAdmin']
   },
   GroupController: {
     '*': false,

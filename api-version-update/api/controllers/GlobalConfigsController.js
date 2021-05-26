@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 module.exports = {
-  getShippingCharge: async (req, res) => {
+  getGlobalConfig: async (req, res) => {
     try {
       let configData = await GlobalConfigs.find({
         deletedAt: null
@@ -13,40 +13,38 @@ module.exports = {
 
       return res.status(200).json({
         success: true,
-        massage: 'Successfully fetched Shipping charge data',
+        massage: 'Successfully fetched global Config data',
         configData
       });
     }
     catch (error){
       return res.status(400).json({
         success: false,
-        massage: 'Error occurred while fetching Shipping charge data',
+        massage: 'Error occurred while fetching global Config data',
         error
       });
     }
   },
 
-  updateShippingCharge: async (req, res) => {
+  updateGlobalConfig: async (req, res) => {
     try {
       let newData = req.body;
+      let id = req.query.id;
 
       let updatedConfig = await GlobalConfigs.update({
-        id: newData.id
-      }).set({
-        dhaka_charge: newData.dhaka_charge,
-        outside_dhaka_charge: newData.outside_dhaka_charge
-      }).fetch();
+        id
+      }).set(newData).fetch();
 
       return res.status(200).json({
         success: true,
-        massage: 'Successfully updated Shipping charge data',
+        massage: 'Successfully updated global Config data',
         updatedConfig
       });
     }
     catch (error){
       return res.status(400).json({
         success: false,
-        massage: 'Error occurred while updating Shipping charge data',
+        massage: 'Error occurred while updating global Config data',
         error
       });
     }

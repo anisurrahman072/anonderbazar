@@ -202,6 +202,12 @@ module.exports = {
       defaultsTo: 0,
       required: false
     },
+    partially_payable: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
     dhaka_charge: {
       type: 'number',
       columnType: 'decimal',

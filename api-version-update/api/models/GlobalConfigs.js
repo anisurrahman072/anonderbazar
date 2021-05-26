@@ -58,6 +58,11 @@ module.exports = {
       columnType: 'int',
       defaultsTo: 6
     },
+    partial_payment_duration: {
+      type: 'number',
+      columnType: 'int',
+      defaultsTo: 168
+    }
   },
   tableName: 'global_configs',
 };
