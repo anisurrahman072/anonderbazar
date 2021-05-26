@@ -20,15 +20,43 @@ module.exports = {
     }
     return new SSLCommerz(settings);
   },
-  preparePaymentRequest: function (authUser, addressId, grandOrderTotal, totalQuantity, finalPostalCode, finalAddress, randomstring) {
+  preparePaymentRequest: function (authUser, additionalParams) {
+    const {
+      shippingAddressId,
+      billingAddressId,
+      amountToPay,
+      totalQuantity,
+      finalPostalCode,
+      finalAddress,
+      randomstring,
+      isPartialPayment = false
+    } = additionalParams;
+
+    let successUrl = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
+    if (isPartialPayment) {
+      successUrl = sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+    }
+    let ipnUrl = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
+    if (isPartialPayment) {
+      ipnUrl = sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+    }
+    let failUrl = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
+    if (isPartialPayment) {
+      failUrl = sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+    }
+    let cancelUrl = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId;
+    if (isPartialPayment) {
+      cancelUrl = sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + billingAddressId + '&shipping_address=' + shippingAddressId + '&partial_payment=1';
+    }
+
     return {
-      total_amount: grandOrderTotal,
+      total_amount: amountToPay,
       currency: 'BDT',
       tran_id: randomstring,
-      success_url: sslApiUrl + '/ssl-commerz/success/?user_id=' + authUser.id + '&billing_address=' + addressId + '&shipping_address=' + addressId,
-      ipn_url: sslApiUrl + '/ssl-commerz/success-ipn/?user_id=' + authUser.id + '&billing_address=' + addressId + '&shipping_address=' + addressId,
-      fail_url: sslApiUrl + '/ssl-commerz/failure/?user_id=' + authUser.id + '&billing_address=' + addressId + '&shipping_address=' + addressId,
-      cancel_url: sslApiUrl + '/ssl-commerz/error/?user_id=' + authUser.id + '&billing_address=' + addressId + '&shipping_address=' + addressId,
+      success_url: successUrl,
+      ipn_url: ipnUrl,
+      fail_url: failUrl,
+      cancel_url: cancelUrl,
       emi_option: 0,
       cus_name: authUser.first_name + ' ' + authUser.last_name,
       cus_email: authUser.email ? authUser.email : 'anonderbazar@gmail.com',

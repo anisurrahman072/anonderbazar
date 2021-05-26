@@ -404,9 +404,9 @@ module.exports = {
       console.log('Place Order - shipping_address: ', shippingAddress);
       console.log('Place Order - billing_address: ', billingAddress);
 
-      let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
+      const paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
-      let response = await paymentGatewayService.placeOrder(
+      const response = await paymentGatewayService.placeOrder(
         authUser,
         req.body,
         req.allParams(),

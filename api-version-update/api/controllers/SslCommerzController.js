@@ -3,7 +3,8 @@ const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 
 module.exports = {
-  sslCommerzIpnSuccess: async function (req, res) {
+
+  ipnPaymentSuccess: async function (req, res) {
 
     console.log('################ sslcommerz success IPN', req.body);
 
@@ -127,7 +128,7 @@ module.exports = {
     }
   },
   //Method called when sslCommerzSuccess from frontend
-  sslCommerzSuccess: async function (req, res) {
+  paymentSuccess: async function (req, res) {
     console.log('################ sslcommerz success', req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
@@ -262,17 +263,29 @@ module.exports = {
     }
   },
   //Method called when sslCommerzFail fails sends redirectory route
-  sslCommerzFailure: function (req, res) {
+  paymentFailure: function (req, res) {
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
     res.end();
   },
   //Method called when sslCommerzError error sends redirectory route
-  sslCommerzError: function (req, res) {
+  paymentError: function (req, res) {
     res.writeHead(301,
       {Location: sslWebUrl + '/checkout'}
     );
     res.end();
+  },
+  ipnPaymentSuccessForPartial: async function(req, res) {
+
+  },
+  paymentSuccessPartial: async function(req, res) {
+
+  },
+  paymentFailurePartial: async function(req, res) {
+
+  },
+  paymentErrorPartial: async function(req, res) {
+
   },
 };

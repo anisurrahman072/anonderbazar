@@ -9,6 +9,7 @@ module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
     const {
+      billingAddress,
       shippingAddress
     } = addresses;
 
@@ -39,7 +40,15 @@ module.exports = {
     if (!finalAddress) {
       throw new Error('No address has been provided.');
     }
-    const postBody = preparePaymentRequest(authUser, shippingAddress.id, grandOrderTotal, totalQty, finalPostalCode, finalAddress, randomstring);
+    const postBody = preparePaymentRequest(authUser, {
+      shippingAddressId: shippingAddress.id,
+      billingAddressId: billingAddress.id,
+      amountToPay: grandOrderTotal,
+      totalQuantity: totalQty,
+      finalPostalCode,
+      finalAddress,
+      randomstring
+    });
     console.log('postBody', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
@@ -108,5 +117,51 @@ module.exports = {
       payments,
       allCouponCodes,
     };
+  },
+  makePartialPayment: async function (customer, authUser, order, request, globalConfigs) {
+    const billingAddress = order.billing_address;
+    const shippingAddress = order.shipping_address;
+    const grandTotal = parseFloat(order.total_price);
+    const totalQuantity = parseFloat(order.total_quantity);
+    const amountToPay = parseFloat(request.body.amount_to_pay);
+    if (amountToPay <= 0) {
+      throw new Error('Invalid Payment Amount.');
+    }
+    const sslcommerz = sslcommerzInstance(globalConfigs);
+
+    const randomstring = generateRandomString();
+
+    let finalPostalCode = shippingAddress.postal_code;
+    let finalAddress = shippingAddress.address;
+
+    if (!finalPostalCode) {
+      throw new Error('No Post Code has been provided.');
+    }
+    if (!finalAddress) {
+      throw new Error('No address has been provided.');
+    }
+    const postBody = preparePaymentRequest(customer, {
+      shippingAddressId: shippingAddress.id,
+      billingAddressId: billingAddress.id,
+      amountToPay,
+      totalQuantity,
+      finalPostalCode,
+      finalAddress,
+      randomstring,
+      isPartialPayment: true
+    });
+    console.log('postBody', postBody);
+
+    const sslResponse = await sslcommerz.init_transaction(postBody);
+    console.log('sslcommerz.init_transaction success', sslResponse);
+    /**
+     * status: 'FAILED',
+     failedreason: "Invalid Information! 'cus_email' is missing or empty.",
+
+     */
+    if (sslResponse && sslResponse.status === 'FAILED') {
+      throw new Error(sslResponse.failedreason);
+    }
+    return sslResponse;
   }
 };
