@@ -1,3 +1,6 @@
+exports.REGULAR_ORDER_TYPE = 1;
+exports.PARTIAL_ORDER_TYPE = 2;
+
 exports.ORDER_STATUSES =  {
   pending: 1,
   processing: 2,

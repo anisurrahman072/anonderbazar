@@ -1,3 +1,8 @@
+/**
+ * WithoutPaymentService
+ *
+ * @type {{placeOrder: (function(*=, *, *, *, *, *=, *=, *=): *)}}
+ */
 module.exports = {
   placeOrder: async function(authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems){
     let {orderType, paymentStatus} = orderDetails;

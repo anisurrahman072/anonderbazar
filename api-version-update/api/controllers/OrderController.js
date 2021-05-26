@@ -404,7 +404,7 @@ module.exports = {
       console.log('Place Order - shipping_address: ', shippingAddress);
       console.log('Place Order - billing_address: ', billingAddress);
 
-      let paymentGatewayService = getPaymentService(req.param('paymentType'));
+      let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
       let response = await paymentGatewayService.placeOrder(
         authUser,
@@ -429,54 +429,6 @@ module.exports = {
       return res.status(400).json({
         message: 'There was a problem in processing the order.',
         additionalMessage: finalError.message
-      });
-    }
-  },
-
-  placeOrderWithoutPayment: async (req, res) => {
-
-    try {
-      const authUser = getAuthUser(req);
-      const globalConfigs = await getGlobalConfig();
-
-      let cart = await PaymentService.getCart(authUser.id);
-      let cartItems = await PaymentService.getCartItems(cart.id);
-
-      const shippingAddress = await PaymentService.getShippingAddress(req);
-      const billingAddress = await PaymentService.getBillingAddress(req, shippingAddress);
-
-      if (_.isNull(shippingAddress) || _.isEmpty(shippingAddress)) {
-        throw new Error('No shipping address has been provided.');
-      }
-
-      console.log('Place Order - body: ', req.body);
-      console.log('Place Order - shipping_address: ', shippingAddress);
-      console.log('Place Order - billing_address: ', billingAddress);
-
-      let response = await PartialPaymentService.placeOrder(
-        authUser,
-        req.body,
-        req.allParams(),
-        {
-          orderType: req.param('orderType'),
-          paymentStatus: req.param('paymentStatus')
-        },
-        {
-          billingAddress,
-          shippingAddress
-        },
-        globalConfigs,
-        cart,
-        cartItems
-      );
-
-      return res.status(200).json(response);
-    }
-    catch (error) {
-      console.log('finalError', error);
-      return res.status(400).json({
-        message: 'There was a problem in placing the order without payment.',
-        additionalMessage: error.message
       });
     }
   },
