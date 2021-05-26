@@ -10,6 +10,7 @@ module.exports = {
     try {
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
+
       const order = await Order.findOne({id: req.param('order_id'), deletedAt: null})
         .populate('shipping_address')
         .populate('billing_address');
