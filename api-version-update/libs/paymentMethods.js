@@ -22,10 +22,6 @@ module.exports = {
         paymentGatewayService = BkashService;
         break;
       }
-      case 'partial_payment': {
-        paymentGatewayService = PartialPaymentService;
-        break;
-      }
     }
     return paymentGatewayService;
   }

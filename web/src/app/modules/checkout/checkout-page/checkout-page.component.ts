@@ -407,6 +407,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // method for confirm without payment
     formConfirmWithoutPayment($event, value){
+        this.loaderService.showLoader();
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
@@ -441,18 +442,25 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
                 division_id: this.noShippingCharge ? '68' : value.shipping_division_id
             },
-            paymentType: 'partial_payment',
+            orderType: 2,
+            paymentStatus: 1,
             is_copy: this.isCopy,
             courierCharge: value.shipping_zila_id === AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge
         };
 
-        this.orderService.placeOrder(requestPayload)
+        this.orderService.placeOrderWithoutPayment(requestPayload)
             .subscribe(data => {
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.store.dispatch(new fromStore.LoadCart());
                 this.toastr.success("Your order has been placed without amount.", "Success!", {
                     positionClass: 'toast-top-right'
                 });
                 this.router.navigate(['/profile/orders/invoice/',data.id]);
+                this.loaderService.hideLoader();
             }, error => {
+                this.loaderService.hideLoader();
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.store.dispatch(new fromStore.LoadCart());
                 this.toastr.error("Problem in placing your order.", "Oppppps!", {
                     positionClass: 'toast-bottom-right'
                 });

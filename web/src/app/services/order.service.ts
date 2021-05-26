@@ -54,7 +54,6 @@ export class OrderService {
     }
 
     placeOrderWithoutPayment(data): Observable<any>{
-        return this.http.post(`${this.EndPoint}/placeOrderWithoutPayment`, data)
-            .map((response) => response);
+        return this.http.post(`${this.EndPoint}/placeOrderWithoutPayment`, data);
     }
 }

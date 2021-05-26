@@ -1,5 +1,6 @@
 module.exports = {
   placeOrder: async function(authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems){
+    let {orderType, paymentStatus} = orderDetails;
     let {billingAddress, shippingAddress} = addresses;
 
     let {
@@ -30,7 +31,10 @@ module.exports = {
           billing_address: billingAddress.id,
           shipping_address: shippingAddress.id,
           courier_charge: courierCharge,
-          courier_status: 1
+          courier_status: 1,
+          order_type: orderType,
+          payment_status: paymentStatus,
+          paid_amount: 0
         }, cartItems);
 
         let allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
@@ -51,7 +55,6 @@ module.exports = {
     }
 
     let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
-    orderForMail.payments = payments;
 
     await PaymentService.sendEmail(orderForMail);
 
