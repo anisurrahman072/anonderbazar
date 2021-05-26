@@ -276,7 +276,7 @@ module.exports = {
     );
     res.end();
   },
-  ipnPaymentSuccessForPartial: async function(req, res) {
+  ipnPaymentSuccessForPartial: async function (req, res) {
     console.log('################ SSLCOMMERZ success IPN (Partial)', req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.query.order_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
@@ -315,9 +315,34 @@ module.exports = {
         });
       }
 
-      const paidAmount = parseFloat(validationResponse.amount);
+      let paidAmount = parseFloat(validationResponse.amount);
 
-      // TODO: save payment transaction
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          await Payment.create({
+            payment_amount: paidAmount,
+            user_id: customer.id,
+            order_id: order.id,
+            payment_type: SSL_COMMERZ_PAYMENT_TYPE,
+            details: JSON.stringify(req.body),
+            transection_key: req.body.tran_id,
+            status: 1
+          }).fetch().usingConnection(db);
+
+          const totalPrice = parseFloat(order.total_price);
+          const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
+
+          let paymentStatus = 2;
+          if (totalPrice <= totalPaidAmount) {
+            paymentStatus = 3;
+          }
+
+          await Order.updateOne({id: order.id}).set({
+            paid_amount: totalPaidAmount,
+            payment_status: paymentStatus,
+          }).usingConnection(db);
+
+        });
 
       const shippingAddress = order.shipping_address;
 
@@ -335,13 +360,13 @@ module.exports = {
       });
     }
   },
-  paymentSuccessPartial: async function(req, res) {
+  paymentSuccessPartial: async function (req, res) {
 
   },
-  paymentFailurePartial: async function(req, res) {
+  paymentFailurePartial: async function (req, res) {
 
   },
-  paymentErrorPartial: async function(req, res) {
+  paymentErrorPartial: async function (req, res) {
 
   },
 };
