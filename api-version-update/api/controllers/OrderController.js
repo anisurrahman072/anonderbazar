@@ -434,7 +434,7 @@ module.exports = {
   },
 
   placeOrderWithoutPayment: async (req, res) => {
-    console.log('iiiii');
+
     try {
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
