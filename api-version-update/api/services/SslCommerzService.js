@@ -121,7 +121,6 @@ module.exports = {
   makePartialPayment: async function (customer, order, request, globalConfigs) {
     const billingAddress = order.billing_address;
     const shippingAddress = order.shipping_address;
-    const grandTotal = parseFloat(order.total_price);
     const totalQuantity = parseFloat(order.total_quantity);
     const amountToPay = parseFloat(request.body.amount_to_pay);
     if (amountToPay <= 0) {

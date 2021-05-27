@@ -238,5 +238,96 @@ module.exports = {
 
     return order;
 
+  },
+  makePartialPayment: async function (customer, order, request, globalConfigs) {
+    const billingAddress = order.billing_address;
+    const shippingAddress = order.shipping_address;
+    const totalQuantity = parseFloat(order.total_quantity);
+    const amountToPay = parseFloat(request.body.amount_to_pay);
+    if (amountToPay <= 0) {
+      throw new Error('Invalid Payment Amount.');
+    }
+    const payerReference = request.body.payerReference;
+    const agreementId = request.body.agreement_id;
+    if (!(payerReference && agreementId)) {
+      throw new Error('Invalid Bkash Payment Request');
+    }
+
+    let tokenRes = await bKashGrandToken();
+    const userWallets = await BkashCustomerWallet.find({
+      user_id: customer.id,
+      agreement_id: agreementId,
+      wallet_no: payerReference,
+      row_status: 3,
+      deletedAt: null
+    });
+
+    if (!(userWallets && userWallets.length > 0)) {
+      throw new Error('No bKash Wallet found with the provided agreementID');
+    }
+
+    const paymentTransactionLog = await PaymentTransactionLog.create({
+      user_id: customer.id,
+      payment_type: BKASH_PAYMENT_TYPE  ,
+      payment_amount: amountToPay,
+      payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      status: '1',
+      details: JSON.stringify({
+        order_id: order.id,
+        id_token: tokenRes.id_token,
+        payerReference,
+        agreementId,
+        billingAddressId: billingAddress.id,
+        shippingAddressId: shippingAddress.id
+      })
+    }).fetch();
+
+    const payloadData = {
+      'agreementID': agreementId,
+      'mode': '0001',
+      'payerReference': payerReference,
+      'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + customer.id + '/' + paymentTransactionLog.id,
+      'amount': amountToPay,
+      'currency': 'BDT',
+      'intent': 'sale',
+      'merchantInvoiceNumber': paymentTransactionLog.id
+    };
+
+    const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+
+    if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
+      await PaymentTransactionLog.updateOne({
+        id: paymentTransactionLog.id
+      }).set({
+        status: '2',
+        details: JSON.stringify({
+          order_id: order.id,
+          id_token: tokenRes.id_token,
+          payerReference,
+          agreementId,
+          billingAddressId: billingAddress.id,
+          shippingAddressId: shippingAddress.id,
+          bKashResponse
+        })
+      });
+      return bKashResponse;
+    }
+
+    await PaymentTransactionLog.updateOne({
+      id: paymentTransactionLog.id
+    }).set({
+      status: '99',
+      details: JSON.stringify({
+        order_id: order.id,
+        id_token: tokenRes.id_token,
+        payerReference,
+        agreementId,
+        billingAddressId: billingAddress.id,
+        shippingAddressId: shippingAddress.id,
+        bKashResponse
+      })
+    });
+
+    throw new Error('Problem in creating bKash payment');
   }
 };

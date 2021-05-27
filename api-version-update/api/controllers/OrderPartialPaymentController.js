@@ -3,7 +3,6 @@
  * To process partial payments
  */
 const {getPaymentServicePartial} = require('../../libs/paymentMethods');
-const {REGULAR_ORDER_TYPE} = require('../../libs/constants');
 const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
 module.exports = {
 
