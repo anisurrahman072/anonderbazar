@@ -26,6 +26,5 @@ module.exports = {
         additionalMessage: finalError.message
       });
     }
-
   }
 };
