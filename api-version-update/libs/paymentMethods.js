@@ -8,6 +8,28 @@ const {
 } = require('./constants');
 
 module.exports = {
+  getPaymentServicePartial: function (paymentType) {
+    let paymentGatewayService = null;
+    switch (paymentType) {
+      case CASHBACK_PAYMENT_TYPE: {
+        paymentGatewayService = CashbackService;
+        break;
+      }
+      case SSL_COMMERZ_PAYMENT_TYPE: {
+        paymentGatewayService = SslCommerzService;
+        break;
+      }
+      case NAGAD_PAYMENT_TYPE: {
+        paymentGatewayService = NagadService;
+        break;
+      }
+      case BKASH_PAYMENT_TYPE: {
+        paymentGatewayService = BkashService;
+        break;
+      }
+    }
+    return paymentGatewayService;
+  },
   getPaymentService: function (paymentType, orderType) {
     if (parseInt(orderType, 10) === PARTIAL_ORDER_TYPE) {
       return WithoutPaymentService;
