@@ -37,7 +37,7 @@ export class ProductDescriptionComponent implements OnInit {
     reviewBox: boolean = false;
     questionButton: boolean = true;
     questionBox: boolean = false;
-    averageRating: any = [];
+    averageRatingArray: any = [];
 
     private userId: any;
 
@@ -82,7 +82,7 @@ export class ProductDescriptionComponent implements OnInit {
         this.canRateProduct(this.userId, this.productId);
         const integerOfAverageRating = this.productRatingDetail.averageRating.toFixed();
         for(let i = 0; i< integerOfAverageRating; i++){
-            this.averageRating.push(i);
+            this.averageRatingArray.push(i);
         }
     }
 
