@@ -5,6 +5,7 @@
  */
 const moment = require('moment');
 const _ = require('lodash');
+const {bkashRefundTransaction} = require('../../libs/bkashHelper');
 const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
 const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
 const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
@@ -382,6 +383,26 @@ module.exports = {
     }
 
     return order;
+  },
+  refundPayment: async function (payload) {
+    const {
+      paymentID,
+      amount,
+      trxID,
+      sku = 'Anonder Bazar Product',
+      reason = 'Order has been cancelled'
+    } = payload;
 
+    const bKashResponse = await bkashRefundTransaction(payload.id_token, {
+      amount,
+      paymentID,
+      trxID,
+      sku,
+      reason
+    });
+
+    if (bKashResponse && bKashResponse.transactionStatus === 'Completed' && bKashResponse.refundTrxID && bKashResponse.amount) {
+
+    }
   }
 };

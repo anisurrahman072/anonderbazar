@@ -274,5 +274,37 @@ module.exports = {
     sails.log('bKash Search Transaction-response', bKashSearchTranxResponse);
     sails.log('############# Search Transaction End ########################');
     return bKashSearchTranxResponse;
+  },
+  bkashRefundTransaction: async (idToken, payload) => {
+    let modeConfigKey = bKashModeConfigKey();
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: idToken,
+      'X-APP-Key': bKash[modeConfigKey].app_key,
+    };
+
+    const url = bKash[modeConfigKey].refund_transaction;
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        amount: payload.amount,
+        trxID: payload.trxID,
+        paymentID: payload.paymentID,
+        sku: payload.sku,
+        reason: payload.reason
+      })
+    };
+    sails.log('############# Bkash Refund Transaction Start ########################');
+    sails.log('bKash Refund Transaction -headers', headers);
+    sails.log('bKash Refund Transaction -postBody', options);
+    let bKashRefundTranxResponse = await fetchWithTimeout(url, options);
+    bKashRefundTranxResponse = await bKashRefundTranxResponse.json();
+    sails.log('bKash Refund Transaction -response', bKashRefundTranxResponse);
+    sails.log('############# Bkash Refund Transaction End ########################');
+    return bKashRefundTranxResponse;
   }
 };

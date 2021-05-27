@@ -30,6 +30,11 @@ module.exports = {
       required: false,
       allowNull: true
     },
+    transaction_type: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 1
+    },
     details: {
       type: 'string',
       columnType: 'text',
