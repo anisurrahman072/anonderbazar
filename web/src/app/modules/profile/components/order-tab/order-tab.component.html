@@ -49,11 +49,6 @@
                     ৳ {{item?.total_price}}
                 </button>
             </li>
-            <li class="text-2">
-                <button color="accent" style="padding-left: 0px; width:200px" routerLink="/profile/orders/invoice/{{item.id}}">
-                    ৳ {{item?.total_price}}
-                </button>
-            </li>
             <li class="text-2" *ngIf="item.isAllowedForPay">
                 <button color="accent" style="padding-left: 0px; width:200px" (click)="makePartialPayment(item)">
                     Make Payment
