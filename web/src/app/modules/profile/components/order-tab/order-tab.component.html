@@ -49,10 +49,24 @@
                     ৳ {{item?.total_price}}
                 </button>
             </li>
+            <li class="text-2">
+                <button color="accent" style="padding-left: 0px; width:200px" routerLink="/profile/orders/invoice/{{item.id}}">
+                    ৳ {{item?.total_price}}
+                </button>
+            </li>
             <li class="text-2" *ngIf="item.isAllowedForPay">
                 <button color="accent" style="padding-left: 0px; width:200px" (click)="makePartialPayment(item)">
                     Make Payment
                 </button>
+            </li>
+            <li class="button button-order-center" *ngIf="item.payment_status == 1">
+                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
+            </li>
+            <li class="button button-order-center" *ngIf="item.payment_status == 2">
+                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
+            </li>
+            <li class="button button-order-center" *ngIf="item.payment_status ==3">
+                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
             </li>
             <li class="list-1 button button-order-center" *ngIf="item.status == 1">
                 <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>

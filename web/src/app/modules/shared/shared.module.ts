@@ -20,6 +20,7 @@ import {LoginMinComponent} from "./components/login-min/login-min.component";
 import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.component";
 import {MaterialModule} from "../../core/material.module";
 import {OrderStatusPipe} from "../../pipes/order-status";
+import {PaymentStatusPipe} from "../../pipes/payment-status";
 import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
 
 const sharedComponents = [
@@ -37,6 +38,7 @@ const sharedComponents = [
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
     OrderStatusPipe,
+    PaymentStatusPipe,
     LoginMinComponent,
     ShoppingCartComponent,
     SuborderInvoiceComponent,
@@ -55,6 +57,7 @@ const sharedComponents1 = [
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
     OrderStatusPipe,
+    PaymentStatusPipe,
     ShoppingCartComponent,
     LoginMinComponent,
     SuborderInvoiceComponent,
