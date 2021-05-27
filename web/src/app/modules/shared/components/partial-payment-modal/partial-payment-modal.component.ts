@@ -11,6 +11,8 @@ import {Store} from "@ngrx/store";
 import {OrderService} from "../../../../services";
 import * as _ from "lodash";
 import {NotificationsService} from "angular2-notifications";
+import {forkJoin} from "rxjs/observable/forkJoin";
+import {LoaderService} from "../../../../services/ui/loader.service";
 
 @Component({
   selector: 'app-partial-payment-modal',
@@ -22,26 +24,23 @@ export class PartialPaymentModalComponent implements OnInit {
   @ViewChild('autoShownModal') autoShownModal: ModalDirective;
   @Input('app-shopping-cart') cartItem;
   isModalShown$: Observable<boolean>;
-  currentOrderId$: any;
   partialPaymentForm: FormGroup;
   enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
 
-  CASH_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
   CASHBACK_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
   SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
   BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
   NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
 
   couponCashbackAmount: number = 0;
-  private currentUserSub: Subscription;
   currentUser$: Observable<User>;
-  private currentUser: User;
   user_id: any;
   showBkashPayment: boolean = true;
-  grantTotal: number = 0;
-  private currentOrderId: number;
   paymentAmount: any = null;
+  amountToPay: number;
 
+  private currentUser: User;
+  private currentOrderId: number;
 
   constructor(
       private partialPaymentModalService: PartialPaymentModalService,
@@ -49,18 +48,26 @@ export class PartialPaymentModalComponent implements OnInit {
       private store: Store<fromStore.HomeState>,
       private orderService: OrderService,
       private _notify: NotificationsService,
+      private loaderService: LoaderService
   ) { }
 
   ngOnInit() {
-    this.getPartialPaymentModalInfo();
     this.partialPaymentForm = this.fb.group({
-      paymentType: ['SSLCommerce', []],
+      paymentType: ['SSLCommerce', [Validators.required]],
       paymentAmount: ['',[Validators.required]]
     });
 
     this.partialPaymentModalService.getPartialModalInfo()
         .subscribe(data => {
           this.currentOrderId = data;
+
+          if(!_.isUndefined(this.currentOrderId) && !_.isNull(this.currentOrderId)){
+            this.orderService.getById(this.currentOrderId)
+                .subscribe(data => {
+                  this.amountToPay = data.total_price - data.paid_amount;
+                  this.getPartialPaymentModalInfo();
+                });
+          }
         })
 
     this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
@@ -97,18 +104,24 @@ export class PartialPaymentModalComponent implements OnInit {
   }
 
   makePartialPayment(value){
-    if(!_.isUndefined(value.paymentAmount) && !_.isNull(value.paymentAmount) && value.paymentAmount <= 0){
-
+    this.onHidden();
+    this.loaderService.showLoader();
+    if(_.isUndefined(value.paymentAmount) || _.isNull(value.paymentAmount) || value.paymentAmount <= 0){
+      this._notify.error('Please insert a correct amount to pay');
+    }
+    if(_.isUndefined(value.paymentType) || _.isNull(value.paymentType)){
+      this._notify.error('Please choose a payment method to complete partial payment');
+    }
+    if(_.isUndefined(value.currentOrderId) || _.isNull(value.currentOrderId)){
+      this._notify.error('Order not found!');
     }
     this.orderService.makePartialPayment(this.currentOrderId, value)
         .subscribe(data => {
           console.log('Successfully paid');
+          this.loaderService.hideLoader();
         }, error => {
-          console.log('Error occurred while making partial payment');
+          this.loaderService.hideLoader();
+          this._notify.error('Error occurred while making partial payment!', error);
         })
-  }
-
-  getFormControl(name) {
-    return this.partialPaymentForm.controls[name];
   }
 }
