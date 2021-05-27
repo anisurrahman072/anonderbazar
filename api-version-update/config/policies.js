@@ -247,6 +247,9 @@ module.exports.policies = {
     '*': false,
     'getAll': ['isAuthorized']
   },
+  OrderPartialPaymentController: {
+    '*': true,
+  },
   PRStatusController: {
     '*': false,
     'find': true,

@@ -406,7 +406,4 @@ module.exports = {
     }
   },
 
-  savePartialPayment: async function () {
-
-  }
 };
