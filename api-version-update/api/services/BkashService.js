@@ -401,6 +401,21 @@ module.exports = {
       reason
     });
 
+    /**
+     * {
+"completedTime":"string"
+"originalTrxID":"string"
+"refundTrxID":"string"
+"transactionStatus":"string"
+"amount":"string"
+"currency":"string"
+}
+     or
+     {
+     errorCode:"string",
+    errorMessage:"string"
+     }
+     */
     if (bKashResponse && bKashResponse.transactionStatus === 'Completed' && bKashResponse.refundTrxID && bKashResponse.amount) {
 
     }
