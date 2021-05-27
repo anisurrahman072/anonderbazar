@@ -5,6 +5,8 @@
  */
 const moment = require('moment');
 const _ = require('lodash');
+const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
 const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
 const {sslApiUrl} = require('../../config/softbd');
 const {bKashGrandToken, bKashCreatePayment, bKashCreateAgreement} = require('../../libs/bkashHelper');
@@ -48,7 +50,7 @@ module.exports = {
 
       const paymentTransactionLog = await PaymentTransactionLog.create({
         user_id: authUser.id,
-        payment_type: BKASH_PAYMENT_TYPE  ,
+        payment_type: BKASH_PAYMENT_TYPE,
         payment_amount: grandOrderTotal,
         payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
         status: '1',
@@ -155,7 +157,7 @@ module.exports = {
       })
     });
 
-    const {billingAddressId,shippingAddressId } = transactionDetails;
+    const {billingAddressId, shippingAddressId} = transactionDetails;
     let shippingAddress = await PaymentAddress.findOne({
       id: shippingAddressId
     });
@@ -201,7 +203,7 @@ module.exports = {
         const payments = await PaymentService.createPayment(db, suborders, {
           user_id: customer.id,
           order_id: order.id,
-          payment_type: BKASH_PAYMENT_TYPE ,
+          payment_type: BKASH_PAYMENT_TYPE,
           details: JSON.stringify(bKashResponse),
           transection_key: bKashResponse.trxID,
           status: 1
@@ -239,10 +241,9 @@ module.exports = {
     return order;
 
   },
-  makePartialPayment: async function (customer, order, request, globalConfigs) {
+  makePartialPayment: async function (customer, order, request) {
     const billingAddress = order.billing_address;
     const shippingAddress = order.shipping_address;
-    const totalQuantity = parseFloat(order.total_quantity);
     const amountToPay = parseFloat(request.body.amount_to_pay);
     if (amountToPay <= 0) {
       throw new Error('Invalid Payment Amount.');
@@ -268,7 +269,7 @@ module.exports = {
 
     const paymentTransactionLog = await PaymentTransactionLog.create({
       user_id: customer.id,
-      payment_type: BKASH_PAYMENT_TYPE  ,
+      payment_type: BKASH_PAYMENT_TYPE,
       payment_amount: amountToPay,
       payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
       status: '1',
@@ -286,7 +287,7 @@ module.exports = {
       'agreementID': agreementId,
       'mode': '0001',
       'payerReference': payerReference,
-      'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + customer.id + '/' + paymentTransactionLog.id,
+      'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + customer.id + '/' + paymentTransactionLog.id + '?' + 'order_id=' + order.id,
       'amount': amountToPay,
       'currency': 'BDT',
       'intent': 'sale',
@@ -329,5 +330,58 @@ module.exports = {
     });
 
     throw new Error('Problem in creating bKash payment');
+  },
+  savePartialPayment: async function (customer, order, bKashResponse, transactionLog, transactionDetails) {
+
+    await PaymentTransactionLog.updateOne({
+      id: transactionLog.id
+    }).set({
+      status: 3,
+      details: JSON.stringify({
+        order_id: order.id,
+        id_token: transactionDetails.id_token,
+        payerReference: bKashResponse.payerReference,
+        agreement_id: bKashResponse.agreementID,
+        billingAddressId: transactionDetails.billingAddressId,
+        shippingAddressId: transactionDetails.shippingAddressId,
+        bKashResponse
+      })
+    });
+
+    const paidAmount = parseFloat(bKashResponse.amount);
+    await sails.getDatastore()
+      .transaction(async (db) => {
+        await Payment.create({
+          payment_amount: paidAmount,
+          user_id: customer.id,
+          order_id: order.id,
+          payment_type: BKASH_PAYMENT_TYPE,
+          details: JSON.stringify(bKashResponse),
+          transection_key: bKashResponse.trxID,
+          status: 1
+        }).usingConnection(db);
+
+        const totalPrice = parseFloat(order.total_price);
+        const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
+
+        let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
+        if (totalPrice <= totalPaidAmount) {
+          paymentStatus = PAYMENT_STATUS_PAID;
+        }
+
+        await Order.updateOne({id: order.id}).set({
+          paid_amount: totalPaidAmount,
+          payment_status: paymentStatus,
+        }).usingConnection(db);
+      });
+
+    const shippingAddress = order.shipping_address;
+
+    if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+      await PaymentService.sendSms(customer, order, [], shippingAddress);
+    }
+
+    return order;
+
   }
 };

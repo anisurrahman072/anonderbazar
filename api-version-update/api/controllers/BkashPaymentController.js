@@ -209,19 +209,39 @@ module.exports = {
   },
   paymentCallback: async (req, res) => {
 
-    sails.log('paymentCallback');
+    sails.log('Bkash paymentCallback');
     sails.log(req.query);
 
-    if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
+    const orderId = req.query.order_id;
+    let redirectUrl = sslWebUrl + '/checkout';
 
+    let originalOrder = null;
+    if (orderId) {
+      redirectUrl = sslWebUrl + 'profile/orders/invoice/' + orderId;
+
+      originalOrder = await Order.findOne({id: req.param('order_id'), deletedAt: null})
+        .populate('shipping_address')
+        .populate('billing_address');
+
+      if (!originalOrder) {
+        res.writeHead(301, {
+          Location: redirectUrl + '?bKashError=' + encodeURIComponent('Invalid bKash payment request. Order doesn\'t exist.')
+        });
+        res.end();
+        return;
+      }
+    }
+
+    if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid request')
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent('Invalid bKash payment request')
       });
       res.end();
       return;
     }
 
     try {
+
       const customer = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
 
@@ -274,17 +294,25 @@ module.exports = {
             throw new Error(messageToSend);
           }
 
-          const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
-
-          if (order && order.id) {
+          if (orderId) {
+            await BkashService.savePartialPayment(customer, originalOrder, bKashResponse, transactionLog, transactionDetails);
             res.writeHead(301,
-              {Location: sslWebUrl + '/checkout?order=' + order.id}
+              {Location: redirectUrl + '?bKashSuccess=' + encodeURIComponent('Your payment transaction was successful.')}
             );
             res.end();
             return;
-          }
+          } else {
+            const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
 
-          throw new Error('There was a problem in processing the order.');
+            if (order && order.id) {
+              res.writeHead(301,
+                {Location: redirectUrl + '?order=' + order.id}
+              );
+              res.end();
+              return;
+            }
+            throw new Error('There was a problem in creating the order.');
+          }
 
         } catch (bKashExecuteError) {
           if (bKashExecuteError.name === 'AbortError') {
@@ -292,22 +320,30 @@ module.exports = {
               paymentID: req.query.paymentID
             });
 
-            const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
-
-            if (order && order.id) {
+            if (orderId) {
+              await BkashService.savePartialPayment(customer, originalOrder, bKashResponse, transactionLog, transactionDetails);
               res.writeHead(301,
-                {Location: sslWebUrl + '/checkout?order=' + order.id}
+                {Location: redirectUrl + '?bKashSuccess=' + encodeURIComponent('Your payment transaction was successful.')}
               );
               res.end();
               return;
-            }
-            res.writeHead(301, {
-              Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
-            });
-            res.end();
-            return;
-          }
+            } else {
+              const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
 
+              if (order && order.id) {
+                res.writeHead(301,
+                  {Location: redirectUrl + '?order=' + order.id}
+                );
+                res.end();
+                return;
+              }
+              res.writeHead(301, {
+                Location: redirectUrl + '?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+              });
+              res.end();
+              return;
+            }
+          }
           throw bKashExecuteError;
         }
       }
@@ -333,7 +369,7 @@ module.exports = {
       });
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(messageToShow)
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent(messageToShow)
       });
       res.end();
 
@@ -341,7 +377,7 @@ module.exports = {
       sails.log(error);
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(error.message)
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent(error.message)
       });
       res.end();
     }

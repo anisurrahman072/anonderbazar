@@ -3,9 +3,11 @@
  *
  * @type {{placeOrder: (function(*=, *, *, *, *, *=, *=, *=): *)}}
  */
+const {PAYMENT_STATUS_UNPAID} = require('../../libs/constants');
+const {PARTIAL_ORDER_TYPE} = require('../../libs/constants');
 module.exports = {
   placeOrder: async function(authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems){
-    let {orderType, paymentStatus} = orderDetails;
+
     let {billingAddress, shippingAddress} = addresses;
 
     let {
@@ -37,8 +39,8 @@ module.exports = {
           shipping_address: shippingAddress.id,
           courier_charge: courierCharge,
           courier_status: 1,
-          order_type: orderType,
-          payment_status: paymentStatus,
+          order_type: PARTIAL_ORDER_TYPE,
+          payment_status: PAYMENT_STATUS_UNPAID,
           paid_amount: 0
         }, cartItems);
 

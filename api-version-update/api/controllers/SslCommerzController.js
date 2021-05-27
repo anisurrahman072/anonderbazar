@@ -1,3 +1,5 @@
+const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
 const {getPaymentRowPartial} = require('../services/PaymentService');
 const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
 const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
@@ -328,14 +330,14 @@ module.exports = {
             details: JSON.stringify(req.body),
             transection_key: req.body.tran_id,
             status: 1
-          }).fetch().usingConnection(db);
+          }).usingConnection(db);
 
           const totalPrice = parseFloat(order.total_price);
           const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
 
-          let paymentStatus = 2;
+          let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
           if (totalPrice <= totalPaidAmount) {
-            paymentStatus = 3;
+            paymentStatus = PAYMENT_STATUS_PAID;
           }
 
           await Order.updateOne({id: order.id}).set({
