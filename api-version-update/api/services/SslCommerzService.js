@@ -163,5 +163,8 @@ module.exports = {
       throw new Error(sslResponse.failedreason);
     }
     return sslResponse;
+  },
+  refundPayment: async function (payload) {
+
   }
 };
