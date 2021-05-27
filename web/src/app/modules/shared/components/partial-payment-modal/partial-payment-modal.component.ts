@@ -8,7 +8,7 @@ import {Subscription} from "rxjs/Subscription";
 import {User} from "../../../../models";
 import * as fromStore from "../../../../state-management";
 import {Store} from "@ngrx/store";
-import {OrderService} from "../../../../services";
+import {OrderService, PartialOrderService} from "../../../../services";
 import * as _ from "lodash";
 import {NotificationsService} from "angular2-notifications";
 import {forkJoin} from "rxjs/observable/forkJoin";
@@ -48,7 +48,8 @@ export class PartialPaymentModalComponent implements OnInit {
       private store: Store<fromStore.HomeState>,
       private orderService: OrderService,
       private _notify: NotificationsService,
-      private loaderService: LoaderService
+      private loaderService: LoaderService,
+      private partialOrderService: PartialOrderService
   ) { }
 
   ngOnInit() {
@@ -108,16 +109,19 @@ export class PartialPaymentModalComponent implements OnInit {
     this.loaderService.showLoader();
     if(_.isUndefined(value.paymentAmount) || _.isNull(value.paymentAmount) || value.paymentAmount <= 0){
       this._notify.error('Please insert a correct amount to pay');
+      return false;
     }
     if(_.isUndefined(value.paymentType) || _.isNull(value.paymentType)){
       this._notify.error('Please choose a payment method to complete partial payment');
+      return false;
     }
-    if(_.isUndefined(value.currentOrderId) || _.isNull(value.currentOrderId)){
+    if(_.isUndefined(this.currentOrderId) || _.isNull(value.currentOrderId)){
       this._notify.error('Order not found!');
+      return false;
     }
-    this.orderService.makePartialPayment(this.currentOrderId, value)
+    this.partialOrderService.makePartialPayment(this.currentOrderId, value)
         .subscribe(data => {
-          console.log('Successfully paid');
+          console.log('Aaaaa', data);
           this.loaderService.hideLoader();
         }, error => {
           this.loaderService.hideLoader();

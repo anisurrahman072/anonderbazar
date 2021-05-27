@@ -19,7 +19,7 @@ import {
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
     ProductVariantService, SuborderItemService, SuborderService, VariantService, WarehouseService, CraftsmanService,
     UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService, LotteryService,
-    InvestorService, GlobalConfigService
+    InvestorService, GlobalConfigService, PartialOrderService
 } from "../services";
 import {NgAisModule} from 'angular-instantsearch';
 import {MaterialModule} from "./material.module";
@@ -150,7 +150,8 @@ if (environment.production) {
         BkashService,
         LotteryService,
         InvestorService,
-        GlobalConfigService
+        GlobalConfigService,
+        PartialOrderService
     ],
     bootstrap: [AppComponent]
 })
