@@ -35,19 +35,24 @@
                 <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 mb-4">
                         <div class="row">
-                            <div class="col-md-5" style="text-align: center; margin: auto">
-                                <span style="font-weight: 600; font-size: 50px">{{productRatingDetail.averageRating}}</span>
-                                <p>Average</p>
+                            <div class="col-md-5" style="margin: auto">
+                                <span class="averageRating">{{productRatingDetail.averageRating}}</span>
+                                <div style="margin-bottom: 13px">
+                                    <ng-container>
+                                        <img class="filled-star" src="./assets/images/star-filled.svg" alt="rating-icon">
+                                    </ng-container>
+                                </div>
+                                <p class="totalRatings">{{productRatingDetail.totalNumberOfRatings}} Ratings</p>
                             </div>
                             <!--rating bars-->
                             <div class="col-md-7">
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li><i class="fa fa-star"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar mt-2"></li>
@@ -56,11 +61,11 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar1 mt-2"></li>
@@ -69,11 +74,11 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar2 mt-2"></li>
@@ -82,11 +87,11 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar3 mt-2"></li>
@@ -95,11 +100,11 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon"></li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar4 mt-2"></li>
@@ -178,7 +183,8 @@
                                         <img src="./assets/images/verified%20purchase%20icon.jpg"
                                              alt="verified-icon">
                                         <span style="color: #FF0000">Verified Purchase</span><br>
-                                        <button class="btn px-1 py-0 mt-2" style="background-color: #FF0000; color: white">{{rating.rating}} <i
+                                        <button class="btn px-1 py-0 mt-2"
+                                                style="background-color: #FF0000; color: white">{{rating.rating}} <i
                                                 class="fa fa-star"></i>
                                         </button>
                                     </div>
