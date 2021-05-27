@@ -198,5 +198,11 @@ ul.termsList li {
 }
 
 button:disabled {
-  background-color: lightcoral;
+  background-color: rgb(208, 208, 208);
+  border-color: rgb(208, 208, 208) !important;
+  cursor: not-allowed;
+}
+
+button:disabled a {
+  cursor: not-allowed;
 }
