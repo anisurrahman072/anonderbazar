@@ -2,10 +2,13 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {MatPaginator} from "@angular/material";
-import {AuthService, OrderService, UserService} from "../../../../services";
+import {AuthService, GlobalConfigService, OrderService, UserService} from "../../../../services";
 import * as fromStore from "../../../../state-management/index";
 import {AppSettings} from "../../../../config/app.config";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
+import * as moment from 'moment';
+import {forkJoin} from "rxjs/observable/forkJoin";
+import {ORDER_STATUSES} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'Order-tab',
@@ -24,6 +27,8 @@ export class OrderTabComponent implements OnInit {
     dashboardData: any = {};
     statusFilter = 'all';
 
+    globalPartialPaymentDuration: number;
+
     /*
     * constructor for OrderTabComponent
     */
@@ -31,22 +36,37 @@ export class OrderTabComponent implements OnInit {
                 private authService: AuthService,
                 private orderService: OrderService,
                 private userService: UserService,
-                private partialPaymentModalService: PartialPaymentModalService) {
+                private partialPaymentModalService: PartialPaymentModalService,
+                private globalConfigService: GlobalConfigService
+                ) {
     }
 
     //init the component
     ngOnInit(): void {
 
         this.currentUser = this.authService.getCurrentUserId();
-        this.orderService.getByUserId(this.currentUser).subscribe(orders => {
-            this.orderList = orders;
-        })
+        forkJoin([this.globalConfigService.getGlobalConfig(), this.orderService.getByUserId(this.currentUser), this.userService.getByIdForDashBoard(this.authService.getCurrentUserId())])
+            .subscribe(allData => {
+                this.globalPartialPaymentDuration = allData[0].configData[0].partial_payment_duration;
+                let orders = allData[1].map(order => {
+                    let now = moment(new Date());
+                    let end = moment(order.createdAt);
+                    let duration = moment.duration(now.diff(end));
+                    let expendedHour =  Math.floor(duration.asHours());
+                    if(this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER){
+                        order.isAllowedForPay = true;
+                    }
+                    else{
+                        order.isAllowedForPay = false;
+                    }
+                    return order;
+                });
+                this.orderList = orders;
 
-        this.userService.getByIdForDashBoard(this.authService.getCurrentUserId()).subscribe(result => {
-            this.dashboardData = result;
-        }, (error) => {
-            console.log(error);
-        })
+                this.dashboardData = allData[2];
+            }, error => {
+                console.log(error);
+            });
     }
 
     //Event called for getting order data

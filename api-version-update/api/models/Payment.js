@@ -18,8 +18,7 @@ module.exports = {
     },
     suborder_id: {
       model: 'suborder',
-      required: false,
-      allowNull: true
+      required: false
     },
     receiver_id: {
       model: 'user',

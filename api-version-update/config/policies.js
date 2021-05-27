@@ -178,10 +178,10 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'getGlobalConfig': true,
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'getGlobalConfig': ['isAuthorized', 'isAdmin'],
     'updateGlobalConfig': ['isAuthorized', 'isAdmin']
   },
   GroupController: {
