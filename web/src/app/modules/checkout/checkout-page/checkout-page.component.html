@@ -449,15 +449,15 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="enabledPaymentMethods['cashBack'] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
                                                   value="CashBack">
                                     <i class="fa fa-money"></i>By Using Cashback
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods['Cash']"
+                                <mat-radio-button *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
                                                   value="Cash">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods['SSLCommerce']" value="SSLCommerce"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]" value="SSLCommerce"
                                                   [checked]="hideCashonDelivery">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/final_sslcommerz.webp"
@@ -465,13 +465,13 @@
                                              alt="SSLcommerce"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods['bKash'] && showBkashPayment" value="bKash">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment" value="bKash">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/bkash.gif" style="height: auto; width: 70%;"
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <!--<mat-radio-button *ngIf="enabledPaymentMethods['nagad']" value="nagad">
+                                <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>

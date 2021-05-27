@@ -18,6 +18,7 @@ import {BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
 import {error} from "util";
+import {PAYMENT_METHODS} from '../../../../environments/global_config';
 
 @Component({
     selector: 'app-checkout-page',
@@ -99,6 +100,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     isFreeShipping: boolean = true;
     maxDhakaCharge: number = 0;
     maxOutsideDhakaCharge: number = 0;
+
+    CASH_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
+    CASHBACK_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
+    SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
+    BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
+    NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -517,7 +524,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log('requestPayload', requestPayload);
 
-        if (value.paymentType == "SSLCommerce" || value.paymentType === 'CashBack' || value.paymentType === 'nagad' || value.paymentType === 'Cash') {
+        if (value.paymentType == this.SSL_COMMERZ_PAYMENT_TYPE || value.paymentType === this.CASHBACK_PAYMENT_TYPE ||
+            value.paymentType === this.NAGAD_PAYMENT_TYPE || value.paymentType === this.CASH_PAYMENT_TYPE) {
             this.loaderService.showLoader();
             this.orderService.placeOrder(requestPayload).subscribe(result => {
 
@@ -557,7 +565,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             });
 
-        } else if (value.paymentType === 'bKash') {
+        } else if (value.paymentType === this.BKASH_PAYMENT_TYPE) {
 
             this.loaderService.showLoader();
             this.bKashService.getAuthUserWallets()

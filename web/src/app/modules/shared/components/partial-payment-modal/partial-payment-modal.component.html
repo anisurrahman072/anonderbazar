@@ -1,0 +1,62 @@
+<div *ngIf="isModalShown$|async" [config]="{ show: true,animated:false }" (onHidden)="onHidden()" bsModal
+     #autoShownModal="bs-modal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header custom-header">
+                <h5 class="modal-title" style="margin-left: auto; text-align: center;">Make partial payment</h5>
+                <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
+                    <i class="fa  fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class=" container form-background" style="height: auto">
+                    <ng-container>
+                        <form [formGroup]="partialPaymentForm">
+                            <div class="payment-method-details1">
+                                <p class="font-weight-bold">Payment Method</p>
+                                <mat-radio-group formControlName="paymentType">
+                                    <div class="radio2">
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0" value="CashBack" style="color: black;">
+                                            <i class="fa fa-money"></i>By Using Cashback
+                                        </mat-radio-button>
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]" value="SSLCommerce">
+                                            <div class="payment-icon-container">
+                                                <img src="../../../../../assets/images/final_sslcommerz.webp"
+                                                     style="height: auto; width: 80%;"
+                                                     alt="SSLcommerce"/>
+                                            </div>
+                                        </mat-radio-button>
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment" value="bKash">
+                                            <div class="payment-icon-container">
+                                                <img src="../../../../../assets/images/bkash.gif" style="height: auto; width: 70%;"
+                                                     alt="bKash"/>
+                                            </div>
+                                        </mat-radio-button>
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
+                                            <div class="payment-icon-container">
+                                                <img src="../../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
+                                                     alt="nagad"/>
+                                            </div>
+                                        </mat-radio-button>
+                                    </div>
+                                </mat-radio-group>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <p class="font-weight-bold">Amount to pay</p>
+                                    <input placeholder="Enter amount to pay" id="paymentAmount" class="form-control" formControlName="paymentAmount" [(ngModel)]="paymentAmount">
+                                </div>
+                            </div>
+                            <div class="send-btn1">
+                                <button type="submit" class="Summarybtn" (click)="makePartialPayment(partialPaymentForm.value)" style="display: block; margin: auto;">
+                                    <a>Confirm payment</a>
+                                </button>
+                            </div>
+                        </form>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

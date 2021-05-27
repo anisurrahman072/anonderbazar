@@ -6,6 +6,7 @@ import {
     SuborderInvoiceComponent
 } from "./components";
 import {ProductItemCompareComponent} from "./components/product-item-compare/product-item-compare.component";
+import {PartialPaymentModalComponent} from "./components/partial-payment-modal/partial-payment-modal.component";
 import {ProductItemWholeSaleComponent} from "./components/product-item-wholesale/product-item-wholesale.component";
 import {ProductItemRewardPointComponent} from "./components/product-item-rewardpoint/product-item-rewardpoint.component";
 import {ProductItemFeedbackComponent} from "./components/product-item-feedback/product-item-feedback.component";
@@ -31,6 +32,7 @@ const sharedComponents = [
     ProductItemFlashDealComponent,
     CategoryItemComponent,
     ProductItemCompareComponent,
+    PartialPaymentModalComponent,
     IsAddedToComparePipe,
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
@@ -58,6 +60,7 @@ const sharedComponents1 = [
     SuborderInvoiceComponent,
     OrderInvoiceComponent,
     ProductItemCompareComponent,
+    PartialPaymentModalComponent
 ];
 
 @NgModule({

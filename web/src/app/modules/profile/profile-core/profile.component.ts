@@ -165,7 +165,6 @@ export class ProfileComponent implements OnInit, OnDestroy  {
             if(res){
                 this.lotteryService.getCashbackByUserId(this.user.id)
                     .subscribe((data) => {
-                        console.log('Amount paici: ', data);
                         if(data.length === 0){
                             this.cashbackAmount = 0;
                         }

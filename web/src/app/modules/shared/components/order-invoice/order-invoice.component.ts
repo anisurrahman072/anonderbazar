@@ -10,6 +10,9 @@ import {PaymentService} from "../../../../services/payment.service";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {ShippingAddressService} from "../../../../services/shipping-address.service";
 import * as _moment from 'moment';
+import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
+import {BsModalService} from "ngx-bootstrap/modal";
+import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
 
 @Component({
     selector: 'order-invoice',
@@ -38,7 +41,8 @@ export class OrderInvoiceComponent implements OnInit {
                 private suborderItemService: SuborderItemService,
                 private paymentService: PaymentService,
                 private paymentAddressService: PaymentAddressService,
-                private shippingAddressService: ShippingAddressService) {
+                private shippingAddressService: ShippingAddressService,
+                private partialPaymentModalService: PartialPaymentModalService) {
     }
 
     //Event method for getting all the data for the page
@@ -87,6 +91,11 @@ export class OrderInvoiceComponent implements OnInit {
             pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight)
             pdf.save('invoice.pdf'); // Generated PDF
         });
+    }
+
+    /** Make payment payment for the order */
+    makePartialPayment(){
+        this.partialPaymentModalService.showPartialModal(true, this.data.id);
     }
 
     ngOnDestroy(): void {
