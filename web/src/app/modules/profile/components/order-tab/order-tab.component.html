@@ -7,7 +7,7 @@
                 <span>All Orders</span>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-sm-6 col-6 mb-4">
             <div class="counters4 counter text-center cursor-pointer" (click)="statusFilter='1'">
                 <h4>{{dashboardData.pendingOrder}}</h4>
@@ -39,7 +39,7 @@
     <div class="category-head justify-content-between d-flex">
         <div class="titel">
             <h4>{{(statusFilter | orderstatus).label | titlecase}} orders</h4>
-        </div> 
+        </div>
     </div>
     <div class="order-list">
         <ul class="justify-content-between" *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
@@ -47,6 +47,11 @@
             <li class="text-2">
                 <button color="accent" style="padding-left: 0px; width:200px" routerLink="/profile/orders/invoice/{{item.id}}">
                     ৳ {{item?.total_price}}
+                </button>
+            </li>
+            <li class="text-2">
+                <button color="accent" style="padding-left: 0px; width:200px" (click)="makePartialPayment(item)">
+                    Make Payment
                 </button>
             </li>
             <li class="list-1 button button-order-center" *ngIf="item.status == 1">
