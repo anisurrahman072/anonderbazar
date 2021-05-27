@@ -46,9 +46,9 @@
                         </div>
                         <div nz-col [nzSpan]="12"      >
                             <image-upload [max]="1" (removed)="onRemoved($event)" (uploadStateChanged)="onUploadStateChanged($event)" [beforeUpload]="onBeforeUpload"></image-upload>
-                            <div    *ngIf="!ImageFile">
+                            <!--<div    *ngIf="!ImageFile">
                                 Please upload an image here!
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <!--image-->
@@ -56,7 +56,7 @@
 
                     <div    nz-row>
                         <div nz-col [nzOffset]="7" [nzSpan]="12"   >
-                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!ImageFile">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'">
 
                                 Submit
                             </button>

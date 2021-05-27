@@ -35,6 +35,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     prevoius_address: any;
     checkoutForm: FormGroup;
 
+    termsAndPolicy: boolean = false;
+
     showBkashPayment: boolean = false;
     /*
     prevoius_address_id: any;
@@ -533,6 +535,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    disabledButtonClick(termsAndPolicy) {
+        if (!termsAndPolicy) {
+            this.toastr.error("Please read and agree to the Terms & Conditions, Privacy Policy and Refund and Return Policy of Anonder Bazar", "", {
+                positionClass: 'toast-bottom-left'
+            });
+        }
+    }
+
     proceedWithBkash($event, value, authUserWallet = null) {
         $event.preventDefault();
         let requestPayload: any = {};
@@ -872,9 +882,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     private addPageTitle() {
-        if(this.cartData) {
+        if (this.cartData) {
             this.title.setTitle('Checkout ' + this.cartData.data.total_quantity + ' item(s) - Anonderbazar');
-        }else {
+        } else {
             this.title.setTitle('Checkout - Anonderbazar');
         }
     }

@@ -128,7 +128,7 @@ select {
 }
 
 .Summarybtn {
-  background: #ED1C24;
+  background: #FF0000;
   padding: 10px 85px;
   margin-top: 20px;
 }
@@ -157,7 +157,7 @@ select {
 }
 
 .tag3 table tr .active {
-  color: #ED1C24;
+  color: #FF0000;
 }
 
 #success-section {
@@ -177,7 +177,7 @@ select {
 
 .success-details button {
   padding: 10px 40px;
-  background: #ED1C24;
+  background: #FF0000;
 }
 
 .success-details button a {
@@ -195,4 +195,14 @@ ul.termsList {
 ul.termsList li {
   list-style-type: circle;
   margin-top: 5px;
+}
+
+button:disabled {
+  background-color: rgb(208, 208, 208);
+  border-color: rgb(208, 208, 208) !important;
+  cursor: not-allowed;
+}
+
+button:disabled a {
+  cursor: not-allowed;
 }

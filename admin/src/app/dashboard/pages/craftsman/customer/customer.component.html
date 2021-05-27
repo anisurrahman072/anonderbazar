@@ -42,6 +42,9 @@
                     <span> Location </span>
                 </th>
                 <th>
+                    <span> Status </span>
+                </th>
+                <th>
                 </th>
             </tr>
             <tr>
@@ -62,6 +65,8 @@
                 <th>
                     <input (ngModelChange)="page=1;getPageData()" [(ngModel)]="phoneSearchValue" nz-input
                            placeholder="Phone">
+                </th>
+                <th>
                 </th>
                 <th>
                 </th>
@@ -95,6 +100,18 @@
                 </td>
                 <td>
                     {{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}
+                </td>
+                <td style="width: 200px;">
+                    <nz-select style="width: 180px;" [(ngModel)]="data.customer_active" [nzPlaceHolder]="'choose option'"
+                               (ngModelChange)="changeStatusConfirm($event,data.id)">
+                        <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                   [nzValue]="option.value">
+                            <ng-template #nzOptionTemplate>
+                                <i class="anticon " [ngClass]="option.icon"></i>
+                                {{option.label}}
+                            </ng-template>
+                        </nz-option>
+                    </nz-select>
                 </td>
                 <td>
                     <button *ngIf="'craftsman-read'|accessControl"

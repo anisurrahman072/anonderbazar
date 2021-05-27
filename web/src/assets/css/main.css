@@ -288,7 +288,7 @@ section {
 }
 
 .header-search-wrapper .icon-search i {
-    color: #F83831;
+    color: #FF0000;
 }
 
 .header_chart {
@@ -321,7 +321,7 @@ section {
 }
 
 .header_chart .checkout {
-    background: #F83831;
+    background: #FF0000;
     padding: 10px 15px;
     margin-right: 0px;
     border-radius: 5px;
@@ -419,11 +419,11 @@ section {
 }
 
 .navbar-collapse ul li:hover a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .navbar-collapse ul li:hover .mainMenu {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .navbar-collapse ul li.active {
@@ -431,7 +431,7 @@ section {
 }
 
 .navbar-collapse ul li.active a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .mobile-menu {
@@ -448,7 +448,7 @@ section {
 }
 
 .menu-sticky {
-    background: #F83831;
+    background: #FF0000;
 }
 
 .nav-item {
@@ -613,7 +613,7 @@ section {
 
 .cart-btn .btn2 {
     padding: 10px 80px;
-    background: #ED1C24;
+    background: #FF0000;
     color: #ffffff;
 }
 
@@ -662,7 +662,7 @@ section {
 
 .banner-contant .h12nd {
     font-size: 65px;
-    color: #ED1C24;
+    color: #FF0000;
     margin-bottom: 30px;
 }
 
@@ -677,7 +677,7 @@ section {
 }
 
 .banner-contant button a {
-    color: #ED1C24;
+    color: #FF0000;
     text-decoration: underline;
 }
 
@@ -702,7 +702,7 @@ section {
     width: 50px;
     height: 50px;
     border-radius: 50px;
-    background: #ED1C24;
+    background: #FF0000;
     opacity: 0.8;
     top: 20%;
     left: 27%;
@@ -714,7 +714,7 @@ section {
 }
 
 .banner-slider .owl-dots .owl-dot.active span {
-    background: #ED1C24 !important;
+    background: #FF0000 !important;
 }
 
 .banner-slider .owl-dots .owl-dot:focus {
@@ -734,7 +734,7 @@ section {
 
 .banner-serv .bserp1 {
     font-size: 16px;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .banner-serv .bserp2 {
@@ -747,7 +747,7 @@ section {
 }
 
 .carousel-indicators .active {
-    background-color: #ED1C24 !important;
+    background-color: #FF0000 !important;
 }
 
 .carousel-indicators li {
@@ -764,7 +764,7 @@ section {
 }
 .banner-serv a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .banner-serv a i {
@@ -809,7 +809,7 @@ category - start
 
 .category-head button a {
     text-decoration: underline;
-    color: #F83831;
+    color: #FF0000;
 }
 
 .category-head button {
@@ -909,7 +909,7 @@ flash-deal - start
 
 #flashdeal .cate-flash .flash span {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 10px;
 }
 
@@ -945,7 +945,7 @@ offer - end
 }
 
 .offer-contant a {
-    color: #D70404;
+    color: #FF0000;
     text-decoration: underline;
 }
 
@@ -962,7 +962,7 @@ offer - end
     width: 50px;
     height: 50px;
     border-radius: 50px;
-    background: #ED1C24;
+    background: #FF0000;
     opacity: 0.8;
     top: 5%;
     left: 25%;
@@ -1009,7 +1009,7 @@ product - start
 
 .product-details button a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .product-details button a i {
@@ -1045,7 +1045,7 @@ product - start
 
 .productsub-details button a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .productsub-details button a i {
@@ -1159,7 +1159,7 @@ services - end
 }
 
 .recommend-btn button {
-    background-color: #ED1C24;
+    background-color: #FF0000;
     color: #ffffff;
     padding: 10px 40px;
 }
@@ -1272,7 +1272,7 @@ footer - start
     height: 50px;
     right: 5%;
     bottom: 120%;
-    background: #ED1C24;
+    background: #FF0000;
     border-radius: 50px;
     padding: 12px 12px;
 }
@@ -1304,13 +1304,13 @@ footer - start
 }
 
 .breadcrumb .breadcrumb-item.active a {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {
-    color: #ED1C24 !important;
-    border-bottom: 2px solid #ED1C24;
+    color: #FF0000 !important;
+    border-bottom: 2px solid #FF0000;
     border-radius: 0px;
 }
 
@@ -1328,7 +1328,7 @@ footer - start
 }
 
 .pro-de-1 {
-    color: #ED1C24;
+    color: #FF0000;
     margin-bottom: 10px !important;
     font-size: 15px;
 }
@@ -1351,12 +1351,12 @@ footer - start
 }
 
 .pro-de-4 li i {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .pro-de-4 .review a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .pro-de-4 .order {
@@ -1365,7 +1365,7 @@ footer - start
 
 .pro-de-4 .coin a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .pro-de-5 {
@@ -1430,12 +1430,12 @@ footer - start
 }
 
 .pro-de-8 li:hover {
-    border: 1px solid #ED1C24;
+    border: 1px solid #FF0000;
     cursor: pointer;
 }
 
 .pro-de-8 li:hover a {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .subdet1 {
@@ -1450,7 +1450,7 @@ footer - start
 
 .subdet1 ul li a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     font-size: 12px;
     font-weight: normal;
 }
@@ -1469,7 +1469,7 @@ footer - start
 
 .subdet2 ul li a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     font-size: 12px;
     font-weight: normal;
 }
@@ -1510,14 +1510,14 @@ footer - start
 }
 
 .add-cartbtn .addto1 {
-    border: 1px solid #ED1C24;
+    border: 1px solid #FF0000;
     padding: 10px 56px;
-    color: #ED1C24;
+    color: #FF0000;
     margin-right: 20px;
 }
 
 .add-cartbtn .addto2 {
-    background: #ED1C24;
+    background: #FF0000;
     padding: 10px 56px;
     color: #ffffff;
 }
@@ -1555,7 +1555,7 @@ footer - start
 }
 
 .success-message .alert p span {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .success-message .alert p {
@@ -1601,37 +1601,37 @@ footer - start
 }
 
 .review-stars .star li i {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .review-stars .pogress .pogress-bar {
     width: 100px;
     height: 10px;
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .review-stars .pogress .pogress-bar1 {
     width: 80px;
     height: 10px;
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .review-stars .pogress .pogress-bar2 {
     width: 60px;
     height: 10px;
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .review-stars .pogress .pogress-bar3 {
     width: 40px;
     height: 10px;
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .review-stars .pogress .pogress-bar4 {
     width: 20px;
     height: 10px;
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .review-stars .pogress .pogress-no {
@@ -1664,7 +1664,7 @@ footer - start
 }
 
 .review-starno ul li i {
-    color: #ED1C24;
+    color: #FF0000;
     font-size: 30px;
 }
 
@@ -1674,7 +1674,7 @@ footer - start
 }
 
 .pog-button a {
-    background-color: #ED1C24;
+    background-color: #FF0000;
     padding: 10px 40px;
     color: #ffffff;
 }
@@ -1735,7 +1735,7 @@ footer - start
 }
 
 .review-reply ul li i {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .review-reply-des p {
@@ -1787,7 +1787,7 @@ footer - start
 }
 
 .question .qus-1 {
-    color: #ED1C24;
+    color: #FF0000;
     font-weight: 600;
 }
 
@@ -1833,21 +1833,21 @@ footer - start
 .pagination .page-item.active .page-link {
     z-index: 1;
     color: #fff !important;
-    background-color: #D70404 !important;
-    border-color: #D70404 !important;
+    background-color: #FF0000 !important;
+    border-color: #FF0000 !important;
 }
 
 .pagination .next-item .next-link {
     background: transparent !important;
-    border-color: #D70404;
-    color: #D70404 !important;
+    border-color: #FF0000;
+    color: #FF0000 !important;
 }
 
 .pagination .next-item .next-link i {
-    border: 1px solid #D70404;
+    border: 1px solid #FF0000;
     border-radius: 50px;
     padding: 0px 4px 0px 4px;
-    color: #D70404;
+    color: #FF0000;
     margin-left: 8px;
     width: 15px;
     height: 15px;
@@ -1862,7 +1862,7 @@ footer - start
 }
 
 .list1.sort-by .active {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 /*.irs--flat .irs-handle>i:first-child {
@@ -1999,7 +1999,7 @@ footer - start
 }
 
 .form-check button {
-    background-color: #ED1C24;
+    background-color: #FF0000;
 }
 
 .filter-clear-btn {
@@ -2021,7 +2021,7 @@ footer - start
     height: 22px;
     transition: transform 0.28s ease;
     border-radius: 50px;
-    background: #ED1C24 !important;
+    background: #FF0000 !important;
     border: none;
 }
 
@@ -2030,8 +2030,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2060,8 +2060,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2090,8 +2090,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2120,8 +2120,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2150,8 +2150,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2199,8 +2199,8 @@ footer - start
     display: block;
     width: 10px;
     height: 5px;
-    border-bottom: 2px solid #ED1C24;
-    border-left: 2px solid #ED1C24;
+    border-bottom: 2px solid #FF0000;
+    border-left: 2px solid #FF0000;
     -webkit-transform: rotate(-45deg) scale(0);
     transform: rotate(-45deg) scale(0);
     transition: transform ease 0.25s;
@@ -2211,7 +2211,7 @@ footer - start
 }
 
 .checkbox input[type="checkbox"]:checked ~ label::before {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .checkbox input[type="checkbox"]:checked ~ label::after {
@@ -2258,7 +2258,7 @@ footer - start
 
 .success-details button {
     padding: 10px 40px;
-    background: #ED1C24;
+    background: #FF0000;
 }
 
 .success-details button a {
@@ -2320,7 +2320,7 @@ footer - start
 }
 
 .checkbox2 input[type="checkbox"]:checked ~ label::before {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .checkbox2 input[type="checkbox"]:checked ~ label::after {
@@ -2375,7 +2375,7 @@ footer - start
 }
 
 .payment-method-details1 button {
-    background: #ED1C24;
+    background: #FF0000;
     padding: 10px 85px;
 }
 
@@ -2391,7 +2391,7 @@ footer - start
 .tag1 p a {
     font-size: 12px;
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 100px;
     border-bottom: none;
 }
@@ -2426,7 +2426,7 @@ footer - start
 .tag2 p a {
     font-size: 12px;
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 130px;
     border-bottom: none;
 }
@@ -2456,7 +2456,7 @@ footer - start
 }
 
 .tag3 table tr .active {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 
@@ -2480,16 +2480,16 @@ footer - start
 }
 
 .sendgift-btn button.active {
-    border-color: #ED1C24;
+    border-color: #FF0000;
 }
 
 .sendgift-btn button a.active {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .sendgift-btn .gift a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .sendgift-btn .gift a i {
@@ -2536,13 +2536,13 @@ footer - start
 
 .send-btn1 button {
     background: transparent;
-    border: 1px solid #ED1C24 !important;
+    border: 1px solid #FF0000 !important;
     padding: 10px 80px;
     border-radius: 0px !important;
 }
 
 .send-btn1 button a {
-    color: #ED1C24;
+    color: #FF0000;
     font-size: 12px;
 }
 
@@ -2624,7 +2624,7 @@ footer - start
 }
 
 .Summarybtn {
-    background: #ED1C24;
+    background: #FF0000;
     padding: 10px 85px;
     margin-top: 20px;
 }
@@ -2781,11 +2781,11 @@ footer - start
     background: transparent;
     padding: 10px 85px;
     margin-top: 20px;
-    border: 1px solid #ED1C24;
+    border: 1px solid #FF0000;
 }
 
 .collect-from button a {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .nearst-shop p {
@@ -2819,7 +2819,7 @@ footer - start
 .nearst-2 button {
     display: block !important;
     padding: 10px 30px !important;
-    background: #ED1C24 !important;
+    background: #FF0000 !important;
 }
 
 .nearst-2 {
@@ -2862,7 +2862,7 @@ footer - start
 
 .signupbtn button {
     padding: 10px 60px;
-    background: #ED1C24;
+    background: #FF0000;
     border-radius: 0px;
     color: #ffffff;
     font-size: 12px;
@@ -2880,7 +2880,7 @@ footer - start
 
 .signupbtn p a {
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 5px;
 }
 
@@ -2919,7 +2919,7 @@ footer - start
 .shipping-add .shiptag p a {
     font-size: 12px;
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 205px;
 }
 
@@ -2951,7 +2951,7 @@ footer - start
 .shipping-contact .conttag p a {
     font-size: 12px;
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 270px;
 }
 
@@ -2973,7 +2973,7 @@ footer - start
 .shipping-paymethod .paytag p a {
     font-size: 12px;
     text-decoration: underline;
-    color: #ED1C24;
+    color: #FF0000;
     margin-left: 208px;
 }
 
@@ -3023,7 +3023,7 @@ footer - start
 
 .counters3 h4 {
     font-size: 30px;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .counters4 h4 {
@@ -3092,7 +3092,7 @@ footer - start
 }
 
 .order-list .list-4.button a {
-    color: #ED1C24;
+    color: #FF0000;
     font-weight: 600;
 }
 
@@ -3305,7 +3305,7 @@ footer - start
 .prduct-det-price ul .fmo {
     font-size: 16px;
     font-weight: 600;
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 
@@ -3335,7 +3335,7 @@ footer - start
 }
 
 .has-child a:hover {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .productsub-img img {
@@ -3348,13 +3348,13 @@ footer - start
 }
 
 .ng5-slider .ng5-slider-pointer {
-    background-color: #ED1C24 !important;
+    background-color: #FF0000 !important;
     width: 0px !important;
     height: 0px !important;
 }
 
 .ng5-slider .ng5-slider-selection {
-    background-color: #ED1C24 !important;
+    background-color: #FF0000 !important;
 
 }
 
@@ -3374,7 +3374,7 @@ footer - start
 }
 
 .ngx-pagination .current {
-    background: #ED1C24 !important;
+    background: #FF0000 !important;
 }
 
 .ngx-pagination a {
@@ -3394,24 +3394,24 @@ footer - start
 }
 
 .pagination-next a {
-    /* border: 1px solid #ED1C24;
+    /* border: 1px solid #FF0000;
     box-sizing: border-box;
     border-radius: 5px !important;
     background: none !important; */
     border-top-right-radius: .25rem;
     border-bottom-right-radius: .25rem;
     background: transparent !important;
-    border-color: #D70404;
-    color: #D70404 !important;
+    border-color: #FF0000;
+    color: #FF0000 !important;
     font-size: 13px;
     padding: .5rem .75rem !important;
 }
 
 .pagination-next a span:after {
-    border: 1px solid #D70404;
+    border: 1px solid #FF0000;
     border-radius: 50px;
     padding: 0px 4px 0px 4px;
-    color: #D70404;
+    color: #FF0000;
     margin-left: 8px;
     width: 15px;
     height: 15px;
@@ -3422,7 +3422,7 @@ footer - start
     content: '»';
     display: inline-block;
     margin-left: 0.5rem;
-    border: 1px solid #D70404;
+    border: 1px solid #FF0000;
     border-radius: 50px;
     width: 19px;
 }
@@ -3431,7 +3431,7 @@ footer - start
     content: '»';
     display: inline-block;
     margin-left: 0.5rem;
-    border: 1px solid #D70404;
+    border: 1px solid #FF0000;
     border-radius: 50px;
     width: 19px;
 }
@@ -3445,14 +3445,14 @@ footer - start
     border-top-right-radius: .25rem;
     border-bottom-right-radius: .25rem;
     background: transparent !important;
-    border-color: #D70404;
-    color: #D70404 !important;
+    border-color: #FF0000;
+    color: #FF0000 !important;
     font-size: 13px;
     padding: .5rem .75rem !important;
 }
 
 .alert-success span {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 /*.tag3[_ngcontent-c19] table[_ngcontent-c19] tr[_ngcontent-c19] .td1[_ngcontent-c19]{*/
@@ -3461,8 +3461,8 @@ footer - start
 
 .collectbtn {
     border-radius: 0px !important;
-    color: #ED1C24;
-    border-color: #ED1C24 !important;
+    color: #FF0000;
+    border-color: #FF0000 !important;
 }
 
 .nearst-2 button {
@@ -3528,7 +3528,7 @@ footer - start
     position: fixed;
     bottom: 50%;
     right: 3%;
-    background: #ED1C24;
+    background: #FF0000;
     width: 50px;
     height: 50px;
     display: block;
@@ -3619,11 +3619,11 @@ footer - start
 }
 
 .submenu ul .text-th:hover a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .submenu ul .text-ot:hover a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
 }
 
 .search_label {
@@ -3635,7 +3635,7 @@ footer - start
 }
 
 .mobile-menu nav ul > li:hover a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
     text-decoration: none;
 }
 
@@ -3644,13 +3644,13 @@ footer - start
 }
 
 .mobile-menu nav ul > li.active a {
-    color: #ED1C24 !important;
+    color: #FF0000 !important;
     text-decoration: none;
 }
 
 
 del {
-    color: #ED1C24;
+    color: #FF0000;
 }
 
 .dropdown-menu_burger_menu {
@@ -3669,7 +3669,7 @@ del {
 }
 
 .dropdown-menu_burger_menu li:hover {
-    background-color: #ED1C24 !important;
+    background-color: #FF0000 !important;
     color: #ffffff !important;
 }
 

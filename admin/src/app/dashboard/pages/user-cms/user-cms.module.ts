@@ -8,6 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImageUploadModule } from 'angular2-image-upload';
 import { CmsRoutingModule } from './user-cms-routing.module';
 import { UiModule } from '../../shared/ui.module';
+import { UserCmsPostReadComponent } from './user-cms-post-read/user-cms-post-read.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,7 @@ import { UiModule } from '../../shared/ui.module';
 
     // ScrollbarModule
   ],
-  declarations: [UserCmsComponent],
+  declarations: [UserCmsComponent, UserCmsPostReadComponent],
   exports: []
 })
 export class UserCmsModule {}

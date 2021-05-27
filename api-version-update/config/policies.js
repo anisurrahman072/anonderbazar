@@ -178,10 +178,10 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'getShippingCharge': true,
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'getShippingCharge': ['isAuthorized', 'isAdmin'],
     'updateShippingCharge': ['isAuthorized', 'isAdmin']
   },
   GroupController: {

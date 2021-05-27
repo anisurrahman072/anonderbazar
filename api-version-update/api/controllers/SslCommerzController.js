@@ -1,7 +1,3 @@
-/**
- * SslCommerzController.js
- * @help :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
 const {createOrder} = require('../services/checkout');
