@@ -2,7 +2,7 @@
  * OrderPartialPaymentController
  * To process partial payments
  */
-const {ORDER_TYPE_PARTIAL} = require('../../libs/constants');
+const {REGULAR_ORDER_TYPE} = require('../../libs/constants');
 const {getPaymentService} = require('../../libs/paymentMethods');
 const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
 module.exports = {
@@ -25,7 +25,7 @@ module.exports = {
       if (!order) {
         throw new Error('Order doesn\'t exist.');
       }
-      let paymentGatewayService = getPaymentService(req.body.payment_method, ORDER_TYPE_PARTIAL);
+      let paymentGatewayService = getPaymentService(req.body.payment_method, REGULAR_ORDER_TYPE);
 
       const response = paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
 

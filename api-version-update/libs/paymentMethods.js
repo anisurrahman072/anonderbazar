@@ -3,9 +3,10 @@ const {
   NAGAD_PAYMENT_TYPE,
   CASH_PAYMENT_TYPE,
   CASHBACK_PAYMENT_TYPE,
-  SSL_COMMERZ_PAYMENT_TYPE
+  SSL_COMMERZ_PAYMENT_TYPE,
+  PARTIAL_ORDER_TYPE
 } = require('./constants');
-const {PARTIAL_ORDER_TYPE} = require('./orders');
+
 module.exports = {
   getPaymentService: function (paymentType, orderType) {
     if (parseInt(orderType, 10) === PARTIAL_ORDER_TYPE) {
