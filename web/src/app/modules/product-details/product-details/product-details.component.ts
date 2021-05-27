@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, TemplateRef} from "@angular/core";
+import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit} from "@angular/core";
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
@@ -18,6 +18,7 @@ import {
     ProductService,
     ProductVariantService
 } from "../../../services";
+import * as _ from "lodash";
 import * as fromStore from "../../../state-management";
 import {LoginModalService} from "../../../services/ui/loginModal.service";
 import {ToastrService} from "ngx-toastr";
@@ -205,18 +206,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.getRecentlyViewedProducts();
     }
 
-    /*    buyCouponProduct(product) {
-            if (this.currentUserId) {
-                this.addProductToCart(product, () => {
-                    this.router.navigate([`/checkout`]);
-                    this.couponProductModalRef.hide();
-                });
-            } else {
-                this.couponProductModalRef.hide();
-                this.loginModalService.showLoginModal(true);
-            }
-        }*/
-
     defaultVariantSelection() {
         for (let v of this.productVariants) {
             let variant = v.warehouse_variants[0]
@@ -238,11 +227,17 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.productDescriptionData = null;
         this.productService.getByIdWithDetails(this.id).subscribe(result => {
             this.loaderService.hideLoader();
-            /*data sent as response from api end => data: [product, questions.rows, rating.rows],*/
-            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]]
+            /** data sent as response from api end => data: [product, questions.rows, rating.rows], */
+            if (!(!_.isUndefined(result.data) && _.isArray(result.data) && result.data.length === 3)) {
+                this.loaderService.hideLoader();
+                this._notify.error('Problem!', "Problem in loading Product Details");
+                return;
+            }
+
+            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]];
             this.data = result.data[0];
 
-            /*rating section*/
+            /** rating section*/
             this.productRatingDetail.totalNumberOfRatings = result.data[2].length;
 
             let totalRating = 0;
@@ -570,24 +565,24 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.updateFinalprice();
     }
 
-
-    showCouponProductModal(template: TemplateRef<any>) {
-        this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
-        document.getElementById('scroll').scrollIntoView({behavior: 'smooth', block: 'end'});
-        /*        setTimeout(() => {
-                    this.scrollToBottom();
-                }, 2000);*/
-    }
-
-    //Method for scroll to bottom
-    scrollToBottom(): void {
-        try {
-            const domElem = this._elementRef.nativeElement.querySelector('#coupon-term-cond-modal-body');
-            domElem.scrollTop = domElem.scrollHeight;
-        } catch (err) {
-            console.log(err);
+    /*
+        showCouponProductModal(template: TemplateRef<any>) {
+            this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
+            document.getElementById('scroll').scrollIntoView({behavior: 'smooth', block: 'end'});
+            /!*        setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 2000);*!/
         }
-    }
+
+        //Method for scroll to bottom
+        scrollToBottom(): void {
+            try {
+                const domElem = this._elementRef.nativeElement.querySelector('#coupon-term-cond-modal-body');
+                domElem.scrollTop = domElem.scrollHeight;
+            } catch (err) {
+                console.log(err);
+            }
+        }*/
 
     private addPageTitleNMetaTag() {
         this.title.setTitle(this.data.name);

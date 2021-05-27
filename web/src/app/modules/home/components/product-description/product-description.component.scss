@@ -133,9 +133,9 @@
 .submitBTN {
   border: 1px solid #FF0000;
   padding: 10px 56px;
-  color: #FF0000;
+  color: white;
   margin-top: 20px;
-  background-color: white;
+  background-color: #FF0000;
 }
 
 .averageRating {
@@ -155,4 +155,23 @@
 .filled-star {
   width: 40px;
   height: 38px
+}
+
+.userRatingStars {
+  width: 15px;
+  height: 14px;
+}
+
+.absoluteStars {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  height: 38px;
+}
+
+.absoluteUserStars {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  height: 28px;
 }

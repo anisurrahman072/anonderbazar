@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AppSettings} from "../../../../config/app.config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {AuthService, ProductService} from "../../../../services";
@@ -6,7 +6,6 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
-import * as moment from 'moment';
 import * as ___ from "lodash";
 
 @Component({
@@ -16,13 +15,12 @@ import * as ___ from "lodash";
 })
 export class ProductDescriptionComponent implements OnInit {
     @Input() productDescriptionData;
-    @Input() productId;
+    @Input() private productId;
     @Input() productRatingDetail;
-    @Input() currentUserId;
+    @Input() private currentUserId;
     p;
     q;
     /*data: [product, questions.rows, rating.rows],*/
-
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     address: any;
@@ -37,9 +35,8 @@ export class ProductDescriptionComponent implements OnInit {
     reviewBox: boolean = false;
     questionButton: boolean = true;
     questionBox: boolean = false;
-    averageRatingArray: any = [];
-
-    private userId: any;
+    averageRatingStarsWidth: number;
+    userStarsWidth: number;
 
     data: any = null;
 
@@ -64,26 +61,16 @@ export class ProductDescriptionComponent implements OnInit {
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        this.userId = this.currentUserId;
-        this.paymentAddressService.getPaymentaddressWithoutOrderid(this.userId).subscribe(result => {
-            this.address = result[0];
-        });
 
-        this.productDescriptionData[0] = this.productDescriptionData[0].map(data => {
-            let created_at = moment(data.created_at).format('DD/MM/YYYY');
-            return {...data, created_at}
-        });
-        this.productDescriptionData[1] = this.productDescriptionData[1].map(data => {
-            let created_at = moment(data.created_at).format('DD/MM/YYYY');
-            return {...data, created_at}
+        this.paymentAddressService.getPaymentaddressWithoutOrderid(this.currentUserId).subscribe(result => {
+            this.address = result[0];
         });
         this.data = this.productDescriptionData;
 
-        this.canRateProduct(this.userId, this.productId);
-        const integerOfAverageRating = this.productRatingDetail.averageRating.toFixed();
-        for(let i = 0; i< integerOfAverageRating; i++){
-            this.averageRatingArray.push(i);
-        }
+        this.canRateProduct(this.currentUserId, this.productId);
+
+        this.averageRatingStarsWidth = ((this.productRatingDetail.averageRating / 5) * 215)
+        this.userStarsWidth = ((this.productRatingDetail.averageRating / 5) * 90)
     }
 
     /*Method called on Rating and Review Submit*/
@@ -103,14 +90,14 @@ export class ProductDescriptionComponent implements OnInit {
     }
 
     ratingChange(rating, review): void {
-        if (this.userId) {
+        if (this.currentUserId) {
             this._progress.start("mainLoader");
             this.productService
                 .sendRating({
                     productId: this.data[2].id,
                     rating: rating,
                     review: review,
-                    userId: this.userId,
+                    userId: this.currentUserId,
                 })
                 .subscribe(res => {
                     this._progress.complete("mainLoader");
@@ -154,11 +141,11 @@ export class ProductDescriptionComponent implements OnInit {
     /*Method Called in onQuestionSubmit() method*/
     sendQuestion(question): void {
 
-        if (this.userId) {
+        if (this.currentUserId) {
             this._progress.start("mainLoader");
             this.productService
                 .sendQuestion({
-                    userId: this.userId,
+                    userId: this.currentUserId,
                     productId: this.data[2].id,
                     question: question,
                 })
@@ -194,11 +181,11 @@ export class ProductDescriptionComponent implements OnInit {
         this.q = event;
     }
 
-    canRateProduct(userID, productID) {
+    private canRateProduct(userID, productID) {
         this.productService.canRateProduct(userID, productID)
             .subscribe(result => {
                 console.log('canRateProduct', result.canRateProduct);
-                if(!___.isUndefined(result) && !___.isUndefined(result.canRateProduct) && ___.isArray(result.canRateProduct) && result.canRateProduct.length >= 1) {
+                if (!___.isUndefined(result) && !___.isUndefined(result.canRateProduct) && ___.isArray(result.canRateProduct) && result.canRateProduct.length >= 1) {
                     this.reviewSection = true;
                 }
             })
