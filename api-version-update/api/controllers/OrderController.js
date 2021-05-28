@@ -13,6 +13,7 @@ const {getAuthUser} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const logger = require("../../libs/softbd-logger").Logger;
 
 module.exports = {
   findOne: async (req, res) => {
@@ -400,9 +401,11 @@ module.exports = {
         throw new Error('No shipping address has been provided.');
       }
 
-      console.log('Place Order - body: ', req.body);
-      console.log('Place Order - shipping_address: ', shippingAddress);
-      console.log('Place Order - billing_address: ', billingAddress);
+      logger.orderLog(authUser.id, '######## PLACING ORDER ########');
+      logger.orderLog(authUser.id, 'Payment Method: ', req.param('paymentType'));
+      logger.orderLog(authUser.id, 'Order Body: ', req.body);
+      logger.orderLog(authUser.id,'Order - shipping_address: ', shippingAddress);
+      logger.orderLog(authUser.id,'Order - billing_address: ', billingAddress);
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
