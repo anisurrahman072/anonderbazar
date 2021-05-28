@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
+const moment = require('moment');
+const {CANCELED_ORDER} = require('../../libs/constants.js');
 
 module.exports = {
 
@@ -66,6 +68,18 @@ module.exports = {
       deletedAt: null
     });
   },
+
+  isAllowedForPartialPay: async function (order, globalConfigs){
+    const currentDate = moment(new Date());
+    const orderedDate = moment(order.createdAt);
+    const duration = moment.duration(currentDate.diff(orderedDate));
+    const expendedHour =  Math.floor(duration.asHours());
+    if(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER){
+      return false;
+    }
+    return true;
+  },
+
   isAllCouponProduct: function (cartItems) {
     const couponProductFound = cartItems.filter((cartItem) => {
       return cartItem.product_id && !!cartItem.product_id.is_coupon_product;

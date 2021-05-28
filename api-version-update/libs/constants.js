@@ -17,3 +17,5 @@ exports.PAYMENT_STATUS_NA = 4;
 
 exports.PAYMENT_TRAN_TYPE_PAY = 1;
 exports.PAYMENT_TRAN_TYPE_REFUND = 2;
+
+exports.CANCELED_ORDER = 12;

@@ -24,6 +24,9 @@ module.exports = {
         throw new Error('Order doesn\'t exist.');
       }
 
+      if(!PaymentService.isAllowedForPartialPay(order, globalConfigs)){
+        throw new Error('Order is no longer for partial payment');
+      }
 
       let paymentGatewayService = getPaymentServicePartial(req.body.payment_method);
 
