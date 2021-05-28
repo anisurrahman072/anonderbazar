@@ -1,3 +1,6 @@
+const {getCurrentUserCashBack} = require('../../libs/cashBackHelper');
+const {CASHBACK_PAYMENT_TYPE, PAYMENT_TRAN_TYPE_PAY, PAYMENT_STATUS_PARTIALLY_PAID, PAYMENT_STATUS_PAID} = require('../../libs/constants');
+
 module.exports = {
   getCouponLotteryCashback: async function (authUser) {
     return await CouponLotteryCashback.findOne({
@@ -109,5 +112,68 @@ module.exports = {
     await PaymentService.sendEmail(orderForMail);
 
     return order;
+  },
+
+  makePartialPayment: async function (customer, order, request, globalConfigs) {
+    const shippingAddress = order.shipping_address;
+    const amountToPay = parseFloat(request.body.amount_to_pay);
+    const totalPrice = parseFloat(order.total_price);
+    const paidAmount = parseFloat(order.paid_amount);
+
+    if (amountToPay <= 0) {
+      throw new Error('Invalid Payment Amount.');
+    }
+
+    let dueAmount = totalPrice - paidAmount;
+    if(dueAmount === 0){
+      throw new Error('Payment already has been completed for this order');
+    }
+    if(dueAmount < amountToPay){
+      throw new Error('Payment amount is larger than due amount');
+    }
+
+    const currentUserCashBack = await getCurrentUserCashBack(customer);
+    if(currentUserCashBack.amount <= 0 || currentUserCashBack.amount < amountToPay){
+      throw new Error('Customer is not allowed to pay by cashBackAmount for this order');
+    }
+
+    await sails.getDatastore()
+      .transaction(async (db) => {
+        await Payment.create({
+          payment_amount: amountToPay,
+          user_id: customer.id,
+          order_id: order.id,
+          payment_type: CASHBACK_PAYMENT_TYPE,
+          transaction_type: PAYMENT_TRAN_TYPE_PAY,
+          status: 1
+        }).usingConnection(db);
+
+        const totalPaidAmount = paidAmount + amountToPay;
+
+        let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
+        if (totalPrice <= totalPaidAmount) {
+          paymentStatus = PAYMENT_STATUS_PAID;
+        }
+
+        await Order.updateOne({id: order.id}).set({
+          paid_amount: totalPaidAmount,
+          payment_status: paymentStatus,
+        }).usingConnection(db);
+
+
+        const deductedCashBackAmount = (currentUserCashBack.amount - amountToPay);
+
+        await CouponLotteryCashback.updateOne({
+          id: currentUserCashBack.id
+        }).set({
+          amount: deductedCashBackAmount
+        }).usingConnection(db);
+      });
+
+    if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+      await PaymentService.sendSms(customer, order, [], shippingAddress);
+    }
+
+    return true;
   }
 };
