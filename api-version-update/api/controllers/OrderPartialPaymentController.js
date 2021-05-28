@@ -12,7 +12,6 @@ module.exports = {
    * @returns {Promise<*>}
    */
   makePayment: async function (req, res) {
-
     try {
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
@@ -24,6 +23,8 @@ module.exports = {
       if (!order) {
         throw new Error('Order doesn\'t exist.');
       }
+
+
       let paymentGatewayService = getPaymentServicePartial(req.body.payment_method);
 
       const response = paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
