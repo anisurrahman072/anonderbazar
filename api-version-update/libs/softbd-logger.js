@@ -1,6 +1,6 @@
 // Firstly we'll need to import the fs library
 const fs = require('fs');
-const {isObject} = require('lodash');
+const _ = require('lodash');
 const moment = require('moment');
 // next we'll want make our Logger object available
 // to whatever file references it.
@@ -20,33 +20,43 @@ const errorStream = fs.createWriteStream('logs/error.log');
 const debugStream = fs.createWriteStream('logs/debug.log');
 
 function formatObject(message) {
-  if (isObject(message)) {
+  if (_.isObject(message)) {
     return JSON.stringify(message, null, 2);
   }
   return message;
 }
 
+Logger.orderLogAuth = function (req, msg = '') {
+  if (!_.isUndefined(req.token) && !_.isUndefined(req.token.userInfo) && req.token.userInfo.id) {
+    this.orderLog(req.token.userInfo.id, 'finalError', msg);
+  } else {
+    this.orderLog('No User', 'finalError', msg);
+  }
+};
 // Finally we create 3 different functions
 // each of which appends our given messages to
 // their own log files along with the current date as an
 // iso string and a \n newline character
 Logger.orderLog = function (userId, label = '', msg = '') {
 
-  let message = 'UserID: ' + userId + ' [' + moment().format('DD-MM-YYYY HH:mm:ss') + ']: '+ label + ': \n' ;
+  let message = 'UserID: ' + userId + ' [' + moment().format('DD-MM-YYYY HH:mm:ss') + '][' + label + ']: ';
   paymentTransactionStream.write(message);
   console.log(message);
-  if(msg){
-    paymentTransactionStream.write(formatObject(msg) + '\n');
+  if (_.isObject(msg)) {
+    paymentTransactionStream.write('\n' + formatObject(msg) + '\n');
+    console.log(msg);
+  } else {
+    paymentTransactionStream.write(msg);
     console.log(msg);
   }
 };
 
 Logger.debug = function (msg) {
-  let message = new Date().toISOString() + ' : ' + msg + '\n';
+  let message = moment().format('DD-MM-YYYY HH:mm:ss') + ' : ' + formatObject(msg) + '\n';
   debugStream.write(message);
 };
 
 Logger.error = function (msg) {
-  let message = new Date().toISOString() + ' : ' + msg + '\n';
+  let message = moment().format('DD-MM-YYYY HH:mm:ss') + ' : ' + formatObject(msg) + '\n';
   errorStream.write(message);
 };

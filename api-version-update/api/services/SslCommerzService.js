@@ -4,7 +4,7 @@
  * @description :: Server-side logic for processing ssl commerz payment method
  */
 const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
-
+const logger = require("../../libs/softbd-logger").Logger;
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -20,12 +20,12 @@ module.exports = {
 
     let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
-    console.log('courierCharge', courierCharge);
+    logger.orderLog(authUser.id, 'Courier Charge: ', courierCharge);
 
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
-    console.log('grandOrderTotal', grandOrderTotal);
+    logger.orderLog(authUser.id, 'grandOrderTotal: ', grandOrderTotal);
 
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
@@ -49,10 +49,12 @@ module.exports = {
       finalAddress,
       randomstring
     });
-    console.log('postBody', postBody);
+
+    logger.orderLog(authUser.id, 'SSL Commerz payment request: ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
-    console.log('sslcommerz.init_transaction success', sslResponse);
+    logger.orderLog(authUser.id, 'SSL Commerz payment response: ', sslResponse);
+
     /**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
