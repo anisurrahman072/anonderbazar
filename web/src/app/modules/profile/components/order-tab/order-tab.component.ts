@@ -8,7 +8,8 @@ import {AppSettings} from "../../../../config/app.config";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
 import * as moment from 'moment';
 import {forkJoin} from "rxjs/observable/forkJoin";
-import {ORDER_STATUSES} from "../../../../../environments/global_config";
+import {ORDER_STATUSES, PAYMENT_STATUS} from "../../../../../environments/global_config";
+import {timer} from 'rxjs/observable/timer';
 
 @Component({
     selector: 'Order-tab',
@@ -28,6 +29,9 @@ export class OrderTabComponent implements OnInit {
     statusFilter = 'all';
 
     globalPartialPaymentDuration: number;
+    allRemainingTime: any[] = [];
+    remainingTimeInHourMinute: any[] = [];
+    PAYMENT_STATUS: any = PAYMENT_STATUS;
 
     /*
     * constructor for OrderTabComponent
@@ -38,7 +42,7 @@ export class OrderTabComponent implements OnInit {
                 private userService: UserService,
                 private partialPaymentModalService: PartialPaymentModalService,
                 private globalConfigService: GlobalConfigService
-                ) {
+    ) {
     }
 
     //init the component
@@ -50,23 +54,54 @@ export class OrderTabComponent implements OnInit {
                 this.globalPartialPaymentDuration = allData[0].configData[0].partial_payment_duration;
                 let orders = allData[1].map(order => {
                     let now = moment(new Date());
-                    let end = moment(order.createdAt);
-                    let duration = moment.duration(now.diff(end));
-                    let expendedHour =  Math.floor(duration.asHours());
-                    if(this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER){
+                    let createdAt = moment(order.createdAt);
+                    let duration = moment.duration(now.diff(createdAt));
+                    let expendedHour = Math.floor(duration.asHours());
+
+                    const globalHourToMS = this.globalPartialPaymentDuration * 60 * 60 * 1000;
+                    this.allRemainingTime[order.id] = globalHourToMS - Math.floor(duration.asMilliseconds());
+
+                    if (this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
+                    && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE) {
                         order.isAllowedForPay = true;
-                    }
-                    else{
+                    } else {
                         order.isAllowedForPay = false;
                     }
                     return order;
                 });
                 this.orderList = orders;
+                this.convertMilliSecondToHourMinute();
 
                 this.dashboardData = allData[2];
             }, error => {
                 console.log(error);
             });
+
+        timer(0, 60000)
+            .subscribe(data => {
+                this.remainingTimeInHourMinute = null;
+                this.orderList.forEach((order, i) => {
+                    if (this.allRemainingTime[order.id] - 60000 <= 0) {
+                        this.allRemainingTime[order.id] = 0;
+                        this.orderList[i].isAllowedForPay = false;
+                    } else
+                        this.allRemainingTime[order.id] -= 60000;
+                });
+                this.convertMilliSecondToHourMinute();
+            })
+    }
+
+    convertMilliSecondToHourMinute() {
+        this.remainingTimeInHourMinute = [];
+        this.orderList.forEach(order => {
+            if (this.allRemainingTime[order.id] === 0) {
+                this.remainingTimeInHourMinute[order.id] = `0 hr : 0 min`;
+            } else {
+                let minutes = moment.duration(this.allRemainingTime[order.id]).minutes();
+                let hours = Math.trunc(moment.duration(this.allRemainingTime[order.id]).asHours());
+                this.remainingTimeInHourMinute[order.id] = `${hours} hr : ${minutes} min`;
+            }
+        });
     }
 
     //Event called for getting order data
@@ -79,7 +114,7 @@ export class OrderTabComponent implements OnInit {
     }
 
     /** Make payment payment for the order */
-    makePartialPayment(order){
+    makePartialPayment(order) {
         this.partialPaymentModalService.showPartialModal(true, order.id);
     }
 }

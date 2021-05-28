@@ -34,3 +34,10 @@ export const ORDER_STATUSES = {
     CANCELED_ORDER: 12,
     CONFIRMED_ORDER: 13
 }
+
+export const PAYMENT_STATUS = {
+    UNPAID: 1,
+    PARTIALLY_PAID: 2,
+    PAID: 3,
+    NOT_APPLICABLE: 4
+}

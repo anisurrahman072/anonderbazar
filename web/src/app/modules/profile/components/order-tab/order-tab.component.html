@@ -45,8 +45,13 @@
         <ul class="justify-content-between" *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
             <li class="text-1">{{item?.createdAt | date}}</li>
             <li class="text-2">
-                <button color="accent" style="padding-left: 0px; width:200px" routerLink="/profile/orders/invoice/{{item.id}}">
+                <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
                     ৳ {{item?.total_price}}
+                </button>
+            </li>
+            <li class="text-2 pl-2 pr-2" *ngIf="remainingTimeInHourMinute && remainingTimeInHourMinute.length > 0 && item.isAllowedForPay">
+                <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
+                    {{remainingTimeInHourMinute[item.id]}} remaining
                 </button>
             </li>
             <li class="text-2" *ngIf="item.isAllowedForPay">
