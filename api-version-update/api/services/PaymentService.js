@@ -69,15 +69,12 @@ module.exports = {
     });
   },
 
-  isAllowedForPartialPay: async function (order, globalConfigs){
+  isAllowedForPartialPay: function (order, globalConfigs){
     const currentDate = moment(new Date());
     const orderedDate = moment(order.createdAt);
     const duration = moment.duration(currentDate.diff(orderedDate));
     const expendedHour =  Math.floor(duration.asHours());
-    if(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER){
-      return false;
-    }
-    return true;
+    return !(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER);
   },
 
   isAllCouponProduct: function (cartItems) {

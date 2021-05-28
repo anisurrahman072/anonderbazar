@@ -114,7 +114,7 @@ module.exports = {
     return order;
   },
 
-  makePartialPayment: async function (customer, order, request, globalConfigs) {
+  makePartialPayment: async function (customer, order, request) {
     const shippingAddress = order.shipping_address;
     const amountToPay = parseFloat(request.body.amount_to_pay);
     const totalPrice = parseFloat(order.total_price);
@@ -137,9 +137,9 @@ module.exports = {
       throw new Error('Customer is not allowed to pay by cashBackAmount for this order');
     }
 
-    await sails.getDatastore()
+    const payment =  await sails.getDatastore()
       .transaction(async (db) => {
-        await Payment.create({
+        let payment = await Payment.create({
           payment_amount: amountToPay,
           user_id: customer.id,
           order_id: order.id,
@@ -168,12 +168,14 @@ module.exports = {
         }).set({
           amount: deductedCashBackAmount
         }).usingConnection(db);
+
+        return payment;
       });
 
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
       await PaymentService.sendSms(customer, order, [], shippingAddress);
     }
 
-    return true;
+    return payment;
   }
 };
