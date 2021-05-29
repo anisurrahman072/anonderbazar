@@ -10,6 +10,7 @@ export class OrderService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/order`;
     private EndPoint2 = `${AppSettings.API_ENDPOINT}/order`;
+    private EndPoint3 = `${AppSettings.API_ENDPOINT}/partial-order`;
 
     constructor(private http: HttpClient) {
     }
@@ -55,7 +56,7 @@ export class OrderService {
     }
 
     placeOrderWithoutPayment(data): Observable<any>{
-        return this.http.post(`${this.EndPoint}/placeOrderWithoutPayment`, data);
+        return this.http.post(`${this.EndPoint3}/placeOrderWithoutPayment`, data);
     }
 
     makePartialPayment(orderId, data): Observable<any>{

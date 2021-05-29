@@ -3,10 +3,10 @@
  *
  * @type {{placeOrder: (function(*=, *, *, *, *, *=, *=, *=): *)}}
  */
-const {PAYMENT_STATUS_UNPAID} = require('../../libs/constants');
-const {PARTIAL_ORDER_TYPE} = require('../../libs/constants');
+const {PAYMENT_STATUS_UNPAID, PARTIAL_ORDER_TYPE} = require('../../libs/constants');
+
 module.exports = {
-  placeOrder: async function(authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems){
+  placeOrder: async function (authUser, requestBody, urlParams, addresses, globalConfigs, cart, cartItems) {
 
     let {billingAddress, shippingAddress} = addresses;
 
