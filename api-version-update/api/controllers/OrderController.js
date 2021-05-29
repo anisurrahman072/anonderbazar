@@ -428,6 +428,7 @@ module.exports = {
       return res.status(200).json(response);
 
     } catch (finalError) {
+      console.log(finalError);
       logger.orderLogAuth(req, finalError);
 
       return res.status(400).json({

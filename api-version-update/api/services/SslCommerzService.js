@@ -18,10 +18,11 @@ module.exports = {
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
 
+    logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
+
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     logger.orderLog(authUser.id, 'Courier Charge: ', courierCharge);
-    logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
@@ -52,9 +53,12 @@ module.exports = {
 
     logger.orderLog(authUser.id, 'SSL Commerz payment request: ', postBody);
 
+    console.log('postBody', postBody);
+
     const sslResponse = await sslcommerz.init_transaction(postBody);
     logger.orderLog(authUser.id, 'SSL Commerz payment response: ', sslResponse);
 
+    console.log('sslResponse', sslResponse);
     /**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",

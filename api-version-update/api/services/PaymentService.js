@@ -17,12 +17,9 @@ module.exports = {
   getBillingAddress: async function (req, shippingAddress) {
     let billingAddress = null;
     if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
-      billingAddress = {...req.param('billing_address')};
+      billingAddress = {...req.param('billing_address'), postal_code: req.param('billing_address').postCode};
       if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') === false) {
-
-        let paymentAddress = await this.createAddress(billingAddress);
-        billingAddress.id = paymentAddress.id;
-
+        billingAddress = await this.createAddress(billingAddress);
       } else if (req.param('is_copy') === true && _.isObject(shippingAddress)) {
         billingAddress = {...shippingAddress};
       }
@@ -32,10 +29,9 @@ module.exports = {
   getShippingAddress: async function (req, cartItems = []) {
     let shippingAddress = null;
     if (req.param('shipping_address')) {
-      shippingAddress = {...req.param('shipping_address')};
+      shippingAddress = {...req.param('shipping_address'), postal_code: req.param('shipping_address').postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
-        let shippingAddres = await this.createAddress(shippingAddress);
-        shippingAddress.id = shippingAddres.id;
+        shippingAddress = await this.createAddress(shippingAddress);
       }
     }
     /** check whether shipping address is required or not and based on it we're using admin address in case shipping address is not provided */
