@@ -17,7 +17,6 @@ import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
-import {error} from "util";
 import {PAYMENT_METHODS} from '../../../../environments/global_config';
 
 @Component({
@@ -81,7 +80,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     authUserWallets: any;
     bKashWalletNumber: string;
 
-    showBKashAgreementTerm: boolean = false;
     agreedToBKashTermsConditions: boolean = false;
 
     couponCashbackAmount: number = 0;
@@ -592,8 +590,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             requestPayload.agreement_id = authUserWallet.agreement_id;
             requestPayload.payerReference = authUserWallet.wallet_no;
 
-        } else if (this.bKashWalletNumber) {
-            requestPayload.payerReference = this.bKashWalletNumber;
         } else {
             this.toastr.error("Please choose a bkash wallet to proceed.", "Error", {
                 positionClass: 'toast-bottom-right'
