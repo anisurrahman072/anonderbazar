@@ -5,7 +5,8 @@ const {
   PAYMENT_STATUS_PARTIALLY_PAID,
   PAYMENT_STATUS_PAID,
   PAYMENT_TRAN_TYPE_REFUND,
-  ORDER_REFUNDED_STATUS
+  ORDER_REFUNDED_STATUS,
+  CANCELED_ORDER
 } = require('../../libs/constants');
 
 module.exports = {
@@ -221,6 +222,10 @@ module.exports = {
 
     if (!order) {
       throw new Error('Order is not found for the transaction');
+    }
+
+    if(order.status != CANCELED_ORDER){
+      throw new Error('Please cancel the order first, then try to refund the payment');
     }
 
     if (totalRefundedMoney + amount > order.paid_amount) {
