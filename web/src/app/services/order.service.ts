@@ -60,6 +60,6 @@ export class OrderService {
     }
 
     makePartialPayment(orderId, data): Observable<any>{
-        return this.http.post(`${this.EndPoint2}/${orderId}`,data);
+        return this.http.post(`${this.EndPoint3}/make-payment/${orderId}`,data);
     }
 }

@@ -15,7 +15,7 @@
                         <form [formGroup]="partialPaymentForm">
                             <div class="payment-method-details1">
                                 <p class="font-weight-bold">Payment Method</p>
-                                <mat-radio-group formControlName="paymentType">
+                                <mat-radio-group formControlName="payment_method">
                                     <div class="radio2">
                                         <mat-radio-button *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0" value="CashBack" style="color: black;">
                                             <i class="fa fa-money"></i>By Using Cashback
@@ -45,7 +45,7 @@
                             <div class="form-group">
                                 <div class="row">
                                     <p class="font-weight-bold">Amount to pay</p>
-                                    <input placeholder={{amountToPay}} id="paymentAmount" class="form-control" formControlName="paymentAmount" [(ngModel)]="paymentAmount">
+                                    <input placeholder={{amountToPay}} id="paymentAmount" class="form-control" formControlName="amount_to_pay" [(ngModel)]="paymentAmount">
                                 </div>
                             </div>
                             <div class="send-btn1">

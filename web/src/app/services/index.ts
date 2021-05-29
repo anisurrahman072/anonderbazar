@@ -23,4 +23,3 @@ export * from './cms.service';
 export * from './lottery.service';
 export * from './investor.service';
 export * from './global-config.service';
-export * from './partial-order.service';

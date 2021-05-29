@@ -8,7 +8,7 @@ import {Subscription} from "rxjs/Subscription";
 import {User} from "../../../../models";
 import * as fromStore from "../../../../state-management";
 import {Store} from "@ngrx/store";
-import {OrderService, PartialOrderService} from "../../../../services";
+import {OrderService} from "../../../../services";
 import * as _ from "lodash";
 import {NotificationsService} from "angular2-notifications";
 import {forkJoin} from "rxjs/observable/forkJoin";
@@ -49,13 +49,12 @@ export class PartialPaymentModalComponent implements OnInit {
       private orderService: OrderService,
       private _notify: NotificationsService,
       private loaderService: LoaderService,
-      private partialOrderService: PartialOrderService
   ) { }
 
   ngOnInit() {
     this.partialPaymentForm = this.fb.group({
-      paymentType: ['SSLCommerce', [Validators.required]],
-      paymentAmount: ['',[Validators.required]]
+      payment_method: ['SSLCommerce', [Validators.required]],
+      amount_to_pay: ['',[Validators.required]]
     });
 
     this.partialPaymentModalService.getPartialModalInfo()
@@ -105,13 +104,12 @@ export class PartialPaymentModalComponent implements OnInit {
   }
 
   makePartialPayment(value){
-    this.onHidden();
     this.loaderService.showLoader();
-    if(_.isUndefined(value.paymentAmount) || _.isNull(value.paymentAmount) || value.paymentAmount <= 0){
+    if(_.isUndefined(value.amount_to_pay) || _.isNull(value.amount_to_pay) || value.amount_to_pay <= 0){
       this._notify.error('Please insert a correct amount to pay');
       return false;
     }
-    if(_.isUndefined(value.paymentType) || _.isNull(value.paymentType)){
+    if(_.isUndefined(value.payment_method) || _.isNull(value.payment_method)){
       this._notify.error('Please choose a payment method to complete partial payment');
       return false;
     }
@@ -119,13 +117,13 @@ export class PartialPaymentModalComponent implements OnInit {
       this._notify.error('Order not found!');
       return false;
     }
-    this.partialOrderService.makePartialPayment(this.currentOrderId, value)
+    this.orderService.makePartialPayment(this.currentOrderId, value)
         .subscribe(data => {
-          console.log('Aaaaa', data);
           this.loaderService.hideLoader();
         }, error => {
           this.loaderService.hideLoader();
           this._notify.error('Error occurred while making partial payment!', error);
         })
+    this.onHidden();
   }
 }

@@ -196,10 +196,11 @@ export class ProductComponent implements OnInit, OnDestroy {
                 this.getProductData();
             });
 
-        this.globalConfigsService.getShippingCharge()
+        this.globalConfigsService.getGlobalConfig()
             .subscribe(data => {
-                this.shippingData = data.configData[0];
+                this.globalConfig = data.configData[0];
                 this.validateShippingForm.patchValue(data.configData[0]);
+                this.validatePartialPaymentForm.patchValue(data.configData[0]);
             })
 
     }
