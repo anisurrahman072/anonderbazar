@@ -40,12 +40,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     termsAndPolicy: boolean = false;
 
     showBkashPayment: boolean = false;
-    /*
-    prevoius_address_id: any;
-    help1Show: boolean = false;
-    help2Show: boolean = false;
-    isAddNew = false;
-    */
 
     isDelivery = true;
     isPickup = false;
@@ -53,6 +47,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     cartData: any;
     message: any;
     user_id: any;
+
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
@@ -69,14 +64,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     shipping_upazila_id: string;
     shippingAddress: string;
     shippingPostCode: string;
-    /*    billshippingFirstName: string;
-        billshippingLastName: string;
-        billshippingPhone: string;
-        billdivision_id: string;
-        billzila_id: string;
-        billupazila_id: string;
-        billaddress: string;
-        billpostCode: string;*/
+
     private currentUser: User;
     private currentUserSub: Subscription;
     private mainSubscription: Subscription;
@@ -103,7 +91,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     maxDhakaCharge: number = 0;
     maxOutsideDhakaCharge: number = 0;
 
-    CASH_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
+    CASH_PAYMENT_TYPE = PAYMENT_METHODS.CASH_PAYMENT_TYPE;
     CASHBACK_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
