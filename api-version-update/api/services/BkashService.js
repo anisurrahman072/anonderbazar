@@ -83,19 +83,21 @@ module.exports = {
 
     const bKashResponse = await bKashCreatePayment(authUser, tokenRes.id_token, payloadData);
 
+    const paymentLogDetails = JSON.stringify({
+      id_token: tokenRes.id_token,
+      payerReference,
+      agreementId,
+      billingAddressId: billingAddress.id,
+      shippingAddressId: shippingAddress.id,
+      bKashResponse
+    });
+
     if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
       await PaymentTransactionLog.updateOne({
         id: paymentTransactionLog.id
       }).set({
         status: '2',
-        details: JSON.stringify({
-          id_token: tokenRes.id_token,
-          payerReference,
-          agreementId,
-          billingAddressId: billingAddress.id,
-          shippingAddressId: shippingAddress.id,
-          bKashResponse
-        })
+        details: paymentLogDetails
       });
       return bKashResponse;
     }
@@ -104,16 +106,12 @@ module.exports = {
       id: paymentTransactionLog.id
     }).set({
       status: '99',
-      details: JSON.stringify({
-        id_token: tokenRes.id_token,
-        payerReference,
-        agreementId,
-        billingAddressId: billingAddress.id,
-        shippingAddressId: shippingAddress.id,
-        bKashResponse
-      })
+      details: paymentLogDetails
     });
 
+    if (bKashResponse && bKashResponse.statusMessage) {
+      throw new Error(bKashResponse.statusMessage);
+    }
     throw new Error('Problem in creating bKash payment');
 
   },
