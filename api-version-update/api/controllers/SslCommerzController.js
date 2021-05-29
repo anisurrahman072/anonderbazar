@@ -20,7 +20,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = PaymentService.getTheCustomer(req.query.user_id);
+      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
@@ -149,7 +149,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = PaymentService.getTheCustomer(req.query.user_id);
+      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
@@ -291,7 +291,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = PaymentService.getTheCustomer(req.query.user_id);
+      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
         .populate('shipping_address');
@@ -378,7 +378,7 @@ module.exports = {
     try {
       let globalConfigs = await getGlobalConfig();
 
-      let customer = PaymentService.getTheCustomer(req.query.user_id);
+      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
         .populate('shipping_address');

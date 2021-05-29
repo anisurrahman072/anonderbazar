@@ -135,7 +135,7 @@ module.exports = {
     sails.log(req.query);
 
     try {
-      let customer = PaymentService.getTheCustomer(req.param('id'));
+      let customer = await PaymentService.getTheCustomer(req.param('id'));
 
       const userWallets = await BkashCustomerWallet.find({
         user_id: customer.id,
@@ -242,8 +242,7 @@ module.exports = {
     }
 
     try {
-
-      const customer = getAuthUser(req);
+      let customer = await PaymentService.getTheCustomer(req.param('userId'));
       const globalConfigs = await getGlobalConfig();
 
       const transactionLog = await PaymentTransactionLog.findOne({
@@ -390,7 +389,7 @@ module.exports = {
 
       let globalConfigs = await getGlobalConfig();
 
-      let customer = PaymentService.getTheCustomer(req.param('userId'));
+      let customer = await PaymentService.getTheCustomer(req.param('userId'));
 
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
