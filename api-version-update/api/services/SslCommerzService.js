@@ -166,7 +166,21 @@ module.exports = {
     }
     return sslResponse;
   },
-  refundPayment: async function (payload) {
+  refundPayment: async function (amountPaid, transactionDetails, globalConfigs) {
+    if( !(transactionDetails && transactionDetails.bank_tran_id && transactionDetails.val_id && transactionDetails.tran_id)){
+      return false;
+    }
+    const sslcommerz = sslcommerzInstance(globalConfigs);
+    return await sslcommerz.init_refund(transactionDetails.bank_tran_id, amountPaid, 'Order has been cancelled');
+  },
+  validateRefundResponse: function(refundResponse){
+    if( !(refundResponse && _.isObject(refundResponse)) ){
+      return false;
+    }
+    if(refundResponse.APIConnect !== 'DONE' || refundResponse.status === 'failed' ){
+      return false;
+    }
 
+    return true;
   }
 };

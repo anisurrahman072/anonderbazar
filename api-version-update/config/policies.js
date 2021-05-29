@@ -250,6 +250,7 @@ module.exports.policies = {
   },
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],
+    'refundPayments': ['isAuthorized', 'isAdmin']
   },
   PRStatusController: {
     '*': false,

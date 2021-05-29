@@ -30,7 +30,7 @@ module.exports = {
     }
     return paymentGatewayService;
   },
-  getPaymentService: function (paymentType, orderType) {
+  getPaymentService: function (paymentType, orderType = 0) {
     if (parseInt(orderType, 10) === PARTIAL_ORDER_TYPE) {
       return WithoutPaymentService;
     }
