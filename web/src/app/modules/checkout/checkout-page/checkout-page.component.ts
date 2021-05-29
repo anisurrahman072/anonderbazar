@@ -582,30 +582,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 });
 
         } else {
-            this.loaderService.showLoader();
-            this.orderService.placeCashOnDeliveryOrder(requestPayload).subscribe(result => {
-                this.loaderService.hideLoader();
-                this.store.dispatch(new fromStore.LoadCart());
-                this.successOrderId = result.order.id;
-                this.toastr.success("Your order has been successfully placed.", "Note", {
-                    positionClass: 'toast-bottom-right'
-                });
-            }, (error) => {
-                this.loaderService.hideLoader();
-                console.log('cash', error);
-                if (error && error.error) {
-                    this.toastr.error(error.error, "Problem in placing your order!", {
-                        positionClass: 'toast-bottom-right'
-                    });
-                } else if (error && error.additionalMessage) {
-                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
-                        positionClass: 'toast-bottom-right'
-                    });
-                } else {
-                    this.toastr.error("Problem in placing your order.", "Problem", {
-                        positionClass: 'toast-bottom-right'
-                    });
-                }
+            this.toastr.success("Please Choose a Correct Payment Method", "Wrong Payment Method", {
+                positionClass: 'toast-bottom-right'
             });
         }
     }
