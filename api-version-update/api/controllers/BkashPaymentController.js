@@ -37,7 +37,8 @@ module.exports = {
   grandToken: async (req, res) => {
 
     try {
-      let tokenRes = await bKashGrandToken();
+      const authUser = req.token.userInfo;
+      let tokenRes = await bKashGrandToken(authUser);
 
       return res.status(200).json(tokenRes);
     } catch (error) {
@@ -110,7 +111,7 @@ module.exports = {
         });
       }
 
-      let cancelAgreementRes = await bKashCancelAgreement(req.body.id_token, req.body.agreement_id);
+      let cancelAgreementRes = await bKashCancelAgreement(authUser, req.body.id_token, req.body.agreement_id);
 
       if (cancelAgreementRes.statusMessage === 'Successful' && cancelAgreementRes.agreementStatus === 'Cancelled') {
         const bkashCustomerWallet = await BkashCustomerWallet.updateOne({
@@ -159,7 +160,7 @@ module.exports = {
             row_status: 2
           });
 
-        const bKashResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
+        const bKashResponse = await bKashExecuteAgreement(customer, userWallet.full_response.id_token, req.query.paymentID);
 
         if (bKashResponse.agreementStatus === 'Completed' && bKashResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
@@ -260,8 +261,6 @@ module.exports = {
 
       const transactionDetails = JSON.parse(transactionLog.details);
 
-      sails.log('transactionDetails', transactionDetails);
-
       if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference &&
         transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
         throw new Error('Invalid bkash order request!');
@@ -269,7 +268,7 @@ module.exports = {
 
       if (req.query.status === 'success') {
         try {
-          const bKashResponse = await bKashExecutePayment(transactionDetails.id_token, {
+          const bKashResponse = await bKashExecutePayment(customer, transactionDetails.id_token, {
             paymentID: req.query.paymentID
           });
 
@@ -316,7 +315,7 @@ module.exports = {
 
         } catch (bKashExecuteError) {
           if (bKashExecuteError.name === 'AbortError') {
-            const bKashResponse = await bKasQueryPayment(transactionDetails.id_token, {
+            const bKashResponse = await bKasQueryPayment(customer, transactionDetails.id_token, {
               paymentID: req.query.paymentID
             });
 
@@ -445,7 +444,7 @@ module.exports = {
             row_status: 2
           });
 
-        const bKashExecAgreementResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
+        const bKashExecAgreementResponse = await bKashExecuteAgreement(customer, userWallet.full_response.id_token, req.query.paymentID);
 
         if (bKashExecAgreementResponse.agreementStatus === 'Completed' && bKashExecAgreementResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({

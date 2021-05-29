@@ -187,7 +187,7 @@ module.exports = {
     return payment;
   },
 
-  refundPayment: async function (payload) {
+  refundPayment: async function (customer, payload, globalConfigs) {
     const {
       paymentID,
       amount,

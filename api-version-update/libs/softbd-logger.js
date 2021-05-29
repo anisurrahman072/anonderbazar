@@ -26,11 +26,11 @@ function formatObject(message) {
   return message;
 }
 
-Logger.orderLogAuth = function (req, msg = '') {
+Logger.orderLogAuth = function (req, msg = '', label = 'finalError') {
   if (!_.isUndefined(req.token) && !_.isUndefined(req.token.userInfo) && req.token.userInfo.id) {
-    this.orderLog(req.token.userInfo.id, 'finalError', msg);
+    this.orderLog(req.token.userInfo.id, label, msg);
   } else {
-    this.orderLog('No User', 'finalError', msg);
+    this.orderLog('No User', label, msg);
   }
 };
 // Finally we create 3 different functions

@@ -5,8 +5,9 @@
 const {fetchWithTimeout} = require('../libs/helper');
 const {bKash} = require('../config/softbd');
 const {bKashModeConfigKey} = require('../libs/helper');
+const logger = require('../libs/softbd-logger').Logger;
 module.exports = {
-  bKashGrandToken: async () => {
+  bKashGrandToken: async (authUser) => {
     let modeConfigKey = bKashModeConfigKey();
 
     const headers = {
@@ -29,15 +30,15 @@ module.exports = {
       body: JSON.stringify(postBody)
     };
 
-    console.log('############# Grand Token Start ########################');
-    console.log('bKash Grand Token-headers', headers);
-    console.log('bKash Grand Token-postBody', postBody);
+    logger.orderLog(authUser.id, '############# Grand Token Start ########################');
+    logger.orderLog(authUser.id, 'bKash Grand Token-headers', headers);
+    logger.orderLog(authUser.id, 'bKash Grand Token-postBody', postBody);
 
     let tokenResponse = await fetchWithTimeout(url, options);
     tokenResponse = await tokenResponse.json();
 
-    console.log('bKash Grand Token-response', tokenResponse);
-    console.log('############# Grand Token End ########################');
+    logger.orderLog(authUser.id, 'bKash Grand Token-response', tokenResponse);
+    logger.orderLog(authUser.id, '############# Grand Token End ########################');
     return tokenResponse;
   },
   bKashCreateAgreement: async (idToken, userId, payerReference, callbackURL) => {
@@ -67,16 +68,16 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    console.log('############# Create Agreement Start ########################');
-    console.log('bKash Create Agreement-headers', headers);
-    console.log('bKash Create Agreement-postBody', postBody);
+    logger.orderLog(userId, '############# Create Agreement Start ########################');
+    logger.orderLog(userId,'bKash Create Agreement-headers', headers);
+    logger.orderLog(userId,'bKash Create Agreement-postBody', postBody);
     let agreementResponse = await fetchWithTimeout(url, options);
     agreementResponse = await agreementResponse.json();
-    console.log('bKash Create Agreement-response', agreementResponse);
-    console.log('############# Create Agreement End ########################');
+    logger.orderLog(userId,'bKash Create Agreement-response', agreementResponse);
+    logger.orderLog(userId,'############# Create Agreement End ########################');
     return agreementResponse;
   },
-  bKashExecuteAgreement: async (idToken, paymentID) => {
+  bKashExecuteAgreement: async (customer, idToken, paymentID) => {
 
     let modeConfigKey = bKashModeConfigKey();
     const headers = {
@@ -97,14 +98,14 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    console.log('############# Execute Agreement Start ########################');
-    console.log('bKash Execute Agreement-headers', headers);
-    console.log('bKash Execute Agreement-postBody', postBody);
+    logger.orderLog(customer.id,'############# Execute Agreement Start ########################');
+    logger.orderLog(customer.id,'bKash Execute Agreement-headers', headers);
+    logger.orderLog(customer.id,'bKash Execute Agreement-postBody', postBody);
 
     let tokenRes = await fetchWithTimeout(url, options);
     tokenRes = await tokenRes.json();
-    console.log('bKash Execute Agreement-response', tokenRes);
-    console.log('############# Execute Agreement End ########################');
+    logger.orderLog(customer.id,'bKash Execute Agreement-response', tokenRes);
+    logger.orderLog(customer.id,'############# Execute Agreement End ########################');
     return tokenRes;
   },
   bKashQueryAgreement: async (idToken, agreementID) => {
@@ -135,7 +136,7 @@ module.exports = {
     console.log('############# Query Agreement End ########################');
     return agreementQueryResponse;
   },
-  bKashCancelAgreement: async (idToken, agreementID) => {
+  bKashCancelAgreement: async (authUser, idToken, agreementID) => {
     let modeConfigKey = bKashModeConfigKey();
     const headers = {
       'Content-Type': 'application/json',
@@ -155,16 +156,16 @@ module.exports = {
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    sails.log('############# Cancel Agreement Start ########################');
-    sails.log('bKash Cancel Agreement-headers', headers);
-    sails.log('bKash Cancel Agreement-postBody', postBody);
+    logger.orderLog(authUser.id,'############# Cancel Agreement Start ########################');
+    logger.orderLog(authUser.id,'bKash Cancel Agreement-headers', headers);
+    logger.orderLog(authUser.id,'bKash Cancel Agreement-postBody', postBody);
     let cancelAgreementResponse = await fetchWithTimeout(url, options);
     cancelAgreementResponse = await cancelAgreementResponse.json();
-    sails.log('bKash Cancel Agreement-response', cancelAgreementResponse);
-    sails.log('############# Cancel Agreement End ########################');
+    logger.orderLog(authUser.id,'bKash Cancel Agreement-response', cancelAgreementResponse);
+    logger.orderLog(authUser.id,'############# Cancel Agreement End ########################');
     return cancelAgreementResponse;
   },
-  bKashCreatePayment: async (idToken, postBody) => {
+  bKashCreatePayment: async (authUser, idToken, postBody) => {
     let modeConfigKey = bKashModeConfigKey();
     const headers = {
       'Content-Type': 'application/json',
@@ -173,24 +174,21 @@ module.exports = {
       'X-APP-Key': bKash[modeConfigKey].app_key,
     };
     const url = bKash[modeConfigKey].payment_create;
-
-    sails.log('headers-postBody', headers, postBody);
-
     const options = {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    sails.log('############# Create Payment Start ########################');
-    sails.log('bKash Create Payment-headers', headers);
-    sails.log('bKash Create Payment-postBody', postBody);
+    logger.orderLog(authUser.id,'############# Create Payment Start ########################');
+    logger.orderLog(authUser.id,'bKash Create Payment-headers', headers);
+    logger.orderLog(authUser.id,'bKash Create Payment-postBody', postBody);
     let bKashResponse = await fetchWithTimeout(url, options);
     bKashResponse = await bKashResponse.json();
-    sails.log('bKash Create Payment-response', bKashResponse);
-    sails.log('############# Create Payment End ########################');
+    logger.orderLog(authUser.id,'bKash Create Payment-response', bKashResponse);
+    logger.orderLog(authUser.id,'############# Create Payment End ########################');
     return bKashResponse;
   },
-  bKashExecutePayment: async (idToken, postBody) => {
+  bKashExecutePayment: async (customer, idToken, postBody) => {
     let modeConfigKey = bKashModeConfigKey();
 
     const headers = {
@@ -201,24 +199,21 @@ module.exports = {
     };
 
     const url = bKash[modeConfigKey].payment_execute;
-
-    sails.log('headers-postBody', headers, postBody);
-
     const options = {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(postBody)
     };
-    sails.log('############# Execute Payment Start ########################');
-    sails.log('bKash Execute Payment-headers', headers);
-    sails.log('bKash Execute Payment-postBody', postBody);
+    logger.orderLog(customer.id,'############# Execute Payment Start ########################');
+    logger.orderLog(customer.id,'bKash Execute Payment-headers', headers);
+    logger.orderLog(customer.id,'bKash Execute Payment-postBody', postBody);
     let bKashResponse = await fetchWithTimeout(url, options);
     bKashResponse = await bKashResponse.json();
-    sails.log('bKashExecutePayment-response', bKashResponse);
-    sails.log('############# Execute Payment End ########################');
+    logger.orderLog(customer.id,'bKashExecutePayment-response', bKashResponse);
+    logger.orderLog(customer.id,'############# Execute Payment End ########################');
     return bKashResponse;
   },
-  bKasQueryPayment: async (idToken, paymentID) => {
+  bKasQueryPayment: async (customer, idToken, paymentID) => {
     let modeConfigKey = bKashModeConfigKey();
 
     const headers = {
@@ -237,14 +232,14 @@ module.exports = {
         paymentID: paymentID
       })
     };
-    sails.log('############# Query Payment Start ########################');
-    sails.log('bKash Query Payment-headers', headers);
-    sails.log('bKash Query Payment-postBody', {paymentID});
+    logger.orderLog(customer.id,'############# Query Payment Start ########################');
+    logger.orderLog(customer.id,'bKash Query Payment-headers', headers);
+    logger.orderLog(customer.id,'bKash Query Payment-postBody', {paymentID});
 
     let bKashPaymentQueryResponse = await fetchWithTimeout(url, options);
     bKashPaymentQueryResponse = await bKashPaymentQueryResponse.json();
-    sails.log('bKash Query Payment-response', bKashPaymentQueryResponse);
-    sails.log('############# Query Payment End ########################');
+    logger.orderLog(customer.id,'bKash Query Payment-response', bKashPaymentQueryResponse);
+    logger.orderLog(customer.id,'############# Query Payment End ########################');
     return bKashPaymentQueryResponse;
   },
   bKasSearchTransaction: async (idToken, trxID) => {
@@ -275,7 +270,7 @@ module.exports = {
     sails.log('############# Search Transaction End ########################');
     return bKashSearchTranxResponse;
   },
-  bkashRefundTransaction: async (idToken, payload) => {
+  bkashRefundTransaction: async (customer, idToken, payload) => {
     let modeConfigKey = bKashModeConfigKey();
 
     const headers = {
@@ -298,13 +293,13 @@ module.exports = {
         reason: payload.reason
       })
     };
-    sails.log('############# Bkash Refund Transaction Start ########################');
-    sails.log('bKash Refund Transaction -headers', headers);
-    sails.log('bKash Refund Transaction -postBody', options);
+    logger.orderLog(customer.id,'############# Bkash Refund Transaction Start ########################');
+    logger.orderLog(customer.id,'bKash Refund Transaction -headers', headers);
+    logger.orderLog(customer.id,'bKash Refund Transaction -postBody', options);
     let bKashRefundTranxResponse = await fetchWithTimeout(url, options);
     bKashRefundTranxResponse = await bKashRefundTranxResponse.json();
-    sails.log('bKash Refund Transaction -response', bKashRefundTranxResponse);
-    sails.log('############# Bkash Refund Transaction End ########################');
+    logger.orderLog(customer.id,'bKash Refund Transaction -response', bKashRefundTranxResponse);
+    logger.orderLog(customer.id,'############# Bkash Refund Transaction End ########################');
     return bKashRefundTranxResponse;
   }
 };

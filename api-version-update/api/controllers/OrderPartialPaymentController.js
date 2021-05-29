@@ -14,6 +14,7 @@ const {
 const {getPaymentService} = require('../../libs/paymentMethods');
 const {getPaymentServicePartial} = require('../../libs/paymentMethods');
 const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
+const logger = require('../../libs/softbd-logger').Logger;
 module.exports = {
 
   refundPayments: async function (req, res) {
@@ -46,8 +47,8 @@ module.exports = {
           }
           const refundResponse = paymentGatewayService.refundPayment(transactionDetails, globalConfigs);
 
-          if(paymentGatewayService.validateRefundResponse(refundResponse) ){
-              // TODO: create a payment entry in payment table with transaction type = refund
+          if (paymentGatewayService.validateRefundResponse(refundResponse)) {
+            // TODO: create a payment entry in payment table with transaction type = refund
           }
 
         }
@@ -58,9 +59,7 @@ module.exports = {
   },
   placeOrderWithoutPayment: async function (req, res) {
     try {
-      console.log('before auth user getting');
       const authUser = getAuthUser(req);
-      console.log('after', authUser);
       const globalConfigs = await getGlobalConfig();
 
       let cart = await PaymentService.getCart(authUser.id);
@@ -73,10 +72,10 @@ module.exports = {
         throw new Error('No shipping address has been provided.');
       }
 
-      /*logger.orderLog(authUser.id, '######## PLACING ORDER ########');
+      logger.orderLog(authUser.id, '######## PLACING ORDER Without Payment ########');
       logger.orderLog(authUser.id, 'Order Body: ', req.body);
       logger.orderLog(authUser.id, 'Order - shipping_address: ', shippingAddress);
-      logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);*/
+      logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);
 
       let response = await WithoutPaymentService.placeOrder(
         authUser,
@@ -92,9 +91,10 @@ module.exports = {
       );
 
       return res.status(200).json(response);
-    } catch (error) {
+    } catch (finalError) {
+      logger.orderLogAuth(req, finalError);
       return res.status(400).json({
-        message: 'Error occurred while placing order', error
+        message: 'Error occurred while placing order', finalError
       });
     }
   },
@@ -127,7 +127,7 @@ module.exports = {
 
       return res.status(200).json(response);
     } catch (finalError) {
-      console.log(finalError);
+      logger.orderLogAuth(req, finalError);
       return res.status(400).json({
         message: 'There was a problem in processing the payment.',
         additionalMessage: finalError.message

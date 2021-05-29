@@ -1,17 +1,15 @@
-const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
-const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
-const {getPaymentRowPartial} = require('../services/PaymentService');
-const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
-const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
+const {PAYMENT_STATUS_PARTIALLY_PAID, PAYMENT_STATUS_PAID, SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
+const {hasPaymentTransactionBeenUsed, getPaymentRowPartial} = require('../services/PaymentService');
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
+const logger = require("../../libs/softbd-logger").Logger;
 
 module.exports = {
 
   ipnPaymentSuccess: async function (req, res) {
-
-    console.log('################ sslcommerz success IPN', req.body);
+    logger.orderLogAuth(req, '################ sslcommerz success IPN');
+    logger.orderLogAuth(req, req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
       return res.status(422).json({
@@ -27,7 +25,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse-sslCommerzIpnSuccess', validationResponse);
+      logger.orderLog(customer.id,'validationResponse-sslCommerzIpnSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.status(422).json({
@@ -52,16 +50,18 @@ module.exports = {
         totalQty
       } = PaymentService.calcCartTotal(cart, cartItems);
 
+      logger.orderLog(customer.id, 'courierCharge', courierCharge);
+      logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
+
       /** adding shipping charge with grandtotal */
       grandOrderTotal += courierCharge;
-
+      logger.orderLog(customer.id, 'Final GrandOrderTotal', grandOrderTotal);
       const paidAmount = parseFloat(validationResponse.amount);
 
-      console.log('paidAmount', paidAmount);
-      console.log('grandOrderTotal', grandOrderTotal);
+      logger.orderLog(customer.id, 'paidAmount', paidAmount);
 
       if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
-        console.log('grandOrderTotal & paid amount miss matched');
+        logger.orderLog(customer.id,'grandOrderTotal & paid amount miss matched');
         throw new Error('Paid amount and order amount are different.');
       }
 
@@ -132,7 +132,8 @@ module.exports = {
   },
   //Method called when sslCommerzSuccess from frontend
   paymentSuccess: async function (req, res) {
-    console.log('################ sslcommerz success', req.body);
+    logger.orderLogAuth(req, '################ sslcommerz success');
+    logger.orderLogAuth(req, req.body);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
@@ -153,7 +154,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse-sslCommerzSuccess', validationResponse);
+      logger.orderLog(customer.id,'validationResponse-sslCommerzSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
@@ -302,7 +303,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse-sslCommerzIpnSuccess', validationResponse);
+      logger.orderLog(customer.id,'validationResponse-sslCommerzIpnSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.status(422).json({

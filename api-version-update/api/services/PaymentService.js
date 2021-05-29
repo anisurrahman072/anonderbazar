@@ -2,6 +2,7 @@ const _ = require('lodash');
 const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
+const logger = require('../../libs/softbd-logger').Logger;
 
 module.exports = {
 
@@ -151,7 +152,6 @@ module.exports = {
     let totalQty = 0;
     cartItems.forEach((cartItem) => {
       if (cartItem.product_quantity > 0) {
-        //  console.log('ttttt', cartItem);
         grandOrderTotal += cartItem.product_total_price;
         totalQty += cartItem.product_quantity;
       }
@@ -404,8 +404,7 @@ module.exports = {
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }
     } catch (err) {
-      console.log('SMS sending error');
-      console.log(err);
+      logger.orderLog(authUser.id, 'SMS sending error', err);
     }
   },
 

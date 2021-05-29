@@ -4,7 +4,7 @@
  * @description :: Server-side logic for processing ssl commerz payment method
  */
 const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
-const logger = require("../../libs/softbd-logger").Logger;
+const logger = require('../../libs/softbd-logger').Logger;
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -21,11 +21,11 @@ module.exports = {
     let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     logger.orderLog(authUser.id, 'Courier Charge: ', courierCharge);
-
+    logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
-    logger.orderLog(authUser.id, 'grandOrderTotal: ', grandOrderTotal);
+    logger.orderLog(authUser.id, 'final GrandOrderTotal', grandOrderTotal);
 
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
@@ -111,7 +111,7 @@ module.exports = {
 
     await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-    console.log('successfully created:', allCouponCodes, order, suborders);
+    logger.orderLog(customer.id, 'ssl commerz order successfully created:', order);
 
     return {
       order,
@@ -152,10 +152,10 @@ module.exports = {
       randomstring,
       isPartialPayment: true
     });
-    console.log('postBody', postBody);
+    logger.orderLog(customer.id, 'SSL Commerz payment request: ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
-    console.log('sslcommerz.init_transaction success', sslResponse);
+    logger.orderLog(customer.id, 'SSL Commerz payment response: ', sslResponse);
     /**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
@@ -166,18 +166,20 @@ module.exports = {
     }
     return sslResponse;
   },
-  refundPayment: async function (amountPaid, transactionDetails, globalConfigs) {
-    if( !(transactionDetails && transactionDetails.bank_tran_id && transactionDetails.val_id && transactionDetails.tran_id)){
+  refundPayment: async function (customer, payload, globalConfigs) {
+    const {amountPaid, transactionDetails} = payload;
+
+    if (!(transactionDetails && transactionDetails.bank_tran_id && transactionDetails.val_id && transactionDetails.tran_id)) {
       return false;
     }
     const sslcommerz = sslcommerzInstance(globalConfigs);
     return await sslcommerz.init_refund(transactionDetails.bank_tran_id, amountPaid, 'Order has been cancelled');
   },
-  validateRefundResponse: function(refundResponse){
-    if( !(refundResponse && _.isObject(refundResponse)) ){
+  validateRefundResponse: function (refundResponse) {
+    if (!(refundResponse && _.isObject(refundResponse))) {
       return false;
     }
-    if(refundResponse.APIConnect !== 'DONE' || refundResponse.status === 'failed' ){
+    if (refundResponse.APIConnect !== 'DONE' || refundResponse.status === 'failed') {
       return false;
     }
 

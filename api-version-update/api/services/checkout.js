@@ -305,7 +305,7 @@ module.exports = {
       shippingAddress
     } = addresses;
 
-    let tokenRes = await bKashGrandToken();
+    let tokenRes = await bKashGrandToken(authUser);
 
     let finalBillingAddressId = null;
     let finalShippingAddressId = null;
@@ -368,7 +368,7 @@ module.exports = {
         'merchantInvoiceNumber': paymentTransactionLog.id
       };
 
-      const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+      const bKashResponse = await bKashCreatePayment(authUser, tokenRes.id_token, payloadData);
 
       if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
         await PaymentTransactionLog.updateOne({

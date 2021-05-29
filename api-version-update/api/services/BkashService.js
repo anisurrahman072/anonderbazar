@@ -10,14 +10,15 @@ const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
 const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
 const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
 const {sslApiUrl} = require('../../config/softbd');
-const {bKashGrandToken, bKashCreatePayment, bKashCreateAgreement} = require('../../libs/bkashHelper');
+const {bKashGrandToken, bKashCreatePayment} = require('../../libs/bkashHelper');
+const logger = require('../../libs/softbd-logger').Logger;
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
 
     const payerReference = requestBody.payerReference;
     const agreementId = requestBody.agreement_id;
-    if (!(payerReference)) {
+    if (!(payerReference && agreementId)) {
       throw new Error('Invalid Bkash Payment Request');
     }
 
@@ -26,78 +27,65 @@ module.exports = {
       shippingAddress
     } = addresses;
 
-    let tokenRes = await bKashGrandToken();
+    let tokenRes = await bKashGrandToken(authUser);
 
     let {
       grandOrderTotal,
     } = PaymentService.calcCartTotal(cart, cartItems);
 
     let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+    logger.orderLog(authUser.id, 'courierCharge', courierCharge);
+    logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
-    if (agreementId) {
-      const userWallets = await BkashCustomerWallet.find({
-        user_id: authUser.id,
-        agreement_id: agreementId,
-        wallet_no: payerReference,
-        row_status: 3,
-        deletedAt: null
-      });
+    logger.orderLog(authUser.id, 'final GrandOrderTotal', grandOrderTotal);
 
-      if (!(userWallets && userWallets.length > 0)) {
-        throw new Error('No bKash Wallet found with the provided agreementID');
-      }
+    const userWallets = await BkashCustomerWallet.find({
+      user_id: authUser.id,
+      agreement_id: agreementId,
+      wallet_no: payerReference,
+      row_status: 3,
+      deletedAt: null
+    });
 
-      const paymentTransactionLog = await PaymentTransactionLog.create({
-        user_id: authUser.id,
-        payment_type: BKASH_PAYMENT_TYPE,
-        payment_amount: grandOrderTotal,
-        payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-        status: '1',
-        details: JSON.stringify({
-          id_token: tokenRes.id_token,
-          payerReference,
-          agreementId,
-          billingAddressId: billingAddress.id,
-          shippingAddressId: shippingAddress.id
-        })
-      }).fetch();
+    if (!(userWallets && userWallets.length > 0)) {
+      throw new Error('No bKash Wallet found with the provided agreementID');
+    }
 
-      const payloadData = {
-        'agreementID': agreementId,
-        'mode': '0001',
-        'payerReference': payerReference,
-        'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
-        'amount': grandOrderTotal,
-        'currency': 'BDT',
-        'intent': 'sale',
-        'merchantInvoiceNumber': paymentTransactionLog.id
-      };
+    const paymentTransactionLog = await PaymentTransactionLog.create({
+      user_id: authUser.id,
+      payment_type: BKASH_PAYMENT_TYPE,
+      payment_amount: grandOrderTotal,
+      payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      status: '1',
+      details: JSON.stringify({
+        id_token: tokenRes.id_token,
+        payerReference,
+        agreementId,
+        billingAddressId: billingAddress.id,
+        shippingAddressId: shippingAddress.id
+      })
+    }).fetch();
 
-      const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+    const payloadData = {
+      'agreementID': agreementId,
+      'mode': '0001',
+      'payerReference': payerReference,
+      'callbackURL': sslApiUrl + '/bkash-payment/payment-callback/' + authUser.id + '/' + paymentTransactionLog.id,
+      'amount': grandOrderTotal,
+      'currency': 'BDT',
+      'intent': 'sale',
+      'merchantInvoiceNumber': paymentTransactionLog.id
+    };
 
-      if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
-        await PaymentTransactionLog.updateOne({
-          id: paymentTransactionLog.id
-        }).set({
-          status: '2',
-          details: JSON.stringify({
-            id_token: tokenRes.id_token,
-            payerReference,
-            agreementId,
-            billingAddressId: billingAddress.id,
-            shippingAddressId: shippingAddress.id,
-            bKashResponse
-          })
-        });
-        return bKashResponse;
-      }
+    const bKashResponse = await bKashCreatePayment(authUser, tokenRes.id_token, payloadData);
 
+    if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
       await PaymentTransactionLog.updateOne({
         id: paymentTransactionLog.id
       }).set({
-        status: '99',
+        status: '2',
         details: JSON.stringify({
           id_token: tokenRes.id_token,
           payerReference,
@@ -107,43 +95,28 @@ module.exports = {
           bKashResponse
         })
       });
-
-      throw new Error('Problem in creating bKash payment');
+      return bKashResponse;
     }
 
-    const foundAgreements = await BkashCustomerWallet.find({
-      user_id: authUser.id,
-      wallet_no: payerReference,
-      row_status: 3,
-      deletedAt: null
+    await PaymentTransactionLog.updateOne({
+      id: paymentTransactionLog.id
+    }).set({
+      status: '99',
+      details: JSON.stringify({
+        id_token: tokenRes.id_token,
+        payerReference,
+        agreementId,
+        billingAddressId: billingAddress.id,
+        shippingAddressId: shippingAddress.id,
+        bKashResponse
+      })
     });
 
-    if (foundAgreements && foundAgreements.length > 0) {
-      throw new Error('Invalid Payment Reference');
-    }
+    throw new Error('Problem in creating bKash payment');
 
-    const callbackURL = sslApiUrl + '/bkash-payment/agreement-callback-checkout/' + authUser.id;
-
-    let bKashAgreementCreateResponse = await bKashCreateAgreement(tokenRes.id_token, authUser.id, payerReference, callbackURL);
-
-    if (bKashAgreementCreateResponse.statusMessage === 'Successful' && bKashAgreementCreateResponse.agreementStatus === 'Initiated') {
-      await BkashCustomerWallet.create({
-        user_id: authUser.id,
-        wallet_no: bKashAgreementCreateResponse.payerReference,
-        payment_id: bKashAgreementCreateResponse.paymentID,
-        full_response: JSON.stringify({
-          id_token: tokenRes.id_token,
-          billingAddressId: billingAddress.id,
-          shippingAddressId: shippingAddress.id,
-          bKashAgreementCreateResponse,
-        })
-      });
-      return bKashAgreementCreateResponse;
-    }
-    throw new Error(JSON.stringify(bKashAgreementCreateResponse));
   },
   createOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
-
+    logger.orderLog(customer.id, '########### bKash create Order ######');
     await PaymentTransactionLog.updateOne({
       id: transactionLogId
     }).set({
@@ -172,8 +145,11 @@ module.exports = {
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
 
+    logger.orderLog(customer.id, 'Courier Charge: ', courierCharge);
+    logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
+    logger.orderLog(customer.id, 'final GrandOrderTotal', grandOrderTotal);
 
     const {
       order,
@@ -255,7 +231,7 @@ module.exports = {
       throw new Error('Invalid Bkash Payment Request');
     }
 
-    let tokenRes = await bKashGrandToken();
+    let tokenRes = await bKashGrandToken(customer);
     const userWallets = await BkashCustomerWallet.find({
       user_id: customer.id,
       agreement_id: agreementId,
@@ -295,7 +271,7 @@ module.exports = {
       'merchantInvoiceNumber': paymentTransactionLog.id
     };
 
-    const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+    const bKashResponse = await bKashCreatePayment(customer, tokenRes.id_token, payloadData);
 
     if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
       await PaymentTransactionLog.updateOne({
@@ -384,7 +360,7 @@ module.exports = {
 
     return order;
   },
-  refundPayment: async function (payload) {
+  refundPayment: async function (customer, payload, globalConfigs) {
 
     const {
       paymentID,
@@ -394,7 +370,7 @@ module.exports = {
       reason = 'Order has been cancelled'
     } = payload;
 
-    const bKashResponse = await bkashRefundTransaction(payload.id_token, {
+    const bKashResponse = await bkashRefundTransaction(customer, payload.id_token, {
       amount,
       paymentID,
       trxID,
