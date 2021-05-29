@@ -1,5 +1,12 @@
 const {getCurrentUserCashBack} = require('../../libs/cashBackHelper');
-const {CASHBACK_PAYMENT_TYPE, PAYMENT_TRAN_TYPE_PAY, PAYMENT_STATUS_PARTIALLY_PAID, PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {
+  CASHBACK_PAYMENT_TYPE,
+  PAYMENT_TRAN_TYPE_PAY,
+  PAYMENT_STATUS_PARTIALLY_PAID,
+  PAYMENT_STATUS_PAID,
+  PAYMENT_TRAN_TYPE_REFUND,
+  ORDER_REFUNDED_STATUS
+} = require('../../libs/constants');
 
 module.exports = {
   getCouponLotteryCashback: async function (authUser) {
@@ -125,19 +132,19 @@ module.exports = {
     }
 
     let dueAmount = totalPrice - paidAmount;
-    if(dueAmount === 0){
+    if (dueAmount === 0) {
       throw new Error('Payment already has been completed for this order');
     }
-    if(dueAmount < amountToPay){
+    if (dueAmount < amountToPay) {
       throw new Error('Payment amount is larger than due amount');
     }
 
     const currentUserCashBack = await getCurrentUserCashBack(customer);
-    if(currentUserCashBack.amount <= 0 || currentUserCashBack.amount < amountToPay){
+    if (currentUserCashBack.amount <= 0 || currentUserCashBack.amount < amountToPay) {
       throw new Error('Customer is not allowed to pay by cashBackAmount for this order');
     }
 
-    const payment =  await sails.getDatastore()
+    const payment = await sails.getDatastore()
       .transaction(async (db) => {
         let payment = await Payment.create({
           payment_amount: amountToPay,
@@ -177,5 +184,73 @@ module.exports = {
     }
 
     return payment;
+  },
+
+  refundPayment: async function (payload) {
+    const {
+      paymentID,
+      amount,
+      sku = 'Anonder Bazar Product',
+      reason = 'Order has been cancelled'
+    } = payload;
+
+    let payment = await Payment.findOne({
+      transection_key: paymentID
+    });
+
+    if (!payment) {
+      throw new Error('No transaction is found for the payment ID!');
+    }
+
+    let allRefundedPayment = await Payment.find({
+      order_id: payment.order_id,
+      transaction_type: PAYMENT_TRAN_TYPE_REFUND
+    });
+
+    /** Check weather total refunding money is larger than paid amount */
+    let totalRefundedMoney = 0;
+    if (allRefundedPayment && allRefundedPayment.length > 0) {
+      totalRefundedMoney = allRefundedPayment.reduce((prevPayment, currentPayment) => {
+        return prevPayment.amount + currentPayment.amount;
+      }, 0);
+    }
+
+    let order = await Order.find({
+      id: payment.order_id
+    });
+
+    if (!order) {
+      throw new Error('Order is not found for the transaction');
+    }
+
+    if (totalRefundedMoney + amount > order.paid_amount) {
+      throw new Error('Your final refund money is larger than the paid amount!');
+    }
+    /** END */
+
+    const refundPayment = await sails.getDatastore()
+      .transaction(async (db) => {
+        let refundPayment = await Payment.create({
+          user_id: payment.user_id,
+          order_id: payment.order_id,
+          transaction_type: PAYMENT_TRAN_TYPE_REFUND,
+          payment_type: CASHBACK_PAYMENT_TYPE,
+          payment_amount: amount,
+          details: JSON.stringify({sku, reason}),
+        }).fetch().usingConnection(db);
+
+        let data = {};
+        data.paid_amount = order.paid_amount + amount;
+        if (amount + order.paid_amount >= order.total_price) {
+          data.refund_status = ORDER_REFUNDED_STATUS;
+        }
+        await Order.updateOne({id: payment.id}, data).usingConnection(db);
+
+        return refundPayment;
+      });
+
+    /** SMS section */
+
+    return refundPayment;
   }
 };
