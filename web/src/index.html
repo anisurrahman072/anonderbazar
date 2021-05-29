@@ -22,6 +22,7 @@
         gtag('config', 'G-L153SSQGCY');
     </script>
     <!-- Facebook Pixel Code -->
+    <!-- Facebook Pixel Code -->
     <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -37,6 +38,7 @@
     <noscript><img height="1" width="1" style="display:none"
                    src="https://www.facebook.com/tr?id=772563423428587&ev=PageView&noscript=1"
     /></noscript>
+    <!-- End Facebook Pixel Code -->
 <!--    <link rel="stylesheet" href="/assets/css/main.css">-->
 <!--    <link rel="stylesheet" href="/assets/css/responsive.css">-->
     <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>-->
@@ -44,6 +46,34 @@
 </head>
 <body>
 <app-root></app-root>
+
+<!-- Messenger Chat Plugin Code -->
+<div id="fb-root"></div>
+
+<!-- Your Chat Plugin code -->
+<div id="fb-customer-chat" class="fb-customerchat">
+</div>
+
+<script>
+    var chatbox = document.getElementById('fb-customer-chat');
+    chatbox.setAttribute("page_id", "108613070884693");
+    chatbox.setAttribute("attribution", "biz_inbox");
+    window.fbAsyncInit = function() {
+        FB.init({
+            xfbml            : true,
+            version          : 'v10.0'
+        });
+    };
+
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
 </body>
 </html>
 <!-- <script src="/assets/js/owl.carousel.min.js"></script> -->

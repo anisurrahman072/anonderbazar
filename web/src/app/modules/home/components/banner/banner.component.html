@@ -41,14 +41,13 @@
                         <span class="carousel-control-next-icon"></span>
                     </a>
                 </div>
-
             </div>
             <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 offer-section" style="">
                 <div style="height: 100%;" class="image-control">
                     <div class="image-contain">
                         <div *ngFor="let data of carouselOffers">
                             <a routerLink="/cms/cms-details/{{data.id}}">
-                                <img src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].image + IMAGE_EXT_CAROUSEL}}"
+                                <img src="{{IMAGE_LIST_ENDPOINT + data.data_value[0].small_image + IMAGE_EXT_CAROUSEL}}"
                                      alt="offered product image" class="sideImage">
                             </a>
                         </div>

@@ -196,3 +196,13 @@ ul.termsList li {
   list-style-type: circle;
   margin-top: 5px;
 }
+
+button:disabled {
+  background-color: rgb(208, 208, 208);
+  border-color: rgb(208, 208, 208) !important;
+  cursor: not-allowed;
+}
+
+button:disabled a {
+  cursor: not-allowed;
+}

@@ -27,6 +27,7 @@ type SearchSubject = { field: string, query: string };
     styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit, OnDestroy {
+    @ViewChild('excelSelectAll') excelSelectAll;
     private currentWarehouseSubscriprtion: Subscription;
     private allProductSub: Subscription;
     private searchChangeSubs: Subscription;
@@ -38,6 +39,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     private addPropSubs: Subscription;
     private categoryChangeSubs: Subscription;
     private getProdVariantSubs: Subscription;
+    private searchChangeSub: Subject<SearchSubject> = new Subject<SearchSubject>();
     status: any = 1;
     type: any;
 
@@ -69,7 +71,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     page: number = 1;
     total: number = 0;
 
-    private searchChangeSub: Subject<SearchSubject> = new Subject<SearchSubject>();
+
     codeSearchValue: string = '';
     nameSearchValue: string = '';
     priceSearchValue: string = '';
@@ -99,7 +101,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     productTotal: number;
     private storedExcelProducts: any = [];
     private excelPageSelectAll = [];
-    @ViewChild('excelSelectAll') excelSelectAll;
+
 
     isShippingChargeVisible: boolean = false;
     isPartialPaymentDurationVisible: boolean = false;
@@ -124,11 +126,83 @@ export class ProductComponent implements OnInit, OnDestroy {
         private exportService: ExportService,
         private globalConfigsService: GlobalConfigsService
     ) {
+
+    }
+// For initiating the section element with data
+    ngOnInit(): void {
         this.validateProductForm = this.fb.group({
             userChecked: ['', []],
         });
-    }
 
+        this.validatePartialPaymentForm = this.fb.group({
+            partial_payment_duration: ['']
+        });
+
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+
+        this.validateForm = this.fb.group({
+            name: ['', [Validators.required]],
+            quantity: ['', []],
+            variant_id: ['', [Validators.required]],
+            warehouses_variant_id: ['', [Validators.required]]
+        });
+
+        this.validateShippingForm = this.fb.group({
+            dhaka_charge: [''],
+            outside_dhaka_charge: ['']
+        })
+
+        this.validatePromotionForm = this.fb.group({
+            promotion: ['', [Validators.required]],
+            promo_price: ['', [Validators.required]],
+            start_date: ['', [Validators.required]],
+            end_date: ['', [Validators.required]],
+            sale_unit: ['', [Validators.required]]
+        });
+        this.route.queryParams.filter(params => params.status).subscribe(params => {
+            this.status = params.status;
+        });
+
+        this.currentUser = this.authService.getCurrentUser();
+        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
+            warehouseId => {
+                this.currentWarehouseId = warehouseId || '';
+                console.log('currentSelectedWarehouseInfo', warehouseId);
+                this.page = 1;
+                this.getProductData();
+            }
+        );
+
+        this.categoryProductSubs1 = this.categoryProductService.getAllCategory().subscribe((result: any) => {
+            this.TypeSearchOptions = result;
+        });
+
+        this.brandSubs = this.brandService.getAll().subscribe((result: any) => {
+            this.brandSearchOptions = result;
+        });
+
+        this.categoryProductSubs2 = this.categoryProductService.getAll().subscribe((result: any) => {
+            this.categorySearchOptions = result;
+        });
+
+        this.searchChangeSubs = this.searchChangeSub
+            .pipe(debounceTime(200), distinctUntilChanged((prev: SearchSubject, next: SearchSubject) => {
+                return JSON.stringify(prev) === JSON.stringify(next);
+            }))
+            .subscribe((model: SearchSubject) => {
+                console.log('model', model);
+                this[model.field] = model.query;
+                this.page = 1;
+                this.getProductData();
+            });
+
+        this.globalConfigsService.getShippingCharge()
+            .subscribe(data => {
+                this.shippingData = data.configData[0];
+                this.validateShippingForm.patchValue(data.configData[0]);
+            })
+
+    }
     onSearchChange(query: string, field: string) {
         this.searchChangeSub.next({
             field,
@@ -250,78 +324,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     }
 
-    // For initiating the section element with data
-    ngOnInit(): void {
-        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
-        this.validateForm = this.fb.group({
-            name: ['', [Validators.required]],
-            quantity: ['', []],
-            variant_id: ['', [Validators.required]],
-            warehouses_variant_id: ['', [Validators.required]]
-        });
-
-        this.validateShippingForm = this.fb.group({
-            dhaka_charge: [''],
-            outside_dhaka_charge: ['']
-        })
-
-        this.validatePartialPaymentForm = this.fb.group({
-            partial_payment_duration: ['']
-        })
-
-        this.validatePromotionForm = this.fb.group({
-            promotion: ['', [Validators.required]],
-            promo_price: ['', [Validators.required]],
-            start_date: ['', [Validators.required]],
-            end_date: ['', [Validators.required]],
-            sale_unit: ['', [Validators.required]]
-        });
-        this.route.queryParams.filter(params => params.status).subscribe(params => {
-            this.status = params.status;
-        });
-
-        this.currentUser = this.authService.getCurrentUser();
-        this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
-            warehouseId => {
-                this.currentWarehouseId = warehouseId || '';
-                console.log('currentSelectedWarehouseInfo', warehouseId);
-                this.page = 1;
-                this.getProductData();
-            }
-        );
-
-        this.categoryProductSubs1 = this.categoryProductService.getAllCategory().subscribe((result: any) => {
-            this.TypeSearchOptions = result;
-        });
-
-        this.brandSubs = this.brandService.getAll().subscribe((result: any) => {
-            this.brandSearchOptions = result;
-        });
-
-        this.categoryProductSubs2 = this.categoryProductService.getAll().subscribe((result: any) => {
-            this.categorySearchOptions = result;
-        });
-
-        this.searchChangeSubs = this.searchChangeSub
-            .pipe(debounceTime(200), distinctUntilChanged((prev: SearchSubject, next: SearchSubject) => {
-                return JSON.stringify(prev) === JSON.stringify(next);
-            }))
-            .subscribe((model: SearchSubject) => {
-                console.log('model', model);
-                this[model.field] = model.query;
-                this.page = 1;
-                this.getProductData();
-            });
-
-        this.globalConfigsService.getGlobalConfig()
-            .subscribe(data => {
-                this.globalConfig = data.configData[0];
-                this.validateShippingForm.patchValue(data.configData[0]);
-                this.validatePartialPaymentForm.patchValue(data.configData[0]);
-            })
-
-    }
 
     // Method for close modals
     receiveCloseEvent($event) {

@@ -114,9 +114,20 @@ module.exports = {
 
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
-          if(files.length === 2){
-            let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-            body.banner_image = '/'+bannerImagePath;
+          if (files.length === 2) {
+            if (req.body.hasBannerImage) {
+              let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + bannerImagePath;
+            } else if (req.body.hasSmallImage) {
+              let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+              body.small_image = '/' + smallImagePath;
+            }
+          } else if (files.length === 3) {
+            let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + smallImagePath;
+
+            let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + bannerImagePath;
           }
 
           body.image = '/' + newPath;
@@ -128,6 +139,7 @@ module.exports = {
                 title: req.body.title,
                 description: req.body.description,
                 image: body.image,
+                small_image: body.small_image,
                 banner_image: body.banner_image,
                 link: body.link,
                 offers: [],
@@ -144,6 +156,7 @@ module.exports = {
                 offers: [],
                 products: [],
                 image: body.image,
+                small_image: body.small_image,
                 banner_image: body.banner_image,
                 showInCarousel: req.body.showInCarousel,
                 showInHome: req.body.showInHome
@@ -158,7 +171,7 @@ module.exports = {
             data_value: data_value
           };
 
-          if(body.frontend_position){
+          if (body.frontend_position) {
             _payload.frontend_position = body.frontend_position;
           }
 
@@ -197,7 +210,7 @@ module.exports = {
           _payload.user_id = req.body.user_id;
         }
 
-        if(req.body.frontend_position){
+        if (req.body.frontend_position) {
           _payload.frontend_position = req.body.frontend_position;
         }
 
@@ -253,7 +266,7 @@ module.exports = {
       let showInCarousel = body.showInCarousel ? body.showInCarousel : prevOfferData.data_value[0].showInCarousel;
       let showInHome = body.showInHome ? body.showInHome : prevOfferData.data_value[0].showInHome;
 
-      if (body.hasImage === 'true' || body.hasBannerImage === 'true') {
+      if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
         if (files.length === 0) {
@@ -261,17 +274,42 @@ module.exports = {
         }
         const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
-        if(files.length === 2){
+        if (files.length === 3) {
           body.image = '/' + newPath;
-          let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-          body.banner_image = '/'+bannerImagePath;
-        }
-        else if(files.length === 1){
-          if(body.hasImage === 'true'){
+
+          let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+          body.small_image = '/' + smallImagePath;
+
+          let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
+          body.banner_image = '/' + bannerImagePath;
+
+        } else if (files.length === 2) {
+          if (body.image === 'true' && body.small_image === 'true') {
             body.image = '/' + newPath;
+
+            let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + smallImagePath;
+          } else if (body.image === 'true' && body.banner_image === 'true') {
+            body.image = '/' + newPath;
+
+            let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + bannerImagePath;
+          } else if (body.small_image && body.banner_image === 'true') {
+            body.small_image = '/' + newPath;
+
+            let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + bannerImagePath;
           }
-          else{
-            body.banner_image = '/' + newPath;
+        } else if (files.length === 1) {
+
+          if (body.hasImage === 'true') {
+            body.image = '/' + newPath;
+
+          } else if (body.hasSmallImage === 'true') {
+            body.small_image = '/' + newPath;
+
+          } else {
+            body.hasBannerImage = '/' + newPath;
           }
         }
 
@@ -284,6 +322,7 @@ module.exports = {
               title: body.title,
               description: body.description,
               image: body.image ? body.image : prevOfferData.data_value[0].image,
+              small_image: body.small_image ? body.small_image: prevOfferData.data_value[0].small_image,
               banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               link: body.link,
               offers: prevOfferData.data_value[0].offers,
@@ -300,6 +339,7 @@ module.exports = {
               offers: prevOfferData.data_value[0].offers,
               products: prevOfferData.data_value[0].products,
               image: body.image ? body.image : prevOfferData.data_value[0].image,
+              small_image: body.small_image ? body.small_image : prevOfferData.data_value[0].small_image,
               banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               showInCarousel: showInCarousel,
               showInHome: showInHome,
@@ -314,7 +354,7 @@ module.exports = {
           data_value: data_value
         };
 
-        if(body.frontend_position){
+        if (body.frontend_position) {
           _payload.frontend_position = parseInt(body.frontend_position);
         }
 
@@ -369,12 +409,12 @@ module.exports = {
           _payload.user_id = body.user_id;
         }
 
-        if(body.frontend_position){
+        if (body.frontend_position) {
           _payload.frontend_position = parseInt(body.frontend_position);
         }
 
         let data = await CMS.updateOne({id: body.id}).set(_payload);
-        console.log('data', data);
+        console.log('updated data: ', data);
         return res.status(201).json({
           success: true,
           message: 'cms updated successfully',

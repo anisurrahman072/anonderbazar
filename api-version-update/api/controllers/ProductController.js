@@ -17,6 +17,7 @@ const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 module.exports = {
 
   details: async (req, res) => {
+    console.log('rouzex now', req.params);
     try {
       let key = 'product-' + req.param('id') + '-details';
 
@@ -35,7 +36,44 @@ module.exports = {
 
         await storeToCache(key, product);
       }
-      return res.status(200).json(product);
+
+      let questionRawSQL = `
+      SELECT
+            product_question_answer.*,
+            users.first_name,
+            users.last_name
+        FROM
+            product_question_answer
+        LEFT JOIN users ON product_question_answer.user_id = users.id
+        LEFT JOIN products ON product_question_answer.product_id = products.id
+        WHERE
+            products.id = ${req.param('id')} and users.first_name is not null
+            order by product_question_answer.id desc
+      `;
+
+      const questions = await sails.sendNativeQuery(questionRawSQL, []);
+
+      let ratingRawSQL = `
+      SELECT
+            product_rating_review.*,
+            users.first_name,
+            users.last_name
+        FROM
+            product_rating_review
+        LEFT JOIN users ON product_rating_review.user_id = users.id
+        LEFT JOIN products ON product_rating_review.product_id = products.id
+        WHERE
+            products.id = ${req.param('id')}
+            order by product_rating_review.id desc
+      `;
+
+      const rating = await sails.sendNativeQuery(ratingRawSQL, []);
+
+      return res.status(200).json({
+        success: true,
+        data: [product, questions.rows, rating.rows],
+        message: 'Detail of the requested product'
+      });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
@@ -783,7 +821,97 @@ module.exports = {
         data: allProducts
       });
     } catch (error) {
+      console.log(error);
+    }
+  },
 
+  /*Method called for saving review and ratings of a product by a user*/
+  saveRating: async (req, res) => {
+    try {
+      if (req.query.userId) {
+        const rating = await ProductRatingReview.create({
+          user_id: req.query.userId,
+          product_id: req.query.product_id,
+          rating: parseFloat(req.query.rating),
+          review: req.query.review,
+        }).fetch();
+
+        return res.status(201).json({
+          success: true,
+          message: 'Rating submitted successfully',
+          rating
+        });
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in saving user rating';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  /*Method called for saving questions related to a product by a user*/
+  saveQuestion: async (req, res) => {
+
+    try {
+      if (req.query.userId) {
+        const question = await ProductQuestionAnswer.create({
+          user_id: req.query.userId,
+          product_id: req.query.product_id,
+          question: req.query.question,
+        }).fetch();
+        return res.status(201).json(question);
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in saving user question';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
+
+  /*Method called to decide whether a user can rate a product or not*/
+  /*route: product/canRateProduct*/
+  canRateProduct: async (req, res) => {
+    try {
+      console.log('rozux then: ', req.query.userID);
+      if (req.query.userID) {
+        let rawSQL = `
+            SELECT
+                cart_items.id
+            FROM
+                cart_items
+            LEFT JOIN product_orders ON product_orders.cart_id = cart_items.cart_id
+            LEFT JOIN users ON users.id = product_orders.user_id
+            WHERE
+                cart_items.product_id = ${req.query.productID} AND users.id = ${req.query.userID} AND product_orders.status = 11
+        `;
+
+        const canRateProduct = await sails.sendNativeQuery(rawSQL, []);
+
+        return res.status(200).json({
+          success: true,
+          canRateProduct: canRateProduct.rows,
+          message: 'User can rate the product, data received'
+        });
+      }
+
+    } catch (error) {
+      console.log('error: ', error);
+      let message = 'Error in canRateProduct api call';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
     }
   }
 
