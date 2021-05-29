@@ -41,13 +41,13 @@ Logger.orderLog = function (userId, label = '', msg = '') {
 
   let message = 'UserID: ' + userId + ' [' + moment().format('DD-MM-YYYY HH:mm:ss') + '][' + label + ']: ';
   paymentTransactionStream.write(message);
-  console.log(message);
+  // console.log(message);
   if (_.isObject(msg)) {
     paymentTransactionStream.write('\n' + formatObject(msg) + '\n');
-    console.log(msg);
+    // console.log(msg);
   } else {
-    paymentTransactionStream.write(msg);
-    console.log(msg);
+    paymentTransactionStream.write(msg + '\n');
+    // console.log(msg);
   }
 };
 

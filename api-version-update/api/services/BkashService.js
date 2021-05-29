@@ -5,13 +5,11 @@
  */
 const moment = require('moment');
 const _ = require('lodash');
-const {bkashRefundTransaction} = require('../../libs/bkashHelper');
-const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
-const {PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
-const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
+const {BKASH_PAYMENT_TYPE, PAYMENT_STATUS_PAID, PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
 const {sslApiUrl} = require('../../config/softbd');
-const {bKashGrandToken, bKashCreatePayment} = require('../../libs/bkashHelper');
+const {bKashGrandToken, bKashCreatePayment, bkashRefundTransaction} = require('../../libs/bkashHelper');
 const logger = require('../../libs/softbd-logger').Logger;
+
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -33,13 +31,17 @@ module.exports = {
       grandOrderTotal,
     } = PaymentService.calcCartTotal(cart, cartItems);
 
-    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
-    logger.orderLog(authUser.id, 'courierCharge', courierCharge);
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
+    console.log('GrandOrderTotal', grandOrderTotal);
+    let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+    logger.orderLog(authUser.id, 'courierCharge', courierCharge);
+    console.log('courierCharge', courierCharge);
+
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
     logger.orderLog(authUser.id, 'final GrandOrderTotal', grandOrderTotal);
+    console.log('final GrandOrderTotal', grandOrderTotal);
 
     const userWallets = await BkashCustomerWallet.find({
       user_id: authUser.id,
@@ -138,7 +140,7 @@ module.exports = {
 
     let cart = await PaymentService.getCart(customer.id);
     let cartItems = await PaymentService.getCartItems(cart.id);
-    let courierCharge = await PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+    let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     let {
       grandOrderTotal,

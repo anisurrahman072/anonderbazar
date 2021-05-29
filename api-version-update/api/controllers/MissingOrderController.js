@@ -226,7 +226,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = await PaymentService.calcCartTotal(cart, cartItems);
+          } = PaymentService.calcCartTotal(cart, cartItems);
 
           let noShippingCharge = false;
 

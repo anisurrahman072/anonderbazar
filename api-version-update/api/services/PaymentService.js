@@ -85,7 +85,7 @@ module.exports = {
     return (couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length);
   },
 
-  calcCourierCharge: async function (cartItems, shippingDhakaZillaId, globalConfigs) {
+  calcCourierCharge: function (cartItems, shippingDhakaZillaId, globalConfigs) {
     let noShippingCharge = false;
 
     /** take decision for adding shipping charge */
@@ -119,7 +119,7 @@ module.exports = {
       }
 
 
-      if (!_.isUndefined(shippingDhakaZillaId)) {
+      if (shippingDhakaZillaId) {
         if (parseInt(shippingDhakaZillaId) === dhakaZilaId) {
           courierCharge = maxDhakaCharge;
         } else {
@@ -147,7 +147,7 @@ module.exports = {
     return paymentTemp;
   },
 
-  calcCartTotal: async function (cart, cartItems) {
+  calcCartTotal: function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
     cartItems.forEach((cartItem) => {
