@@ -248,7 +248,7 @@ module.exports.policies = {
     'getAll': ['isAuthorized']
   },
   OrderPartialPaymentController: {
-    '*': true,
+    '*': ['isAuthorized', 'isCustomer'],
   },
   PRStatusController: {
     '*': false,
@@ -306,7 +306,7 @@ module.exports.policies = {
     'allOrders': ['isAuthorized', 'isAdmin'],
   },
   MissingOrderController: {
-    '*': true
+    '*': ['isAuthorized', 'isOwnerOrAdmin']
   },
   ShippingAddressController: {
     '*': false,
