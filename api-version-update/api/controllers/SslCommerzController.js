@@ -49,6 +49,7 @@ module.exports = {
       logger.orderLog(customer.id, 'ipnPaymentSuccess-transaction id: (' + hasAlreadyBeenUsed + ' )', req.body.tran_id);
 
       if (hasAlreadyBeenUsed) {
+        logger.orderLog(customer.id, 'ipnPaymentSuccess-hasAlreadyBeenUsed', (hasAlreadyBeenUsed ? 'Yes': 'No'));
         return res.status(422).json({
           failure: true
         });
@@ -189,6 +190,7 @@ module.exports = {
       });
 
       if (ordersFound && Array.isArray(ordersFound) && ordersFound.length > 0) {
+        logger.orderLog(customer.id, 'paymentSuccess-ordersFound', (ordersFound.length ? 'Yes': 'No'));
         res.writeHead(301,
           {
             Location: sslWebUrl + '/checkout?order=' + ordersFound[0].id
@@ -354,6 +356,7 @@ module.exports = {
       const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (hasAlreadyBeenUsed) {
+        logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-hasPaymentTransactionBeenUsed', (hasAlreadyBeenUsed ? 'Yes': 'No'));
         return res.status(422).json({
           failure: true
         });
@@ -451,6 +454,7 @@ module.exports = {
       const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (numberOfTransaction) {
+        logger.orderLog(customer.id, 'paymentSuccessPartial-hasPaymentTransactionBeenUsed', (numberOfTransaction ? 'Yes': 'No'));
         res.writeHead(301,
           {
             Location: sslWebUrl + '/profile/orders/invoice/' + order.id
