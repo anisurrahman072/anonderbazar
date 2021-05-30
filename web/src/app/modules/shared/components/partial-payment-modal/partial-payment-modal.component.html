@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <div class="send-btn1">
-                                <button type="submit" class="Summarybtn" (click)="makePartialPayment(partialPaymentForm.value)" style="display: block; margin: auto;">
+                                <button type="submit" class="Summarybtn" (click)="makePartialPayment(partialPaymentForm.value, bKashWalletModalTemplate)" style="display: block; margin: auto;">
                                     <a>Confirm payment</a>
                                 </button>
                             </div>
@@ -60,3 +60,30 @@
         </div>
     </div>
 </div>
+
+<ng-template #bKashWalletModalTemplate>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">My bKash Wallets</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="bKashWalletModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="color: #444444;">
+        <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
+            <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
+                <span>{{authUserWallet.wallet_no}}</span>
+                <a class="btn btn-primary btn-sm" style="margin-left: 50px;" (click)="proceedWithBkash($event, partialPaymentForm.value, authUserWallet)">Proceed with bKash</a>
+            </li>
+        </ul>
+        <ng-template #noWalletTemplate>
+            <p class="alert alert-info">
+                You don't have any bKash Wallet added. Please first add a bKash Wallet from <a routerLink="/profile/bkash-accounts"> Here </a> and then proceed with checkout.
+            </p>
+        </ng-template>
+    </div>
+    <div class="modal-footer">
+        <div class="btn-group pull-right" role="group" aria-label="First group">
+            <button type="button" class="btn btn-default" (click)="bKashWalletModalRef.hide()">Cancel</button>
+        </div>
+    </div>
+</ng-template>

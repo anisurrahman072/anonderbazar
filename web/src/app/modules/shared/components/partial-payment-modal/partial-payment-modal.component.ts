@@ -13,6 +13,11 @@ import * as _ from "lodash";
 import {NotificationsService} from "angular2-notifications";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import {LoaderService} from "../../../../services/ui/loader.service";
+import {BkashService} from "../../../../services/bkash.service";
+import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
+import {BsModalService} from "ngx-bootstrap/modal";
+import {AppSettings} from "../../../../config/app.config";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-partial-payment-modal',
@@ -22,7 +27,6 @@ import {LoaderService} from "../../../../services/ui/loader.service";
 export class PartialPaymentModalComponent implements OnInit {
 
   @ViewChild('autoShownModal') autoShownModal: ModalDirective;
-  @Input('app-shopping-cart') cartItem;
   isModalShown$: Observable<boolean>;
   partialPaymentForm: FormGroup;
   enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
@@ -42,6 +46,9 @@ export class PartialPaymentModalComponent implements OnInit {
   private currentUser: User;
   private currentOrderId: number;
 
+  authUserWallets: any;
+  bKashWalletModalRef: BsModalRef;
+
   constructor(
       private partialPaymentModalService: PartialPaymentModalService,
       private fb: FormBuilder,
@@ -49,6 +56,9 @@ export class PartialPaymentModalComponent implements OnInit {
       private orderService: OrderService,
       private _notify: NotificationsService,
       private loaderService: LoaderService,
+      private bKashService: BkashService,
+      private modalService: BsModalService,
+      private toastr: ToastrService,
   ) { }
 
   ngOnInit() {
@@ -96,15 +106,14 @@ export class PartialPaymentModalComponent implements OnInit {
   }
 
   onHidden(): void {
-    this.partialPaymentModalService.showPartialModal(false, null);
+    this.partialPaymentModalService.showPartialModal(false, this.currentOrderId);
   }
 
   hideModal(): void {
     this.autoShownModal.hide();
   }
 
-  makePartialPayment(value){
-    this.loaderService.showLoader();
+  makePartialPayment(value, modalTemplate){
     if(_.isUndefined(value.amount_to_pay) || _.isNull(value.amount_to_pay) || value.amount_to_pay <= 0){
       this._notify.error('Please insert a correct amount to pay');
       return false;
@@ -117,13 +126,85 @@ export class PartialPaymentModalComponent implements OnInit {
       this._notify.error('Order not found!');
       return false;
     }
-    this.orderService.makePartialPayment(this.currentOrderId, value)
-        .subscribe(data => {
+    if(value.amount_to_pay > this.amountToPay){
+      this._notify.error('Payment amount is larger than due amount!');
+      return false;
+    }
+    this.loaderService.showLoader();
+    if (value.payment_method === this.BKASH_PAYMENT_TYPE) {
+      this.bKashService.getAuthUserWallets()
+          .subscribe((res) => {
+            console.log(res);
+            this.authUserWallets = res;
+            this.loaderService.hideLoader();
+            this.bKashWalletModalRef = this.modalService.show(modalTemplate);
+          }, (err) => {
+            console.log(err);
+            this.loaderService.hideLoader();
+          });
+      this.onHidden();
+
+    } else if(value.payment_method === this.SSL_COMMERZ_PAYMENT_TYPE){
+      this.orderService.makePartialPayment(this.currentOrderId, value)
+          .subscribe(result => {
+            this.onHidden();
+            this.loaderService.hideLoader();
+            if (result && result.GatewayPageURL) {
+              console.log('ssl response', result);
+              window.location.href = result.GatewayPageURL;
+            }
+            else {
+              console.log('No gateway page to redirect');
+            }
+          }, error => {
+            this.onHidden();
+            this.loaderService.hideLoader();
+            console.log('ssl response with error', error);
+            this._notify.error('Error occurred while making partial payment!', error);
+          })
+    }
+  }
+
+  proceedWithBkash($event, value, authUserWallet = null) {
+    $event.preventDefault();
+    let requestPayload: any = Object.assign({},value);
+    console.log('selected auth wallet', authUserWallet);
+
+    if (authUserWallet) {
+      requestPayload.agreement_id = authUserWallet.agreement_id;
+      requestPayload.payerReference = authUserWallet.wallet_no;
+
+    } else {
+      this.toastr.error("Please choose a bkash wallet to proceed.", "Error", {
+        positionClass: 'toast-bottom-right'
+      });
+      return false;
+    }
+
+    console.log('partialPaymentForm', this.currentOrderId, requestPayload);
+
+    this.orderService.makePartialPayment(this.currentOrderId, requestPayload)
+        .subscribe(result => {
           this.loaderService.hideLoader();
+          if (result && result.bkashURL) {
+            window.location.href = result.bkashURL;
+          } else {
+            this.toastr.error("Problem in placing your order.", "Problem", {
+              positionClass: 'toast-bottom-right'
+            });
+          }
         }, error => {
           this.loaderService.hideLoader();
-          this._notify.error('Error occurred while making partial payment!', error);
+          console.log('bKash place order ', error);
+          if (error && error.error) {
+            this.toastr.error(error.error, "Problem", {
+              positionClass: 'toast-bottom-right'
+            });
+          } else {
+            this.toastr.error("Problem in placing your order.", "Problem", {
+              positionClass: 'toast-bottom-right'
+            });
+          }
         })
-    this.onHidden();
   }
 }

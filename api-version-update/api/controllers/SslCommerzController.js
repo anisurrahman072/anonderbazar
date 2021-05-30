@@ -3,7 +3,7 @@ const {hasPaymentTransactionBeenUsed, getPaymentRowPartial} = require('../servic
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
-const logger = require("../../libs/softbd-logger").Logger;
+const logger = require('../../libs/softbd-logger').Logger;
 
 module.exports = {
 
@@ -282,8 +282,9 @@ module.exports = {
   },
   ipnPaymentSuccessForPartial: async function (req, res) {
     console.log('################ SSLCOMMERZ success IPN (Partial)', req.body);
+    const tranId = req.body.tran_id;
 
-    if (!(req.body.tran_id && req.query.user_id && req.query.order_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
+    if (!(tranId && req.query.user_id && req.query.order_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
       return res.status(422).json({
         failure: true
       });
@@ -311,7 +312,7 @@ module.exports = {
         });
       }
 
-      const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
+      const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (hasAlreadyBeenUsed) {
         return res.status(422).json({
@@ -323,15 +324,16 @@ module.exports = {
 
       await sails.getDatastore()
         .transaction(async (db) => {
-          await Payment.create({
+
+          let pay = await Payment.create({
+            transection_key: tranId,
             payment_amount: paidAmount,
             user_id: customer.id,
             order_id: order.id,
             payment_type: SSL_COMMERZ_PAYMENT_TYPE,
             details: JSON.stringify(req.body),
-            transection_key: req.body.tran_id,
             status: 1
-          }).usingConnection(db);
+          }).fetch().usingConnection(db);
 
           const totalPrice = parseFloat(order.total_price);
           const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
@@ -365,7 +367,8 @@ module.exports = {
     }
   },
   paymentSuccessPartial: async function (req, res) {
-    if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
+    const tranId = req.body.tran_id;
+    if (!(tranId && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
       res.writeHead(301,
         {
@@ -390,18 +393,17 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      console.log('validationResponse-sslCommerzSuccess', validationResponse);
-
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
       }
 
-      const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
+
+      const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (numberOfTransaction) {
         res.writeHead(301,
           {
-            Location: sslWebUrl + 'profile/orders/invoice/' + order.id
+            Location: sslWebUrl + '/profile/orders/invoice/' + order.id
           }
         );
         res.end();
@@ -412,13 +414,14 @@ module.exports = {
 
       await sails.getDatastore()
         .transaction(async (db) => {
-          await Payment.create({
+
+          let pay = await Payment.create({
+            transection_key: tranId,
             payment_amount: paidAmount,
             user_id: customer.id,
             order_id: order.id,
             payment_type: SSL_COMMERZ_PAYMENT_TYPE,
             details: JSON.stringify(req.body),
-            transection_key: req.body.tran_id,
             status: 1
           }).fetch().usingConnection(db);
 
@@ -445,7 +448,7 @@ module.exports = {
 
       res.writeHead(301,
         {
-          Location: sslWebUrl + 'profile/orders/invoice/' + order.id
+          Location: sslWebUrl + '/profile/orders/invoice/' + order.id
         }
       );
       res.end();

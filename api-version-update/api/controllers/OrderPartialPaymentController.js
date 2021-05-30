@@ -123,7 +123,7 @@ module.exports = {
 
       let paymentGatewayService = getPaymentServicePartial(req.body.payment_method);
 
-      const response = paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
+      const response = await paymentGatewayService.makePartialPayment(authUser, order, req, globalConfigs);
 
       return res.status(200).json(response);
     } catch (finalError) {

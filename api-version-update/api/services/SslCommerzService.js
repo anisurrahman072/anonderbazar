@@ -5,6 +5,7 @@
  */
 const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
+const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -91,6 +92,8 @@ module.exports = {
       user_id: customer.id,
       cart_id: cart.id,
       total_price: grandOrderTotal,
+      paid_amount: grandOrderTotal,
+      payment_status: PAYMENT_STATUS_PAID,
       total_quantity: totalQty,
       billing_address: billingAddressId,
       shipping_address: shippingAddressId,
@@ -159,6 +162,7 @@ module.exports = {
     logger.orderLog(customer.id, 'SSL Commerz payment request: ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
+
     logger.orderLog(customer.id, 'SSL Commerz payment response: ', sslResponse);
     /**
      * status: 'FAILED',
