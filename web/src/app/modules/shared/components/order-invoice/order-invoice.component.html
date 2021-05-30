@@ -155,8 +155,8 @@
     <div *ngIf="data && data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER && allPaymentsLog && allPaymentsLog.length > 0">
         <mat-card-title>Transaction log</mat-card-title>
         <mat-card class="example-card">
-            <mat-card-content>
-                <div *ngFor="let payment of allPaymentsLog;" style="display: flex; flex-direction: row;" class="mb-3">
+            <mat-card-content *ngFor="let payment of allPaymentsLog;" class="mb-3">
+                <div style="display: flex; flex-direction: row;">
                     <div class="circle fa">
                         <i class="fa fa-check" aria-hidden="true"></i>
                     </div>
