@@ -9,6 +9,7 @@ import {BsModalRef} from 'ngx-bootstrap/modal';
 export class QueryMessageModalComponent implements OnInit {
     title: string;
     message: string;
+    alertClass = 'alert-danger';
 
     constructor(public bsModalRef: BsModalRef) {
 
