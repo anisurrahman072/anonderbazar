@@ -6,17 +6,17 @@
  */
 
 const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
-const {getGlobalConfig} = require('../../libs/helper');
-const {getAuthUser} = require('../../libs/helper');
-const {bKashCancelAgreement} = require('../../libs/bkashHelper.js');
+const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl, sslApiUrl} = require('../../config/softbd');
 const {
   bKashGrandToken,
   bKashCreateAgreement,
   bKashExecutePayment,
   bKashExecuteAgreement,
-  bKasQueryPayment
+  bKasQueryPayment,
+  bKashCancelAgreement
 } = require('../../libs/bkashHelper.js');
+const logger = require('../../libs/softbd-logger').Logger;
 
 module.exports = {
 
@@ -49,7 +49,6 @@ module.exports = {
   },
   createAgreement: async (req, res) => {
 
-    sails.log('createAgreement', req.query);
     if (!req.query.id_token) {
       return res.status(422).json({
         statusMessage: 'Invalid Request',
@@ -60,6 +59,11 @@ module.exports = {
     try {
 
       const authUser = getAuthUser(req);
+
+      logger.orderLog(authUser.id, '######## createAgreement bkash ########');
+      logger.orderLog(authUser.id, 'Body: ', req.body);
+      logger.orderLog(authUser.id, 'Query: ', req.query);
+
       const callbackURL = sslApiUrl + '/bkash-payment/agreement-callback/' + authUser.id;
 
       let tokenRes = await bKashCreateAgreement(req.query.id_token, authUser.id, req.query.wallet_no, callbackURL);
@@ -96,6 +100,7 @@ module.exports = {
     try {
 
       const authUser = getAuthUser(req);
+      logger.orderLog(authUser.id, '######## Cancel Agreement bkash ########');
 
       const foundAgreements = await BkashCustomerWallet.find({
         agreement_id: req.body.agreement_id,
@@ -131,11 +136,19 @@ module.exports = {
     }
   },
   agreementCallback: async (req, res) => {
-    sails.log('agreementCallback');
-    sails.log(req.query);
+    let customer = await PaymentService.getTheCustomer(req.param('id'));
+
+    if(!customer){
+      res.writeHead(301, {
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Provided customer was not found.')
+      });
+      res.end();
+    }
+    logger.orderLog(customer.id, '######## agreementCallback bkash ########');
+    logger.orderLog(customer.id, 'body', req.body);
+    logger.orderLog(customer.id, 'query', req.query);
 
     try {
-      let customer = await PaymentService.getTheCustomer(req.param('id'));
 
       const userWallets = await BkashCustomerWallet.find({
         user_id: customer.id,
@@ -209,10 +222,6 @@ module.exports = {
     }
   },
   paymentCallback: async (req, res) => {
-
-    sails.log('Bkash paymentCallback');
-    sails.log(req.query);
-
     const orderId = req.query.order_id;
     let redirectUrl = sslWebUrl + '/checkout';
 
@@ -233,6 +242,18 @@ module.exports = {
       }
     }
 
+    let customer = await PaymentService.getTheCustomer(req.param('userId'));
+    if(!customer){
+      res.writeHead(301, {
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent('Provided customer was not found.')
+      });
+      res.end();
+    }
+
+    logger.orderLog(customer.id, '######## paymentCallback bkash ########');
+    logger.orderLog(customer.id, 'body', req.body);
+    logger.orderLog(customer.id, 'query', req.query);
+
     if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
       res.writeHead(301, {
         Location: redirectUrl + '?bKashError=' + encodeURIComponent('Invalid bKash payment request')
@@ -242,7 +263,7 @@ module.exports = {
     }
 
     try {
-      let customer = await PaymentService.getTheCustomer(req.param('userId'));
+
       const globalConfigs = await getGlobalConfig();
 
       const transactionLog = await PaymentTransactionLog.findOne({
@@ -251,7 +272,7 @@ module.exports = {
         deletedAt: null
       });
 
-      sails.log('transactionLog', transactionLog);
+      logger.orderLog(customer.id, 'transactionLog', transactionLog);
 
       // eslint-disable-next-line eqeqeq
       if (!(transactionLog && transactionLog.id && transactionLog.status == 2)) {
@@ -422,8 +443,8 @@ module.exports = {
         return;
       }
 
-      const billingAddress = await PaymentAddress.findOne({id: userWallet.full_response.billingAddressId});
-      const shippingAddress = await PaymentAddress.findOne({id: userWallet.full_response.shippingAddressId});
+      const billingAddress = await PaymentService.getAddress( userWallet.full_response.billingAddressId);
+      const shippingAddress = await PaymentService.getAddress( userWallet.full_response.shippingAddressId);
 
       if (!(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id)) {
         res.writeHead(301, {

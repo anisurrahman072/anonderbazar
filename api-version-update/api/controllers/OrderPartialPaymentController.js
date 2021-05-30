@@ -110,6 +110,9 @@ module.exports = {
       const authUser = getAuthUser(req);
       const globalConfigs = await getGlobalConfig();
 
+      logger.orderLog(authUser.id, '######## make Partial Payment ########');
+      logger.orderLog(authUser.id, 'Order Body: ', req.body);
+
       const order = await Order.findOne({id: req.param('order_id'), deletedAt: null})
         .populate('shipping_address')
         .populate('billing_address');

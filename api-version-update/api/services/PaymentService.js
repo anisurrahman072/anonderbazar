@@ -17,12 +17,7 @@ module.exports = {
     return randomstring;
   },
   getTheCustomer: async function (userId) {
-    let customer = await User.findOne({id: userId, deletedAt: null});
-
-    if (!customer) {
-      throw new Error('Invalid Request! Customer was not found!');
-    }
-    return customer;
+    return await User.findOne({id: userId, deletedAt: null});
   },
   getBillingAddress: async function (req, shippingAddress) {
     let billingAddress = null;
@@ -53,6 +48,11 @@ module.exports = {
     return shippingAddress;
   },
 
+  getAddress: async function(addressId) {
+    return await PaymentAddress.findOne({
+      id: addressId
+    });
+  },
   getAdminPaymentAddress: async function () {
     return await PaymentAddress.findOne({
       id: adminPaymentAddressId

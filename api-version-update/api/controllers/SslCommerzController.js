@@ -8,8 +8,17 @@ const logger = require('../../libs/softbd-logger').Logger;
 module.exports = {
 
   ipnPaymentSuccess: async function (req, res) {
-    logger.orderLogAuth(req, '################ sslcommerz success IPN', '');
-    logger.orderLogAuth(req, req.body, 'ipnPaymentSuccess-body');
+
+    let customer = await PaymentService.getTheCustomer(req.query.user_id);
+    if(!customer){
+      return res.status(422).json({
+        failure: true
+      });
+    }
+
+    logger.orderLog(customer.id, '################ SSLCOMMERZ success IPN', '');
+    logger.orderLog(customer.id, 'ipnPaymentSuccess-body', req.body);
+    logger.orderLog(customer.id,'ipnPaymentSuccess-query',  req.query);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
       return res.status(422).json({
@@ -18,10 +27,13 @@ module.exports = {
     }
 
     try {
-      let globalConfigs = await getGlobalConfig();
+      const globalConfigs = await getGlobalConfig();
 
-      let customer = await PaymentService.getTheCustomer(req.query.user_id);
+      const shippingAddress = await PaymentService.getAddress(req.query.billing_address);
 
+      if(!shippingAddress){
+        throw new Error('Provided Shipping Address was not found!');
+      }
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
@@ -44,7 +56,7 @@ module.exports = {
 
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
-      let courierCharge = PaymentService.calcCourierCharge(cartItems, req.query.shipping_address.zila_id, globalConfigs);
+      let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
       let {
         grandOrderTotal,
@@ -107,16 +119,14 @@ module.exports = {
             allCouponCodes,
           };
         });
+
       logger.orderLog(customer.id, 'ipnPaymentSuccess - Order Created', order);
-      let shippingAddress = await PaymentAddress.find({
-        user_id: customer.id
-      });
 
       let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
       orderForMail.payments = payments;
 
-      if (customer.phone || (shippingAddress && shippingAddress.length > 0 && shippingAddress[0].phone)) {
-        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress);
       }
 
       await PaymentService.sendEmail(orderForMail);
@@ -124,7 +134,9 @@ module.exports = {
       return res.status(200).json({
         success: true
       });
+
     } catch (finalError) {
+      logger.orderLogAuth(req, finalError);
       console.log('finalError', finalError);
       return res.status(400).json({
         failure: true
@@ -133,8 +145,20 @@ module.exports = {
   },
   //Method called when sslCommerzSuccess from frontend
   paymentSuccess: async function (req, res) {
-    logger.orderLogAuth(req, '################ sslcommerz success');
-    logger.orderLogAuth(req, req.body);
+    let customer = await PaymentService.getTheCustomer(req.query.user_id);
+    if(!customer){
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Provided customer was not found.')
+        }
+      );
+      res.end();
+      return;
+    }
+
+    logger.orderLog(customer.id, '################ SSLCOMMERZ success', '');
+    logger.orderLog(customer.id, 'paymentSuccess-body', req.body);
+    logger.orderLog(customer.id,'paymentSuccess-query',  req.query);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
@@ -149,8 +173,6 @@ module.exports = {
 
     try {
       let globalConfigs = await getGlobalConfig();
-
-      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
@@ -178,9 +200,14 @@ module.exports = {
 
       const paidAmount = parseFloat(validationResponse.amount);
 
+      const shippingAddress = await PaymentService.getAddress(req.query.billing_address);
+      if(!shippingAddress){
+        throw new Error('Provided Shipping Address was not found!');
+      }
+
       let cart = await PaymentService.getCart(customer.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
-      let courierCharge = PaymentService.calcCourierCharge(cartItems, req.query.shipping_address.zila_id, globalConfigs);
+      let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
       let {
         grandOrderTotal,
@@ -240,15 +267,11 @@ module.exports = {
 
       logger.orderLog(customer.id, 'paymentSuccess - Order Created', order);
 
-      let shippingAddress = await PaymentAddress.find({
-        user_id: customer.id
-      });
-
       let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
       orderForMail.payments = payments;
 
-      if (customer.phone || (shippingAddress && shippingAddress.length > 0 && shippingAddress[0].phone)) {
-        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress[0]);
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress);
       }
 
       await PaymentService.sendEmail(orderForMail);
@@ -286,9 +309,16 @@ module.exports = {
   },
   ipnPaymentSuccessForPartial: async function (req, res) {
 
-    logger.orderLogAuth(req, '################ SSLCOMMERZ success IPN (Partial)');
+    let customer = await PaymentService.getTheCustomer(req.query.user_id);
+    if(!customer){
+      return res.status(400).json({
+        failure: true
+      });
+    }
 
-    console.log('################ SSLCOMMERZ success IPN (Partial)');
+    logger.orderLog(customer.id, '################ SSLCOMMERZ success IPN (Partial)', '');
+    logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-body', req.body);
+    logger.orderLog(customer.id,'ipnPaymentSuccessForPartial-query',  req.query);
 
     const tranId = req.body.tran_id;
 
@@ -299,8 +329,6 @@ module.exports = {
     }
     try {
       let globalConfigs = await getGlobalConfig();
-
-      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       logger.orderLog(customer.id, 'IPN Payment Success Partial (req body)', req.body);
 
@@ -379,7 +407,18 @@ module.exports = {
     }
   },
   paymentSuccessPartial: async function (req, res) {
-    logger.orderLogAuth(req, '################ SSLCOMMERZ success (Partial)');
+
+    let customer = await PaymentService.getTheCustomer(req.query.user_id);
+    if(!customer){
+      return res.status(400).json({
+        failure: true
+      });
+    }
+
+    logger.orderLog(customer.id, '################ SSLCOMMERZ success (Partial)', '');
+    logger.orderLog(customer.id, 'paymentSuccessPartial-body', req.body);
+    logger.orderLog(customer.id,'paymentSuccessPartial-query',  req.query);
+
     const tranId = req.body.tran_id;
     if (!(tranId && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
@@ -393,8 +432,6 @@ module.exports = {
     }
     try {
       let globalConfigs = await getGlobalConfig();
-
-      let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
       const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
         .populate('shipping_address');
@@ -410,7 +447,6 @@ module.exports = {
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
       }
-
 
       const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 

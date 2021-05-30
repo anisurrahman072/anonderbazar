@@ -54,12 +54,9 @@ module.exports = {
 
     logger.orderLog(authUser.id, 'SSL Commerz payment request: ', postBody);
 
-    console.log('postBody', postBody);
-
     const sslResponse = await sslcommerz.init_transaction(postBody);
     logger.orderLog(authUser.id, 'SSL Commerz payment response: ', sslResponse);
 
-    console.log('sslResponse', sslResponse);
     /**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
