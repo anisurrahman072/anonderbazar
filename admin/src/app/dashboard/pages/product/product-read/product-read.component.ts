@@ -52,10 +52,10 @@ export class ProductReadComponent implements OnInit, OnDestroy {
     getPageData() {
         this.productService.getByIdWithPopulate(this.id)
             .subscribe(result => {
-                if (result) {
-                    this.data = result;
-                    if (result.tag != "undefined")
-                        this.tags = JSON.parse(result.tag);
+                if (result.data[0]) {
+                    this.data = result.data[0];
+                    if (result.data[0].tag !== 'undefined')
+                        this.tags = JSON.parse(result.data[0].tag);
                 }
 
             });
