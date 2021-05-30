@@ -25,7 +25,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      logger.orderLog(customer.id,'validationResponse-sslCommerzIpnSuccess', validationResponse);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzIpnSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.status(422).json({
@@ -61,7 +61,7 @@ module.exports = {
       logger.orderLog(customer.id, 'paidAmount', paidAmount);
 
       if (!(Math.abs(paidAmount - grandOrderTotal) < Number.EPSILON)) {
-        logger.orderLog(customer.id,'grandOrderTotal & paid amount miss matched');
+        logger.orderLog(customer.id, 'grandOrderTotal & paid amount miss matched');
         throw new Error('Paid amount and order amount are different.');
       }
 
@@ -106,7 +106,7 @@ module.exports = {
             allCouponCodes,
           };
         });
-
+      logger.orderLog(customer.id, 'ipnPaymentSuccess - Order Created', order);
       let shippingAddress = await PaymentAddress.find({
         user_id: customer.id
       });
@@ -154,7 +154,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      logger.orderLog(customer.id,'validationResponse-sslCommerzSuccess', validationResponse);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
@@ -237,9 +237,12 @@ module.exports = {
           };
         });
 
+      logger.orderLog(customer.id, 'paymentSuccess - Order Created', order);
+
       let shippingAddress = await PaymentAddress.find({
         user_id: customer.id
       });
+
       let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
       orderForMail.payments = payments;
 
@@ -257,7 +260,7 @@ module.exports = {
       res.end();
     } catch (finalError) {
       console.log('finalError', finalError);
-
+      logger.orderLogAuth(req, finalError);
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(finalError.message)
@@ -281,7 +284,11 @@ module.exports = {
     res.end();
   },
   ipnPaymentSuccessForPartial: async function (req, res) {
-    console.log('################ SSLCOMMERZ success IPN (Partial)', req.body);
+
+    logger.orderLogAuth(req, '################ SSLCOMMERZ success IPN (Partial)');
+
+    console.log('################ SSLCOMMERZ success IPN (Partial)');
+
     const tranId = req.body.tran_id;
 
     if (!(tranId && req.query.user_id && req.query.order_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
@@ -294,6 +301,8 @@ module.exports = {
 
       let customer = await PaymentService.getTheCustomer(req.query.user_id);
 
+      logger.orderLog(customer.id, 'IPN Payment Success Partial (req body)', req.body);
+
       const order = await Order.findOne({id: req.query.order_id, deletedAt: null})
         .populate('shipping_address');
 
@@ -304,8 +313,9 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      logger.orderLog(customer.id,'validationResponse-sslCommerzIpnSuccess', validationResponse);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzIpnSuccess', validationResponse);
 
+      console.log('',);
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         return res.status(422).json({
           failure: true
@@ -325,7 +335,7 @@ module.exports = {
       await sails.getDatastore()
         .transaction(async (db) => {
 
-          let pay = await Payment.create({
+          await Payment.create({
             transection_key: tranId,
             payment_amount: paidAmount,
             user_id: customer.id,
@@ -349,7 +359,7 @@ module.exports = {
           }).usingConnection(db);
 
         });
-
+      logger.orderLog(customer.id, 'IPN Payment Success Partial - Order Updated');
       const shippingAddress = order.shipping_address;
 
       if (customer.phone || (shippingAddress && shippingAddress.phone)) {
@@ -360,6 +370,7 @@ module.exports = {
         success: true
       });
     } catch (finalError) {
+      logger.orderLogAuth(req, finalError);
       console.log('finalError', finalError);
       return res.status(400).json({
         failure: true
@@ -367,6 +378,7 @@ module.exports = {
     }
   },
   paymentSuccessPartial: async function (req, res) {
+    logger.orderLogAuth(req, '################ SSLCOMMERZ success (Partial)');
     const tranId = req.body.tran_id;
     if (!(tranId && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
@@ -392,6 +404,7 @@ module.exports = {
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzSuccess', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
         throw new Error('SSL Commerz Payment Validation Failed!');
@@ -415,7 +428,7 @@ module.exports = {
       await sails.getDatastore()
         .transaction(async (db) => {
 
-          let pay = await Payment.create({
+          await Payment.create({
             transection_key: tranId,
             payment_amount: paidAmount,
             user_id: customer.id,
@@ -440,6 +453,8 @@ module.exports = {
 
         });
 
+      logger.orderLog(customer.id, 'Payment Success Partial - Order Updated');
+
       const shippingAddress = order.shipping_address;
 
       if (customer.phone || (shippingAddress && shippingAddress.phone)) {
@@ -455,6 +470,7 @@ module.exports = {
 
     } catch (finalError) {
       console.log(finalError);
+      logger.orderLogAuth(req, finalError);
       res.writeHead(301,
         {
           Location: sslWebUrl + '/profile/orders?bKashError=' + encodeURIComponent(finalError.message)

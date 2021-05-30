@@ -23,6 +23,7 @@ module.exports = {
       const globalConfigs = await getGlobalConfig();
       const orderId = req.param('order_id');
       const order = await Order.findOne({id: orderId});
+      // eslint-disable-next-line eqeqeq
       if (order.order_type != PARTIAL_ORDER_TYPE) {
         return res.status(422).json({
           message: 'Refund is not allowed for this order.'

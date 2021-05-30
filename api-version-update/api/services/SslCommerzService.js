@@ -159,11 +159,11 @@ module.exports = {
       randomstring,
       isPartialPayment: true
     });
-    logger.orderLog(customer.id, 'SSL Commerz payment request: ', postBody);
+    logger.orderLog(customer.id, 'SSL Commerz payment request (Partial): ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
 
-    logger.orderLog(customer.id, 'SSL Commerz payment response: ', sslResponse);
+    logger.orderLog(customer.id, 'SSL Commerz payment response (Partial): ', sslResponse);
     /**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
