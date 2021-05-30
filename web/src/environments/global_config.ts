@@ -12,12 +12,20 @@ export class GLOBAL_CONFIGS {
     };
     public static lotteryAdminId = 130;
 }
+
 export const PAYMENT_METHODS = {
     CASH_PAYMENT_TYPE: 'Cash',
     CASHBACK_PAYMENT_TYPE: 'cashBack',
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad'
+}
+export const PAYMENT_METHODS_LABELS = {
+    'Cash': 'Cash On Delivery',
+    'cashBack': 'Cash Back',
+    'SSLCommerce': 'SSLCOMMERZ Payment Gateway',
+    'bKash': 'bKash Payment Gateway',
+    'Nagad': 'Nagad Payment Gateway'
 }
 export const ORDER_STATUSES = {
     PENDING_ORDER: 1,

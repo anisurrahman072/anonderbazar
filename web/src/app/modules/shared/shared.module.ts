@@ -22,8 +22,9 @@ import {MaterialModule} from "../../core/material.module";
 import {OrderStatusPipe} from "../../pipes/order-status";
 import {PaymentStatusPipe} from "../../pipes/payment-status";
 import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
+import {QueryMessageModalComponent} from "./components/query-message-modal/query-message-modal.component";
 
-const sharedComponents = [
+const declaredComponents = [
     ProductItemComponent,
     ProductItemWholeSaleComponent,
     ProductItemRewardPointComponent,
@@ -42,9 +43,10 @@ const sharedComponents = [
     LoginMinComponent,
     ShoppingCartComponent,
     SuborderInvoiceComponent,
-    OrderInvoiceComponent
+    OrderInvoiceComponent,
+    QueryMessageModalComponent
 ];
-const sharedComponents1 = [
+const sharedComponents = [
     ProductItemComponent,
     ProductItemWholeSaleComponent,
     ProductItemFeedbackComponent,
@@ -63,7 +65,8 @@ const sharedComponents1 = [
     SuborderInvoiceComponent,
     OrderInvoiceComponent,
     ProductItemCompareComponent,
-    PartialPaymentModalComponent
+    PartialPaymentModalComponent,
+    QueryMessageModalComponent
 ];
 
 @NgModule({
@@ -74,8 +77,9 @@ const sharedComponents1 = [
         ReactiveFormsModule,
         MaterialModule,
     ],
-    declarations: sharedComponents,
-    exports: sharedComponents1
+    declarations: declaredComponents,
+    exports: sharedComponents,
+    entryComponents: [QueryMessageModalComponent]
 
 })
 export class SharedModule {
