@@ -14,15 +14,13 @@ module.exports = {
 
     sails.log('Running custom shell script... (`sails run missing-transaction-key`)');
 
-    const payments = await Payment.find({
-      payment_type: SSL_COMMERZ_PAYMENT_TYPE,
-      deletedAt: null,
-    });
+    let _where = {};
+    _where.payment_type = SSL_COMMERZ_PAYMENT_TYPE;
+    _where.deletedAt = null;
 
-    const length = await Payment.count().where({
-      payment_type: SSL_COMMERZ_PAYMENT_TYPE,
-      deletedAt: null
-    });
+    const payments = await Payment.find(_where);
+
+    const length = await Payment.count().where(_where);
 
     for (let i = 0; i < length; i++){
       const tranDetails = JSON.stringify(payments[i].details);
