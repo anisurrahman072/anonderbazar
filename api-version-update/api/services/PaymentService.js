@@ -71,6 +71,7 @@ module.exports = {
     const orderedDate = moment(order.createdAt);
     const duration = moment.duration(currentDate.diff(orderedDate));
     const expendedHour =  Math.floor(duration.asHours());
+    // eslint-disable-next-line eqeqeq
     return !(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER);
   },
 
