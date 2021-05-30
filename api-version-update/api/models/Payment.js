@@ -66,9 +66,8 @@ module.exports = {
   customToJSON: function () {
     return this;
   },
-
   // generating transection key before creating a row
-  beforeCreate: function (req, next) {
+  /* beforeCreate: function (req, next) {
 
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
     let string_length = 16;
@@ -80,6 +79,6 @@ module.exports = {
     req.transection_key = randomstring;
 
     next();
-  },
+  },*/
 };
 

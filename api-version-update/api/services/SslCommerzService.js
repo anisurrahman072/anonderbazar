@@ -3,7 +3,7 @@
  *
  * @description :: Server-side logic for processing ssl commerz payment method
  */
-const {sslcommerzInstance, preparePaymentRequest, generateRandomString} = require('../../libs/sslcommerz');
+const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
 const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
 
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
-    const randomstring = generateRandomString();
+    const randomstring = PaymentService.generateRandomString();
 
     let finalPostalCode = shippingAddress.postal_code;
     let finalAddress = shippingAddress.address;
@@ -137,7 +137,7 @@ module.exports = {
     }
     const sslcommerz = sslcommerzInstance(globalConfigs);
 
-    const randomstring = generateRandomString();
+    const randomstring = PaymentService.generateRandomString();
 
     let finalPostalCode = shippingAddress.postal_code;
     let finalAddress = shippingAddress.address;

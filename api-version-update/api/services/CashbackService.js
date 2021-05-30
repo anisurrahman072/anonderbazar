@@ -40,7 +40,7 @@ module.exports = {
       throw new Error('The customer is not allowed to use cashback with this order.');
     }
     /** END */
-
+    const generatedTransactionKey = PaymentService.generateRandomString();
     const {
       allCouponCodes,
       order,
@@ -69,7 +69,7 @@ module.exports = {
 
         /** .............Payment Section ........... */
         let paymentResponse = {
-          'purpose': 'Cashback Payment for coupon code purchase'
+          'purpose': 'Cashback Payment'
         };
 
         let payments = await PaymentService.createPayment(db, suborders, {
@@ -77,6 +77,7 @@ module.exports = {
           order_id: order.id,
           payment_type: paymentType,
           details: JSON.stringify(paymentResponse),
+          transection_key: generatedTransactionKey,
           status: 1
         });
 

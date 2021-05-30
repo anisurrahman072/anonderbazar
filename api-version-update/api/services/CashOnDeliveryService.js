@@ -32,7 +32,7 @@ module.exports = {
       throw new Error('Payment method is invalid for this particular order.');
     }
     /** END */
-
+    const generatedTransactionKey = PaymentService.generateRandomString();
     const {
       order,
       suborders,
@@ -67,6 +67,7 @@ module.exports = {
           order_id: order.id,
           payment_type: paymentType,
           details: JSON.stringify(paymentResponse),
+          transection_key: generatedTransactionKey,
           status: 1
         });
 

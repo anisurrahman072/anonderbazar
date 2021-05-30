@@ -52,8 +52,8 @@ module.exports = {
     const merchantId = '683002007104225';
     const dateTime = currentDate + time;
     const amount = '5';
-    const orderId = generateRandomString();
-    const challenge = toHexString(generateRandomString(40));
+    const orderId = PaymentService.generateRandomString();
+    const challenge = toHexString(PaymentService.generateRandomString(40));
 
     const PostURL = `http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0/api/dfs/check-out/initialize/${merchantId}/${orderId}`;
 

@@ -1,5 +1,5 @@
 const {PAYMENT_STATUS_PARTIALLY_PAID, PAYMENT_STATUS_PAID, SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
-const {hasPaymentTransactionBeenUsed, getPaymentRowPartial} = require('../services/PaymentService');
+const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
@@ -8,8 +8,8 @@ const logger = require('../../libs/softbd-logger').Logger;
 module.exports = {
 
   ipnPaymentSuccess: async function (req, res) {
-    logger.orderLogAuth(req, '################ sslcommerz success IPN');
-    logger.orderLogAuth(req, req.body);
+    logger.orderLogAuth(req, '################ sslcommerz success IPN', '');
+    logger.orderLogAuth(req, req.body, 'ipnPaymentSuccess-body');
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
       return res.status(422).json({
@@ -34,6 +34,7 @@ module.exports = {
       }
 
       const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, req.body.tran_id);
+      logger.orderLog(customer.id, 'ipnPaymentSuccess-transaction id: (' + hasAlreadyBeenUsed + ' )', req.body.tran_id);
 
       if (hasAlreadyBeenUsed) {
         return res.status(422).json({
