@@ -141,6 +141,11 @@ const routes: Routes = [
                     '../pages/requisition/requisition.module#RequisitionModule'
             },
             {
+                path: 'questions' /* /questions  */,
+                loadChildren:
+                    '../pages/questions/questions.module#QuestionsModule'
+            },
+            {
                 path: '' /* /dashboard  */,
                 component: DashboardHomeComponent
             }

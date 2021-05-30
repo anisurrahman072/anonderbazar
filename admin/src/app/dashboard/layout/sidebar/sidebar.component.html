@@ -160,6 +160,17 @@
             </li>
         </ul>
     </li>
+
+    <li nz-menu-item *ngIf="'questions'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/questions">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text" style="color: blue">Questions</span>
+        </span>
+        </a>
+    </li>
+
     <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>
