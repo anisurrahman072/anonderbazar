@@ -227,7 +227,7 @@ module.exports = {
 
     let originalOrder = null;
     if (orderId) {
-      redirectUrl = sslWebUrl + 'profile/orders/invoice/' + orderId;
+      redirectUrl = sslWebUrl + '/profile/orders/invoice/' + orderId;
 
       originalOrder = await Order.findOne({id: req.param('order_id'), deletedAt: null})
         .populate('shipping_address')
