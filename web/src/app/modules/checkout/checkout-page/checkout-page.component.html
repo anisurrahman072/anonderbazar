@@ -500,7 +500,7 @@
                             <a>Confirm payment</a>
                         </button>
                         <button type="submit" class="Summarybtn"
-                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)">
+                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)" [disabled]="!termsAndPolicy">
                             <a>Confirm without payment</a>
                         </button>
                     </div>

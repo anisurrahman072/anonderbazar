@@ -41,3 +41,8 @@ export const PAYMENT_STATUS = {
     PAID: 3,
     NOT_APPLICABLE: 4
 }
+
+export const ORDER_TYPE = {
+    REGULAR_ORDER: 1,
+    PARTIAL_PAYMENT_ORDER: 2
+}

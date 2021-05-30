@@ -7,7 +7,7 @@
             <div class="col-md-3">
                 <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders/">Dashboard</button>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" *ngIf="isAllowedForPay">
                 <button class="btn btn-block text-center btn-profile" (click)="makePartialPayment()">Make Payment</button>
             </div>
         </div>
@@ -91,7 +91,22 @@
                             </td>
                             <td>
                                 <div class="amount-text text-right">
-                                    <h5>৳. {{data.paid_amount}}</h5>
+                                    <h5>৳. {{data.total_price}}</h5>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="amount-text text-right">
+                                    <h5>Paid amount</h5>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount-text text-right">
+                                    <h5 *ngIf="data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER; else regularOrder">৳. {{data.paid_amount}}</h5>
+                                    <ng-template #regularOrder>
+                                        <h5>৳. {{data.total_price}}</h5>
+                                    </ng-template>
                                 </div>
                             </td>
                         </tr>
@@ -136,4 +151,25 @@
             </mat-card-content>
         </mat-card>
     </div>
+
+    <div *ngIf="data && data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER && allPaymentsLog && allPaymentsLog.length > 0">
+        <mat-card-title>Transaction log</mat-card-title>
+        <mat-card class="example-card">
+            <mat-card-content>
+                <div *ngFor="let payment of allPaymentsLog;" style="display: flex; flex-direction: row;" class="mb-3">
+                    <div class="circle fa">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <p>Payment method: {{payment.payment_type}}</p>
+                        <p>Paid amount: {{payment.payment_amount}}</p>
+                        <p>Payment transaction: {{payment.transection_key}}</p>
+                        <p>Transaction time: {{payment.createdAt}}</p>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
 </section>
+
+
