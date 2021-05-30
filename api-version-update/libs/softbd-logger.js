@@ -9,15 +9,15 @@ const Logger = (exports.Logger = {});
 // Create 3 sets of write streams for the 3 levels of logging we wish to do
 // every time we get an error we'll append to our error streams, any debug message
 // to our debug stream etc...
-const paymentTransactionStream = fs.createWriteStream('logs/payment-transaction.log');
+const paymentTransactionStream = fs.createWriteStream('logs/payment-transaction.log', {flags: 'a'});
 // Notice we set the path of our log files in the first parameter of
 // fs.createWriteStream. This could easily be pulled in from a config
 // file if needed.
-const errorStream = fs.createWriteStream('logs/error.log');
+const errorStream = fs.createWriteStream('logs/error.log', {flags: 'a'});
 // createWriteStream takes in options as a second, optional parameter
 // if you wanted to set the file encoding of your output file you could
 // do so by setting it like so: ('logs/debug.txt' , { encoding : 'utf-8' });
-const debugStream = fs.createWriteStream('logs/debug.log');
+const debugStream = fs.createWriteStream('logs/debug.log', {flags: 'a'});
 
 function formatObject(message) {
   if (_.isObject(message)) {
