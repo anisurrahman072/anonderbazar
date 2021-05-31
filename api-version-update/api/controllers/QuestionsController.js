@@ -128,6 +128,25 @@ module.exports = {
         error
       });
     }
+  },
+
+  addAnswer: async (req, res) => {
+    try {
+      await ProductQuestionAnswer.updateOne({id: req.param('id')})
+        .set({answer: req.body.answer, answered_by: req.body.answeredBy});
+
+      return res.json({
+        success: true,
+        message: 'Answer added successfully'
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to add the answer',
+        error
+      });
+    }
   }
 
 };

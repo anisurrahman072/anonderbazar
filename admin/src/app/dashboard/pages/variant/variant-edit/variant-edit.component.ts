@@ -3,7 +3,6 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {VariantService} from '../../../../services/variant.service';
 
 @Component({
@@ -19,7 +18,7 @@ export class VariantEditComponent implements OnInit, OnDestroy{
     typeSearchOptions = [
         {label: 'Yes', value: 1},
         {label: 'No', value: 0}
-        
+
     ];
 
     validateForm: FormGroup;
@@ -34,7 +33,7 @@ export class VariantEditComponent implements OnInit, OnDestroy{
         formData.append('type', value.type);
         this.variantService.update(this.id, formData)
             .subscribe(result => {
-              
+
                 this._notification.create('success', 'Update successful', this.data.name);
                 this.router.navigate(['/dashboard/variant/details/', this.id]);
             });
@@ -75,7 +74,7 @@ export class VariantEditComponent implements OnInit, OnDestroy{
 
     ngOnDestroy(): void {
         this.sub ? this.sub.unsubscribe() : '';
-    
+
     }
 
 }
