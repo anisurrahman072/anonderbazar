@@ -424,7 +424,7 @@ module.exports = {
       }
 
       if (smsPhone) {
-        let smsText = `আপনার ট্রানজেকশনটি সফল ভাবে সম্পন্ন হয়েছে। ট্রানজেকশন নাম্বার: ${transaction_id}, টাকার পরিমান: ${paidAmount}, order no: ${orderId}`;
+        let smsText = `আপনার পেমেন্টি সফল হয়েছে। ট্রানজেকশন নাম্বার: ${transaction_id}, টাকার পরিমান: ${paidAmount}, অর্ডার নাম্বার: ${orderId}`;
         console.log('smsTxt', smsText);
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }
