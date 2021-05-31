@@ -55,6 +55,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
+    private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
 
     shippingFirstName: string;
     shippingLastName: string;
@@ -94,7 +95,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     isPartiallyPayable = true;
 
-        constructor(
+    constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
         private router: Router,
@@ -156,10 +157,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (this.currentUser.couponLotteryCashback && this.currentUser.couponLotteryCashback.length > 0) {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
-
-                if (this.user_id == 130) {
-                    this.showBkashPayment = true;
-                }
+                this.showBkashPayment = this.bKashTestUsers.find((userId) => this.user_id == userId);
             } else {
                 this.user_id = null;
             }
@@ -250,21 +248,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.openPaymentGatewayModal(queryParams['bKashError']);
                 this.cdr.detectChanges();
             }, 500);
-        } else if(queryParams['sslCommerzError']){
+        } else if (queryParams['sslCommerzError']) {
             setTimeout(() => {
                 this.openPaymentGatewayModal(queryParams['sslCommerzError']);
                 this.cdr.detectChanges();
             }, 500);
-        }else if (queryParams['bkashURL']) {
+        } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
     }
-/*
-    onAgreedToBKashTerms(event: any) {
-        console.log('onAgreedToBKashTerms', event);
-        this.agreedToBKashTermsConditions = event;
 
-    }*/
+    /*
+        onAgreedToBKashTerms(event: any) {
+            console.log('onAgreedToBKashTerms', event);
+            this.agreedToBKashTermsConditions = event;
+
+        }*/
 
     // Method for update cart
     updateCartItem(cartItem, action) {
@@ -315,7 +314,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
             }
-            if(!item.product_id.partially_payable){
+            if (!item.product_id.partially_payable) {
                 this.isPartiallyPayable = false;
             }
             let itemDhakaCharge = 0;
@@ -397,19 +396,20 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
     }
-/*
+
+    /*
 
 
-    //Event method for resetting the form
-    resetForm($event: MouseEvent) {
-        $event.preventDefault();
-        this.checkoutForm.reset();
-        this.updateGrandTotal();
-        for (const key in this.checkoutForm.controls) {
-            this.checkoutForm.controls[key].markAsPristine();
+        //Event method for resetting the form
+        resetForm($event: MouseEvent) {
+            $event.preventDefault();
+            this.checkoutForm.reset();
+            this.updateGrandTotal();
+            for (const key in this.checkoutForm.controls) {
+                this.checkoutForm.controls[key].markAsPristine();
+            }
         }
-    }
-*/
+    */
 
 
     // method for confirm without payment

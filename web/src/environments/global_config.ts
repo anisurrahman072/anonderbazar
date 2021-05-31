@@ -11,6 +11,7 @@ export class GLOBAL_CONFIGS {
         Nagad: false
     };
     public static lotteryAdminId = 130;
+    public static bkashTestUsers = [130, 2814];
 }
 
 export const PAYMENT_METHODS = {
