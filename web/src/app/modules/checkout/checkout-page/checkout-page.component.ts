@@ -92,7 +92,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
 
-    constructor(
+    isPartiallyPayable = true;
+
+        constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
         private router: Router,
@@ -313,6 +315,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
             }
+            if(item.product_id.partially_payable){
+                this.isPartiallyPayable = false;
+            }
             let itemDhakaCharge = 0;
             let itemOutsideDhakaCharge = 0;
             if (item.product_id.free_shipping === 0) {
@@ -323,6 +328,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
             this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
         });
+        console.log('Aaaa', this.cartData);
     }
 
     //Event method for removing cart items
