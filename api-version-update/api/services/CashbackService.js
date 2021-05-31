@@ -185,7 +185,10 @@ module.exports = {
       });
 
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-      await PaymentService.sendSmsForPartialPayment(customer, order, shippingAddress, payment.transection_key, amountToPay);
+      await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
+        paidAmount: amountToPay,
+        transaction_id: payment.transection_key
+      });
     }
 
     return payment;

@@ -152,7 +152,7 @@
         </mat-card>
     </div>
 
-    <div *ngIf="data && data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER && allPaymentsLog && allPaymentsLog.length > 0">
+    <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
         <mat-card-title>Transaction log</mat-card-title>
         <mat-card class="example-card">
             <mat-card-content *ngFor="let payment of allPaymentsLog;" class="mb-3">
