@@ -415,6 +415,24 @@ module.exports = {
     }
   },
 
+  sendSmsForPartialPayment: async (authUser, order, shippingAddress, transaction, tran_id, amount) => {
+    try {
+      let smsPhone = authUser.phone;
+
+      if (!smsPhone && shippingAddress.phone) {
+        smsPhone = shippingAddress.phone;
+      }
+
+      if (smsPhone) {
+        let smsText = `আপনার ট্রানজেকশনটি সফল ভাবে সম্পন্ন হয়েছে। ট্রানজেকশন নাম্বার ঃ ${tran_id} এবং টাকার পরিমান ${amount}`;
+        console.log('smsTxt', smsText);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
   sendEmail: async (orderForMail) => {
     try {
       EmailService.orderSubmitMail(orderForMail);

@@ -395,7 +395,7 @@ module.exports = {
       const shippingAddress = order.shipping_address;
 
       if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-        await PaymentService.sendSms(customer, order, [], shippingAddress);
+        await PaymentService.sendSmsForPartialPayment(customer, order, shippingAddress, req.body.tran_id, req.body.amount);
       }
 
       return res.status(200).json({
@@ -499,7 +499,7 @@ module.exports = {
       const shippingAddress = order.shipping_address;
 
       if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-        await PaymentService.sendSms(customer, order, [], shippingAddress);
+        await PaymentService.sendSmsForPartialPayment(customer, order, shippingAddress, req.body.tran_id, req.body.amount);
       }
 
       res.writeHead(301,

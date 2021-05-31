@@ -158,6 +158,8 @@ module.exports = {
           status: 1
         }).usingConnection(db);
 
+        console.log('payment created for cashBack', payment);
+
         const totalPaidAmount = paidAmount + amountToPay;
 
         let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
@@ -183,7 +185,7 @@ module.exports = {
       });
 
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-      await PaymentService.sendSms(customer, order, [], shippingAddress);
+      await PaymentService.sendSmsForPartialPayment(customer, order, shippingAddress, payment.transection_key, amountToPay);
     }
 
     return payment;
