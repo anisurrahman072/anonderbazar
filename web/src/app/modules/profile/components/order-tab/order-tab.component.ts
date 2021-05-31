@@ -10,6 +10,9 @@ import * as moment from 'moment';
 import {forkJoin} from "rxjs/observable/forkJoin";
 import {ORDER_STATUSES, PAYMENT_STATUS} from "../../../../../environments/global_config";
 import {timer} from 'rxjs/observable/timer';
+import {Router} from "@angular/router";
+import {NotificationsService} from "angular2-notifications";
+import {LoaderService} from "../../../../services/ui/loader.service";
 
 @Component({
     selector: 'Order-tab',
@@ -32,6 +35,7 @@ export class OrderTabComponent implements OnInit {
     allRemainingTime: any[] = [];
     remainingTimeInHourMinute: any[] = [];
     PAYMENT_STATUS: any = PAYMENT_STATUS;
+    isShownConfirm: boolean = false;
 
     /*
     * constructor for OrderTabComponent
@@ -41,7 +45,10 @@ export class OrderTabComponent implements OnInit {
                 private orderService: OrderService,
                 private userService: UserService,
                 private partialPaymentModalService: PartialPaymentModalService,
-                private globalConfigService: GlobalConfigService
+                private globalConfigService: GlobalConfigService,
+                private router: Router,
+                private _notify: NotificationsService,
+                public loaderService: LoaderService,
     ) {
     }
 
@@ -116,6 +123,24 @@ export class OrderTabComponent implements OnInit {
     /** Make payment payment for the order */
     makePartialPayment(order) {
         this.partialPaymentModalService.showPartialModal(true, order.id);
+    }
+
+    cancelOrder(oderId){
+        this.loaderService.showLoader();
+        let confirm = window.confirm('Are you confirm to delete the order?');
+        if(confirm){
+            this.orderService.deleteOrder(oderId)
+                .subscribe(data => {
+                    this.loaderService.hideLoader();
+                    console.log('Successfully deleted the product');
+                    this._notify.success('Successfully cancelled the order the order!');
+                    this.router.navigate(['/profile/orders']);
+                }, error => {
+                    this.loaderService.hideLoader();
+                    console.log('Error occurred while canceling the order!', error);
+                    this._notify.error('Error occurred while canceling the order!');
+                })
+        }
     }
 }
 

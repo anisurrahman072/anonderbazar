@@ -13,7 +13,8 @@ const {getAuthUser} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
-const logger = require("../../libs/softbd-logger").Logger;
+const logger = require('../../libs/softbd-logger').Logger;
+const {CANCELED_ORDER} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -623,6 +624,63 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating Order'
+      });
+    }
+  },
+
+  deleteOrder: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set({
+        status: CANCELED_ORDER
+      });
+
+      let subOrders = await Suborder.update({
+        product_order_id: req.param('id'),
+        deletedAt: null
+      }).set({
+        status: CANCELED_ORDER
+      }).fetch();
+
+      console.log('all suborders', subOrders);
+
+      let len = subOrders.length;
+      for(let i = 0; i < len; i++){
+        let subOrderItem = await SuborderItem.find({
+          product_suborder_id: subOrders[i].id,
+          deletedAt: null
+        });
+
+        let subItemLen = subOrderItem.length;
+        for(let index = 0; index < subItemLen; index++){
+          let product = await Product.findOne({
+            id: subOrderItem[index].product_id,
+            deletedAt: null
+          });
+
+          let newQuantity = product.quantity + subOrderItem[index].product_quantity;
+          await Product.updateOne({
+            id: product.id,
+            deletedAt: null
+          }).set({
+            quantity: newQuantity
+          });
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully deleted the order.',
+        order: updatedOrder
+      });
+    }
+    catch (error){
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while deleting the order. ', error
       });
     }
   }

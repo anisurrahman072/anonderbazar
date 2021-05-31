@@ -293,6 +293,7 @@ module.exports.policies = {
   },
   OrderController: {
     '*': ['isAuthorized'],
+    'deleteOrder': true,
     'sslcommerzsuccess': true,
     'sslcommerzfail': true,
     'sslcommerzerror': true,

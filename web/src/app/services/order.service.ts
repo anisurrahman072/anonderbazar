@@ -62,4 +62,8 @@ export class OrderService {
     makePartialPayment(orderId, data): Observable<any>{
         return this.http.post(`${this.EndPoint3}/make-payment/${orderId}`,data);
     }
+
+    deleteOrder(orderId): Observable<any>{
+        return this.http.delete(`${this.EndPoint}/deleteOrder/${orderId}`);
+    }
 }

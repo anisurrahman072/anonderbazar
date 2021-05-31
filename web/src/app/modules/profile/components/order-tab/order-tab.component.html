@@ -42,14 +42,16 @@
         </div>
     </div>
     <div class="order-list" *ngIf="orderList && orderList.length > 0">
-        <ul class="justify-content-between" *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
+        <ul class="justify-content-between"
+            *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
             <li class="text-1 pr-2">{{item?.createdAt | date}}</li>
             <li class="text-2 pl-2 pr-2">
                 <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
                     ৳ {{item?.total_price}}
                 </button>
             </li>
-            <li class="text-2 pl-2  pr-2" *ngIf="remainingTimeInHourMinute && remainingTimeInHourMinute.length > 0 && item.isAllowedForPay">
+            <li class="text-2 pl-2  pr-2"
+                *ngIf="remainingTimeInHourMinute && remainingTimeInHourMinute.length > 0 && item.isAllowedForPay">
                 <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
                     {{remainingTimeInHourMinute[item.id]}} remaining
                 </button>
@@ -81,13 +83,16 @@
                 <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
             </li>
             <li class="icon">
+                <button mat-mini-fab color="basic" (click)="cancelOrder(item.id)" *ngIf="item.status != 12">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </button>
                 <button mat-mini-fab color="basic" routerLink="/profile/orders/invoice/{{item.id}}">
                     <i class="fa fa-angle-right"></i>
                 </button>
             </li>
         </ul>
         <div class="text-center">
-            <pagination-controls (pageChange) = "currentPage = $event" previousLabel="Previous"
+            <pagination-controls (pageChange)="currentPage = $event" previousLabel="Previous"
                                  nextLabel="Next">
             </pagination-controls>
         </div>
