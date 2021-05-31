@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, AfterViewInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as ___ from 'lodash';
@@ -21,13 +21,15 @@ import {BsModalService} from "ngx-bootstrap/modal";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
 import {ORDER_STATUSES, ORDER_TYPE, PAYMENT_STATUS} from '../../../../../environments/global_config';
 import {forkJoin} from "rxjs/observable/forkJoin";
+import {QueryMessageModalComponent} from "../query-message-modal/query-message-modal.component";
+import {LoaderService} from "../../../../services/ui/loader.service";
 
 @Component({
     selector: 'order-invoice',
     templateUrl: './order-invoice.component.html',
     styleUrls: ['./order-invoice.component.scss']
 })
-export class OrderInvoiceComponent implements OnInit {
+export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
     sub: Subscription;
     id: number;
@@ -50,6 +52,8 @@ export class OrderInvoiceComponent implements OnInit {
     isAllowedForPay: boolean = true;
 
     allPaymentsLog: any;
+    paymentGatewayErrorModalRef: BsModalRef;
+    successOrderId: any = false;
 
     constructor(private route: ActivatedRoute,
                 private suborderService: SuborderService,
@@ -60,7 +64,10 @@ export class OrderInvoiceComponent implements OnInit {
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService,
                 private partialPaymentModalService: PartialPaymentModalService,
-                private globalCongigService: GlobalConfigService) {
+                private globalCongigService: GlobalConfigService,
+                private modalService: BsModalService,
+                public loaderService: LoaderService,
+                private cdr: ChangeDetectorRef,) {
     }
 
     //Event method for getting all the data for the page
@@ -111,6 +118,34 @@ export class OrderInvoiceComponent implements OnInit {
                     console.log('Alllll', this.allPaymentsLog);
                 })
         });
+    }
+
+    private openPaymentGatewayModal(message) {
+        this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
+        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.message = message;
+    }
+
+    ngAfterViewInit() {
+        this.loaderService.hideLoader();
+
+        let queryParams = this.route.snapshot.queryParams;
+
+        if (queryParams['order']) {
+            this.successOrderId = queryParams['order'];
+        } else if (queryParams['bKashError']) {
+            setTimeout(() => {
+                this.openPaymentGatewayModal(queryParams['bKashError']);
+                this.cdr.detectChanges();
+            }, 500);
+        } else if(queryParams['sslCommerzError']){
+            setTimeout(() => {
+                this.openPaymentGatewayModal(queryParams['sslCommerzError']);
+                this.cdr.detectChanges();
+            }, 500);
+        }else if (queryParams['bkashURL']) {
+            window.location.href = queryParams['bkashURL'];
+        }
     }
 
     //Method for save and download pdf
