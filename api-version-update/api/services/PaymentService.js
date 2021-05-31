@@ -157,9 +157,13 @@ module.exports = {
   calcCartTotal: function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
-    cartItems.forEach((cartItem) => {
+    cartItems.forEach(async (cartItem) => {
       if (cartItem.product_quantity > 0) {
-        grandOrderTotal += cartItem.product_total_price;
+        let productPrice = cartItem.product_total_price;
+        if(!cartItem.product_id.promotion){
+          productPrice = cartItem.product_id.price;
+        }
+        grandOrderTotal += productPrice;
         totalQty += cartItem.product_quantity;
       }
     });
