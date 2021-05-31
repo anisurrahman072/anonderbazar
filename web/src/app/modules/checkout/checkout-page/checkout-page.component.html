@@ -499,8 +499,8 @@
                                 (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">
                             <a>Confirm payment</a>
                         </button>
-                        <button type="submit" class="Summarybtn"
-                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)">
+                            <button type="submit" class="Summarybtn" *ngIf="isPartiallyPayable"
+                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)" [disabled]="!termsAndPolicy">
                             <a>Confirm without payment</a>
                         </button>
                     </div>
@@ -577,7 +577,7 @@
         </ul>
         <ng-template #noWalletTemplate>
             <p class="alert alert-info">
-                You don't have any bKash Wallet added. Please first add a bKash Wallet from <a routerLink="/profile/bkash-accounts"> Here </a> and then proceed with checkout.
+                You don't have any bKash Wallet added. Please first add a bKash Wallet from <a (click)="noBKashWalletAction($event)"> Here </a> and then proceed with checkout.
             </p>
         </ng-template>
     </div>
@@ -587,3 +587,4 @@
         </div>
     </div>
 </ng-template>
+

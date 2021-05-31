@@ -1,11 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, AfterViewInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as ___ from 'lodash';
 import * as jspdf from 'jspdf';
 import * as html2canvas from "html2canvas";
 import {AppSettings} from "../../../../config/app.config";
-import {AreaService, OrderService, SuborderItemService, SuborderService} from "../../../../services";
+import {
+    AreaService,
+    GlobalConfigService,
+    OrderService,
+    SuborderItemService,
+    SuborderService
+} from "../../../../services";
 import {PaymentService} from "../../../../services/payment.service";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import {ShippingAddressService} from "../../../../services/shipping-address.service";
@@ -13,13 +19,17 @@ import * as _moment from 'moment';
 import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
 import {BsModalService} from "ngx-bootstrap/modal";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
+import {ORDER_STATUSES, ORDER_TYPE, PAYMENT_STATUS} from '../../../../../environments/global_config';
+import {forkJoin} from "rxjs/observable/forkJoin";
+import {QueryMessageModalComponent} from "../query-message-modal/query-message-modal.component";
+import {LoaderService} from "../../../../services/ui/loader.service";
 
 @Component({
     selector: 'order-invoice',
     templateUrl: './order-invoice.component.html',
     styleUrls: ['./order-invoice.component.scss']
 })
-export class OrderInvoiceComponent implements OnInit {
+export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
     sub: Subscription;
     id: number;
@@ -34,6 +44,17 @@ export class OrderInvoiceComponent implements OnInit {
     suborders: any[] = [];
     suborderItems: any[] = [];
 
+    ORDER_TYPE: any = ORDER_TYPE;
+    PAYMENT_STATUS: any = PAYMENT_STATUS;
+
+    allRemainingTime: any[] = [];
+    globalPartialPaymentDuration: number;
+    isAllowedForPay: boolean = true;
+
+    allPaymentsLog: any;
+    paymentGatewayErrorModalRef: BsModalRef;
+    successOrderId: any = false;
+
     constructor(private route: ActivatedRoute,
                 private suborderService: SuborderService,
                 private orderService: OrderService,
@@ -42,7 +63,11 @@ export class OrderInvoiceComponent implements OnInit {
                 private paymentService: PaymentService,
                 private paymentAddressService: PaymentAddressService,
                 private shippingAddressService: ShippingAddressService,
-                private partialPaymentModalService: PartialPaymentModalService) {
+                private partialPaymentModalService: PartialPaymentModalService,
+                private globalCongigService: GlobalConfigService,
+                private modalService: BsModalService,
+                public loaderService: LoaderService,
+                private cdr: ChangeDetectorRef,) {
     }
 
     //Event method for getting all the data for the page
@@ -50,14 +75,22 @@ export class OrderInvoiceComponent implements OnInit {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
-            this.orderService.getById(this.id)
-                .subscribe(order => {
-                    this.data = order;
+
+            forkJoin([this.orderService.getById(this.id), this.globalCongigService.getGlobalConfig(), this.paymentService.getByOrderId(this.id)])
+                .subscribe(data => {
+                    let now = _moment(new Date());
+                    let createdAt = _moment(data[0].createdAt);
+                    let duration = _moment.duration(now.diff(createdAt));
+                    let expendedHour = Math.floor(duration.asHours());
+                    console.log('qqqqq', now, createdAt, duration,  expendedHour);
+
+                    this.data = data[0];
+                    console.log('1sttttttt', this.data);
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                     this.payment = this.data.payment[0];
-                    // this.suborders = order.suborders;
-                    for (let i = 0; i < order.suborders.length; i++) {
-                        this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
+                    // this.suborders = order[0].suborders;
+                    for (let i = 0; i < data[0].suborders.length; i++) {
+                        this.suborderService.getById(data[0].suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                             this.suborderItems.push(...suborder.suborderItems);
                         });
@@ -72,8 +105,47 @@ export class OrderInvoiceComponent implements OnInit {
 
                     console.log('order', this.data);
                     console.log('payment', this.payment);
-                });
+
+                    this.globalPartialPaymentDuration = data[1].configData[0].partial_payment_duration;
+
+                    this.isAllowedForPay = this.globalPartialPaymentDuration >= expendedHour && data[0].status != ORDER_STATUSES.CANCELED_ORDER
+                        && data[0].payment_status != PAYMENT_STATUS.PAID && data[0].payment_status != PAYMENT_STATUS.NOT_APPLICABLE;
+
+                    this.allPaymentsLog = data[2];
+                    this.allPaymentsLog.forEach(data => {
+                        return data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
+                    })
+                    console.log('Alllll', this.allPaymentsLog);
+                })
         });
+    }
+
+    private openPaymentGatewayModal(message) {
+        this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
+        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.message = message;
+    }
+
+    ngAfterViewInit() {
+        this.loaderService.hideLoader();
+
+        let queryParams = this.route.snapshot.queryParams;
+
+        if (queryParams['order']) {
+            this.successOrderId = queryParams['order'];
+        } else if (queryParams['bKashError']) {
+            setTimeout(() => {
+                this.openPaymentGatewayModal(queryParams['bKashError']);
+                this.cdr.detectChanges();
+            }, 500);
+        } else if(queryParams['sslCommerzError']){
+            setTimeout(() => {
+                this.openPaymentGatewayModal(queryParams['sslCommerzError']);
+                this.cdr.detectChanges();
+            }, 500);
+        }else if (queryParams['bkashURL']) {
+            window.location.href = queryParams['bkashURL'];
+        }
     }
 
     //Method for save and download pdf

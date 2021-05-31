@@ -13,11 +13,11 @@ import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../services/validator/form-validator.service";
 import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
-import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import {BsModalService} from 'ngx-bootstrap/modal';
+import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
 import {PAYMENT_METHODS} from '../../../../environments/global_config';
+import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 
 @Component({
     selector: 'app-checkout-page',
@@ -26,8 +26,15 @@ import {PAYMENT_METHODS} from '../../../../environments/global_config';
 })
 export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
+    private currentUser: User;
+    private currentUserSub: Subscription;
+    private mainSubscription: Subscription;
+
     bKashWalletModalRef: BsModalRef;
+    paymentGatewayErrorModalRef: BsModalRef;
     currentUser$: Observable<User>;
+    cart$: Observable<Cart>;
+
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
     zilaSearchOptions: any = [];
@@ -37,12 +44,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     checkoutForm: FormGroup;
 
     termsAndPolicy: boolean = false;
-
     showBkashPayment: boolean = false;
-
     isDelivery = true;
     isPickup = false;
-    cart$: Observable<Cart>;
     cartData: any;
     message: any;
     user_id: any;
@@ -64,9 +68,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     shippingAddress: string;
     shippingPostCode: string;
 
-    private currentUser: User;
-    private currentUserSub: Subscription;
-    private mainSubscription: Subscription;
     newShippingAddress: boolean = false;
     newBillingAddress: boolean = false;
     isCopy: boolean = true;
@@ -78,10 +79,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     noShippingCharge: boolean = false;
 
     authUserWallets: any;
-    bKashWalletNumber: string;
-
-    agreedToBKashTermsConditions: boolean = false;
-
     couponCashbackAmount: number = 0;
 
     isPayOnlineOnly: boolean = false;
@@ -95,7 +92,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
 
-    constructor(
+    isPartiallyPayable = true;
+
+        constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
         private router: Router,
@@ -233,6 +232,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    private openPaymentGatewayModal(message) {
+        this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
+        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.message = message;
+    }
+
     ngAfterViewInit() {
         this.loaderService.hideLoader();
 
@@ -242,19 +247,24 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.successOrderId = queryParams['order'];
         } else if (queryParams['bKashError']) {
             setTimeout(() => {
-                this.toastr.error(queryParams['bKashError'], 'Oppss!');
+                this.openPaymentGatewayModal(queryParams['bKashError']);
                 this.cdr.detectChanges();
             }, 500);
-        } else if (queryParams['bkashURL']) {
+        } else if(queryParams['sslCommerzError']){
+            setTimeout(() => {
+                this.openPaymentGatewayModal(queryParams['sslCommerzError']);
+                this.cdr.detectChanges();
+            }, 500);
+        }else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
     }
-
+/*
     onAgreedToBKashTerms(event: any) {
         console.log('onAgreedToBKashTerms', event);
         this.agreedToBKashTermsConditions = event;
 
-    }
+    }*/
 
     // Method for update cart
     updateCartItem(cartItem, action) {
@@ -305,6 +315,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
             }
+            if(!item.product_id.partially_payable){
+                this.isPartiallyPayable = false;
+            }
             let itemDhakaCharge = 0;
             let itemOutsideDhakaCharge = 0;
             if (item.product_id.free_shipping === 0) {
@@ -315,6 +328,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
             this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
         });
+        console.log('Aaaa', this.cartData);
     }
 
     //Event method for removing cart items
@@ -383,6 +397,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
     }
+/*
 
 
     //Event method for resetting the form
@@ -394,14 +409,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.checkoutForm.controls[key].markAsPristine();
         }
     }
+*/
 
-    //Event method for setting up form in validation
-    getFormControl(name) {
-        return this.checkoutForm.controls[name];
-    }
 
     // method for confirm without payment
-    formConfirmWithoutPayment($event, value){
+    formConfirmWithoutPayment($event, value) {
         this.loaderService.showLoader();
         if (this.cartData && this.cartData.data.cart_items.length <= 0) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
@@ -450,7 +462,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastr.success("Your order has been placed without amount.", "Success!", {
                     positionClass: 'toast-top-right'
                 });
-                this.router.navigate(['/profile/orders/invoice/',data.id]);
+                this.router.navigate(['/profile/orders/invoice/', data.id]);
                 this.loaderService.hideLoader();
             }, error => {
                 this.loaderService.hideLoader();
@@ -510,8 +522,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             courierCharge: value.shipping_zila_id === AppSettings.DHAKA_ZILA_ID ? this.maxDhakaCharge : this.maxOutsideDhakaCharge
         };
 
-        console.log('requestPayload', requestPayload);
-
         if (value.paymentType == this.SSL_COMMERZ_PAYMENT_TYPE || value.paymentType === this.CASHBACK_PAYMENT_TYPE ||
             value.paymentType === this.NAGAD_PAYMENT_TYPE || value.paymentType === this.CASH_PAYMENT_TYPE) {
             this.loaderService.showLoader();
@@ -530,7 +540,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.successOrderId = result.id;
                     this.store.dispatch(new fromStore.LoadCurrentUser());
                     this.store.dispatch(new fromStore.LoadCart());
-                }else {
+                } else {
                     this.toastr.error("Problem in placing your order.", "Oppppps!", {
                         positionClass: 'toast-bottom-right'
                     });
@@ -706,12 +716,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isPickup = false;
     }
 
-    //Method for showing pickup location in front view
-    showPickupSection() {
-        this.isDelivery = false;
-        this.isPickup = true;
-    }
-
     //Method for coping shipping address
     copyAll() {
         if (this.isCopy) {
@@ -872,26 +876,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     changeCartItemQuantity(cartItem, action) {
 
         this.updateCartItem(cartItem, action);
-        /*        this.updateCartItem(cartItem, action, (action) => {
-                    if (action == 'increase') {
-                        let maxProductQuantity = cartItem.product_id.quantity;
-                        if (cartItem.product_quantity < maxProductQuantity) {
-                            cartItem.product_quantity += 1;
-                            cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-                        } else {
-                            this.toastr.error('Unable to increase quantity!', 'Sorry!');
-                            return false;
-                        }
-                    } else {
-                        if (cartItem.product_quantity > 1) {
-                            cartItem.product_quantity -= 1;
-                            cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-                        } else {
-                            this.toastr.error('Unable to decrease quantity!', 'Sorry!');
-                            return false;
-                        }
-                    }
-                });*/
     }
 
     checkAddressSegment(type, segment) {
@@ -914,15 +898,17 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         return this.checkoutForm.controls[type];
     }
 
-    hideBkashWalletModal(template: TemplateRef<any>) {
-        this.bKashWalletModalRef = this.modalService.show(template);
-    }
-
     private addPageTitle() {
         if (this.cartData) {
             this.title.setTitle('Checkout ' + this.cartData.data.total_quantity + ' item(s) - Anonderbazar');
         } else {
             this.title.setTitle('Checkout - Anonderbazar');
         }
+    }
+
+    noBKashWalletAction(event: any) {
+        event.preventDefault();
+        this.bKashWalletModalRef.hide();
+        this.router.navigate(["/profile/bkash-accounts"]);
     }
 }

@@ -12,7 +12,6 @@ import {AppSettings} from "../../../config/app.config";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 
-
 @Component({
     selector: "app-profile",
     templateUrl: "./profile.component.html",
@@ -36,12 +35,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
     isWishlist: boolean;
     isProfile: boolean;
     isAddress: boolean;
-/*    favouriteProducts$: Observable<FavouriteProduct[]>;
-    favouriteProducts: FavouriteProduct[];
-    profileRouterLink = [
-        {label: "Favourites", path: "/profile/favourites"},
-        {label: "Orders", path: "/profile/orders"}
-    ];*/
+
     options: { value: number; label: string; icon: string }[];
     view: any[] = [700, 400];
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
@@ -186,9 +180,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.imageDone = true;
         this.imageEdit = false;
     }
-
-// Event for switching to order view
-    switchToOrder() {
+    // Event for switching to order view
+    private switchToOrder() {
         this.isDashboard = false;
         this.isOrder = true;
         this.isWishlist = false;
@@ -196,9 +189,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to dashboard view
-    switchToDashBoard() {
+    private switchToDashBoard() {
         this.isDashboard = true;
         this.isOrder = false;
         this.isWishlist = false;
@@ -206,9 +198,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to wishlist view
-    switchToWishlist() {
+    private switchToWishlist() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = true;
@@ -216,20 +207,17 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to profile settings view
-    switchToProfileSettings() {
+    private switchToProfileSettings() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
         this.isProfile = true;
         this.isAddress = false;
         this.isMessage = false;
-
     }
-
     // Event for switching to address settings view
-    switchToAddressSettings() {
+    private switchToAddressSettings() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
@@ -237,9 +225,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isAddress = true;
         this.isMessage = false;
     }
-
     // Event for switching to message view
-    switchToMessages() {
+    private switchToMessages() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
@@ -247,23 +234,19 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isAddress = false;
         this.isMessage = true;
     }
-
     // Event for increasing step
-    setStep(index: number) {
+    private setStep(index: number) {
         this.step = index;
     }
-
     //Event for removing image
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
-
     //Called before image upload
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
     };
-
     //Event method for getting profile data
     getPageData() {
         this.userService
@@ -273,7 +256,6 @@ export class ProfileComponent implements OnInit, OnDestroy  {
                 this.ImageFileEdit = [];
             });
     }
-
     //Event method for updating profile image
     updateImage() {
         const formData: FormData = new FormData();

@@ -59,6 +59,7 @@ module.exports = {
           user_id: authUser.id,
           cart_id: cart.id,
           total_price: grandOrderTotal,
+          paid_amount: grandOrderTotal,
           total_quantity: totalQty,
           billing_address: billingAddress.id,
           shipping_address: shippingAddress.id,
