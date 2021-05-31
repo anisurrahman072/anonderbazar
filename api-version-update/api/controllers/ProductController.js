@@ -17,7 +17,6 @@ const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 module.exports = {
 
   details: async (req, res) => {
-    console.log('rouzex now', req.params);
     try {
       let key = 'product-' + req.param('id') + '-details';
 
