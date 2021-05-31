@@ -210,6 +210,9 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  QuestionsController: {
+    '*': true
+  },
   ProductsController: {
     'index': true,
     'findOne': true,

@@ -17,7 +17,6 @@ const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
 module.exports = {
 
   details: async (req, res) => {
-    console.log('rouzex now', req.params);
     try {
       let key = 'product-' + req.param('id') + '-details';
 
@@ -47,7 +46,7 @@ module.exports = {
         LEFT JOIN users ON product_question_answer.user_id = users.id
         LEFT JOIN products ON product_question_answer.product_id = products.id
         WHERE
-            products.id = ${req.param('id')} and users.first_name is not null
+            products.id = ${req.param('id')} and users.first_name is not null and product_question_answer.deleted_at IS NULL
             order by product_question_answer.id desc
       `;
 
@@ -63,7 +62,7 @@ module.exports = {
         LEFT JOIN users ON product_rating_review.user_id = users.id
         LEFT JOIN products ON product_rating_review.product_id = products.id
         WHERE
-            products.id = ${req.param('id')}
+            products.id = ${req.param('id')} and product_rating_review.deleted_at IS NULL
             order by product_rating_review.id desc
       `;
 
@@ -863,6 +862,7 @@ module.exports = {
           user_id: req.query.userId,
           product_id: req.query.product_id,
           question: req.query.question,
+          answer: 'Not responded yet'
         }).fetch();
         return res.status(201).json(question);
       }

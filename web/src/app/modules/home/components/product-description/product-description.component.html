@@ -354,11 +354,8 @@
                                 <span style="font-size: 15px; color: #979494">{{question.created_at | date:'dd/MM/yyyy'}}</span><br>
 
                                 <p style="font-size: 18px; color: #979494; margin-top: 12px">Answer</p>
-                                <p *ngIf="question.answer; else noAnswer"
+                                <p *ngIf="question.answer"
                                    style="font-size: 18px; margin-bottom: 7px">{{question.answer}}</p>
-                                <ng-template #noAnswer>
-                                    <p>Not responded yet</p>
-                                </ng-template>
                                 <p *ngIf="question.answeredBy" style="font-size: 18px">{{question.answeredBy}}</p>
                                 <span *ngIf="question.answerDate"
                                       style="font-size: 15px; color: #979494">{{question.answerDate | date: 'dd/MM/yyyy'}}</span><br>
@@ -368,13 +365,14 @@
                 </div>
 
                 <ng-template #noQuestions>
-                    <div style="text-align: center">
+                    <div style="text-align: center; margin-bottom: 34px">
                         <h5 class="text-center mb-3">NO questions and Answers to show for this product</h5>
                         <a style="border: 1px solid #FF0000; padding: 10px 56px; color: #FF0000;" *ngIf="questionButton"
                            (click)="questionButtonClicked()">Ask a
                             question
                         </a>
                     </div>
+                    <hr>
                 </ng-template>
 
                 <!--pagination starts-->

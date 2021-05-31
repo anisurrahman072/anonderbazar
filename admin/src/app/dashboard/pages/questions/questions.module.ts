@@ -6,12 +6,14 @@ import {QuestionsReadComponent} from './questions-read/questions-read.component'
 import {QuestionsEditComponent} from './questions-edit/questions-edit.component';
 import {QuestionsRoutingModule} from "./questions-routing.module";
 import {NgZorroAntdModule} from "ng-zorro-antd";
+import {UiModule} from "../../shared/ui.module";
 
 @NgModule({
     imports: [
         CommonModule,
         QuestionsRoutingModule,
-        NgZorroAntdModule
+        NgZorroAntdModule,
+        UiModule
     ],
     declarations: [
         QuestionsComponent,

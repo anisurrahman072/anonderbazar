@@ -20,15 +20,15 @@ const routes: Routes = [
         canActivate: [AccessControl],
         data: {accessData: 'questions-read'},
         component: QuestionsReadComponent,
-      }, {
+      }, /*{
         path: 'answer',
         canActivate: [AccessControl],
         data: {accessData: 'questions-answer'},
         component: QuestionsAnswerComponent,
-      }, {
+      }, */{
         path: 'edit/:id',
         canActivate: [AccessControl],
-        data: {accessData: 'warehouse-edit'},
+        data: {accessData: 'questions-edit'},
         component: QuestionsEditComponent,
       }, {
         path: '**',
