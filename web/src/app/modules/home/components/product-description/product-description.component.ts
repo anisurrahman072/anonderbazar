@@ -16,11 +16,29 @@ import * as ___ from "lodash";
 export class ProductDescriptionComponent implements OnInit {
     @Input() productDescriptionData;
     @Input() private productId;
-    @Input() productRatingDetail;
     @Input() private currentUserId;
     p;
     q;
     /*data: [product, questions.rows, rating.rows],*/
+
+    productRatingDetail: {
+        totalNumberOfRatings: number;
+        averageRating: number;
+        fiveStar: number;
+        fourStar: number;
+        threeStar: number;
+        twoStar: number;
+        oneStar: number;
+    } = {
+        totalNumberOfRatings: 0,
+        averageRating: 0,
+        fiveStar: 0,
+        fourStar: 0,
+        threeStar: 0,
+        twoStar: 0,
+        oneStar: 0,
+    };
+
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     address: any;
@@ -61,6 +79,7 @@ export class ProductDescriptionComponent implements OnInit {
 
     //Event method for getting all the data for the page
     ngOnInit() {
+        this.productRatingDetail.averageRating = 0;
 
         this.paymentAddressService.getPaymentaddressWithoutOrderid(this.currentUserId).subscribe(result => {
             this.address = result[0];
@@ -69,8 +88,7 @@ export class ProductDescriptionComponent implements OnInit {
 
         this.canRateProduct(this.currentUserId, this.productId);
 
-        this.averageRatingStarsWidth = ((this.productRatingDetail.averageRating / 5) * 215)
-        this.userStarsWidth = ((this.productRatingDetail.averageRating / 5) * 90)
+        this.getProductData();
     }
 
     /*Method called on Rating and Review Submit*/
@@ -163,6 +181,40 @@ export class ProductDescriptionComponent implements OnInit {
 
     getProductData() {
         this.productService.getByIdWithDetails(this.productId).subscribe(result => {
+            /** rating section*/
+            this.productRatingDetail.totalNumberOfRatings = result.data[2].length;
+
+            let totalRating = 0;
+            for (let i = 0; i < result.data[2].length; i++) {
+                totalRating += result.data[2][i].rating;
+
+                if (result.data[2][i].rating === 5) {
+                    this.productRatingDetail.fiveStar += 1;
+                }
+                if (result.data[2][i].rating === 4) {
+                    this.productRatingDetail.fourStar += 1;
+                }
+                if (result.data[2][i].rating === 3) {
+                    this.productRatingDetail.threeStar += 1;
+                }
+                if (result.data[2][i].rating === 2) {
+                    this.productRatingDetail.twoStar += 1;
+                }
+                if (result.data[2][i].rating === 1) {
+                    this.productRatingDetail.oneStar += 1;
+                }
+            }
+            if (totalRating !== 0) {
+                const num = totalRating / this.productRatingDetail.totalNumberOfRatings;
+                this.productRatingDetail.averageRating = Number((Math.round(num * 100) / 100).toFixed(2));
+            } else {
+                this.productRatingDetail.averageRating = 0;
+
+            }
+            this.averageRatingStarsWidth = ((this.productRatingDetail.averageRating / 5) * 215)
+            this.userStarsWidth = ((this.productRatingDetail.averageRating / 5) * 90)
+            console.log('averageRatingStarsWidth: ', this.averageRatingStarsWidth);
+
             this.data = [result.data[1], result.data[2], result.data[0]]
         }, (error) => {
             this._notify.error('Problem!', "Problem in loading the product");
