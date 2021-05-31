@@ -415,7 +415,7 @@ module.exports = {
     }
   },
 
-  sendSmsForPartialPayment: async (authUser, order, shippingAddress, transaction, tran_id, amount) => {
+  sendSmsForPartialPayment: async (authUser, order, shippingAddress, tran_id, amount) => {
     try {
       let smsPhone = authUser.phone;
 
