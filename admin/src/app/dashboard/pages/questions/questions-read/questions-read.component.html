@@ -1,3 +1,102 @@
-<p>
-  questions-read works!
-</p>
+<nz-card nzTitle="Question Details" [nzExtra]="extra">
+    <ng-template #extra>
+        <nz-button-group>
+            <button *ngIf="'questions-edit'|accessControl" [routerLink]="['/dashboard/questions/edit', id]" nz-button
+                    [nzType]="'primary'"
+                    [nzSize]="'large'">
+                <i class="anticon anticon-edit"></i><span>Edit</span>
+            </button>&nbsp;
+
+            <button routerLink="/dashboard/questions" nz-button [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-file-text"></i><span> List </span>
+            </button>
+
+        </nz-button-group>
+    </ng-template>
+    <ng-template [ngIf]="data">
+        <ul class="list-group list">
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Product Code :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.code}}</p>
+                    </div>
+                </div>
+            </li>
+
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Product Name :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.name}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Username :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.first_name}} {{data.last_name}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Phone :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.username}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Question :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.question}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Answer :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.answer}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Answered By :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.answered_by}}</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item list-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="pull-right">Product Owner :</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p class="pull-left">{{data.warehouse_name}}</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </ng-template>
+</nz-card>

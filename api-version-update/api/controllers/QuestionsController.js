@@ -82,6 +82,52 @@ module.exports = {
         error
       });
     }
+  },
+
+  findOne: async (req, res) => {
+    try {
+      let rawSQL = `
+      SELECT
+            product_question_answer.*,
+            products.code,
+            products.name,
+            products.warehouse_id,
+            users.first_name,
+            users.last_name,
+            users.username,
+            warehouses.name AS warehouse_name
+        FROM
+            product_question_answer
+        LEFT JOIN products ON product_question_answer.product_id = products.id
+        LEFT JOIN users ON product_question_answer.user_id = users.id
+        LEFT JOIN warehouses ON products.warehouse_id = warehouses.id
+      `;
+
+      let _where = ` WHERE product_question_answer.deleted_at IS NULL AND product_question_answer.id = ${req.params.id}`;
+
+      if (req.query.warehouseId) {
+        _where += ` AND products.warehouse_id = ${req.query.warehouseId}`;
+      }
+
+
+      let finalSQL = rawSQL + _where;
+
+      const questionedProducts = await sails.sendNativeQuery(finalSQL, []);
+      const questionedProduct = questionedProducts.rows;
+
+      return res.status(200).json({
+        success: true,
+        questionedProduct,
+        message: 'all questioned products with pagination',
+      });
+    } catch (error) {
+      let message = 'Error in read product';
+      return res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
   }
 
 };

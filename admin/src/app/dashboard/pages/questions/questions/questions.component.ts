@@ -17,7 +17,7 @@ export class QuestionsComponent implements OnInit {
     total: number;
     loading: boolean = false;
     private currentUser: any;
-    private warehouseId: number;
+    private warehouseId: any;
 
     constructor(private questionsService: QuestionsService,
                 private authService: AuthService,
