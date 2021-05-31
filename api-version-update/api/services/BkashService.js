@@ -355,7 +355,10 @@ module.exports = {
     const shippingAddress = order.shipping_address;
 
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-      await PaymentService.sendSmsForPartialPayment(customer, order, shippingAddress, transactionDetails.id_token, bKashResponse.amount);
+      await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
+        paidAmount: bKashResponse.amount,
+        transaction_id: bKashResponse.trxID
+      });
     }
 
     return order;

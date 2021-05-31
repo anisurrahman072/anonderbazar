@@ -399,7 +399,7 @@ module.exports = {
       }
 
       if (smsPhone) {
-        let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
+        let smsText = `আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
         console.log('smsTxt', smsText);
         if (allCouponCodes && allCouponCodes.length > 0) {
           if (allCouponCodes.length === 1) {
@@ -415,7 +415,7 @@ module.exports = {
     }
   },
 
-  sendSmsForPartialPayment: async (authUser, order, shippingAddress, tran_id, amount) => {
+  sendSmsForPartialPayment: async (authUser,shippingAddress, orderId, {paidAmount, transaction_id}) => {
     try {
       let smsPhone = authUser.phone;
 
@@ -424,7 +424,7 @@ module.exports = {
       }
 
       if (smsPhone) {
-        let smsText = `আপনার ট্রানজেকশনটি সফল ভাবে সম্পন্ন হয়েছে। ট্রানজেকশন নাম্বার ঃ ${tran_id} এবং টাকার পরিমান ${amount}`;
+        let smsText = `আপনার ট্রানজেকশনটি সফল ভাবে সম্পন্ন হয়েছে। ট্রানজেকশন নাম্বার: ${transaction_id}, টাকার পরিমান: ${paidAmount}, order no: ${orderId}`;
         console.log('smsTxt', smsText);
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }
