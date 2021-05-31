@@ -315,7 +315,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
             }
-            if(item.product_id.partially_payable){
+            if(!item.product_id.partially_payable){
                 this.isPartiallyPayable = false;
             }
             let itemDhakaCharge = 0;

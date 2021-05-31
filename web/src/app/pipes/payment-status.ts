@@ -17,7 +17,7 @@ export class PaymentStatusPipe implements PipeTransform {
             case 3:
                 return {value: 3, label: 'Paid'};
             case 4:
-                return {value: 4, label: 'Not applicable'};
+                return {value: 4, label: 'Paid'};
             default:
                 return {value: value, label: value};
         }
