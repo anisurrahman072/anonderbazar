@@ -60,4 +60,12 @@ export class OrderService {
     generateMissingOrders(data): Observable<any>{
         return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
+
+    getCancelledOrder(page: number = 1, limit: number = 20, status: string): Observable<any>{
+        return this.http.get(`${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}&status=${status}`);
+    }
+
+    refundCancelOrder(orderId, status): Observable<any>{
+        return this.http.put(`${this.EndPoint}/refundCancelOrder/${orderId}`, {status});
+    }
 }

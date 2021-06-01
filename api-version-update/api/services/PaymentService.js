@@ -437,6 +437,20 @@ module.exports = {
     }
   },
 
+  sendSmsForRefund: async (orderId, authUser) => {
+    try {
+      let smsPhone = authUser.phone;
+
+      if (smsPhone) {
+        let smsText = `আপনার ট্রানজেকশন টাকা গুলো রিফান্ড করা হয়েছে। অর্ডার নাম্বার: ${orderId}`;
+        console.log('smsTxt', smsText);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
   sendEmail: async (orderForMail) => {
     try {
       EmailService.orderSubmitMail(orderForMail);

@@ -307,6 +307,8 @@ module.exports.policies = {
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
     'allOrders': ['isAuthorized', 'isAdmin'],
+    'getCancelledOrder': ['isAuthorized', 'isAdmin'],
+    'refundCancelOrder': ['isAuthorized', 'isAdmin']
   },
   MissingOrderController: {
     '*': ['isAuthorized', 'isOwnerOrAdmin']

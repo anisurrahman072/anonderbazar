@@ -18,6 +18,7 @@ import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
 import {BsModalService} from "ngx-bootstrap/modal";
 import {AppSettings} from "../../../../config/app.config";
 import {ToastrService} from "ngx-toastr";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-partial-payment-modal',
@@ -59,6 +60,7 @@ export class PartialPaymentModalComponent implements OnInit {
       private bKashService: BkashService,
       private modalService: BsModalService,
       private toastr: ToastrService,
+      private router: Router,
   ) { }
 
   ngOnInit() {
@@ -161,6 +163,21 @@ export class PartialPaymentModalComponent implements OnInit {
             this.loaderService.hideLoader();
             console.log('ssl response with error', error);
             this._notify.error('Error occurred while making partial payment!', error);
+          })
+    }
+    else if(value.payment_method === this.CASHBACK_PAYMENT_TYPE){
+
+      this.orderService.makePartialPayment(this.currentOrderId, value)
+          .subscribe(data => {
+            console.log("Successfully paid", data);
+            this.onHidden();
+            this.loaderService.hideLoader();
+            this._notify.success('You have successfully paid.');
+            this.router.navigate(['/profile/orders/invoice/',this.currentOrderId]);
+          }, error => {
+            console.log("Error occurred", error);
+            this.onHidden();
+            this.loaderService.hideLoader();
           })
     }
   }

@@ -82,6 +82,12 @@ module.exports = {
       required: false,
       defaultsTo: 1,
     },
+    refund_status: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 0,
+    },
     courier_status: {
       type: 'number',
       columnType: 'integer',

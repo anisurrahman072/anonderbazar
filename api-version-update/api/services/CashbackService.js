@@ -125,6 +125,7 @@ module.exports = {
   },
 
   makePartialPayment: async function (customer, order, request) {
+
     const shippingAddress = order.shipping_address;
     const amountToPay = parseFloat(request.body.amount_to_pay);
     const totalPrice = parseFloat(order.total_price);
@@ -187,7 +188,7 @@ module.exports = {
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
       await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
         paidAmount: amountToPay,
-        transaction_id: payment.transection_key
+        transaction_id: 'CashBack'
       });
     }
 

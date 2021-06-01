@@ -14,7 +14,7 @@ const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
-const {CANCELED_ORDER} = require('../../libs/constants');
+const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -405,8 +405,8 @@ module.exports = {
       logger.orderLog(authUser.id, '######## PLACING ORDER ########');
       logger.orderLog(authUser.id, 'Payment Method: ', req.param('paymentType'));
       logger.orderLog(authUser.id, 'Order Body: ', req.body);
-      logger.orderLog(authUser.id,'Order - shipping_address: ', shippingAddress);
-      logger.orderLog(authUser.id,'Order - billing_address: ', billingAddress);
+      logger.orderLog(authUser.id, 'Order - shipping_address: ', shippingAddress);
+      logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
@@ -647,14 +647,14 @@ module.exports = {
       console.log('all suborders', subOrders);
 
       let len = subOrders.length;
-      for(let i = 0; i < len; i++){
+      for (let i = 0; i < len; i++) {
         let subOrderItem = await SuborderItem.find({
           product_suborder_id: subOrders[i].id,
           deletedAt: null
         });
 
         let subItemLen = subOrderItem.length;
-        for(let index = 0; index < subItemLen; index++){
+        for (let index = 0; index < subItemLen; index++) {
           let product = await Product.findOne({
             id: subOrderItem[index].product_id,
             deletedAt: null
@@ -675,12 +675,119 @@ module.exports = {
         message: 'successfully deleted the order.',
         order: updatedOrder
       });
-    }
-    catch (error){
+    } catch (error) {
       console.log(error);
       return res.status(400).json({
         success: false,
         message: 'Error occurred while deleting the order. ', error
+      });
+    }
+  },
+
+  getCancelledOrder: async (req, res) => {
+    let params = req.allParams();
+
+    let _where = {};
+    _where.deletedAt = null;
+    _where.order_type = PARTIAL_ORDER_TYPE;
+    _where.status = CANCELED_ORDER;
+    _where.paid_amount = {'!=': 0};
+    if (params.status) {
+      _where.refund_status = parseInt(params.status);
+    }
+
+    console.log('where is: ',_where );
+
+    try {
+      let paginate = pagination(params);
+
+      let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
+      console.log('all canceled order:', canceledOrder);
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully fetched cancelled order',
+        data: canceledOrder
+      });
+    } catch (error) {
+      return res.status(200).json({
+        success: false,
+        message: 'Error occurred while fetching cancelled order', error
+      });
+    }
+  },
+
+  refundCancelOrder: async (req, res) => {
+    try {
+      const authUser = getAuthUser(req);
+      const orderId = req.param('id');
+
+      let order = await Order.findOne({
+        id: orderId,
+        deletedAt: null
+      });
+
+      console.log('The order is', order);
+
+      if (!order) {
+        throw new Error('Order not found!');
+      }
+
+      if (order.refund_status) {
+        throw new Error('This order already has been refunded!');
+      }
+
+      let cashBackTransactions = await Payment.find({
+        order_id: orderId,
+        payment_type: CASHBACK_PAYMENT_TYPE,
+        deletedAt: null
+      });
+
+      let cashBackAmountToRefund = 0;
+      cashBackTransactions.forEach(transaction => {
+        cashBackAmountToRefund += transaction.payment_amount;
+      });
+
+
+      let couponLotteryCashback = await CouponLotteryCashback.findOne({
+        user_id: order.user_id,
+        deletedAt: null
+      });
+
+      let newCashbackAmount = couponLotteryCashback.amount + cashBackAmountToRefund;
+
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          if (cashBackAmountToRefund > 0) {
+            await CouponLotteryCashback.update({
+              user_id: order.user_id,
+              deletedAt: null
+            }).set({
+              amount: newCashbackAmount
+            }).usingConnection(db);
+          }
+
+          await Order.updateOne({
+            id: orderId,
+            deletedAt: null
+          }).set({
+            refund_status: 1
+          }).usingConnection(db);
+        });
+
+
+      await PaymentService.sendSmsForRefund(orderId, authUser);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully refunded.',
+
+      });
+    } catch (error) {
+      console.log('Error occurred while refunding the order');
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while refunding the order. ',error,
       });
     }
   }

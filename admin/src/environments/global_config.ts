@@ -104,5 +104,9 @@ export const GLOBAL_CONFIGS = {
     CUSTOMER_STATUS: [
         {value: 0, label: 'Banned'},
         {value: 1, label: 'Unbanned'},
+    ],
+    REFUND_STATUS: [
+        {value: 0, label: 'Not Refunded'},
+        {value: 1, label: 'Refunded'},
     ]
 };

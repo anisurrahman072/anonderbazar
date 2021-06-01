@@ -4,7 +4,7 @@ export class GLOBAL_CONFIGS {
     public static bannerImageExtension = '.webp';
     public static otherImageExtension = '.webp';
     public static activePaymentMethods = {
-        cashBack: true,
+        CashBack: true,
         Cash: true,
         SSLCommerce: true,
         bKash: true,
@@ -16,7 +16,7 @@ export class GLOBAL_CONFIGS {
 
 export const PAYMENT_METHODS = {
     CASH_PAYMENT_TYPE: 'Cash',
-    CASHBACK_PAYMENT_TYPE: 'cashBack',
+    CASHBACK_PAYMENT_TYPE: 'CashBack',
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad'
