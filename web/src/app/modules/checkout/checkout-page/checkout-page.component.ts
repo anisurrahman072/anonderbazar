@@ -171,9 +171,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.grantTotal = 0;
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
-                console.log('globalConfig', globalConfig);
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0];
+                    this.cart$.subscribe((cartData) => {
+                        console.log('cartData', cartData);
+                        if (cartData) {
+                            this.cartData = cartData;
+                            this.setShippingCharge();
+                        } else {
+                            this.cartData = null;
+                        }
+                        this.updateGrandTotal();
+                        this.addPageTitle();
+                    }, (err) => {
+                        console.log(err);
+                        this.toastr.error('Unable to update cart data', 'Sorry!');
+                    });
                     return this.areaService.getAllDivision();
                 }
                 return Observable.throw(new Error('Problem in getting global config.'));
@@ -181,26 +194,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             .concatMap((divisionList: any) => {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
                     this.divisionSearchOptions = divisionList;
-                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
                     return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
-            .concatMap((previousAddresses: any) => {
+            .subscribe((previousAddresses: any) => {
                 console.log('previous addresses', previousAddresses);
                 this.prevoius_address = previousAddresses;
-                return this.cart$;
-            })
-            .subscribe((cartData) => {
-                console.log('cartData', cartData);
-                if (cartData) {
-                    this.cartData = cartData;
-                    this.setShippingCharge();
-                    this.addPageTitle();
-                } else {
-                    this.cartData = null;
-                }
-                this.updateGrandTotal();
                 this.loaderService.hideLoader();
 
             }, (err) => {
@@ -208,6 +208,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
+
 
     }
 
@@ -310,6 +311,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isPayOnlineOnly = false;
         this.maxDhakaCharge = 0;
         this.maxOutsideDhakaCharge = 0;
+        this.isPartiallyPayable = true;
         this.cartData.data.cart_items.map(item => {
             if (item.product_id.pay_online) {
                 this.isPayOnlineOnly = true;
@@ -327,7 +329,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.maxDhakaCharge = Math.max(this.maxDhakaCharge, itemDhakaCharge);
             this.maxOutsideDhakaCharge = Math.max(this.maxOutsideDhakaCharge, itemOutsideDhakaCharge);
         });
-        console.log('Aaaa', this.cartData);
     }
 
     //Event method for removing cart items
@@ -336,6 +337,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loaderService.showLoader();
         this.cartItemService.delete(cartItemId).subscribe(res => {
             this.store.dispatch(new fromStore.LoadCart());
+            // this.setShippingCharge();
+            // this.updateGrandTotal();
             this.toastr.info("Item removed from cart successfully", 'Note');
             this.loaderService.hideLoader();
         }, () => {
@@ -398,8 +401,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     /*
-
-
         //Event method for resetting the form
         resetForm($event: MouseEvent) {
             $event.preventDefault();
