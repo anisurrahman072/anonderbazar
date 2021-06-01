@@ -6,7 +6,7 @@
                     <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
                        role="tab" aria-controls="pills-home" aria-selected="true">Specification</a>
                 </li>
-<!--                <li class="nav-item .list1"><a class="nav-link" id="pills-profile-tab" data-toggle="pill"
+                <li class="nav-item .list1"><a class="nav-link" id="pills-profile-tab" data-toggle="pill"
                                                href="#pills-profile" role="tab" aria-controls="pills-profile"
                                                aria-selected="true"><span class="semi">Reviews</span></a>
                 </li>
@@ -14,7 +14,7 @@
                                                href="#pills-planing" role="tab" aria-controls="pills-planing"
                                                aria-selected="true"><span
                         class="semi">Questions & Answers</span></a>
-                </li>-->
+                </li>
             </ul>
         </div>
         <div class="tab-content" id="pills-tabContent">
@@ -35,19 +35,47 @@
                 <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 mb-4">
                         <div class="row">
-                            <div class="col-md-5" style="text-align: center; margin: auto">
-                                <span style="font-weight: 600; font-size: 50px">{{productRatingDetail.averageRating}}</span>
-                                <p>Average</p>
+                            <div class="col-md-5" style="margin: auto;">
+                                <span class="averageRating">{{productRatingDetail.averageRating}}</span>
+                                <div style="margin-bottom: 13px; position: relative">
+                                    <div style="position: relative">
+                                        <img class="filled-star" src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        <img class="filled-star" src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        <img class="filled-star" src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        <img class="filled-star" src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        <img class="filled-star" src="./assets/images/star-empty.svg" alt="rating-icon">
+                                    </div>
+                                    <div [style.width.px]="averageRatingStarsWidth" class="absoluteStars">
+                                        <div [style.width.px]="215" class="absoluteStars">
+                                            <img class="filled-star" src="./assets/images/star-filled.svg"
+                                                 alt="rating-icon">
+                                            <img class="filled-star" src="./assets/images/star-filled.svg"
+                                                 alt="rating-icon">
+                                            <img class="filled-star" src="./assets/images/star-filled.svg"
+                                                 alt="rating-icon">
+                                            <img class="filled-star" src="./assets/images/star-filled.svg"
+                                                 alt="rating-icon">
+                                            <img class="filled-star" src="./assets/images/star-filled.svg"
+                                                 alt="rating-icon">
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="totalRatings">{{productRatingDetail.totalNumberOfRatings}} Ratings</p>
                             </div>
                             <!--rating bars-->
                             <div class="col-md-7">
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li><i class="fa fa-star"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar mt-2"></li>
@@ -56,11 +84,16 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar1 mt-2"></li>
@@ -69,11 +102,16 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar2 mt-2"></li>
@@ -82,11 +120,16 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar3 mt-2"></li>
@@ -95,11 +138,16 @@
                                 </div>
                                 <div class="review-stars d-flex">
                                     <ul class="star d-flex mr-3">
-                                        <li class="mr-1"><i class="fa fa-star"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li class="mr-1"><i class="fa fa-star-o"></i></li>
-                                        <li><i class="fa fa-star-o"></i></li>
+                                        <li class="mr-1"><img src="./assets/images/star-filled.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
+                                        <li class="mr-1"><img src="./assets/images/star-empty.svg" alt="rating-icon">
+                                        </li>
                                     </ul>
                                     <ul class="pogress d-flex">
                                         <li class="pogress-bar4 mt-2"></li>
@@ -149,7 +197,7 @@
                             <button class="submitBTN" style="float: right" type="submit">Submit</button>
                         </form>
                     </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12" style="margin: auto; text-align: center"
+                    <div class="col-xl-6 col-lg-12 col-md-12"
                          *ngIf="reviewButton && reviewSection"
                          (click)="reviewButtonClicked()">
                         <button class="submitBTN" style="margin-top: 0">Write a review</button>
@@ -174,21 +222,52 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="review-reply">
-                                        <p>{{rating.first_name}} {{rating.last_name}}</p>
-                                        <img src="./assets/images/verified%20purchase%20icon.jpg"
-                                             alt="verified-icon">
-                                        <span style="color: #FF0000">Verified Purchase</span><br>
-                                        <button class="btn px-1 py-0 mt-2" style="background-color: #FF0000; color: white">{{rating.rating}} <i
-                                                class="fa fa-star"></i>
-                                        </button>
+                                        <p style="font-size: 18px">{{rating.first_name}} {{rating.last_name}}</p>
+                                        <span style="color: #20CE46; font-size: 15px">Verified Purchase</span><br>
+                                        <div class="d-flex">
+                                            <span style="font-size: 17px; color: #000000">{{rating.rating}}</span>&ngsp;
+                                            <div style="margin-left: 5px">
+                                                <div style="position: relative">
+                                                    <img class="userRatingStars" src="./assets/images/star-empty.svg"
+                                                         alt="rating-icon">
+                                                    <img class="userRatingStars" src="./assets/images/star-empty.svg"
+                                                         alt="rating-icon">
+                                                    <img class="userRatingStars" src="./assets/images/star-empty.svg"
+                                                         alt="rating-icon">
+                                                    <img class="userRatingStars" src="./assets/images/star-empty.svg"
+                                                         alt="rating-icon">
+                                                    <img class="userRatingStars" src="./assets/images/star-empty.svg"
+                                                         alt="rating-icon">
+                                                </div>
+                                                <div>
+                                                    <div class="absoluteUserStars" [style.width.px]="((rating.rating/5.0) * 90.0)">
+                                                        <img class="userRatingStars"
+                                                             src="./assets/images/star-filled.svg"
+                                                             alt="rating-icon">
+                                                        <img class="userRatingStars"
+                                                             src="./assets/images/star-filled.svg"
+                                                             alt="rating-icon">
+                                                        <img class="userRatingStars"
+                                                             src="./assets/images/star-filled.svg"
+                                                             alt="rating-icon">
+                                                        <img class="userRatingStars"
+                                                             src="./assets/images/star-filled.svg"
+                                                             alt="rating-icon">
+                                                        <img class="userRatingStars"
+                                                             src="./assets/images/star-filled.svg"
+                                                             alt="rating-icon">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="review-reply-des">
-                                        <p>{{rating.review}}</p>
+                                        <p style="font-size: 18px">{{rating.review}}</p>
                                         <div class="review-replybtm justify-content-between d-flex">
                                             <div class="titel">
-                                                <span>{{rating.created_at}}</span>
+                                                <span style="font-size: 15px">{{rating.created_at | date: 'dd/MM/yyyy'}}</span>
                                             </div>
                                             <ul class="d-flex">
                                                 <li class="sort mr-3"><span>Was this helpful?</span></li>
@@ -249,13 +328,13 @@
                 <!--question button-->
                 <div *ngIf="data && data[0].length > 0; else noQuestions">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-lg-8 col-md-8 col-6">
+                        <div class="col-lg-6 col-md-6 col-6">
                             <div class="ques-title">
                                 <h4>Questions Related to this product <span>({{data[0].length}})</span></h4>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-8 col-6">
-                            <div class="pog-button text-right">
+                        <div class="col-lg-6 col-md-6 col-6">
+                            <div class="pog-button">
                                 <a class="submitBTN"
                                    (click)="questionButtonClicked()"
                                 >Ask a question
@@ -268,51 +347,32 @@
                     <!--user questions list-->
                     <div *ngFor="let question of (data[0] | paginate: { id:'pagination_question', itemsPerPage: 3, currentPage: q})">
                         <div class="review-comment">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="review-reply">
-                                        <ng-container>
-                                            <b>{{question.first_name}} {{question.last_name}}</b><br>
-                                        </ng-container>
-                                        <img src="./assets/images/person.svg" alt="verified-icon">
-                                        <span style="color: #828282">Anonder bazar Seller</span><br>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="review-reply-des">
-                                        <b>
-                                            <span style="color: #00A652">Question: </span>{{question.question}}
-                                        </b><br>
-                                        <span style="color: #828282">
-                                        Answer: Contrary to popular belief, Lorem Ipsum is not simply random text
-                                    </span>
-                                        <div class="review-replybtm justify-content-between d-flex">
-                                            <div class="titel">
-                                                <span>{{question.created_at}}</span>
-                                            </div>
-                                            <ul class="d-flex">
-                                                <li class="sort mr-3"><span>Was this helpful?</span></li>
-                                                <li class="mr-1"><i class="fa fa-thumbs-up"></i></li>
-                                                <li class="mr-1">10</li>
-                                                <li class="mr-1"><i class="fa fa-thumbs-down"></i></li>
-                                                <li>1</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="review-reply-des">
+                                <p style="color: #ED1C24">Question</p>
+                                <p style="margin-bottom: 7px; font-size: 18px">{{question.question}}</p>
+                                <p style="font-size: 18px">{{question.first_name}} {{question.last_name}}</p>
+                                <span style="font-size: 15px; color: #979494">{{question.created_at | date:'dd/MM/yyyy'}}</span><br>
+
+                                <p style="font-size: 18px; color: #979494; margin-top: 12px">Answer</p>
+                                <p *ngIf="question.answer"
+                                   style="font-size: 18px; margin-bottom: 7px">{{question.answer}}</p>
+                                <p *ngIf="question.answeredBy" style="font-size: 18px">{{question.answeredBy}}</p>
+                                <span *ngIf="question.answerDate"
+                                      style="font-size: 15px; color: #979494">{{question.answerDate | date: 'dd/MM/yyyy'}}</span><br>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <ng-template #noQuestions>
-                    <div style="text-align: center" class="py-5">
+                    <div style="text-align: center">
                         <h5 class="text-center mb-3">NO questions and Answers to show for this product</h5>
                         <a style="border: 1px solid #FF0000; padding: 10px 56px; color: #FF0000;" *ngIf="questionButton"
                            (click)="questionButtonClicked()">Ask a
                             question
                         </a>
                     </div>
+                    <hr>
                 </ng-template>
 
                 <!--pagination starts-->
@@ -365,27 +425,27 @@
                 </div>
             </div>
         </div>
-<!--        <hr>
-        <div class="delivery-option-details my-4">
-            <div class="delivery-option-tag1" style="max-width: 500px; margin: auto">
-                <div class="tag1">
-                    <p>Delivery Options<a routerLink="/profile/address-tab">Change</a></p>
-                    <p class="add">{{ address?.address }},{{ address?.division_id.name }},{{
-                        address?.upazila_id.name
-                        }},{{ address?.zila_id.name }}.</p>
+        <!--        <hr>
+                <div class="delivery-option-details my-4">
+                    <div class="delivery-option-tag1" style="max-width: 500px; margin: auto">
+                        <div class="tag1">
+                            <p>Delivery Options<a routerLink="/profile/address-tab">Change</a></p>
+                            <p class="add">{{ address?.address }},{{ address?.division_id.name }},{{
+                                address?.upazila_id.name
+                                }},{{ address?.zila_id.name }}.</p>
+                        </div>
+                        <div class="tag2" style="display: none;">
+                            <p class="justify-contant-between">Home Delivery<a href="#">৳56</a></p>
+                            <small>3-5 Days</small>
+                            <span>Cash On <small><a href="#">Delivery</a></small> Available</span>
+                        </div>
+                    </div>
+                    <div class="tag3" style="display: none;">
+                        <p class="justify-contant-between">Shipping & return</p>
+                        <span>60 Day buyer protection</span>
+                        <span>Money back guarantee</span>
+                    </div>
                 </div>
-                <div class="tag2" style="display: none;">
-                    <p class="justify-contant-between">Home Delivery<a href="#">৳56</a></p>
-                    <small>3-5 Days</small>
-                    <span>Cash On <small><a href="#">Delivery</a></small> Available</span>
-                </div>
-            </div>
-            <div class="tag3" style="display: none;">
-                <p class="justify-contant-between">Shipping & return</p>
-                <span>60 Day buyer protection</span>
-                <span>Money back guarantee</span>
-            </div>
-        </div>
-        <hr>-->
+                <hr>-->
     </div>
 </section>
