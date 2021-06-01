@@ -217,7 +217,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 return;
             }
 
-            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]];
+            this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {

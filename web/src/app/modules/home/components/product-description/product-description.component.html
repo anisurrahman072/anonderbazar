@@ -24,7 +24,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="des-detail">
-                            <p [innerHTML]="data[2].product_details"></p>
+                            <p [innerHTML]="data[0].product_details"></p>
                         </div>
                     </div>
                 </div>
@@ -217,8 +217,8 @@
                 </div>
 
                 <!--for loop: customer reviews list here-->
-                <div *ngIf="data &&  data[1].length > 0; else noReview">
-                    <div *ngFor="let rating of (data[1] | paginate: {id:'pagination_rating', itemsPerPage: 3, currentPage: p})">
+                <div *ngIf="data &&  data[2].length > 0; else noReview">
+                    <div *ngFor="let rating of (data[2] | paginate: {id:'pagination_rating', itemsPerPage: 3, currentPage: page})">
                         <div class="review-comment">
                             <div class="row">
                                 <div class="col-md-3">
@@ -291,7 +291,7 @@
                 </ng-template>
 
                 <!--pagination starts-->
-                <div class="text-center" *ngIf="data[1]?.length > 3">
+                <div class="text-center" *ngIf="data[2]?.length > 3">
                     <pagination-controls id="pagination_rating" (pageChange)="onPageChange($event)"
                                          maxSize="5" responsive="true"
                                          nextLabel="Next">
@@ -328,11 +328,11 @@
                 </div>
 
                 <!--question button-->
-                <div *ngIf="data && data[0].length > 0; else noQuestions">
+                <div *ngIf="data && data[1].length > 0; else noQuestions">
                     <div class="row d-flex justify-content-between">
                         <div class="col-lg-6 col-md-6 col-sm-12" style="margin-bottom: 20px">
                             <div class="ques-title">
-                                <h4>Questions Related to this product <span>({{data[0].length}})</span></h4>
+                                <h4>Questions Related to this product <span>({{data[1].length}})</span></h4>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
@@ -347,7 +347,7 @@
                     <hr style="margin-top: 1.8rem">
 
                     <!--user questions list-->
-                    <div *ngFor="let question of (data[0] | paginate: { id:'pagination_question', itemsPerPage: 3, currentPage: q})">
+                    <div *ngFor="let question of (data[1] | paginate: { id:'pagination_question', itemsPerPage: 3, currentPage: nextPage})">
                         <div class="review-comment">
                             <div class="review-reply-des">
                                 <p style="color: #ED1C24">Question</p>
@@ -378,7 +378,7 @@
                 </ng-template>
 
                 <!--pagination starts-->
-                <div class="text-center" *ngIf="data[0]?.length > 3">
+                <div class="text-center" *ngIf="data[1]?.length > 3">
                     <pagination-controls id="pagination_question" (pageChange)="onQuestionPageChange($event)"
                                          maxSize="5" responsive="true"
                                          nextLabel="Next">
