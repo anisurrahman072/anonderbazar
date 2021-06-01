@@ -207,7 +207,7 @@ module.exports = {
       address: address.address,
       country: address.address,
       phone: address.phone,
-      postal_code: address.postCode,
+      postal_code: address.postal_code,
       upazila_id: address.upazila_id,
       zila_id: address.zila_id,
       division_id: address.division_id,
