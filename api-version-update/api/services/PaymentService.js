@@ -19,24 +19,24 @@ module.exports = {
   getTheCustomer: async function (userId) {
     return await User.findOne({id: userId, deletedAt: null});
   },
-  getBillingAddress: async function (req, shippingAddress) {
+  getBillingAddress: async function (authUser, req, shippingAddress) {
     let billingAddress = null;
     if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
       billingAddress = {...req.param('billing_address'), postal_code: req.param('billing_address').postCode};
       if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') === false) {
-        billingAddress = await this.createAddress(billingAddress);
+        billingAddress = await this.createAddress(authUser, billingAddress);
       } else if (req.param('is_copy') === true && _.isObject(shippingAddress)) {
         billingAddress = {...shippingAddress};
       }
     }
     return billingAddress;
   },
-  getShippingAddress: async function (req, cartItems = []) {
+  getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
     if (req.param('shipping_address')) {
       shippingAddress = {...req.param('shipping_address'), postal_code: req.param('shipping_address').postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
-        shippingAddress = await this.createAddress(shippingAddress);
+        shippingAddress = await this.createAddress(authUser, shippingAddress);
       }
     }
     /** check whether shipping address is required or not and based on it we're using admin address in case shipping address is not provided */
@@ -199,7 +199,7 @@ module.exports = {
     return cartItems;
   },
 
-  createAddress: async (address) => {
+  createAddress: async (authUser, address) => {
     return await PaymentAddress.create({
       user_id: authUser.id,
       first_name: address.firstName,

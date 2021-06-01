@@ -395,8 +395,8 @@ module.exports = {
       let cart = await PaymentService.getCart(authUser.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
 
-      const shippingAddress = await PaymentService.getShippingAddress(req);
-      const billingAddress = await PaymentService.getBillingAddress(req, shippingAddress);
+      const shippingAddress = await PaymentService.getShippingAddress(authUser, req);
+      const billingAddress = await PaymentService.getBillingAddress(authUser, req, shippingAddress);
 
       if (_.isNull(shippingAddress) || _.isEmpty(shippingAddress)) {
         throw new Error('No shipping address has been provided.');
