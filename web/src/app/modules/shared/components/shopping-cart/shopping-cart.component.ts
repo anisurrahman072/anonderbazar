@@ -92,9 +92,16 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
         this.progress.start('mainLoader');
         this.cartItemService.delete(id).subscribe(result => {
             this.store.dispatch(new fromStore.LoadCart());
+
+            let currentUrl = this.router.url;
+            if(currentUrl === '/checkout'){
+                this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+                    this.router.navigate([currentUrl]);
+                });
+            }
+
             this._notify.error('remove from cart succeeded');
             this.progress.complete('mainLoader');
-
         });
     }
 
