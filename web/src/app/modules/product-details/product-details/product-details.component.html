@@ -182,8 +182,8 @@
     </div>
 </section>
 
-<app-product-description *ngIf="productDescriptionData && productRatingDetail"
-                         [productDescriptionData]="productDescriptionData" [productRatingDetail]="productRatingDetail"
+<app-product-description *ngIf="productDescriptionData"
+                         [productDescriptionData]="productDescriptionData"
                          [productId]="id" [currentUserId]="currentUserId"></app-product-description>
 <app-related-product *ngIf="similarProducts" [products]="similarProducts"></app-related-product>
 

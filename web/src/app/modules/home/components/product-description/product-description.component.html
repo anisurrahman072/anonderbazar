@@ -31,7 +31,8 @@
             </div>
 
             <!--Reviews Section-->
-            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
+                 *ngIf="productRatingDetail">
                 <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 mb-4">
                         <div class="row">
@@ -223,7 +224,7 @@
                                 <div class="col-md-3">
                                     <div class="review-reply">
                                         <p style="font-size: 18px">{{rating.first_name}} {{rating.last_name}}</p>
-                                        <span style="color: #20CE46; font-size: 15px">Verified Purchase</span><br>
+                                        <span style="color: #20CE46;">Verified Purchase</span><br>
                                         <div class="d-flex">
                                             <span style="font-size: 17px; color: #000000">{{rating.rating}}</span>&ngsp;
                                             <div style="margin-left: 5px">
@@ -239,8 +240,9 @@
                                                     <img class="userRatingStars" src="./assets/images/star-empty.svg"
                                                          alt="rating-icon">
                                                 </div>
-                                                <div>
-                                                    <div class="absoluteUserStars" [style.width.px]="((rating.rating/5.0) * 90.0)">
+                                                <div style="position: relative">
+                                                    <div class="absoluteUserStars"
+                                                         [style.width.px]="((rating.rating/5.0) * 90.0)">
                                                         <img class="userRatingStars"
                                                              src="./assets/images/star-filled.svg"
                                                              alt="rating-icon">
@@ -264,7 +266,7 @@
                                 </div>
                                 <div class="col-md-9">
                                     <div class="review-reply-des">
-                                        <p style="font-size: 18px">{{rating.review}}</p>
+                                        <p>{{rating.review}}</p>
                                         <div class="review-replybtm justify-content-between d-flex">
                                             <div class="titel">
                                                 <span style="font-size: 15px">{{rating.created_at | date: 'dd/MM/yyyy'}}</span>
@@ -328,12 +330,12 @@
                 <!--question button-->
                 <div *ngIf="data && data[0].length > 0; else noQuestions">
                     <div class="row d-flex justify-content-between">
-                        <div class="col-lg-6 col-md-6 col-6">
+                        <div class="col-lg-6 col-md-6 col-sm-12" style="margin-bottom: 20px">
                             <div class="ques-title">
                                 <h4>Questions Related to this product <span>({{data[0].length}})</span></h4>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-6">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="pog-button">
                                 <a class="submitBTN"
                                    (click)="questionButtonClicked()"
@@ -349,16 +351,16 @@
                         <div class="review-comment">
                             <div class="review-reply-des">
                                 <p style="color: #ED1C24">Question</p>
-                                <p style="margin-bottom: 7px; font-size: 18px">{{question.question}}</p>
+                                <p style="margin-bottom: 7px;">{{question.question}}</p>
                                 <p style="font-size: 18px">{{question.first_name}} {{question.last_name}}</p>
                                 <span style="font-size: 15px; color: #979494">{{question.created_at | date:'dd/MM/yyyy'}}</span><br>
 
                                 <p style="font-size: 18px; color: #979494; margin-top: 12px">Answer</p>
                                 <p *ngIf="question.answer"
-                                   style="font-size: 18px; margin-bottom: 7px">{{question.answer}}</p>
-                                <p *ngIf="question.answeredBy" style="font-size: 18px">{{question.answeredBy}}</p>
-                                <span *ngIf="question.answerDate"
-                                      style="font-size: 15px; color: #979494">{{question.answerDate | date: 'dd/MM/yyyy'}}</span><br>
+                                   style="margin-bottom: 7px">{{question.answer}}</p>
+                                <p *ngIf="question.answeredBy">{{question.answeredBy}}</p>
+                                <span *ngIf="question.updated_at"
+                                      style="color: #979494">{{question.updated_at | date: 'dd/MM/yyyy'}}</span><br>
                             </div>
                         </div>
                     </div>

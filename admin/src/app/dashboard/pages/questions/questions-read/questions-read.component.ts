@@ -26,7 +26,6 @@ export class QuestionsReadComponent implements OnInit {
       this.id = +params['id'];
       this.questionsService.getById(this.id)
           .subscribe(result => {
-            console.log('single rouzx', result.questionedProduct[0]);
             this.data = result.questionedProduct[0];
             this._isSpinning = false;
           })
