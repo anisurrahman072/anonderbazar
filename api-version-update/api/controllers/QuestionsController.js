@@ -21,6 +21,7 @@ module.exports = {
             users.first_name,
             users.last_name,
             users.username,
+            users.phone,
             warehouses.name AS warehouse_name
         FROM
             product_question_answer

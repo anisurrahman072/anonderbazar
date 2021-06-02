@@ -152,7 +152,6 @@ export class OrderComponent implements OnInit, OnDestroy {
             orderNumber: this.orderNumberFilter
         }, page, limit)
             .subscribe(result => {
-                console.log('getallorders', result);
                 if (!forCsv) {
                     this.orderData = result.data;
                     this.orderTotal = result.total;

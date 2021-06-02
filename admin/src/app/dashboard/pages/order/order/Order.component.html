@@ -42,8 +42,11 @@
                     <th nzWidth="200px">
                         <span>Status</span>
                     </th>
-                    <th nzWidth="260px">
+                    <th nzWidth="100px">
                         <span>Status Changer</span>
+                    </th>
+                    <th nzWidth="300px">
+                        <span>shipping_address</span>
                     </th>
                     <th><span>Actions</span></th>
                 </tr>
@@ -75,7 +78,7 @@
                     </th>
                     <th nzWidth="100px"></th>
                     <th nzWidth="100px"></th>
-                    <th nzWidth="200px">
+                    <th nzWidth="100px">
                         <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Status'"
@@ -89,7 +92,8 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="260px"></th>
+                    <th nzWidth="100px"></th>
+                    <th nzWidth="300px"></th>
                     <th>
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </th>
@@ -115,7 +119,14 @@
                             </nz-option>
                         </nz-select>
                     </td>
-                    <td style="width: 260px;">{{data.changedByName}}</td>
+                    <td style="width: 100px;">{{data.changedByName}}</td>
+                    <td style="width: 300px;">
+                        <p>Postal Code: {{data.postal_code}}</p>
+                        <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
+                        <p>
+                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}, {{data.division_name}}
+                        </p>
+                    </td>
                     <td>
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
