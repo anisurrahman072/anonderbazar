@@ -328,7 +328,12 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
                 'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
-                'Coupon Product Code': allCouponCodes,
+                'Coupon Product Code': suborderItem,
+                'postal Code': suborderItem.postal_code,
+                'Upazila Name': suborderItem.upazila_name,
+                'Zila Name': suborderItem.zila_name,
+                'Division Nname': suborderItem.division_name,
+                'Address': suborderItem.address,
             });
 
         });
@@ -351,6 +356,11 @@ export class OrderComponent implements OnInit, OnDestroy {
             'Date',
             'SSLCommerce Transaction Id',
             'Coupon Product Code',
+            'postal Code',
+            'Upazila Name',
+            'Zila Name',
+            'Division Nname',
+            'Address'
         ];
         this.exportService.downloadFile(csvData, header);
     }
@@ -359,6 +369,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     submitForm = ($event, value) => {
         this.submitting = true;
         let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
+            console.log('error id: ', item.id);
             return item.id;
         });
         if (orderIds.length === 0) {

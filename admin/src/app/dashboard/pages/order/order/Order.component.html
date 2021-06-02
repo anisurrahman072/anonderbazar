@@ -145,7 +145,7 @@
 
 <!--product modal-->
 <nz-modal [nzFooter]="null"
-          nzWidth="70%"
+          nzWidth="95%"
           [nzVisible]="isProductVisible"
           [nzTitle]="'Generate and Download CSV Document'"
           [nzContent]="modalProductContent"
@@ -183,6 +183,18 @@
                     </th>
                     <th>
                     </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -200,6 +212,11 @@
                     <td>{{data.total_price}}</td>
                     <td>{{getStatusLabel(data.status)}}</td>
                     <td>{{data.changedByName}}</td>
+                    <td>{{data.postal_code}}</td>
+                    <td>{{data.upazila_name}}</td>
+                    <td>{{data.zila_name}}</td>
+                    <td>{{data.division_name}}</td>
+                    <td>{{data.address}}</td>
                 </tr>
                 </tbody>
             </nz-table>
