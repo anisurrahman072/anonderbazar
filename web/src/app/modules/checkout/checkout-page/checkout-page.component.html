@@ -334,7 +334,8 @@
                         <div class="nearstshops border-bottom-0">
                             <div class="nearst-media1">
                                 <li class="media">
-                                    <img class="mr-3" src="../../../../assets/images/nearst2.jpg" alt="Generic placeholder image">
+                                    <img class="mr-3" src="../../../../assets/images/nearst2.jpg"
+                                         alt="Generic placeholder image">
                                     <div class="media-body">
                                         <h6 class="mt-0">Best Electronics</h6>
                                         <p>Dhaka, Dhaka North, Banani Road No. 12-19</p>
@@ -452,26 +453,36 @@
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
-                                <mat-radio-button *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
-                                                  value="CashBack">
+                                <mat-radio-button
+                                        *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
+                                        value="CashBack" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>By Using Cashback
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
-                                                  value="Cash">
+                                <mat-radio-button
+                                        *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
+                                        value="Cash" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]" value="SSLCommerce"
-                                                  [checked]="hideCashonDelivery">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]"
+                                                  value="SSLCommerce"
+                                                  [checked]="hideCashonDelivery"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/final_sslcommerz.webp"
                                              style="height: auto; width: 80%;"
                                              alt="SSLcommerce"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment" value="bKash">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment"
+                                                  value="bKash" (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/bkash.gif" style="height: auto; width: 70%;"
                                              alt="bKash"/>
+                                    </div>
+                                </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAY_PAYMENT_TYPE]"
+                                                  value="OfflinePay" (click)="showOfflineForm(true)">
+                                    <div class="payment-icon-container">
+                                        <p>Offline payment</p>
                                     </div>
                                 </mat-radio-button>
                                 <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
@@ -483,6 +494,66 @@
                             </div>
                         </mat-radio-group>
                     </div>
+                    <div *ngIf="isShowOfflineForm">
+                        <mat-radio-group formControlName="offlinePaymentMethods" style="display: flex">
+                            <mat-radio-button value="cashInAdvance"
+                                              (click)="showOfflinePaymentMethods(true, false, false, false)">
+                                <p>Cash In Advance</p>
+                            </mat-radio-button>
+                            <mat-radio-button value="bankTransfer"
+                                              (click)="showOfflinePaymentMethods(false, true, false, false)">
+                                <p>Bank transfer</p>
+                            </mat-radio-button>
+                            <mat-radio-button value="bankDeposit"
+                                              (click)="showOfflinePaymentMethods(false, false, true, false)">
+                                <p>Bank deposit</p>
+                            </mat-radio-button>
+                            <mat-radio-button value="bankDeposit"
+                                              (click)="showOfflinePaymentMethods(false, false, false, true)">
+                                <p>Bank deposit</p>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                        <div *ngIf="isShowCashInAdvanceForm">
+                            <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"
+                                          id="imageUploadSection"
+                                          [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
+                                          dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
+                                          clearButtonCaption="clear">
+                            </image-upload>
+                        </div>
+                        <div *ngIf="isShowBankTransferForm">
+                            <label>Transaction number</label>
+                            <input type="text" class="form-control" formControlName="transactionIdForBank"
+                                   placeholder="Enter bank transaction number">
+                            <label>Bank name</label>
+                            <input type="text" class="form-control" formControlName="bankName"
+                                   placeholder="Enter Bank Name">
+                            <label>Branch name</label>
+                            <input type="text" class="form-control" formControlName="branchName"
+                                   placeholder="Enter Branch name">
+                            <label>Account Number</label>
+                            <input type="text" class="form-control" formControlName="accountNumberForBank"
+                                   placeholder="Enter Account Number">
+                        </div>
+                        <div *ngIf="isBankDeposit">
+                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)" [uploadedFiles]="ImageFileEdit"
+                                          id="bankDepositImageUploadSection"
+                                          [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
+                                          dropBoxMessage="Drop picture of bank deposit slip"
+                                          clearButtonCaption="clear">
+                            </image-upload>
+                        </div>
+
+                        <div *ngIf="isMobileTransfer">
+                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)" [uploadedFiles]="ImageFileEdit"
+                                          id="mobileTransferImageUploadSection"
+                                          [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
+                                          dropBoxMessage="Drop screenshot of payment page"
+                                          clearButtonCaption="clear">
+                            </image-upload>
+                        </div>
+                    </div>
+
 
                     <!--terms and conditions checkbox-->
                     <input style="min-height: 0" type="checkbox" id="termsAndPolicy" [checked]="termsAndPolicy"
@@ -495,12 +566,17 @@
                             Policy</a> of Anonder Bazar</label>
 
                     <div class="send-btn1" (click)="disabledButtonClick(termsAndPolicy)">
-                        <button type="submit" class="Summarybtn" [disabled]="!termsAndPolicy"
+                        <button type="submit" class="Summarybtn" [disabled]="!termsAndPolicy" *ngIf="isShowOfflineForm"
+                                (click)="saveOrderForOfflinePayment($event, checkoutForm.value)">
+                            <a>Save order</a>
+                        </button>
+                        <button type="submit" class="Summarybtn" [disabled]="!termsAndPolicy" *ngIf="!isShowOfflineForm"
                                 (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">
                             <a>Confirm payment</a>
                         </button>
-                            <button type="submit" class="Summarybtn" *ngIf="isPartiallyPayable"
-                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)" [disabled]="!termsAndPolicy">
+                        <button type="submit" class="Summarybtn" *ngIf="isPartiallyPayable && !isShowOfflineForm"
+                                (click)="formConfirmWithoutPayment($event, checkoutForm.value)"
+                                [disabled]="!termsAndPolicy">
                             <a>Confirm without payment</a>
                         </button>
                     </div>
@@ -572,12 +648,14 @@
         <ul class="list-group" *ngIf="authUserWallets && authUserWallets.length > 0; else noWalletTemplate">
             <li class="list-group-item" *ngFor="let authUserWallet of authUserWallets; let i = index">
                 <span>{{authUserWallet.wallet_no}}</span>
-                <a class="btn btn-primary btn-sm" style="margin-left: 50px;" (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)">Proceed with bKash</a>
+                <a class="btn btn-primary btn-sm" style="margin-left: 50px;"
+                   (click)="proceedWithBkash($event, checkoutForm.value, authUserWallet)">Proceed with bKash</a>
             </li>
         </ul>
         <ng-template #noWalletTemplate>
             <p class="alert alert-info">
-                You don't have any bKash Wallet added. Please first add a bKash Wallet from <a (click)="noBKashWalletAction($event)"> Here </a> and then proceed with checkout.
+                You don't have any bKash Wallet added. Please first add a bKash Wallet from <a
+                    (click)="noBKashWalletAction($event)"> Here </a> and then proceed with checkout.
             </p>
         </ng-template>
     </div>

@@ -8,7 +8,8 @@ export class GLOBAL_CONFIGS {
         Cash: true,
         SSLCommerce: true,
         bKash: true,
-        Nagad: false
+        Nagad: false,
+        OfflinePay: true
     };
     public static lotteryAdminId = 130;
     public static bkashTestUsers = [130, 2814];
@@ -19,7 +20,8 @@ export const PAYMENT_METHODS = {
     CASHBACK_PAYMENT_TYPE: 'CashBack',
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
-    NAGAD_PAYMENT_TYPE: 'Nagad'
+    NAGAD_PAYMENT_TYPE: 'Nagad',
+    OFFLINE_PAY_PAYMENT_TYPE: 'OfflinePay'
 }
 export const PAYMENT_METHODS_LABELS = {
     'Cash': 'Cash On Delivery',
