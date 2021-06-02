@@ -508,9 +508,9 @@
                                               (click)="showOfflinePaymentMethods(false, false, true, false)">
                                 <p>Bank deposit</p>
                             </mat-radio-button>
-                            <mat-radio-button value="bankDeposit"
+                            <mat-radio-button value="mobileTransfer"
                                               (click)="showOfflinePaymentMethods(false, false, false, true)">
-                                <p>Bank deposit</p>
+                                <p>Direct Mobile Transfer</p>
                             </mat-radio-button>
                         </mat-radio-group>
                         <div *ngIf="isShowCashInAdvanceForm">
@@ -545,9 +545,9 @@
                         </div>
 
                         <div *ngIf="isMobileTransfer">
-                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)" [uploadedFiles]="ImageFileEdit"
+                            <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)" [uploadedFiles]="ImageFileEdit"
                                           id="mobileTransferImageUploadSection"
-                                          [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
+                                          [beforeUpload]="onBeforeUploadMobileTransferSS" buttonCaption="Select image"
                                           dropBoxMessage="Drop screenshot of payment page"
                                           clearButtonCaption="clear">
                             </image-upload>

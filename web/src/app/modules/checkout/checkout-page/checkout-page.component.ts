@@ -103,9 +103,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     isBankDeposit: boolean = false;
     isMobileTransfer: boolean = false;
 
-    ImageFile: File;
-    ImageFileEdit: any[] = [];
-    BankDepositImageFile: File;
+    ImageFile: File = null;
+    BankDepositImageFile: File = null;
+    mobileTransferImageFile: File = null;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -466,7 +466,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             division_id: this.noShippingCharge ? '68' : value.shipping_division_id
         };
 
-        let dataPayload = null;
+        let addresses = {
+            billing_address,
+            shipping_address
+        };
+
+        const formData: FormData = new FormData();
+        formData.append('addresses', JSON.stringify(addresses));
+
         if(value.paymentType == PAYMENT_METHODS.OFFLINE_PAY_PAYMENT_TYPE){
             if(value.offlinePaymentMethods == 'bankTransfer'){
                 if(!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank){
@@ -475,10 +482,51 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     });
                     return false;
                 }
-                dataPayload = {
-
+                formData.append('offlinePaymentMethod', 'bankTransfer');
+                let bankTransferInfo = {
+                    transactionId: value.transactionIdForBank,
+                    bankName: value.bankName,
+                    branchName: value.branchName,
+                    accountNumberForBank: value.accountNumberForBank
+                }
+                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
+            }
+            else if(value.offlinePaymentMethods == 'cashInAdvance') {
+                formData.append('offlinePaymentMethod', 'cashInAdvance');
+                if(this.ImageFile){
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.ImageFile, this.ImageFile.name);
+                }
+                else{
+                    formData.append('hasImage', 'false');
                 }
             }
+            else if(value.offlinePaymentMethods == 'bankDeposit') {
+                formData.append('offlinePaymentMethod', 'bankDeposit');
+                if(this.ImageFile){
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
+                }
+                else{
+                    formData.append('hasImage', 'false');
+                }
+            }
+            else if(value.offlinePaymentMethods == 'mobileTransfer') {
+                formData.append('offlinePaymentMethod', 'mobileTransfer');
+                if(this.ImageFile){
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
+                }
+                else{
+                    formData.append('hasImage', 'false');
+                }
+            }
+        }
+        else {
+            this.toastr.error('Error occurred', "Insert correct payment method", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
         }
 
     }
@@ -992,6 +1040,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.BankDepositImageFile = null;
     }
 
+    onRemovedMobileTransferSS(file: FileHolder) {
+        this.mobileTransferImageFile = null;
+    }
+
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
@@ -999,6 +1051,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
         this.BankDepositImageFile = metadata.file;
+        return metadata;
+    };
+
+    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
+        this.mobileTransferImageFile = metadata.file;
         return metadata;
     };
 
