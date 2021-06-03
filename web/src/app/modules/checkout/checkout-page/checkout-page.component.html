@@ -482,7 +482,7 @@
                                 <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE]"
                                                   value="OfflinePay" (click)="showOfflineForm(true)">
                                     <div class="payment-icon-container">
-                                        <p>Offline payment</p>
+                                        <p class="defaultParagraph">Offline payment</p>
                                     </div>
                                 </mat-radio-button>
                                 <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
@@ -498,19 +498,19 @@
                         <mat-radio-group formControlName="offlinePaymentMethods" style="display: flex">
                             <mat-radio-button value="cashInAdvance"
                                               (click)="showOfflinePaymentMethods(true, false, false, false)">
-                                <p>Cash In Advance</p>
+                                <p class="defaultParagraph">Cash In Advance</p>
                             </mat-radio-button>
                             <mat-radio-button value="bankTransfer"
                                               (click)="showOfflinePaymentMethods(false, true, false, false)">
-                                <p>Bank transfer</p>
+                                <p class="defaultParagraph">Bank transfer</p>
                             </mat-radio-button>
                             <mat-radio-button value="bankDeposit"
                                               (click)="showOfflinePaymentMethods(false, false, true, false)">
-                                <p>Bank deposit</p>
+                                <p class="defaultParagraph">Bank deposit</p>
                             </mat-radio-button>
                             <mat-radio-button value="mobileTransfer"
                                               (click)="showOfflinePaymentMethods(false, false, false, true)">
-                                <p>Direct Mobile Transfer</p>
+                                <p class="defaultParagraph">Direct Mobile Transfer</p>
                             </mat-radio-button>
                         </mat-radio-group>
                         <div *ngIf="isShowCashInAdvanceForm">
