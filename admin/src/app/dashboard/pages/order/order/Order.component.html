@@ -23,109 +23,131 @@
                 [nzBordered]="true"
             >
                 <thead>
-                <tr>
-                    <th nzWidth="100px">
-                        <span> Order </span>
-                    </th>
-                    <th nzWidth="220px">
-                        <span> Date </span>
-                    </th>
-                    <th nzWidth="220px">
-                        <span> Customer </span>
-                    </th>
-                    <th nzWidth="100px">
-                        <span> Quantity </span>
-                    </th>
-                    <th nzWidth="100px">
-                        <span>Total</span>
-                    </th>
-                    <th nzWidth="200px">
-                        <span>Status</span>
-                    </th>
-                    <th nzWidth="260px">
-                        <span>Status Changer</span>
-                    </th>
-                    <th><span>Actions</span></th>
-                </tr>
-                <tr>
-                    <th nzWidth="100px">
-                        <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
-                               (input)=" orderPage = 1; getData(); " >
-                    </th>
-                    <th nzWidth="220px">
-                        <nz-date-picker
-                                nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
-                                [(ngModel)]="searchStartDate"
-                                nzPlaceHolder="Start"
-                                (ngModelChange)="orderPage = 1; getData();">
+                    <tr>
+                        <th nzWidth="100px">
+                            <span> Order </span>
+                        </th>
+                        <th nzWidth="220px">
+                            <span> Date </span>
+                        </th>
+                        <th nzWidth="220px">
+                            <span> Customer </span>
+                        </th>
+                        <th nzWidth="100px">
+                            <span> Quantity </span>
+                        </th>
+                        <th nzWidth="100px">
+                            <span>Total</span>
+                        </th>
+                        <th nzWidth="200px">
+                            <span>Order Status</span>
+                        </th>
+                        <th nzWidth="200px">
+                            <span>Payment Status</span>
+                        </th>
+                        <th nzWidth="260px">
+                            <span>Status Changer</span>
+                        </th>
+                        <th><span>Actions</span></th>
+                    </tr>
+                    <tr>
+                        <th nzWidth="100px">
+                            <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
+                                   (input)=" orderPage = 1; getData(); ">
+                        </th>
+                        <th nzWidth="220px">
+                            <nz-date-picker
+                                    nzShowTime
+                                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                                    [(ngModel)]="searchStartDate"
+                                    nzPlaceHolder="Start"
+                                    (ngModelChange)="orderPage = 1; getData();">
 
-                        </nz-date-picker>
-                        <nz-date-picker
-                                nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
-                                [(ngModel)]="searchEndDate"
-                                nzPlaceHolder="End"
-                                (ngModelChange)="orderPage = 1; getData();">
-                        </nz-date-picker>
-                    </th>
-                    <th nzWidth="220px">
-                        <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
-                               placeholder="Customer Name" (input)=" orderPage = 1; getData(); ">
-                    </th>
-                    <th nzWidth="100px"></th>
-                    <th nzWidth="100px"></th>
-                    <th nzWidth="200px">
-                        <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
-                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
-                                   [nzPlaceHolder]="'Select Status'"
-                                   [nzNotFoundContent]="'Not found'">
-                            <nz-option *ngFor="let option of options" [nzLabel]="option.label"
-                                       [nzValue]="option.value">
-                                <ng-template #nzOptionTemplate>
-                                    <i class="anticon " [ngClass]="option.icon"></i>
-                                    {{option.label}}
-                                </ng-template>
-                            </nz-option>
-                        </nz-select>
-                    </th>
-                    <th nzWidth="260px"></th>
-                    <th>
-                        <button nz-button (click)="resetAllFilter()">Clear filter</button>
-                    </th>
-                </tr>
+                            </nz-date-picker>
+                            <nz-date-picker
+                                    nzShowTime
+                                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                                    [(ngModel)]="searchEndDate"
+                                    nzPlaceHolder="End"
+                                    (ngModelChange)="orderPage = 1; getData();">
+                            </nz-date-picker>
+                        </th>
+                        <th nzWidth="220px">
+                            <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
+                                   placeholder="Customer Name" (input)=" orderPage = 1; getData(); ">
+                        </th>
+                        <th nzWidth="100px"></th>
+                        <th nzWidth="100px"></th>
+                        <th nzWidth="200px">
+                            <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
+                                       nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                       [nzPlaceHolder]="'Select Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th>
+                            <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
+                                       nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                       [nzPlaceHolder]="'Select Payment Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of paymentOptions" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                </nz-option>
+                            </nz-select>
+                        </th>
+                        <th nzWidth="260px"></th>
+                        <th>
+                            <button nz-button (click)="resetAllFilter()">Clear filter</button>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                    <td style="width: 100px;">{{data.id}}</td>
-                    <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                    <td style="width: 220px;">{{data.full_name}}</td>
-                    <td style="width: 100px;">{{data.total_quantity}}</td>
-                    <td style="width: 100px;">{{data.total_price}}</td>
-                    <td style="width: 200px;">
-                        <span *ngIf="setStatus(i, data.status)"></span>
-                        <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
-                                   (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
-                            <nz-option *ngFor="let option of options" [nzLabel]="option.label"
-                                       [nzValue]="option.value">
-                                <ng-template #nzOptionTemplate>
-                                    <i class="anticon " [ngClass]="option.icon"></i>
-                                    {{option.label}}
-                                </ng-template>
-                            </nz-option>
-                        </nz-select>
-                    </td>
-                    <td style="width: 260px;">{{data.changedByName}}</td>
-                    <td>
-                        <nz-button-group>
-                            <button *ngIf="'order-read'|accessControl"
-                                    [routerLink]="['/dashboard/order/details/', data.id]"
-                                    nz-button [nzSize]="'default'">
-                                <i class="anticon anticon-info-circle"> </i>
-                            </button>
-                        </nz-button-group>
-                    </td>
-                </tr>
+                    <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
+                        <td style="width: 100px;">{{data.id}}</td>
+                        <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                        <td style="width: 220px;">{{data.full_name}}</td>
+                        <td style="width: 100px;">{{data.total_quantity}}</td>
+                        <td style="width: 100px;">{{data.total_price}}</td>
+                        <td style="width: 200px;">
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
+                                       (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </td>
+                        <td style="width: 200px;">
+                            <nz-select style="width: 180px;" *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                       [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
+                                       (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
+                                <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
+                                           [nzValue]="paymentOption.value">
+                                </nz-option>
+                            </nz-select>
+                        </td>
+                        <td style="width: 260px;">{{data.changedByName}}</td>
+                        <td>
+                            <nz-button-group>
+                                <button *ngIf="'order-read'|accessControl"
+                                        [routerLink]="['/dashboard/order/details/', data.id]"
+                                        nz-button [nzSize]="'default'">
+                                    <i class="anticon anticon-info-circle"> </i>
+                                </button>
+                            </nz-button-group>
+                        </td>
+                    </tr>
                 </tbody>
             </nz-table>
         </nz-spin>
@@ -155,7 +177,7 @@
                 <thead>
                 <tr>
                     <th>
-                        <input  type="checkbox" id="order_check_all_pr" #csvSelectAll
+                        <input type="checkbox" id="order_check_all_pr" #csvSelectAll
                                (change)="selectAllCsv($event)">
                     </th>
                     <th>

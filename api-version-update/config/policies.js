@@ -306,6 +306,7 @@ module.exports.policies = {
     'replace': false,
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
+    'updatePaymentStatus': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],

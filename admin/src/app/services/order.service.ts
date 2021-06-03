@@ -19,6 +19,9 @@ export class OrderService {
         if (data.status) {
             url += `&status=${data.status}`;
         }
+        if (data.payment_status) {
+            url += `&payment_status=${data.payment_status}`;
+        }
         if(data.customerName){
             url += `&customerName=${data.customerName}`;
         }
@@ -51,6 +54,10 @@ export class OrderService {
 
     update(id: number, data: any) {
         return this.http.put(`${this.EndPoint}/update?id=${id}`, data);
+    }
+
+    updatePaymentStatus(id: number, data: any) {
+        return this.http.put(`${this.EndPoint}/updatePaymentStatus?id=${id}`, data);
     }
 
     findSSLTransaction(data): Observable<any>{

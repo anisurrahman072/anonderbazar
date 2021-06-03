@@ -448,18 +448,25 @@ module.exports = {
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
       let rawSelect = 'SELECT orders.id as id,';
-      rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, ';
+      rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, orders.payment_status as paymentStatus, payment.payment_type, ';
       rawSelect += ' CONCAT(users.first_name, \' \', users.last_name) as  full_name,  CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName  ';
 
       let fromSQL = ' FROM product_orders as orders  ';
       fromSQL += '  LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id  ';
       fromSQL += '  LEFT JOIN users as users ON users.id = orders.user_id  ';
+      fromSQL += '  LEFT JOIN payments as payment ON  orders.id  =   payment.order_id';
 
       let _where = ' WHERE orders.deleted_at IS NULL ';
 
       if (req.query.status) {
         _where += ` AND orders.status = ${req.query.status} `;
       }
+
+      if (req.query.payment_status) {
+        _where += ` AND orders.payment_status = ${req.query.payment_status} `;
+      }
+
+      console.log('_where is: ', _where);
 
       if (req.query.orderNumber) {
         _where += ` AND orders.id = ${req.query.orderNumber} `;
@@ -478,9 +485,8 @@ module.exports = {
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
-
-      _where += ' ORDER BY orders.created_at DESC ';
       const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      _where += ' GROUP BY orders.id  ORDER BY orders.created_at DESC   ';
       let totalOrder = 0;
       let orders = [];
       if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
@@ -626,6 +632,29 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating Order'
+      });
+    }
+  },
+
+  updatePaymentStatus: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set(req.body);
+
+      console.log('wwwwtttt',req.param('id'),req.body,  updatedOrder);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated payment status of order',
+        data: updatedOrder
+      });
+    }
+    catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating payment status'
       });
     }
   },
