@@ -643,8 +643,6 @@ module.exports = {
         id: req.param('id')
       }).set(req.body);
 
-      console.log('wwwwtttt',req.param('id'),req.body,  updatedOrder);
-
       return res.status(200).json({
         success: true,
         message: 'Successfully updated payment status of order',

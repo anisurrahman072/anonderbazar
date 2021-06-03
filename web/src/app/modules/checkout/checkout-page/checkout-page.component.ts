@@ -498,7 +498,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
             }
-            else if(value.offlinePaymentMethods == 'cashInAdvance') {
+            else if(value.offlinePaymentMethods === 'cashInAdvance') {
                 formData.append('offlinePaymentMethod', 'cashInAdvance');
                 if(this.ImageFile){
                     formData.append('hasImage', 'true');
@@ -508,9 +508,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     formData.append('hasImage', 'false');
                 }
             }
-            else if(value.offlinePaymentMethods == 'bankDeposit') {
+            else if(value.offlinePaymentMethods === 'bankDeposit') {
                 formData.append('offlinePaymentMethod', 'bankDeposit');
-                if(this.ImageFile){
+                if(this.BankDepositImageFile){
                     formData.append('hasImage', 'true');
                     formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
                 }
@@ -518,9 +518,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     formData.append('hasImage', 'false');
                 }
             }
-            else if(value.offlinePaymentMethods == 'mobileTransfer') {
+            else if(value.offlinePaymentMethods === 'mobileTransfer') {
                 formData.append('offlinePaymentMethod', 'mobileTransfer');
-                if(this.ImageFile){
+                if(this.mobileTransferImageFile){
                     formData.append('hasImage', 'true');
                     formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
                 }
@@ -1069,6 +1069,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
+        console.log('qqqqqqqaaaa');
         return metadata;
     };
 
