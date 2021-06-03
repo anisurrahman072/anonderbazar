@@ -556,19 +556,21 @@
 
 
                     <!--terms and conditions checkbox-->
-                    <input style="min-height: 0" type="checkbox" id="termsAndPolicy" [checked]="termsAndPolicy"
-                           (change)="termsAndPolicy = !termsAndPolicy"/>
-                    <label for="termsAndPolicy" style="margin: 20px 0 0 10px; display: initial">I agree to the <a
-                            routerLink="/cms/post-details/112" target="_blank" style="color: #F83831">Terms &
-                        Conditions</a>, <a routerLink="/cms/post-details/40" target="_blank" style="color: #F83831">Privacy
-                        Policy</a> and
-                        <a routerLink="/cms/post-details/117" target="_blank" style="color: #F83831">Refund and Return
-                            Policy</a> of Anonder Bazar</label>
+                    <div style="margin-top: 20px;">
+                        <input style="min-height: 0" type="checkbox" id="termsAndPolicy" [checked]="termsAndPolicy"
+                               (change)="termsAndPolicy = !termsAndPolicy"/>
+                        <label for="termsAndPolicy" style="margin: 40px 0 0 10px; display: initial">I agree to the <a
+                                routerLink="/cms/post-details/112" target="_blank" style="color: #F83831">Terms &
+                            Conditions</a>, <a routerLink="/cms/post-details/40" target="_blank" style="color: #F83831">Privacy
+                            Policy</a> and
+                            <a routerLink="/cms/post-details/117" target="_blank" style="color: #F83831">Refund and Return
+                                Policy</a> of Anonder Bazar</label>
+                    </div>
 
                     <div class="send-btn1" (click)="disabledButtonClick(termsAndPolicy)">
                         <button type="submit" class="Summarybtn" [disabled]="!termsAndPolicy" *ngIf="isShowOfflineForm"
                                 (click)="saveOrderForOfflinePayment($event, checkoutForm.value)">
-                            <a>Save order</a>
+                            <a>Confirm Order</a>
                         </button>
                         <button type="submit" class="Summarybtn" [disabled]="!termsAndPolicy" *ngIf="!isShowOfflineForm"
                                 (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">

@@ -175,7 +175,8 @@ module.exports = {
       if (cartItem.product_quantity > 0) {
         let productPrice = cartItem.product_total_price;
         if(!cartItem.product_id.promotion){
-          productPrice = cartItem.product_id.price;
+          let productUnitPrice = cartItem.product_id.price;
+          productPrice = productUnitPrice * cartItem.product_quantity;
         }
         grandOrderTotal += productPrice;
         totalQty += cartItem.product_quantity;

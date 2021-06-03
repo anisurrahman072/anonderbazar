@@ -437,8 +437,29 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
             });
+            this.loaderService.hideLoader();
             return false;
         }
+
+        if (!this.isShowCashInAdvanceForm && !this.isShowBankTransferForm && !this.isBankDeposit && !this.isMobileTransfer) {
+            this.toastr.error("Please select a Offline Payment method to proceed", "Not selected", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+            (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) ||
+            (this.isBankDeposit && !this.BankDepositImageFile) ||
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
+            this.toastr.error("Please fill up Offline Payment form correctly!", "Not filled up all fields!!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
 
         let billing_address = {
             id: this.newBillingAddress ? '' : value.billing_id,
@@ -481,9 +502,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         formData.append('paymentStatus', `${PAYMENT_STATUS.UNPAID}`);
         formData.append('is_copy', `${this.isCopy}`);
 
-        if(value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE){
-            if(value.offlinePaymentMethods == 'bankTransfer'){
-                if(!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank){
+        if (value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE) {
+            if (value.offlinePaymentMethods == 'bankTransfer') {
+                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
                     this.toastr.error('Error occurred', "Insert all the fields of bank transfer method", {
                         positionClass: 'toast-bottom-right'
                     });
@@ -497,39 +518,32 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     accountNumberForBank: value.accountNumberForBank
                 }
                 formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
-            }
-            else if(value.offlinePaymentMethods === 'cashInAdvance') {
+            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
                 formData.append('offlinePaymentMethod', 'cashInAdvance');
-                if(this.ImageFile){
+                if (this.ImageFile) {
                     formData.append('hasImage', 'true');
                     formData.append('image', this.ImageFile, this.ImageFile.name);
-                }
-                else{
+                } else {
                     formData.append('hasImage', 'false');
                 }
-            }
-            else if(value.offlinePaymentMethods === 'bankDeposit') {
+            } else if (value.offlinePaymentMethods === 'bankDeposit') {
                 formData.append('offlinePaymentMethod', 'bankDeposit');
-                if(this.BankDepositImageFile){
+                if (this.BankDepositImageFile) {
                     formData.append('hasImage', 'true');
                     formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
-                }
-                else{
+                } else {
                     formData.append('hasImage', 'false');
                 }
-            }
-            else if(value.offlinePaymentMethods === 'mobileTransfer') {
+            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
                 formData.append('offlinePaymentMethod', 'mobileTransfer');
-                if(this.mobileTransferImageFile){
+                if (this.mobileTransferImageFile) {
                     formData.append('hasImage', 'true');
                     formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
-                }
-                else{
+                } else {
                     formData.append('hasImage', 'false');
                 }
             }
-        }
-        else {
+        } else {
             this.toastr.error('Error occurred', "Insert correct payment method", {
                 positionClass: 'toast-bottom-right'
             });
@@ -1069,7 +1083,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
-        console.log('qqqqqqqaaaa');
         return metadata;
     };
 
