@@ -199,14 +199,15 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
 
     selectAllCsv($event) {
-
         const isChecked = !!$event.target.checked;
-        console.log('selectAllCsv', isChecked);
+
         if (!isChecked) {
             this.storedCsvOrders[this.csvPage - 1] = [];
         }
+
         this.csvPageSelectAll[this.csvPage - 1] = isChecked;
         const len = this.csvOrders.length;
+
         for (let i = 0; i < len; i++) {
             this.csvOrders[i].checked = isChecked;
             if (isChecked) {
@@ -218,7 +219,6 @@ export class OrderComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
     }
 
 
@@ -266,7 +266,6 @@ export class OrderComponent implements OnInit, OnDestroy {
             status: $event,
             changed_by: this.currentUser.id
         }).subscribe((res) => {
-            console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
                 .subscribe(arg => {
@@ -298,7 +297,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
             if (suborderItem.all_coupons) {
                 const couponArr = suborderItem.all_coupons.split(',');
-                console.log('couponArr', suborderItem.all_coupons, couponArr);
                 allCouponCodes = couponArr.map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
                 }).join('|');
@@ -332,7 +330,7 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'postal Code': suborderItem.postal_code,
                 'Upazila Name': suborderItem.upazila_name,
                 'Zila Name': suborderItem.zila_name,
-                'Division Nname': suborderItem.division_name,
+                'Division Name': suborderItem.division_name,
                 'Address': suborderItem.address,
             });
 
@@ -359,7 +357,7 @@ export class OrderComponent implements OnInit, OnDestroy {
             'postal Code',
             'Upazila Name',
             'Zila Name',
-            'Division Nname',
+            'Division Name',
             'Address'
         ];
         this.exportService.downloadFile(csvData, header);
@@ -368,8 +366,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
-        let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
-            console.log('error id: ', item.id);
+
+        /** the array indexes which has the data are being filtered and the ids
+         *  of those data's are being map out and taken into "orderIds" variable*/
+        let orderIds = ___.flatten(this.storedCsvOrders.filter(arr => {
+            return arr.length > 0;
+        })).map(item => {
             return item.id;
         });
         if (orderIds.length === 0) {
@@ -380,7 +382,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         this._isSpinning = true;
         this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
             .subscribe((result: any) => {
-                console.log('submitForm', result);
                 this._isSpinning = false;
                 this.dowonloadCSV(result.data);
                 this.submitting = false;
