@@ -93,7 +93,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
-    OFFLINE_PAY_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAY_PAYMENT_TYPE;
+    OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
     REGULAR_ORDER = ORDER_TYPE.REGULAR_ORDER;
 
     isPartiallyPayable = true;
@@ -466,15 +466,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             division_id: this.noShippingCharge ? '68' : value.shipping_division_id
         };
 
-        let addresses = {
-            billing_address,
-            shipping_address
-        };
-
         const formData: FormData = new FormData();
-        formData.append('addresses', JSON.stringify(addresses));
+        let payLoad = {
+            shipping_address,
+            billing_address,
+            orderType: ORDER_TYPE.REGULAR_ORDER,
+            paymentStatus: PAYMENT_STATUS.UNPAID,
+            is_copy: this.isCopy
+        }
+        formData.append('paymentType', this.OFFLINE_PAYMENT_TYPE);
+        formData.append('shipping_address', JSON.stringify(shipping_address));
+        formData.append('billing_address', JSON.stringify(billing_address));
+        formData.append('orderType', `${ORDER_TYPE.REGULAR_ORDER}`);
+        formData.append('paymentStatus', `${PAYMENT_STATUS.UNPAID}`);
+        formData.append('is_copy', `${this.isCopy}`);
 
-        if(value.paymentType == PAYMENT_METHODS.OFFLINE_PAY_PAYMENT_TYPE){
+        if(value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE){
             if(value.offlinePaymentMethods == 'bankTransfer'){
                 if(!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank){
                     this.toastr.error('Error occurred', "Insert all the fields of bank transfer method", {
@@ -529,6 +536,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
+
+        this.orderService.placeOrder(formData)
+            .subscribe(order => {
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.store.dispatch(new fromStore.LoadCart());
+                this.toastr.success("Your order has been placed. Please wait for verification your payment.", "Success!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.router.navigate(['/profile/orders/invoice/', order.id]);
+                this.loaderService.hideLoader();
+            }, error => {
+                this.toastr.error("Error occurred while placing your order.", "Error!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.loaderService.hideLoader();
+            })
     }
 
 

@@ -404,6 +404,7 @@ module.exports = {
 
       logger.orderLog(authUser.id, '######## PLACING ORDER ########');
       logger.orderLog(authUser.id, 'Payment Method: ', req.param('paymentType'));
+      console.log('Payment Method', req.param('paymentType'));
       logger.orderLog(authUser.id, 'Order Body: ', req.body);
       logger.orderLog(authUser.id, 'Order - shipping_address: ', shippingAddress);
       logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);
@@ -423,7 +424,8 @@ module.exports = {
         },
         globalConfigs,
         cart,
-        cartItems
+        cartItems,
+        req.file
       );
 
       return res.status(200).json(response);

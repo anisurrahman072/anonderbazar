@@ -21,7 +21,7 @@ export const PAYMENT_METHODS = {
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad',
-    OFFLINE_PAY_PAYMENT_TYPE: 'OfflinePay'
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
 }
 export const PAYMENT_METHODS_LABELS = {
     'Cash': 'Cash On Delivery',

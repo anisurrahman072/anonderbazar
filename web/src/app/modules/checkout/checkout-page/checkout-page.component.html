@@ -479,7 +479,7 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAY_PAYMENT_TYPE]"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE]"
                                                   value="OfflinePay" (click)="showOfflineForm(true)">
                                     <div class="payment-icon-container">
                                         <p>Offline payment</p>
@@ -514,7 +514,7 @@
                             </mat-radio-button>
                         </mat-radio-group>
                         <div *ngIf="isShowCashInAdvanceForm">
-                            <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"
+                            <image-upload [max]="1" (removed)="onRemoved($event)"
                                           id="imageUploadSection"
                                           [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
                                           dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
@@ -536,7 +536,7 @@
                                    placeholder="Enter Account Number">
                         </div>
                         <div *ngIf="isBankDeposit">
-                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)" [uploadedFiles]="ImageFileEdit"
+                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)"
                                           id="bankDepositImageUploadSection"
                                           [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
                                           dropBoxMessage="Drop picture of bank deposit slip"
@@ -545,7 +545,7 @@
                         </div>
 
                         <div *ngIf="isMobileTransfer">
-                            <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)" [uploadedFiles]="ImageFileEdit"
+                            <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)"
                                           id="mobileTransferImageUploadSection"
                                           [beforeUpload]="onBeforeUploadMobileTransferSS" buttonCaption="Select image"
                                           dropBoxMessage="Drop screenshot of payment page"
