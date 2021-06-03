@@ -7,7 +7,7 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
@@ -37,6 +37,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     statusSearchValue: string = '';
 
     searchStartDate: any;
+    paymentStatusSearchValue: any;
     searchEndDate: any;
 
     orderData = [];
@@ -50,6 +51,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
+    paymentOptions: any[] = GLOBAL_CONFIGS.OFFLINE_PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     isProductVisible = false;
@@ -59,6 +61,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     private storedCsvOrders: any = [];
 
     submitting: boolean = false;
+
+    PAYMENT_METHODS = PAYMENT_METHODS;
 
     constructor(
         private orderService: OrderService,
@@ -148,6 +152,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.orderDataSubscription = this.orderService.getAllOrdersGrid({
             date: JSON.stringify(dateSearchValue),
             status: this.statusSearchValue,
+            payment_status: this.paymentStatusSearchValue,
             customerName: this.customerNameFilter,
             orderNumber: this.orderNumberFilter
         }, page, limit)
@@ -279,8 +284,21 @@ export class OrderComponent implements OnInit, OnDestroy {
             this._notification.create('error', 'Error', 'Something went wrong');
             $event = oldStatus;
         });
+    }
 
-
+    changePaymentStatusConfirm($event, id, oldStatus){
+        this._isSpinning = true;
+        this.orderService.updatePaymentStatus(id, {
+            payment_status: $event,
+            changed_by: this.currentUser.id
+        }).subscribe(data => {
+            this._isSpinning = false;
+            this._notification.create('success', 'Successful Message', 'Order Payment status has been updated successfully');
+        }, error => {
+            console.log(error);
+            this._isSpinning = false;
+            this._notification.create('error', 'Error Message', 'Error occurred while updating the payment status!');
+        })
     }
 
     //Method for csv download
@@ -423,6 +441,10 @@ export class OrderComponent implements OnInit, OnDestroy {
     handleCancel = e => {
         this.isProductVisible = false;
     };
+
+    setPaymentStatus() {
+
+    }
 
 
 }

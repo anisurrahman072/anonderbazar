@@ -36,7 +36,7 @@ export class CanceledOrderComponent implements OnInit {
             this.page = $event;
         }
 
-        this.orderService.getCancelledOrder(this.page, this.limit, this.statusSearchValue || '')
+        this.orderService.getCancelledOrder(this.page, this.limit, this.statusSearchValue)
             .subscribe(orders => {
                 this._isSpinning = false;
                 this.total = orders.total;

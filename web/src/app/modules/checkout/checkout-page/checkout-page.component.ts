@@ -12,12 +12,13 @@ import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../services/validator/form-validator.service";
-import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
+import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_STATUS} from "../../../../environments/global_config";
 import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
 import {PAYMENT_METHODS} from '../../../../environments/global_config';
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
+import {FileHolder, UploadMetadata} from "angular2-image-upload";
 
 @Component({
     selector: 'app-checkout-page',
@@ -92,8 +93,19 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
+    OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
+    REGULAR_ORDER = ORDER_TYPE.REGULAR_ORDER;
 
     isPartiallyPayable = true;
+    isShowOfflineForm: boolean = false;
+    isShowCashInAdvanceForm: boolean = false;
+    isShowBankTransferForm: boolean = false;
+    isBankDeposit: boolean = false;
+    isMobileTransfer: boolean = false;
+
+    ImageFile: File = null;
+    BankDepositImageFile: File = null;
+    mobileTransferImageFile: File = null;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -119,6 +131,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnInit() {
 
         this.checkoutForm = this.fb.group({
+            offlinePaymentMethods: ['', []],
+            transactionIdForBank: ['', []],
+            bankName: ['', []],
+            branchName: ['', []],
+            accountNumberForBank: ['', []],
+
             // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
@@ -411,6 +429,144 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
     */
+
+    // method for offline order
+    saveOrderForOfflinePayment($event, value) {
+        this.loaderService.showLoader();
+        if (this.cartData && this.cartData.data.cart_items.length <= 0) {
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if (!this.isShowCashInAdvanceForm && !this.isShowBankTransferForm && !this.isBankDeposit && !this.isMobileTransfer) {
+            this.toastr.error("Please select a Offline Payment method to proceed", "Not selected", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+            (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) ||
+            (this.isBankDeposit && !this.BankDepositImageFile) ||
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
+            this.toastr.error("Please fill up Offline Payment form correctly!", "Not filled up all fields!!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+
+        let billing_address = {
+            id: this.newBillingAddress ? '' : value.billing_id,
+            firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.firstName,
+            lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.lastName,
+            address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.address,
+            country: value.country,
+            phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
+            postCode: this.noShippingCharge ? '1212' : value.postCode,
+            upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
+            zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+            division_id: this.noShippingCharge ? '68' : value.division_id
+        };
+
+        let shipping_address = {
+            id: this.newShippingAddress ? '' : value.shipping_id,
+            firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.shippingFirstName,
+            lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.shippingAddress,
+            address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.shippingAddress,
+            country: value.shipping_country,
+            phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
+            postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
+            upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
+            zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+            division_id: this.noShippingCharge ? '68' : value.shipping_division_id
+        };
+
+        const formData: FormData = new FormData();
+        let payLoad = {
+            shipping_address,
+            billing_address,
+            orderType: ORDER_TYPE.REGULAR_ORDER,
+            paymentStatus: PAYMENT_STATUS.UNPAID,
+            is_copy: this.isCopy
+        }
+        formData.append('paymentType', this.OFFLINE_PAYMENT_TYPE);
+        formData.append('shipping_address', JSON.stringify(shipping_address));
+        formData.append('billing_address', JSON.stringify(billing_address));
+        formData.append('orderType', `${ORDER_TYPE.REGULAR_ORDER}`);
+        formData.append('paymentStatus', `${PAYMENT_STATUS.UNPAID}`);
+        formData.append('is_copy', `${this.isCopy}`);
+
+        if (value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE) {
+            if (value.offlinePaymentMethods == 'bankTransfer') {
+                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
+                    this.toastr.error('Error occurred', "Insert all the fields of bank transfer method", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                    return false;
+                }
+                formData.append('offlinePaymentMethod', 'bankTransfer');
+                let bankTransferInfo = {
+                    transactionId: value.transactionIdForBank,
+                    bankName: value.bankName,
+                    branchName: value.branchName,
+                    accountNumberForBank: value.accountNumberForBank
+                }
+                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
+            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
+                formData.append('offlinePaymentMethod', 'cashInAdvance');
+                if (this.ImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.ImageFile, this.ImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            } else if (value.offlinePaymentMethods === 'bankDeposit') {
+                formData.append('offlinePaymentMethod', 'bankDeposit');
+                if (this.BankDepositImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
+                formData.append('offlinePaymentMethod', 'mobileTransfer');
+                if (this.mobileTransferImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            }
+        } else {
+            this.toastr.error('Error occurred', "Insert correct payment method", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
+
+        this.orderService.placeOrder(formData)
+            .subscribe(order => {
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.store.dispatch(new fromStore.LoadCart());
+                this.toastr.success("Your order has been placed. Please wait for verification your payment.", "Success!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.router.navigate(['/profile/orders/invoice/', order.id]);
+                this.loaderService.hideLoader();
+            }, error => {
+                this.toastr.error("Error occurred while placing your order.", "Error!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.loaderService.hideLoader();
+            })
+    }
 
 
     // method for confirm without payment
@@ -911,5 +1067,43 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         event.preventDefault();
         this.bKashWalletModalRef.hide();
         this.router.navigate(["/profile/bkash-accounts"]);
+    }
+
+    onRemoved(file: FileHolder) {
+        this.ImageFile = null;
+    }
+
+    onRemovedBankDepositSlip(file: FileHolder) {
+        this.BankDepositImageFile = null;
+    }
+
+    onRemovedMobileTransferSS(file: FileHolder) {
+        this.mobileTransferImageFile = null;
+    }
+
+    onBeforeUpload = (metadata: UploadMetadata) => {
+        this.ImageFile = metadata.file;
+        return metadata;
+    };
+
+    onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
+        this.BankDepositImageFile = metadata.file;
+        return metadata;
+    };
+
+    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
+        this.mobileTransferImageFile = metadata.file;
+        return metadata;
+    };
+
+    showOfflineForm(flag) {
+        this.isShowOfflineForm = flag;
+    }
+
+    showOfflinePaymentMethods(isCashInAdvance, isBank, isbanlkDeposit, isMobileTransfer) {
+        this.isShowCashInAdvanceForm = isCashInAdvance;
+        this.isShowBankTransferForm = isBank;
+        this.isBankDeposit = isbanlkDeposit;
+        this.isMobileTransfer = isMobileTransfer
     }
 }

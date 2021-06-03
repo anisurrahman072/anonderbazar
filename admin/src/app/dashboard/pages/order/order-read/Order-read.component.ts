@@ -7,9 +7,10 @@ import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
+import en from "@angular/common/locales/en";
 
 @Component({
     selector: 'app-brand-read',
@@ -22,9 +23,11 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     id: number;
     data: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    otherImageExtension = environment.otherImageExtension;
     currentDate: any;
     order: any;
     payment: any;
+    paymentDetails: any;
     paymentAddress: any;
     shippingAddress: any;
     suborderItems: any;
@@ -33,6 +36,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     _isSpinning = true;
 
     userPhone: string = "";
+    PAYMENT_METHODS =  PAYMENT_METHODS;
+    isAddModalVisible = false;
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -68,6 +73,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
                         this.payment = order.payment[0];
+                        this.paymentDetails = JSON.parse(order.payment[0].details);
                         if (this.payment.payment_type === 'SSLCommerce') {
                             this.payment.details = JSON.parse(this.payment.details);
                         }
@@ -141,4 +147,13 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             return '1' + ___.padStart(code.id, 6, '0')
         }).join(',');
     }
+
+    handleModalCancel = e => {
+        this.isAddModalVisible = false;
+    };
+
+    handleModalOk = e => {
+        this.isAddModalVisible = false;
+
+    };
 }

@@ -140,6 +140,22 @@
                             <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
                         </p>
                     </div>
+                    <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 10px !important;">
+                        <h4>Offline payment method details</h4>
+                        <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
+                            <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                            <p>Transaction number: {{paymentDetails.transactionId}}</p>
+                            <p>Bank name: {{paymentDetails.bankName}}</p>
+                            <p>Branch name: {{paymentDetails.branchName}}</p>
+                            <p>Account Number: {{paymentDetails.accountNumberForBank}}</p>
+                        </div>
+                        <ng-template #notBankTransfer>
+                            <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                            <div (click)="isAddModalVisible = true" style="cursor: pointer;">
+                                <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}" alt="money-receipt" style="height: 100px;">
+                            </div>
+                        </ng-template>
+                    </div>
                 </div>
             </div>
             <span class="footer" style="margin-top: 50px; display: inline-block;">Happy Shopping!</span>
@@ -147,3 +163,15 @@
     </nz-spin>
 </nz-card>
 
+<nz-modal [nzFooter]="null"
+          [nzVisible]="isAddModalVisible"
+          [nzTitle]="'Transaction receipt'"
+          nzWidth="960"
+          [nzContent]="modalContent"
+          (nzOnCancel)="handleModalCancel($event)"
+          (nzOnOk)="handleModalOk($event)">
+    <ng-template #modalContent>
+        <h4>Money Receipt</h4>
+        <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}">
+    </ng-template>
+</nz-modal>

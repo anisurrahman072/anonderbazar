@@ -92,6 +92,16 @@
                             </nz-option>
                         </nz-select>
                     </th>
+                    <th>
+                        <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Payment Status'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of paymentOptions" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </th>
                     <th nzWidth="100px"></th>
                     <th nzWidth="300px"></th>
                     <th>
@@ -116,6 +126,15 @@
                                     <i class="anticon " [ngClass]="option.icon"></i>
                                     {{option.label}}
                                 </ng-template>
+                            </nz-option>
+                        </nz-select>
+                    </td>
+                    <td style="width: 200px;">
+                        <nz-select style="width: 180px;" *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                   [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
+                                   (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
+                            <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
+                                       [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
                     </td>
@@ -166,7 +185,7 @@
                 <thead>
                 <tr>
                     <th>
-                        <input  type="checkbox" id="order_check_all_pr" #csvSelectAll
+                        <input type="checkbox" id="order_check_all_pr" #csvSelectAll
                                (change)="selectAllCsv($event)">
                     </th>
                     <th>
