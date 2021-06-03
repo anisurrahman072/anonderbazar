@@ -643,6 +643,18 @@ module.exports = {
         id: req.param('id')
       }).set(req.body);
 
+      let userDetail = await User.find({
+        id: updatedOrder.user_id,
+        deletedAt: null
+      });
+
+      let shippingAddresses = await ShippingAddress.find({
+        user_id: userDetail.id,
+        deletedAt: null
+      });
+
+      await PaymentService.sendSms(userDetail, updatedOrder, [], shippingAddresses[0]);
+
       return res.status(200).json({
         success: true,
         message: 'Successfully updated payment status of order',
