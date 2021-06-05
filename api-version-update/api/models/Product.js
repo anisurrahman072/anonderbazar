@@ -190,7 +190,13 @@ module.exports = {
       columnName: 'last_order_completed_date',
       required: false,
     },
-    pay_online: {
+    disable_cash_on_delivery: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 0,
+      required: false
+    },
+    offline_payment: {
       type: 'number',
       columnType: 'integer',
       defaultsTo: 0,

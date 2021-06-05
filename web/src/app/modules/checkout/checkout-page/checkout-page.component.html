@@ -459,7 +459,7 @@
                                     <i class="fa fa-money"></i>By Using Cashback
                                 </mat-radio-button>
                                 <mat-radio-button
-                                        *ngIf="!isPayOnlineOnly && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
+                                        *ngIf="!disableCashOnDelivery && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
                                         value="Cash" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
@@ -479,7 +479,7 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE]"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE] && isOfflinePayable"
                                                   value="OfflinePay" (click)="showOfflineForm(true)">
                                     <div class="payment-icon-container">
                                         <p class="defaultParagraph">Offline payment</p>

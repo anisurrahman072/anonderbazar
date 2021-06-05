@@ -23,6 +23,7 @@ import {OrderStatusPipe} from "../../pipes/order-status";
 import {PaymentStatusPipe} from "../../pipes/payment-status";
 import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
 import {QueryMessageModalComponent} from "./components/query-message-modal/query-message-modal.component";
+import {OrderTypePipe} from "../../pipes/order-type";
 
 const declaredComponents = [
     ProductItemComponent,
@@ -77,7 +78,10 @@ const sharedComponents = [
         ReactiveFormsModule,
         MaterialModule,
     ],
-    declarations: declaredComponents,
+    declarations: [
+        declaredComponents,
+        OrderTypePipe
+    ],
     exports: sharedComponents,
     entryComponents: [QueryMessageModalComponent]
 

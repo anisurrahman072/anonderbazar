@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, AfterViewInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, AfterViewInit, NgZone} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as ___ from 'lodash';
@@ -71,7 +71,8 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                 private globalCongigService: GlobalConfigService,
                 private modalService: BsModalService,
                 public loaderService: LoaderService,
-                private cdr: ChangeDetectorRef,) {
+                private cdr: ChangeDetectorRef,
+                private _ngZone: NgZone) {
     }
 
     //Event method for getting all the data for the page
@@ -88,10 +89,9 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     let expendedHour = Math.floor(duration.asHours());
 
                     this.data = data[0];
-                    console.log('1sttttttt', this.data);
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                     this.payment = this.data.payment[0];
-                    if(this.data.payment[0] && this.data.payment[0].details){
+                    if (this.data.payment[0] && this.data.payment[0].details) {
                         this.paymentDetails = JSON.parse(this.data.payment[0].details);
                     }
                     // this.suborders = order[0].suborders;
@@ -115,7 +115,8 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     this.globalPartialPaymentDuration = data[1].configData[0].partial_payment_duration;
 
                     this.isAllowedForPay = this.globalPartialPaymentDuration >= expendedHour && data[0].status != ORDER_STATUSES.CANCELED_ORDER
-                        && data[0].payment_status != PAYMENT_STATUS.PAID && data[0].payment_status != PAYMENT_STATUS.NOT_APPLICABLE;
+                        && data[0].payment_status != PAYMENT_STATUS.PAID && data[0].payment_status != PAYMENT_STATUS.NOT_APPLICABLE
+                        && (data[0].paid_amount < data[0].total_price);
 
                     this.allPaymentsLog = data[2];
                     this.allPaymentsLog.forEach(data => {
@@ -143,12 +144,12 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                 this.openPaymentGatewayModal(queryParams['bKashError']);
                 this.cdr.detectChanges();
             }, 500);
-        } else if(queryParams['sslCommerzError']){
+        } else if (queryParams['sslCommerzError']) {
             setTimeout(() => {
                 this.openPaymentGatewayModal(queryParams['sslCommerzError']);
                 this.cdr.detectChanges();
             }, 500);
-        }else if (queryParams['bkashURL']) {
+        } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
     }
@@ -156,22 +157,34 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
     //Method for save and download pdf
 
     public SavePDF() {
-        var data = document.getElementById('content');
-        html2canvas(data).then(canvas => {
-            var imgWidth = 178;
-            var pageHeight = 295;
-            var imgHeight = canvas.height * imgWidth / canvas.width;
-            var heightLeft = imgHeight;
+        this.loaderService.showLoader();
+        let data = document.getElementById('content');
 
-            const contentDataURL = canvas.toDataURL('image/png')
-            let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-            pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight)
-            pdf.save('invoice.pdf'); // Generated PDF
+        this._ngZone.runOutsideAngular(() => {
+            html2canvas(data)
+                .then(canvas => {
+                    let imgWidth = 178;
+                    let pageHeight = 295;
+                    let imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+
+                    const contentDataURL = canvas.toDataURL('image/png')
+                    let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight)
+                    pdf.save('invoice.pdf'); // Generated PDF
+                    this.loaderService.hideLoader();
+                })
+                .catch(error => {
+                    this.loaderService.hideLoader();
+                    console.log("Error occurred!", error);
+                });
         });
+
+
     }
 
     /** Make payment payment for the order */
-    makePartialPayment(){
+    makePartialPayment() {
         this.partialPaymentModalService.showPartialModal(true, this.data.id);
     }
 
@@ -188,7 +201,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
         }).join(',');
     }
 
-    isAddModalVisible(modalContent){
+    isAddModalVisible(modalContent) {
         this.moneyReceiptModalRef = this.modalService.show(modalContent);
     }
 }

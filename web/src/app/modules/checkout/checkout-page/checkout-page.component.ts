@@ -83,7 +83,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     authUserWallets: any;
     couponCashbackAmount: number = 0;
 
-    isPayOnlineOnly: boolean = false;
+    disableCashOnDelivery: boolean = false;
+    isOfflinePayable: boolean = false;
     isFreeShipping: boolean = true;
     maxDhakaCharge: number = 0;
     maxOutsideDhakaCharge: number = 0;
@@ -326,13 +327,17 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     setShippingCharge() {
-        this.isPayOnlineOnly = false;
+        this.disableCashOnDelivery = false;
+        this.isOfflinePayable = false;
         this.maxDhakaCharge = 0;
         this.maxOutsideDhakaCharge = 0;
         this.isPartiallyPayable = true;
         this.cartData.data.cart_items.map(item => {
-            if (item.product_id.pay_online) {
-                this.isPayOnlineOnly = true;
+            if (item.product_id.disable_cash_on_delivery) {
+                this.disableCashOnDelivery = true;
+            }
+            if (item.product_id.offline_payment) {
+                this.isOfflinePayable = true;
             }
             if (!item.product_id.partially_payable) {
                 this.isPartiallyPayable = false;

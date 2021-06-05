@@ -139,10 +139,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div style="margin-bottom: 10px;">
+                                <h5>Payment Type: {{data.order_type | ordertype}}</h5>
+                            </div>
                             <div class="bill-info-right" *ngIf="payment">
                                 <h5>Payment Info</h5>
-                                <p> Payment type: {{payment.payment_type}}</p>
-                                <p> Transaction id: {{payment.transection_key}}</p>
+                                <p> Payment method: {{payment.payment_type}}</p>
+                                <p *ngIf="payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE &&
+                                          payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"> Transaction id: {{payment.transection_key}}</p>
 
                                 <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 20px !important;">
                                     <h5>Offline payment method details</h5>
@@ -169,7 +173,7 @@
         </mat-card>
     </div>
 
-    <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
+    <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0 && payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
         <mat-card-title>Transaction log</mat-card-title>
         <mat-card class="example-card">
             <mat-card-content *ngFor="let payment of allPaymentsLog;" class="mb-3">
