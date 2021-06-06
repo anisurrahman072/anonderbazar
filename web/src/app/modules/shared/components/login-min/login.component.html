@@ -200,7 +200,9 @@
                                                     <div class="col-lg-12">
                                                         <input placeholder="Enter your Email address (optional)" id="emailId"
                                                                class="form-control" formControlName="email"
-                                                               [autofocus]="true">
+                                                               [autofocus]="true" type="email">
+                                                        <i class='fa fa-check-circle-o feedback-icon-success'></i>
+                                                        <i class='fa fa-exclamation-circle feedback-icon-error'></i>
                                                         <div class="validation-feedback">
                                                             <span *ngIf="getSignUpFormControl('email').hasError('email')">
                                                                 <i class='fa fa-exclamation-circle mr-2'></i>Enter a right email address!</span>
@@ -316,7 +318,7 @@
                                                     <button disabled type="button"
                                                             style="color: #333333; font-weight: bold;"
                                                             class="btn btn-flat">
-                                                        lease wait
+                                                        please wait
                                                     </button>
                                                 </ng-template>
                                             </div>

@@ -10,7 +10,7 @@ export class FormValidatorService {
     }
 
     static phoneNumberValidator(control) {
-        if (RegExp('(^([+]{1}[8]{2}|0088)?(01){1}[3-9]{1}\\d{8})$').test(control.value)) {
+        if (RegExp('(^(01){1}[3-9]{1}\\d{8})$').test(control.value)) {
             return null;
         } else {
             return {'phoneNumber': true};

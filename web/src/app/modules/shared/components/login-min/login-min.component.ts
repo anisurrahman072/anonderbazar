@@ -283,9 +283,6 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
     //Method called for sign up form submit
     submitSignupForm($event, value) {
-
-        console.log('this.validateSignUpForm', this.validateSignUpForm);
-
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }
@@ -390,19 +387,18 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     //Method called for resending phone number verification code
     resendOTPCode() {
         if (this.resendOTPForm.invalid) {
-            console.log('this.resendOTPForm.invalid: ', this.resendOTPForm);
             return;
         }
 
         this.resendUserName = this.resendOTPForm.controls.userPhnNumber.value;
         this.authService.resendOTPCode(this.resendUserName)
             .subscribe(result => {
-                console.log('resulted otp resent: ', result);
                 if (result.code && result.code === 'NOT_FOUND') {
                     this.toastr.error("Phone number is invalid", 'Phone Number');
                 } else if (result.data) {
                     this.toastr.success("You have been sent a new OTP code", 'OTP Code');
-                    this.showTimerCounter = 'processing'
+                    this.showTimerCounter = 'yes'
+                    this.startTimer();
                 } else {
                     this.toastr.error("Error in generating new code", 'OTP Code');
                 }
@@ -494,6 +490,8 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.showVerifyModal = true;
         this.register = false;
         this.loginErrorMessage = '';
+        this.showTimerCounter = 'yes'
+        this.startTimer();
     }
 
     startTimer() {

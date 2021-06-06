@@ -8,6 +8,7 @@ import {UserService} from "./user.service";
 import {catchError} from "rxjs/operators";
 import {of} from "rxjs/observable/of";
 import {LocalStorageService} from "./local-storage.service";
+import {response} from "express";
 
 @Injectable()
 export class AuthService {
@@ -111,6 +112,13 @@ export class AuthService {
     signUp(data): Observable<any> {
         return this.http
             .post(AppSettings.API_ENDPOINT + '/auth/signup', data)
+            .map(response => response);
+    }
+
+    /** Password Change section */
+    passwordChange(data): Observable<any> {
+        return this.http
+            .put(AppSettings.API_ENDPOINT + '/auth/passwordChange', data)
             .map(response => response);
     }
 

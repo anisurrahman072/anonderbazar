@@ -263,6 +263,7 @@ module.exports = {
   //Method called for customer signup for frontend
   //Model models/User.js
   signup: async (req, res) => {
+    console.log('sign up request rrrrr: ', req.body);
     try {
       if (req.body && req.body.dob === '') {
         req.body.dob = null;
@@ -539,7 +540,6 @@ module.exports = {
       const newExpireTime = expireTime.getTime();
 
       const user = await User.findOne({username: signedUpUserName, deletedAt: null});
-      console.log('user updated data: ', user);
       if (!user) {
         return res.status(200).json({
           code: 'NOT_FOUND',
@@ -574,4 +574,77 @@ module.exports = {
       });
     }
   },
+
+  passwordChange: async (req, res) => {
+    let user_id = req.body.user_id;
+    let confirmPassword = req.body.confirmPassword;
+    let newPassword = req.body.newPassword;
+    let oldPassword = req.body.oldPassword;
+
+    if (!user_id || !confirmPassword || !newPassword || !oldPassword) {
+      return res.json(422, {err: 'Invalid user or password'});
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.json(422, {err: 'password didn\'t match'});
+    }
+
+    try {
+      const user = await User.findOne({id: user_id, deletedAt: null})
+        .populate('warehouse_id')
+        .populate('group_id');
+
+      if (!user) {
+        return res.json(422, {model: 'userName', message: 'Invalid user id'});
+      }
+
+      if (user.group_id.name !== 'customer') {
+        return res.json(403, {err: 'forbidden....'});
+      }
+
+      const valid = await comparePasswords(oldPassword, user.password);
+
+      if (!valid) {
+        return res.status(200).json({
+          code: 'WRONG_PASSWORD',
+          message: 'Wrong old password input by the user'
+        });
+      }
+
+      let hash = await bcrypt.hash(newPassword, 10);
+
+      await User.updateOne({id: user_id}).set({password: hash});
+
+      if (user.phone) {
+        try {
+          let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + newPassword;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      if (user.email) {
+        try {
+          EmailService.sendPasswordResetMailUpdated(user, newPassword);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      return res.status(201).json({
+        'success': true,
+        'message': 'Your password has been updated and new password has been sent your mobile/email'
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        message: 'failed to update password',
+        error
+      });
+    }
+
+  },
+
 };
