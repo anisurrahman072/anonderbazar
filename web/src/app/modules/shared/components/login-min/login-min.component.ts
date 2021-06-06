@@ -208,8 +208,10 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                     this.showVerifyModal = true;
                     this.showTimerCounter = 'processing';
                     this.toastr.error("Sorry you didn\'t verify your OTP", 'Verify OTP');
+                    return;
                 } else if (result && result.code && result.code === 'OTP_EXPIRED') {
                     this.toastr.error("Sorry!! OTP code expired, request a new one", 'Code Expired');
+                    return;
                 } else if (result && result.token) {
                     this.loginInfoService.showLoginModal(false);
                     localStorage.setItem(
@@ -316,9 +318,11 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.signupSubmitting = true;
         this.authService.signUp(FormData1)
             .subscribe(result => {
-                    this.signedUpUserName = result.user.username;
-
-                    if (result) {
+                    if (result && result.code && result.code === 'WRONG_PHONE_NUMBER') {
+                        this._notify.error("Invalid Mobile number");
+                        return;
+                    } else if (result) {
+                        this.signedUpUserName = result.user.username;
                         if (result && result.token) {
                             this.showPhoneVerification();
                         } else {

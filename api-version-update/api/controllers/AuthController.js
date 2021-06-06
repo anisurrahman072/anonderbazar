@@ -263,7 +263,6 @@ module.exports = {
   //Method called for customer signup for frontend
   //Model models/User.js
   signup: async (req, res) => {
-    console.log('sign up request rrrrr: ', req.body);
     try {
       if (req.body && req.body.dob === '') {
         req.body.dob = null;
@@ -272,6 +271,13 @@ module.exports = {
         return res.status(400).json({
           success: false,
           message: 'Invalid Request',
+        });
+      }
+
+      if (!RegExp('(^(01){1}[3-9]{1}\\d{8})$').test(req.body.username)) {
+        return res.status(200).json({
+          code: 'WRONG_PHONE_NUMBER',
+          message: 'The entered phone number is not a valid number'
         });
       }
 
