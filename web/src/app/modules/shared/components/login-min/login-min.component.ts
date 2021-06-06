@@ -112,6 +112,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             first_name: ['', [Validators.required]],
             last_name: ['', []],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [this.formValidatorService.phoneNumberUniqueValidator.bind(this)]],
+            email: ['', [FormValidatorService.emailValidator]],
             gender: ['', []],
             full_birth_date: ['', []],
             password: ['', [Validators.required]],
@@ -372,7 +373,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                         this.setUpUserData();
                         this.loginInfoService.userLoggedIn(true);
                         this.showVerifyModal = false;
-                        this.toastr.success("Login Successful.");
+                        this.toastr.success("Login Successful.", 'Login');
                         this.loginSubmitting = false;
                         this.router.navigate(['/']);
                     } else {
