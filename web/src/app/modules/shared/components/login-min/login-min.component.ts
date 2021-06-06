@@ -13,6 +13,9 @@ import {CartService} from '../../../../services';
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
 import * as moment from 'moment';
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
+import {timer} from "rxjs/observable/timer";
+import {scan, takeWhile} from "rxjs/operators";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
     selector: 'app-front-login-min',
@@ -23,6 +26,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     @ViewChild('autoShownModal') autoShownModal: ModalDirective;
     private currentCart: any;
     private isUnique = true;
+
     currentYear: number;
     gender: any;
     genderSearchOptions = [
@@ -32,6 +36,17 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     ];
 
     isModalShown$: Observable<boolean>;
+
+    /**OTP related declarations*/
+    private verifiedCode: number;
+    verifyOTPForm: FormGroup;
+    showVerifyModal: Boolean = false;
+    private signedUpUserName: any;
+    timer$: Observable<any>;
+    showTimerCounter: string = 'processing';
+    resendOTPForm: FormGroup;
+    isResendForm: Boolean = false;
+    private resendUserName: any;
 
     validateForm: FormGroup;
 
@@ -43,6 +58,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
     private d: Subscription;
     loginErrorMessage;
+    OPTErrorMessage = null;
 
     forgetPaswordSubmitting: boolean = false;
     loginSubmitting: boolean = false;
@@ -61,7 +77,8 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         private _notify: NotificationsService,
         private cartService: CartService,
         private userService: UserService,
-        private formValidatorService: FormValidatorService
+        private formValidatorService: FormValidatorService,
+        private toastr: ToastrService
     ) {
         this.minBirthDate = moment().subtract(120, 'year').format('YYYY-MM-DD');
         this.maxBirthDate = moment().subtract(5, 'year').format('YYYY-MM-DD');
@@ -80,6 +97,16 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             email: ['', []],
             phone: ['', [Validators.required]],
         });
+
+        /*verifyOTPForm controls and validators*/
+        this.verifyOTPForm = this.fb.group({
+            OTPCode: ['', [Validators.required]]
+        })
+
+        /*resendOTPForm controls and validators*/
+        this.resendOTPForm = this.fb.group({
+            userPhnNumber: ['', [Validators.required, FormValidatorService.phoneNumberValidator]]
+        })
 
         this.validateSignUpForm = this.fb.group({
             first_name: ['', [Validators.required]],
@@ -130,6 +157,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     showLogin() {
         this.isForgot = false;
         this.register = false;
+        this.showVerifyModal = false;
     }
 
     //Method called for all controls validated
@@ -173,7 +201,15 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.loginSubmitting = true;
         this.authService.login(value.username, value.password).subscribe(
             async result => {
-                if (result && result.token) {
+                if (result && result.code && result.code === 'VERIFY_OTP') {
+                    this.register = false;
+                    this.isForgot = false;
+                    this.showVerifyModal = true;
+                    this.showTimerCounter = 'processing';
+                    this.toastr.error("Sorry you didn\'t verify your OTP", 'Verify OTP');
+                } else if (result && result.code && result.code === 'OTP_EXPIRED') {
+                    this.toastr.error("Sorry!! OTP code expired, request a new one", 'Code Expired');
+                } else if (result && result.token) {
                     this.loginInfoService.showLoginModal(false);
                     localStorage.setItem(
                         'currentUser',
@@ -187,10 +223,10 @@ export class LoginMinComponent implements OnInit, OnDestroy {
 
                     this.setUpUserData();
                     this.loginInfoService.userLoggedIn(true);
-                    this._notify.success("Login Successful.");
+                    this._notify.success("Login Successful.", 'Login');
                     this.loginSubmitting = false;
                 } else {
-                    this._notify.error("Login Failed.");
+                    this.toastr.error("Login Failed.", 'Login');
                 }
             },
             err => {
@@ -282,28 +318,18 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.signupSubmitting = true;
         this.authService.signUp(FormData1)
             .subscribe(result => {
-                    console.log('result', result);
+                    this.signedUpUserName = result.user.username;
+
                     if (result) {
                         if (result && result.token) {
-                            this.loginInfoService.showLoginModal(false);
-                            localStorage.setItem(
-                                'currentUser',
-                                JSON.stringify({
-                                    username: result.user.username,
-                                    token: result.token
-                                })
-                            );
-                            localStorage.setItem('token', result.token);
-
-                            this.setUpUserData();
-
-                            this.loginInfoService.userLoggedIn(true);
-                            this._notify.success("Signup Successful.");
+                            this.showPhoneVerification();
                         } else {
-                            this._notify.error("Login Failed.");
+                            this._notify.error("Signup Failed.");
                         }
+
                         this.signupSubmitting = false;
                         return result;
+
                     } else {
                         this.signupSubmitting = false;
                         this._notify.error("Signup Failed.");
@@ -318,7 +344,75 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             );
     }
 
-    //Method called for setting up user data
+//Method called for user phone number verification
+    verifyOTP() {
+        if (this.verifyOTPForm.invalid) {
+            return;
+        }
+        this.verifiedCode = this.verifyOTPForm.controls.OTPCode.value;
+        if (this.resendUserName && this.resendUserName !== 'undefined') {
+            this.signedUpUserName = this.resendUserName;
+        }
+        this.authService.verifyUserPhone(this.verifiedCode, this.signedUpUserName)
+            .subscribe(verifiedUserData => {
+                    if (verifiedUserData.code && verifiedUserData.code === 'INVALID_CODE') {
+                        this.toastr.error('Invalid OTP code', 'OTP Code');
+                    } else if (verifiedUserData && verifiedUserData.token) {
+                        this.loginInfoService.showLoginModal(false);
+                        localStorage.setItem(
+                            'currentUser',
+                            JSON.stringify({
+                                username: verifiedUserData.username,
+                                token: verifiedUserData.token
+                            })
+                        );
+
+                        localStorage.setItem('token', verifiedUserData.token);
+
+                        this.setUpUserData();
+                        this.loginInfoService.userLoggedIn(true);
+                        this.showVerifyModal = false;
+                        this.toastr.success("Login Successful.");
+                        this.loginSubmitting = false;
+                        this.router.navigate(['/']);
+                    } else {
+                        this.toastr.error("Login Failed.");
+                    }
+                },
+                err => {
+                    this.loginSubmitting = false;
+                    this.loginErrorMessage = 'Invalid OTP code';
+                }
+            )
+    }
+
+    //Method called for resending phone number verification code
+    resendOTPCode() {
+        if (this.resendOTPForm.invalid) {
+            console.log('this.resendOTPForm.invalid: ', this.resendOTPForm);
+            return;
+        }
+
+        this.resendUserName = this.resendOTPForm.controls.userPhnNumber.value;
+        this.authService.resendOTPCode(this.resendUserName)
+            .subscribe(result => {
+                console.log('resulted otp resent: ', result);
+                if (result.code && result.code === 'NOT_FOUND') {
+                    this.toastr.error("Phone number is invalid", 'Phone Number');
+                } else if (result.data) {
+                    this.toastr.success("You have been sent a new OTP code", 'OTP Code');
+                    this.showTimerCounter = 'processing'
+                } else {
+                    this.toastr.error("Error in generating new code", 'OTP Code');
+                }
+            })
+    }
+
+    showResendForm() {
+        this.isResendForm = !this.isResendForm;
+    }
+
+//Method called for setting up user data
     setUpUserData() {
         this.store.dispatch(new fromStore.LoadCurrentUser());
         this.store.dispatch(new fromStore.LoadCart());
@@ -326,33 +420,43 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         this.store.dispatch(new fromStore.LoadCompare());
     }
 
-    //Method called for hide modal
-    hideModal(): void {
+//Method called for hide modal
+    hideModal()
+        :
+        void {
         this.autoShownModal.hide();
         this.validateForm.reset();
         this.validateForgotForm.reset();
         this.validateSignUpForm.reset();
         this.register = false;
         this.isForgot = false;
+        this.showVerifyModal = false;
     }
 
-    //Method called for login modal info
-    getLoginModalInfo(): void {
+//Method called for login modal info
+    getLoginModalInfo()
+        :
+        void {
         this.isModalShown$ = this.loginInfoService.currentLoginModalinfo;
     }
 
-    onHidden(): void {
+    onHidden()
+        :
+        void {
         this.validateForm.reset();
         this.loginInfoService.showLoginModal(false);
         this.loginErrorMessage = '';
     }
 
-    //Method called for getting year list
-    yearList(i: number) {
+//Method called for getting year list
+    yearList(i
+                 :
+                 number
+    ) {
         return new Array(i);
     }
 
-    //Method called for confirm username exist validation
+//Method called for confirm username exist validation
     usernameValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
             return {required: true};
@@ -373,14 +477,29 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     }
 
 
-    //Method to show sign up section in popup modal
+//Method to show sign up section in popup modal
 
     showSignUp() {
+        this.showVerifyModal = false;
         this.register = true;
         this.loginErrorMessage = '';
         this.validateForm.reset();
         this.validateForgotForm.reset();
         this.validateSignUpForm.reset();
+    }
+
+    //Method to show Phone Number verification section
+    showPhoneVerification() {
+        this.showVerifyModal = true;
+        this.register = false;
+        this.loginErrorMessage = '';
+    }
+
+    startTimer() {
+        this.timer$ = timer(0, 1000).pipe(
+            scan(acc => --acc, 300),
+            takeWhile(x => x >= 0)
+        );
     }
 
 }

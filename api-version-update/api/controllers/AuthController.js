@@ -158,6 +158,13 @@ module.exports = {
         return res.json(422, {model: 'password', message: 'Password is invalid'});
       }
 
+      if (user.is_verified === false) {
+        return res.status(200).json({
+          code: 'VERIFY_OTP',
+          message: 'Sorry you didn\'t verify your OTP code, VERIFY first????',
+        });
+      }
+
       if (user.group_id.name !== 'customer') {
         return res.json(403, {err: 'forbidden....'});
       }
@@ -267,6 +274,12 @@ module.exports = {
         });
       }
 
+      req.body.verification_code = Math.floor(100000 + Math.random() * 900000);
+      req.body.is_verified = false;
+
+      let expireTime = new Date(Date.now() + (5 * 60 * 1000));
+      req.body.verification_code_expire_time = expireTime.getTime();
+
       const username = req.body.username;
       let foundUserCount = await User.count().where({
         username: username
@@ -289,10 +302,20 @@ module.exports = {
       }).fetch();
 
       user = await User.findOne({id: user.id}).populate('group_id').populate('warehouse_id');
+      console.log('sign up user data: ', user.phone);
       try {
         EmailService.sendWelcomeMailCustomer(user);
       } catch (er) {
         console.log(er);
+      }
+
+      if (user.phone) {
+        try {
+          let smsText = 'anonderbazar.com এ আপনার OTP হল: ' + user.verification_code;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
       }
 
       let data = Object.assign({}, cart);
@@ -448,5 +471,107 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  /*Method called for verifying user's phone number and returning data of that user*/
+  verifyUserPhone: async (req, res) => {
+    try {
+      const verificationCode = req.query.verificationCode;
+      const signedUpUserName = req.query.signedUpUserName;
+      const user = await User.findOne({
+        verification_code: verificationCode,
+        username: signedUpUserName,
+        deletedAt: null
+      })
+        .populate('group_id')
+        .populate('warehouse_id');
+
+      if (!user) {
+        return res.status(200).json({
+          code: 'INVALID_CODE',
+          message: 'Invalid user verification code'
+        });
+      }
+
+      if (user.group_id.name !== 'customer') {
+        return res.json(403, {err: 'forbidden....'});
+      }
+
+      const x = new Date(Date.now());
+
+      let activation_time = x.getTime();
+
+      if (activation_time > user.verification_code_expire_time) {
+        return res.status(200).json({
+          code: 'OTP_EXPIRED',
+          message: 'Sorry!! OTP code expired, Resend Code??'
+        });
+      }
+      await User.updateOne({username: user.username}).set({is_verified: true});
+
+      return res.status(200).json({
+        user: user,
+        token: jwToken.issue({
+          id: user.id,
+          userInfo: user,
+          group_id: user.group_id.name,
+          warehouse: user.warehouse_id
+        })
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to authenticate the user with the given verification code',
+        error
+      });
+    }
+  },
+
+  /** Method called for resending user phone verification code,
+   here it will update the verification code and the timer in the database */
+  resendOTPCode: async (req, res) => {
+    try {
+      const signedUpUserName = req.query.signedUpUserName;
+      const newCode = Math.floor(100000 + Math.random() * 900000);
+      const expireTime = new Date(Date.now() + (5 * 60 * 1000));
+      const newExpireTime = expireTime.getTime();
+
+      const user = await User.findOne({username: signedUpUserName, deletedAt: null});
+      console.log('user updated data: ', user);
+      if (!user) {
+        return res.status(200).json({
+          code: 'NOT_FOUND',
+          message: 'Phone number is invalid'
+        });
+      }
+
+      const updatedUser = await User.updateOne({username: signedUpUserName})
+        .set({verification_code: newCode, verification_code_expire_time: newExpireTime});
+
+      if (updatedUser.phone) {
+        try {
+          let smsText = 'anonderbazar.com এ আপনার নতুন OTP হল: ' + updatedUser.verification_code;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      return res.status(201).json({
+        data: 'code resent',
+        success: true,
+        message: 'You have been sent a new OTP code'
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to resend OTP code',
+        error
+      });
+    }
+  },
 };

@@ -114,6 +114,20 @@ export class AuthService {
             .map(response => response);
     }
 
+    /**verify OTP section*/
+    verifyUserPhone(code, signedUpUserName): Observable<any> {
+        return this.http
+            .get(`${this.EndPoint}/verifyUserPhone?verificationCode=${code}&signedUpUserName=${signedUpUserName}`)
+            .map(response => response);
+    }
+
+    resendOTPCode(signedUpUserName): Observable<any> {
+        return this.http
+            .get(`${this.EndPoint}/resendOTPCode?signedUpUserName=${signedUpUserName}`)
+            .map(response => response);
+    }
+    /**verify OTP section ends*/
+
     usernameUnique(data): Observable<any> {
         return this.http
             .post(AppSettings.API_ENDPOINT + '/auth/usernameUnique', data)

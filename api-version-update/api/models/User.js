@@ -43,6 +43,21 @@ module.exports = {
       required: false,
       allowNull: true
     },
+    verification_code: {
+      type: 'string',
+      columnType: 'varchar',
+      required: false,
+      allowNull: true
+    },
+    is_verified: {
+      type: 'boolean',
+      defaultsTo: false,
+      allowNull: true
+    },
+    verification_code_expire_time: {
+      type: 'string',
+      allowNull: true
+    },
     forgotten_password_code: {
       type: 'string',
       columnType: 'varchar',

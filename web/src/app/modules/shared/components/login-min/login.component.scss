@@ -292,3 +292,13 @@ input[type=email] {
 .mat-datepicker-content .mat-calendar {
     z-index: 12999999;
 }
+
+.resendButton {
+    padding: 10px 60px;
+    background: #FF0000;
+    border-radius: 0;
+    color: #ffffff;
+    font-size: 12px;
+    margin-right: 30px;
+    height: 40px;
+}
