@@ -66,4 +66,8 @@ export class OrderService {
     deleteOrder(orderId): Observable<any>{
         return this.http.delete(`${this.EndPoint}/deleteOrder/${orderId}`);
     }
+
+    confirmOrderByOffline(value): Observable<any>{
+        return this.http.post(`${this.EndPoint}/confirmOrderInOffline`, value);
+    }
 }

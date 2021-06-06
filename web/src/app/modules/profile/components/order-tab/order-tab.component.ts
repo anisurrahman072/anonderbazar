@@ -59,24 +59,9 @@ export class OrderTabComponent implements OnInit {
         forkJoin([this.globalConfigService.getGlobalConfig(), this.orderService.getByUserId(this.currentUser), this.userService.getByIdForDashBoard(this.authService.getCurrentUserId())])
             .subscribe(allData => {
                 this.globalPartialPaymentDuration = allData[0].configData[0].partial_payment_duration;
-                let orders = allData[1].map(order => {
-                    let now = moment(new Date());
-                    let createdAt = moment(order.createdAt);
-                    let duration = moment.duration(now.diff(createdAt));
-                    let expendedHour = Math.floor(duration.asHours());
 
-                    const globalHourToMS = this.globalPartialPaymentDuration * 60 * 60 * 1000;
-                    this.allRemainingTime[order.id] = globalHourToMS - Math.floor(duration.asMilliseconds());
+                this.loadAllOrders(allData[1]);
 
-                    if (this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
-                    && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE) {
-                        order.isAllowedForPay = true;
-                    } else {
-                        order.isAllowedForPay = false;
-                    }
-                    return order;
-                });
-                this.orderList = orders;
                 this.convertMilliSecondToHourMinute();
 
                 this.dashboardData = allData[2];
@@ -96,6 +81,29 @@ export class OrderTabComponent implements OnInit {
                 });
                 this.convertMilliSecondToHourMinute();
             })
+    }
+
+    loadAllOrders(allOrder){
+        this.orderList = [];
+        let orders = allOrder.map(order => {
+            let now = moment(new Date());
+            let createdAt = moment(order.createdAt);
+            let duration = moment.duration(now.diff(createdAt));
+            let expendedHour = Math.floor(duration.asHours());
+
+            const globalHourToMS = this.globalPartialPaymentDuration * 60 * 60 * 1000;
+            this.allRemainingTime[order.id] = globalHourToMS - Math.floor(duration.asMilliseconds());
+
+            if (this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
+                && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE
+                && order.paid_amount < order.total_price) {
+                order.isAllowedForPay = true;
+            } else {
+                order.isAllowedForPay = false;
+            }
+            return order;
+        });
+        this.orderList = orders;
     }
 
     convertMilliSecondToHourMinute() {
@@ -126,15 +134,18 @@ export class OrderTabComponent implements OnInit {
     }
 
     cancelOrder(oderId){
-        this.loaderService.showLoader();
         let confirm = window.confirm('Are you confirm to delete the order?');
         if(confirm){
+            this.loaderService.showLoader();
             this.orderService.deleteOrder(oderId)
+                .concatMap(data => {
+                    return this.orderService.getByUserId(this.currentUser);
+                })
                 .subscribe(data => {
+                    this.loadAllOrders(data);
                     this.loaderService.hideLoader();
                     console.log('Successfully deleted the product');
                     this._notify.success('Successfully cancelled the order the order!');
-                    this.router.navigate(['/profile/orders']);
                 }, error => {
                     this.loaderService.hideLoader();
                     console.log('Error occurred while canceling the order!', error);

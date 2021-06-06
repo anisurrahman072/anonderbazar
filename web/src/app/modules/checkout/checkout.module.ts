@@ -6,6 +6,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
 import {ModalModule} from "ngx-bootstrap/modal";
 import {MaterialModule} from "../../core/material.module";
+import {ImageUploadModule} from "angular2-image-upload";
 
 @NgModule({
     imports: [
@@ -16,6 +17,7 @@ import {MaterialModule} from "../../core/material.module";
         ModalModule.forRoot(),
         MaterialModule,
         SharedModule,
+        ImageUploadModule.forRoot(),
     ],
     declarations: [CheckoutPageComponent],
 })

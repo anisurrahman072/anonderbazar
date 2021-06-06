@@ -6,6 +6,7 @@ import {OrderComponent} from './order/Order.component';
 import {OrderReadComponent} from './order-read/Order-read.component';
 import {OrderRoutingModule} from './order-routing.module';
 import {UiModule} from "../../shared/ui.module";
+import {ProductModule} from "../product/product.module";
 
 @NgModule({
     imports: [
@@ -14,7 +15,8 @@ import {UiModule} from "../../shared/ui.module";
         FileUploadModule,
         ReactiveFormsModule,
         OrderRoutingModule,
-        UiModule
+        UiModule,
+        ProductModule
     ],
     declarations: [
         OrderComponent,
