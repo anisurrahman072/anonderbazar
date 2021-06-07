@@ -595,6 +595,13 @@ module.exports = {
       return res.json(422, {err: 'password didn\'t match'});
     }
 
+    if(newPassword === oldPassword) {
+      return res.status(200).json({
+        code: 'SAME_PASSWORD',
+        message: 'New and old passwords are same'
+      });
+    }
+
     try {
       const user = await User.findOne({id: user_id, deletedAt: null})
         .populate('warehouse_id')
