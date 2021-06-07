@@ -73,6 +73,8 @@ export class ChangePasswordTabComponent implements OnInit {
             .subscribe(result => {
                     if (result && result.code && result.code === 'WRONG_PASSWORD') {
                         this.toastService.error('Wrong old password', 'wrong password');
+                    } else if (result && result.code && result.code === 'SAME_PASSWORD') {
+                        this.toastService.error('New and Old passwords are same', 'Same password');
                     } else if (result) {
                         this._notify.success("Password Update", 'Password updated successfully.');
                         this.router.navigate(['/profile/orders']);
