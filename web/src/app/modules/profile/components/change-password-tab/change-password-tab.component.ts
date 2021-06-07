@@ -29,7 +29,7 @@ export class ChangePasswordTabComponent implements OnInit {
         this.user_id = this.authService.getCurrentUserId();
         this.changePasswordForm = this.fb.group({
             oldPassword: ['', [Validators.required]],
-            newPassword: ['', [Validators.required]],
+            newPassword: ['', [Validators.required, FormValidatorService.passwordValidator]],
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
         });
     }

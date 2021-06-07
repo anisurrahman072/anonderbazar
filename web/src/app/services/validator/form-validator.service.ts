@@ -18,10 +18,21 @@ export class FormValidatorService {
     }
 
     static emailValidator(control) {
-        if (RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/).test(control.value)) {
+        if (!control.value) {
+            return null;
+        }
+        else if (RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/).test(control.value)) {
             return null;
         } else {
             return {'email': true};
+        }
+    }
+
+    static passwordValidator(control) {
+        if (RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})').test(control.value)) {
+            return null;
+        } else {
+            return {'password': true};
         }
     }
 

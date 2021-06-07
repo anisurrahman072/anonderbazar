@@ -115,7 +115,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             email: ['', [FormValidatorService.emailValidator]],
             gender: ['', []],
             full_birth_date: ['', []],
-            password: ['', [Validators.required]],
+            password: ['', [Validators.required, FormValidatorService.passwordValidator]],
             confirmPassword: ['', [Validators.required, this.confirmationValidator]]
         });
 
@@ -165,9 +165,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     confirmationValidator = (control: FormControl): { [s: string]: boolean } => {
         if (!control.value) {
             return {required: true};
-        } else if (
-            control.value !== this.validateSignUpForm.controls.password.value
-        ) {
+        } else if (control.value !== this.validateSignUpForm.controls.password.value) {
             return {confirm: true, error: true};
         }
     };
@@ -279,7 +277,6 @@ export class LoginMinComponent implements OnInit, OnDestroy {
     }
 
     birthDateChangeHandler(event) {
-
         console.log('birthDateChangeHandler', event.value);
     }
 
@@ -288,9 +285,11 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         for (const key in this.validateSignUpForm.controls) {
             this.validateSignUpForm.controls[key].markAsDirty();
         }
+
         if (!this.validateSignUpForm.valid) {
             return false;
         }
+
         let signupBirthDate = '';
         if (value.full_birth_date) {
             signupBirthDate = moment(value.full_birth_date).format('YYYY-MM-DD');

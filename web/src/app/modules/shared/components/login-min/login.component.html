@@ -198,11 +198,12 @@
                                                      [ngClass]="{'has-error': validateSignUpForm.get('email').dirty && validateSignUpForm.get('email').errors, 'has-success': validateSignUpForm.get('email').dirty && !validateSignUpForm.get('email').errors }">
                                                     <label for="emailId" class="col-lg-12 control-label">Email</label>
                                                     <div class="col-lg-12">
-                                                        <input placeholder="Enter your Email address (optional)" id="emailId"
-                                                               class="form-control" formControlName="email"
-                                                               [autofocus]="true" type="email">
+                                                        <input placeholder="Enter your Email address (optional)"
+                                                               id="emailId"
+                                                               class="form-control" formControlName="email" type="email">
                                                         <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                         <i class='fa fa-exclamation-circle feedback-icon-error'></i>
+                                                        <P></P>
                                                         <div class="validation-feedback">
                                                             <span *ngIf="getSignUpFormControl('email').hasError('email')">
                                                                 <i class='fa fa-exclamation-circle mr-2'></i>Enter a right email address!</span>
@@ -230,9 +231,10 @@
                                                         <i class='fa fa-check-circle-o feedback-icon-success'></i>
                                                         <i class='fa fa-exclamation-circle feedback-icon-error'></i>
                                                         <div class="validation-feedback">
-                                                            <span>
-                                                                <i class='fa fa-exclamation-circle'></i> Password  is required!</span>
-
+                                                            <span *ngIf="getSignUpFormControl('password').dirty && getSignUpFormControl('password').hasError('required')">
+                                                                <i class='fa fa-exclamation-circle mr-2'></i>password is required!</span>
+                                                            <span *ngIf="getSignUpFormControl('password').dirty && !getSignUpFormControl('password').hasError('required') && getSignUpFormControl('password').hasError('password')">
+                                                                <i class='fa fa-exclamation-circle mr-2'></i>Should be at least 8 characters,containing at least 1 uppercase, 1 lowercase & a number</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -424,7 +426,8 @@
                                             <input placeholder="Registered Phone Number" class="form-control"
                                                    id="OTPCodelebel"
                                                    formControlName="userPhnNumber" [autofocus]="true" required>
-                                            <mat-error *ngIf="resendOTPForm.controls.userPhnNumber.touched && resendOTPForm.controls.userPhnNumber.invalid">
+                                            <mat-error
+                                                    *ngIf="resendOTPForm.controls.userPhnNumber.touched && resendOTPForm.controls.userPhnNumber.invalid">
                                                 <mat-error
                                                         *ngIf="resendOTPForm.controls.userPhnNumber.errors.required"
                                                         style="font-size: 15px">Please enter your registered phone
@@ -454,7 +457,8 @@
                                 <ng-container *ngIf="showTimerCounter === 'no'">
                                     <div class="jumbotron">
                                         <div *ngIf="!isResendForm; else resendButtonClicked">
-                                            <p style="font-size: 16px">Please <b>wait for a while</b> before you click the 'Re-send Code' button</p>
+                                            <p style="font-size: 16px">Please <b>wait for a while</b> before you click
+                                                the 'Re-send Code' button</p>
                                             <button (click)="showResendForm();"
                                                     type="submit" class="resendButton mt-4"
                                                     style="font-size: 14px;padding: 10px 39px; text-align: center"
