@@ -419,7 +419,7 @@ module.exports = {
 
       if (smsPhone) {
         let smsText = `আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-        console.log('smsTxt', smsText);
+        console.log('smsTxt', smsText, smsPhone);
         if (allCouponCodes && allCouponCodes.length > 0) {
           if (allCouponCodes.length === 1) {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');

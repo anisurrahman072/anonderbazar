@@ -690,7 +690,7 @@ module.exports = {
         deletedAt: null
       });
 
-      await PaymentService.sendSms(userDetail, updatedOrder, [], shippingAddresses[0]);
+      await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
 
       return res.status(200).json({
         success: true,
