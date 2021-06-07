@@ -22,6 +22,12 @@ export class OrderService {
         if (data.payment_status) {
             url += `&payment_status=${data.payment_status}`;
         }
+        if (data.order_type) {
+            url += `&order_type=${data.order_type}`;
+        }
+        if (data.payment_type) {
+            url += `&payment_type=${data.payment_type}`;
+        }
         if(data.customerName){
             url += `&customerName=${data.customerName}`;
         }

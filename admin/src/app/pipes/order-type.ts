@@ -8,9 +8,9 @@ export class OrderTypePipe implements PipeTransform {
         // if (!value) return value;
 
         if (value === 1) {
-            return 'Regular payment'
+            return 'Regular order'
         } else {
-            return 'Partial payment'
+            return 'Partial order'
         }
 
     }

@@ -7,7 +7,7 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
@@ -38,6 +38,8 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     searchStartDate: any;
     paymentStatusSearchValue: any;
+    paymentTypeSearchValue: any;
+    orderTypeSearchValue: any;
     searchEndDate: any;
 
     orderData = [];
@@ -51,7 +53,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
-    paymentOptions: any[] = GLOBAL_CONFIGS.OFFLINE_PAYMENT_STATUS;
+    paymentOptions: any[] = GLOBAL_CONFIGS.PAYMENT_STATUS;
+    paymentTypes: any[] = GLOBAL_CONFIGS.PAYMENT_TYPES;
+    orderTypes: any[] = GLOBAL_CONFIGS.ORDER_TYPE;
+    paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     isProductVisible = false;
@@ -153,6 +158,8 @@ export class OrderComponent implements OnInit, OnDestroy {
             date: JSON.stringify(dateSearchValue),
             status: this.statusSearchValue,
             payment_status: this.paymentStatusSearchValue,
+            payment_type: this.paymentTypeSearchValue,
+            order_type: this.orderTypeSearchValue,
             customerName: this.customerNameFilter,
             orderNumber: this.orderNumberFilter
         }, page, limit)

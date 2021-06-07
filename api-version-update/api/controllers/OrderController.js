@@ -14,7 +14,7 @@ const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
-const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE} = require('../../libs/constants');
+const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE, PAYMENT_STATUS_NA, PAYMENT_STATUS_PAID} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -452,10 +452,12 @@ module.exports = {
             orders.id as id,
             orders.total_quantity,
             orders.total_price,
+            orders.paid_amount,
             orders.status,
             orders.created_at as createdAt,
             orders.updated_at as updatedAt,
             orders.payment_status as paymentStatus,
+            orders.order_type as orderType,
             payment.payment_type,
             payment_addresses.postal_code,
             payment_addresses.address,
@@ -485,10 +487,23 @@ module.exports = {
       }
 
       if (req.query.payment_status) {
-        _where += ` AND orders.payment_status = ${req.query.payment_status} `;
+        if(req.query.payment_status == PAYMENT_STATUS_PAID) {
+          _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
+        }
+        else{
+          _where += ` AND orders.payment_status = ${req.query.payment_status} `;
+        }
       }
 
-      console.log('_where is: ', _where);
+      if (req.query.order_type) {
+        _where += ` AND orders.order_type = ${req.query.order_type} `;
+      }
+
+      if (req.query.payment_type) {
+        _where += ` AND payment.payment_type = '${req.query.payment_type}' `;
+      }
+
+      console.log('_where: ', _where);
 
       if (req.query.orderNumber) {
         _where += ` AND orders.id = ${req.query.orderNumber} `;

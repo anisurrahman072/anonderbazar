@@ -43,6 +43,12 @@
                         <span>Status</span>
                     </th>
                     <th nzWidth="230px">
+                        <span>Order type </span>
+                    </th>
+                    <th nzWidth="230px">
+                        <span>Payment type </span>
+                    </th>
+                    <th nzWidth="230px">
                         <span>Payment status </span>
                     </th>
                     <th nzWidth="100px">
@@ -96,6 +102,26 @@
                         </nz-select>
                     </th>
                     <th  nzWidth="230px">
+                        <nz-select style="width: 170px;" [(ngModel)]="orderTypeSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Order type'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of orderTypes" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th  nzWidth="230px">
+                        <nz-select style="width: 170px;" [(ngModel)]="paymentTypeSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Payment type'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of paymentTypes" [nzLabel]="option"
+                                       [nzValue]="option">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th  nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment Status'"
@@ -132,6 +158,9 @@
                             </nz-option>
                         </nz-select>
                     </td>
+                    <td *ngIf="data.orderType == 1">Regular order</td>
+                    <td *ngIf="data.orderType == 2">Partial order</td>
+                    <td>{{data.payment_type}}</td>
                     <td style="width: 230px;">
                         <nz-select style="width: 180px;" *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
@@ -140,6 +169,9 @@
                                        [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">Paid</p>
                     </td>
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 300px;">

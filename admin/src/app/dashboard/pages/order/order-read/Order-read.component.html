@@ -102,6 +102,19 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="margin-bottom: 100px">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>Paid amount</h5>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>৳. {{data.paid_amount}}</h5>
+                    </div>
+                </div>
+            </div>
 
             <div class="row" style="margin-bottom: 10px; margin-left: 30px">
                 <div class="col-md-6">
@@ -132,12 +145,12 @@
                 </div>
                 <div class="col-md-6">
                     <div style="margin-bottom: 10px;">
-                        <h5>Payment Type: {{data.order_type | ordertype}}</h5>
+                        <h5>Order Type: {{data.order_type | ordertype}}</h5>
                     </div>
                     <div class="bill-info-right" *ngIf="payment">
                         <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock">Payment
                             Method: SSLCOMMERZ</h5>
-                        <ng-template #elseBlock><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
+                        <ng-template #elseBlock><h5>Payment Type: {{payment.payment_type}}</h5></ng-template>
                         <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details"
                            style="margin-top: 20px;">
                             <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
