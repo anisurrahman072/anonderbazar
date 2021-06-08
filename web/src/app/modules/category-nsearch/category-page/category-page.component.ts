@@ -1,6 +1,6 @@
 import {HttpClient} from "@angular/common/http";
 import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
     Component,
     Injector,
@@ -25,9 +25,8 @@ import {AppSettings} from "../../../config/app.config";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
-import {concatMap} from "rxjs/operator/concatMap";
 import {Subscription} from "rxjs/Subscription";
-import {a} from "@angular/core/src/render3";
+
 @Component({
     selector: "app-category-page",
     templateUrl: "./category-page.component.html",
