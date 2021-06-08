@@ -38,23 +38,7 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
     styleUrls: ["./product-details.component.scss"]
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
-    productRatingDetail: {
-        totalNumberOfRatings: number;
-        averageRating: number;
-        fiveStar: number;
-        fourStar: number;
-        threeStar: number;
-        twoStar: number;
-        oneStar: number;
-    } = {
-        totalNumberOfRatings: 0,
-        averageRating: 0,
-        fiveStar: 0,
-        fourStar: 0,
-        threeStar: 0,
-        twoStar: 0,
-        oneStar: 0,
-    };
+
     couponProductModalRef: BsModalRef;
     similarProducts: null;
     id: any;
@@ -149,7 +133,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        this.productRatingDetail.averageRating = 0;
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
@@ -234,39 +217,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 return;
             }
 
-            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]];
+            this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
-
-            /** rating section*/
-            this.productRatingDetail.totalNumberOfRatings = result.data[2].length;
-
-            let totalRating = 0;
-            for (let i = 0; i < result.data[2].length; i++) {
-                totalRating += result.data[2][i].rating;
-
-                if (result.data[2][i].rating === 5) {
-                    this.productRatingDetail.fiveStar += 1;
-                }
-                if (result.data[2][i].rating === 4) {
-                    this.productRatingDetail.fourStar += 1;
-                }
-                if (result.data[2][i].rating === 3) {
-                    this.productRatingDetail.threeStar += 1;
-                }
-                if (result.data[2][i].rating === 2) {
-                    this.productRatingDetail.twoStar += 1;
-                }
-                if (result.data[2][i].rating === 1) {
-                    this.productRatingDetail.oneStar += 1;
-                }
-            }
-            if (totalRating !== 0) {
-                const num = totalRating / this.productRatingDetail.totalNumberOfRatings;
-                this.productRatingDetail.averageRating = Number((Math.round(num * 100) / 100).toFixed(2));
-            } else {
-                this.productRatingDetail.averageRating = 0;
-
-            }
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');

@@ -15,6 +15,7 @@ import {CustomProductCreateComponent} from './product-create/custom/custom-produ
 import {FixedProductCreateComponent} from './product-create/fixed/fixed-product-create.component';
 import {BulkUploadComponent} from "./bulk-upload/bulk-upload.component";
 import { BulkUpdateComponent } from './bulk-update/bulk-update.component';
+import {OrderTypePipe} from "../../../pipes/order-type";
 
 @NgModule({
     imports: [
@@ -23,6 +24,9 @@ import { BulkUpdateComponent } from './bulk-update/bulk-update.component';
         ProductRoutingModule,
         CKEditorModule,
         UiModule
+    ],
+    exports: [
+        OrderTypePipe
     ],
     declarations: [
         ProductComponent,
@@ -35,7 +39,8 @@ import { BulkUpdateComponent } from './bulk-update/bulk-update.component';
         AddProductDesignComponent,
         DesignCombinationComponent,
         BulkUploadComponent,
-        BulkUpdateComponent
+        BulkUpdateComponent,
+        OrderTypePipe
     ]
 })
 export class ProductModule {

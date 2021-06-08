@@ -89,7 +89,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row" style="margin-bottom: 100px">
+            <div class="row" style="margin-bottom: 15px">
                 <div class="col-md-6"></div>
                 <div class="col-md-3">
                     <div class="amount-text text-right">
@@ -99,6 +99,19 @@
                 <div class="col-md-3">
                     <div class="amount-text text-right">
                         <h5>৳. {{data.total_price}}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 100px">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>Paid amount</h5>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="amount-text text-right">
+                        <h5>৳. {{data.paid_amount}}</h5>
                     </div>
                 </div>
             </div>
@@ -131,14 +144,45 @@
                     </ng-template>
                 </div>
                 <div class="col-md-6">
+                    <div style="margin-bottom: 10px;">
+                        <h5>Order Type: {{data.order_type | ordertype}}</h5>
+                    </div>
                     <div class="bill-info-right" *ngIf="payment">
                         <h5 *ngIf="payment && payment.payment_type === 'SSLCommerce'; else elseBlock">Payment
                             Method: SSLCOMMERZ</h5>
-                        <ng-template #elseBlock>><h5>Payment Method: {{payment.payment_type}}</h5></ng-template>
+                        <ng-template #elseBlock><h5>Payment Type: {{payment.payment_type}}</h5></ng-template>
                         <p *ngIf="payment && payment.payment_type === 'SSLCommerce'  && payment.details"
                            style="margin-top: 20px;">
                             <strong>SSLCOMMERZ transaction ID:</strong> {{payment.details.tran_id}}
                         </p>
+                    </div>
+                    <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 10px !important;">
+                        <h4>Offline payment method details</h4>
+                        <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
+                            <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                            <p>Transaction number: {{paymentDetails.transactionId}}</p>
+                            <p>Bank name: {{paymentDetails.bankName}}</p>
+                            <p>Branch name: {{paymentDetails.branchName}}</p>
+                            <p>Account Number: {{paymentDetails.accountNumberForBank}}</p>
+                        </div>
+                        <ng-template #notBankTransfer>
+                            <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                            <div (click)="showAddModalVisible(true)" style="cursor: pointer;">
+                                <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}" alt="money-receipt" style="height: 100px;">
+                            </div>
+                        </ng-template>
+                        <nz-modal [nzFooter]="null"
+                                  [nzVisible]="isAddModalVisible"
+                                  [nzTitle]="'Transaction receipt'"
+                                  nzWidth="960"
+                                  [nzContent]="modalContent"
+                                  (nzOnCancel)="handleModalCancel($event)"
+                                  (nzOnOk)="handleModalOk($event)">
+                            <ng-template #modalContent>
+                                <h4>Money Receipt</h4>
+                                <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}">
+                            </ng-template>
+                        </nz-modal>
                     </div>
                 </div>
             </div>
@@ -147,3 +191,18 @@
     </nz-spin>
 </nz-card>
 
+<nz-card nzTitle="Transaction log" *ngIf="payment && payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+    <div *ngFor="let payment of allPaymentsLog;" style="margin-bottom: 10px !important;">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <div class="circle fa">
+                <i class="fa fa-check" aria-hidden="true"></i>
+            </div>
+            <div style="margin-left: 30px;">
+                <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
+                <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
+                <p style="margin: 0px;">Payment transaction: {{payment.transection_key}}</p>
+                <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
+            </div>
+        </div>
+    </div>
+</nz-card>

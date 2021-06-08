@@ -14,7 +14,7 @@ const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
-const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE} = require('../../libs/constants');
+const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE, PAYMENT_STATUS_NA, PAYMENT_STATUS_PAID} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -404,6 +404,7 @@ module.exports = {
 
       logger.orderLog(authUser.id, '######## PLACING ORDER ########');
       logger.orderLog(authUser.id, 'Payment Method: ', req.param('paymentType'));
+      console.log('Payment Method', req.param('paymentType'));
       logger.orderLog(authUser.id, 'Order Body: ', req.body);
       logger.orderLog(authUser.id, 'Order - shipping_address: ', shippingAddress);
       logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);
@@ -423,7 +424,8 @@ module.exports = {
         },
         globalConfigs,
         cart,
-        cartItems
+        cartItems,
+        req.file
       );
 
       return res.status(200).json(response);
@@ -445,19 +447,63 @@ module.exports = {
 
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
-      let rawSelect = 'SELECT orders.id as id,';
-      rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, ';
-      rawSelect += ' CONCAT(users.first_name, \' \', users.last_name) as  full_name,  CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName  ';
+      let rawSelect = `
+      SELECT
+            orders.id as id,
+            orders.total_quantity,
+            orders.total_price,
+            orders.paid_amount,
+            orders.status,
+            orders.created_at as createdAt,
+            orders.updated_at as updatedAt,
+            orders.payment_status as paymentStatus,
+            orders.order_type as orderType,
+            payment.payment_type,
+            payment_addresses.postal_code,
+            payment_addresses.address,
+            divArea.name as division_name,
+            zilaArea.name as zila_name,
+            upazilaArea.name as upazila_name,
+            CONCAT(users.first_name, \' \', users.last_name) as  full_name,
+            CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName
+      `;
 
-      let fromSQL = ' FROM product_orders as orders  ';
-      fromSQL += '  LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id  ';
-      fromSQL += '  LEFT JOIN users as users ON users.id = orders.user_id  ';
+      let fromSQL = `
+            FROM
+              product_orders as orders
+              LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id
+              LEFT JOIN users as users ON users.id = orders.user_id
+              LEFT JOIN payments as payment ON  orders.id  =   payment.order_id
+              LEFT JOIN payment_addresses ON orders.shipping_address = payment_addresses.id
+              LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
+              LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id
+              LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id
+        `;
 
       let _where = ' WHERE orders.deleted_at IS NULL ';
 
       if (req.query.status) {
         _where += ` AND orders.status = ${req.query.status} `;
       }
+
+      if (req.query.payment_status) {
+        if(req.query.payment_status == PAYMENT_STATUS_PAID) {
+          _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
+        }
+        else{
+          _where += ` AND orders.payment_status = ${req.query.payment_status} `;
+        }
+      }
+
+      if (req.query.order_type) {
+        _where += ` AND orders.order_type = ${req.query.order_type} `;
+      }
+
+      if (req.query.payment_type) {
+        _where += ` AND payment.payment_type = '${req.query.payment_type}' `;
+      }
+
+      console.log('_where: ', _where);
 
       if (req.query.orderNumber) {
         _where += ` AND orders.id = ${req.query.orderNumber} `;
@@ -476,9 +522,8 @@ module.exports = {
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
-
-      _where += ' ORDER BY orders.created_at DESC ';
       const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      _where += ' GROUP BY orders.id  ORDER BY orders.created_at DESC   ';
       let totalOrder = 0;
       let orders = [];
       if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
@@ -628,6 +673,39 @@ module.exports = {
     }
   },
 
+  updatePaymentStatus: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set(req.body);
+
+      let userDetail = await User.find({
+        id: updatedOrder.user_id,
+        deletedAt: null
+      });
+
+      let shippingAddresses = await ShippingAddress.find({
+        user_id: userDetail.id,
+        deletedAt: null
+      });
+
+      await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated payment status of order',
+        data: updatedOrder
+      });
+    }
+    catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating payment status'
+      });
+    }
+  },
+
   deleteOrder: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
@@ -692,11 +770,9 @@ module.exports = {
     _where.order_type = PARTIAL_ORDER_TYPE;
     _where.status = CANCELED_ORDER;
     _where.paid_amount = {'!=': 0};
-    if (params.status) {
+    if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
       _where.refund_status = parseInt(params.status);
     }
-
-    console.log('where is: ',_where );
 
     try {
       let paginate = pagination(params);

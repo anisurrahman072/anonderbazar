@@ -19,6 +19,7 @@ import {MessagingTabComponent} from './components/messaging-tab/messaging-tab.co
 import {ImageUploadModule} from "angular2-image-upload";
 import {NgxPaginationModule} from "ngx-pagination";
 import {BKashAccountComponent} from "./components/bkash-tab/bKash-account.component";
+import { ChangePasswordTabComponent } from './components/change-password-tab/change-password-tab.component';
 
 //init route path for profile module
 const routes: Routes = [
@@ -54,6 +55,11 @@ const routes: Routes = [
             {
                 path: 'messaging-tab', component: MessagingTabComponent, data: {
                     title: 'My Messages - Anonderbazar'
+                }
+            },
+            {
+                path: 'change-password-tab', component: ChangePasswordTabComponent, data: {
+                    title: 'change-password - Anonderbazar'
                 }
             },
         ]
@@ -95,7 +101,7 @@ const routes: Routes = [
     ],
     declarations: [
         ProfileComponent, FavouriteProductTabComponent, OrderTabComponent, SuborderComponent, OrderComponent,
-        ProfileTabComponent, AddressTabComponent, MessagingTabComponent, BKashAccountComponent
+        ProfileTabComponent, AddressTabComponent, MessagingTabComponent, BKashAccountComponent, ChangePasswordTabComponent
     ],
 
 })

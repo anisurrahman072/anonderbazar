@@ -21,6 +21,7 @@ module.exports = {
             users.first_name,
             users.last_name,
             users.username,
+            users.phone,
             warehouses.name AS warehouse_name
         FROM
             product_question_answer
@@ -125,6 +126,25 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message,
+        error
+      });
+    }
+  },
+
+  addAnswer: async (req, res) => {
+    try {
+      await ProductQuestionAnswer.updateOne({id: req.param('id')})
+        .set({answer: req.body.answer, answered_by: req.body.answeredBy});
+
+      return res.json({
+        success: true,
+        message: 'Answer added successfully'
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to add the answer',
         error
       });
     }

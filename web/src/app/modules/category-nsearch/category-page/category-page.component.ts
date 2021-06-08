@@ -1,6 +1,6 @@
 import {HttpClient} from "@angular/common/http";
 import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
 import {
     Component,
     Injector,
@@ -25,7 +25,9 @@ import {AppSettings} from "../../../config/app.config";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
+import {concatMap} from "rxjs/operator/concatMap";
 import {Subscription} from "rxjs/Subscription";
+import {a} from "@angular/core/src/render3";
 
 @Component({
     selector: "app-category-page",
@@ -232,10 +234,14 @@ export class CategoryPageComponent implements OnInit {
                     this.allSubSubCategory = results[0];
                     this.categoryB = null;
                     this.categoryB = results[1];
-                    this.categoryTitle = results[1].code;
-                    this.categoryTitleName = results[1].name;
-                    console.log('this.categoryTitle', this.categoryTitle);
-                    console.log('this.categoryTitleName', this.categoryTitleName);
+
+                    if (!_.isNull(results[1]) && !_.isNull(results[1].code)) {
+                        this.categoryTitle = results[1].code;
+                    }
+                    if (!_.isNull(results[1]) && !_.isNull(results[1].name)) {
+                        this.categoryTitleName = results[1].name;
+                    }
+
                     this.allSubSubCategory = results[2];
                     this.subcategoryB = results[3];
                     this.subsubcategoryB = results[4];

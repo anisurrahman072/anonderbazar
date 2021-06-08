@@ -37,6 +37,8 @@ export class HeaderComponent implements OnInit {
     ADMIN_ENDPOINT = AppSettings.ADMIN_ENDPOINT;
     ADMIN_ENDPOINT1 = AppSettings.ADMIN_ENDPOINT;
 
+    searchInputValue: any = null;
+
     user_id: any;
     cart$: Observable<any>;
     favourites$: Observable<FavouriteProduct>;
@@ -64,7 +66,6 @@ export class HeaderComponent implements OnInit {
                 private loginModalService: LoginModalService,
                 private shoppingModalService: ShoppingModalService,
                 private cmsService: CmsService,
-
                 private FilterUiService: FilterUiService
     ) {
         this.stateCtrl = new FormControl();
@@ -84,7 +85,6 @@ export class HeaderComponent implements OnInit {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
 
         this.cmsService.getBySectionName('LAYOUT', 'LOGO').subscribe((result: any) => {
-            console.log('Header Component: ', result);
             this.cmsLogoData = '';
             if (!___.isUndefined(result) && !___.isUndefined(result.data_value) && ___.isArray(result.data_value)) {
                 this.cmsLogoData = result.data_value[0].image;
@@ -103,13 +103,13 @@ export class HeaderComponent implements OnInit {
         }
     }
 
-/*    filter(val: string) {
-        return this.products.map(response =>
-            response.filter(option => {
-                return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
-            })
-        );
-    }*/
+    /*    filter(val: string) {
+            return this.products.map(response =>
+                response.filter(option => {
+                    return option.name.toLowerCase().indexOf(val.toLowerCase()) === 0;
+                })
+            );
+        }*/
 
     //Event method for logout
     logOut() {
@@ -169,7 +169,15 @@ export class HeaderComponent implements OnInit {
 
     //Event for search enter press
     onPressEnter(event) {
-        this.router.navigate(['/products'], {queryParams: {search: event.target.value}});
+        if (event.target !== undefined && event.target.value !== undefined) {
+            this.router.navigate(['/products'], {queryParams: {search: event.target.value}});
+        }else {
+            this.router.navigate(['/products'], {queryParams: {search: event}});
+        }
+    }
+
+    clickEvent() {
+        this.onPressEnter(this.searchInputValue);
     }
 
     //Event method for getting search result

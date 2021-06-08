@@ -19,6 +19,15 @@ export class OrderService {
         if (data.status) {
             url += `&status=${data.status}`;
         }
+        if (data.payment_status) {
+            url += `&payment_status=${data.payment_status}`;
+        }
+        if (data.order_type) {
+            url += `&order_type=${data.order_type}`;
+        }
+        if (data.payment_type) {
+            url += `&payment_type=${data.payment_type}`;
+        }
         if(data.customerName){
             url += `&customerName=${data.customerName}`;
         }
@@ -53,6 +62,10 @@ export class OrderService {
         return this.http.put(`${this.EndPoint}/update?id=${id}`, data);
     }
 
+    updatePaymentStatus(id: number, data: any) {
+        return this.http.put(`${this.EndPoint}/updatePaymentStatus?id=${id}`, data);
+    }
+
     findSSLTransaction(data): Observable<any>{
         return this.http.post(`${this.EndPoint2}/findSSLTransaction`, data);
     }
@@ -61,8 +74,12 @@ export class OrderService {
         return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
 
-    getCancelledOrder(page: number = 1, limit: number = 20, status: string): Observable<any>{
-        return this.http.get(`${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}&status=${status}`);
+    getCancelledOrder(page: number = 1, limit: number = 20, status: number): Observable<any>{
+        let _url = `${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}`;
+        if(status == 0 || status == 1){
+            _url += `&status=${status}`;
+        }
+        return this.http.get(_url);
     }
 
     refundCancelOrder(orderId, status): Observable<any>{

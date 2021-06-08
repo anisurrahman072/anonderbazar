@@ -108,5 +108,37 @@ export const GLOBAL_CONFIGS = {
     REFUND_STATUS: [
         {value: 0, label: 'Not Refunded'},
         {value: 1, label: 'Refunded'},
+    ],
+    PAYMENT_STATUS: [
+        {value: 1, label: 'Unpaid'},
+        {value: 2, label: 'Partially paid'},
+        {value: 3, label: 'Paid'},
+    ],
+    ORDER_TYPE: [
+        {value: 1, label: 'Regular order'},
+        {value: 2, label: 'Partial order'},
+    ],
+    PAYMENT_TYPES: [
+        'Cash',
+        'CashBack',
+        'SSLCommerce',
+        'bKash',
+        'OfflinePay'
     ]
 };
+
+export const PAYMENT_STATUS = {
+    UNPAID_PAYMENT_STATUS: 1,
+    PARTIALLY_PAID_PAYMENT_STATUS: 2,
+    PAID_PAYMENT_STATUS: 3,
+    NOT_APPLICABLE_PAYMENT_STATUS: 4,
+}
+
+export const PAYMENT_METHODS = {
+    CASH_PAYMENT_TYPE: 'Cash',
+    CASHBACK_PAYMENT_TYPE: 'CashBack',
+    SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
+    BKASH_PAYMENT_TYPE: 'bKash',
+    NAGAD_PAYMENT_TYPE: 'Nagad',
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
+}

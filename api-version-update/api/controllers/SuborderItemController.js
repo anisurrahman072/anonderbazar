@@ -135,7 +135,10 @@ module.exports = {
        CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
        CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
        customer.phone as customer_phone, vendor.name as vendor_name, vendor.phone as vendor_phone,
-       GROUP_CONCAT(coupon.id) as all_coupons
+       GROUP_CONCAT(coupon.id) as all_coupons, payment_addresses.postal_code,payment_addresses.address,
+       divArea.name as division_name,
+       zilaArea.name as zila_name,
+       upazilaArea.name as upazila_name
       `;
 
       let fromSQL = ' FROM product_suborder_items as suborder_item  ';
@@ -147,6 +150,10 @@ module.exports = {
       fromSQL += ' LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = suborder.changed_by   ';
       fromSQL += ' LEFT JOIN warehouses as vendor ON vendor.id = suborder.warehouse_id   ';
       fromSQL += ' LEFT JOIN product_purchased_coupon_codes as coupon ON coupon.suborder_item_id = suborder_item.id   ';
+      fromSQL += ' LEFT JOIN payment_addresses ON p_order.shipping_address = payment_addresses.id' +
+        '          LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id      ' +
+        '       LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id' +
+        '       LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id ';
 
       let _where = ' WHERE p_order.deleted_at IS NULL AND suborder.deleted_at IS NULL AND suborder_item.deleted_at IS NULL ';
 
@@ -180,6 +187,7 @@ module.exports = {
         data: allSubOrderItems
       });
     } catch (error) {
+      console.log(error);
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,

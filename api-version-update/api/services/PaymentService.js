@@ -21,20 +21,33 @@ module.exports = {
   },
   getBillingAddress: async function (authUser, req, shippingAddress) {
     let billingAddress = null;
-    if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
-      billingAddress = {...req.param('billing_address'), postal_code: req.param('billing_address').postCode};
-      if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') === false) {
-        billingAddress = await this.createAddress(authUser, billingAddress);
-      } else if (req.param('is_copy') === true && _.isObject(shippingAddress)) {
-        billingAddress = {...shippingAddress};
+    let billing_address = req.param('billing_address');
+    if (billing_address) {
+      if(!_.isObject(billing_address)){
+        if(!_.isObject(billing_address)){
+          billing_address = JSON.parse(billing_address);
+        }
+      }
+      if(_.isObject(billing_address)){
+        billingAddress = {...billing_address, postal_code: billing_address.postCode};
+        if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') == false) {
+          billingAddress = await this.createAddress(authUser, billingAddress);
+        } else if (req.param('is_copy') == true && _.isObject(shippingAddress)) {
+          billingAddress = {...shippingAddress};
+        }
       }
     }
     return billingAddress;
   },
   getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
-    if (req.param('shipping_address')) {
-      shippingAddress = {...req.param('shipping_address'), postal_code: req.param('shipping_address').postCode};
+    let shipping_address = req.param('shipping_address');
+
+    if (shipping_address) {
+      if(!_.isObject(shipping_address)){
+        shipping_address = JSON.parse(shipping_address);
+      }
+      shippingAddress = {...shipping_address, postal_code: shipping_address.postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
         shippingAddress = await this.createAddress(authUser, shippingAddress);
       }
@@ -45,6 +58,7 @@ module.exports = {
         return await this.getAdminPaymentAddress();
       }
     }
+    console.log('4444', shippingAddress);
     return shippingAddress;
   },
 
@@ -161,7 +175,8 @@ module.exports = {
       if (cartItem.product_quantity > 0) {
         let productPrice = cartItem.product_total_price;
         if(!cartItem.product_id.promotion){
-          productPrice = cartItem.product_id.price;
+          let productUnitPrice = cartItem.product_id.price;
+          productPrice = productUnitPrice * cartItem.product_quantity;
         }
         grandOrderTotal += productPrice;
         totalQty += cartItem.product_quantity;
@@ -404,7 +419,7 @@ module.exports = {
 
       if (smsPhone) {
         let smsText = `আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-        console.log('smsTxt', smsText);
+        console.log('smsTxt', smsText, smsPhone);
         if (allCouponCodes && allCouponCodes.length > 0) {
           if (allCouponCodes.length === 1) {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');

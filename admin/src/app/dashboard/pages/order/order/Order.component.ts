@@ -7,7 +7,7 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
@@ -37,6 +37,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     statusSearchValue: string = '';
 
     searchStartDate: any;
+    paymentStatusSearchValue: any;
+    paymentTypeSearchValue: any;
+    orderTypeSearchValue: any;
     searchEndDate: any;
 
     orderData = [];
@@ -50,6 +53,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
+    paymentOptions: any[] = GLOBAL_CONFIGS.PAYMENT_STATUS;
+    paymentTypes: any[] = GLOBAL_CONFIGS.PAYMENT_TYPES;
+    orderTypes: any[] = GLOBAL_CONFIGS.ORDER_TYPE;
+    paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     isProductVisible = false;
@@ -59,6 +66,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     private storedCsvOrders: any = [];
 
     submitting: boolean = false;
+
+    PAYMENT_METHODS = PAYMENT_METHODS;
 
     constructor(
         private orderService: OrderService,
@@ -148,11 +157,13 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.orderDataSubscription = this.orderService.getAllOrdersGrid({
             date: JSON.stringify(dateSearchValue),
             status: this.statusSearchValue,
+            payment_status: this.paymentStatusSearchValue,
+            payment_type: this.paymentTypeSearchValue,
+            order_type: this.orderTypeSearchValue,
             customerName: this.customerNameFilter,
             orderNumber: this.orderNumberFilter
         }, page, limit)
             .subscribe(result => {
-                console.log('getallorders', result);
                 if (!forCsv) {
                     this.orderData = result.data;
                     this.orderTotal = result.total;
@@ -200,14 +211,15 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
 
     selectAllCsv($event) {
-
         const isChecked = !!$event.target.checked;
-        console.log('selectAllCsv', isChecked);
+
         if (!isChecked) {
             this.storedCsvOrders[this.csvPage - 1] = [];
         }
+
         this.csvPageSelectAll[this.csvPage - 1] = isChecked;
         const len = this.csvOrders.length;
+
         for (let i = 0; i < len; i++) {
             this.csvOrders[i].checked = isChecked;
             if (isChecked) {
@@ -219,7 +231,6 @@ export class OrderComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
     }
 
 
@@ -267,7 +278,6 @@ export class OrderComponent implements OnInit, OnDestroy {
             status: $event,
             changed_by: this.currentUser.id
         }).subscribe((res) => {
-            console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
                 .subscribe(arg => {
@@ -281,8 +291,21 @@ export class OrderComponent implements OnInit, OnDestroy {
             this._notification.create('error', 'Error', 'Something went wrong');
             $event = oldStatus;
         });
+    }
 
-
+    changePaymentStatusConfirm($event, id, oldStatus){
+        this._isSpinning = true;
+        this.orderService.updatePaymentStatus(id, {
+            payment_status: $event,
+            changed_by: this.currentUser.id
+        }).subscribe(data => {
+            this._isSpinning = false;
+            this._notification.create('success', 'Successful Message', 'Order Payment status has been updated successfully');
+        }, error => {
+            console.log(error);
+            this._isSpinning = false;
+            this._notification.create('error', 'Error Message', 'Error occurred while updating the payment status!');
+        })
     }
 
     //Method for csv download
@@ -299,7 +322,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
             if (suborderItem.all_coupons) {
                 const couponArr = suborderItem.all_coupons.split(',');
-                console.log('couponArr', suborderItem.all_coupons, couponArr);
                 allCouponCodes = couponArr.map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
                 }).join('|');
@@ -329,7 +351,12 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
                 'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
-                'Coupon Product Code': allCouponCodes,
+                'Coupon Product Code': suborderItem,
+                'postal Code': suborderItem.postal_code,
+                'Upazila Name': suborderItem.upazila_name,
+                'Zila Name': suborderItem.zila_name,
+                'Division Name': suborderItem.division_name,
+                'Address': suborderItem.address,
             });
 
         });
@@ -352,6 +379,11 @@ export class OrderComponent implements OnInit, OnDestroy {
             'Date',
             'SSLCommerce Transaction Id',
             'Coupon Product Code',
+            'postal Code',
+            'Upazila Name',
+            'Zila Name',
+            'Division Name',
+            'Address'
         ];
         this.exportService.downloadFile(csvData, header);
     }
@@ -359,7 +391,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
-        let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
+
+        /** the array indexes which has the data are being filtered and the ids
+         *  of those data's are being map out and taken into "orderIds" variable*/
+        let orderIds = ___.flatten(this.storedCsvOrders.filter(arr => {
+            return arr.length > 0;
+        })).map(item => {
             return item.id;
         });
         if (orderIds.length === 0) {
@@ -370,7 +407,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         this._isSpinning = true;
         this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
             .subscribe((result: any) => {
-                console.log('submitForm', result);
                 this._isSpinning = false;
                 this.dowonloadCSV(result.data);
                 this.submitting = false;
@@ -412,6 +448,10 @@ export class OrderComponent implements OnInit, OnDestroy {
     handleCancel = e => {
         this.isProductVisible = false;
     };
+
+    setPaymentStatus() {
+
+    }
 
 
 }

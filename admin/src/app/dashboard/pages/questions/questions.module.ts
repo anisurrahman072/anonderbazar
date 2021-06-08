@@ -7,13 +7,15 @@ import {QuestionsEditComponent} from './questions-edit/questions-edit.component'
 import {QuestionsRoutingModule} from "./questions-routing.module";
 import {NgZorroAntdModule} from "ng-zorro-antd";
 import {UiModule} from "../../shared/ui.module";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
     imports: [
         CommonModule,
         QuestionsRoutingModule,
         NgZorroAntdModule,
-        UiModule
+        UiModule,
+        ReactiveFormsModule
     ],
     declarations: [
         QuestionsComponent,

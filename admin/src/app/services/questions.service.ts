@@ -30,4 +30,8 @@ export class QuestionsService {
         return this.http.get(`${this.EndPoint}/read/${id}`);
     }
 
+    update(id: number, answerData: object) {
+        return this.http.put(`${this.EndPoint}/addAnswer/${id}`, answerData);
+    }
+
 }

@@ -26,7 +26,8 @@ module.exports = {
       columnType: 'text',
     },
     answered_by: {
-      model: 'user',
+      type: 'string',
+      columnType: 'varchar'
     }
   },
   tableName: 'product_question_answer',

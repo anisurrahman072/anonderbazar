@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {forkJoin, Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute} from '@angular/router';
 import jsPDF from 'jspdf';
@@ -7,9 +7,11 @@ import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
+import en from "@angular/common/locales/en";
+import {PaymentService} from "../../../../services/payment.service";
 
 @Component({
     selector: 'app-brand-read',
@@ -22,9 +24,11 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     id: number;
     data: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    otherImageExtension = environment.otherImageExtension;
     currentDate: any;
     order: any;
     payment: any;
+    paymentDetails: any;
     paymentAddress: any;
     shippingAddress: any;
     suborderItems: any;
@@ -33,12 +37,17 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     _isSpinning = true;
 
     userPhone: string = "";
+    PAYMENT_METHODS =  PAYMENT_METHODS;
+    isAddModalVisible: boolean = false;
+
+    allPaymentsLog: any;
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
-                private paymentAddressService: PaymentAddressService) {
+                private paymentAddressService: PaymentAddressService,
+                private paymentService: PaymentService) {
     }
 
     // init the component
@@ -49,10 +58,10 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             console.log(' this.id',  this.id);
 
-           this.orderSub = this.orderService.getById(this.id)
-                .subscribe(order => {
+            forkJoin([this.orderService.getById(this.id), this.paymentService.getByOrderId(this.id)])
+                .subscribe(data => {
 
-                    this.data = order;
+                    this.data = data[0];
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
 
                     console.log('this.orderService.getById(this.id)',  this.data);
@@ -60,28 +69,31 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     if (this.data.user_id && this.data.user_id) {
                         this.userPhone = this.data.user_id.phone;
                     }
-                    for (let i = 0; i < order.suborders.length; i++) {
-                        this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
+                    for (let i = 0; i < data[0].suborders.length; i++) {
+                        this.suborderService.getById(data[0].suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                         });
                     }
 
-                    if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
-                        this.payment = order.payment[0];
+                    if (data[0] && typeof data[0].payment !== 'undefined' && data[0].payment.length > 0) {
+                        this.payment = data[0].payment[0];
+                        this.paymentDetails = JSON.parse(data[0].payment[0].details);
                         if (this.payment.payment_type === 'SSLCommerce') {
                             this.payment.details = JSON.parse(this.payment.details);
                         }
                     }
-                    if (order && typeof order.billing_address !== 'undefined' && order.billing_address.id !== 75) {
+                    if (data[0] && typeof data[0].billing_address !== 'undefined' && data[0].billing_address.id !== 75) {
                         this.paymentAddressService.getById(this.data.billing_address.id).subscribe(paymentAddress => {
                             this.paymentAddress = paymentAddress;
                         });
                     }
-                    if (order && typeof order.shipping_address !== 'undefined' && order.shipping_address.id !== 75) {
+                    if (data[0] && typeof data[0].shipping_address !== 'undefined' && data[0].shipping_address.id !== 75) {
                         this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
                             this.shippingAddress = shippingAddress;
                         });
                     }
+
+                    this.allPaymentsLog = data[1];
 
                     console.log('this.data', this.data, this.suborders);
                     this._isSpinning = false;
@@ -140,5 +152,17 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         }).map((code) => {
             return '1' + ___.padStart(code.id, 6, '0')
         }).join(',');
+    }
+
+    handleModalCancel = e => {
+        this.isAddModalVisible = false;
+    };
+
+    handleModalOk = e => {
+        this.isAddModalVisible = false;
+    };
+
+    showAddModalVisible(flag){
+        this.isAddModalVisible = flag;
     }
 }
