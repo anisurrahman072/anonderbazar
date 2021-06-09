@@ -54,6 +54,9 @@
                     <th nzWidth="100px">
                         <span>Status Changer</span>
                     </th>
+                    <th nzWidth="400px">
+                        <span>Transactions</span>
+                    </th>
                     <th nzWidth="300px">
                         <span>shipping_address</span>
                     </th >
@@ -174,6 +177,11 @@
                         <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">Paid</p>
                     </td>
                     <td style="width: 100px;">{{data.changedByName}}</td>
+                    <td style="width: 400px;">
+                        <div *ngFor="let transaction of data.transactions">
+                            <p style="margin-bottom: 15px;">amount: {{transaction.amount}}, Payment Type: {{transaction.paymentType}}, Transaction Key: {{transaction.transactionKey}}, Transaction Time: {{transaction.transactionTime}}</p>
+                        </div>
+                    </td>
                     <td style="width: 300px;">
                         <p>Postal Code: {{data.postal_code}}</p>
                         <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
