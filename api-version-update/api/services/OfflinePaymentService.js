@@ -1,5 +1,5 @@
 const logger = require('../../libs/softbd-logger').Logger;
-const {PAYMENT_STATUS_UNPAID, OFFLINE_PAYMENT_TYPE} = require('../../libs/constants');
+const {PAYMENT_STATUS_UNPAID, OFFLINE_PAYMENT_TYPE, BANK_TRANSFER_OFFLINE_PAYMENT} = require('../../libs/constants');
 const {uploadImages} = require('../../libs/helper');
 
 
@@ -20,6 +20,7 @@ module.exports = {
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
     logger.orderLog(authUser.id, 'Courier Charge: ', courierCharge);
+
     /** adding shipping charge with grandtotal */
     grandOrderTotal += courierCharge;
 
@@ -37,12 +38,18 @@ module.exports = {
 
     console.log('Request body: ', requestBody);
 
-    let paymentDetails = {};
-    if (requestBody.offlinePaymentMethod == 'bankTransfer') {
-      paymentDetails = JSON.parse(requestBody.bankTransfer);
-      paymentDetails.offline_payment_method = requestBody.offlinePaymentMethod;
+    /** Creating payment details */
+    let paymentDetails = {
+      offline_payment_method: requestBody.offlinePaymentMethod
+    };
+
+    if (requestBody.offlinePaymentMethod === BANK_TRANSFER_OFFLINE_PAYMENT) {
+      paymentDetails = {
+        ...paymentDetails,
+        ...JSON.parse(requestBody.bankTransfer)
+      };
     } else {
-      if (requestBody.hasImage == 'true') {
+      if (requestBody.hasImage === 'true') {
         const uploaded = await uploadImages(requestFile('image'));
         if (uploaded.length === 0) {
           throw new Error('No image was uploaded');
@@ -50,9 +57,9 @@ module.exports = {
         const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
         paymentDetails.money_receipt = newPath;
-        paymentDetails.offline_payment_method = requestBody.offlinePaymentMethod;
       }
     }
+    /** END */
 
     const order =
       await sails.getDatastore()
@@ -61,7 +68,6 @@ module.exports = {
             suborders,
             order,
             allOrderedProductsInventory,
-            allGeneratedCouponCodes
           } = await PaymentService.createOrder(db, {
             user_id: authUser.id,
             cart_id: cart.id,
@@ -76,15 +82,13 @@ module.exports = {
           }, cartItems);
 
           /** .............Payment Section ........... */
-          const payments = await PaymentService.createPayment(db, suborders, {
+          await PaymentService.createPayment(db, suborders, {
             user_id: authUser.id,
             order_id: order.id,
             payment_type: OFFLINE_PAYMENT_TYPE,
             details: JSON.stringify(paymentDetails),
             status: 1
           });
-
-          const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
 
           await PaymentService.updateCart(cart.id, db, cartItems);
 
