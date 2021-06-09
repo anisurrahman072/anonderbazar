@@ -3,7 +3,6 @@ const {PAYMENT_STATUS_UNPAID, OFFLINE_PAYMENT_TYPE} = require('../../libs/consta
 const {uploadImages} = require('../../libs/helper');
 
 
-
 module.exports = {
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems, requestFile) => {
     const {
@@ -39,12 +38,11 @@ module.exports = {
     console.log('Request body: ', requestBody);
 
     let paymentDetails = {};
-    if(requestBody.offlinePaymentMethod == 'bankTransfer'){
+    if (requestBody.offlinePaymentMethod == 'bankTransfer') {
       paymentDetails = JSON.parse(requestBody.bankTransfer);
       paymentDetails.offline_payment_method = requestBody.offlinePaymentMethod;
-    }
-    else{
-      if(requestBody.hasImage == 'true'){
+    } else {
+      if (requestBody.hasImage == 'true') {
         const uploaded = await uploadImages(requestFile('image'));
         if (uploaded.length === 0) {
           throw new Error('No image was uploaded');
@@ -57,45 +55,45 @@ module.exports = {
     }
 
     const order =
-    await sails.getDatastore()
-      .transaction(async (db) => {
-        let {
-          suborders,
-          order,
-          allOrderedProductsInventory,
-          allGeneratedCouponCodes
-        } = await PaymentService.createOrder(db, {
-          user_id: authUser.id,
-          cart_id: cart.id,
-          total_price: grandOrderTotal,
-          paid_amount: grandOrderTotal,
-          payment_status: PAYMENT_STATUS_UNPAID,
-          total_quantity: totalQty,
-          billing_address: billingAddress.id,
-          shipping_address: shippingAddress.id,
-          courier_charge: courierCharge,
-          courier_status: 1
-        }, cartItems);
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          let {
+            suborders,
+            order,
+            allOrderedProductsInventory,
+            allGeneratedCouponCodes
+          } = await PaymentService.createOrder(db, {
+            user_id: authUser.id,
+            cart_id: cart.id,
+            total_price: grandOrderTotal,
+            paid_amount: grandOrderTotal,
+            payment_status: PAYMENT_STATUS_UNPAID,
+            total_quantity: totalQty,
+            billing_address: billingAddress.id,
+            shipping_address: shippingAddress.id,
+            courier_charge: courierCharge,
+            courier_status: 1
+          }, cartItems);
 
-        /** .............Payment Section ........... */
-        const payments = await PaymentService.createPayment(db, suborders, {
-          user_id: authUser.id,
-          order_id: order.id,
-          payment_type: OFFLINE_PAYMENT_TYPE,
-          details: JSON.stringify(paymentDetails),
-          status: 1
+          /** .............Payment Section ........... */
+          const payments = await PaymentService.createPayment(db, suborders, {
+            user_id: authUser.id,
+            order_id: order.id,
+            payment_type: OFFLINE_PAYMENT_TYPE,
+            details: JSON.stringify(paymentDetails),
+            status: 1
+          });
+
+          const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
+
+          await PaymentService.updateCart(cart.id, db, cartItems);
+
+          await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+          logger.orderLog(authUser.id, 'offline order successfully created:', order);
+
+          return order;
         });
-
-        const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
-
-        await PaymentService.updateCart(cart.id, db, cartItems);
-
-        await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
-
-        logger.orderLog(authUser.id, 'offline order successfully created:', order);
-
-        return order;
-      });
     return order;
   }
 };

@@ -513,6 +513,11 @@
                                 <p class="defaultParagraph">Direct Mobile Transfer</p>
                             </mat-radio-button>
                         </mat-radio-group>
+                        <div class="validation-feedback">
+                                    <span *ngIf="!(getSignUpFormControl('offlinePaymentMethods').dirty)">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>You have to select a offline payment method must!
+                                    </span>
+                        </div>
                         <div *ngIf="isShowCashInAdvanceForm">
                             <image-upload [max]="1" (removed)="onRemoved($event)"
                                           id="imageUploadSection"
@@ -520,20 +525,45 @@
                                           dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
                                           clearButtonCaption="clear">
                             </image-upload>
+                            <div class="validation-feedback">
+                                    <span *ngIf="!ImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload cash memo image first!
+                                    </span>
+                            </div>
                         </div>
                         <div *ngIf="isShowBankTransferForm">
                             <label>Transaction number</label>
                             <input type="text" class="form-control" formControlName="transactionIdForBank"
                                    placeholder="Enter bank transaction number">
+                            <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('transactionIdForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank transaction number is required!
+                                    </span>
+                            </div>
                             <label>Bank name</label>
                             <input type="text" class="form-control" formControlName="bankName"
                                    placeholder="Enter Bank Name">
+                            <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('bankName').value">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank name is required!
+                                    </span>
+                            </div>
                             <label>Branch name</label>
                             <input type="text" class="form-control" formControlName="branchName"
                                    placeholder="Enter Branch name">
+                            <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('branchName').value">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank branch name is required!
+                                    </span>
+                            </div>
                             <label>Account Number</label>
-                            <input type="text" class="form-control" formControlName="accountNumberForBank"
+                            <input type="number" class="form-control" formControlName="accountNumberForBank"
                                    placeholder="Enter Account Number">
+                            <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('accountNumberForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Account number is required!
+                                    </span>
+                            </div>
                         </div>
                         <div *ngIf="isBankDeposit">
                             <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)"
@@ -542,6 +572,11 @@
                                           dropBoxMessage="Drop picture of bank deposit slip"
                                           clearButtonCaption="clear">
                             </image-upload>
+                            <div class="validation-feedback">
+                                    <span *ngIf="!BankDepositImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload bank deposit slip image first!
+                                    </span>
+                            </div>
                         </div>
 
                         <div *ngIf="isMobileTransfer">
@@ -551,6 +586,11 @@
                                           dropBoxMessage="Drop screenshot of payment page"
                                           clearButtonCaption="clear">
                             </image-upload>
+                            <div class="validation-feedback">
+                                    <span *ngIf="!mobileTransferImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload screenshot of payment first!
+                                    </span>
+                            </div>
                         </div>
                     </div>
 

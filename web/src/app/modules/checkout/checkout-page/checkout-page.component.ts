@@ -454,11 +454,18 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
-            (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) ||
+        if((this.isShowCashInAdvanceForm && !this.ImageFile) ||
             (this.isBankDeposit && !this.BankDepositImageFile) ||
-            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
-            this.toastr.error("Please fill up Offline Payment form correctly!", "Not filled up all fields!!", {
+            (this.isMobileTransfer && !this.mobileTransferImageFile)){
+            this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) {
+            this.toastr.error("Please fill up Bank transfer form correctly!", "Not filled up all fields!!", {
                 positionClass: 'toast-bottom-right'
             });
             this.loaderService.hideLoader();
@@ -1087,18 +1094,39 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
-        return metadata;
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.ImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.ImageFile = null;
+            return false;
+        }
     };
 
     onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
-        this.BankDepositImageFile = metadata.file;
-        return metadata;
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.BankDepositImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.BankDepositImageFile = null;
+            return false;
+        }
     };
 
     onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
-        this.mobileTransferImageFile = metadata.file;
-        return metadata;
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.mobileTransferImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.mobileTransferImageFile = null;
+            return false;
+        }
     };
 
     showOfflineForm(flag) {
