@@ -20,3 +20,8 @@ exports.PAYMENT_TRAN_TYPE_PAY = 1;
 exports.PAYMENT_TRAN_TYPE_REFUND = 2;
 
 exports.CANCELED_ORDER = 12;
+
+exports.BANK_TRANSFER_OFFLINE_PAYMENT = 'bankTransfer';
+exports.CASH_IN_ADVANCE_OFFLINE_PAYMENT = 'cashInAdvance';
+exports.BANK_DEPOSIT_OFFLINE_PAYMENT = 'bankDeposit';
+exports.MOBILE_TRANSFER_OFFLINE_PAYMENT = 'mobileTransfer';

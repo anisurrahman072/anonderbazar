@@ -69,18 +69,9 @@
                                                     </div>
                                                 </td>
                                                 <td class="product-remove text-center" *ngIf="cartItem">
-                                                    <ng-template #popTemplate>
-                                                        <button mat-raised-button color="warn"
-                                                                (click)="removeCartItem(cartItem.id)">Ok
-                                                        </button>
-                                                        <button mat-raised-button color="basic" (click)="pop.hide()">
-                                                            Cancel
-                                                        </button>
-                                                    </ng-template>
                                                     <button mat-mini-fab color="basic" class="remove text-dark"
-                                                            type="button" #pop="bs-popover"
-                                                            [popover]="popTemplate" popoverTitle="Are you want to remove?"
-                                                            [outsideClick]="true">
+                                                            type="button"
+                                                            (click)="removeCartItem(cartItem.id)" >
                                                         <i class="fa fa-times"></i>
                                                     </button>
                                                 </td>

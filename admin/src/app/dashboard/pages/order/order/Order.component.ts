@@ -165,7 +165,36 @@ export class OrderComponent implements OnInit, OnDestroy {
         }, page, limit)
             .subscribe(result => {
                 if (!forCsv) {
-                    this.orderData = result.data;
+
+                    let allData = result.data;
+                    allData = allData.map(data => {
+                        let transactions = [];
+
+                        if(!data.paymentAmount){
+                            return {...data, transactions};
+                        }
+                        else {
+                            let transactionsCount = data.paymentAmount.split(',').length;
+
+                            let paymentAmounts = data.paymentAmount.split(',');
+                            let paymentTypes = data.paymentType.split(',');
+                            let transactionKeys = data.transactionKey.split(',');
+                            let transactionTimes = data.transactionTime.split(',');
+
+                            for (let i = 0; i < transactionsCount; i++){
+                                let transaction = {
+                                    amount: paymentAmounts[i],
+                                    paymentType: paymentTypes[i],
+                                    transactionKey: transactionKeys[i],
+                                    transactionTime: transactionTimes[i]
+                                }
+                                transactions.push(transaction);
+                            }
+                            return {...data, transactions};
+                        }
+                    })
+
+                    this.orderData = allData;
                     this.orderTotal = result.total;
                 } else {
                     this.csvOrders = result.data.map((item) => {
@@ -351,8 +380,9 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
                 'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
-                'Coupon Product Code': suborderItem,
+                'Coupon Product Code': allCouponCodes,
                 'postal Code': suborderItem.postal_code,
+                'Transactions': suborderItem.transactions,
                 'Upazila Name': suborderItem.upazila_name,
                 'Zila Name': suborderItem.zila_name,
                 'Division Name': suborderItem.division_name,
@@ -380,6 +410,7 @@ export class OrderComponent implements OnInit, OnDestroy {
             'SSLCommerce Transaction Id',
             'Coupon Product Code',
             'postal Code',
+            'Transactions',
             'Upazila Name',
             'Zila Name',
             'Division Name',
@@ -408,7 +439,36 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
             .subscribe((result: any) => {
                 this._isSpinning = false;
-                this.dowonloadCSV(result.data);
+
+                let allData = result.data;
+                allData = allData.map(data => {
+                    let transactions = [];
+
+                    if(!data.paymentAmount){
+                        return {...data, transactions};
+                    }
+                    else {
+                        let transactionsCount = data.paymentAmount.split(',').length;
+
+                        let paymentAmounts = data.paymentAmount.split(',');
+                        let paymentTypes = data.paymentType.split(',');
+                        let transactionKeys = data.transactionKey.split(',');
+                        let transactionTimes = data.transactionTime.split(',');
+
+                        for (let i = 0; i < transactionsCount; i++){
+                            let transaction = {
+                                amount: paymentAmounts[i],
+                                paymentType: paymentTypes[i],
+                                transactionKey: transactionKeys[i],
+                                transactionTime: transactionTimes[i]
+                            }
+                            transactions.push(transaction);
+                        }
+                        return {...data, transactions};
+                    }
+                })
+
+                this.dowonloadCSV(allData);
                 this.submitting = false;
             }, (err) => {
                 console.log(err);

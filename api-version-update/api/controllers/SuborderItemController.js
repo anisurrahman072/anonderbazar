@@ -131,6 +131,12 @@ module.exports = {
        suborder_item.warehouse_id, suborder_item.product_quantity, suborder_item.product_total_price,
        suborder_item.status, suborder_item.\`date\`,  suborder_item.created_at,
        p_order.status as order_status, p_order.user_id, suborder.status as sub_order_status,
+
+       GROUP_CONCAT(payment.payment_type) as paymentType,
+       GROUP_CONCAT(COALESCE(payment.transection_key, '') SEPARATOR ', ') as transactionKey,
+       GROUP_CONCAT(payment.payment_amount) as paymentAmount,
+       GROUP_CONCAT(payment.created_at) as transactionTime,
+
        CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
        CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
        CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
@@ -144,6 +150,7 @@ module.exports = {
       let fromSQL = ' FROM product_suborder_items as suborder_item  ';
       fromSQL += ' LEFT JOIN product_suborders as suborder ON suborder.id = suborder_item.product_suborder_id   ';
       fromSQL += ' LEFT JOIN product_orders as p_order ON p_order.id = suborder.product_order_id   ';
+      fromSQL += ' LEFT JOIN payments as payment ON  p_order.id  =   payment.order_id   ';
       fromSQL += ' LEFT JOIN products   ON products.id = suborder_item.product_id   ';
       fromSQL += ' LEFT JOIN users as customer ON customer.id = p_order.user_id   ';
       fromSQL += ' LEFT JOIN users as orderChangedBy ON orderChangedBy.id = p_order.changed_by   ';

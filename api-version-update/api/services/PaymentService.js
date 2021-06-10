@@ -22,17 +22,19 @@ module.exports = {
   getBillingAddress: async function (authUser, req, shippingAddress) {
     let billingAddress = null;
     let billing_address = req.param('billing_address');
+    let isCopy = req.param('is_copy');
     if (billing_address) {
-      if(!_.isObject(billing_address)){
-        if(!_.isObject(billing_address)){
-          billing_address = JSON.parse(billing_address);
-        }
+      if (!_.isObject(billing_address)) {
+        billing_address = JSON.parse(billing_address);
       }
-      if(_.isObject(billing_address)){
+      if (_.isString(isCopy)) {
+        isCopy = isCopy === 'true';
+      }
+      if (_.isObject(billing_address)) {
         billingAddress = {...billing_address, postal_code: billing_address.postCode};
-        if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') == false) {
+        if ((!billingAddress.id || billingAddress.id === '') && isCopy === false) {
           billingAddress = await this.createAddress(authUser, billingAddress);
-        } else if (req.param('is_copy') == true && _.isObject(shippingAddress)) {
+        } else if (isCopy === true && _.isObject(shippingAddress)) {
           billingAddress = {...shippingAddress};
         }
       }
@@ -42,11 +44,14 @@ module.exports = {
   getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
     let shipping_address = req.param('shipping_address');
+    console.log('helllloooo2222222', req.param('shipping_address'), req.param('is_copy'));
 
     if (shipping_address) {
-      if(!_.isObject(shipping_address)){
+      if (!_.isObject(shipping_address)) {
         shipping_address = JSON.parse(shipping_address);
       }
+      console.log('shippppppppppppppppp', shipping_address);
+
       shippingAddress = {...shipping_address, postal_code: shipping_address.postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
         shippingAddress = await this.createAddress(authUser, shippingAddress);
@@ -62,7 +67,7 @@ module.exports = {
     return shippingAddress;
   },
 
-  getAddress: async function(addressId) {
+  getAddress: async function (addressId) {
     return await PaymentAddress.findOne({
       id: addressId
     });
@@ -90,11 +95,11 @@ module.exports = {
     });
   },
 
-  isAllowedForPartialPay: function (order, globalConfigs){
+  isAllowedForPartialPay: function (order, globalConfigs) {
     const currentDate = moment(new Date());
     const orderedDate = moment(order.createdAt);
     const duration = moment.duration(currentDate.diff(orderedDate));
-    const expendedHour =  Math.floor(duration.asHours());
+    const expendedHour = Math.floor(duration.asHours());
     // eslint-disable-next-line eqeqeq
     return !(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER);
   },
@@ -174,7 +179,7 @@ module.exports = {
     cartItems.forEach(async (cartItem) => {
       if (cartItem.product_quantity > 0) {
         let productPrice = cartItem.product_total_price;
-        if(!cartItem.product_id.promotion){
+        if (!cartItem.product_id.promotion) {
           let productUnitPrice = cartItem.product_id.price;
           productPrice = productUnitPrice * cartItem.product_quantity;
         }
@@ -232,7 +237,11 @@ module.exports = {
 
   createOrder: async (db, orderDatPayload, cartItems) => {
 
+    console.log('ttttttttttttt1');
+    console.log('orderDatPayload', orderDatPayload);
+
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
+
 
     /** Get unique warehouse Id for suborder................START......................... */
     let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
@@ -246,6 +255,7 @@ module.exports = {
 
     /** Generate Necessary sub orders according to warehouse Start **/
     let allGeneratedCouponCodes = [];
+
 
     for (let i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
@@ -434,7 +444,7 @@ module.exports = {
     }
   },
 
-  sendSmsForPartialPayment: async (authUser,shippingAddress, orderId, {paidAmount, transaction_id}) => {
+  sendSmsForPartialPayment: async (authUser, shippingAddress, orderId, {paidAmount, transaction_id}) => {
     try {
       let smsPhone = authUser.phone;
 
