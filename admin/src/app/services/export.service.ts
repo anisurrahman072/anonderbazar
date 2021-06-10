@@ -49,16 +49,21 @@ export class ExportService {
                 let head = headerList[index];
                 if (head === 'Transactions') {
                     let len = array[i][head].length;
-                    if(len > 0) line += ', '
+                    if(len === 0){
+                        line += ', No transaction found'
+                    }
+                    else {
+                        if(len > 0) line += ', '
 
-                    for(let ind = 0; ind < len ; ind++){
-                        line += '{';
-                        for(let key in array[i][head][ind]){
-                            line += key+':';
-                            line += array[i][head][ind][key]+' || ';
+                        for(let ind = 0; ind < len ; ind++){
+                            line += `${ind+1}. `;
+                            for(let key in array[i][head][ind]){
+                                line += key+':';
+                                line += array[i][head][ind][key]+' / ';
+                            }
+                            line = line.substr(0, line.split('').length-3);
+                            line += "  ";
                         }
-                        line = line.substr(0, line.split('').length-4);
-                        line += '} '
                     }
                 } else
                     line += ',' + array[i][head];

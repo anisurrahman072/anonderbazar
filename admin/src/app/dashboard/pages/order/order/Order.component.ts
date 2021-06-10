@@ -457,10 +457,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
                         for (let i = 0; i < transactionsCount; i++){
                             let transaction = {
-                                amount: paymentAmounts[i],
-                                paymentType: paymentTypes[i],
-                                transactionKey: transactionKeys[i],
-                                transactionTime: transactionTimes[i]
+                                Amount: paymentAmounts[i],
+                                Type: paymentTypes[i],
+                                Transaction_Key: transactionKeys[i],
+                                Time: transactionTimes[i]
                             }
                             transactions.push(transaction);
                         }
