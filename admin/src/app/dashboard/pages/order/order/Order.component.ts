@@ -380,7 +380,7 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
                 'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
-                'Coupon Product Code': suborderItem,
+                'Coupon Product Code': allCouponCodes,
                 'postal Code': suborderItem.postal_code,
                 'Transactions': suborderItem.transactions,
                 'Upazila Name': suborderItem.upazila_name,
