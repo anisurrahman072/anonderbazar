@@ -344,7 +344,7 @@ module.exports = {
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
 
-      logger.orderLog(customer.id, 'validationResponse-sslCommerzIpnSuccess', validationResponse);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzIpnSuccess-partial-', validationResponse);
 
       console.log('',);
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
@@ -448,10 +448,10 @@ module.exports = {
 
       const sslcommerz = sslcommerzInstance(globalConfigs);
       const validationResponse = await sslcommerz.validate_transaction_order(req.body.val_id);
-      logger.orderLog(customer.id, 'validationResponse-sslCommerzSuccess', validationResponse);
+      logger.orderLog(customer.id, 'validationResponse-sslCommerzSuccess-partial-', validationResponse);
 
       if (!(validationResponse && (validationResponse.status === 'VALID' || validationResponse.status === 'VALIDATED'))) {
-        throw new Error('SSL Commerz Payment Validation Failed!');
+        throw new Error('SSL Commerz Payment Validation Failed (Partial)!');
       }
 
       const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
