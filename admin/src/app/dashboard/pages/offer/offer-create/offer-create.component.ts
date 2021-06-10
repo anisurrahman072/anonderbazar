@@ -5,6 +5,7 @@ import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
 import {environment} from "../../../../../environments/environment";
+import {ProductService} from "../../../../services/product.service";
 
 @Component({
     selector: 'app-offer-create',
@@ -57,12 +58,23 @@ export class OfferCreateComponent implements OnInit {
     isShowHomepage: boolean = false;
     isShowCarousel: boolean = false;
 
+    Calc_type;
+    isVisible: Boolean = false;
+    allProducts: any = [];
+
+    allProductPage: number = 1;
+    allProductLimit: number = 20;
+    offerProductIds: any = [];
+    allProductNameSearch: string = '';
+    allProductTotal = 0;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private cmsService: CmsService,
+        private productService: ProductService
     ) {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
@@ -70,12 +82,17 @@ export class OfferCreateComponent implements OnInit {
             frontend_position: ['', ''],
             link: ['', ''],
             description: ['', []],
+            discountAmount: ['', [Validators.required]],
+            calculationType: ['', [Validators.required]],
+            offerStartDate: ['', Validators.required],
+            offerEndDate: ['', Validators.required],
             showHome: ['', []],
             showCarousel: ['', []]
         });
     }
 
     ngOnInit() {
+        this.getAllProducts(1);
     }
 
 //Event method for submitting the form
@@ -97,6 +114,10 @@ export class OfferCreateComponent implements OnInit {
         formData.append('description', value.description);
         formData.append('showInCarousel', showInCarousel);
         formData.append('showInHome', showInHome);
+        formData.append('discountAmount', value.discountAmount);
+        formData.append('calculationType', value.calculationType);
+        formData.append('offerStartDate', value.offerStartDate);
+        formData.append('offerEndDate', value.offerEndDate);
         if (value.frontend_position) {
             console.log('hhh', value.frontend_position);
             formData.append('frontend_position', value.frontend_position);
@@ -192,7 +213,34 @@ export class OfferCreateComponent implements OnInit {
         this.isShowHomepage = !this.isShowHomepage;
     }
 
-    changeShowCarousel() {
+    /*changeShowCarousel() {
         this.isShowCarousel = !this.isShowCarousel;
+    }*/
+
+    getAllProducts(event: any) {
+        if(event) {
+            this.allProductPage = event;
+        }
+
+        this._isSpinning = true;
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch)
+            .subscribe(result => {
+                console.log('all products to add to offer: rrrrr: ', result);
+
+            })
+    }
+
+    showModal(): void {
+        this.isVisible = true;
+    }
+
+    handleOk(): void {
+        console.log('Button ok clicked!');
+        this.isVisible = false;
+    }
+
+    handleCancel(): void {
+        console.log('Button cancel clicked!');
+        this.isVisible = false;
     }
 }

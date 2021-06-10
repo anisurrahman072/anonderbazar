@@ -121,7 +121,59 @@
                 <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
                           debounce="500 "></ckeditor>
             </div>
-        </div><!--type-->
+        </div>
+        <div nz-row style="margin-top: 20px">
+
+            <div nz-col [nzSpan]="7">
+                <label> Calculation Type </label>
+            </div>
+
+            <div nz-col [nzSpan]="12">
+
+                <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'"
+                           [(ngModel)]="Calc_type">
+                    <nz-option *ngFor="let option of ['percentage', 'absolute amount']" [nzLabel]="option"
+                               [nzValue]="option">
+                    </nz-option>
+                </nz-select>
+                <div *ngIf="getFormControl('calculationType').dirty&&getFormControl('calculationType').hasError('required')">
+                    Please Select Calculation Type
+                </div>
+
+                <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
+                       [nzSize]="'large'" style="margin: 10px 0" type="number">
+                <div *ngIf="getFormControl('discountAmount').dirty&&getFormControl('discountAmount').hasError('required')">
+                    Please insert the discount amount
+                </div>
+
+                <a nz-button style="margin-bottom: 10px" [nzType]="'primary'" (click)="showModal()">
+                    <span>Add Offer Products</span>
+                </a>
+
+            </div>
+        </div>
+
+        <!--Offer Duration-->
+        <div nz-row style="margin: 20px 0;">
+            <div nz-col [nzSpan]="7">
+                <label>Offer Duration</label>
+            </div>
+            <div nz-col [nzSpan]="12">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd HH:mm:ss"
+                        formControlName="offerStartDate"
+                        nzPlaceHolder="Start">
+                </nz-date-picker>
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd HH:mm:ss"
+                        formControlName="offerEndDate"
+                        nzPlaceHolder="End">
+                </nz-date-picker>
+            </div>
+        </div>
+
 
         <div nz-row>
             <div nz-col [nzOffset]="7" [nzSpan]="12">
@@ -147,3 +199,95 @@
         </div>
     </form>
 </nz-card>
+
+<!--product modal-->
+<nz-modal [(nzVisible)]="isVisible" nzTitle="The first Modal" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <nz-spin [nzSpinning]="_isSpinning">
+        <nz-table #nzTableProd1
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="allProducts"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="allProductTotal"
+                  [(nzPageIndex)]="allProductPage"
+                  [(nzPageSize)]="allProductLimit"
+                  (nzPageIndexChange)="getAllProducts($event)"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <label nz-checkbox [(ngModel)]="allProductSelectAll[allProductPage - 1]"
+                           (ngModelChange)="selectAllProducts($event)"></label>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Brand </span>
+                </th>
+                <th>
+                    <span> Category </span>
+                </th>
+                <th>
+                    <span> Sub-Category </span>
+                </th>
+                <th>
+                    <span> Sub-Sub-Category </span>
+                </th>
+                <th>
+                    <span> Price </span>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                </th>
+                <th>
+                    <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
+                           (ngModelChange)="allProductNameChangeHandler($event)">
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableProd1.data;let i=index;">
+                <td>
+                    <label nz-checkbox [(ngModel)]="datum.checked"
+                           (ngModelChange)="_refreshStatus($event, datum.id)">
+                    </label>
+                </td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.brand_name}}</td>
+                <td>{{datum.type_name}}</td>
+                <td>{{datum.category_name}}</td>
+                <td>{{datum.subcategory_name}}</td>
+                <td>{{datum.price}}</td>
+            </tr>
+            </tbody>
+        </nz-table>
+        <div>
+            <div>
+                <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                        (click)="submitForm()"
+                        [disabled]="_isSpinning">
+                    <span *ngIf="!_isSpinning; else loadingBtnTxt">Add Product(s)</span>
+                    <ng-template #loadingBtnTxt>
+                        <span>Submitting......</span>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+    </nz-spin>
+</nz-modal>
