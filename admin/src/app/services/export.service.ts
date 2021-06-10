@@ -61,7 +61,7 @@ export class ExportService {
                                 line += array[i][head][ind][key] + ' / ';
                             }
                             line = line.substr(0, line.split('').length - 3);
-                            line += "]\, ";
+                            line += "] ";
                         }
                     }
                 } else
