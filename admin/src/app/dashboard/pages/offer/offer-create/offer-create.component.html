@@ -163,13 +163,13 @@
                         nzShowTime
                         nzFormat="yyyy-MM-dd HH:mm:ss"
                         formControlName="offerStartDate"
-                        nzPlaceHolder="Start">
+                        nzPlaceHolder="Start Date">
                 </nz-date-picker>
                 <nz-date-picker
                         nzShowTime
                         nzFormat="yyyy-MM-dd HH:mm:ss"
                         formControlName="offerEndDate"
-                        nzPlaceHolder="End">
+                        nzPlaceHolder="End Date">
                 </nz-date-picker>
             </div>
         </div>
@@ -201,7 +201,8 @@
 </nz-card>
 
 <!--product modal-->
-<nz-modal [(nzVisible)]="isVisible" nzTitle="The first Modal" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+<nz-modal [nzFooter]="null" [(nzVisible)]="isVisible" nzTitle="Add Products to the offer" (nzOnCancel)="handleCancel()"
+          nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
         <nz-table #nzTableProd1
                   nzShowSizeChanger
@@ -221,6 +222,9 @@
                 </th>
                 <th>
                     <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Shop Owner </span>
                 </th>
                 <th>
                     <span> Brand </span>
@@ -246,13 +250,20 @@
                            (ngModelChange)="allProductNameChangeHandler($event)">
                 </th>
                 <th>
-
+                    <input nz-input placeholder="Shop Owner" [(ngModel)]="allShopOwnerSearch"
+                           (ngModelChange)="allProductShopOwnerChangeHandler($event)">
                 </th>
                 <th>
-
+                    <input nz-input placeholder="Brand" [(ngModel)]="allBrandSearch"
+                           (ngModelChange)="allProductBrandChangeHandler($event)">
                 </th>
                 <th>
-
+                    <input nz-input placeholder="Category" [(ngModel)]="allCategorySearch"
+                           (ngModelChange)="allProductCategoryChangeHandler($event)">
+                </th>
+                <th>
+                    <input nz-input placeholder="Sub Category" [(ngModel)]="allSubCategorySearch"
+                           (ngModelChange)="allProductSubCategoryChangeHandler($event)">
                 </th>
                 <th>
 
@@ -269,6 +280,7 @@
                     </label>
                 </td>
                 <td>{{datum.name}}</td>
+                <td>{{datum.warehouse_name}}</td>
                 <td>{{datum.brand_name}}</td>
                 <td>{{datum.type_name}}</td>
                 <td>{{datum.category_name}}</td>
@@ -278,16 +290,14 @@
             </tbody>
         </nz-table>
         <div>
-            <div>
-                <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
-                        (click)="submitForm()"
-                        [disabled]="_isSpinning">
-                    <span *ngIf="!_isSpinning; else loadingBtnTxt">Add Product(s)</span>
-                    <ng-template #loadingBtnTxt>
-                        <span>Submitting......</span>
-                    </ng-template>
-                </button>
-            </div>
+            <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                    (click)="submitModalForm()">
+                <span>Add Product(s)</span>
+            </button>
+            <button nz-button class="login-form-button" [nzType]="'primary'"
+                    (click)="handleCancel()" style="float: right; display: inline-block">
+                <span>Cancel</span>
+            </button>
         </div>
     </nz-spin>
 </nz-modal>

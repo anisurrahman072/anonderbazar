@@ -98,6 +98,7 @@ module.exports = {
   //Method called for creating offer data
   //Model models/CMS.js
   offerInsert: async (req, res) => {
+    console.log('offer data; arouzexs', req.body);
     try {
 
       if (req.body.hasImage === 'true') {

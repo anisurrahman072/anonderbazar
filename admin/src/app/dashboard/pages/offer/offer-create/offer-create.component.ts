@@ -6,6 +6,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
 import {environment} from "../../../../../environments/environment";
 import {ProductService} from "../../../../services/product.service";
+import * as ___ from 'lodash';
 
 @Component({
     selector: 'app-offer-create',
@@ -65,8 +66,18 @@ export class OfferCreateComponent implements OnInit {
     allProductPage: number = 1;
     allProductLimit: number = 20;
     offerProductIds: any = [];
+
     allProductNameSearch: string = '';
+    allShopOwnerSearch: string = '';
+    allBrandSearch: string = '';
+    allCategorySearch: string = '';
+    allSubCategorySearch: string = '';
+
     allProductTotal = 0;
+    selectedProductIds: any;
+
+    selectedAllProductIds: any = [];
+    allProductSelectAll: any = [false];
 
     constructor(
         private router: Router,
@@ -92,14 +103,13 @@ export class OfferCreateComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getAllProducts(1);
     }
 
 //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
         $event.preventDefault();
-
+        console.log('value.productSelectedIDs: ', this.selectedProductIds);
         this._isSpinning = true;
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -116,6 +126,7 @@ export class OfferCreateComponent implements OnInit {
         formData.append('showInHome', showInHome);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);
+        formData.append('productSelectedIDs', this.selectedProductIds);
         formData.append('offerStartDate', value.offerStartDate);
         formData.append('offerEndDate', value.offerEndDate);
         if (value.frontend_position) {
@@ -218,29 +229,134 @@ export class OfferCreateComponent implements OnInit {
     }*/
 
     getAllProducts(event: any) {
-        if(event) {
+        if (event) {
             this.allProductPage = event;
         }
 
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
             .subscribe(result => {
                 console.log('all products to add to offer: rrrrr: ', result);
 
-            })
+                if (typeof result.data !== 'undefined') {
+                    this.allProductTotal = result.total;
+                    this.allProducts = result.data.map(item => {
+                        return {
+                            ...item,
+                            checked: false
+                        }
+                    });
+                    const thisTotal = this.allProducts.length;
+                    if (typeof this.selectedAllProductIds[this.allProductPage - 1] === 'undefined') {
+                        this.selectedAllProductIds[this.allProductPage - 1] = [];
+                    }
+                    if (typeof this.allProductSelectAll[this.allProductPage - 1] === 'undefined') {
+                        this.allProductSelectAll[this.allProductPage - 1] = false;
+                    }
+
+                    if (this.selectedAllProductIds[this.allProductPage - 1].length) {
+                        for (let index = 0; index < thisTotal; index++) {
+                            const foundIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
+                                return prodId == this.allProducts[index].id;
+                            });
+                            this.allProducts[index].checked = foundIndex !== -1;
+                        }
+                    } else {
+                        for (let index = 0; index < thisTotal; index++) {
+                            this.allProducts[index].checked = false;
+                        }
+                    }
+                } else {
+                    this.allProducts = [];
+                    this.allProductTotal = 0;
+                }
+                this._isSpinning = false;
+            }, err => {
+                this._isSpinning = false;
+            });
+    }
+
+    allProductNameChangeHandler(event: any) {
+        this.allProductNameSearch = event;
+        this.getAllProducts(1);
+    }
+
+    allProductShopOwnerChangeHandler(event: any) {
+        this.allShopOwnerSearch = event;
+        this.getAllProducts(1);
+    }
+
+    allProductBrandChangeHandler(event: any) {
+        this.allBrandSearch = event;
+        this.getAllProducts(1);
+    }
+
+    allProductCategoryChangeHandler(event: any) {
+        this.allCategorySearch = event;
+        this.getAllProducts(1);
+    }
+
+    allProductSubCategoryChangeHandler(event: any) {
+        this.allSubCategorySearch = event;
+        this.getAllProducts(1);
+    }
+
+    selectAllProducts($event: any) {
+        const isChecked = !!$event;
+        if (!isChecked) {
+            this.selectedAllProductIds[this.allProductPage - 1] = [];
+        }
+
+        this.allProductSelectAll[this.allProductPage - 1] = isChecked;
+        const len = this.allProducts.length;
+        for (let i = 0; i < len; i++) {
+            this.allProducts[i].checked = isChecked;
+            if (isChecked) {
+                const foundIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
+                    return prodId == this.allProducts[i].id;
+                });
+                if (foundIndex === -1) {
+                    this.selectedAllProductIds[this.allProductPage - 1].push(this.allProducts[i].id);
+                }
+            }
+        }
+    }
+
+    // Method for refresh offer checkbox data in the offer modal
+    _refreshStatus($event, value) {
+
+        console.log($event);
+
+        if ($event) {
+            this.selectedAllProductIds[this.allProductPage - 1].push(value);
+        } else {
+            let findIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
+                return prodId == value.id
+            });
+            if (findIndex !== -1) {
+                this.selectedAllProductIds[this.allProductPage - 1].splice(findIndex, 1);
+            }
+        }
+        console.log(this.selectedAllProductIds);
+    }
+
+    submitModalForm() {
+        this.selectedProductIds = ___.flatten(this.selectedAllProductIds).filter(ids => {
+            return ids !== undefined;
+        });
+
+        if (this.selectedProductIds.length === 0) {
+            return false;
+        }
+        this.isVisible = false;
     }
 
     showModal(): void {
         this.isVisible = true;
-    }
-
-    handleOk(): void {
-        console.log('Button ok clicked!');
-        this.isVisible = false;
+        this.getAllProducts(1);
     }
 
     handleCancel(): void {
-        console.log('Button cancel clicked!');
         this.isVisible = false;
     }
 }

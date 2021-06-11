@@ -130,6 +130,24 @@ module.exports = {
         _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
 
+
+
+      if (req.query.shopSearchValue) {
+        _where += ` AND warehouse.name LIKE '%${req.query.shopSearchValue}%'  `;
+      }
+      if (req.query.brandSearchValue) {
+        _where += ` AND brand.name LIKE '%${req.query.brandSearchValue}%'  `;
+      }
+      if (req.query.categorySearchValue) {
+        _where += ` AND category.name LIKE '%${req.query.categorySearchValue}%'  `;
+      }
+      if (req.query.subCategorySearchValue) {
+        _where += ` AND subcategory.name LIKE '%${req.query.subCategorySearchValue}%'  `;
+      }
+
+
+
+
       let _sort = '';
       if (req.query.sortKey && req.query.sortValue) {
         _sort += ` ORDER BY product.${req.query.sortKey} ${req.query.sortValue} `;
