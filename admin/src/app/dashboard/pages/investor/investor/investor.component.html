@@ -1,6 +1,7 @@
 <section>
     <nz-card class="card-height" nzTitle="Investor List">
         <nz-table #nzTable
+                  nzShowQuickJumper
                   (nzPageIndexChange)="getPageData($event)"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"

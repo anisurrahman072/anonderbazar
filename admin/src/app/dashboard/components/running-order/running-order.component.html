@@ -93,7 +93,7 @@
           (nzOnOk)="handleOk($event)">
     <ng-template #modalContent>
         <nz-spin [nzSpinning]="_isSpinning">
-            <nz-table #nzTable [nzData]="allData">
+            <nz-table #nzTable [nzData]="allData" nzShowQuickJumper>
                 <thead>
                 <tr>
                     <th><span> Order number </span></th>

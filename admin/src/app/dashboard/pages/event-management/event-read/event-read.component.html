@@ -91,7 +91,7 @@
 
                             </div>
                             <div class="col-md-12" *ngIf="data.event_type===1 || data.event_type===2">
-                                    <nz-table #basicTable [nzFrontPagination]="false" [nzSize]="'large'" [nzData]="addedPrices">
+                                    <nz-table #basicTable [nzFrontPagination]="false" [nzSize]="'large'" [nzData]="addedPrices" nzShowQuickJumper>
                                             <thead>
                                                 <tr>
                                                     <th>Title</th>
