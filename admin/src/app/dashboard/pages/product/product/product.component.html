@@ -191,15 +191,15 @@
                     <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</a>
                 </td>
                 <td style="text-align: center; width: 137px">
-                    <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
-                    <nz-tag *ngIf="data.promotion == 1">
+                    <a [routerLink]="['/dashboard/product/details/', data.id]"><nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag></a>
+                        <a [routerLink]="['/dashboard/product/details/', data.id]"><nz-tag *ngIf="data.promotion == 1">
                         <del style="color: red">{{data.price}}</del>
-                        {{data.promo_price}}</nz-tag>
+                            {{data.promo_price}}</nz-tag></a>
                 </td>
                 <td style="text-align: center; width: 137.5px">
-                    <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
+                    <a [routerLink]="['/dashboard/product/details/', data.id]"><nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
                         {{data.quantity}}
-                    </nz-tag>
+                    </nz-tag></a>
                 </td>
                 <td style="text-align: center; width: 139px">
                     <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
