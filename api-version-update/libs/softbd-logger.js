@@ -2,6 +2,7 @@
 const fs = require('fs');
 const _ = require('lodash');
 const moment = require('moment');
+const {serializeError} = require('serialize-error');
 // next we'll want make our Logger object available
 // to whatever file references it.
 const Logger = (exports.Logger = {});
@@ -21,7 +22,7 @@ const debugStream = fs.createWriteStream('logs/debug.log', {flags: 'a'});
 
 function formatObject(message) {
   if (_.isObject(message)) {
-    return JSON.stringify(message, null, 2);
+    return JSON.stringify(serializeError(message), null, 2);
   }
   return message;
 }
