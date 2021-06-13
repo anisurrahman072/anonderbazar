@@ -20,6 +20,10 @@ class ProductBulk {
     quantity: number = 0;
     weight: number = 0;
     frontend_position: number = 111;
+    offline_payment: number = 0;
+    free_shipping: number = 0;
+    partially_payable: number = 0;
+    disable_cash_on_delivery: number = 0;
     tag: string = "";
 }
 
@@ -169,8 +173,12 @@ export class BulkUpdateComponent implements OnInit {
             const productOb = new ProductBulk();
 
             if (this.currentUser.group_id === 'owner') {
-                delete productOb.frontend_position;
                 delete productOb.warehouse_id;
+                delete productOb.frontend_position;
+                delete productOb.offline_payment;
+                delete productOb.free_shipping;
+                delete productOb.partially_payable;
+                delete productOb.disable_cash_on_delivery;
             }
             const header: string[] = Object.getOwnPropertyNames(productOb);
             console.log('header', header);

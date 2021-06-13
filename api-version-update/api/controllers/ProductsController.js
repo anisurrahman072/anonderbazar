@@ -782,11 +782,15 @@ module.exports = {
       const columnNamesObject = columnListForBulkUpdate(isAdmin);
       if (authUser.group_id.name === 'owner') {
         delete columnNamesObject['Frontend Position'];
+        delete columnNamesObject['Offline Payment'];
+        delete columnNamesObject['Free Shipping'];
+        delete columnNamesObject['Partially Payable'];
+        delete columnNamesObject['Disable Cash on Delivery'];
       }
 
       const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
       if (authUser.group_id.name === 'admin') {
-        letters.splice(letters.length, 0, 'L', 'M');
+        letters.splice(letters.length, 0, 'L', 'M', 'N', 'O', 'P', 'Q');
       }
       const columnNameKeys = Object.keys(columnNamesObject);
 
@@ -843,6 +847,10 @@ module.exports = {
                 products.promo_price as promo_price,
                 products.warehouse_id,
                 products.product_details,
+                products.offline_payment,
+                products.free_shipping,
+                products.partially_payable,
+                products.disable_cash_on_delivery,
                 types.name as type_name,
                 category.name as category_name,
                 subCategory.name as subcategory_name,
@@ -946,6 +954,10 @@ module.exports = {
 
         if (authUser.group_id.name === 'admin') {
           ws.cell(row, column++).number(item.frontend_position);
+          ws.cell(row, column++).number(item.offline_payment);
+          ws.cell(row, column++).number(item.free_shipping);
+          ws.cell(row, column++).number(item.partially_payable);
+          ws.cell(row, column++).number(item.disable_cash_on_delivery);
         }
 
         if (item.tag) {
@@ -988,7 +1000,6 @@ module.exports = {
           });
         productsIndex = _.zipObject(productCodes, productsIndex);
       }
-
       for (let i = 0; i < len; i++) {
         if (
           !(req.body[i].name !== '' && req.body[i].code !== '' && req.body[i].price !== '' && req.body[i].quantity !== '' &&
@@ -1056,6 +1067,10 @@ module.exports = {
         product.quantity = req.body[i].quantity;
         product.vendor_price = parseFloat(req.body[i].vendor_price);
         product.frontend_position = req.body[i].frontend_position;
+        product.offline_payment = req.body[i].offline_payment;
+        product.free_shipping = req.body[i].free_shipping;
+        product.partially_payable = req.body[i].partially_payable;
+        product.disable_cash_on_delivery = req.body[i].disable_cash_on_delivery;
 
         if (req.body[i].promo_price > 0) {
           product.promo_price = parseFloat(req.body[i].promo_price);
@@ -1094,6 +1109,10 @@ module.exports = {
           quantity: product.quantity,
           weight: product.weight,
           frontend_position: product.frontend_position,
+          offline_payment: product.offline_payment,
+          free_shipping: product.free_shipping,
+          partially_payable: product.partially_payable,
+          disable_cash_on_delivery: product.disable_cash_on_delivery,
           tag: product.tag
         });
 

@@ -103,6 +103,22 @@ exports.columnListForBulkUpdate = function (isAdmin) {
       width: 20,
       validation: 'decimal'
     },
+    'Offline Payment': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Free Shipping': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Partially Payable': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Disable Cash on Delivery': {
+      width: 30,
+      validation: 'decimal'
+    },
     'Tags': {width: 15}
   };
 
