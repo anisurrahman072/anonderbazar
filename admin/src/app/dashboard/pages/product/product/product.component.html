@@ -2,7 +2,7 @@
     <nz-card [hidden]="!showList" class="card-height"
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
-        <ng-template #extraTemplate>
+        <ng-template #extraTemplate style="width: 85%;">
             <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button (click)='showPartialPaymentDurationModal()'>
                 <span> Set Partial Payment duration </span>
             </button>&nbsp;
@@ -17,7 +17,7 @@
             >
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
-            </button>
+            </button><br>
             <button routerLink="/dashboard/product/bulk-upload"
                     [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
             >
