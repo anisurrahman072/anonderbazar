@@ -38,6 +38,7 @@
     "sails-mysql": "1.0.1",
     "sails-redis": "^1.0.0",
     "save": "^2.4.0",
+    "serialize-error": "^8.1.0",
     "skipper": "^0.8.7",
     "skipper-s3": "^0.6.0",
     "sslcommerz-nodejs": "^1.0.8",

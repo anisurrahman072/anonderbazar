@@ -10,6 +10,7 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table
                 #nzTable
+                nzShowQuickJumper
                 [nzTotal]="orderTotal"
                 [nzData]="orderData"
                 [nzShowSizeChanger]="true"
@@ -54,15 +55,18 @@
                     <th nzWidth="100px">
                         <span>Status Changer</span>
                     </th>
+                    <th nzWidth="400px">
+                        <span>Transactions</span>
+                    </th>
                     <th nzWidth="300px">
                         <span>shipping_address</span>
-                    </th >
+                    </th>
                     <th nzWidth="200px"><span>Actions</span></th>
                 </tr>
                 <tr>
                     <th nzWidth="100px">
                         <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
-                               (input)=" orderPage = 1; getData(); " >
+                               (input)=" orderPage = 1; getData(); ">
                     </th>
                     <th nzWidth="230px">
                         <nz-date-picker
@@ -101,7 +105,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="orderTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Order type'"
@@ -111,7 +115,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="paymentTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment type'"
@@ -121,7 +125,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment Status'"
@@ -133,7 +137,7 @@
                     </th>
                     <th nzWidth="100px"></th>
                     <th nzWidth="300px"></th>
-                    <th  nzWidth="200px">
+                    <th nzWidth="200px">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </th>
                 </tr>
@@ -162,23 +166,35 @@
                     <td *ngIf="data.orderType == 2">Partial order</td>
                     <td>{{data.payment_type}}</td>
                     <td style="width: 230px;">
-                        <nz-select style="width: 180px;" *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                        <nz-select style="width: 180px;"
+                                   *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
                             <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
                                        [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">Paid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">
+                            Unpaid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">
+                            Partially paid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">
+                            Paid</p>
                     </td>
                     <td style="width: 100px;">{{data.changedByName}}</td>
+                    <td style="width: 400px;">
+                        <div *ngFor="let transaction of data.transactions">
+                            <p style="margin-bottom: 15px;">amount: {{transaction.amount}}, Payment
+                                Type: {{transaction.paymentType}}, Transaction Key: {{transaction.transactionKey}},
+                                Transaction Time: {{transaction.transactionTime}}</p>
+                        </div>
+                    </td>
                     <td style="width: 300px;">
                         <p>Postal Code: {{data.postal_code}}</p>
                         <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
                         <p>
-                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}, {{data.division_name}}
+                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}
+                            , {{data.division_name}}
                         </p>
                     </td>
                     <td style="width: 200px;">
@@ -212,6 +228,7 @@
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="csvOrders" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
+                      nzShowQuickJumper
                       [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="orderCsvTotal"
                       (nzPageIndexChange)="getData($event, true)"

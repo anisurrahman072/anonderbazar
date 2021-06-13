@@ -26,6 +26,7 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
     allProductLimit: number = 20;
     allProductTotal = 0;
     allProductNameSearch: string = '';
+    allProductCodeSearch: string = '';
 
     _isSpinning: boolean = false;
     _submitting: boolean = false;
@@ -63,7 +64,7 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
         }
 
         this._isSpinning = true;
-        this.productservice.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch)
+        this.productservice.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch)
             .subscribe(result => {
 
                 console.log(' this.product service.get all ', result);
@@ -152,6 +153,11 @@ export class AllProductModalComponent implements OnInit, OnDestroy {
 
     allProductNameChangeHandler(event: any) {
         this.allProductNameSearch = event;
+        this.getAllProducts(1);
+    }
+
+    allProductCodeChangeHandler(event: any) {
+        this.allProductCodeSearch = event;
         this.getAllProducts(1);
     }
 

@@ -126,6 +126,10 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
+      else if (req.query.codeSearchValue) {
+        _where += ` AND ( product.code LIKE '%${req.query.codeSearchValue}%' ) `;
+      }
+
       if (req.query.nameSearchValue) {
         _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }

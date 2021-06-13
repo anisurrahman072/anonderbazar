@@ -55,8 +55,10 @@ export class ProductService {
     }
 
     getAllWithPagination(page = 1, limit = 20, excludedProductIds = [], nameSearchValue = '', shopSearchValue = '', brandSearchValue = '', categorySearchValue = '', subCategorySearchValue = ''): Observable<any> {
+    getAllWithPagination(page = 1, limit = 30, excludedProductIds = [], nameSearchValue = '', codeSearchValue = ''): Observable<any> {
         const skip = (page - 1) * limit;
         return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&nameSearchValue=${nameSearchValue}&shopSearchValue=${shopSearchValue}&brandSearchValue=${brandSearchValue}&categorySearchValue=${categorySearchValue}&subCategorySearchValue=${subCategorySearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
+        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&nameSearchValue=${nameSearchValue}&codeSearchValue=${codeSearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
     }
 
     getByIdsWithJoin(ids): Observable<any> {
