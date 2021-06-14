@@ -8,6 +8,7 @@ exports.productRoute = {
   'GET /api/v1/product/getTopSellProducts': 'ProductController.getTopSellProducts',
   'GET /api/v1/product/getNewProducts': 'ProductController.getNewProducts',
   'GET /api/v1/product/canRateProduct': 'ProductController.canRateProduct',
+  'GET /api/v1/product/getFlashDealsProducts': 'ProductController.getFlashDealsProducts',
   'GET /api/v1/products/:_id': 'ProductsController.findOne',
   'GET /api/v1/products/getbysearchterm': 'ProductsController.getBySearchTerm',
   'GET /api/v1/products/search': 'ProductsController.search',

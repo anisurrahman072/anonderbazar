@@ -9,7 +9,24 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-                <div nz-row>
+                <div nz-row *ngIf="this.currentUser.group_id === 'admin'">
+                    <div nz-col [nzSpan]="7">
+                        <label> Choose Vendor </label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <nz-select formControlName="warehouse_id" nzAllowClear [(ngModel)]="vendor_id"
+                                   (ngModelChange)="typeIdChange($event)"
+                                   nzPlaceHolder="Select Warehouse"
+                                   [nzNotFoundContent]="'Not found'"
+                                   nzShowSearch>
+                            <nz-option *ngFor="let option of warehouses" [nzLabel]="option.name"
+                                       [nzValue]="option.id">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                </div>
+
+                <div nz-row style="margin-top: 10px;">
                     <div nz-col [nzSpan]="7">
                         <label> Product Category </label>
                     </div>
@@ -64,7 +81,7 @@
 
                 <div nz-row style="margin-top: 10px;">
                     <div nz-col [nzOffset]="7" [nzSpan]="12">
-                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid || (!vendor_id && !type_id)">
                             Download Excel File
                         </button>&nbsp;
                     </div>

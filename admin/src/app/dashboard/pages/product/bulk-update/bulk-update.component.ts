@@ -6,6 +6,7 @@ import {ExcelService} from "../../../../services/excel.service";
 import {AuthService} from "../../../../services/auth.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {Subscription} from "rxjs";
+import {WarehouseService} from "../../../../services/warehouse.service";
 
 class ProductBulk {
     category: string = "";
@@ -54,14 +55,19 @@ export class BulkUpdateComponent implements OnInit {
     private typeSub: Subscription;
     private updateSub: Subscription;
 
+    vendor_id: any = null;
+    warehouses: any = null;
+
   constructor(private categoryProductService: CategoryProductService,
               private fb: FormBuilder,
               private productService: ProductService,
               private excelSrv: ExcelService,
               private authService: AuthService,
-              private _notification: NzNotificationService,) {
+              private _notification: NzNotificationService,
+              private warehouseService: WarehouseService) {
       this.validateForm = this.fb.group({
-          type_id: ['', [Validators.required]],
+          warehouse_id: ['', []],
+          type_id: ['', []],
           category: ['', []],
           subcategory: ['', []]
       });
@@ -76,6 +82,14 @@ export class BulkUpdateComponent implements OnInit {
       this.typeSub = this.categoryProductService.getAllCategory().subscribe((result: any) => {
           this.productsType = result;
       });
+
+      this.warehouseService.getAll(1, 20)
+          .subscribe(result => {
+              this.warehouses = result;
+          }, error => {
+              console.log("Error occurred.", error);
+          })
+
     }
     ngOnDestroy(): void {
         this.catSub ? this.catSub.unsubscribe() : '';

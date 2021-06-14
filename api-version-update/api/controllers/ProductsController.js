@@ -698,10 +698,10 @@ module.exports = {
 
   productExcel: async (req, res) => {
 
-    if (!req.query.type_id || req.query.type_id === 'null') {
+    if ((!req.query.type_id || req.query.type_id === 'null') && (!req.query.warehouse_id || req.query.warehouse_id === 'null')) {
       return res.status(404).json({
         success: false,
-        message: 'Please insert product type & category!'
+        message: 'Please insert product category or Vendor!'
       });
     }
     const authUser = req.token.userInfo;
@@ -866,8 +866,11 @@ module.exports = {
         LEFT JOIN brands ON brands.id = products.brand_id
       `;
 
-      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL AND products.type_id = ${req.query.type_id} `;
+      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL `;
 
+      if (req.query.type_id && req.query.type_id !== 'null') {
+        _where += ` AND products.type_id = ${req.query.type_id} `;
+      }
       if (req.query.category_id && req.query.category_id !== 'null') {
         _where += ` AND products.category_id = ${req.query.category_id} `;
       }
@@ -875,8 +878,15 @@ module.exports = {
         _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
-      if (isVendor && authUser.warehouse_id && authUser.warehouse_id.id) {
-        _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
+      if(isVendor){
+        if(authUser.warehouse_id && authUser.warehouse_id.id){
+          _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
+        }
+      }
+      else {
+        if(req.query.warehouse_id && req.query.warehouse_id !== 'null'){
+          _where += ` AND products.warehouse_id = ${req.query.warehouse_id} `;
+        }
       }
       _where += ' ORDER BY products.created_at DESC ';
 
@@ -1135,7 +1145,6 @@ module.exports = {
 
   getProductsByName: async (req, res) => {
     try {
-      console.log('rrrr');
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
     SELECT

@@ -913,6 +913,44 @@ module.exports = {
         error
       });
     }
-  }
+  },
 
+  getFlashDealsProducts: async (req, res) => {
+    try {
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+          products.id as id,
+          products.code  as code,
+          products.name as name,
+          products.price,
+          products.vendor_price as vendor_price,
+          products.image as image,
+          products.category_id  as category_id ,
+          products.subcategory_id  as subcategory_id ,
+          products.type_id   as type_id  ,
+          products.brand_id    as brand_id   ,
+          products.quantity as quantity,
+          products.promotion as promotion,
+          products.promo_price as promo_price,
+          products.warehouse_id
+      `;
+      let fromSQL = ' FROM products  ';
+      fromSQL += ' LEFT JOIN warehouses as warehouse ON warehouse.id = products.warehouse_id    ';
+      let _where = ` WHERE products.featured = 1  AND  products.approval_status = 2  AND  products.deleted_at IS NULL  AND
+         warehouse.status = 2  AND  warehouse.deleted_at IS NULL ORDER BY products.created_at DESC`;
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      console.log('getFlashDealsProducts', rawResult.rows);
+      return res.status(200).json(rawResult.rows);
+    }
+    catch (error){
+      console.log('Error: ', error);
+      return res.status(400).json({
+        message: error
+      });
+    }
+  }
 };
+

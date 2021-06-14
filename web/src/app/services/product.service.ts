@@ -90,11 +90,11 @@ export class ProductService {
 
     getFlashDealsProducts() {
         this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
+            .get(this.EndPoint + '/getFlashDealsProducts')
             .subscribe(data => {
                 this.allFlashDealsProducts = data;
             }, error => {
-                console.log('Error while fetching flashDealsProducts');
+                console.log('Error while fetching flashDealsProducts.', error);
             })
     }
 
