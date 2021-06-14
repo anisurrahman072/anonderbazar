@@ -100,7 +100,7 @@ export class ProductService {
 
     fetchFlashDealsProducts() {
         return this.allFlashDealsProducts.filter(product => {
-            return (product.warehouse_id.status == 2 && product.status == 2);
+            return product.warehouse_id.status == 2;
         });
     }
 
@@ -129,7 +129,7 @@ export class ProductService {
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2&limit=4')
+            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2')
             .map(response => response);
     }
 

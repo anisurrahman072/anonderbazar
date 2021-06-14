@@ -25,7 +25,10 @@ export class RecommendComponent implements OnInit {
     //Event method for getting all the data for the page
     private getRecommendedProducts(limit, skip) {
         this.productService.getRecommendedProducts(limit, skip).subscribe(products => {
-            this.dataProductList.push(...products.data);
+            let recommendedProducts = products.data.filter(product => {
+                return product.warehouse_id.status == 2;
+            })
+            this.dataProductList.push(...recommendedProducts);
             if (products.length < 8) {
                 this.productDataTrue = false;
                 this.toastr.info("No more products", 'Note');
