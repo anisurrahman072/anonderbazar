@@ -738,6 +738,7 @@ module.exports = {
       const ws = wb.addWorksheet('Product List', options);
       const categorySheet = wb.addWorksheet('Category', options);
       const brandSheet = wb.addWorksheet('Brand', options);
+      const variantSheet = wb.addWorksheet('Variant', options);
       let wareHouseSheet;
       if (isAdmin) {
         wareHouseSheet = wb.addWorksheet('Warehouse', options);
@@ -753,6 +754,28 @@ module.exports = {
       brandList.forEach((item, i) => {
         brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
+
+      /** Fetch Variants list */
+      let allVariants = await Variant.find({
+        deletedAt: null
+      }).populate('warehouseVariants');
+
+      let index = 0;
+      allVariants.forEach((variant) => {
+        if(variant.warehouseVariants && variant.warehouseVariants.length > 0){
+          variant.warehouseVariants.forEach((warehouseVariant) => {
+            let str = `${variant.name}=>${warehouseVariant.name}`;
+            if(variant.type == 0){
+              str += `(Price Variation: No)`;
+            }
+            else {
+              str += `(Price Variation: Yes)`;
+            }
+            variantSheet.cell(++index, 1).string(variant.id+','+warehouseVariant.id +'|'+escapeExcel(str));
+          });
+        }
+      });
+
 
       /* Fetch Warehouse List */
       let wareHouseList;
@@ -788,9 +811,9 @@ module.exports = {
         delete columnNamesObject['Disable Cash on Delivery'];
       }
 
-      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC'];
       if (authUser.group_id.name === 'admin') {
-        letters.splice(letters.length, 0, 'L', 'M', 'N', 'O', 'P', 'Q');
+        letters.splice(letters.length, 0, 'AD', 'AE', 'AF', 'AG', 'AH', 'AI');
       }
       const columnNameKeys = Object.keys(columnNamesObject);
 
@@ -855,7 +878,11 @@ module.exports = {
                 category.name as category_name,
                 subCategory.name as subcategory_name,
                 brands.name as brand_name,
-                warehouses.name as warehouse_name
+                warehouses.name as warehouse_name,
+                GROUP_CONCAT(productVariant.name) as variantName,
+                GROUP_CONCAT(productVariant.quantity) as variantQty,
+                GROUP_CONCAT(variant.name) as variantNames,
+                GROUP_CONCAT(warehouseVariant.name) as warehouseVariantsName
       `;
 
       let fromSQL = ` FROM products
@@ -864,6 +891,9 @@ module.exports = {
         LEFT JOIN categories as subCategory ON subCategory.id = products.subcategory_id
         LEFT JOIN warehouses   ON warehouses.id = products.warehouse_id
         LEFT JOIN brands ON brands.id = products.brand_id
+        LEFT JOIN product_variants  as  productVariant  ON productVariant.product_id = products.id
+        LEFT JOIN variants  as  variant  ON variant.id = productVariant.variant_id
+        LEFT JOIN warehouses_variants  as  warehouseVariant  ON warehouseVariant.id = productVariant.warehouses_variant_id
       `;
 
       let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL `;
@@ -888,9 +918,11 @@ module.exports = {
           _where += ` AND products.warehouse_id = ${req.query.warehouse_id} `;
         }
       }
-      _where += ' ORDER BY products.created_at DESC ';
+      _where += 'GROUP BY products.id  ORDER BY products.created_at DESC ';
 
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      console.log('rawResult.rows: ', rawResult.rows);
 
       const products = rawResult.rows;
 
@@ -971,10 +1003,21 @@ module.exports = {
         }
 
         if (item.tag) {
-          ws.cell(row, column).string(item.tag).style(myStyle);
+          ws.cell(row, column++).string(item.tag).style(myStyle);
         } else {
-          ws.cell(row, column).string(null);
+          ws.cell(row, column++).string(null);
         }
+
+        /*let variants = item.variantName.split(',');
+        let additionalPrice = item.variantQty.split(',');
+        let variantsLength = variants.length;
+
+        for(let ind = 0; ind < variantsLength; ind++){
+          // TODO: On forward after completion of present task
+        }
+
+         */
+
         row++;
 
       });

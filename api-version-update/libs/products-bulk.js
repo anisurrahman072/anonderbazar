@@ -52,6 +52,17 @@ exports.columnListForBulkUpload = {
   'Image 5': {width: 15}
 };
 exports.columnListForBulkUpdate = function (isAdmin) {
+  let index = 1;
+  let variant = {
+    'Variant': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Category'
+    },
+    'Variant Info': {width: 30},
+    'Variant Id': {width: 30}
+  };
+
   let columnNamesObject = {
     'Category': {
       width: 50,
@@ -119,7 +130,49 @@ exports.columnListForBulkUpdate = function (isAdmin) {
       width: 30,
       validation: 'decimal'
     },
-    'Tags': {width: 15}
+    'Tags': {width: 15},
+    'Variant1': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant1 Info': {width: 30},
+    'Variant1 Id': {width: 30},
+    'Variant2': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant Info2': {width: 30},
+    'Variant Id2': {width: 30},
+    'Variant3': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant Info3': {width: 30},
+    'Variant Id3': {width: 30},
+    'Variant4': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant Info4': {width: 30},
+    'Variant Id4': {width: 30},
+    'Variant5': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant Info5': {width: 30},
+    'Variant Id5': {width: 30},
+    'Variant6': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant Info6': {width: 30},
+    'Variant Id6': {width: 30}
   };
 
   return columnNamesObject;
