@@ -26,4 +26,10 @@ export class OfferService {
           .get(`${this.EndPoint}/allRegularOffer?limit=${specialOfferLimit}&page=${specialOfferPage}`)
           .map(response => response);
     }
+
+    /**method called to delete a regular offer*/
+    delete(id): Observable<any> {
+        return this.http.delete(`${this.EndPoint}/${id}`)
+            .map(response => response);
+    }
 }

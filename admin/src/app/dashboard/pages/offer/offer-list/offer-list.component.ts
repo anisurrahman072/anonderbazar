@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
-import {ProductService} from '../../../../services/product.service';
 import {OfferService} from "../../../../services/offer.service";
 
 @Component({
@@ -35,7 +34,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     productOfferedPage: number = 1;
 
     constructor(
-        private productservice: ProductService,
         private _notification: NzNotificationService,
         private cmsService: CmsService,
         private offerService: OfferService
@@ -54,10 +52,10 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     // init the component
     ngOnInit() {
         this.getRegularOfferData();
-        this.getChildData();
+        this.getJhorOfferData();
     };
 
-    // Event method for getting all the data for the Regular offer
+    /**Event method for getting all the data for the Regular offer*/
     getRegularOfferData() {
         this._isSpinning = true;
         this.offerService
@@ -67,7 +65,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             )
             .subscribe(result => {
                 this.loading = false;
-                console.log('result-getRegularOfferData', result);
+                console.log('getRegularOfferData', result);
                 this.regularOfferData = result.data;
                 this.regularOfferTotal = result.total;
                 this._isSpinning = false;
@@ -77,8 +75,8 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     };
 
-    // Event method for getting all child data for the page
-    getChildData() {
+    /**Event method for getting all Anonder Jhor data for the page*/
+    getJhorOfferData() {
         this._isSpinning = true;
         this.cmsService
             .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'},
@@ -93,50 +91,28 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     };
 
-    //Event method for deleting offer product
-    deleteConfirm(index, id) {
 
-        let findValue = this.offerProductIds.indexOf(id);
-        this.offerProductIds.splice(findValue, 1);
-        this.currentProduct.data_value[0].products = this.offerProductIds;
+    /**Event method for deleting regular offer*/
+    deleteRegularOffer(index, id) {
         this._isSpinning = true;
-        this.cmsService.offerProductUpdate(this.currentProduct).subscribe(result => {
-            this._notification.warning('Offer Product Delete', "Deleted Successfully");
+        this.offerService.delete(id).subscribe(result => {
+            this._notification.warning('Regular Offer Delete', "Deleted Successfully");
             this._isSpinning = false;
-            this.allProducts = [];
-            this.offerProductIds = [];
-
+            this.getRegularOfferData();
+            this.getJhorOfferData();
         }, (err) => {
             this._isSpinning = false;
         });
-
     };
 
-    //Event method for deleting child offer
-    deleteConfirmOffer(index, id) {
-
-        let findValue = this.anonderjhorOffers.indexOf(id);
-        this.anonderjhorOffers.splice(findValue, 1);
-        this.currentOffer.data_value[0].offers = this.anonderjhorOffers;
-        this._isSpinning = true;
-        this.cmsService.updateOffer(this.currentOffer).subscribe(result => {
-            this._notification.warning('Offer Delete', "Deleted Successfully");
-            this._isSpinning = false;
-            this.offers = [];
-        }, (err) => {
-            this._isSpinning = false;
-            console.log(err);
-        });
-    };
-
-    //Event method for deleting offer
-    deleteOffer(index, id) {
+    /**Event method for deleting Anonder Jhor offer*/
+    deleteJhorOffer(index, id) {
         this._isSpinning = true;
         this.cmsService.delete(id).subscribe(result => {
             this._notification.warning('Parent Offer Delete', "Deleted Successfully");
             this._isSpinning = false;
             this.getRegularOfferData();
-            this.getChildData();
+            this.getJhorOfferData();
         }, (err) => {
             this._isSpinning = false;
         });

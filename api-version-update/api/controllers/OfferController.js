@@ -172,7 +172,7 @@ module.exports = {
   /**Model models/Offer.js*/
   allRegularOffer: async (req, res) => {
     try {
-      console.log('regular offer request: ', req.query);
+      /**console.log('regular offer request: ', req.query);*/
       let _pagination = pagination(req.query);
 
       let _where = {};
@@ -185,8 +185,6 @@ module.exports = {
       });
 
       let totalRegularOffer = await Offer.count().where(_where);
-      console.log('All regular offers: ', allRegularOffer);
-      console.log('number of regular offer: ', totalRegularOffer);
 
       res.status(200).json({
         success: true,
@@ -204,6 +202,21 @@ module.exports = {
       res.status(400).json({
         success: false,
         message,
+        error
+      });
+    }
+  },
+
+  /**Method called to delete a regular offer*/
+  /**model: Offer.js*/
+  destroy: async (req, res) => {
+    try {
+      const RegularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      return res.status(201).json(RegularOffer);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to delete a regular offer',
         error
       });
     }

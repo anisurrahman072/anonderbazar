@@ -62,7 +62,7 @@
                                             <ng-container>
                                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                                [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
-                                                               (nzOnConfirm)="deleteOffer(i,datum.id)">
+                                                               (nzOnConfirm)="deleteRegularOffer(i,datum.id)">
                                                     <a nz-popconfirm>
                                                         <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                             <i class="anticon anticon-delete "></i>
@@ -78,6 +78,8 @@
                             </nz-table>
                         </div>
                     </nz-tab>
+
+                    <!--special offer: anonder jhor offer section-->
                     <nz-tab nzTitle="Special Offer">
                         <div>
                             <nz-table #nzTable1
@@ -89,7 +91,7 @@
                                       [nzTotal]="regularOfferTotal"
                                       [(nzPageIndex)]="homeOfferPage"
                                       [(nzPageSize)]="homeOfferLimit"
-                                      (nzPageIndexChange)="getChildData()"
+                                      (nzPageIndexChange)="getJhorOfferData()"
                             >
                                 <thead>
                                 <tr>
@@ -125,7 +127,7 @@
                                             <ng-container>
                                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                                [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
-                                                               (nzOnConfirm)="deleteOffer(i,data1.id)">
+                                                               (nzOnConfirm)="deleteJhorOffer(i,data1.id)">
                                                     <a nz-popconfirm>
                                                         <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                             <i class="anticon anticon-delete "></i>
