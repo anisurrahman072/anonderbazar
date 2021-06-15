@@ -167,6 +167,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             featured: [false, []],
             is_coupon_product: [false, []],
             weight: ['', []],
+            promo_price: ['', []],
             status: ['', [Validators.required]]
         });
 
@@ -307,6 +308,16 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         value.offline_payment ? formData.append('offline_payment', "1") : formData.append('offline_payment', "0");
         value.free_shipping ? formData.append('free_shipping', "1") : formData.append('free_shipping', "0");
         value.partially_payable ? formData.append('partially_payable', "1") : formData.append('partially_payable', "0");
+
+        if(value.promo_price == 0 || !value.promo_price){
+            formData.append('promotion', "0");
+            formData.append('promo_price', "0");
+        }
+        else if(value.promo_price){
+            formData.append('promotion', "1");
+            formData.append('promo_price', value.promo_price);
+        }
+
         if(!value.free_shipping){
             if (value.dhaka_charge) {
                 formData.append('dhaka_charge', value.dhaka_charge);
