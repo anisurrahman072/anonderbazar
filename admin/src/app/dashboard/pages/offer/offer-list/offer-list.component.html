@@ -15,12 +15,12 @@
                                       nzShowQuickJumper
                                       nzShowSizeChanger
                                       [nzFrontPagination]="false"
-                                      [nzData]="homeOfferData"
+                                      [nzData]="regularOfferData"
                                       [nzLoading]="loading"
-                                      [nzTotal]="homeOfferTotal"
+                                      [nzTotal]="regularOfferTotal"
                                       [(nzPageIndex)]="homeOfferPage"
                                       [(nzPageSize)]="homeOfferLimit"
-                                      (nzPageIndexChange)="getData()"
+                                      (nzPageIndexChange)="getRegularOfferData()"
                             >
                                 <thead>
                                 <tr>
@@ -45,12 +45,12 @@
                                 <tr *ngFor="let datum of nzTable.data;let i=index">
                                     <td>{{datum.id}}</td>
                                     <td>
-                                        <nz-tag>{{datum.data_value[0].title}}</nz-tag>
+                                        <nz-tag>{{datum.title}}</nz-tag>
                                     </td>
                                     <td>
                                         <nz-tag>{{datum.frontend_position}}</nz-tag>
                                     </td>
-                                    <td [innerHTML]="datum.data_value[0].description"></td>
+                                    <td [innerHTML]="datum.description"></td>
                                     <td>
                                         <nz-button-group>
 
@@ -71,28 +71,6 @@
                                                     </a>
                                                 </nz-popconfirm>
                                             </ng-container>
-                                            <nz-dropdown nzTrigger="click" *ngIf="'offer-read'|accessControl"
-                                                         nzPlacement="topRight">
-                                                <button nz-button nz-dropdown>
-                                                    <!-- <span> আরও </span> -->
-                                                    <i class="anticon anticon-down"></i>
-                                                </button>
-                                                <ul nz-menu>
-                                                    <li nz-menu-item>
-
-                                                        <button style="width: 100%" nz-button [nzType]="'primary'"
-                                                                (click)="showOfferModal(datum)">
-                                                            <span> Add Related Offer </span>
-                                                        </button>
-                                                    </li>
-                                                    <li nz-menu-item>
-                                                        <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                                (click)="showProductModal(datum)">
-                                                            <span> Add Related Product </span>
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </nz-dropdown>
                                         </nz-button-group>
                                     </td>
                                 </tr>
@@ -106,9 +84,9 @@
                                       nzShowQuickJumper
                                       nzShowSizeChanger
                                       [nzFrontPagination]="false"
-                                      [nzData]="homeChildOfferData"
+                                      [nzData]="anonderjhorOfferData"
                                       [nzLoading]="loading"
-                                      [nzTotal]="homeOfferTotal"
+                                      [nzTotal]="regularOfferTotal"
                                       [(nzPageIndex)]="homeOfferPage"
                                       [(nzPageSize)]="homeOfferLimit"
                                       (nzPageIndexChange)="getChildData()"
@@ -133,9 +111,9 @@
                                 <tr *ngFor="let data1 of nzTable1.data;let i=index">
                                     <td>{{data1.id}}</td>
                                     <td>
-                                        <nz-tag>{{data1.data_value[0].title}}</nz-tag>
+                                        <nz-tag>{{data1.title}}</nz-tag>
                                     </td>
-                                    <td [innerHTML]="data1.data_value[0].description"></td>
+                                    <td [innerHTML]="data1.description"></td>
                                     <td>
                                         <nz-button-group>
 
@@ -156,20 +134,6 @@
                                                     </a>
                                                 </nz-popconfirm>
                                             </ng-container>
-                                            <nz-dropdown nzTrigger="click" *ngIf="'offer-read'|accessControl"
-                                                         nzPlacement="topRight">
-                                                <button nz-button nz-dropdown>
-                                                    <i class="anticon anticon-down"></i>
-                                                </button>
-                                                <ul nz-menu>
-                                                    <li nz-menu-item>
-                                                        <button nz-button style="width: 100%" [nzType]="'primary'"
-                                                                (click)="showProductModal(data1)">
-                                                            <span> Add Related Product </span>
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </nz-dropdown>
                                         </nz-button-group>
                                     </td>
                                 </tr>
@@ -183,190 +147,3 @@
         </ng-container>
     </nz-card>
 </section>
-
-<!--offer modal-->
-<nz-modal [nzFooter]="null" nzWidth="70%" [nzVisible]="isOfferVisible" nzTitle="Add Offer(s)"
-          [nzContent]="modalOfferContent"
-          (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
-    <ng-template #modalOfferContent>
-
-        <nz-table #nzTableOfferList
-                  nzShowQuickJumper
-                  nzShowSizeChanger
-                  [nzFrontPagination]="false"
-                  [nzData]="offers"
-                  [nzLoading]="_isSpinning"
-                  [nzTotal]="offerModalTotal"
-                  [(nzPageIndex)]="offerModalPage"
-                  [(nzPageSize)]="offerModalLimit"
-                  (nzPageIndexChange)="getOfferData($event, homeOfferData)"
-        >
-            <thead>
-            <tr>
-                <th>
-                    <span> ID </span>
-                </th>
-                <th>
-                    <span> Title </span>
-                </th>
-                <th>
-                    <span> Description </span>
-                </th>
-                <th>
-
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let datum of nzTableOfferList.data;let i=index;">
-                <td>{{datum.id}}</td>
-                <td>
-                    <nz-tag>{{datum.data_value[0].title}}</nz-tag>
-                </td>
-                <td [innerHTML]="datum.data_value[0].description"></td>
-                <td>
-                    <ng-container>
-                        <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'" [nzOkText]="'Delete'"
-                                       [nzCancelText]="'Cancel'" (nzOnConfirm)="deleteConfirmOffer(i,datum.id)">
-                            <a nz-popconfirm>
-                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                    <i class="anticon anticon-delete "></i>
-                                </button>
-
-                            </a>
-                        </nz-popconfirm>
-                    </ng-container>
-                </td>
-            </tr>
-            </tbody>
-        </nz-table>
-
-        <button nz-button [nzSize]="'large'" (click)="addNew=!addNew;">
-            <span *ngIf="!addNew"> Add New </span>
-            <span *ngIf="addNew">Cancel</span>
-        </button>
-
-        <form *ngIf="addNew" nz-form [nzLayout]="'inline'" [formGroup]="validateFormOffer"
-              (ngSubmit)="submitFormOffer($event,validateFormOffer.value)">
-
-            <div>
-                <nz-table #nzTableAllOfferList
-                          nzShowQuickJumper
-                          nzShowSizeChanger
-                          [nzFrontPagination]="true"
-                          [nzData]="allOffers"
-                          [nzLoading]="_isSpinning"
-                          [nzTotal]="modalAllOfferTotal"
-                          [(nzPageIndex)]="modalAllOfferPage"
-                          [(nzPageSize)]="modalAllOfferLimit"
-                >
-                    <thead>
-                    <tr>
-                        <th>
-                        </th>
-                        <th>
-                            <span> Title </span>
-                        </th>
-                        <th>
-                            <span> Description </span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let datum of nzTableAllOfferList.data;let i=index;">
-                        <td>
-                            <label nz-checkbox [(ngModel)]="datum.checked" formControlName='offerChecked'
-                                   (ngModelChange)="_refreshStatusOffer($event, datum.id)">
-                            </label>
-                        </td>
-                        <td>
-                            <nz-tag>{{datum.data_value[0].title}}</nz-tag>
-                        </td>
-                        <td [innerHTML]="datum.data_value[0].description"></td>
-                    </tr>
-                    </tbody>
-                </nz-table>
-                <div>
-                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
-                            [disabled]="!validateFormOffer.valid">
-                        Add Offer
-                    </button>
-                </div>
-            </div>
-        </form>
-    </ng-template>
-</nz-modal>
-
-
-<!--product modal-->
-<nz-modal [nzFooter]="null" nzWidth="90%" [nzVisible]="isProductVisible" nzTitle="Add New Products to offer"
-          (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
-    <nz-table #nzTableProd
-              nzShowQuickJumper
-              nzShowSizeChanger
-              [nzFrontPagination]="true"
-              [nzData]="productsOffered"
-              [nzLoading]="_isSpinning"
-              [nzTotal]="productOfferedTotal"
-              [(nzPageIndex)]="productOfferedPage"
-              [(nzPageSize)]="productOfferedLimit"
-    >
-        <thead>
-        <tr>
-            <th>
-                <span> Product Name </span>
-            </th>
-            <th>
-                <span> Brand </span>
-            </th>
-            <th>
-                <span> Category </span>
-            </th>
-            <th>
-                <span> Sub-Category </span>
-            </th>
-            <th>
-                <span> Sub-Sub-Category </span>
-            </th>
-            <th>
-                <span> Price </span>
-            </th>
-            <th>
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let datum of nzTableProd.data;let i=index;">
-            <td>{{datum.name}}</td>
-            <td>{{datum.brand_name}}</td>
-            <td>{{datum.type_name}}</td>
-            <td>{{datum.category_name}}</td>
-            <td>{{datum.subcategory_name}}</td>
-            <td>{{datum.price}}</td>
-            <td>
-                <ng-container>
-                    <nz-popconfirm
-                            [nzTitle]="'Are you sure you want to delete?'"
-                            [nzOkText]="'Delete'"
-                            [nzCancelText]="'Cancel'"
-                            (nzOnConfirm)="deleteConfirm(i,datum.id)">
-                        <a nz-popconfirm>
-                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
-                                <i class="anticon anticon-delete "></i>
-                            </button>
-                        </a>
-                    </nz-popconfirm>
-                </ng-container>
-            </td>
-        </tr>
-        </tbody>
-    </nz-table>
-
-    <button nz-button [nzSize]="'large'" (click)="addNewProducts()">
-        <span *ngIf="!addNew"> Add New </span>
-        <span *ngIf="addNew"> Cancel </span>
-    </button>
-
-    <all-products-for-offer *ngIf="addNew" [cmsRow]="currentProduct"  (onNewProductsAdded)="onNewProductAdded()"></all-products-for-offer>
-
-</nz-modal>

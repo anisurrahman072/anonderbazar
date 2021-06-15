@@ -6,6 +6,7 @@
  */
 
 const {imageUploadConfig} = require('../../libs/helper');
+const {pagination} = require('../../libs/pagination');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -35,7 +36,7 @@ module.exports = {
     }
   },
 
-  /**Method called for creating offer data*/
+  /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
   offerInsert: async (req, res) => {
     /**console.log('offer request to controller from client: ', req.body);*/
@@ -165,7 +166,48 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  /**Method called for getting all regular offer data*/
+  /**Model models/Offer.js*/
+  allRegularOffer: async (req, res) => {
+    try {
+      console.log('regular offer request: ', req.query);
+      let _pagination = pagination(req.query);
+
+      let _where = {};
+      _where.deletedAt = null;
+
+      let allRegularOffer = await Offer.find({
+        where: _where,
+        limit: _pagination.limit,
+        skip: _pagination.skip
+      });
+
+      let totalRegularOffer = await Offer.count().where(_where);
+      console.log('All regular offers: ', allRegularOffer);
+      console.log('number of regular offer: ', totalRegularOffer);
+
+      res.status(200).json({
+        success: true,
+        total: totalRegularOffer,
+        limit: _pagination.limit,
+        skip: _pagination.skip,
+        page: _pagination.page,
+        message: 'All regular offers with pagination',
+        data: allRegularOffer
+      });
+
+    } catch (error) {
+      console.log(error);
+      let message = 'Failed to get all regular offers with pagination';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
 
 };
 

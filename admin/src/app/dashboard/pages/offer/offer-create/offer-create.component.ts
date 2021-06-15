@@ -22,7 +22,6 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    linkVisible: boolean = false;
     ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
@@ -58,7 +57,6 @@ export class OfferCreateComponent implements OnInit {
     submitting: boolean = false;
 
     isShowHomepage: boolean = false;
-    isShowCarousel: boolean = false;
 
     Calc_type;
     /*variables taken for ngmodel in nz-select*/
@@ -80,7 +78,6 @@ export class OfferCreateComponent implements OnInit {
     allCategorySearch: string = '';
     allSubCategorySearch: string = '';
 
-    /**working now*/
     offerSelectionType;
     allOptions;
 
@@ -340,9 +337,6 @@ export class OfferCreateComponent implements OnInit {
 
     // Method for refresh offer checkbox data in the offer modal
     _refreshStatus($event, value) {
-
-        console.log($event);
-
         if ($event) {
             this.selectedAllProductIds[this.allProductPage - 1].push(value);
         } else {
