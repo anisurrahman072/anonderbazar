@@ -54,11 +54,11 @@ export class ProductService {
         );
     }
 
-    getAllWithPagination(page = 1, limit = 20, excludedProductIds = [], nameSearchValue = '', shopSearchValue = '', brandSearchValue = '', categorySearchValue = '', subCategorySearchValue = ''): Observable<any> {
-    getAllWithPagination(page = 1, limit = 30, excludedProductIds = [], nameSearchValue = '', codeSearchValue = ''): Observable<any> {
+
+    getAllWithPagination(page = 1, limit = 30, excludedProductIds = [], nameSearchValue = '', codeSearchValue = '', shopSearchValue = '', brandSearchValue = '', categorySearchValue = '', subCategorySearchValue = ''): Observable<any> {
         const skip = (page - 1) * limit;
-        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&nameSearchValue=${nameSearchValue}&shopSearchValue=${shopSearchValue}&brandSearchValue=${brandSearchValue}&categorySearchValue=${categorySearchValue}&subCategorySearchValue=${subCategorySearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
-        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&nameSearchValue=${nameSearchValue}&codeSearchValue=${codeSearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
+        return this.http.get(this.EndPoint2 + `?where={"deletedAt":null}&codeSearchValue=${codeSearchValue}&nameSearchValue=${nameSearchValue}&shopSearchValue=${shopSearchValue}&brandSearchValue=${brandSearchValue}&categorySearchValue=${categorySearchValue}&subCategorySearchValue=${subCategorySearchValue}&excludedProductIds=${JSON.stringify(excludedProductIds)}&page=${page}&skip=${skip}&limit=${limit}`);
+
     }
 
     getByIdsWithJoin(ids): Observable<any> {
@@ -155,7 +155,6 @@ export class ProductService {
     }
 
     getByCategorySubCategory(type_id: number, category_id: number, subcategory_id?: number): Observable<any>{
-        console.log('wwwwwee', type_id, category_id, subcategory_id);
         let query = `?type_id=${type_id}&category_id=${category_id}`;
         if(subcategory_id){
             query += `&subcategory_id=${subcategory_id}`;

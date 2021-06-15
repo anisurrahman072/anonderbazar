@@ -3,10 +3,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {CmsService} from '../../../../services/cms.service';
 import {environment} from "../../../../../environments/environment";
 import {ProductService} from "../../../../services/product.service";
 import * as ___ from 'lodash';
+import {OfferService} from "../../../../services/offer.service";
+import moment from "moment";
 
 @Component({
     selector: 'app-offer-create',
@@ -60,6 +61,11 @@ export class OfferCreateComponent implements OnInit {
     isShowCarousel: boolean = false;
 
     Calc_type;
+    /*variables taken for ngmodel in nz-select*/
+    selectionType;
+    vendorName;
+    brandName;
+    categoryName;
     isVisible: Boolean = false;
     allProducts: any = [];
 
@@ -68,10 +74,16 @@ export class OfferCreateComponent implements OnInit {
     offerProductIds: any = [];
 
     allProductNameSearch: string = '';
+    allProductCodeSearch: string = '';
     allShopOwnerSearch: string = '';
     allBrandSearch: string = '';
     allCategorySearch: string = '';
     allSubCategorySearch: string = '';
+
+    /**working now*/
+    offerSelectionType;
+    allOptions;
+
 
     allProductTotal = 0;
     selectedProductIds: any;
@@ -84,21 +96,22 @@ export class OfferCreateComponent implements OnInit {
         private route: ActivatedRoute,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
-        private cmsService: CmsService,
-        private productService: ProductService
+        private productService: ProductService,
+        private offerService: OfferService,
     ) {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
-            offer_type: ['', [Validators.required]],
             frontend_position: ['', ''],
-            link: ['', ''],
+            selectionType: ['', [Validators.required]],
+            vendorName: ['', []],
+            brandName: ['', []],
+            categoryName: ['', []],
             description: ['', []],
             discountAmount: ['', [Validators.required]],
             calculationType: ['', [Validators.required]],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
-            showCarousel: ['', []]
         });
     }
 
@@ -107,6 +120,7 @@ export class OfferCreateComponent implements OnInit {
 
 //Event method for submitting the form
     submitForm = ($event, value) => {
+        console.log('moment: ', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         this.submitting = true;
         $event.preventDefault();
         console.log('value.productSelectedIDs: ', this.selectedProductIds);
@@ -116,21 +130,33 @@ export class OfferCreateComponent implements OnInit {
         }
 
         let formData = new FormData();
-        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
         let showInHome = this.isShowHomepage ? 'true' : 'false';
+
         formData.append('title', value.title);
-        formData.append('subsection', value.offer_type);
-        formData.append('link', value.link);
         formData.append('description', value.description);
-        formData.append('showInCarousel', showInCarousel);
         formData.append('showInHome', showInHome);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);
-        formData.append('productSelectedIDs', this.selectedProductIds);
-        formData.append('offerStartDate', value.offerStartDate);
-        formData.append('offerEndDate', value.offerEndDate);
+        formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
+        formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
+
+        if(this.selectedProductIds) {
+            formData.append('selectedProductIds', this.selectedProductIds);
+        }
+
+        if(value.vendorName) {
+            formData.append('vendor_id', this.vendorName);
+        }
+
+        if(value.brandName) {
+            formData.append('brand_id', this.brandName);
+        }
+
+        if(value.categoryName) {
+            formData.append('category_id', this.categoryName);
+        }
+
         if (value.frontend_position) {
-            console.log('hhh', value.frontend_position);
             formData.append('frontend_position', value.frontend_position);
         }
         if (this.ImageFile) {
@@ -154,7 +180,8 @@ export class OfferCreateComponent implements OnInit {
             formData.append('hasBannerImage', 'false');
         }
 
-        this.cmsService.offerInsert(formData).subscribe(result => {
+        this.offerService.offerInsert(formData).subscribe(result => {
+            console.log('submit rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', result);
             this.submitting = false;
             this._notification.success('Offer Added', "Feature Title: ");
             this._isSpinning = false;
@@ -210,23 +237,9 @@ export class OfferCreateComponent implements OnInit {
         return metadata;
     }
 
-// Method for change offer type
-    typeChange($event) {
-        console.log($event);
-        if ($event === 'OFFER') {
-            this.linkVisible = true;
-        } else {
-            this.linkVisible = false;
-        }
-    }
-
     changeShowHomepage() {
         this.isShowHomepage = !this.isShowHomepage;
     }
-
-    /*changeShowCarousel() {
-        this.isShowCarousel = !this.isShowCarousel;
-    }*/
 
     getAllProducts(event: any) {
         if (event) {
@@ -234,10 +247,8 @@ export class OfferCreateComponent implements OnInit {
         }
 
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
             .subscribe(result => {
-                console.log('all products to add to offer: rrrrr: ', result);
-
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
                     this.allProducts = result.data.map(item => {
@@ -274,6 +285,11 @@ export class OfferCreateComponent implements OnInit {
             }, err => {
                 this._isSpinning = false;
             });
+    }
+
+    allProductCodeChangeHandler(event: any) {
+        this.allProductCodeSearch = event;
+        this.getAllProducts(1);
     }
 
     allProductNameChangeHandler(event: any) {
@@ -348,6 +364,7 @@ export class OfferCreateComponent implements OnInit {
         if (this.selectedProductIds.length === 0) {
             return false;
         }
+        this._notification.success(this.selectedProductIds.length, ' items has been added');
         this.isVisible = false;
     }
 
@@ -358,5 +375,48 @@ export class OfferCreateComponent implements OnInit {
 
     handleCancel(): void {
         this.isVisible = false;
+    }
+
+    /**Method called when selection type is changed from the front end*/
+    onSelectionTypeSelect(offerSelectionType) {
+        this.offerSelectionType = offerSelectionType;
+        if(offerSelectionType && offerSelectionType !== 'Product wise') {
+            this.getAllOptions(offerSelectionType);
+        }
+    }
+
+    /**method called to show the available options according to the selection in the offer selection type dropdown*/
+    getAllOptions(offerSelectionType) {
+        this.offerService.getAllOptions(offerSelectionType)
+            .subscribe(result => {
+                this.allOptions = result.data;
+            })
+    }
+
+    /**Method call when we selection a offer selection type, it does not allow to store previously selected selection type
+    it only keeps the finally selected selection type data*/
+    finalSelectionType(vendor, brand, category, selectedProductIds, event) {
+        if(event && event !== 'undefined') {
+            if(vendor) {
+                this.vendorName = event;
+                this.brandName = null;
+                this.categoryName = null;
+                this.selectedProductIds = null;
+            }else if(brand) {
+                this.vendorName = null;
+                this.brandName = event;
+                this.categoryName = null;
+                this.selectedProductIds = null;
+            }else if(category) {
+                this.vendorName = null;
+                this.brandName = null;
+                this.categoryName = event;
+                this.selectedProductIds = null;
+            }else if(selectedProductIds) {
+                this.vendorName = null;
+                this.brandName = null;
+                this.categoryName = null;
+            }
+        }
     }
 }
