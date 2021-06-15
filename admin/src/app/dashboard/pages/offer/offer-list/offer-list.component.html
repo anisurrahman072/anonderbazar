@@ -25,10 +25,15 @@
                                 <thead>
                                 <tr>
                                     <th>
-                                        <span> ID </span>
+                                        <span> Title </span>
                                     </th>
                                     <th>
-                                        <span> Title </span>
+                                        <span> Discount </span>
+                                    </th><th>
+                                        <span> Selection Type </span>
+                                    </th>
+                                    <th>
+                                        <span> Offer duration </span>
                                     </th>
                                     <th>
                                         <span> Frontend Position </span>
@@ -43,9 +48,32 @@
                                 </thead>
                                 <tbody>
                                 <tr *ngFor="let datum of nzTable.data;let i=index">
-                                    <td>{{datum.id}}</td>
                                     <td>
                                         <nz-tag>{{datum.title}}</nz-tag>
+                                    </td>
+
+                                    <td *ngIf="datum.calculation_type === 'percentage'">
+                                        <nz-tag>{{datum.discount_amount}} %</nz-tag>
+                                    </td>
+                                    <td *ngIf="datum.calculation_type === 'absolute amount'">
+                                        <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                                    </td>
+
+                                    <td *ngIf="datum.brand_ids !== null">
+                                        <nz-tag>Brand Wise</nz-tag>
+                                    </td>
+                                    <td *ngIf="datum.category_ids !== null">
+                                        <nz-tag>Category Wise</nz-tag>
+                                    </td>
+                                    <td *ngIf="datum.vendor_ids !== null">
+                                        <nz-tag>Vendor Wise</nz-tag>
+                                    </td>
+                                    <td *ngIf="datum.product_ids !== null">
+                                        <nz-tag>Product Wise</nz-tag>
+                                    </td>
+
+                                    <td>
+                                        <nz-tag>{{datum.start_date | date : 'medium'}} - {{datum.end_date | date : 'medium'}}</nz-tag>
                                     </td>
                                     <td>
                                         <nz-tag>{{datum.frontend_position}}</nz-tag>
