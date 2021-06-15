@@ -36,6 +36,7 @@
         </ng-template>
 
         <nz-table #nzTable
+                  nzShowQuickJumper
                   nzShowSizeChanger
                   [nzShowPagination]="true"
                   [nzFrontPagination]="false"
@@ -392,7 +393,7 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalVariantContent>
 
-        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false">
+        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false" nzShowQuickJumper>
             <thead>
             <tr>
                 <th>
@@ -525,7 +526,7 @@
           [nzContent]="modalPromotionContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalPromotionContent>
 
-        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false">
+        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false" nzShowQuickJumper>
             <thead>
             <tr>
                 <th>
@@ -666,6 +667,7 @@
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allProduct" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
+                      nzShowQuickJumper
                       [(nzPageIndex)]="productPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="total"
                       (nzPageIndexChange)="getProductData($event, 'page', true)"

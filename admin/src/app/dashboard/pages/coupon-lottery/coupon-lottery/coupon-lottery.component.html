@@ -3,6 +3,7 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table
                 #nzTable
+                nzShowQuickJumper
                 [nzTotal]="lotteryTotal"
                 [nzData]="lotteryList"
                 [nzShowSizeChanger]="true"
@@ -66,6 +67,7 @@
     <ng-template #winnerModalContent>
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table #nzTableWinners
+                      nzShowQuickJumper
                       [nzBordered]="true"
                       [nzData]="winnerList"
                       [nzFrontPagination]="true"

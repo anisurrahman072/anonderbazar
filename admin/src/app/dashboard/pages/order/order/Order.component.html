@@ -10,6 +10,7 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table
                 #nzTable
+                nzShowQuickJumper
                 [nzTotal]="orderTotal"
                 [nzData]="orderData"
                 [nzShowSizeChanger]="true"
@@ -219,6 +220,7 @@
               (ngSubmit)="submitForm($event, validateProductForm.value)">
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="csvOrders" [nzFrontPagination]="false"
+                      nzShowQuickJumper
                       [nzLoading]="_isSpinning"
                       [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="orderCsvTotal"
