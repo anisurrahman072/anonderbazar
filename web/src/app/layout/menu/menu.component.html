@@ -24,10 +24,11 @@
                         (mouseenter)="categoryHover(category)"
                         (click)="categoryClickEvent(category)"
                         [ngClass]="category.id == selectedCategoryId? 'active':''">
-                        <a  style="font-weight: 400; text-transform: uppercase;"
+                        <a style="font-weight: 400; text-transform: uppercase;"
                            [ngClass]="category.id == selectedCategoryId? 'mainMenu':'mainMenu'">{{category.name}}</a>
                     </li>
-                    <div class="dropdown-menu" style="height: 400px; width: 100%; display: block;" (mouseleave)="isDisplay = false"
+                    <div class="dropdown-menu" style="height: 400px; width: 100%; display: block;"
+                         (mouseleave)="isDisplay = false"
                          *ngIf='subCategoryList && subCategoryList.length > 0 && isDisplay'>
                         <div class="row" style="height: 400px;">
                             <div class="col-md-8 d-inline-flex flex-column flex-wrap"
@@ -99,7 +100,8 @@
     <div *ngIf="mobileSubCategoryList" class="subcategory-section" style="">
         <div *ngFor='let subCategory of mobileSubCategoryList'
              style="background-color: whitesmoke; width: 90%;">
-            <p class="subcategory-name" style=" color: black;  padding: 5px; font-weight: 400; text-transform: uppercase; font-size: 13px !important;"
+            <p class="subcategory-name"
+               style=" color: black;  padding: 5px; font-weight: 400; text-transform: uppercase; font-size: 13px !important;"
                (click)="subCategoryClickEvent(subCategory)">
                 {{subCategory.name}}
                 <i class="fa fa-chevron-down" aria-hidden="true"
