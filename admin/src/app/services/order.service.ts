@@ -85,4 +85,8 @@ export class OrderService {
     refundCancelOrder(orderId, status): Observable<any>{
         return this.http.put(`${this.EndPoint}/refundCancelOrder/${orderId}`, {status});
     }
+
+    getOrdersByDate(data): Observable<any>{
+        return this.http.get(`${this.EndPoint}/getOrdersByDate?created_at= ${data.date}`);
+    }
 }

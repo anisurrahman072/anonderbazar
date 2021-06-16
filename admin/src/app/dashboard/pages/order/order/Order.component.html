@@ -1,6 +1,9 @@
 <section>
     <nz-card class="card-height order-list-card" nzTitle="Order list" [nzExtra]="extra">
         <ng-template #extra>
+            <button nz-button [nzType]="'primary'" (click)='showOrdersBalkModal()'>
+                <i class="anticon anticon-download"></i><span> Download Orders as Bulk </span>
+            </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
@@ -293,5 +296,39 @@
                 </div>
             </div>
         </form>
+    </ng-template>
+</nz-modal>
+
+<!-- Download as bulk -->
+<nz-modal [nzFooter]="null"
+          nzWidth="60%"
+          [nzVisible]="isOrdersBulkVisible"
+          [nzTitle]="'Download orders as bulk'"
+          [nzContent]="modalOrdersBulkContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalOrdersBulkContent>
+        <div    nz-row>
+            <div    nz-col [nzSpan]="7">
+                <label> Enter Date </label>
+            </div>
+            <div nz-col [nzSpan]="12">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  00:00:00"
+                        [(ngModel)]="searchStartDateOrdersBulk"
+                        nzPlaceHolder="Start date">
+                </nz-date-picker>&nbsp;
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  23:59:59"
+                        [(ngModel)]="searchEndDateOrdersBulk"
+                        nzPlaceHolder="End date">
+                </nz-date-picker>
+            </div>
+        </div>
+
+        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
     </ng-template>
 </nz-modal>
