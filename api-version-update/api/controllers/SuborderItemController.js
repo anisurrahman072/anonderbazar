@@ -134,9 +134,10 @@ module.exports = {
        p_order.id as order_id,
        suborder_item.product_id,
        products.name as product_name,
-       products.price as price,
-       products.vendor_price as vendor_price,
+       products.price as originalPrice,
+       products.vendor_price as vendorPrice,
        products.code as product_code,
+       products.promo_price as discountPrice,
        suborder_item.warehouse_id,
        suborder_item.product_quantity,
        suborder_item.product_total_price,
@@ -203,7 +204,7 @@ module.exports = {
       const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where, []);
 
       /** Find the total original price , total promotion price & total Vendor price of order */
-      let orders = {};
+      /*let orders = {};
       let len = rawResult.rows.length;
       for (let index = 0; index < len; index++) {
         if (!orders[rawResult.rows[index].order_id]) {
@@ -236,19 +237,20 @@ module.exports = {
           _where += ` AND products.promotion = 1 `;
           const rawResultPromotionalPrice = await OrderQuery(rawSelect + fromSQL + _where, []);
 
-          /** Store original price , promotional price & Vendor price into an object (Taking Order_id as Keys) for further use */
+          /!** Store original price , promotional price & Vendor price into an object (Taking Order_id as Keys) for further use *!/
           orders[rawResult.rows[index].order_id] = {
             originalPrice: rawResultPrice.rows[0].Total_price,
             discountPrice: rawResultPromotionalPrice.rows[0].Total_promo_price ? rawResultPromotionalPrice.rows[0].Total_promo_price : 0,
             vendorPrice: rawResultVendorPrice.rows[0].Total_vendor_price ? rawResultVendorPrice.rows[0].Total_vendor_price : 0
           };
-          /** END */
+          /!** END *!/
           rawResult.rows[index] = {...rawResult.rows[index], ...orders[rawResult.rows[index].order_id]};
         } else {
           rawResult.rows[index] = {...rawResult.rows[index], ...orders[rawResult.rows[index].order_id]};
         }
       }
-      /** END */
+      /!** END *!/
+      */
 
       console.log('The result is: ', rawResult.rows);
       return res.status(200).json(rawResult.rows);

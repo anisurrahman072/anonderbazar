@@ -518,6 +518,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     };
 
     onSubmitOrdersBulkDownload() {
+        this.isOrdersBulkVisible = false;
         if (!this.searchStartDateOrdersBulk) {
             this._notification.error('Missing Start date!', 'Please provide start date!');
         }
@@ -556,6 +557,7 @@ export class OrderComponent implements OnInit, OnDestroy {
                 console.log("result is: ", result);
                 if (!(Array.isArray(result) && result.length > 0)) {
                     this._notification.info('Not found!', 'No product found in this time');
+                    return false;
                 }
                 let csvData = [];
                 let varients = "";
