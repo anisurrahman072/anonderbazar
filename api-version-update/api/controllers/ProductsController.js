@@ -883,10 +883,14 @@ module.exports = {
                 subCategory.name as subcategory_name,
                 brands.name as brand_name,
                 warehouses.name as warehouse_name,
-                GROUP_CONCAT(productVariant.name) as variantName,
-                GROUP_CONCAT(productVariant.quantity) as variantQty,
-                GROUP_CONCAT(variant.name) as variantNames,
-                GROUP_CONCAT(warehouseVariant.name) as warehouseVariantsName
+                GROUP_CONCAT(productVariant.id) as productVariantId,
+                GROUP_CONCAT(productVariant.name) as productVariantLabel,
+                GROUP_CONCAT(productVariant.quantity) as productVariantQty,
+                GROUP_CONCAT(variant.id) as variantId,
+                GROUP_CONCAT(variant.name) as variantName,
+                GROUP_CONCAT(variant.type) as variantType,
+                GROUP_CONCAT(warehouseVariant.id) as warehouseVariantId,
+                GROUP_CONCAT(warehouseVariant.name) as warehouseVariantName
       `;
 
       let fromSQL = ` FROM products
@@ -1012,15 +1016,37 @@ module.exports = {
           ws.cell(row, column++).string(null);
         }
 
-        /*let variants = item.variantName.split(',');
-        let additionalPrice = item.variantQty.split(',');
-        let variantsLength = variants.length;
 
-        for(let ind = 0; ind < variantsLength; ind++){
-          // TODO: On forward after completion of present task
+
+        if(item.productVariantId && item.productVariantId.split(',').length > 0){
+          let productVariantId = item.productVariantId.split(',');
+          let productVariantLabel = item.productVariantLabel.split(',');
+          let productVariantQty = item.productVariantQty.split(',');
+          let variantId = item.variantId.split(',');
+          let variantName = item.variantName.split(',');
+          let variantType = item.variantType.split(',');
+          let warehouseVariantId = item.warehouseVariantId.split(',');
+          let warehouseVariantName = item.warehouseVariantName.split(',');
+          let productVariantsLength = productVariantId.length;
+
+          console.log('tttttt', productVariantId, productVariantLabel, productVariantQty, variantId, variantName, variantType, warehouseVariantId, warehouseVariantName);
+
+          for(let ind = 0; ind < productVariantsLength; ind++){
+            // TODO: On forward after completion of present task
+            let str = `${variantName[ind]}=>${warehouseVariantName[ind]}`;
+            if(variantType[ind] == 0){
+              str += `(Price Variation: No)`;
+            }
+            else {
+              str += `(Price Variation: Yes)`;
+            }
+            ws.cell(row, column++).string(variantId[ind]+','+warehouseVariantId[ind] +'|'+escapeExcel(str));
+            let variantInfo = productVariantLabel[ind] +' | ' + productVariantQty[ind];
+            ws.cell(row, column++).string(variantInfo);
+            console.log('111111111: ', item.id, ind, str, variantInfo);
+          }
         }
 
-         */
 
         row++;
 
