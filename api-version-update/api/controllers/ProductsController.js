@@ -1032,7 +1032,7 @@ module.exports = {
           console.log('tttttt', productVariantId, productVariantLabel, productVariantQty, variantId, variantName, variantType, warehouseVariantId, warehouseVariantName);
 
           for(let ind = 0; ind < productVariantsLength; ind++){
-            // TODO: On forward after completion of present task
+            ws.cell(row, column++).string(productVariantId[ind]);
             let str = `${variantName[ind]}=>${warehouseVariantName[ind]}`;
             if(variantType[ind] == 0){
               str += `(Price Variation: No)`;
@@ -1046,8 +1046,6 @@ module.exports = {
             console.log('111111111: ', item.id, ind, str, variantInfo);
           }
         }
-
-
         row++;
 
       });
@@ -1073,7 +1071,10 @@ module.exports = {
       let problematicRow = 0;
       let message = '';
 
-      const productCodes = _.map(req.body, 'code');
+      /** Get all product codes in an ARRAY. Then sort the Array on codes. */
+      let productCodes = _.map(req.body, 'code');
+      productCodes = _.sortBy(productCodes);
+
 
       let productsIndex = {};
       if (productCodes && productCodes.length > 0) {
@@ -1081,7 +1082,15 @@ module.exports = {
           {
             code: productCodes
           });
-        productsIndex = _.zipObject(productCodes, productsIndex);
+
+        /** Sort the products Array by codes as previously we sorted the codes Array "productCodes" */
+        productsIndex = _.sortBy(productsIndex, (e) => {
+          return e.code;
+        });
+
+        /** Make an OBJECT of OBJECT where codes are KEY & products are VALUE */
+        productsIndex = _.zipObject(productCodes, productsIndex); // index wise products in object of object
+
       }
       for (let i = 0; i < len; i++) {
         if (
@@ -1116,6 +1125,7 @@ module.exports = {
 
       for (let i = 0; i < Object.keys(productsIndex).length; i++) {
         let product = productsIndex[req.body[i].code];
+
         product.weight = parseFloat(req.body[i].weight);
 
         let parts = req.body[i].category.split('|');
@@ -1169,13 +1179,14 @@ module.exports = {
             product.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
+
+        if(req.body[i].allVariants && req.body[i].allVariants.length > 0){
+          product.allVariants = req.body[i].allVariants;
+        }
       }
 
       for (let key in productsIndex) {
         const product = productsIndex[key];
-        console.log('first', product.type_id);
-        console.log('second', product.category_id);
-        console.log('third', product.subcategory_id);
 
         await Product.updateOne({code: key}).set({
           type_id: product.type_id,
@@ -1199,6 +1210,48 @@ module.exports = {
           tag: product.tag
         });
 
+        if(product.allVariants && product.allVariants.length > 0){
+          let variantsCount = product.allVariants.length;
+          for(let variantIndex = 0; variantIndex < variantsCount; variantIndex++){
+
+            /** If id exists that means the variant will be updated. Other wise it is a new variant that will be added for the product. */
+            if(product.allVariants[variantIndex].id){
+
+              /** Find the product variant & check weather the variant is for this product */
+              let productVariant = await ProductVariant.findOne({
+                id: product.allVariants[variantIndex].id,
+                deletedAt: null
+              });
+              if(productVariant && product.id === productVariant.product_id){
+                let updatedVariant = await ProductVariant.updateOne({
+                  id: product.allVariants[variantIndex].id,
+                  deletedAt: null
+                }).set({
+                  variant_id: product.allVariants[variantIndex].variant_id,
+                  warehouses_variant_id: product.allVariants[variantIndex].warehouses_variant_id,
+                  name: product.allVariants[variantIndex].name,
+                  quantity: product.allVariants[variantIndex].quantity
+                });
+                console.log('updatedVariant: ', updatedVariant);
+              }
+              else {
+                res.status(400).json({
+                  message: `Variant ID has been mis-matched for Product Code: ${product.code}`
+                });
+              }
+            }
+            else {
+              let newVariant = await ProductVariant.create({
+                product_id: product.id,
+                variant_id: product.allVariants[variantIndex].variant_id,
+                warehouses_variant_id: product.allVariants[variantIndex].warehouses_variant_id,
+                name: product.allVariants[variantIndex].name,
+                quantity: product.allVariants[variantIndex].quantity
+              }).fetch();
+              console.log('newVariant: ', newVariant);
+            }
+          }
+        }
         count++;
       }
 
@@ -1207,10 +1260,8 @@ module.exports = {
         message: 'Number of Products successfully updated: ' + count,
       });
     } catch (error) {
-      let message = 'Error in Update products with excel';
       res.status(400).json({
         success: false,
-        message,
         error
       });
     }
