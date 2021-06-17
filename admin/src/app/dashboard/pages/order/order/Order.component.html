@@ -310,10 +310,10 @@
 >
     <ng-template #modalOrdersBulkContent>
         <div    nz-row>
-            <div    nz-col [nzSpan]="7">
+            <div    nz-col [nzSpan]="3">
                 <label> Enter Date </label>
             </div>
-            <div nz-col [nzSpan]="12">
+            <div nz-col [nzSpan]="15">
                 <nz-date-picker
                         nzShowTime
                         nzFormat="yyyy-MM-dd  00:00:00"
@@ -327,8 +327,9 @@
                         nzPlaceHolder="End date">
                 </nz-date-picker>
             </div>
+            <div nz-col [nzSpan]="1">
+                <button nz-col nz-button [nzType]="'primary'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
+            </div>
         </div>
-
-        <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
     </ng-template>
 </nz-modal>
