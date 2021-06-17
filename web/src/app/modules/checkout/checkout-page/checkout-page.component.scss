@@ -137,6 +137,10 @@ select {
   padding: 10px 85px;
   margin-top: 20px;
 }
+//for Confirm without payment btn
+#sum-btn-w-o-payment {
+  padding: 10px 64px;
+}
 
 .Summarybtn a {
   color: #ffffff;
@@ -211,3 +215,10 @@ button:disabled {
 button:disabled a {
   cursor: not-allowed;
 }
+
+@media (max-width: 767.98px) {
+  .payment-method-radio-btn {
+    flex-direction: column;
+  }
+}
+
