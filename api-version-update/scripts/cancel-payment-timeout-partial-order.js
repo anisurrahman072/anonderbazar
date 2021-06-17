@@ -13,7 +13,7 @@ module.exports = {
   description: 'This script will auto run in linux server & will auto cancel the orders that were timed out for partial pay',
 
 
-  fn: async function () {
+  fn: async function (inputs, exits) {
 
     sails.log('Running custom shell script... (`sails run cancel-timeout-partial-order`)');
 
@@ -42,7 +42,7 @@ module.exports = {
             status: ORDER_STATUSES.canceled
           });
 
-          await Suborder.updateOne({
+          await Suborder.update({
             product_order_id: partialOrders[i].id
           }).set({
             status: SUB_ORDER_STATUSES.canceled
@@ -55,7 +55,7 @@ module.exports = {
 
           let smsText = `Your order ${deletedOrder.id} has been canceled!`;
           console.log(smsText);
-          // SmsService.sendingOneSmsToOne([user.phone], smsText);
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
         }
       }
       return exits.success();

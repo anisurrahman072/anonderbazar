@@ -42,6 +42,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     orderTypeSearchValue: any;
     searchEndDate: any;
 
+    searchStartDateOrdersBulk: any;
+    searchEndDateOrdersBulk: any;
+
     orderData = [];
     orderTotal: number = 0;
     orderLimit: number = 25;
@@ -60,6 +63,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     isProductVisible = false;
+    isOrdersBulkVisible = false;
 
     csvOrders: any = [];
     private csvPageSelectAll = [];
@@ -170,10 +174,9 @@ export class OrderComponent implements OnInit, OnDestroy {
                     allData = allData.map(data => {
                         let transactions = [];
 
-                        if(!data.paymentAmount){
+                        if (!data.paymentAmount) {
                             return {...data, transactions};
-                        }
-                        else {
+                        } else {
                             let transactionsCount = data.paymentAmount.split(',').length;
 
                             let paymentAmounts = data.paymentAmount.split(',');
@@ -181,7 +184,7 @@ export class OrderComponent implements OnInit, OnDestroy {
                             let transactionKeys = data.transactionKey.split(',');
                             let transactionTimes = data.transactionTime.split(',');
 
-                            for (let i = 0; i < transactionsCount; i++){
+                            for (let i = 0; i < transactionsCount; i++) {
                                 let transaction = {
                                     amount: paymentAmounts[i],
                                     paymentType: paymentTypes[i],
@@ -289,6 +292,10 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.getData(null, true);
     };
 
+    showOrdersBalkModal() {
+        this.isOrdersBulkVisible = true;
+    }
+
 
     //Event method for resetting all filters
     resetAllFilter() {
@@ -322,7 +329,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         });
     }
 
-    changePaymentStatusConfirm($event, id, oldStatus){
+    changePaymentStatusConfirm($event, id, oldStatus) {
         this._isSpinning = true;
         this.orderService.updatePaymentStatus(id, {
             payment_status: $event,
@@ -444,10 +451,9 @@ export class OrderComponent implements OnInit, OnDestroy {
                 allData = allData.map(data => {
                     let transactions = [];
 
-                    if(!data.paymentAmount){
+                    if (!data.paymentAmount) {
                         return {...data, transactions};
-                    }
-                    else {
+                    } else {
                         let transactionsCount = data.paymentAmount.split(',').length;
 
                         let paymentAmounts = data.paymentAmount.split(',');
@@ -455,7 +461,7 @@ export class OrderComponent implements OnInit, OnDestroy {
                         let transactionKeys = data.transactionKey.split(',');
                         let transactionTimes = data.transactionTime.split(',');
 
-                        for (let i = 0; i < transactionsCount; i++){
+                        for (let i = 0; i < transactionsCount; i++) {
                             let transaction = {
                                 Amount: paymentAmounts[i],
                                 Type: paymentTypes[i],
@@ -503,14 +509,135 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     handleOk = e => {
         this.isProductVisible = false;
+        this.isOrdersBulkVisible = false;
     };
 
     handleCancel = e => {
         this.isProductVisible = false;
+        this.isOrdersBulkVisible = false;
     };
 
-    setPaymentStatus() {
+    onSubmitOrdersBulkDownload() {
+        this.isOrdersBulkVisible = false;
+        if (!this.searchStartDateOrdersBulk) {
+            this._notification.error('Missing Start date!', 'Please provide start date!');
+        }
 
+        let dateSearchValue = {
+            from: null,
+            to: null,
+        };
+
+
+        if (this.searchStartDateOrdersBulk) {
+            if (this.searchStartDateOrdersBulk.constructor.name === 'Moment') {
+                dateSearchValue.from = this.searchStartDateOrdersBulk.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.from = this.searchStartDateOrdersBulk;
+            }
+        } else {
+            dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        }
+
+        if (this.searchEndDateOrdersBulk) {
+            if (this.searchEndDateOrdersBulk.constructor.name === 'Moment') {
+                dateSearchValue.to = this.searchEndDateOrdersBulk.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.to = this.searchEndDateOrdersBulk;
+            }
+        } else {
+            dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
+        }
+
+
+        this.orderService.getOrdersByDate({
+            date: JSON.stringify(dateSearchValue)
+        })
+            .subscribe(result => {
+                console.log("result is: ", result);
+                if (!(Array.isArray(result) && result.length > 0)) {
+                    this._notification.info('Not found!', 'No product found in this time');
+                    return false;
+                }
+                let csvData = [];
+                let varients = "";
+                result.forEach(suborderItem => {
+                    csvData.push({
+                        'Order Date': _moment(suborderItem.orderCreatedAt).format('DD-MM-YYYY'),
+                        'Order Time': _moment(suborderItem.orderCreatedAt).format('h:m a'),
+                        'Order Id': suborderItem.order_id,
+                        'SubOrder Id': suborderItem.suborder_id,
+                        'Customer Name': suborderItem.customer_name,
+                        'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
+                        'Customer Division': suborderItem.division_name,
+                        'Customer District': suborderItem.zila_name,
+                        'Customer Upazila': suborderItem.upazila_name,
+                        'Customer House/Road/Block/Village': suborderItem.address.split(',').join('/'),
+                        'Category': suborderItem.categoryName,
+                        'Product Name': suborderItem.product_name,
+                        'Product SKU': suborderItem.product_code,
+                        'MRP': suborderItem.originalPrice,
+                        'Vendor Price': suborderItem.vendorPrice,
+                        'Discount Price': suborderItem.discountPrice,
+                        'Quantity': suborderItem.product_quantity,
+                        'Shipping Charge': suborderItem.courier_charge,
+                        'Total': suborderItem.product_total_price,
+                        'Grand Total': suborderItem.total_price,
+                        'Payment Method': suborderItem.paymentType,
+                        'Transaction ID': suborderItem.transactionKey,
+                        'Payment Amount': suborderItem.paymentAmount,
+                        'Transaction Time': _moment(suborderItem.transactionTime).format('DD-MM-YYYY h:m a'),
+                        'Remaining Amount': suborderItem.dueAmount,
+                        'Vendor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                        'Vendor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
+                        'Vendor Address': suborderItem.vendor_address.split(',').join('/'),
+                        'Suborder Status': typeof this.statusOptions[suborderItem.sub_order_status] !== 'undefined' ? this.statusOptions[suborderItem.sub_order_status] : 'Unrecognized Status',
+                        'Suborder Changed By': ((suborderItem.suborder_changed_by_name) ? suborderItem.suborder_changed_by_name : ''),
+                        'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',
+                        'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
+                    });
+                });
+                const header = [
+                    'Order Date',
+                    'Order Time',
+                    'Order Id',
+                    'SubOrder Id',
+                    'Customer Name',
+                    'Customer Phone',
+                    'Customer Division',
+                    'Customer District',
+                    'Customer Upazila',
+                    'Customer House/Road/Block/Village',
+                    'Category',
+                    'Product Name',
+                    'Product SKU',
+                    'MRP',
+                    'Vendor Price',
+                    'Discount Price',
+                    'Quantity',
+                    'Shipping Charge',
+                    'Total',
+                    'Grand Total',
+                    'Payment Method',
+                    'Transaction ID',
+                    'Payment Amount',
+                    'Transaction Time',
+                    'Remaining Amount',
+                    'Vendor Name',
+                    'Vendor Phone',
+                    'Vendor Address',
+                    'Suborder Status',
+                    'Suborder Changed By',
+                    'Order Status',
+                    'Order Status Changed By'
+                ];
+                this.exportService.downloadFile(csvData, header);
+                this._notification.success('Success', 'Successfully fetched all products.');
+
+            }, error => {
+                console.log("Error: ", error);
+                this._notification.error('Error occurred!', 'Something wrong happened!');
+            })
     }
 
 

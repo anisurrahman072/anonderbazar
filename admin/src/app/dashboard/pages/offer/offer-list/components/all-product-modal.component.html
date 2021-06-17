@@ -1,6 +1,7 @@
 <nz-spin [nzSpinning]="_isSpinning">
     <nz-table #nzTableProd1
               nzShowSizeChanger
+              nzShowQuickJumper
               [nzFrontPagination]="false"
               [nzData]="allProducts"
               [nzLoading]="_isSpinning"
@@ -14,6 +15,9 @@
             <th>
                 <label nz-checkbox [(ngModel)]="allProductSelectAll[allProductPage - 1]"
                        (ngModelChange)="selectAllProducts($event)"></label>
+            </th>
+            <th>
+                <span> Code </span>
             </th>
             <th>
                 <span> Product Name </span>
@@ -36,6 +40,10 @@
         </tr>
         <tr>
             <th>
+            </th>
+            <th>
+                <input nz-input placeholder="Code" [(ngModel)]="allProductCodeSearch"
+                       (ngModelChange)="allProductCodeChangeHandler($event)">
             </th>
             <th>
                 <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
@@ -64,6 +72,7 @@
                        (ngModelChange)="_refreshStatus($event, datum.id)">
                 </label>
             </td>
+            <td>{{datum.code}}</td>
             <td>{{datum.name}}</td>
             <td>{{datum.brand_name}}</td>
             <td>{{datum.type_name}}</td>

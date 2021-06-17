@@ -122,6 +122,144 @@ module.exports = {
       });
     }
   },
+
+  getOrdersByDate: async (req, res) => {
+    try {
+      const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+      SELECT
+       suborder_item.id,
+       suborder_item.product_suborder_id as suborder_id,
+       p_order.id as order_id,
+       suborder_item.product_id,
+       products.name as product_name,
+       products.price as originalPrice,
+       products.vendor_price as vendorPrice,
+       products.code as product_code,
+       products.promo_price as discountPrice,
+       suborder_item.warehouse_id,
+       suborder_item.product_quantity,
+       suborder_item.product_total_price,
+       suborder_item.status,
+       suborder_item.\`date\`,
+       suborder_item.created_at,
+       p_order.status as order_status,
+       p_order.courier_charge as courier_charge,
+       p_order.total_price as total_price,
+       p_order.user_id,
+       p_order.created_at as orderCreatedAt,
+       suborder.status as sub_order_status,
+
+       payment.payment_type as paymentType,
+       payment.transection_key as transactionKey,
+       payment.payment_amount as paymentAmount,
+       payment.created_at as transactionTime,
+
+       CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+       CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
+       CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
+
+       customer.phone as customer_phone,
+       vendor.name as vendor_name,
+       vendor.phone as vendor_phone,
+       vendor.address as vendor_address,
+       payment_addresses.postal_code,
+       payment_addresses.address,
+       divArea.name as division_name,
+       zilaArea.name as zila_name,
+       upazilaArea.name as upazila_name,
+
+       categories.name as categoryName,
+       (p_order.total_price - p_order.paid_amount) as dueAmount
+      `;
+
+      let fromSQL = ' FROM product_suborder_items as suborder_item  ';
+      fromSQL += ' LEFT JOIN product_suborders as suborder ON suborder.id = suborder_item.product_suborder_id   ';
+      fromSQL += ' LEFT JOIN product_orders as p_order ON p_order.id = suborder.product_order_id   ';
+      fromSQL += ' LEFT JOIN payments as payment ON  p_order.id  =   payment.order_id   ';
+      fromSQL += ' LEFT JOIN products   ON products.id = suborder_item.product_id   ';
+      fromSQL += ' LEFT JOIN categories   ON categories.id = products.type_id   ';
+      fromSQL += ' LEFT JOIN users as customer ON customer.id = p_order.user_id   ';
+      fromSQL += ' LEFT JOIN users as orderChangedBy ON orderChangedBy.id = p_order.changed_by   ';
+      fromSQL += ' LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = suborder.changed_by   ';
+      fromSQL += ' LEFT JOIN warehouses as vendor ON vendor.id = suborder.warehouse_id   ';
+      fromSQL += ' LEFT JOIN payment_addresses ON p_order.shipping_address = payment_addresses.id' +
+        '          LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id      ' +
+        '       LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id' +
+        '       LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id ';
+
+      let _where = ' WHERE p_order.deleted_at IS NULL AND suborder.deleted_at IS NULL AND suborder_item.deleted_at IS NULL ';
+
+
+      if (req.query.created_at) {
+        let created_at = JSON.parse(req.query.created_at);
+        let from = moment(created_at.from).format('YYYY-MM-DD 00:00:00');
+        let to = moment(created_at.to).format('YYYY-MM-DD 23:59:59');
+
+        _where += ` AND p_order.created_at >= '${from}' AND p_order.created_at <= '${to}' `;
+      }
+      _where += ' ORDER BY suborder_item.created_at DESC, suborder_item.id  DESC,  payment.created_at  DESC ';
+
+      const rawResult = await SuborderItemQuery(rawSelect + fromSQL + _where, []);
+
+      /** Find the total original price , total promotion price & total Vendor price of order */
+      /*let orders = {};
+      let len = rawResult.rows.length;
+      for (let index = 0; index < len; index++) {
+        if (!orders[rawResult.rows[index].order_id]) {
+          const OrderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+          let rawSelect = `
+              SELECT
+                SUM(products.price * suborderItem.product_quantity) Total_price
+              `;
+          let fromSQL = ' FROM product_orders as orders  ';
+          fromSQL += ' LEFT JOIN product_suborders as suborder ON suborder.product_order_id = orders.id   ';
+          fromSQL += ' LEFT JOIN product_suborder_items as suborderItem ON suborderItem.product_suborder_id = suborder.id   ';
+          fromSQL += ' LEFT JOIN products ON products.id = suborderItem.product_id   ';
+
+          let _where = ` WHERE orders.id = ${rawResult.rows[index].order_id} AND orders.deleted_at IS NULL AND suborder.deleted_at IS NULL AND suborderItem.deleted_at IS NULL `;
+
+          const rawResultPrice = await OrderQuery(rawSelect + fromSQL + _where, []);
+
+
+          rawSelect = `
+            SELECT
+                SUM(products.vendor_price * suborderItem.product_quantity) Total_vendor_price
+             `;
+          const rawResultVendorPrice = await OrderQuery(rawSelect + fromSQL + _where, []);
+
+
+          rawSelect = `
+            SELECT
+                SUM(products.promo_price * suborderItem.product_quantity) Total_promo_price
+             `;
+          _where += ` AND products.promotion = 1 `;
+          const rawResultPromotionalPrice = await OrderQuery(rawSelect + fromSQL + _where, []);
+
+          /!** Store original price , promotional price & Vendor price into an object (Taking Order_id as Keys) for further use *!/
+          orders[rawResult.rows[index].order_id] = {
+            originalPrice: rawResultPrice.rows[0].Total_price,
+            discountPrice: rawResultPromotionalPrice.rows[0].Total_promo_price ? rawResultPromotionalPrice.rows[0].Total_promo_price : 0,
+            vendorPrice: rawResultVendorPrice.rows[0].Total_vendor_price ? rawResultVendorPrice.rows[0].Total_vendor_price : 0
+          };
+          /!** END *!/
+          rawResult.rows[index] = {...rawResult.rows[index], ...orders[rawResult.rows[index].order_id]};
+        } else {
+          rawResult.rows[index] = {...rawResult.rows[index], ...orders[rawResult.rows[index].order_id]};
+        }
+      }
+      /!** END *!/
+      */
+
+      console.log('The result is: ', rawResult.rows);
+      return res.status(200).json(rawResult.rows);
+    } catch (error) {
+      console.log('THe error is: ', error);
+      return res.status(400).json(error);
+    }
+  },
+
   getByOrderIds: async (req, res) => {
     const SuborderItemQuery = Promise.promisify(SuborderItem.getDatastore().sendNativeQuery);
     try {
