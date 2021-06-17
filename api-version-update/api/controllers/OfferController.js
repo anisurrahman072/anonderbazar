@@ -14,17 +14,47 @@ module.exports = {
     try {
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
-        allOptions = await Warehouse.find({deletedAt: null});
+        let rawSQL = `
+              SELECT
+                  warehouses.id,
+                  warehouses.name
+              FROM
+                  warehouses
+              LEFT JOIN offers ON warehouses.id = offers.vendor_ids
+              WHERE
+                  warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_ids IS NULL)
+        `;
+        allOptions = await sails.sendNativeQuery(rawSQL, []);
       } else if (req.query.offerSelectionType && req.query.offerSelectionType === 'Brand wise') {
-        allOptions = await Brand.find({deletedAt: null});
+        let rawSQL = `
+                  SELECT
+                      brands.id,
+                      brands.name
+                  FROM
+                      brands
+                  LEFT JOIN offers ON brands.id = offers.brand_ids
+                  WHERE
+                      brands.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.brand_ids IS NULL)
+        `;
+        allOptions = await sails.sendNativeQuery(rawSQL, []);
       } else {
-        allOptions = await Category.find({deletedAt: null, parent_id: 0, type_id: 2});
+        let rawSQL = `
+              SELECT
+                  categories.id,
+                  categories.name
+              FROM
+                  categories
+              LEFT JOIN offers ON categories.id = offers.category_ids
+              WHERE
+                  categories.deleted_at IS NULL AND categories.type_id = 2 AND categories.parent_id = 0 AND (offers.deleted_at IS NOT NULL OR offers.category_ids IS NULL)
+        `;
+        allOptions = await sails.sendNativeQuery(rawSQL, []);
       }
 
       res.status(200).json({
         success: true,
         message: 'Get all options for shop/ brand/ category',
-        data: allOptions
+        data: allOptions.rows
       });
     } catch (error) {
       console.log(error);

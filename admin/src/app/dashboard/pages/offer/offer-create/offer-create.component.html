@@ -101,7 +101,7 @@
                     Please select to add products to this offer
                 </div>
 
-                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorName" required
+                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorName"
                            nzPlaceHolder="Select Vendor"
                            [(ngModel)]="vendorName" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
@@ -111,7 +111,7 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandName" required
+                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandName"
                            [nzPlaceHolder]=" 'Select Brand'"
                            [(ngModel)]="brandName" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
@@ -121,7 +121,7 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryName" required
+                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryName"
                            [nzPlaceHolder]=" 'Select Category'"
                            [(ngModel)]="categoryName" style="margin: 10px 0;"
                            (ngModelChange)="finalSelectionType(false, false, true, false, $event)">

@@ -97,7 +97,7 @@ module.exports = {
   },
   //Method called for creating offer data
   //Model models/CMS.js
-  offerInsert: async (req, res) => {
+  /*offerInsert: async (req, res) => {
     console.log('offer insert: data', req.body);
     try {
 
@@ -208,7 +208,8 @@ module.exports = {
         error
       });
     }
-  },
+  },*/
+
   //Method called for updating product offer data
   //Model models/CMS.js
   offerProductUpdate: async (req, res) => {
@@ -235,7 +236,7 @@ module.exports = {
 
   //Method called for updating child offer data
   //Model models/CMS.js
-  updateOffer: async (req, res) => {
+  /*updateOffer: async (req, res) => {
     try {
       let body = req.body;
       let prevOfferData = await CMS.findOne({
@@ -408,7 +409,7 @@ module.exports = {
         error
       });
     }
-  },
+  },*/
 
   //Method called for creating post data
   //Model models/CMS.js
