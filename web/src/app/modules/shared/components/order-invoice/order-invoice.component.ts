@@ -156,9 +156,9 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
     //Method for save and download pdf
 
-    public SavePDF() {
+    public SavePDF(data: HTMLElement) {
         this.loaderService.showLoader();
-        let data = document.getElementById('content');
+        // let data = document.getElementById('content');
 
         this._ngZone.runOutsideAngular(() => {
             html2canvas(data)
@@ -167,10 +167,18 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     let pageHeight = 295;
                     let imgHeight = canvas.height * imgWidth / canvas.width;
                     let heightLeft = imgHeight;
+                    let y = 0;
 
                     const contentDataURL = canvas.toDataURL('image/png')
                     let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight)
+                    heightLeft -= pageHeight;
+                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight);
+                    while (heightLeft >= 0) {
+                        y = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(contentDataURL, 'PNG', 15, y, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
                     pdf.save('invoice.pdf'); // Generated PDF
                     this.loaderService.hideLoader();
                 })
