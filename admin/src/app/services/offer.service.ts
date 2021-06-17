@@ -32,4 +32,23 @@ export class OfferService {
         return this.http.delete(`${this.EndPoint}/${id}`)
             .map(response => response);
     }
+
+    /** Method called to get a regular offer data by its id for editing purpose*/
+    getRegularOfferById(id): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getRegularOfferById?id=${id}`).map(response => response);
+    }
+
+    getRelatedOfferProducts(id, page= 1, limit = 20): Observable<any> {
+        const skip = (page - 1) * limit;
+        return this.http.get(`${this.EndPoint}/getRelatedOfferProducts?id=${id}&page=${page}&skip=${skip}&limit=${limit}`)
+            .map(response => response);
+    }
+
+    removeProductFromOffer(productId, offerId): Observable<any> {
+        return this.http.delete(`${this.EndPoint}/removeProductFromOffer?productId=${productId}&offerId=${offerId}`)
+    }
+
+    updateOffer(data): Observable<any> {
+        return this.http.post(`${this.EndPoint}/updateOffer`, data);
+    }
 }

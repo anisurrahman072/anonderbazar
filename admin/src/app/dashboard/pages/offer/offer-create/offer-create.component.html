@@ -8,7 +8,7 @@
 
     <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-        <div nz-row style="margin-bottom: 10px"><!--name start-->
+        <div nz-row style="margin-bottom: 10px">
             <div nz-col [nzSpan]="7">
                 <label> Title </label>
             </div>
@@ -21,7 +21,7 @@
                     Title is required!
                 </div>
             </div>
-        </div><!--name -->
+        </div>
 
         <div nz-row style="margin-bottom: 10px"><!--name start-->
             <div nz-col [nzSpan]="7">
@@ -43,7 +43,8 @@
             <div nz-col [nzSpan]="12">
                 <image-upload [max]="1" (removed)="onRemoved($event)"
                               (uploadStateChanged)="onUploadStateChanged($event)"
-                              [beforeUpload]="onBeforeUpload"></image-upload>
+                              [beforeUpload]="onBeforeUpload">
+                </image-upload>
                 <div *ngIf="!ImageFile">
                     Please upload an image here!
                 </div>
@@ -81,7 +82,6 @@
         </div>
 
         <!--Add Products to the Offer list-->
-
         <div nz-row>
             <div nz-col [nzSpan]="7">
                 <label>Selection Type</label>
@@ -101,7 +101,7 @@
                     Please select to add products to this offer
                 </div>
 
-                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorName"
+                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorName" required
                            nzPlaceHolder="Select Vendor"
                            [(ngModel)]="vendorName" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
@@ -111,7 +111,7 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandName"
+                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandName" required
                            [nzPlaceHolder]=" 'Select Brand'"
                            [(ngModel)]="brandName" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
@@ -121,7 +121,7 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryName"
+                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryName" required
                            [nzPlaceHolder]=" 'Select Category'"
                            [(ngModel)]="categoryName" style="margin: 10px 0;"
                            (ngModelChange)="finalSelectionType(false, false, true, false, $event)">
@@ -134,7 +134,8 @@
                     <a nz-button style="margin-bottom: 10px" [nzType]="'primary'" (click)="showModal(); finalSelectionType(false, false, false, true, $event)">
                         <span>Add Offer Products</span>
                     </a><br>
-                    <small *ngIf="selectedProductIds && selectedProductIds.length > 0">{{selectedProductIds.length}}
+                    <small *ngIf="selectedProductIds && selectedProductIds.length > 0" style="margin: 5px 10px 0 0">
+                        {{selectedProductIds.length}}
                         products added in the offer list
                     </small>
                 </div>
@@ -149,19 +150,18 @@
             </div>
             <div nz-col [nzSpan]="12">
 
-                <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
+                <ckeditor formControlName="description"
+                          [config]="ckConfig" [readonly]="false "
                           debounce="500 ">
                 </ckeditor>
             </div>
         </div>
-        <div nz-row style="margin-top: 20px">
 
+        <div nz-row style="margin-top: 20px">
             <div nz-col [nzSpan]="7">
                 <label> Calculation Type </label>
             </div>
-
             <div nz-col [nzSpan]="12">
-
                 <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'"
                            [(ngModel)]="Calc_type">
                     <nz-option *ngFor="let option of ['percentage', 'absolute amount']" [nzLabel]="option"
@@ -325,7 +325,6 @@
                 <td>{{datum.brand_name}}</td>
                 <td>{{datum.type_name}}</td>
                 <td>{{datum.category_name}}</td>
-                <!--<td>{{datum.subcategory_name}}</td>-->
                 <td>{{datum.price}}</td>
             </tr>
             </tbody>

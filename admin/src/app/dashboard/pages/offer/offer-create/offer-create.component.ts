@@ -99,11 +99,11 @@ export class OfferCreateComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             frontend_position: ['', ''],
+            description: ['', []],
             selectionType: ['', [Validators.required]],
             vendorName: ['', []],
             brandName: ['', []],
             categoryName: ['', []],
-            description: ['', []],
             discountAmount: ['', [Validators.required]],
             calculationType: ['', [Validators.required]],
             offerStartDate: ['', Validators.required],
@@ -117,11 +117,10 @@ export class OfferCreateComponent implements OnInit {
 
 //Event method for submitting the form
     submitForm = ($event, value) => {
-        console.log('moment: ', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         this.submitting = true;
         $event.preventDefault();
-        console.log('value.productSelectedIDs: ', this.selectedProductIds);
         this._isSpinning = true;
+
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
         }
@@ -131,6 +130,7 @@ export class OfferCreateComponent implements OnInit {
 
         formData.append('title', value.title);
         formData.append('description', value.description);
+        formData.append('selection_type', value.selectionType);
         formData.append('showInHome', showInHome);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);

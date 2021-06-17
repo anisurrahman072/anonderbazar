@@ -59,17 +59,8 @@
                                         <nz-tag>{{datum.discount_amount}} tk</nz-tag>
                                     </td>
 
-                                    <td *ngIf="datum.brand_ids !== null">
-                                        <nz-tag>Brand Wise</nz-tag>
-                                    </td>
-                                    <td *ngIf="datum.category_ids !== null">
-                                        <nz-tag>Category Wise</nz-tag>
-                                    </td>
-                                    <td *ngIf="datum.vendor_ids !== null">
-                                        <nz-tag>Vendor Wise</nz-tag>
-                                    </td>
-                                    <td *ngIf="datum.product_ids !== null">
-                                        <nz-tag>Product Wise</nz-tag>
+                                    <td>
+                                        <nz-tag>{{datum.selection_type}}</nz-tag>
                                     </td>
 
                                     <td>
@@ -108,7 +99,7 @@
                     </nz-tab>
 
                     <!--special offer: anonder jhor offer section-->
-                    <nz-tab nzTitle="Special Offer">
+                    <nz-tab nzTitle="Anonder Jhor">
                         <div>
                             <nz-table #nzTable1
                                       nzShowQuickJumper

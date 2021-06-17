@@ -79,6 +79,7 @@ module.exports = {
               small_image: body.small_image,
               banner_image: body.banner_image,
             },
+            selection_type: body.selection_type,
             description: body.description,
             calculation_type: body.calculationType,
             discount_amount: body.discountAmount,
@@ -103,12 +104,20 @@ module.exports = {
             offerData.vendor_ids = body.vendor_id;
           }
 
-          if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-            offerData.product_ids = body.selectedProductIds.split(',');
-          }
-
           let data = await Offer.create(offerData).fetch();
           /**console.log('offer fetched data from database: with image: ', data);*/
+
+          let regular_offer_product_ids;
+          if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
+            regular_offer_product_ids = body.selectedProductIds.split(',');
+          }
+
+          if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+            for (let id = 0; id < regular_offer_product_ids.length; id++) {
+              let product_id = parseInt(regular_offer_product_ids[id]);
+              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            }
+          }
 
           return res.status(200).json({
             success: true,
@@ -122,6 +131,7 @@ module.exports = {
         let offerData = {
           title: body.title,
           description: body.description,
+          selection_type: body.selection_type,
           calculation_type: body.calculationType,
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
@@ -145,12 +155,20 @@ module.exports = {
           offerData.vendor_ids = body.vendor_id;
         }
 
-        if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-          offerData.product_ids = body.selectedProductIds.split(',');
-        }
-
         let data = await Offer.create(offerData).fetch();
         /**console.log('offer fetched data from database: ', data);*/
+
+        let regular_offer_product_ids;
+        if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
+          regular_offer_product_ids = body.selectedProductIds.split(',');
+        }
+
+        if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+          for (let id = 0; id < regular_offer_product_ids.length; id++) {
+            let product_id = parseInt(regular_offer_product_ids[id]);
+            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+          }
+        }
 
         return res.status(200).json({
           success: true,
@@ -221,6 +239,221 @@ module.exports = {
       });
     }
   },
+
+  getRegularOfferById: async (req, res) => {
+    try {
+      let regularOffer = await Offer.findOne({id: req.query.id})
+        .populate('category_ids')
+        .populate('brand_ids')
+        .populate('vendor_ids');
+
+      res.status(200).json({
+        success: true,
+        message: 'Regular Offer data by id',
+        regularOffer
+      });
+    } catch (error) {
+      console.log('error in getRegularOfferById: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get regular offer by id',
+        error
+      });
+    }
+  },
+
+  getRelatedOfferProducts: async (req, res) => {
+    try {
+      let _pagination = pagination(req.query);
+      let rawSQL = `
+      SELECT
+            regular_offer_products.*,
+            products.*
+        FROM
+            regular_offer_products
+        LEFT JOIN products ON regular_offer_products.product_id = products.id
+        WHERE
+            regular_offer_products.regular_offer_id = ${req.query.id} and regular_offer_products.deleted_at is null
+        LIMIT ${_pagination.skip}, ${_pagination.limit}
+      `;
+
+      const products = await sails.sendNativeQuery(rawSQL, []);
+      const totalProducts = await RegularOfferProducts.count().where({regular_offer_id: req.query.id, deletedAt: null});
+
+      res.status(200).json({
+        success: true,
+        message: 'All products with detail info related to this regular offer',
+        data: products.rows,
+        total: totalProducts
+      });
+    } catch (error) {
+      console.log('getRelatedOfferProducts error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to get related offer products',
+        error
+      });
+    }
+  },
+
+  removeProductFromOffer: async (req, res) => {
+    try {
+      const removedProduct = await RegularOfferProducts.updateOne({
+        product_id: req.query.productId,
+        regular_offer_id: req.query.offerId
+      }).set({deletedAt: new Date()});
+      return res.status(201).json(removedProduct);
+    } catch (error) {
+      console.log('removeProductFromOffer error: ', error);
+      res.status(400).json({
+        message: 'Failed to delete the offered product'
+      });
+    }
+  },
+
+  updateOffer: async (req, res) => {
+    try {
+      let body = req.body;
+      if (req.body.hasImage === 'true') {
+        req.file('image').upload(imageUploadConfig(), async (err, files) => {
+          if (err) {
+            return res.serverError(err);
+          }
+
+          if (files.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
+
+          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+
+          if (files.length === 2) {
+            if (req.body.hasBannerImage) {
+              let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+              body.banner_image = '/' + bannerImagePath;
+            } else if (req.body.hasSmallImage) {
+              let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+              body.small_image = '/' + smallImagePath;
+            }
+          } else if (files.length === 3) {
+            let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + smallImagePath;
+
+            let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + bannerImagePath;
+          }
+
+          body.image = '/' + newPath;
+
+          let offerData = {
+            title: body.title,
+            image: {
+              image: body.image,
+              small_image: body.small_image,
+              banner_image: body.banner_image,
+            },
+            description: body.description,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+
+          if (body.frontend_position) {
+            offerData.frontend_position = body.frontend_position;
+          }
+
+          if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
+            offerData.category_ids = body.category_id;
+          }
+
+          if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
+            offerData.brand_ids = body.brand_id;
+          }
+
+          if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
+            offerData.vendor_ids = body.vendor_id;
+          }
+
+          let data = await Offer.updateOne({id: body.id}).set(offerData);
+          /**console.log('offer fetched data from database: with image: ', data);*/
+
+          let regular_offer_product_ids;
+          if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
+            regular_offer_product_ids = body.selectedProductIds.split(',');
+          }
+
+          if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+            for (let id = 0; id < regular_offer_product_ids.length; id++) {
+              let product_id = parseInt(regular_offer_product_ids[id]);
+              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            }
+          }
+
+          return res.status(200).json({
+            success: true,
+            message: 'Offer created successfully',
+            data
+          });
+
+        });
+
+      } else {
+        let offerData = {
+          title: body.title,
+          description: body.description,
+          discount_amount: body.discountAmount,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          show_in_homepage: body.showInHome
+        };
+
+        if (body.frontend_position) {
+          offerData.frontend_position = body.frontend_position;
+        }
+
+        if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
+          offerData.category_ids = body.category_id;
+        }
+
+        if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
+          offerData.brand_ids = body.brand_id;
+        }
+
+        if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
+          offerData.vendor_ids = body.vendor_id;
+        }
+
+        let data = await Offer.updateOne({id: body.id}).set(offerData);
+        /**console.log('offer fetched data from database: ', data);*/
+
+        let regular_offer_product_ids;
+        if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
+          regular_offer_product_ids = body.selectedProductIds.split(',');
+        }
+
+        if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+          for (let id = 0; id < regular_offer_product_ids.length; id++) {
+            let product_id = parseInt(regular_offer_product_ids[id]);
+            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+          }
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: 'Offer created successfully',
+          data
+        });
+      }
+
+    } catch (error) {
+      console.log('updateOffer error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update the offer',
+        error
+      });
+    }
+  }
 
 };
 

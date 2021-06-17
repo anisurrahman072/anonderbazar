@@ -27,9 +27,14 @@ module.exports = {
       type: 'string',
       columnType: 'text',
     },
+    selection_type: {
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
+    },
     product_ids: {
-      type: 'json',
-      columnType: 'text',
+      collection: 'regularOfferProducts',
+      via: 'regular_offer_id'
     },
     category_ids: {
       model: 'category'
