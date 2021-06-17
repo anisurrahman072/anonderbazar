@@ -10,6 +10,7 @@
                 <div class="table-operations">
                 </div>
                 <nz-table #nzTable
+                          nzShowQuickJumper
                           (nzPageIndexChange)="getPageData()"
                           [(nzPageIndex)]="page"
                           [(nzPageSize)]="limit"

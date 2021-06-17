@@ -22,7 +22,7 @@ export class ExportService {
         if (fileName) {
             a.download = `${fileName}.csv`;
         } else {
-            a.download = `myFile.csv`;
+            a.download = `orders.csv`;
         }
         a.click();
         window.URL.revokeObjectURL(url);

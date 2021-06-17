@@ -12,6 +12,7 @@
             <button (click)="resetAllFilter()" nz-button>Clear filter</button>
         </ng-template>
         <nz-table #nzTable
+                  nzShowQuickJumper
                   (nzPageIndexChange)="getPageData($event, false)"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
