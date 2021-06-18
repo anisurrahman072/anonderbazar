@@ -20,6 +20,9 @@ module.exports = {
   //Model models/Product.js
   index: async (req, res) => {
     try {
+      /**checking if the options have the offer time or not*/
+      OfferService.offerDurationCheck();
+
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
@@ -136,7 +139,6 @@ module.exports = {
       }
 
 
-
       if (req.query.shopSearchValue) {
         _where += ` AND warehouse.name LIKE '%${req.query.shopSearchValue}%'  `;
       }
@@ -149,8 +151,6 @@ module.exports = {
       if (req.query.subCategorySearchValue) {
         _where += ` AND subcategory.name LIKE '%${req.query.subCategorySearchValue}%'  `;
       }
-
-
 
 
       let _sort = '';
@@ -1171,8 +1171,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',
@@ -1213,8 +1212,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',

@@ -7,54 +7,40 @@
 
 const {imageUploadConfig} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
+const OfferService = require('../services/OfferService');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
   getAllOptions: async (req, res) => {
     try {
+      /**checking if the options have the offer time or not*/
+      OfferService.offerDurationCheck();
+
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
-        let rawSQL = `
-              SELECT
-                  warehouses.id,
-                  warehouses.name
-              FROM
-                  warehouses
-              LEFT JOIN offers ON warehouses.id = offers.vendor_ids
-              WHERE
-                  warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_ids IS NULL)
-        `;
-        allOptions = await sails.sendNativeQuery(rawSQL, []);
+        /*let rawSQL = `SELECT warehouses.id, warehouses.name FROM warehouses  LEFT JOIN offers ON warehouses.id = offers.vendor_ids
+              WHERE warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_ids IS NULL) `;
+        allOptions = await sails.sendNativeQuery(rawSQL, []);*/
+
+        allOptions = await Warehouse.find({deletedAt: null});
       } else if (req.query.offerSelectionType && req.query.offerSelectionType === 'Brand wise') {
-        let rawSQL = `
-                  SELECT
-                      brands.id,
-                      brands.name
-                  FROM
-                      brands
-                  LEFT JOIN offers ON brands.id = offers.brand_ids
-                  WHERE
-                      brands.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.brand_ids IS NULL)
-        `;
-        allOptions = await sails.sendNativeQuery(rawSQL, []);
-      } else {
-        let rawSQL = `
-              SELECT
-                  categories.id,
-                  categories.name
-              FROM
-                  categories
-              LEFT JOIN offers ON categories.id = offers.category_ids
-              WHERE
-                  categories.deleted_at IS NULL AND categories.type_id = 2 AND categories.parent_id = 0 AND (offers.deleted_at IS NOT NULL OR offers.category_ids IS NULL)
-        `;
-        allOptions = await sails.sendNativeQuery(rawSQL, []);
+        allOptions = await Brand.find({deletedAt: null});
+      } else if (req.query.offerSelectionType && req.query.offerSelectionType === 'Category wise') {
+        allOptions = await Category.find({deletedAt: null, parent_id: 0, type_id: 2});
+      }
+
+      if (req.query.catId) {
+        allOptions = await Category.find({deletedAt: null, parent_id: parseInt(req.query.catId), type_id: 2});
+      }
+
+      if (req.query.subCatId) {
+        allOptions = await Category.find({deletedAt: null, parent_id: parseInt(req.query.subCatId), type_id: 2});
       }
 
       res.status(200).json({
         success: true,
         message: 'Get all options for shop/ brand/ category',
-        data: allOptions.rows
+        data: allOptions
       });
     } catch (error) {
       console.log(error);
@@ -67,9 +53,8 @@ module.exports = {
   },
 
   /**Method called for creating Regular offer data*/
-  /**Model models/Offer.js*/
+  /**Model models/OfferService.js*/
   offerInsert: async (req, res) => {
-    /**console.log('offer request to controller from client: ', req.body);*/
     try {
       let body = req.body;
       if (req.body.hasImage === 'true') {
@@ -122,6 +107,12 @@ module.exports = {
             offerData.frontend_position = body.frontend_position;
           }
 
+          if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+            offerData.subSubCategory_Id = body.subSubCategory_Id;
+          }
+          if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
+            offerData.subCategory_Id = body.subCategory_Id;
+          }
           if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
             offerData.category_ids = body.category_id;
           }
@@ -173,6 +164,12 @@ module.exports = {
           offerData.frontend_position = body.frontend_position;
         }
 
+        if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+          offerData.subSubCategory_Id = body.subSubCategory_Id;
+        }
+        if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
+          offerData.subCategory_Id = body.subCategory_Id;
+        }
         if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
           offerData.category_ids = body.category_id;
         }
@@ -217,9 +214,11 @@ module.exports = {
   },
 
   /**Method called for getting all regular offer data*/
-  /**Model models/Offer.js*/
+  /**Model models/OfferService.js*/
   allRegularOffer: async (req, res) => {
     try {
+      OfferService.offerDurationCheck();
+
       /**console.log('regular offer request: ', req.query);*/
       let _pagination = pagination(req.query);
 
@@ -256,7 +255,7 @@ module.exports = {
   },
 
   /**Method called to delete a regular offer*/
-  /**model: Offer.js*/
+  /**model: OfferService.js*/
   destroy: async (req, res) => {
     try {
       const RegularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
@@ -272,8 +271,11 @@ module.exports = {
 
   getRegularOfferById: async (req, res) => {
     try {
+      OfferService.offerDurationCheck();
       let regularOffer = await Offer.findOne({id: req.query.id})
         .populate('category_ids')
+        .populate('subCategory_Id')
+        .populate('subSubCategory_Id')
         .populate('brand_ids')
         .populate('vendor_ids');
 
@@ -294,6 +296,7 @@ module.exports = {
 
   getRelatedOfferProducts: async (req, res) => {
     try {
+      OfferService.offerDurationCheck();
       let _pagination = pagination(req.query);
       let rawSQL = `
       SELECT
@@ -381,7 +384,9 @@ module.exports = {
               small_image: body.small_image,
               banner_image: body.banner_image,
             },
+            selection_type: body.selection_type,
             description: body.description,
+            calculation_type: body.calculationType,
             discount_amount: body.discountAmount,
             start_date: body.offerStartDate,
             end_date: body.offerEndDate,
@@ -392,6 +397,12 @@ module.exports = {
             offerData.frontend_position = body.frontend_position;
           }
 
+          if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+            offerData.subSubCategory_Id = body.subSubCategory_Id;
+          }
+          if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
+            offerData.subCategory_Id = body.subCategory_Id;
+          }
           if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
             offerData.category_ids = body.category_id;
           }
@@ -431,6 +442,8 @@ module.exports = {
         let offerData = {
           title: body.title,
           description: body.description,
+          selection_type: body.selection_type,
+          calculation_type: body.calculationType,
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
@@ -441,6 +454,12 @@ module.exports = {
           offerData.frontend_position = body.frontend_position;
         }
 
+        if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+          offerData.subSubCategory_Id = body.subSubCategory_Id;
+        }
+        if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
+          offerData.subCategory_Id = body.subCategory_Id;
+        }
         if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
           offerData.category_ids = body.category_id;
         }

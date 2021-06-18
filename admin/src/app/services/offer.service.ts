@@ -12,8 +12,8 @@ export class OfferService {
     constructor(private http: HttpClient) {
     }
 
-    getAllOptions(offerSelectionType): Observable<any> {
-        return this.http.get(`${this.EndPoint}/getAllOptions?offerSelectionType=${offerSelectionType}`);
+    getAllOptions(offerSelectionType = '', catId = '', subCatId = '' ): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllOptions?offerSelectionType=${offerSelectionType}&catId=${catId}&subCatId=${subCatId}`);
     }
 
     offerInsert(data): Observable<any> {

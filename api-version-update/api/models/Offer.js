@@ -1,5 +1,5 @@
 /**
- * Offer.js
+ * OfferService.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -37,6 +37,12 @@ module.exports = {
       via: 'regular_offer_id'
     },
     category_ids: {
+      model: 'category'
+    },
+    subCategory_Id: {
+      model: 'category'
+    },
+    subSubCategory_Id: {
       model: 'category'
     },
     brand_ids: {

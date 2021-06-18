@@ -61,11 +61,16 @@ export class OfferCreateComponent implements OnInit {
     Calc_type;
     /*variables taken for ngmodel in nz-select*/
     selectionType;
-    vendorName;
-    brandName;
-    categoryName;
+    vendorId;
+    brandId;
+    categoryId;
+    subCategoryId;
+    subSubCategoryId;
     isVisible: Boolean = false;
     allProducts: any = [];
+    /**variables used for storing subCat and subSubCat options*/
+    subcategoryIDS;
+    subSubCategoryIDS;
 
     allProductPage: number = 1;
     allProductLimit: number = 20;
@@ -99,11 +104,13 @@ export class OfferCreateComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             frontend_position: ['', ''],
-            description: ['', []],
             selectionType: ['', [Validators.required]],
-            vendorName: ['', []],
-            brandName: ['', []],
-            categoryName: ['', []],
+            vendorId: ['', []],
+            brandId: ['', []],
+            categoryId: ['', []],
+            subCategoryId: ['', []],
+            subSubCategoryId: ['', []],
+            description: ['', []],
             discountAmount: ['', [Validators.required]],
             calculationType: ['', [Validators.required]],
             offerStartDate: ['', Validators.required],
@@ -137,20 +144,26 @@ export class OfferCreateComponent implements OnInit {
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
 
-        if(this.selectedProductIds) {
+        if (this.selectedProductIds) {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if(value.vendorName) {
-            formData.append('vendor_id', this.vendorName);
+        if (value.vendorId) {
+            formData.append('vendor_id', this.vendorId);
         }
 
-        if(value.brandName) {
-            formData.append('brand_id', this.brandName);
+        if (value.brandId) {
+            formData.append('brand_id', this.brandId);
         }
 
-        if(value.categoryName) {
-            formData.append('category_id', this.categoryName);
+        if (value.categoryId) {
+            formData.append('category_id', this.categoryId);
+        }
+        if (value.subCategoryId) {
+            formData.append('subCategory_Id', this.subCategoryId);
+        }
+        if (value.subSubCategoryId) {
+            formData.append('subSubCategory_Id', this.subSubCategoryId);
         }
 
         if (value.frontend_position) {
@@ -374,42 +387,72 @@ export class OfferCreateComponent implements OnInit {
     /**Method called when selection type is changed from the front end*/
     onSelectionTypeSelect(offerSelectionType) {
         this.offerSelectionType = offerSelectionType;
-        if(offerSelectionType && offerSelectionType !== 'Product wise') {
-            this.getAllOptions(offerSelectionType);
+        /*this.vendorId = event;*/
+        this.vendorId = null;
+        this.brandId = null;
+        this.categoryId = null;
+        this.subCategoryId = null;
+        this.subSubCategoryId = null;
+        this.selectedProductIds = null;
+        if (offerSelectionType && offerSelectionType !== 'Product wise') {
+            this.getAllOptions(offerSelectionType, '', '');
         }
     }
 
     /**method called to show the available options according to the selection in the offer selection type dropdown*/
-    getAllOptions(offerSelectionType) {
-        this.offerService.getAllOptions(offerSelectionType)
-            .subscribe(result => {
-                this.allOptions = result.data;
-            })
+    getAllOptions(offerSelectionType?, catId?, subCatId?) {
+        if (offerSelectionType || catId || subCatId) {
+            if (offerSelectionType) {
+                this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
+                    .subscribe(result => {
+                        this.allOptions = result.data;
+                    })
+            } else if (catId) {
+                this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
+                    .subscribe(result => {
+                        this.subcategoryIDS = result.data;
+                    })
+            } else if (subCatId) {
+                this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
+                    .subscribe(result => {
+                        this.subSubCategoryIDS = result.data;
+                    })
+            }
+        }
     }
 
     /**Method call when we selection a offer selection type, it does not allow to store previously selected selection type
-    it only keeps the finally selected selection type data*/
-    finalSelectionType(vendor, brand, category, selectedProductIds, event) {
-        if(event && event !== 'undefined') {
-            if(vendor) {
-                this.vendorName = event;
-                this.brandName = null;
-                this.categoryName = null;
+     it only keeps the finally selected selection type data*/
+    finalSelectionType(vendorId, brandId, categoryId, selectedProductIds, event) {
+        if (event) {
+            if (vendorId) {
+                this.vendorId = event;
+                this.brandId = null;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
                 this.selectedProductIds = null;
-            }else if(brand) {
-                this.vendorName = null;
-                this.brandName = event;
-                this.categoryName = null;
+            } else if (brandId) {
+                this.vendorId = null;
+                this.brandId = event;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
                 this.selectedProductIds = null;
-            }else if(category) {
-                this.vendorName = null;
-                this.brandName = null;
-                this.categoryName = event;
+            } else if (categoryId) {
+                this.vendorId = null;
+                this.brandId = null;
+                this.categoryId = event;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
                 this.selectedProductIds = null;
-            }else if(selectedProductIds) {
-                this.vendorName = null;
-                this.brandName = null;
-                this.categoryName = null;
+                this.getAllOptions('', event, '')
+            } else if (selectedProductIds) {
+                this.vendorId = null;
+                this.brandId = null;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
             }
         }
     }

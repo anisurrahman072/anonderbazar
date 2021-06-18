@@ -88,7 +88,7 @@
             </div>
             <div nz-col [nzSpan]="12">
 
-                <nz-select formControlName="selectionType" [nzPlaceHolder]=" 'Selection Type'"
+                <nz-select formControlName="selectionType" [nzPlaceHolder]=" 'Selection Type'" nzAllowClear nzShowSearch
                            [(ngModel)]="selectionType" style="margin: 10px 0;"
                            (ngModelChange)="onSelectionTypeSelect($event)">
                     <nz-option *ngFor="let option of ['Vendor wise', 'Brand wise', 'Category wise', 'Product wise']"
@@ -101,9 +101,9 @@
                     Please select to add products to this offer
                 </div>
 
-                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorName"
+                <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorId"
                            nzPlaceHolder="Select Vendor"
-                           [(ngModel)]="vendorName" style="margin: 10px 0;"
+                           [(ngModel)]="vendorId" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
                            (ngModelChange)="finalSelectionType(true, false, false, false, $event)">
                     <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
@@ -111,9 +111,9 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandName"
+                <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandId"
                            [nzPlaceHolder]=" 'Select Brand'"
-                           [(ngModel)]="brandName" style="margin: 10px 0;"
+                           [(ngModel)]="brandId" style="margin: 10px 0;"
                            nzShowSearch nzAllowClear
                            (ngModelChange)="finalSelectionType(false, true, false, false, $event)">
                     <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
@@ -121,11 +121,28 @@
                     </nz-option>
                 </nz-select>
 
-                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryName"
+                <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryId" nzAllowClear nzShowSearch
                            [nzPlaceHolder]=" 'Select Category'"
-                           [(ngModel)]="categoryName" style="margin: 10px 0;"
-                           (ngModelChange)="finalSelectionType(false, false, true, false, $event)">
+                           [(ngModel)]="categoryId" style="margin: 10px 0;"
+                           (ngModelChange)="finalSelectionType(false, false, true, false, $event);">
                     <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
+                               [nzValue]="option.id">
+                    </nz-option>
+                </nz-select>
+                <!--Select Sub-Category-->
+                <nz-select *ngIf="offerSelectionType === 'Category wise' && categoryId !== null && categoryId !== undefined " formControlName="subCategoryId" nzAllowClear nzShowSearch
+                           [nzPlaceHolder]=" 'Select Sub-Category'"
+                           [(ngModel)]="subCategoryId" style="margin: 10px 0;"
+                           (ngModelChange)="getAllOptions('', '', $event)">
+                    <nz-option *ngFor="let option of subcategoryIDS" [nzLabel]="option.name"
+                               [nzValue]="option.id">
+                    </nz-option>
+                </nz-select>
+                <!--Select Sub-Sub-Category-->
+                <nz-select *ngIf="offerSelectionType === 'Category wise' && subCategoryId !== null && subCategoryId !== undefined " formControlName="subSubCategoryId" nzAllowClear nzShowSearch
+                           [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
+                           [(ngModel)]="subSubCategoryId" style="margin: 10px 0;">
+                    <nz-option *ngFor="let option of subSubCategoryIDS" [nzLabel]="option.name"
                                [nzValue]="option.id">
                     </nz-option>
                 </nz-select>
@@ -163,7 +180,7 @@
             </div>
             <div nz-col [nzSpan]="12">
                 <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'"
-                           [(ngModel)]="Calc_type">
+                           [(ngModel)]="Calc_type" nzAllowClear nzShowSearch>
                     <nz-option *ngFor="let option of ['percentage', 'absolute amount']" [nzLabel]="option"
                                [nzValue]="option">
                     </nz-option>

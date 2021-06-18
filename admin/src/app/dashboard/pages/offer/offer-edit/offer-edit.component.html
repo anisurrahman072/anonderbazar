@@ -8,7 +8,6 @@
 
     <nz-spin [nzSpinning]="_isSpinning">
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
-
             <!--name start-->
             <div nz-row style="margin-bottom: 10px">
                 <div nz-col [nzSpan]="7">
@@ -22,7 +21,7 @@
                     </div>
                 </div>
             </div>
-
+            <!--frontend_position-->
             <div nz-row style="margin-bottom: 10px">
                 <div nz-col [nzSpan]="7">
                     <label> Frontend Position </label>
@@ -33,7 +32,7 @@
                            [nzSize]="'large'">
                 </div>
             </div>
-
+            <!--image section-->
             <div nz-row *ngIf="ImageFileEdit">
                 <div nz-col [nzSpan]="7">
                     <label>Offer Main Image</label>
@@ -49,7 +48,7 @@
                 </div>
             </div>
 
-            <!--Offer Image Beside Carousel: smallOfferImage: WORKING-->
+            <!--Offer Image Beside Carousel: smallOfferImage-->
             <div nz-row *ngIf="ImageFileEdit">
                 <div nz-col [nzSpan]="7">
                     <label>Offer Image Beside Carousel</label>
@@ -64,7 +63,7 @@
                     </div>
                 </div>
             </div>
-
+            <!--banner image-->
             <div nz-row>
                 <div nz-col [nzSpan]="7">
                     <label>Banner Image</label>
@@ -78,62 +77,86 @@
                     </div>
                 </div>
             </div>
-
-            <div nz-row style="margin-bottom: 10px" *ngIf="selectionType">
+            <!--Selection Type-->
+            <div nz-row>
                 <div nz-col [nzSpan]="7">
-                    <label> Selection Type </label>
+                    <label>Selection Type</label>
                 </div>
                 <div nz-col [nzSpan]="12">
-                    <input nz-input placeholder="{{selectionType}}" disabled
-                           style="cursor: not-allowed; margin: 10px 0"/>
-                </div>
-            </div>
 
-            <div nz-row style="margin-bottom: 10px" *ngIf="vendorName">
-                <div nz-col [nzSpan]="7">
-                    <label> Vendor Name </label>
-                </div>
-                <div nz-col [nzSpan]="12">
-                    <input nz-input placeholder="{{vendorName}}" disabled
-                           style="cursor: not-allowed; margin: 10px 0"/>
-                </div>
-            </div>
+                    <nz-select [ngModel]="selectionType" formControlName="selectionType"
+                               [nzPlaceHolder]=" 'Selection Type'" nzAllowClear nzShowSearch
+                                style="margin: 10px 0;"
+                               (ngModelChange)="onSelectionTypeSelect($event)">
+                        <nz-option *ngFor="let option of ['Vendor wise', 'Brand wise', 'Category wise', 'Product wise']"
+                                   [nzLabel]="option" [nzValue]="option">
+                        </nz-option>
+                    </nz-select>
+                    <div *ngIf="getFormControl('selectionType').dirty&&getFormControl('selectionType').hasError('required')"
+                         style="color: red">
+                        Please select to add products to this offer
+                    </div>
+                    <!--vendorId-->
+                    <nz-select *ngIf="offerSelectionType === 'Vendor wise'" formControlName="vendorId"
+                               nzPlaceHolder="Select Vendor"
+                               [ngModel]="vendorId" style="margin: 10px 0;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="finalSelectionType(true, false,false, false, false, $event)">
+                        <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--brandId-->
+                    <nz-select *ngIf="offerSelectionType === 'Brand wise'" formControlName="brandId" nzAllowClear
+                               [ngModel]="brandId"
+                               [nzPlaceHolder]=" 'Select Brand'"
+                               style="margin: 10px 0;"
+                               nzShowSearch
+                               (ngModelChange)="finalSelectionType(false, true, false,false, false, $event)">
+                        <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--categoryId-->
+                    <nz-select *ngIf="offerSelectionType === 'Category wise'" formControlName="categoryId" nzAllowClear nzShowSearch
+                               [nzPlaceHolder]=" 'Select Category'"
+                               [ngModel]="categoryId" style="margin: 10px 0;"
+                               (ngModelChange)="finalSelectionType(false, false, true, false,false, $event)">
+                        <nz-option *ngFor="let option of allOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--Select Sub-Category-->
+                    <nz-select *ngIf="offerSelectionType === 'Category wise' && categoryId !== null && categoryId !== undefined " formControlName="subCategoryId" nzAllowClear nzShowSearch
+                               [nzPlaceHolder]=" 'Select Sub-Category'"
+                               [ngModel]="subCategoryId" style="margin: 10px 0;"
+                               (ngModelChange)="getAllOptions('', '', $event); finalSelectionType(false, false, false, true,false, $event)">
+                        <nz-option *ngFor="let option of subcategoryIDS" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--Select Sub-Sub-Category-->
+                    <nz-select *ngIf="offerSelectionType === 'Category wise' && subCategoryId !== null && subCategoryId !== undefined " formControlName="subSubCategoryId" nzAllowClear nzShowSearch
+                               [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
+                               [(ngModel)]="subSubCategoryId" style="margin: 10px 0;">
+                        <nz-option *ngFor="let option of subSubCategoryIDS" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
 
-            <div nz-row style="margin-bottom: 10px" *ngIf="brandName">
-                <div nz-col [nzSpan]="7">
-                    <label> Brand Name </label>
-                </div>
-                <div nz-col [nzSpan]="12">
-                    <input nz-input placeholder="{{brandName}}" disabled
-                           style="cursor: not-allowed; margin: 10px 0"/>
-                </div>
-            </div>
+                    <div *ngIf="offerSelectionType === 'Product wise'">
+                        <a nz-button style="margin-bottom: 10px" [nzType]="'primary'" (click)="showOfferModal();">
+                            <span>See Offered Products</span>
+                        </a>
+                        <a nz-button style="margin:0 10px 0 10px" [nzType]="'primary'" (click)="showProductModal();">
+                            <span>Add More Products</span>
+                        </a>
+                        <small *ngIf="selectedProductIds && selectedProductIds.length > 0" style="margin: 5px 10px 0 0">
+                            {{selectedProductIds.length}}
+                            products added in the offer list
+                        </small>
+                    </div>
 
-            <div nz-row style="margin-bottom: 10px" *ngIf="categoryName">
-                <div nz-col [nzSpan]="7">
-                    <label> Category Name </label>
-                </div>
-                <div nz-col [nzSpan]="12">
-                    <input nz-input placeholder="{{categoryName}}" disabled
-                           style="cursor: not-allowed; margin: 10px 0"/>
-                </div>
-            </div>
-
-            <div nz-row style="margin-bottom: 10px" *ngIf="selectionType === 'Product wise'">
-                <div nz-col [nzSpan]="7">
-                    <label></label>
-                </div>
-                <div nz-col [nzSpan]="12">
-                    <a nz-button style="margin-bottom: 10px" [nzType]="'primary'" (click)="showOfferModal();">
-                        <span>See Offered Products</span>
-                    </a>
-                    <a nz-button style="margin:0 10px 0 10px" [nzType]="'primary'" (click)="showProductModal();">
-                        <span>Add More Products</span>
-                    </a>
-                    <small *ngIf="selectedProductIds && selectedProductIds.length > 0" style="margin: 5px 10px 0 0">
-                        {{selectedProductIds.length}}
-                        products added in the offer list
-                    </small>
                 </div>
             </div>
 
@@ -149,13 +172,29 @@
                 </div>
             </div>
 
-            <div nz-row style="margin-bottom: 10px" *ngIf="calculationType">
+            <div nz-row style="margin-top: 20px">
                 <div nz-col [nzSpan]="7">
                     <label> Calculation Type </label>
                 </div>
                 <div nz-col [nzSpan]="12">
-                    <input nz-input placeholder="{{calculationType}}" disabled
-                           style="cursor: not-allowed; margin: 10px 0"/>
+                    <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'" nzAllowClear
+                               [ngModel]="calculationType" nzShowSearch>
+                        <nz-option *ngFor="let option of ['percentage', 'absolute amount']" [nzLabel]="option"
+                                   [nzValue]="option">
+                        </nz-option>
+                    </nz-select>
+                    <div *ngIf="getFormControl('calculationType').dirty&&getFormControl('calculationType').hasError('required')"
+                         style="color: red">
+                        Please Select Calculation Type
+                    </div>
+
+                    <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
+                           [nzSize]="'large'" style="margin: 10px 0" type="number">
+                    <div *ngIf="getFormControl('discountAmount').dirty&&getFormControl('discountAmount').hasError('required')"
+                         style="color: red">
+                        Please insert the discount amount
+                    </div>
+
                 </div>
             </div>
 
@@ -223,7 +262,8 @@
 </nz-card>
 
 <!--Related offer product modal-->
-<nz-modal [nzFooter]="null" [(nzVisible)]="isVisible" nzTitle="Products in this offer" (nzOnCancel)="handleOfferCancel()"
+<nz-modal [nzFooter]="null" [(nzVisible)]="isVisible" nzTitle="Products in this offer"
+          (nzOnCancel)="handleOfferCancel()"
           nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
         <nz-table #nzTableProd1
@@ -340,7 +380,8 @@
 
 
 <!-- modal for adding more products to the existing offer-->
-<nz-modal [nzFooter]="null" [(nzVisible)]="isProductModal" nzTitle="Add Products to the offer" (nzOnCancel)="handleProductCancel()"
+<nz-modal [nzFooter]="null" [(nzVisible)]="isProductModal" nzTitle="Add Products to the offer"
+          (nzOnCancel)="handleProductCancel()"
           nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
         <nz-table #nzTable
