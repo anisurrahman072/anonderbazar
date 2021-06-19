@@ -51,4 +51,12 @@ export class OfferService {
     updateOffer(data): Observable<any> {
         return this.http.post(`${this.EndPoint}/updateOffer`, data);
     }
+
+    getSelectedProductsInfo(data): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getSelectedProductsInfo?data=${data}`);
+    }
+
+    activeStatusChange(data): Observable<any> {
+        return this.http.post(`${this.EndPoint}/activeStatusChange`, data);
+    }
 }

@@ -20,8 +20,8 @@ module.exports = {
   //Model models/Product.js
   index: async (req, res) => {
     try {
-      /**checking if the options have the offer time or not*/
-      OfferService.offerDurationCheck();
+      /*      /!**checking if the options have the offer time or not*!/
+      OfferService.offerDurationCheck();*/
 
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
@@ -69,10 +69,9 @@ module.exports = {
           LEFT JOIN categories as subcategory ON subcategory.id = product.subcategory_id
           LEFT JOIN brands as brand ON brand.id = product.brand_id
           LEFT JOIN warehouses as warehouse ON warehouse.id = product.warehouse_id
-          LEFT JOIN regular_offer_products ON product.id = regular_offer_products.product_id
       `;
 
-      let _where = ' WHERE product.deleted_at IS NULL AND (regular_offer_products.deleted_at IS NOT NULL OR regular_offer_products.product_id IS NULL)';
+      let _where = ' WHERE product.deleted_at IS NULL ';
 
       if (req.query.status) {
         // _where.status = req.query.status;

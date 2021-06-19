@@ -30,7 +30,12 @@ module.exports = {
       }
 
       if (req.query.catId) {
-        allOptions = await Category.find({deletedAt: null, parent_id: parseInt(req.query.catId), type_id: 2});
+        let categoryId = await Category.find({deletedAt: null, name: req.query.catId, type_id: 2, parent_id: 0});
+        if (categoryId.length > 0) {
+          allOptions = await Category.find({deletedAt: null, parent_id: categoryId[0].id, type_id: 2});
+        } else {
+          allOptions = await Category.find({deletedAt: null, parent_id: parseInt(req.query.catId), type_id: 2});
+        }
       }
 
       if (req.query.subCatId) {
@@ -53,7 +58,7 @@ module.exports = {
   },
 
   /**Method called for creating Regular offer data*/
-  /**Model models/OfferService.js*/
+  /**Model models/Offer.js*/
   offerInsert: async (req, res) => {
     try {
       let body = req.body;
@@ -109,6 +114,17 @@ module.exports = {
 
           if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
             offerData.subSubCategory_Id = body.subSubCategory_Id;
+            const subSubCat = await Offer.findOne({
+              subSubCategory_Id: body.subSubCategory_Id,
+              offer_deactivation_time: null
+            });
+            if (subSubCat !== undefined) {
+              return res.status(200).json({
+                code: 'INVALID_SUBSUBCAT',
+                message: 'Subsub category already in another offer'
+              });
+              /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
+            }
           }
           if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
             offerData.subCategory_Id = body.subCategory_Id;
@@ -136,7 +152,15 @@ module.exports = {
           if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
             for (let id = 0; id < regular_offer_product_ids.length; id++) {
               let product_id = parseInt(regular_offer_product_ids[id]);
-              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              let existedProduct = await RegularOfferProducts.findOne({
+                product_id: product_id,
+                product_deactivation_time: null
+              });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+              } else {
+                await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              }
             }
           }
 
@@ -166,6 +190,17 @@ module.exports = {
 
         if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
           offerData.subSubCategory_Id = body.subSubCategory_Id;
+          const subSubCat = await Offer.findOne({
+            subSubCategory_Id: body.subSubCategory_Id,
+            offer_deactivation_time: null
+          });
+          if (subSubCat !== undefined) {
+            return res.status(200).json({
+              code: 'INVALID_SUBSUBCAT',
+              message: 'Subsub category already in another offer'
+            });
+            /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
+          }
         }
         if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
           offerData.subCategory_Id = body.subCategory_Id;
@@ -193,7 +228,15 @@ module.exports = {
         if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
           for (let id = 0; id < regular_offer_product_ids.length; id++) {
             let product_id = parseInt(regular_offer_product_ids[id]);
-            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            let existedProduct = await RegularOfferProducts.findOne({
+              product_id: product_id,
+              product_deactivation_time: null
+            });
+            if (existedProduct !== undefined) {
+              await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+            } else {
+              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            }
           }
         }
 
@@ -258,8 +301,12 @@ module.exports = {
   /**model: OfferService.js*/
   destroy: async (req, res) => {
     try {
-      const RegularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
-      return res.status(201).json(RegularOffer);
+      const regularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const regularOfferInfo = await Offer.findOne({id: req.param('id')});
+      if (regularOfferInfo.selection_type === 'Product wise') {
+        await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
+      }
+      return res.status(201).json(regularOffer);
     } catch (error) {
       console.log(error);
       res.status(400).json({
@@ -311,7 +358,11 @@ module.exports = {
       `;
 
       const products = await sails.sendNativeQuery(rawSQL, []);
-      const totalProducts = await RegularOfferProducts.count().where({regular_offer_id: req.query.id, deletedAt: null});
+      const totalProducts = await RegularOfferProducts.count().where({
+        regular_offer_id: req.query.id,
+        deletedAt: null,
+        product_deactivation_time: null
+      });
 
       res.status(200).json({
         success: true,
@@ -399,6 +450,17 @@ module.exports = {
 
           if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
             offerData.subSubCategory_Id = body.subSubCategory_Id;
+            const subSubCat = await Offer.findOne({
+              subSubCategory_Id: body.subSubCategory_Id,
+              offer_deactivation_time: null
+            });
+            if (subSubCat !== undefined) {
+              return res.status(200).json({
+                code: 'INVALID_SUBSUBCAT',
+                message: 'Subsub category already in another offer'
+              });
+              /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
+            }
           }
           if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
             offerData.subCategory_Id = body.subCategory_Id;
@@ -426,7 +488,15 @@ module.exports = {
           if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
             for (let id = 0; id < regular_offer_product_ids.length; id++) {
               let product_id = parseInt(regular_offer_product_ids[id]);
-              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              let existedProduct = await RegularOfferProducts.findOne({
+                product_id: product_id,
+                product_deactivation_time: null
+              });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+              } else {
+                await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              }
             }
           }
 
@@ -456,6 +526,17 @@ module.exports = {
 
         if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
           offerData.subSubCategory_Id = body.subSubCategory_Id;
+          const subSubCat = await Offer.findOne({
+            subSubCategory_Id: body.subSubCategory_Id,
+            offer_deactivation_time: null
+          });
+          if (subSubCat !== undefined) {
+            return res.status(200).json({
+              code: 'INVALID_SUBSUBCAT',
+              message: 'Subsub category already in another offer'
+            });
+            /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
+          }
         }
         if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
           offerData.subCategory_Id = body.subCategory_Id;
@@ -483,7 +564,15 @@ module.exports = {
         if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
           for (let id = 0; id < regular_offer_product_ids.length; id++) {
             let product_id = parseInt(regular_offer_product_ids[id]);
-            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            let existedProduct = await RegularOfferProducts.findOne({
+              product_id: product_id,
+              product_deactivation_time: null
+            });
+            if (existedProduct !== undefined) {
+              await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+            } else {
+              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+            }
           }
         }
 
@@ -499,6 +588,66 @@ module.exports = {
       res.status(400).json({
         success: false,
         message: 'Failed to update the offer',
+        error
+      });
+    }
+  },
+
+  getSelectedProductsInfo: async (req, res) => {
+    try {
+      let selectedIDS = req.query.data.split(',');
+      let foundProducts = [];
+
+      if (selectedIDS && selectedIDS.length > 0) {
+        for (let id = 0; id < selectedIDS.length; id++) {
+          let product_id = parseInt(selectedIDS[id]);
+          if(product_id) {
+            let product = await Product.findOne({id: product_id});
+            foundProducts.push(product);
+          }
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully fetched selected products with their detail info',
+        data: foundProducts,
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get selected products info',
+        error
+      });
+    }
+  },
+
+  activeStatusChange: async (req, res) => {
+    try {
+      if (req.body.event) {
+        await Offer.updateOne({id: req.body.offerId}).set({offer_deactivation_time: null});
+        const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
+        if (regularOfferInfo.selection_type === 'Product wise') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
+        }
+      } else {
+        await Offer.updateOne({id: req.body.offerId}).set({offer_deactivation_time: new Date()});
+        const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
+        if (regularOfferInfo.selection_type === 'Product wise') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully updated offer status',
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to update offer status',
         error
       });
     }

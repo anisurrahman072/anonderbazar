@@ -6,4 +6,6 @@ exports.offerRoute = {
   'GET /api/v1/offer/getRelatedOfferProducts': 'OfferController.getRelatedOfferProducts',
   'DELETE /api/v1/offer/removeProductFromOffer': 'OfferController.removeProductFromOffer',
   'POST /api/v1/offer/updateOffer': 'OfferController.updateOffer',
+  'GET /api/v1/offer/getSelectedProductsInfo': 'OfferController.getSelectedProductsInfo',
+  'POST /api/v1/offer/activeStatusChange': 'OfferController.activeStatusChange',
 };

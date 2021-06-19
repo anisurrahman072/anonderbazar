@@ -253,6 +253,107 @@
 <nz-modal [nzFooter]="null" [(nzVisible)]="isVisible" nzTitle="Add Products to the offer" (nzOnCancel)="handleCancel()"
           nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
+
+        <!--selected products table-->
+        <nz-table #nzTableSelected
+                  nzShowSizeChanger
+                  nzShowQuickJumper
+                  [nzFrontPagination]="false"
+                  [nzData]="selectedData"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="allProductTotal"
+                  [(nzPageIndex)]="allProductPage"
+                  [(nzPageSize)]="allProductLimit"
+        >
+            <thead>
+            <tr>
+                <!--<th>
+                    <label nz-checkbox [(ngModel)]="allProductSelectAll[allProductPage - 1]"
+                           (ngModelChange)="selectAllProducts($event)"></label>
+                </th>-->
+                <th>
+                    <span> Product Code </span>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Price </span>
+                </th>
+            </tr>
+            <!--<tr>
+                <th>
+                </th>
+                <th>
+                    <input nz-input placeholder="Code" [(ngModel)]="allProductCodeSearch"
+                           (ngModelChange)="allProductCodeChangeHandler($event)">
+                </th>
+                <th>
+                    <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
+                           (ngModelChange)="allProductNameChangeHandler($event)">
+                </th>
+                <th>
+                    <nz-select nzPlaceHolder="Vendor"
+                               [(ngModel)]="allVendorSearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductShopOwnerChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalVendors" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select nzPlaceHolder="Brand"
+                               [(ngModel)]="allBrandSearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductBrandChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalBrands" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select nzPlaceHolder="Category"
+                               [(ngModel)]="allCategorySearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductCategoryChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalCategories" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+                    <nz-select nzPlaceHolder="Sub Category"
+                               [(ngModel)]="allSubCategorySearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductSubCategoryChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalSubCategories" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th>
+
+                </th>
+                &lt;!&ndash;<th>
+                </th>&ndash;&gt;
+            </tr>-->
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableSelected.data;let i=index;">
+                <!--<td>
+                    <label nz-checkbox [(ngModel)]="datum.checked"
+                           (ngModelChange)="_refreshStatus($event, datum.id)">
+                    </label>
+                </td>-->
+                <td>{{datum.code}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.price}}</td>
+            </tr>
+            </tbody>
+        </nz-table>
+
+        <!--products to select table-->
         <nz-table #nzTableProd1
                   nzShowSizeChanger
                   nzShowQuickJumper
@@ -307,20 +408,44 @@
                            (ngModelChange)="allProductNameChangeHandler($event)">
                 </th>
                 <th>
-                    <input nz-input placeholder="Shop Owner" [(ngModel)]="allShopOwnerSearch"
-                           (ngModelChange)="allProductShopOwnerChangeHandler($event)">
+                    <nz-select nzPlaceHolder="Vendor"
+                               [(ngModel)]="allVendorSearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductShopOwnerChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalVendors" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
                 </th>
                 <th>
-                    <input nz-input placeholder="Brand" [(ngModel)]="allBrandSearch"
-                           (ngModelChange)="allProductBrandChangeHandler($event)">
+                    <nz-select nzPlaceHolder="Brand"
+                               [(ngModel)]="allBrandSearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductBrandChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalBrands" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
                 </th>
                 <th>
-                    <input nz-input placeholder="Category" [(ngModel)]="allCategorySearch"
-                           (ngModelChange)="allProductCategoryChangeHandler($event)">
+                    <nz-select nzPlaceHolder="Category"
+                               [(ngModel)]="allCategorySearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductCategoryChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalCategories" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
                 </th>
                 <th>
-                    <input nz-input placeholder="Sub Category" [(ngModel)]="allSubCategorySearch"
-                           (ngModelChange)="allProductSubCategoryChangeHandler($event)">
+                    <nz-select nzPlaceHolder="Sub Category"
+                               [(ngModel)]="allSubCategorySearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductSubCategoryChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalSubCategories" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
                 </th>
                 <th>
 

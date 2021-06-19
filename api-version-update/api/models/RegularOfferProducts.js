@@ -16,7 +16,11 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: true
-    }
+    },
+    product_deactivation_time:  {
+      type: 'ref',
+      columnType: 'datetime',
+    },
   },
   tableName: 'regular_offer_products'
 };

@@ -117,6 +117,15 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             this._isSpinning = false;
         });
     };
+
+    activeStatusChange(event, offerId) {
+        console.log('event: ', event);
+        let data = {event, offerId}
+        this.offerService.activeStatusChange(data)
+            .subscribe(result => {
+                this.getRegularOfferData();
+            });
+    }
 }
 
 

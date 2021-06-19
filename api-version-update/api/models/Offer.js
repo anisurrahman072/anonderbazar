@@ -69,6 +69,10 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
     },
+    offer_deactivation_time:  {
+      type: 'ref',
+      columnType: 'datetime',
+    },
     show_in_homepage: {
       type: 'boolean',
       columnType: 'integer',

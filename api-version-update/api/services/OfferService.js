@@ -8,9 +8,9 @@ module.exports = {
 
       if (endDate < presentTime) {
         if(allOffers[index].selection_type === 'Product wise') {
-          await RegularOfferProducts.update({regular_offer_id: allOffers[index].id}).set({deletedAt: new Date()});
+          await RegularOfferProducts.update({regular_offer_id: allOffers[index].id}).set({product_deactivation_time: new Date()});
         }
-        await Offer.updateOne({id: allOffers[index].id}).set({deletedAt: new Date()});
+        await Offer.updateOne({id: allOffers[index].id}).set({offer_deactivation_time: new Date()});
       }
     }
   }

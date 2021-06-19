@@ -88,6 +88,7 @@ export class OfferEditComponent implements OnInit {
     allProductTotal = 0;
     allProducts: any = [];
     selectedAllProductIds: any = [];
+    selectedData;
     allProductSelectAll: any = [false];
     offerProductIds: any = [];
 
@@ -257,10 +258,15 @@ export class OfferEditComponent implements OnInit {
         }
 
         this.offerService.updateOffer(formData).subscribe(result => {
-            this._notification.success('Offer Added', "Feature Title: ");
-            this._isSpinning = false;
-            this.resetForm(null);
-            this.router.navigate(['/dashboard/offer']);
+            if (result.code === 'INVALID_SUBSUBCAT') {
+                this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
+                this._isSpinning = false;
+            } else {
+                this._notification.success('Offer Added', "Feature Title: ");
+                this._isSpinning = false;
+                this.resetForm(null);
+                this.router.navigate(['/dashboard/offer']);
+            }
         }, () => {
             this._isSpinning = false;
         });
@@ -407,6 +413,7 @@ export class OfferEditComponent implements OnInit {
                 }
             }
         }
+        console.log("selectd products; ", this.selectedAllProductIds);
     }
 
     // Method for refresh offer checkbox data in the offer modal
@@ -415,12 +422,18 @@ export class OfferEditComponent implements OnInit {
             this.selectedAllProductIds[this.allProductPage - 1].push(value);
         } else {
             let findIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
-                return prodId == value.id
+                return prodId == value
             });
             if (findIndex !== -1) {
                 this.selectedAllProductIds[this.allProductPage - 1].splice(findIndex, 1);
             }
         }
+
+        /*to show the selected products at the top*/
+        this.offerService.getSelectedProductsInfo(this.selectedAllProductIds)
+            .subscribe(result => {
+                this.selectedData = result.data;
+            })
         console.log(this.selectedAllProductIds);
     }
 

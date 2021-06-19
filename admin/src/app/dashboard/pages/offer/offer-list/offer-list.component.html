@@ -29,7 +29,8 @@
                                     </th>
                                     <th>
                                         <span> Discount </span>
-                                    </th><th>
+                                    </th>
+                                    <th>
                                         <span> Selection Type </span>
                                     </th>
                                     <th>
@@ -39,10 +40,13 @@
                                         <span> Frontend Position </span>
                                     </th>
                                     <th>
+                                        <span> Status </span>
+                                    </th>
+                                    <th>
                                         <span> Description </span>
                                     </th>
                                     <th>
-
+                                        Action
                                     </th>
                                 </tr>
                                 </thead>
@@ -64,10 +68,24 @@
                                     </td>
 
                                     <td>
-                                        <nz-tag>{{datum.start_date | date : 'medium'}} - {{datum.end_date | date : 'medium'}}</nz-tag>
+                                        <nz-tag>{{datum.start_date | date : 'medium'}}
+                                            - {{datum.end_date | date : 'medium'}}</nz-tag>
                                     </td>
                                     <td>
                                         <nz-tag>{{datum.frontend_position}}</nz-tag>
+                                    </td>
+                                    <td>
+                                        <div *ngIf="datum.offer_deactivation_time === null; else inactive">
+                                            <nz-switch [ngModel]="true"
+                                                       (ngModelChange)="activeStatusChange($event, datum.id)"
+                                            >
+                                            </nz-switch>
+                                        </div>
+                                        <ng-template #inactive>
+                                            <nz-switch [ngModel]="false"
+                                                       (ngModelChange)="activeStatusChange($event, datum.id)">
+                                            </nz-switch>
+                                        </ng-template>
                                     </td>
                                     <td [innerHTML]="datum.description"></td>
                                     <td>

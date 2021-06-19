@@ -78,10 +78,14 @@ export class OfferCreateComponent implements OnInit {
 
     allProductNameSearch: string = '';
     allProductCodeSearch: string = '';
-    allShopOwnerSearch: string = '';
+    allVendorSearch: string = '';
+    allModalVendors;
     allBrandSearch: string = '';
+    allModalBrands;
     allCategorySearch: string = '';
+    allModalCategories;
     allSubCategorySearch: string = '';
+    allModalSubCategories;
 
     offerSelectionType;
     allOptions;
@@ -91,6 +95,7 @@ export class OfferCreateComponent implements OnInit {
     selectedProductIds: any;
 
     selectedAllProductIds: any = [];
+    selectedData;
     allProductSelectAll: any = [false];
 
     constructor(
@@ -193,10 +198,15 @@ export class OfferCreateComponent implements OnInit {
         this.offerService.offerInsert(formData).subscribe(result => {
             console.log('submit rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', result);
             this.submitting = false;
-            this._notification.success('Offer Added', "Feature Title: ");
-            this._isSpinning = false;
-            this.resetForm(null);
-            this.router.navigate(['/dashboard/offer']);
+            if (result.code === 'INVALID_SUBSUBCAT') {
+                this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
+                this._isSpinning = false;
+            } else {
+                this._notification.success('Offer Added', "Feature Title: ");
+                this._isSpinning = false;
+                this.resetForm(null);
+                this.router.navigate(['/dashboard/offer']);
+            }
         }, error => {
             this.submitting = false;
             this._notification.error('Error Occurred!', "Error occurred while adding offer!");
@@ -257,7 +267,7 @@ export class OfferCreateComponent implements OnInit {
         }
 
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allVendorSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
             .subscribe(result => {
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
@@ -308,21 +318,39 @@ export class OfferCreateComponent implements OnInit {
     }
 
     allProductShopOwnerChangeHandler(event: any) {
-        this.allShopOwnerSearch = event;
+        if (event === null) {
+            event = '';
+        }
+        this.allVendorSearch = event;
         this.getAllProducts(1);
     }
 
     allProductBrandChangeHandler(event: any) {
+        if (event === null) {
+            event = '';
+        }
         this.allBrandSearch = event;
         this.getAllProducts(1);
     }
 
     allProductCategoryChangeHandler(event: any) {
+        if (event === null) {
+            event = '';
+        }
+        this.allSubCategorySearch = '';
+        this.allModalSubCategories = null;
         this.allCategorySearch = event;
         this.getAllProducts(1);
+        this.offerService.getAllOptions('', event, '')
+            .subscribe(result => {
+                this.allModalSubCategories = result.data;
+            })
     }
 
     allProductSubCategoryChangeHandler(event: any) {
+        if (event === null) {
+            event = '';
+        }
         this.allSubCategorySearch = event;
         this.getAllProducts(1);
     }
@@ -354,12 +382,17 @@ export class OfferCreateComponent implements OnInit {
             this.selectedAllProductIds[this.allProductPage - 1].push(value);
         } else {
             let findIndex = this.selectedAllProductIds[this.allProductPage - 1].findIndex((prodId) => {
-                return prodId == value.id
+                return prodId == value
             });
             if (findIndex !== -1) {
                 this.selectedAllProductIds[this.allProductPage - 1].splice(findIndex, 1);
             }
         }
+        /*to show the selected products at the top*/
+        this.offerService.getSelectedProductsInfo(this.selectedAllProductIds)
+            .subscribe(result => {
+                this.selectedData = result.data;
+            })
         console.log(this.selectedAllProductIds);
     }
 
@@ -378,6 +411,18 @@ export class OfferCreateComponent implements OnInit {
     showModal(): void {
         this.isVisible = true;
         this.getAllProducts(1);
+        this.offerService.getAllOptions('Brand wise', '', '')
+            .subscribe(result => {
+                this.allModalBrands = result.data;
+            })
+        this.offerService.getAllOptions('Vendor wise', '', '')
+            .subscribe(result => {
+                this.allModalVendors = result.data;
+            })
+        this.offerService.getAllOptions('Category wise', '', '')
+            .subscribe(result => {
+                this.allModalCategories = result.data;
+            })
     }
 
     handleCancel(): void {
