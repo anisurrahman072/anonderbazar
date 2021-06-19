@@ -450,11 +450,13 @@ module.exports = {
 
           if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
             offerData.subSubCategory_Id = body.subSubCategory_Id;
-            const subSubCat = await Offer.findOne({
+            const subSubCat = await Offer.find({
               subSubCategory_Id: body.subSubCategory_Id,
-              offer_deactivation_time: null
+              offer_deactivation_time: null,
+              deletedAt: null
             });
-            if (subSubCat !== undefined) {
+
+            if (subSubCat !== undefined && subSubCat.length > 1) {
               return res.status(200).json({
                 code: 'INVALID_SUBSUBCAT',
                 message: 'Subsub category already in another offer'
@@ -526,11 +528,13 @@ module.exports = {
 
         if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
           offerData.subSubCategory_Id = body.subSubCategory_Id;
-          const subSubCat = await Offer.findOne({
+          const subSubCat = await Offer.find({
             subSubCategory_Id: body.subSubCategory_Id,
-            offer_deactivation_time: null
+            offer_deactivation_time: null,
+            deletedAt: null
           });
-          if (subSubCat !== undefined) {
+
+          if (subSubCat !== undefined && subSubCat.length > 1) {
             return res.status(200).json({
               code: 'INVALID_SUBSUBCAT',
               message: 'Subsub category already in another offer'
@@ -662,13 +666,7 @@ module.exports = {
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
 
-      let webRegularOffers = await Offer.find({where: _where})
-        .populate('product_ids')
-        .populate('category_ids')
-        .populate('subCategory_Id')
-        .populate('subSubCategory_Id')
-        .populate('brand_ids')
-        .populate('vendor_ids');
+      let webRegularOffers = await Offer.find({where: _where});
 
       res.status(200).json({
         success: true,
@@ -680,6 +678,87 @@ module.exports = {
       res.status(400).json({
         success: false,
         message: 'failed to get regular offer for the web',
+        error
+      });
+    }
+  },
+
+  /**Method called from the web to get the regular offer data with its related offered products data*/
+  webRegularOfferById: async (req, res) => {
+    try {
+      OfferService.offerDurationCheck();
+
+      let webRegularOfferedProducts;
+
+      let _where = {};
+      _where.id = req.query.id;
+      _where.deletedAt = null;
+      _where.offer_deactivation_time = null;
+      const requestedOffer = await Offer.findOne({where: _where});
+      console.log('requested offer: ', requestedOffer);
+
+      /**if selection_type === 'Vendor wise'*/
+      if (requestedOffer.selection_type === 'Vendor wise') {
+        let _where = {};
+        _where.warehouse_id = requestedOffer.vendor_ids;
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+        webRegularOfferedProducts = await Product.find({where: _where});
+      }
+
+      /**if selection_type === 'Brand wise'*/
+      if (requestedOffer.selection_type === 'Brand wise') {
+        let _where = {};
+        _where.brand_id = requestedOffer.brand_ids;
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+        webRegularOfferedProducts = await Product.find({where: _where});
+      }
+
+      /**if selection_type === 'Category wise'*/
+      if (requestedOffer.selection_type === 'Category wise') {
+        let _where = {};
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+
+        if (requestedOffer.subSubCategory_Id !== 'null') {
+          _where.subcategory_id = requestedOffer.subSubCategory_Id;
+        } else if (requestedOffer.subCategory_Id !== 'null') {
+          _where.category_id = requestedOffer.subCategory_Id;
+        } else if (requestedOffer.category_ids !== 'null') {
+          _where.type_id = requestedOffer.category_ids;
+        }
+
+        webRegularOfferedProducts = await Product.find({where: _where});
+      }
+
+      /**if selection_type === 'Product wise'*/
+      if (requestedOffer.selection_type === 'Product wise') {
+        let _where = {};
+        _where.regular_offer_id = req.query.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
+          .populate('product_id');
+
+        webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
+          return data.product_id;
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'All regular offers for the web with related products data',
+        data: [requestedOffer, webRegularOfferedProducts]
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get regular offer for the web with related products data',
         error
       });
     }

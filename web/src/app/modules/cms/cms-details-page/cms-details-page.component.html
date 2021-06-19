@@ -1,87 +1,40 @@
-<div class="main-container right-sidebar" *ngIf="cms_post_by_id && cms_detail">
+<div class="main-container right-sidebar" *ngIf="regularOffer && regularOfferedProducts">
     <div class="container-fluid">
         <nav class="woocommerce-breadcrumb breadcrumbs">
             <a routerLink="/" routerLinkActive="active">Home</a>
             <a routerLink="/cms" routerLinkActive="active">Offer</a>
-            <a>{{cms_detail.title}}</a>
+            <a>{{regularOffer.title}}</a>
         </nav>
         <div class="row">
             <div class="col-sm-6 col-md-12 main-content">
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
-                            <div class="post-thumb" *ngIf="cms_detail.banner_image; else image">
-                                <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.banner_image}}"
-                                     alt="{{cms_detail.title}}">
+                            <div class="post-thumb" *ngIf="regularOffer.image.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.banner_image}}"
+                                     alt="{{regularOffer.title}}">
                             </div>
                             <ng-template #image>
-                                <div class="post-thumb" *ngIf="cms_detail.image">
-                                    <img width="100%" src="{{  IMAGE_ENDPOINT + cms_detail.image}}"
-                                         alt="{{cms_detail.title}}">
+                                <div class="post-thumb" *ngIf="regularOffer.image">
+                                    <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.image}}"
+                                         alt="{{regularOffer.title}}">
                                 </div>
                             </ng-template>
                         </div>
 
                         <div class="post-info" style="margin-top:40px">
-                            <span class="post-title h1">{{cms_detail.title}}</span>
-                            <div class="post-meta h6">
-                                <span class="author "
-                                      *ngIf="cms_post_by_id?.user_id"> By {{cms_post_by_id.user_id?.first_name}}  {{cms_post_by_id.user_id?.last_name}}</span>
-                                <!--<span class="date">{{ cms_post_by_id?.createdAt | date }}  </span>-->
-                            </div>
+                            <span class="post-title h1">{{regularOffer.title}}</span>
                             <div style="margin-top:40px" class="blog-content"
-                                 [innerHTML]="cms_detail.description">
+                                 [innerHTML]="regularOffer.description">
                             </div>
                         </div>
                     </div>
-                    <div class="blog-single-footer">
-                        <div class="tags">
-
-                        </div>
-                        <div class="share">
-
-                        </div>
-
-                    </div>
-                </div>
-                <div class="author-bio">
-
-                </div>
-                <div class="comments-area">
-
-                </div>
-                <div class="comment-form-wapper">
-                    <div class="comment-respond">
-
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="category-head justify-content-between d-flex">
-            <div class="titel">
-            </div>
-        </div>
 
-
-        <div class="row" *ngIf='cms_detail.alloffers && cms_detail.alloffers.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4" *ngFor="let offer of (cms_detail.alloffers)">
-                <div class="category-contant">
-                    <a routerLink="/cms/cms-details/{{offer.id}}">
-                        <div class="cate-img mb-4">
-                            <img style="width: 316px;height: 316px;"
-                                 src="{{IMAGE_ENDPOINT + offer?.data_value[0].image}}"
-                                 alt="{{offer.data_value[0].title}}">
-                        </div>
-                        <div class="cate-text">
-                            <h6>{{offer.data_value[0].title}}</h6>
-                            <h6 [innerHTML]='offer.data_value[0].description'></h6>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="row" *ngIf='cms_detail.allproducts && cms_detail.allproducts.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (cms_detail.allproducts | paginate: { itemsPerPage: 12, currentPage: p }) ; let i=index">
+        <div class="row" *ngIf='regularOfferedProducts && regularOfferedProducts.length > 0'>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (regularOfferedProducts | paginate: { itemsPerPage: 12, currentPage: p }) ; let i=index">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>

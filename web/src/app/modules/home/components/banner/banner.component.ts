@@ -25,7 +25,7 @@ export class BannerComponent implements OnInit {
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT_CAROUSEL = GLOBAL_CONFIGS.productImageExtension;
 
-    constructor(private cmsService: CmsService) {
+    constructor() {
     }
 
     //Event method for getting all the data for the page

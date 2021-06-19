@@ -39,7 +39,6 @@ export class OfferComponent implements OnInit {
     ngOnInit() {
         if (!___.isUndefined(this.homeOfferData) && !___.isEmpty(this.homeOfferData)) {
             this.allOffers = this.homeOfferData.filter(offer => {
-                console.log("show: ", offer.show_in_homepage);
                 return (offer.show_in_homepage === true);
             }).slice(0, 4);
         }

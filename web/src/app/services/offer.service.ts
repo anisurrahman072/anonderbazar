@@ -7,12 +7,17 @@ import {AppSettings} from '../config/app.config';
 @Injectable()
 export class OfferService {
 
-  private EndPoint = `${AppSettings.API_ENDPOINT}/offer`;
+    private EndPoint = `${AppSettings.API_ENDPOINT}/offer`;
 
-  constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {
+    }
 
-  getWebRegularOffers(): Observable<any> {
-    return this.http.get(`${this.EndPoint}/getWebRegularOffers`);
-}
+    getWebRegularOffers(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getWebRegularOffers`);
+    }
+
+  getWebRegularOfferById(id): Observable<any> {
+    return this.http.get(`${this.EndPoint}/getWebRegularOfferById?id=${id}`);
+  }
 
 }

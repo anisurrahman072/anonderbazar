@@ -33,8 +33,8 @@ export class HomeComponent implements OnInit {
         this.addPageTitleNMetaTag();
         this.offerService.getWebRegularOffers()
             .subscribe(result => {
-                console.log('offer result: ',result.data);
                 this.regularOfferData = result.data;
+                console.log('regular offer data: ', this.regularOfferData);
             })
     }
 

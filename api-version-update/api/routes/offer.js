@@ -9,4 +9,5 @@ exports.offerRoute = {
   'GET /api/v1/offer/getSelectedProductsInfo': 'OfferController.getSelectedProductsInfo',
   'POST /api/v1/offer/activeStatusChange': 'OfferController.activeStatusChange',
   'GET /api/v1/offer/getWebRegularOffers': 'OfferController.webRegularOffers',
+  'GET /api/v1/offer/getWebRegularOfferById': 'OfferController.webRegularOfferById',
 };

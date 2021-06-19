@@ -11,10 +11,8 @@ module.exports = {
       model: 'offer',
       required: true
     },
-
     product_id: {
-      type: 'number',
-      columnType: 'integer',
+      model: 'product',
       required: true
     },
     product_deactivation_time:  {
