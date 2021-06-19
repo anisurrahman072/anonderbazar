@@ -20,6 +20,7 @@ export * from './suborder.service';
 export * from './suborder-item.service';
 export * from './suborder-item-variant.service';
 export * from './cms.service';
+export * from './offer.service';
 export * from './lottery.service';
 export * from './investor.service';
 export * from './global-config.service';

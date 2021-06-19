@@ -8,98 +8,21 @@
         </div>
         <div class="row">
             <ng-container *ngFor="let offer of allOffers">
-                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4 offer-container"
-                     *ngIf="offer && (( offer.data_value[0].offers && offer.data_value[0].offers.length > 0) || (offer.data_value[0].products && offer.data_value[0].products.length > 0))">
-                    <div class="offer-details"
-                         *ngIf='offer.data_value[0].offers && offer.data_value[0].offers.length > 0'>
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4 offer-container" *ngIf="offer">
+                    <div class="offer-details">
                         <div class="offer-img">
-                            <!--<div class="row">
-                                <div class="col-md- col-8" id="img-1">
-                                    <div class="mr-1">
-                                        <img class="offer-mainimg"
-                                             src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].alloffers[0]?.image + IMAGE_EXT}}"
-                                             alt="offered product image">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-4 pr-0" id="">
-                                    <div class="row" id="img-2">
-                                        <div class="col-md-12 pl-0 mb-1">
-                                            <img class="offerimg2"
-                                                 src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].alloffers[1]?.image + IMAGE_EXT}}"
-                                                 alt="offered product image">
-                                        </div>
-                                        <div class="col-md-12 pl-0 mb-1">
-                                            <img class="offerimg2"
-                                                 src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].alloffers[2]?.image + IMAGE_EXT}}"
-                                                 alt="offered product image">
-                                        </div>
-                                        <div class="col-md-12 pl-0 mb-1">
-                                            <img class="offerimg2"
-                                                 src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].alloffers[3]?.image + IMAGE_EXT}}"
-                                                 alt="offered product image">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>-->
                             <a routerLink="/cms/cms-details/{{offer.id}}">
-                                <img src="{{IMAGE_LIST_ENDPOINT + offer.data_value[0].image + IMAGE_EXT}}"
+                                <img src="{{IMAGE_LIST_ENDPOINT + offer.image.image + IMAGE_EXT}}"
                                      alt="offered product image">
                             </a>
                         </div>
                         <div class="offer-contant">
-                            <h6>{{offer.data_value[0]?.title}}</h6>
-                            <p [innerHTML]='offer.data_value[0].description'></p>
+                            <h6>{{offer.title}}</h6>
+                            <p [innerHTML]='offer.description'></p>
                             <a routerLink="/cms/cms-details/{{offer.id}}">View Offer details<i
                                     class="fa fa-angle-right text-center"></i></a>
                         </div>
                     </div>
-
-                    <div class="offer-details"
-                         *ngIf='offer.data_value[0].products && offer.data_value[0].products?.length > 0'>
-                        <div class="offer-img">
-                            <!--<a routerLink="/cms/cms-details/{{homeOfferData.id}}">
-                                <div class="row">
-                                    <div class="col-md-8 col-8 pr-0">
-                                        <div class="mr-1">
-                                            <img class="offer-mainimg"
-                                                 src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].allproducts[0]?.image + IMAGE_EXT}}"
-                                                 alt="offered product image">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4 pr-0">
-                                        <div class="row">
-                                            <div class="col-md-12 pl-0 mb-0">
-                                                <img class="offerimg2"
-                                                     src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].allproducts[1]?.image + IMAGE_EXT}}"
-                                                     alt="offered product image">
-                                            </div>
-                                            <div class="col-md-12 pl-0 mb-1 mt-1">
-                                                <img class="offerimg2"
-                                                     src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].allproducts[2]?.image + IMAGE_EXT}}"
-                                                     alt="offered product image">
-                                            </div>
-                                            <div class="col-md-12 pl-0 mb-0">
-                                                <img class="offerimg2"
-                                                     src="{{IMAGE_LIST_ENDPOINT + homeOfferData.data_value[0].allproducts[3]?.image + IMAGE_EXT}}"
-                                                     alt="offered product image">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>-->
-                            <a routerLink="/cms/cms-details/{{offer.id}}">
-                                <img src="{{IMAGE_LIST_ENDPOINT + offer.data_value[0].image + IMAGE_EXT}}"
-                                     alt="offered product image">
-                            </a>
-                        </div>
-                        <div class="offer-contant">
-                            <h6>{{offer.data_value[0].title}}</h6>
-                            <p [innerHTML]='offer.data_value[0].description'></p>
-                            <a routerLink="/cms/cms-details/{{offer.id}}">View Offer details<i
-                                    class="fa fa-angle-right text-center"></i></a>
-                        </div>
-                    </div>
-
 
                 </div>
             </ng-container>

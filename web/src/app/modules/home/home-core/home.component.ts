@@ -4,6 +4,7 @@ import {Observable} from "rxjs/Observable";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import * as ___ from "lodash";
 import { Title } from '@angular/platform-browser';
+import {OfferService} from "../../../services/offer.service";
 
 @Component({
     selector: 'app-home-page',
@@ -15,11 +16,13 @@ export class HomeComponent implements OnInit {
     featureProducts: any = null;
     cmsDataForPageSection: any;
     cmsDataForPageSectionSubsection: any;
+    regularOfferData;
 
     constructor(
         private productService: ProductService,
         private cmsService: CmsService,
         private title: Title,
+        private offerService: OfferService,
     ) {
     }
 
@@ -28,6 +31,11 @@ export class HomeComponent implements OnInit {
         this.getFeatureProducts();
         this.fetchCmsData();
         this.addPageTitleNMetaTag();
+        this.offerService.getWebRegularOffers()
+            .subscribe(result => {
+                console.log('offer result: ',result.data);
+                this.regularOfferData = result.data;
+            })
     }
 
     //get all cms data that are need in the home page
@@ -46,6 +54,7 @@ export class HomeComponent implements OnInit {
                 }
             });
     }
+
 
     //Event method for getting all the data for the page
     private getFeatureProducts() {

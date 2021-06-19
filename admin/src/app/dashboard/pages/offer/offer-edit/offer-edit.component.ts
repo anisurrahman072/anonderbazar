@@ -143,8 +143,7 @@ export class OfferEditComponent implements OnInit {
                     this.smallOfferImageEdit = [];
                     this.data = result.regularOffer;
 
-                    let showHome = this.data.showInHome === 'true';
-                    this.isShowHomepage = showHome;
+                    this.isShowHomepage = this.data.show_in_homepage;
 
                     this.selectionType = this.data.selection_type;
                     this.offerSelectionType = this.selectionType;
@@ -169,7 +168,7 @@ export class OfferEditComponent implements OnInit {
                         offerEndDate: this.data.end_date,
                         discountAmount: this.data.discount_amount,
                         calculationType: this.data.calculation_type,
-                        showHome: showHome,
+                        showHome: this.data.show_in_homepage,
                     };
 
                     this.validateForm.patchValue(payload);

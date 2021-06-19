@@ -75,7 +75,7 @@ export class BannerComponent implements OnInit {
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
                 /*return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");*/
-                return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)));
+                return ((!___.isUndefined(offer.image)) && (!___.isUndefined(offer.image.small_image)));
             }).slice(0,3);
         }
 

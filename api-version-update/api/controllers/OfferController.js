@@ -257,7 +257,7 @@ module.exports = {
   },
 
   /**Method called for getting all regular offer data*/
-  /**Model models/OfferService.js*/
+  /**Model models/Offer.js*/
   allRegularOffer: async (req, res) => {
     try {
       OfferService.offerDurationCheck();
@@ -601,7 +601,7 @@ module.exports = {
       if (selectedIDS && selectedIDS.length > 0) {
         for (let id = 0; id < selectedIDS.length; id++) {
           let product_id = parseInt(selectedIDS[id]);
-          if(product_id) {
+          if (product_id) {
             let product = await Product.findOne({id: product_id});
             foundProducts.push(product);
           }
@@ -648,6 +648,38 @@ module.exports = {
       res.status(400).json({
         success: false,
         message: 'failed to update offer status',
+        error
+      });
+    }
+  },
+
+  /**Method called from the web to get the regular offer data*/
+  webRegularOffers: async (req, res) => {
+    try {
+      OfferService.offerDurationCheck();
+
+      let _where = {};
+      _where.deletedAt = null;
+      _where.offer_deactivation_time = null;
+
+      let webRegularOffers = await Offer.find({where: _where})
+        .populate('product_ids')
+        .populate('category_ids')
+        .populate('subCategory_Id')
+        .populate('subSubCategory_Id')
+        .populate('brand_ids')
+        .populate('vendor_ids');
+
+      res.status(200).json({
+        success: true,
+        message: 'All regular offers for the web',
+        data: webRegularOffers
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get regular offer for the web',
         error
       });
     }
