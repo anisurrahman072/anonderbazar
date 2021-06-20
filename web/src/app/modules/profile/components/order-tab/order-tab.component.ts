@@ -65,6 +65,8 @@ export class OrderTabComponent implements OnInit {
                 this.convertMilliSecondToHourMinute();
 
                 this.dashboardData = allData[2];
+                // console.log('this.dashboardData==>', this.dashboardData);
+                // console.log('this.dashboardData total==>', this.dashboardData.totalOrder);
             }, error => {
                 console.log(error);
             });
