@@ -156,6 +156,7 @@ module.exports = {
       randomstring,
       isPartialPayment: true
     });
+
     logger.orderLog(customer.id, 'SSL Commerz payment request (Partial): ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);
