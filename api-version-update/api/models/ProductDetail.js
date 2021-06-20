@@ -3,7 +3,7 @@
  * Model
  */
 
-module.exports = {
+/*module.exports = {
 
   attributes: {
     code: {
@@ -237,4 +237,4 @@ module.exports = {
   customToJSON: function () {
     return this;
   }
-};
+};*/
