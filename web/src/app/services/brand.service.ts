@@ -13,11 +13,7 @@ export class BrandService {
     }
 
     getAll(frontEndPosition?: any): Observable<any> {
-        let _where = `?where={"deletedAt":null}`;
-        if (frontEndPosition) {
-            _where += `&sort=frontend_position%20ASC`
-        }
-        return this.http.get(this.EndPoint + `${_where}`);
+        return this.http.get(this.EndPoint + `/getAll`);
     }
 
     getAllByWarehouseId(id): Observable<any> {

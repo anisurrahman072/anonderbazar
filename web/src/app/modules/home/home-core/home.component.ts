@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
 
     //Event method for getting all the data for the page
     private getFeatureProducts() {
-        this.featureProducts = this.productService.fetchFlashDealsProducts();
+        this.featureProducts = this.productService.fetchFlashDealsProducts().slice(0,4);
     }
 
     private addPageTitleNMetaTag() {

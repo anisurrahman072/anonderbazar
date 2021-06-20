@@ -1,14 +1,15 @@
 <section class="invoice container">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-3">
-                <button class="btn btn-block text-center btn-profile" (click)="SavePDF()">Download</button>
+            <div class="col-md-3 pt-lg-3">
+                <button class="btn btn-block text-center btn-profile" (click)="SavePDF(content)">Download</button>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 pt-3">
                 <button class="btn btn-block text-center btn-profile" routerLink="/profile/orders/">Dashboard</button>
             </div>
-            <div class="col-md-3" *ngIf="isAllowedForPay">
-                <button class="btn btn-block text-center btn-profile" (click)="makePartialPayment()">Make Payment</button>
+            <div class="col-md-3 pt-3" *ngIf="isAllowedForPay">
+                <button class="btn btn-block text-center btn-profile" (click)="makePartialPayment()">Make Payment
+                </button>
             </div>
         </div>
 
@@ -61,7 +62,8 @@
                                 </ng-container>
                                 <br>
 
-                                <ng-container *ngIf="data && data.couponProductCodes && data.couponProductCodes.length > 0">
+                                <ng-container
+                                        *ngIf="data && data.couponProductCodes && data.couponProductCodes.length > 0">
                                     <h6>Coupon Codes</h6>
                                     <p style="background-color: #ffffff; padding: 5px; border-radius: 10px; overflow-wrap: anywhere;">{{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}</p>
                                 </ng-container>
@@ -103,7 +105,8 @@
                             </td>
                             <td>
                                 <div class="amount-text text-right">
-                                    <h5 *ngIf="data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER; else regularOrder">৳. {{data.paid_amount}}</h5>
+                                    <h5 *ngIf="data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER; else regularOrder">
+                                        ৳. {{data.paid_amount}}</h5>
                                     <ng-template #regularOrder>
                                         <h5>৳. {{data.total_price}}</h5>
                                     </ng-template>
@@ -117,7 +120,7 @@
                     <br>
                     <br>
 
-                    <div class="row" style="margin-bottom: 100px; margin-left: 30px">
+                    <div class="row billing-info">
                         <div class="col-md-6">
                             <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
                                 <h5>BILLING INFORMATION: </h5>
@@ -146,9 +149,11 @@
                                 <h5>Payment Info</h5>
                                 <p> Payment method: {{payment.payment_type}}</p>
                                 <p *ngIf="payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE &&
-                                          payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"> Transaction id: {{payment.transection_key}}</p>
+                                          payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"> Transaction
+                                    id: {{payment.transection_key}}</p>
 
-                                <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 20px !important;">
+                                <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                     style="margin-top: 20px !important;">
                                     <h5>Offline payment method details</h5>
                                     <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
                                         <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
@@ -160,7 +165,8 @@
                                     <ng-template #notBankTransfer>
                                         <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
                                         <div (click)="isAddModalVisible(modalContent)" style="cursor: pointer;">
-                                            <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}" alt="money-receipt" style="height: 100px;">
+                                            <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}"
+                                                 alt="money-receipt" style="height: 100px;">
                                         </div>
                                     </ng-template>
                                 </div>

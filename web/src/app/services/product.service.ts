@@ -90,16 +90,18 @@ export class ProductService {
 
     getFlashDealsProducts() {
         this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&limit=4&sort=createdAt%20DESC')
+            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&sort=createdAt%20DESC')
             .subscribe(data => {
                 this.allFlashDealsProducts = data;
             }, error => {
-                console.log('Error while fetching flashDealsProducts');
+                console.log('Error while fetching flashDealsProducts. ', error);
             })
     }
 
     fetchFlashDealsProducts() {
-        return this.allFlashDealsProducts;
+        return this.allFlashDealsProducts.filter(product => {
+            return product.warehouse_id.status == 2;
+        });
     }
 
     getRewardProducts(): Observable<any> {
@@ -127,7 +129,7 @@ export class ProductService {
 
     getNewProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2&limit=4')
+            .get(this.EndPoint + '/getNewProducts?featured=0&approval_status=2')
             .map(response => response);
     }
 

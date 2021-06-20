@@ -495,7 +495,7 @@
                         </mat-radio-group>
                     </div>
                     <div *ngIf="isShowOfflineForm">
-                        <mat-radio-group formControlName="offlinePaymentMethods" style="display: flex">
+                        <mat-radio-group class="payment-method-radio-btn" formControlName="offlinePaymentMethods" style="display: flex">
                             <mat-radio-button value="cashInAdvance"
                                               (click)="showOfflinePaymentMethods(true, false, false, false)">
                                 <p class="defaultParagraph">Cash In Advance</p>
@@ -616,7 +616,7 @@
                                 (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">
                             <a>Confirm payment</a>
                         </button>
-                        <button type="submit" class="Summarybtn" *ngIf="isPartiallyPayable && !isShowOfflineForm"
+                        <button type="submit" class="Summarybtn" id="sum-btn-w-o-payment" *ngIf="isPartiallyPayable && !isShowOfflineForm"
                                 (click)="formConfirmWithoutPayment($event, checkoutForm.value)"
                                 [disabled]="!termsAndPolicy">
                             <a>Confirm without payment</a>

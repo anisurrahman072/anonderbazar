@@ -52,6 +52,17 @@ exports.columnListForBulkUpload = {
   'Image 5': {width: 15}
 };
 exports.columnListForBulkUpdate = function (isAdmin) {
+  let index = 1;
+  let variant = {
+    'Variant': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Category'
+    },
+    'Variant Info': {width: 30},
+    'Variant Id': {width: 30}
+  };
+
   let columnNamesObject = {
     'Category': {
       width: 50,
@@ -103,7 +114,71 @@ exports.columnListForBulkUpdate = function (isAdmin) {
       width: 20,
       validation: 'decimal'
     },
-    'Tags': {width: 15}
+    'Offline Payment': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Free Shipping': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Partially Payable': {
+      width: 20,
+      validation: 'decimal'
+    },
+    'Disable Cash on Delivery': {
+      width: 30,
+      validation: 'decimal'
+    },
+    'Tags': {width: 15},
+
+    'Variant1 Id': {width: 30},
+    'Variant1': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant1 Info': {width: 30},
+
+    'Variant2 Id': {width: 30},
+    'Variant2': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant2 Info': {width: 30},
+
+    'Variant3 Id': {width: 30},
+    'Variant3': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant3 Info': {width: 30},
+
+    'Variant4 Id': {width: 30},
+    'Variant4': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant4 Info': {width: 30},
+
+    'Variant5 Id': {width: 30},
+    'Variant5': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant5 Info': {width: 30},
+
+    'Variant6 Id': {width: 30},
+    'Variant6': {
+      width: 50,
+      validation: 'list',
+      sheetName: 'Variant'
+    },
+    'Variant6 Info': {width: 30}
   };
 
   return columnNamesObject;
