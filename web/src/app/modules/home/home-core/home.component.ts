@@ -4,6 +4,7 @@ import {Observable} from "rxjs/Observable";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import * as ___ from "lodash";
 import { Title } from '@angular/platform-browser';
+import {error} from "util";
 
 @Component({
     selector: 'app-home-page',
@@ -49,7 +50,14 @@ export class HomeComponent implements OnInit {
 
     //Event method for getting all the data for the page
     private getFeatureProducts() {
-        this.featureProducts = this.productService.fetchFlashDealsProducts().slice(0,4);
+        this.productService.getFlashDealsProducts()
+            .subscribe(data => {
+                this.featureProducts = data.filter(product => {
+                    return product.warehouse_id.status == 2;
+                }).slice(0,4);
+            }, error => {
+                console.log("Error occurred!", error);
+            })
     }
 
     private addPageTitleNMetaTag() {

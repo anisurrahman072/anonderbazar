@@ -10,7 +10,7 @@ import {response} from "express";
 export class ProductService {
     private EndPoint = `${AppSettings.API_ENDPOINT}/product`;
     private EndPoint2 = `${AppSettings.API_ENDPOINT}/products`;
-    private allFlashDealsProducts;
+    private allFlashDealsProducts = null;
 
     constructor(private http: HttpClient) {
         this.getFlashDealsProducts();
@@ -71,7 +71,7 @@ export class ProductService {
             .map(response => response);
     }
 
-    canRateProduct(userID, productID): Observable<any>{
+    canRateProduct(userID, productID): Observable<any> {
         return this.http.get(this.EndPoint + `/canRateProduct?userID=${userID}&productID=${productID}`)
             .map(response => response);
     }
@@ -88,20 +88,8 @@ export class ProductService {
             .map(response => response);
     }
 
-    getFlashDealsProducts() {
-        this.http
-            .get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&sort=createdAt%20DESC')
-            .subscribe(data => {
-                this.allFlashDealsProducts = data;
-            }, error => {
-                console.log('Error while fetching flashDealsProducts. ', error);
-            })
-    }
-
-    fetchFlashDealsProducts() {
-        return this.allFlashDealsProducts.filter(product => {
-            return product.warehouse_id.status == 2;
-        });
+    getFlashDealsProducts(): Observable<any> {
+        return this.http.get(this.EndPoint + '?where={"deletedAt":null, "featured":1, "approval_status": 2 }&sort=createdAt%20DESC');
     }
 
     getRewardProducts(): Observable<any> {
@@ -124,7 +112,7 @@ export class ProductService {
 
     getTopSellProducts(): Observable<any> {
         return this.http
-            .get(this.EndPoint+'/getTopSellProducts')
+            .get(this.EndPoint + '/getTopSellProducts')
     }
 
     getNewProducts(): Observable<any> {
@@ -200,13 +188,13 @@ export class ProductService {
             .map(response => response);
     }
 
-    getAllByBrandId(brand_id: number): Observable<any>{
+    getAllByBrandId(brand_id: number): Observable<any> {
         return this.http
             .get(`${this.EndPoint}/getAllByBrandId?brand_id=${brand_id}`)
             .map(response => response);
     }
 
-    getCountByBrandIds(brand_ids: number[]): Observable<any>{
+    getCountByBrandIds(brand_ids: number[]): Observable<any> {
         return this.http
             .get(`${this.EndPoint}/getCountByBrandIds?brand_ids=${brand_ids}`)
             .map(response => response);
