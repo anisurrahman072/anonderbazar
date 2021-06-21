@@ -135,8 +135,9 @@
         </tr>
         </tbody>
     </table>
+
     </div>
-        <div class="text-center">
+        <div class="text-center" *ngIf="dashboardData.totalOrder > 20">
             <pagination-controls (pageChange)="currentPage = $event" previousLabel="Previous"
                                  nextLabel="Next">
             </pagination-controls>
