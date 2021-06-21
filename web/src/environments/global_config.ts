@@ -7,7 +7,7 @@ export class GLOBAL_CONFIGS {
         CashBack: true,
         Cash: true,
         SSLCommerce: true,
-        bKash: false,
+        bKash: true,
         Nagad: false,
         OfflinePay: true
     };
