@@ -1,5 +1,5 @@
 <div class="remove-menu" (mouseenter)="isDisplay = false" style="height: 15px; background-color: white;"></div>
-<div class="menu-sticky">
+<div class="menu-sticky" (mouseleave)="isDisplay = false">
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg px-0">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -10,6 +10,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="responsive-menu" #responsiveMenu>
+
+                    <!--side menu bar starts-->
                     <li class="has-child c-1" (mouseenter)="isDisplay = false">
                         <span class="mr-1 burger_menu"><i class="fa fa-bars"></i></span>
                         <ul class="dropdown-menu_burger_menu">
@@ -19,6 +21,9 @@
                             </li>
                         </ul>
                     </li>
+                    <!--side menu bar ends-->
+
+                    <!--main dropdown menu starts-->
                     <li *ngFor="let category of categoryList" class="has-child c-2"
                         (mouseover)="isDisplay = true"
                         (mouseenter)="categoryHover(category)"

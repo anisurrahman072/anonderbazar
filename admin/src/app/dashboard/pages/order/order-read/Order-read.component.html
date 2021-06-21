@@ -2,7 +2,7 @@
     <nz-spin [nzSpinning]="_isSpinning">
         <ng-template #extra>
             <button nz-button [nzType]="'primary'"
-                    [nzSize]="'large'" (click)="getPDF()">
+                    [nzSize]="'large'" (click)="SavePDF()">
                 <i class="anticon anticon-download"></i><span> Save  </span>
             </button>&nbsp;
             <button routerLink="/dashboard/order" nz-button [nzType]="'primary'"
@@ -10,7 +10,7 @@
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
         </ng-template>
-        <div *ngIf="data && suborders" id="print-section">
+        <div *ngIf="data && suborders" id="printSection">
             <div class="row">
                 <div class="col-md-6">
                     <div class="header-logo">

@@ -23,7 +23,7 @@
   text-transform: capitalize;
   font-weight: 500;
   font-size: 25px;
-  margin-top: 20px;
+  //margin-top: 20px;
   margin-bottom: 50px;
 }
 
@@ -136,4 +136,16 @@
     padding: 1px;
   }
 }
+
+@media (max-width: 767.98px) {
+  .invoice-head {
+    position: relative;
+    top: -174%;
+  }
+
+  .header-text h4{
+    margin-bottom: 5px
+  }
+}
+
 

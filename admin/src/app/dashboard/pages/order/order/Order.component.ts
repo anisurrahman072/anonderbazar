@@ -186,7 +186,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
                             for (let i = 0; i < transactionsCount; i++) {
                                 let transaction = {
-                                    amount: paymentAmounts[i],
+                                    amount: Math.trunc(paymentAmounts[i]),
                                     paymentType: paymentTypes[i],
                                     transactionKey: transactionKeys[i],
                                     transactionTime: transactionTimes[i]
