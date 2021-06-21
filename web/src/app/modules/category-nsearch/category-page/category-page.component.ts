@@ -250,11 +250,13 @@ export class CategoryPageComponent implements OnInit {
                     console.log('filterSearchObservable-result', result);
                     if (result && result.data) {
                         this.allProductsByCategory = result.data.filter(product => {
-                            return product.warehouse_id.status == 2;
+                            return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
                         });
                     } else {
                         this.allProductsByCategory = [];
                     }
+                    console.log('this.allProductsByCategory', this.allProductsByCategory);
+
                     this.isLoading = false;
                     // this.loaderService.hideLoader();
 

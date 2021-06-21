@@ -31,13 +31,13 @@ module.exports = {
         id: req.param('id')
       });
 
-      if(!isResourceOwner(req.token.userInfo, foundCart )){
+      if (!isResourceOwner(req.token.userInfo, foundCart)) {
         return res.forbidden();
       }
 
       const cart = await Cart.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       return res.json(cart);
-    } catch (error){
+    } catch (error) {
       return res.json({error: error});
     }
 
@@ -188,10 +188,46 @@ module.exports = {
             _cartItem.cartitemvariant = {};
           }
 
-          data.cart_items.push(_cartItem);
-        }
 
+          /** Check weather the cart item is a valid item or not */
+          if (_cartItem.product_id.approval_status == 2 && !_cartItem.product_id.deletedAt &&
+            !_cartItem.product_id.warehouse_id.deletedAt && _cartItem.product_id.warehouse_id.status == 2) {
+            data.cart_items.push(_cartItem);
+          }
+          else {
+            let remainingQty = cart.total_quantity - _cartItem.product_quantity;
+            data.total_quantity = remainingQty;
+
+            let remainingTotalPrice = cart.total_price - _cartItem.product_total_price;
+            data.total_price = remainingTotalPrice;
+
+            await Cart.update({
+              id: _cartItem.cart_id,
+              deletedAt: null
+            }).set({
+              total_quantity: remainingQty,
+              total_price: remainingTotalPrice
+            });
+
+            await CartItem.update({
+              id: _cartItem.id,
+              deletedAt: null
+            }).set({
+              deletedAt: new Date()
+            }).fetch();
+
+            await CartItemVariant.update({
+              cart_item_id: _cartItem.id,
+              deletedAt: null
+            }).set({
+              deletedAt: new Date()
+            });
+          }
+          /** END */
+        }
       });
+
+      console.log('Final data: ', data);
 
       return res.json({
         success: true,

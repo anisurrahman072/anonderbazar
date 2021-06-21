@@ -29,6 +29,7 @@ module.exports = {
     }
 
     try {
+      const cartItem =
       await sails.getDatastore()
         .transaction(async (db) => {
           let cartItem = await CartItem.updateOne({id: req.param('id')}).set({deletedAt: new Date()}).usingConnection(db);
@@ -59,12 +60,14 @@ module.exports = {
 
           await Cart.update({id: cart.id}).set(cartPayload)
             .usingConnection(db);
+
+          return cartItem;
         });
 
       return res.json({
         success: true,
         message: 'cart item successfully removed',
-        data: null
+        data: cartItem
       });
 
     } catch (error) {

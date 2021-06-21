@@ -188,6 +188,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
+        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
