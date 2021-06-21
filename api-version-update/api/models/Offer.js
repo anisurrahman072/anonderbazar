@@ -36,7 +36,7 @@ module.exports = {
       collection: 'regularOfferProducts',
       via: 'regular_offer_id'
     },
-    category_ids: {
+    category_id: {
       model: 'category'
     },
     subCategory_Id: {
@@ -45,10 +45,10 @@ module.exports = {
     subSubCategory_Id: {
       model: 'category'
     },
-    brand_ids: {
+    brand_id: {
       model: 'brand'
     },
-    vendor_ids: {
+    vendor_id: {
       model: 'warehouse',
     },
     calculation_type: {

@@ -18,8 +18,8 @@ module.exports = {
 
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
-        /*let rawSQL = `SELECT warehouses.id, warehouses.name FROM warehouses  LEFT JOIN offers ON warehouses.id = offers.vendor_ids
-              WHERE warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_ids IS NULL) `;
+        /*let rawSQL = `SELECT warehouses.id, warehouses.name FROM warehouses  LEFT JOIN offers ON warehouses.id = offers.vendor_id
+              WHERE warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_id IS NULL) `;
         allOptions = await sails.sendNativeQuery(rawSQL, []);*/
 
         allOptions = await Warehouse.find({deletedAt: null});
@@ -130,15 +130,15 @@ module.exports = {
             offerData.subCategory_Id = body.subCategory_Id;
           }
           if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-            offerData.category_ids = body.category_id;
+            offerData.category_id = body.category_id;
           }
 
           if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-            offerData.brand_ids = body.brand_id;
+            offerData.brand_id = body.brand_id;
           }
 
           if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-            offerData.vendor_ids = body.vendor_id;
+            offerData.vendor_id = body.vendor_id;
           }
 
           let data = await Offer.create(offerData).fetch();
@@ -206,15 +206,15 @@ module.exports = {
           offerData.subCategory_Id = body.subCategory_Id;
         }
         if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-          offerData.category_ids = body.category_id;
+          offerData.category_id = body.category_id;
         }
 
         if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-          offerData.brand_ids = body.brand_id;
+          offerData.brand_id = body.brand_id;
         }
 
         if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-          offerData.vendor_ids = body.vendor_id;
+          offerData.vendor_id = body.vendor_id;
         }
 
         let data = await Offer.create(offerData).fetch();
@@ -320,11 +320,11 @@ module.exports = {
     try {
       await OfferService.offerDurationCheck();
       let regularOffer = await Offer.findOne({id: req.query.id})
-        .populate('category_ids')
+        .populate('category_id')
         .populate('subCategory_Id')
         .populate('subSubCategory_Id')
-        .populate('brand_ids')
-        .populate('vendor_ids');
+        .populate('brand_id')
+        .populate('vendor_id');
 
       res.status(200).json({
         success: true,
@@ -468,15 +468,15 @@ module.exports = {
             offerData.subCategory_Id = body.subCategory_Id;
           }
           if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-            offerData.category_ids = body.category_id;
+            offerData.category_id = body.category_id;
           }
 
           if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-            offerData.brand_ids = body.brand_id;
+            offerData.brand_id = body.brand_id;
           }
 
           if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-            offerData.vendor_ids = body.vendor_id;
+            offerData.vendor_id = body.vendor_id;
           }
 
           let data = await Offer.updateOne({id: body.id}).set(offerData);
@@ -546,15 +546,15 @@ module.exports = {
           offerData.subCategory_Id = body.subCategory_Id;
         }
         if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-          offerData.category_ids = body.category_id;
+          offerData.category_id = body.category_id;
         }
 
         if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-          offerData.brand_ids = body.brand_id;
+          offerData.brand_id = body.brand_id;
         }
 
         if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-          offerData.vendor_ids = body.vendor_id;
+          offerData.vendor_id = body.vendor_id;
         }
 
         let data = await Offer.updateOne({id: body.id}).set(offerData);
@@ -699,7 +699,7 @@ module.exports = {
       /**if selection_type === 'Vendor wise'*/
       if (requestedOffer.selection_type === 'Vendor wise') {
         let _where = {};
-        _where.warehouse_id = requestedOffer.vendor_ids;
+        _where.warehouse_id = requestedOffer.vendor_id;
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
@@ -709,7 +709,7 @@ module.exports = {
       /**if selection_type === 'Brand wise'*/
       if (requestedOffer.selection_type === 'Brand wise') {
         let _where = {};
-        _where.brand_id = requestedOffer.brand_ids;
+        _where.brand_id = requestedOffer.brand_id;
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
@@ -723,12 +723,12 @@ module.exports = {
         _where.approval_status = 2;
         _where.deletedAt = null;
 
-        if (requestedOffer.subSubCategory_Id !== 'null') {
+        if (requestedOffer.subSubCategory_Id) {
           _where.subcategory_id = requestedOffer.subSubCategory_Id;
-        } else if (requestedOffer.subCategory_Id !== 'null') {
+        } else if (requestedOffer.subCategory_Id) {
           _where.category_id = requestedOffer.subCategory_Id;
-        } else if (requestedOffer.category_ids !== 'null') {
-          _where.type_id = requestedOffer.category_ids;
+        } else if (requestedOffer.category_id) {
+          _where.type_id = requestedOffer.category_id;
         }
 
         webRegularOfferedProducts = await Product.find({where: _where});
@@ -797,7 +797,7 @@ module.exports = {
             status: 2,
             approval_status: 2,
             deletedAt: null,
-            warehouse_id: thisOffer.vendor_ids
+            warehouse_id: thisOffer.vendor_id
           });
 
           if (products.length > 0) {
@@ -809,7 +809,7 @@ module.exports = {
         /**if selection_type === 'Brand wise'*/
         if (thisOffer.selection_type === 'Brand wise') {
           let _where = {};
-          _where.brand_id = thisOffer.brand_ids;
+          _where.brand_id = thisOffer.brand_id;
           _where.status = 2;
           _where.approval_status = 2;
           _where.deletedAt = null;
@@ -833,8 +833,8 @@ module.exports = {
             _where.subcategory_id = thisOffer.subSubCategory_Id;
           } else if (thisOffer.subCategory_Id) {
             _where.category_id = thisOffer.subCategory_Id;
-          } else if (thisOffer.category_ids) {
-            _where.type_id = thisOffer.category_ids;
+          } else if (thisOffer.category_id) {
+            _where.type_id = thisOffer.category_id;
           }
 
           let products = await Product.find({where: _where});
@@ -856,7 +856,7 @@ module.exports = {
 
           if (products.length > 0) {
             products.forEach(product => {
-              finalCollectionOfProducts[product.id] = offerObj;
+              finalCollectionOfProducts[product.product_id] = offerObj;
             });
           }
         }

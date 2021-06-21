@@ -147,9 +147,9 @@ export class OfferEditComponent implements OnInit {
 
                     this.selectionType = this.data.selection_type;
                     this.offerSelectionType = this.selectionType;
-                    this.vendorId = this.data.vendor_ids ? this.data.vendor_ids.id : '';
-                    this.brandId = this.data.brand_ids ? this.data.brand_ids.id : '';
-                    this.categoryId = this.data.category_ids ? this.data.category_ids.id : '';
+                    this.vendorId = this.data.vendor_id ? this.data.vendor_id.id : '';
+                    this.brandId = this.data.brand_id ? this.data.brand_id.id : '';
+                    this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                     this.subCategoryId = this.data.subCategory_Id ? this.data.subCategory_Id.id : '';
                     this.subSubCategoryId = this.data.subSubCategory_Id ? this.data.subSubCategory_Id.id : '';
                     this.calculationType = this.data.calculation_type;
@@ -158,9 +158,9 @@ export class OfferEditComponent implements OnInit {
                         title: this.data.title,
                         frontend_position: this.data.frontend_position,
                         selectionType: this.data.selection_type,
-                        vendorId: this.data.vendor_ids ? this.data.vendor_ids.id : '',
-                        brandId: this.data.brand_ids ? this.data.brand_ids.id : '',
-                        categoryId: this.data.category_ids ? this.data.category_ids.id : '',
+                        vendorId: this.data.vendor_id ? this.data.vendor_id.id : '',
+                        brandId: this.data.brand_id ? this.data.brand_id.id : '',
+                        categoryId: this.data.category_id ? this.data.category_id.id : '',
                         subCategoryId: this.data.subCategory_Id ? this.data.subCategory_Id.id : '',
                         subSubCategory_Id: this.data.subSubCategory_Id ? this.data.subSubCategory_Id.id : '',
                         description: this.data.description,
