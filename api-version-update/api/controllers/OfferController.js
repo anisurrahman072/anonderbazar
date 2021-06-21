@@ -774,88 +774,91 @@ module.exports = {
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
       const requestedOffer = await Offer.find({where: _where});
-      if (requestedOffer.length > 0) {
-        for (let offer = 0; offer < requestedOffer.length; offer++) {
-          let offerObj = {
-            calculation_type: requestedOffer[offer].calculation_type,
-            discount_amount: requestedOffer[offer].discount_amount,
-          };
 
-          /**if selection_type === 'Product wise'*/
-          if (requestedOffer[offer].selection_type === 'Product wise') {
-            let _where = {};
-            _where.regular_offer_id = requestedOffer[offer].id;
-            _where.product_deactivation_time = null;
-            _where.deletedAt = null;
-            let products = await RegularOfferProducts.find({where: _where});
+      if (requestedOffer.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'Successfully fetched all existing offered products to store in redux',
+          finalCollectionOfProducts: {}
+        });
+      }
 
-            if (products.length > 0) {
-              products.forEach(id => {
-                let proId = id.id;
-                finalCollectionOfProducts[proId] = offerObj;
-              });
-            }
+      for (let offer = 0; offer < requestedOffer.length; offer++) {
+        const thisOffer = requestedOffer[offer];
+        let offerObj = {
+          calculation_type: thisOffer.calculation_type,
+          discount_amount: thisOffer.discount_amount,
+        };
+
+        /**if selection_type === 'Vendor wise'*/
+        if (thisOffer.selection_type === 'Vendor wise') {
+
+          let products = await Product.find({
+            status: 2,
+            approval_status: 2,
+            deletedAt: null,
+            warehouse_id: thisOffer.vendor_ids
+          });
+
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.id] = offerObj;
+            });
+          }
+        }
+        /**if selection_type === 'Brand wise'*/
+        if (thisOffer.selection_type === 'Brand wise') {
+          let _where = {};
+          _where.brand_id = thisOffer.brand_ids;
+          _where.status = 2;
+          _where.approval_status = 2;
+          _where.deletedAt = null;
+          let products = await Product.find({where: _where});
+
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.id] = offerObj;
+            });
+          }
+        }
+
+        /**if selection_type === 'Category wise'*/
+        if (thisOffer.selection_type === 'Category wise') {
+          let _where = {};
+          _where.status = 2;
+          _where.approval_status = 2;
+          _where.deletedAt = null;
+
+          if (thisOffer.subSubCategory_Id) {
+            _where.subcategory_id = thisOffer.subSubCategory_Id;
+          } else if (thisOffer.subCategory_Id) {
+            _where.category_id = thisOffer.subCategory_Id;
+          } else if (thisOffer.category_ids) {
+            _where.type_id = thisOffer.category_ids;
           }
 
-          /**if selection_type === 'Category wise'*/
-          if (requestedOffer[offer].selection_type === 'Category wise') {
-            let _where = {};
-            _where.status = 2;
-            _where.approval_status = 2;
-            _where.deletedAt = null;
+          let products = await Product.find({where: _where});
 
-            if (requestedOffer[offer].subSubCategory_Id !== 'null') {
-              _where.subcategory_id = requestedOffer[offer].subSubCategory_Id;
-            } else if (requestedOffer[offer].subCategory_Id !== 'null') {
-              _where.category_id = requestedOffer[offer].subCategory_Id;
-            } else if (requestedOffer[offer].category_ids !== 'null') {
-              _where.type_id = requestedOffer[offer].category_ids;
-            }
-
-            let products = await Product.find({where: _where});
-
-            if (products.length > 0) {
-              products.forEach(id => {
-                let proId = id.id;
-                finalCollectionOfProducts[proId] = offerObj;
-              });
-            }
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.id] = offerObj;
+            });
           }
+        }
 
-          /**if selection_type === 'Vendor wise'*/
-          if (requestedOffer[offer].selection_type === 'Vendor wise') {
-            let _where = {};
-            _where.warehouse_id = requestedOffer[offer].vendor_ids;
-            _where.status = 2;
-            _where.approval_status = 2;
-            _where.deletedAt = null;
-            let products = await Product.find({where: _where});
+        /** if selection_type === 'Product wise' */
+        if (thisOffer.selection_type === 'Product wise') {
+          let _where = {};
+          _where.regular_offer_id = thisOffer.id;
+          _where.product_deactivation_time = null;
+          _where.deletedAt = null;
+          let products = await RegularOfferProducts.find({where: _where});
 
-            if (products.length > 0) {
-              products.forEach(id => {
-                let proId = id.id;
-                finalCollectionOfProducts[proId] = offerObj;
-              });
-            }
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.id] = offerObj;
+            });
           }
-          /**if selection_type === 'Brand wise'*/
-          if (requestedOffer[offer].selection_type === 'Brand wise') {
-            let _where = {};
-            _where.brand_id = requestedOffer[offer].brand_ids;
-            _where.status = 2;
-            _where.approval_status = 2;
-            _where.deletedAt = null;
-            let products = await Product.find({where: _where});
-
-            if (products.length > 0) {
-              products.forEach(id => {
-                let proId = id.id;
-                finalCollectionOfProducts[proId] = offerObj;
-                // finalArray.push({[proId]: offerObj});
-              });
-            }
-          }
-
         }
       }
 
