@@ -3,6 +3,7 @@ import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient} from '@angular/common/http';
 import {AppSettings} from '../config/app.config';
+import {Offer} from "../models";
 
 @Injectable()
 export class OfferService {
@@ -16,8 +17,12 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/getWebRegularOffers`);
     }
 
-  getWebRegularOfferById(id): Observable<any> {
-    return this.http.get(`${this.EndPoint}/getWebRegularOfferById?id=${id}`);
-  }
+    getWebRegularOfferById(id): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getWebRegularOfferById?id=${id}`);
+    }
+
+    getRegularOfferStore(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getRegularOfferStore`);
+    }
 
 }

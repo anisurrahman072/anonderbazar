@@ -6,7 +6,7 @@ import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../state-management";
-import {Cart, User} from "../../../models";
+import {Cart, Offer, User} from "../../../models";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../services";
 import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
@@ -35,6 +35,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     paymentGatewayErrorModalRef: BsModalRef;
     currentUser$: Observable<User>;
     cart$: Observable<Cart>;
+    offer$: Observable<Offer>;
 
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
@@ -185,6 +186,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            console.log("offeraData: ", offerData);
+        })
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
@@ -454,9 +459,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        if((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
             (this.isBankDeposit && !this.BankDepositImageFile) ||
-            (this.isMobileTransfer && !this.mobileTransferImageFile)){
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
             this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
                 positionClass: 'toast-bottom-right'
             });
@@ -1095,11 +1100,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUpload = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.ImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.ImageFile = null;
             return false;
         }
@@ -1107,11 +1111,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.BankDepositImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.BankDepositImageFile = null;
             return false;
         }
@@ -1119,11 +1122,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.mobileTransferImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.mobileTransferImageFile = null;
             return false;
         }

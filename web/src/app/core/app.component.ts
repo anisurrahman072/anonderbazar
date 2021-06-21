@@ -121,7 +121,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.dispatch(new fromStore.LoadCurrentUser());
         this.store.dispatch(new fromStore.LoadFavouriteProduct());
         this.store.dispatch(new fromStore.LoadCompare());
-
+        this.store.dispatch(new fromStore.LoadOffer());
     }
 
     // scroll top function

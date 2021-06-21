@@ -14,7 +14,7 @@ module.exports = {
   getAllOptions: async (req, res) => {
     try {
       /**checking if the options have the offer time or not*/
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
 
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
@@ -260,7 +260,7 @@ module.exports = {
   /**Model models/Offer.js*/
   allRegularOffer: async (req, res) => {
     try {
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
 
       /**console.log('regular offer request: ', req.query);*/
       let _pagination = pagination(req.query);
@@ -298,7 +298,7 @@ module.exports = {
   },
 
   /**Method called to delete a regular offer*/
-  /**model: OfferService.js*/
+  /**model: RegularOfferProducts.js*/
   destroy: async (req, res) => {
     try {
       const regularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
@@ -318,7 +318,7 @@ module.exports = {
 
   getRegularOfferById: async (req, res) => {
     try {
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
       let regularOffer = await Offer.findOne({id: req.query.id})
         .populate('category_ids')
         .populate('subCategory_Id')
@@ -343,7 +343,7 @@ module.exports = {
 
   getRelatedOfferProducts: async (req, res) => {
     try {
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
       let _pagination = pagination(req.query);
       let rawSQL = `
       SELECT
@@ -660,7 +660,7 @@ module.exports = {
   /**Method called from the web to get the regular offer data*/
   webRegularOffers: async (req, res) => {
     try {
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
 
       let _where = {};
       _where.deletedAt = null;
@@ -686,7 +686,7 @@ module.exports = {
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
     try {
-      OfferService.offerDurationCheck();
+      await OfferService.offerDurationCheck();
 
       let webRegularOfferedProducts;
 
@@ -695,7 +695,6 @@ module.exports = {
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
       const requestedOffer = await Offer.findOne({where: _where});
-      console.log('requested offer: ', requestedOffer);
 
       /**if selection_type === 'Vendor wise'*/
       if (requestedOffer.selection_type === 'Vendor wise') {
@@ -762,7 +761,117 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  /**Method called to get all regular offered products in a store in redux*/
+  /**model: Offer.js, RegularOfferProducts.js*/
+  getRegularOfferStore: async (req, res) => {
+    try {
+
+      let finalCollectionOfProducts = {};
+      await OfferService.offerDurationCheck();
+      let _where = {};
+      _where.deletedAt = null;
+      _where.offer_deactivation_time = null;
+      const requestedOffer = await Offer.find({where: _where});
+      if (requestedOffer.length > 0) {
+        for (let offer = 0; offer < requestedOffer.length; offer++) {
+          let offerObj = {
+            calculation_type: requestedOffer[offer].calculation_type,
+            discount_amount: requestedOffer[offer].discount_amount,
+          };
+
+          /**if selection_type === 'Product wise'*/
+          if (requestedOffer[offer].selection_type === 'Product wise') {
+            let _where = {};
+            _where.regular_offer_id = requestedOffer[offer].id;
+            _where.product_deactivation_time = null;
+            _where.deletedAt = null;
+            let products = await RegularOfferProducts.find({where: _where});
+
+            if (products.length > 0) {
+              products.forEach(id => {
+                let proId = id.id;
+                finalCollectionOfProducts[proId] = offerObj;
+              });
+            }
+          }
+
+          /**if selection_type === 'Category wise'*/
+          if (requestedOffer[offer].selection_type === 'Category wise') {
+            let _where = {};
+            _where.status = 2;
+            _where.approval_status = 2;
+            _where.deletedAt = null;
+
+            if (requestedOffer[offer].subSubCategory_Id !== 'null') {
+              _where.subcategory_id = requestedOffer[offer].subSubCategory_Id;
+            } else if (requestedOffer[offer].subCategory_Id !== 'null') {
+              _where.category_id = requestedOffer[offer].subCategory_Id;
+            } else if (requestedOffer[offer].category_ids !== 'null') {
+              _where.type_id = requestedOffer[offer].category_ids;
+            }
+
+            let products = await Product.find({where: _where});
+
+            if (products.length > 0) {
+              products.forEach(id => {
+                let proId = id.id;
+                finalCollectionOfProducts[proId] = offerObj;
+              });
+            }
+          }
+
+          /**if selection_type === 'Vendor wise'*/
+          if (requestedOffer[offer].selection_type === 'Vendor wise') {
+            let _where = {};
+            _where.warehouse_id = requestedOffer[offer].vendor_ids;
+            _where.status = 2;
+            _where.approval_status = 2;
+            _where.deletedAt = null;
+            let products = await Product.find({where: _where});
+
+            if (products.length > 0) {
+              products.forEach(id => {
+                let proId = id.id;
+                finalCollectionOfProducts[proId] = offerObj;
+              });
+            }
+          }
+          /**if selection_type === 'Brand wise'*/
+          if (requestedOffer[offer].selection_type === 'Brand wise') {
+            let _where = {};
+            _where.brand_id = requestedOffer[offer].brand_ids;
+            _where.status = 2;
+            _where.approval_status = 2;
+            _where.deletedAt = null;
+            let products = await Product.find({where: _where});
+
+            if (products.length > 0) {
+              products.forEach(id => {
+                let proId = id.id;
+                finalCollectionOfProducts[proId] = offerObj;
+                // finalArray.push({[proId]: offerObj});
+              });
+            }
+          }
+
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all existing offered products to store in redux',
+        finalCollectionOfProducts
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to fetch all existing offered products',
+        error
+      });
+    }
+  },
 
 };
 
