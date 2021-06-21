@@ -4,6 +4,7 @@
  * @description :: Server-side logic for processing Cash on Delivery payment method
  */
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const {PAYMENT_STATUS_UNPAID} = require('../../libs/constants');
 
 module.exports = {
   isCashOnDeliveryAllowed: function (cartItems) {
@@ -32,7 +33,6 @@ module.exports = {
       throw new Error('Payment method is invalid for this particular order.');
     }
     /** END */
-    const generatedTransactionKey = PaymentService.generateRandomString();
     const {
       order,
       suborders,
@@ -53,7 +53,8 @@ module.exports = {
           billing_address: billingAddress.id,
           shipping_address: shippingAddress.id,
           courier_charge: courierCharge,
-          courier_status: 1
+          courier_status: 1,
+          payment_status: PAYMENT_STATUS_UNPAID
         }, cartItems);
         /** END */
 
@@ -67,7 +68,6 @@ module.exports = {
           order_id: order.id,
           payment_type: paymentType,
           details: JSON.stringify(paymentResponse),
-          transection_key: generatedTransactionKey,
           status: 1
         });
 

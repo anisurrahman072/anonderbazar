@@ -6,6 +6,7 @@
 const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
 const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -96,7 +97,8 @@ module.exports = {
       shipping_address: shippingAddressId,
       courier_charge: courierCharge,
       courier_status: 1,
-      ssl_transaction_id: sslCommerztranId
+      ssl_transaction_id: sslCommerztranId,
+      status: ORDER_STATUSES.processing
     }, cartItems);
 
     /** .............Payment Section ........... */

@@ -183,7 +183,10 @@
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 400px;">
                         <div *ngFor="let transaction of data.transactions">
-                            <p style="margin-bottom: 15px;">amount: {{transaction.amount}}, Payment Type: {{transaction.paymentType}}, Transaction Key: {{transaction.transactionKey}}, Transaction Time: {{transaction.transactionTime}}</p>
+                            <p>Amount: {{transaction.amount}}</p>
+                            <p>Payment Type: {{transaction.paymentType}}</p>
+                            <p *ngIf="transaction.paymentType != PAYMENT_METHODS.CASH_PAYMENT_TYPE">Transaction Key: {{transaction.transactionKey}}</p>
+                            <p style="margin-bottom: 15px;">Transaction Time: {{transaction.transactionTime}}</p>
                         </div>
                     </td>
                     <td style="width: 300px;">

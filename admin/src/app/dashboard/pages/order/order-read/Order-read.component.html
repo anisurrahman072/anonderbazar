@@ -200,7 +200,7 @@
             <div style="margin-left: 30px;">
                 <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
                 <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
-                <p style="margin: 0px;">Payment transaction: {{payment.transection_key}}</p>
+                <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE">Payment transaction: {{payment.transection_key}}</p>
                 <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
             </div>
         </div>
