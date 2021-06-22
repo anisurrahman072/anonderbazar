@@ -1,6 +1,7 @@
 module.exports = {
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
     const {
+      billingAddress,
       shippingAddress
     } = addresses;
 
@@ -11,32 +12,18 @@ module.exports = {
 
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
+    /** adding shipping charge with grandtotal */
+    grandOrderTotal += courierCharge;
 
-    if (billingAddress && billingAddress.id) {
-      finalBillingAddressId = billingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
+    let finalPostalCode = shippingAddress.postal_code;
+    let finalAddress = shippingAddress.address;
+
+    if (!finalPostalCode) {
+      throw new Error('No Post Code has been provided.');
     }
-
-    if (shippingAddress && shippingAddress.id) {
-      finalShippingAddressId = shippingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
+    if (!finalAddress) {
+      throw new Error('No address has been provided.');
     }
-
-    const paymentTransactionLog = await PaymentTransactionLog.create({
-      user_id: authUser.id,
-      payment_type: 'nagad',
-      payment_amount: grandOrderTotal,
-      payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status: '1',
-      details: JSON.stringify({
-        billingAddressId: finalBillingAddressId,
-        shippingAddressId: finalShippingAddressId
-      })
-    }).fetch();
 
     /** Driver code for Nagad Integration */
 

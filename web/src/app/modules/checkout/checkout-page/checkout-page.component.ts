@@ -46,6 +46,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     termsAndPolicy: boolean = false;
     showBkashPayment: boolean = false;
+    showNagadPayment: boolean = false;
+
     isDelivery = true;
     isPickup = false;
     cartData: any;
@@ -57,6 +59,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
+    private nagadTestUsers: any = GLOBAL_CONFIGS.nagadTestUsers;
 
     shippingFirstName: string;
     shippingLastName: string;
@@ -177,6 +180,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
                 this.showBkashPayment = this.bKashTestUsers.find((userId) => this.user_id == userId);
+                this.showNagadPayment = this.nagadTestUsers.find((userId) => this.user_id == userId);
             } else {
                 this.user_id = null;
             }

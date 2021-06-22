@@ -8,11 +8,12 @@ export class GLOBAL_CONFIGS {
         Cash: true,
         SSLCommerce: true,
         bKash: true,
-        Nagad: false,
+        Nagad: true,
         OfflinePay: true
     };
     public static lotteryAdminId = 130;
     public static bkashTestUsers = [130, 2814];
+    public static nagadTestUsers = [130, 2814];
 }
 
 export const PAYMENT_METHODS = {
