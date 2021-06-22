@@ -29,6 +29,9 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     agreedToBKashTermsConditions: boolean = false;
     showBKashAgreementTerm: boolean = false;
 
+    isNotAcceptTerms: boolean = false;
+    isInvalidWallet: boolean = false;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -143,12 +146,18 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     createBKashAgreement() {
+        let number = this.bKashWalletNoToAdd.replace(/[^0-9]/g,'');
+        if(!number || (number && number.length != 11)){
+            this.isInvalidWallet = true;
+            this.bKashWalletNoToAdd = '';
+            return false;
+        }
         if (!this.showBKashAgreementTerm) {
             this.showBKashAgreementTerm = true;
             return;
         }
         if (!(this.bKashWalletNoToAdd && this.agreedToBKashTermsConditions)) {
-            this._notify.error("Accept the terms & condition first!");
+            this.isNotAcceptTerms = true;
             return false;
         }
 
