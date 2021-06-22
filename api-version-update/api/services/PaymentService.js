@@ -5,9 +5,9 @@ const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 
 module.exports = {
-  generateRandomString: function () {
+  generateRandomString: function (length = 16) {
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-    let string_length = 16;
+    let string_length = length;
     let randomstring = '';
 
     for (let i = 0; i < string_length; i++) {

@@ -1,3 +1,6 @@
+const {sslApiUrl} = require('../../config/softbd');
+const {toHexString} = require('../../libs/nagad');
+
 module.exports = {
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
     const {
@@ -53,6 +56,7 @@ module.exports = {
       orderId,
       challenge
     };
+    console.log('The result is: ', SensitiveData);
 
     const PostData = {
       accountNumber: '01958083901',
@@ -60,6 +64,7 @@ module.exports = {
       sensitiveData: EncryptDataWithPublicKey(JSON.stringify(SensitiveData)),
       signature: SignatureGenerate(JSON.stringify(SensitiveData))
     };
+
 
     let result_Data = await HttpPostMethod(PostURL, PostData, ip);
 

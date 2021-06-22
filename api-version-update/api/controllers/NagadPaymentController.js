@@ -7,6 +7,7 @@
 
 module.exports = {
   callbackCheckout: async (req, res) => {
+
   }
 
 };
