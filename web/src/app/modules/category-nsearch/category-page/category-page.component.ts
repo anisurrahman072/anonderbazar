@@ -13,7 +13,7 @@ import {
     ProductVariantService,
     VariantService,
     WarehouseService,
-    UserService, BrandService
+    UserService, BrandService, OfferService
 } from "../../../services";
 import {Observable} from "rxjs/Observable";
 import {forkJoin} from "rxjs/observable/forkJoin";
@@ -26,6 +26,9 @@ import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {Subscription} from "rxjs/Subscription";
+import {Offer} from "../../../models";
+import {Store} from "@ngrx/store";
+import * as fromStore from "../../../state-management";
 
 @Component({
     selector: "app-category-page",
@@ -95,6 +98,13 @@ export class CategoryPageComponent implements OnInit {
     categoryTitle: string = null;
     categoryTitleName: string = null;
 
+    /**offer related variables*/
+    offer$: Observable<Offer>;
+    offerData: Offer;
+    calculationType;
+    discountAmount;
+    originalPrice;
+
     options: Options = {
         floor: 1,
         // ceil: this.maxPrice,
@@ -150,11 +160,18 @@ export class CategoryPageComponent implements OnInit {
         private FilterUiService: FilterUiService,
         public loaderService: LoaderService,
         private brandService: BrandService,
+        private offerService: OfferService,
+        private store: Store<fromStore.HomeState>
     ) {
     }
 
     // init the component
     ngOnInit() {
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            this.offerData = offerData;
+        })
+
         let queryParams = this.route.snapshot.queryParams;
         if (queryParams['min'] == 0) {
             this.minPrice = 1;
@@ -247,9 +264,14 @@ export class CategoryPageComponent implements OnInit {
                     return this.filterSearchObservable();
                 })
                 .subscribe((result: any) => {
-                    console.log('filterSearchObservable-result', result);
+                    console.log('filterSearchObservable-result', result.data);
                     if (result && result.data) {
                         this.allProductsByCategory = result.data;
+
+                        /** finding out the products exists in the offer store*/
+                        this.allProductsByCategory.forEach(product => {
+                            this.setOfferDataToProduct(product);
+                        })
                     } else {
                         this.allProductsByCategory = [];
                     }
@@ -629,6 +651,11 @@ export class CategoryPageComponent implements OnInit {
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
                 this.allProductsByCategory = result.data;
+
+                /** finding out the products exists in the offer store*/
+                this.allProductsByCategory.forEach(product => {
+                    this.setOfferDataToProduct(product);
+                })
                 // this.loaderService.hideLoader();
             }, (err) => {
                 console.log('generateSearchFilterResult', err);
@@ -845,6 +872,20 @@ export class CategoryPageComponent implements OnInit {
             imageUrl = this.IMAGE_ENDPOINT + this.categoryB.banner_image;
         }
         return imageUrl;
+    }
+
+    /**Method for setting offer data to the offered products*/
+    setOfferDataToProduct(product) {
+        if (this.offerData && this.offerData.finalCollectionOfProducts && product.id in this.offerData.finalCollectionOfProducts) {
+            this.calculationType = this.offerData.finalCollectionOfProducts[product.id].calculation_type;
+            this.discountAmount = this.offerData.finalCollectionOfProducts[product.id].discount_amount;
+            this.originalPrice = product.price;
+
+            product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+
+            product.calculationType = this.calculationType;
+            product.discountAmount = this.discountAmount;
+        }
     }
 
     private addPageTitle() {

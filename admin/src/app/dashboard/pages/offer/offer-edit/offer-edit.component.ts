@@ -446,6 +446,7 @@ export class OfferEditComponent implements OnInit {
         }
         this._notification.success(this.selectedProductIds.length, ' items has been added');
         this.isProductModal = false;
+        this.isVisible = false;
     }
 
     getRelatedOfferProducts(event: any) {

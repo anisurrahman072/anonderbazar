@@ -385,7 +385,7 @@ module.exports = {
       const removedProduct = await RegularOfferProducts.updateOne({
         product_id: req.query.productId,
         regular_offer_id: req.query.offerId
-      }).set({deletedAt: new Date()});
+      }).set({deletedAt: new Date(), product_deactivation_time: new Date()});
       return res.status(201).json(removedProduct);
     } catch (error) {
       console.log('removeProductFromOffer error: ', error);
@@ -491,11 +491,15 @@ module.exports = {
             for (let id = 0; id < regular_offer_product_ids.length; id++) {
               let product_id = parseInt(regular_offer_product_ids[id]);
               let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
+                product_id: product_id
               });
+
               if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  product_deactivation_time: null,
+                  deletedAt: null
+                });
               } else {
                 await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
               }
@@ -569,11 +573,15 @@ module.exports = {
           for (let id = 0; id < regular_offer_product_ids.length; id++) {
             let product_id = parseInt(regular_offer_product_ids[id]);
             let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id,
-              product_deactivation_time: null
+              product_id: product_id
             });
+
             if (existedProduct !== undefined) {
-              await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+              await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                regular_offer_id: data.id,
+                product_deactivation_time: null,
+                deletedAt: null
+              });
             } else {
               await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
             }

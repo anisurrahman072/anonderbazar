@@ -1,6 +1,8 @@
 export interface Offer {
-    product_id: {
-        calculation_type?: string;
-        discount_amount?: number;
-    }
+    finalCollectionOfProducts?: {
+        product_id: {
+            calculation_type?: string;
+            discount_amount?: number;
+        }
+    },
 }

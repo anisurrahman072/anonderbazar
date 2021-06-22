@@ -25,4 +25,12 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/getRegularOfferStore`);
     }
 
+    calculateOfferPrice(calculationType, originalPrice, discountAmount) {
+        if(calculationType === 'absolute amount') {
+            return originalPrice - discountAmount;
+        }else {
+            return originalPrice - (originalPrice * (discountAmount / 100));
+        }
+    }
+
 }

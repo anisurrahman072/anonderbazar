@@ -201,21 +201,6 @@
                 </div>
             </div>
 
-            <div nz-row style="margin-top: 20px">
-                <div nz-col [nzSpan]="7">
-                    <label> Discount Amount </label>
-                </div>
-                <div nz-col [nzSpan]="12">
-                    <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
-                           [nzSize]="'large'" style="margin: 10px 0" type="number">
-                    <div *ngIf="getFormControl('discountAmount').dirty&&getFormControl('discountAmount').hasError('required')"
-                         style="color: red">
-                        Please insert the discount amount
-                    </div>
-
-                </div>
-            </div>
-
             <!--Offer Duration-->
             <div nz-row style="margin: 20px 0;">
                 <div nz-col [nzSpan]="7">

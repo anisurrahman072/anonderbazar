@@ -5,6 +5,9 @@ import {forkJoin} from "rxjs/observable/forkJoin";
 import * as ___ from "lodash";
 import { Title } from '@angular/platform-browser';
 import {OfferService} from "../../../services/offer.service";
+import * as fromStore from "../../../state-management";
+import {Offer} from "../../../models";
+import {Store} from "@ngrx/store";
 
 @Component({
     selector: 'app-home-page',
@@ -18,11 +21,16 @@ export class HomeComponent implements OnInit {
     cmsDataForPageSectionSubsection: any;
     regularOfferData;
 
+    /**offer related variables*/
+    offer$: Observable<Offer>;
+    offerData: Offer;
+
     constructor(
         private productService: ProductService,
         private cmsService: CmsService,
         private title: Title,
         private offerService: OfferService,
+        private store: Store<fromStore.HomeState>,
     ) {
     }
 
@@ -31,11 +39,20 @@ export class HomeComponent implements OnInit {
         this.getFeatureProducts();
         this.fetchCmsData();
         this.addPageTitleNMetaTag();
+
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            console.log('offer store data: ', offerData);
+            this.offerData = offerData;
+        })
+
         this.offerService.getWebRegularOffers()
             .subscribe(result => {
                 this.regularOfferData = result.data;
                 console.log('regular offer data: ', this.regularOfferData);
             })
+
+        console.log('fffffffffffffffffoo: ', this.offerData);
     }
 
     //get all cms data that are need in the home page

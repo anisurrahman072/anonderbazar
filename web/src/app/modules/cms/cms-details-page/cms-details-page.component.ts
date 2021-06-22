@@ -19,20 +19,25 @@ export class CmsDetailsPageComponent implements OnInit {
     p: any;
     private queryParams: any;
 
+    /**offer related variables*/
+    calculationType;
+    discountAmount;
+    originalPrice;
+
     constructor(
         private route: ActivatedRoute,
         private cmsService: CmsService,
         private productservice: ProductService,
         private title: Title,
         private router: Router,
-        private offerService: OfferService
+        private offerService: OfferService,
     ) {
     }
 
     // init the component
     ngOnInit() {
         this.route.queryParams.subscribe(queryparams => {
-            if(queryparams['page']){
+            if (queryparams['page']) {
                 this.p = +queryparams['page'];
             }
         });
@@ -48,15 +53,28 @@ export class CmsDetailsPageComponent implements OnInit {
 
         if (this.id) {
             this.offerService.getWebRegularOfferById(this.id).subscribe(result => {
+                /**info related to this offer*/
                 this.regularOffer = result.data[0];
+
+                /**stored products in this offer*/
                 this.regularOfferedProducts = result.data[1];
 
-                /*console.log('regularOffer', this.regularOffer);
-                console.log('regularOfferedProducts', this.regularOfferedProducts);*/
+                /** setting discount to every products exists in this offer*/
+                this.regularOfferedProducts.forEach(product => {
+                    this.calculationType = this.regularOffer.calculation_type;
+                    this.discountAmount = this.regularOffer.discount_amount;
+                    this.originalPrice = product.price;
+
+                    product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+
+                    product.calculationType = this.calculationType;
+                    product.discountAmount = this.discountAmount;
+                })
 
                 if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
                     return false;
                 }
+
                 this.addPageTitle();
             });
         }
@@ -66,7 +84,7 @@ export class CmsDetailsPageComponent implements OnInit {
     private addPageTitle() {
         if (this.regularOffer) {
             this.title.setTitle(this.regularOffer.title + ' - Anonderbazar');
-        }else {
+        } else {
             this.title.setTitle('Offer Detail - Anonderbazar');
         }
     }
