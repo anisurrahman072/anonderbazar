@@ -1,4 +1,4 @@
-const {PARTIAL_ORDER_TYPE, CANCELED_ORDER, PAYMENT_STATUS_PAID} = require('../libs/constants');
+const {PARTIAL_ORDER_TYPE, PAYMENT_STATUS_PAID} = require('../libs/constants');
 const {getGlobalConfig} = require('../libs/helper');
 const moment = require('moment');
 const {ORDER_STATUSES} = require('../libs/orders');
