@@ -148,6 +148,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
         }
         if (!(this.bKashWalletNoToAdd && this.agreedToBKashTermsConditions)) {
+            this._notify.error("Accept the terms & condition first!");
             return false;
         }
 
