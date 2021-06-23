@@ -21,8 +21,8 @@ module.exports = {
 
     const cart = cartItem.cart_id;
 
-    console.log('req.token.userInfo', req.token.userInfo);
-    console.log('cartItem', cartItem);
+    /*console.log('req.token.userInfo', req.token.userInfo);*/
+    console.log('cartItem: in destroy', cartItem);
 
     if (!isResourceOwner(req.token.userInfo, cart)) {
       return res.forbidden();
@@ -141,9 +141,6 @@ module.exports = {
   //Method called for creating cart item data
   //Model models/CartItem.js
   create: async (req, res) => {
-
-    console.log(req.body);
-
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
@@ -177,9 +174,16 @@ module.exports = {
       }
 */
 
+      let offerInfo = req.body.offerDataCollection[product.id];
+
       let productUnitPrice = product.price;
-      if (product.promotion) {
-        productUnitPrice = product.promo_price;
+
+      if (offerInfo) {
+        if(offerInfo.calculation_type === 'absolute amount') {
+          productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
+        }else {
+          productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100));
+        }
       }
 
       let cartItems = await CartItem.find({
@@ -252,6 +256,8 @@ module.exports = {
               }
             }
           }
+
+          /**fetching all the product existing in the cartItem table of a perticula user*/
           let allCartItems = await CartItem.find({cart_id: cart.id, deletedAt: null}).usingConnection(db);
           let totalPrice = 0;
           let totalQty = 0;
@@ -268,7 +274,8 @@ module.exports = {
             'total_price': totalPrice,
             'total_quantity': totalQty,
           };
-          console.log('cartItem', cartItem);
+          console.log('cartItem: in create: for update operation', cartItem);
+          console.log('cartItem: in create: for update operation: cartPayLoad', cartPayload);
           await Cart.update({id: cartItem.cart_id}).set(cartPayload)
             .usingConnection(db);
         });

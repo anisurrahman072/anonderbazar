@@ -359,6 +359,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
+                offerDataCollection: this.offerData.finalCollectionOfProducts
             };
         } else {
             dataPayload = {
@@ -367,7 +368,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
-                cartItemVariants: variants
+                cartItemVariants: variants,
+                offerDataCollection: this.offerData.finalCollectionOfProducts
             };
         }
         console.log('payload: ', dataPayload);

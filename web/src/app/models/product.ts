@@ -13,8 +13,8 @@ export interface Product {
     product_details?: any;
     rating?: any;
     featured?: boolean;
-    /*promotion?: boolean;*/
-    /*promo_price?: number;*/
+    promotion?: boolean;
+    promo_price?: number;
     start_date?: any,
     produce_time?: any,
     last_order_completed_date?: any,
