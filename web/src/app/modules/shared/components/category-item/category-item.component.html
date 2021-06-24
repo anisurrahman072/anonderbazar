@@ -1,5 +1,5 @@
 <div class="category-contant">
-    <a routerLink="/products/category/{{category.id}}">
+    <a (click)="categoryClickEvent(category)">
 
         <div *ngIf="category.mobile_image; else mainImageTmp" class="cate-img mb-4" >
             <picture>

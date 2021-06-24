@@ -192,7 +192,7 @@
                                          alt="No Product is available.">
                                 </div>
                             </div>
-                            <div class="text-center" *ngIf="allProductsByCategory?.length > 9">
+                            <div class="text-center" *ngIf="allProductsByCategory && allProductsByCategory.length > 24">
                                 <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous"
                                                      maxSize="5" responsive="true"
                                                      nextLabel="Next">

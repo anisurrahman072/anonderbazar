@@ -27,7 +27,7 @@
                     </div>
                     <div class="shipping-add">
                         <div class="shiptag">
-                            <p>Shipping address<a routerLink="/profile/address-tab">View</a></p>
+                            <p>Shipping address<a (click)="scrollItem(target)" routerLink="/profile/address-tab">View</a></p>
                             <small>Address</small>
                             <span>{{ addresses[0]?.address }},{{ addresses[0]?.zila_id.name }}
                                 ,{{addresses[0]?.upazila_id.name}},{{ addresses[0]?.division_id.name }}
@@ -36,7 +36,7 @@
                     </div>
                     <div class="shipping-contact">
                         <div class="conttag">
-                            <p>Profile<a routerLink="/profile/profile-tab">View</a></p>
+                            <p>Profile<a (click)="scrollItem(target)" routerLink="/profile/profile-tab">View</a></p>
                             <small>Phone</small>
                             <span>{{ user?.phone }}</span>
                         </div>
