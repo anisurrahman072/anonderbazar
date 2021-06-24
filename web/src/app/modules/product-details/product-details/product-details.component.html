@@ -58,7 +58,7 @@
                                 <span *ngIf="data.offerPrice"
                                       class="product-discount-badge">-{{data.offerPrice.toFixed(2)}}%</span>
                                 <ng-container *ngIf="data.offerPrice">
-                                    <span *ngIf="data.calculationType === 'absolute amount'; else percentage"
+                                    <span *ngIf="data.calculationType === 'absolute'; else percentage"
                                           class="product-discount-badge">
                                         -{{data.discountAmount}} tk
                                     </span>

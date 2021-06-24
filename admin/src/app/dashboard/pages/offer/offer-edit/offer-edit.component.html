@@ -179,12 +179,10 @@
                     <label> Calculation Type </label>
                 </div>
                 <div nz-col [nzSpan]="12">
-                    <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'"
-                               nzAllowClear
+                    <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'" nzAllowClear
                                [ngModel]="calculationType" nzShowSearch>
-                        <nz-option *ngFor="let option of ['percentage', 'absolute amount']" [nzLabel]="option"
-                                   [nzValue]="option">
-                        </nz-option>
+                        <nz-option nzLabel="percentage" nzValue="percentage"></nz-option>
+                        <nz-option nzLabel="absolute amount" nzValue="absolute"></nz-option>
                     </nz-select>
                     <div *ngIf="getFormControl('calculationType').dirty&&getFormControl('calculationType').hasError('required')"
                          style="color: red">

@@ -180,7 +180,7 @@ module.exports = {
       let productUnitPrice = product.price;
 
       if (offerInfo) {
-        if(offerInfo.calculation_type === 'absolute amount') {
+        if(offerInfo.calculation_type === 'absolute') {
           productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
         }else {
           productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0));

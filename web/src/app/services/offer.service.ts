@@ -26,7 +26,7 @@ export class OfferService {
     }
 
     calculateOfferPrice(calculationType, originalPrice, discountAmount) {
-        if(calculationType === 'absolute amount') {
+        if(calculationType === 'absolute') {
             return originalPrice - discountAmount;
         }else {
             return originalPrice - (originalPrice * (discountAmount / 100.0));

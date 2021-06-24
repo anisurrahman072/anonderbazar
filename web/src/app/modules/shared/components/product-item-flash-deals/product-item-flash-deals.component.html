@@ -4,7 +4,7 @@
         <div class="productimage-wrapper">
             <!--<span *ngIf="product.promotion" class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>-->
             <ng-container *ngIf="product.offerPrice">
-                <span *ngIf="product.calculationType === 'absolute amount'; else percentage"
+                <span *ngIf="product.calculationType === 'absolute'; else percentage"
                       class="product-discount-badge">-{{product.discountAmount}} tk
                 </span>
                 <ng-template #percentage>

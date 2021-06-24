@@ -282,7 +282,7 @@ module.exports = {
         if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
           productFinalPrice = productUnitPrice * cartItem.product_quantity;
         } else {
-          if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute amount') {
+          if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute') {
             let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
             productFinalPrice = productPrice * cartItem.product_quantity;
           } else {
