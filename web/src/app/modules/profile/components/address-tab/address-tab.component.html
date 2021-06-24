@@ -3,7 +3,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Address #{{i+1}}</h5> 
+                    <h5 class="card-title">Address #{{i+1}}</h5>
                     <div style="float: left">Name:</div>
                     <div>
                         &nbsp;{{ address?.first_name }}&nbsp;{{address?.last_name}}
@@ -51,7 +51,7 @@
                                 </mat-error>
                             </mat-form-field>
                             <mat-form-field>
-                                <input matInput placeholder="Address" formControlName="address" /> 
+                                <input matInput placeholder="Address" formControlName="address" />
                             </mat-form-field>
                             <mat-form-field>
                                 <input matInput placeholder="postal code" formControlName="postal_code" type="number" />
@@ -120,7 +120,7 @@
                                 <input matInput placeholder="Last name" formControlName="last_name" />
                             </mat-form-field>
                             <mat-form-field>
-                                <span matPrefix>+880 &nbsp;</span>
+                                <span matPrefix>+88 &nbsp;</span>
                                 <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
                                 <mat-error>
                                     <span *ngIf="getAddAddressFormControl('phone').dirty&&getAddAddressFormControl('phone').hasError('required')"><i
@@ -130,26 +130,26 @@
                                 </mat-error>
                             </mat-form-field>
                             <mat-form-field>
-                                <input matInput placeholder="Address" formControlName="address" /> 
+                                <input matInput placeholder="Address" formControlName="address" />
                             </mat-form-field>
                             <mat-form-field>
-                                <input matInput placeholder="postal code" formControlName="postal_code" type="number" />
+                                <input matInput placeholder="Postal code" formControlName="postal_code" type="number" />
                             </mat-form-field>
                             <mat-form-field>
-                                <mat-select placeholder="division" formControlName="division_id" (change)="divisionChange($event)">
+                                <mat-select placeholder="Division" formControlName="division_id" (change)="divisionChange($event)">
                                     <mat-option *ngFor="let division of divisionSearchOptions" [value]="division.id">{{
                                         division.name }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field>
-                                <mat-select placeholder="zila" formControlName="zila_id" (change)="zilaChange($event)">
+                                <mat-select placeholder="Zila" formControlName="zila_id" (change)="zilaChange($event)">
                                     <mat-option *ngFor="let zila of zilaSearchOptions" value="{{ zila.id }}">{{
                                         zila.name }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
                             <mat-form-field>
-                                <mat-select placeholder="upazila" formControlName="upazila_id">
+                                <mat-select placeholder="Upazila" formControlName="upazila_id">
                                     <mat-option *ngFor="let upazila of upazilaSearchOptions" value="{{ upazila.id }}">
                                         {{ upazila.name }}</mat-option>
                                 </mat-select>
@@ -157,13 +157,13 @@
                         </div>
                     </mat-card-content>
                     <div class="button-row ">
-                        <button mat-button color="danger" *ngIf="showClear" (click)="removeShow()">
+                        <button class="btm-btn" mat-button color="danger" *ngIf="showClear" (click)="removeShow()">
                            Cancel
                         </button>
-                        <button mat-button color="primary" type="submit">
+                        <button class="btm-btn" mat-button color="primary" type="submit">
                             Save
                         </button>
-                        <button mat-button color="warn" (click)="reset($event)">
+                        <button class="btm-btn" mat-button color="warn" (click)="reset($event)">
                             Clear
                         </button>
                     </div>
