@@ -13,7 +13,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
     console.log('offline: RRRRR: total', grandOrderTotal);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);

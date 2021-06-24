@@ -143,7 +143,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = PaymentService.calcCartTotal(cart, cartItems);
+          } = await PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 

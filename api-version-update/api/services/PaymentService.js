@@ -174,7 +174,7 @@ module.exports = {
     return paymentTemp;
   },
 
-  getRegularOfferStore: async function() {
+  getRegularOfferStore: async function () {
     let finalCollectionOfProducts = {};
     await OfferService.offerDurationCheck();
     let _where = {};
@@ -274,18 +274,21 @@ module.exports = {
     let totalQty = 0;
     for (let cartItem of cartItems) {
       if (cartItem.product_quantity > 0) {
-        let productPrice = cartItem.product_total_price;
-        console.log('offerProducts: before');
+        let productUnitPrice = cartItem.product_id.price;
+        let productFinalPrice = productUnitPrice * cartItem.product_quantity;
 
-        /**Method called to get all the offerd products*/
         let offerProducts = await this.getRegularOfferStore();
-        /**Method getRegularOfferStore END*/
 
-        console.log('offerProducts', offerProducts);
-
-        if (!(offerProducts && offerProducts[cartItem.product_id.id])) {
-          let productUnitPrice = cartItem.product_id.price;
-          productPrice = productUnitPrice * cartItem.product_quantity;
+        if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
+          productFinalPrice = productUnitPrice * cartItem.product_quantity;
+        } else {
+          if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute amount') {
+            let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          } else {
+            let productPrice = productUnitPrice - (productUnitPrice * (offerProducts[cartItem.product_id.id].discount_amount / 100.0));
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          }
         }
 
         /*if (!cartItem.product_id.promotion) {
@@ -293,9 +296,8 @@ module.exports = {
           productPrice = productUnitPrice * cartItem.product_quantity;
         }*/
 
-        grandOrderTotal += productPrice;
+        grandOrderTotal += productFinalPrice;
         totalQty += cartItem.product_quantity;
-        console.log('grand totallllllllll: ', grandOrderTotal);
       }
     }
     return {

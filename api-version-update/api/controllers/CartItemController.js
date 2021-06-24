@@ -174,7 +174,8 @@ module.exports = {
       }
 */
 
-      let offerInfo = req.body.offerDataCollection[product.id];
+      let offerInfo = req.body.offerInfo;
+      console.log('changed offerInfo: cccc', offerInfo);
 
       let productUnitPrice = product.price;
 
@@ -182,7 +183,7 @@ module.exports = {
         if(offerInfo.calculation_type === 'absolute amount') {
           productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
         }else {
-          productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100));
+          productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0));
         }
       }
 
@@ -257,7 +258,7 @@ module.exports = {
             }
           }
 
-          /**fetching all the product existing in the cartItem table of a perticula user*/
+          /** fetching all the product existing in the cartItem table of a perticula user */
           let allCartItems = await CartItem.find({cart_id: cart.id, deletedAt: null}).usingConnection(db);
           let totalPrice = 0;
           let totalQty = 0;

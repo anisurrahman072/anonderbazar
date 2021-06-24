@@ -1,0 +1,31 @@
+<div class="main-container right-sidebar">
+    <div class="container-fluid">
+        <!--breadcrumbs-->
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home</a>
+            <a routerLink="/cms" routerLinkActive="active">Offer</a>
+            <a>Anonder Jhor</a>
+        </nav>
+
+        <!--banner section-->
+        <div class="row">
+            <div class="col-sm-6 col-md-12 main-content">
+                <div class="blog-single">
+                    <div class="post-item">
+                        <div class="banner-image" style="overflow: hidden;">
+                            <div class="post-thumb" *ngIf="regularOffer.image.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.banner_image}}"
+                                     alt="{{regularOffer.title}}">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center">
+            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next"></pagination-controls>
+        </div>
+    </div>
+</div>

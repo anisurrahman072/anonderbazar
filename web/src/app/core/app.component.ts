@@ -43,6 +43,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     panelOpenState: boolean = false;
 
     private tokenExpiredNotiSub: Subscription;
+    private loadingSubjectSub: Subscription;
+    private currentsidebarShowInfoSub: Subscription;
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object,
                 private router: Router,
@@ -69,28 +71,29 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
 
-        this.tokenExpiredNotiSub = this.uiService.tokenExpiredNotificationObservable.subscribe((message: string) => {
-            this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
-            this.store.dispatch(new fromStore.LoadCartSuccess(null));
-            this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
-            this._notify.error(message);
-        }, (err) => {
-            console.log(err);
-        })
+        this.tokenExpiredNotiSub = this.uiService.tokenExpiredNotificationObservable
+            .subscribe((message: string) => {
+                this.store.dispatch(new fromStore.LoadCurrentUserSuccess(null));
+                this.store.dispatch(new fromStore.LoadCartSuccess(null));
+                this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
+                this._notify.error(message);
+            }, (err) => {
+                console.log(err);
+            })
 
         this.moadlProgressRef = this.progress.ref('loadingModal');
 
         this.user_id = this.authService.getCurrentUserId();
 
-        this.initialize();
+        this.initialDispatchStore();
         this.scrollTopAndTitleChange();
 
-        this.uiService.currentsidebarShowInfo.subscribe((r) => {
+        this.currentsidebarShowInfoSub = this.uiService.currentsidebarShowInfo.subscribe((r) => {
             this.sidebarOpened$ = r;
         });
 
         if (this.loaderService.loadingSubject) {
-            this.loaderService.loadingSubject.subscribe((event) => {
+            this.loadingSubjectSub = this.loaderService.loadingSubject.subscribe((event) => {
                 this.loading = event;
                 this.cdr.detectChanges();
             });
@@ -100,6 +103,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.tokenExpiredNotiSub ? this.tokenExpiredNotiSub.unsubscribe() : "";
+        this.loadingSubjectSub ? this.loadingSubjectSub.unsubscribe() : "";
+        this.currentsidebarShowInfoSub ? this.currentsidebarShowInfoSub.unsubscribe() : "";
     }
 
     ngAfterViewInit() {
@@ -116,7 +121,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
 
-    initialize() {
+    initialDispatchStore() {
         this.store.dispatch(new fromStore.LoadCart());
         this.store.dispatch(new fromStore.LoadCurrentUser());
         this.store.dispatch(new fromStore.LoadFavouriteProduct());

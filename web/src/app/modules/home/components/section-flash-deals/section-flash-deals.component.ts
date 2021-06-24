@@ -10,12 +10,7 @@ import {OfferService, ProductService} from "../../../../services";
 })
 export class FlashDealsComponent implements OnInit {
     @Input() dataProductList;
-    @Input('offerData') offerData: Offer;
-
-    /*for offer*/
-    calculationType;
-    discountAmount;
-    originalPrice;
+    @Input() offerData: Offer;
 
     constructor(private offerService: OfferService) {
     }
@@ -24,14 +19,14 @@ export class FlashDealsComponent implements OnInit {
     ngOnInit() {
         this.dataProductList.forEach(product => {
             if (this.offerData && this.offerData.finalCollectionOfProducts && product.id in this.offerData.finalCollectionOfProducts) {
-                this.calculationType = this.offerData.finalCollectionOfProducts[product.id].calculation_type;
-                this.discountAmount = this.offerData.finalCollectionOfProducts[product.id].discount_amount;
-                this.originalPrice = product.price;
+                const calculationType = this.offerData.finalCollectionOfProducts[product.id].calculation_type;
+                const discountAmount = this.offerData.finalCollectionOfProducts[product.id].discount_amount;
+                const originalPrice = product.price;
 
-                product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+                product.offerPrice = this.offerService.calculateOfferPrice(calculationType, originalPrice, discountAmount);
 
-                product.calculationType = this.calculationType;
-                product.discountAmount = this.discountAmount;
+                product.calculationType = calculationType;
+                product.discountAmount = discountAmount;
             }
         })
     }

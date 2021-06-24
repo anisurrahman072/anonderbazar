@@ -352,6 +352,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         let qty = this.product_quantity;
 
+        const offerInfo = this.offerData.finalCollectionOfProducts[this.data.id];
+
         if (variants.length == 0) {
             dataPayload = {
                 cart_id: this.cartId,
@@ -359,7 +361,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
-                offerDataCollection: this.offerData.finalCollectionOfProducts
+                offerInfo
             };
         } else {
             dataPayload = {
@@ -369,7 +371,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
                 cartItemVariants: variants,
-                offerDataCollection: this.offerData.finalCollectionOfProducts
+                offerInfo
             };
         }
         console.log('payload: ', dataPayload);

@@ -795,7 +795,7 @@ module.exports = {
         const thisOffer = requestedOffer[offer];
         let offerObj = {
           calculation_type: thisOffer.calculation_type,
-          discount_amount: thisOffer.discount_amount,
+          discount_amount: thisOffer.discount_amount * 1.0,
         };
 
         /**if selection_type === 'Vendor wise'*/

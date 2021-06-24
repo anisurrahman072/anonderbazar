@@ -29,7 +29,7 @@ export class OfferService {
         if(calculationType === 'absolute amount') {
             return originalPrice - discountAmount;
         }else {
-            return originalPrice - (originalPrice * (discountAmount / 100));
+            return originalPrice - (originalPrice * (discountAmount / 100.0));
         }
     }
 

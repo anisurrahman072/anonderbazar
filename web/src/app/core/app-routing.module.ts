@@ -14,6 +14,7 @@ const routes: Routes = [
     {path: 'lottery', loadChildren: '../modules/coupon-lottery/coupon-lottery.module#CouponLotteryModule'},
     {path: 'checkout', loadChildren: '../modules/checkout/checkout.module#CheckoutModule'},
     {path: 'cms', loadChildren: '../modules/cms/cms.module#CmsModule'},
+    {path: 'offers', loadChildren: '../modules/offer/offer.module#OfferModule'},
     {path: 'brands', loadChildren: '../modules/brand/brand.module#BrandModule'},
     {path: 'featured-product', loadChildren: '../modules/featured/featured.module#FeaturedModule'},
     {path: 'categories', loadChildren: '../modules/category-list/category-list.module#CategoryListModule'},

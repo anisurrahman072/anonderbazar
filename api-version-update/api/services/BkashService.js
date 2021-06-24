@@ -29,7 +29,7 @@ module.exports = {
 
     let {
       grandOrderTotal,
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
     console.log('GrandOrderTotal', grandOrderTotal);
@@ -143,7 +143,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(customer.id, 'Courier Charge: ', courierCharge);
     logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
