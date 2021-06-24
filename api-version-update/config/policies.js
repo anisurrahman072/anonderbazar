@@ -250,7 +250,8 @@ module.exports.policies = {
   },
   PaymentsController: {
     '*': false,
-    'getAll': ['isAuthorized']
+    'getAll': ['isAuthorized'],
+    'changeApprovalStatus': ['isAuthorized', 'isAdmin']
   },
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],

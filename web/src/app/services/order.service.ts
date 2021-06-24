@@ -70,4 +70,8 @@ export class OrderService {
     confirmOrderByOffline(value): Observable<any>{
         return this.http.post(`${this.EndPoint}/confirmOrderInOffline`, value);
     }
+
+    getAllProductsByOrderId(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllProductsByOrderId?orderId=${orderId}`);
+    }
 }

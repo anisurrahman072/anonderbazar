@@ -20,6 +20,11 @@ module.exports = {
       model: 'suborder',
       required: false
     },
+    approval_status: {
+      type: 'number',
+      defaultsTo: 1,
+      columnType: 'tinyint'
+    },
     receiver_id: {
       model: 'user',
       required: false

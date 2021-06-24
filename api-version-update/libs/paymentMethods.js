@@ -28,6 +28,11 @@ module.exports = {
         paymentGatewayService = BkashService;
         break;
       }
+
+      case OFFLINE_PAYMENT_TYPE: {
+        paymentGatewayService = OfflinePaymentService;
+        break;
+      }
     }
     return paymentGatewayService;
   },
