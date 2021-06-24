@@ -1,6 +1,9 @@
 <section>
     <nz-card class="card-height" [nzExtra]="extra" [nzTitle]="cardTitle">
         <ng-template #extra>
+            <button *ngIf="'payment-create'| accessControl" (click)="getPageData(true)">
+                <span> All Partial Offline Payment </span>
+            </button>
             <button *ngIf="'payment-create'| accessControl"
                     routerLink="/dashboard/payment/create" nz-button
                      >
@@ -150,7 +153,7 @@
                         <td *ngIf="datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
                             N/A
                         </td>
-                        <td style="width: 200px;">
+                        <td style="width: 200px;" *ngIf="datum.order_type == ORDER_TYPE.PARTIAL_ORDER_TYPE && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
                             <nz-select style="width: 170px;" [(ngModel)]="datum.approval_status"
                                        nzAllowClear (ngModelChange)="changeApprovalStatus($event, datum.id, datum.order_id, datum.approval_status);"
                                        [nzPlaceHolder]="'Select Approval Status'"
@@ -159,6 +162,11 @@
                                            [nzValue]="option.value">
                                 </nz-option>
                             </nz-select>
+                        </td>
+                        <td *ngIf="datum.order_type !== ORDER_TYPE.PARTIAL_ORDER_TYPE || datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.APPROVED">APPROVED</p>
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.PENDING">PENDING</p>
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.REJECTED">REJECTED</p>
                         </td>
 
                         <td>{{datum.transection_key}}</td>

@@ -19,8 +19,8 @@ export class PaymentService {
             ;
     }
 
-    changeApprovalStatus(paymentId, status): Observable<any> {
-        return this.http.get(this.EndPoint + `?paymentId=${paymentId}&status=${status}`);
+    changeApprovalStatus(paymentId, orderId, status): Observable<any> {
+        return this.http.get(this.EndPoint + `/changeApprovalStatus?paymentId=${paymentId}&status=${status}&orderId=${orderId}`);
     }
 
     getAllPayment(page: number,
@@ -35,6 +35,8 @@ export class PaymentService {
                   dateSearchValue: string,
                   statusSearchValue: string,
                   receiver_id: number,
+                  approvalStatusSearchValue:  number,
+                  orderType: number,
                   sortKey: string,
                   sortValue:string): Observable<any> {
 
@@ -49,6 +51,8 @@ export class PaymentService {
             }&paymentAmountSearchValue=${paymentAmountSearchValue
             }&dateSearchValue=${dateSearchValue
             }&statusSearchValue=${statusSearchValue
+            }&approvalStatusSearchValue=${approvalStatusSearchValue
+            }&orderType=${orderType
             }&receiver_id=${receiver_id
             }&sortKey=${sortKey
             }&sortValue=${sortValue}`

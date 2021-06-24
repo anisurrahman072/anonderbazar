@@ -132,6 +132,11 @@ export const GLOBAL_CONFIGS = {
     ]
 };
 
+export const ORDER_TYPE = {
+    REGULAR_ORDER_TYPE: 1,
+    PARTIAL_ORDER_TYPE: 2
+}
+
 export const PAYMENT_STATUS = {
     UNPAID_PAYMENT_STATUS: 1,
     PARTIALLY_PAID_PAYMENT_STATUS: 2,
@@ -153,4 +158,10 @@ export const OFFLINE_PAYMENT_METHODS = {
     BANK_TRANSFER: 'bankTransfer',
     BANK_DEPOSIT: 'bankDeposit',
     MOBILE_TRANSFER: 'mobileTransfer'
+}
+
+export const PAYMENT_APPROVAL_STATUS_TYPES = {
+    PENDING: 1,
+    APPROVED: 2,
+    REJECTED: 3
 }

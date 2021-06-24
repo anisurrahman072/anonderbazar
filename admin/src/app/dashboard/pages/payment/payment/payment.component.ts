@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PaymentService} from '../../../../services/payment.service';
 import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
-import {PAYMENT_METHODS, OFFLINE_PAYMENT_METHODS, GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {PAYMENT_METHODS, OFFLINE_PAYMENT_METHODS, GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_APPROVAL_STATUS_TYPES} from "../../../../../environments/global_config";
 import {NzNotificationService} from "ng-zorro-antd";
 import moment from "moment";
 
@@ -24,6 +24,7 @@ export class PaymentComponent implements OnInit {
     viewNotRendered: boolean = true;
 
     nameSearchValue: string = '';
+    approvalStatusSearchValue: any = null;
     orderNumberSearchValue: string = '';
     suborderNumberSearchValue: string = '';
     userIdSearchValue: string = '';
@@ -51,6 +52,8 @@ export class PaymentComponent implements OnInit {
     PAYMENT_METHODS = PAYMENT_METHODS;
     OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
     approvalOptions = GLOBAL_CONFIGS.PAYMENT_APPROVAL_STATUS_TYPES;
+    ORDER_TYPE = ORDER_TYPE;
+    PAYMENT_APPROVAL_STATUS_TYPES = PAYMENT_APPROVAL_STATUS_TYPES;
 
     constructor(
         private paymentService: PaymentService,
@@ -109,11 +112,28 @@ export class PaymentComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getPageData() {
+    getPageData(showPartialOfflinePayments = false) {
         console.log('this.dateSearchValue', this.dateSearchValue);
         let dateSearchVal = '';
         if(this.dateSearchValue){
             dateSearchVal = moment(this.dateSearchValue).format('YYYY-MM-DD');
+        }
+        let orderType = null;
+        if(showPartialOfflinePayments){
+            orderType = ORDER_TYPE.PARTIAL_ORDER_TYPE;
+            this.paymentTypeSearchValue = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
+
+            this.nameSearchValue = '';
+            this.orderNumberSearchValue = '';
+            this.suborderNumberSearchValue = '';
+            this.userIdSearchValue = '';
+            this.transactionSearchValue = '';
+            this.paymentAmountSearchValue = '';
+            dateSearchVal = '';
+            this.statusSearchValue = '';
+            this.receiver_id = '';
+            this.approvalStatusSearchValue = '';
+            this.sortKey = '';
         }
         this.loading = true;
         this.paymentService
@@ -130,6 +150,8 @@ export class PaymentComponent implements OnInit {
                 dateSearchVal || '',
                 this.statusSearchValue || '',
                 this.receiver_id || '',
+                this.approvalStatusSearchValue || '',
+                orderType || '',
                 this.sortKey,
                 this.filterTerm(this.sortValue)
             )
@@ -261,11 +283,14 @@ export class PaymentComponent implements OnInit {
         this.isOfflinePaymentDetailVisible = false;
     };
 
-    changeApprovalStatus($event, paymentId, paymentApprovalStatus){
-        this.paymentService.changeApprovalStatus(paymentId, paymentApprovalStatus)
+    changeApprovalStatus($event, paymentId, orderId, paymentApprovalStatus){
+        this.paymentService.changeApprovalStatus(paymentId, orderId, paymentApprovalStatus)
             .subscribe(data => {
                 console.log("The updated data is: ", data);
+                this._notification.success("Success", "Successfully updated the payment");
                 this.getPageData();
+            }, error => {
+                this._notification.error("Error", "Error occurred while updating the payment");
             })
     }
 }
