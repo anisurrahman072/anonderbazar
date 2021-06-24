@@ -44,13 +44,11 @@ module.exports = {
   getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
     let shipping_address = req.param('shipping_address');
-    console.log('helllloooo2222222', req.param('shipping_address'), req.param('is_copy'));
 
     if (shipping_address) {
       if (!_.isObject(shipping_address)) {
         shipping_address = JSON.parse(shipping_address);
       }
-      console.log('shippppppppppppppppp', shipping_address);
 
       shippingAddress = {...shipping_address, postal_code: shipping_address.postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PaymentService} from '../../../../services/payment.service';
 import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
+import {PAYMENT_METHODS, OFFLINE_PAYMENT_METHODS, GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {NzNotificationService} from "ng-zorro-antd";
 import moment from "moment";
 
@@ -41,6 +42,15 @@ export class PaymentComponent implements OnInit {
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
     options: any[];
+
+    isOrderDetailsVisible: boolean = false;
+    currentOrderDetails = null;
+    isOfflinePaymentDetailVisible: boolean = false;
+    currentOfflinePaymentDetails = null;
+
+    PAYMENT_METHODS = PAYMENT_METHODS;
+    OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
+    approvalOptions = GLOBAL_CONFIGS.PAYMENT_APPROVAL_STATUS_TYPES;
 
     constructor(
         private paymentService: PaymentService,
@@ -126,7 +136,26 @@ export class PaymentComponent implements OnInit {
             .subscribe(
                 result => {
                     this.loading = false;
-                    this.data = result.data;
+                    this.data = result.data.map(payment => {
+                        let  productNames = payment.productName.split('___');
+                        let  productQtys = payment.productQty.split(',');
+                        let  productTotalPrices = payment.productTotalPrice.split(',');
+                        let orderDetails = [];
+
+                        let len = productTotalPrices.length;
+                        for(let index = 0; index < len; index++){
+                            let details = {
+                                productName: productNames[index],
+                                productQty: productQtys[index],
+                                productTotalPrice: productTotalPrices[index]
+                            };
+                            orderDetails.push(details);
+                        }
+
+                        return {...payment, orderDetails, paymentDetails: JSON.parse(payment.paymentDetails)}
+
+                    });
+                    console.log("AnnnnnFnl: ", this.data );
                     this.total = result.total;
                     console.log(result);
                     this._isSpinning = false;
@@ -210,5 +239,29 @@ export class PaymentComponent implements OnInit {
             });
             this.getPageData();
         }
+    }
+
+    showOrderDetailsModal(orderDetail){
+        this.isOrderDetailsVisible = true;
+        this.currentOrderDetails = orderDetail;
+    }
+
+    showOfflinePaymentDetailsModal(paymentDetail){
+        this.isOfflinePaymentDetailVisible = true;
+        this.currentOfflinePaymentDetails = paymentDetail;
+    }
+
+    handleOk = e => {
+        this.isOrderDetailsVisible = false;
+        this.isOfflinePaymentDetailVisible = false;
+    };
+    // Modal method
+    handleCancel = e => {
+        this.isOrderDetailsVisible = false;
+        this.isOfflinePaymentDetailVisible = false;
+    };
+
+    changeApprovalStatus($event, paymentId, paymentApprovalStatus){
+        console.log("aaaaa; ", $event, paymentId, paymentApprovalStatus);
     }
 }

@@ -124,6 +124,11 @@ export const GLOBAL_CONFIGS = {
         'SSLCommerce',
         'bKash',
         'OfflinePay'
+    ],
+    PAYMENT_APPROVAL_STATUS_TYPES: [
+        {value: 1, label: 'Pending'},
+        {value: 2, label: 'Approved'},
+        {value: 3, label: 'Rejected'}
     ]
 };
 
@@ -141,4 +146,11 @@ export const PAYMENT_METHODS = {
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad',
     OFFLINE_PAYMENT_TYPE: 'OfflinePay'
+}
+
+export const OFFLINE_PAYMENT_METHODS = {
+    CASH_IN_ADVANCE: 'cashInAdvance',
+    BANK_TRANSFER: 'bankTransfer',
+    BANK_DEPOSIT: 'bankDeposit',
+    MOBILE_TRANSFER: 'mobileTransfer'
 }

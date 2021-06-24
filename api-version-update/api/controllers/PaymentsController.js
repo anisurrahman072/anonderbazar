@@ -25,7 +25,14 @@ module.exports = {
           payments.payment_date as payment_date,
           payments.created_at as created_at,
           payments.receiver_id as receiver_id,
+          payments.approval_status as approval_status,
+          payments.details as paymentDetails,
           p_order.ssl_transaction_id,
+
+          GROUP_CONCAT(COALESCE(products.name, '') SEPARATOR ' ___ ') as productName,
+          GROUP_CONCAT(p_suborder_items.product_quantity) as productQty,
+          GROUP_CONCAT(p_suborder_items.product_total_price) as productTotalPrice,
+
           CONCAT(customer.first_name, ' ', customer.last_name) as customer_name,
           CONCAT(receiver.first_name, ' ',receiver.last_name) as receiver_name,
           customer.phone as customer_phone
@@ -33,6 +40,9 @@ module.exports = {
 
       let fromSQL = ' FROM payments  ';
       fromSQL += ' LEFT JOIN product_orders as p_order ON p_order.id = payments.order_id   ';
+      fromSQL += ' LEFT JOIN product_suborders as p_suborders ON p_suborders.product_order_id = p_order.id  ';
+      fromSQL += ' LEFT JOIN product_suborder_items as p_suborder_items ON p_suborder_items.product_suborder_id = p_suborders.id  ';
+      fromSQL += ' LEFT JOIN products as products ON products.id = p_suborder_items.product_id  ';
       fromSQL += ' LEFT JOIN users as customer ON customer.id = payments.user_id   ';
       fromSQL += ' LEFT JOIN users as receiver ON receiver.id = payments.receiver_id   ';
       let _where = ' WHERE p_order.deleted_at IS NULL AND payments.deleted_at IS NULL  ';
@@ -64,15 +74,17 @@ module.exports = {
 
       let _sort ='';
       if (req.query.sortValue && req.query.sortKey) {
-         _sort += ` ORDER BY payments.${req.query.sortKey} ${req.query.sortValue} `;
+        _sort += ` GROUP BY id ORDER BY payments.${req.query.sortKey} ${req.query.sortValue} `;
       } else {
-        _sort += ` ORDER BY payments.created_at DESC `;
+        _sort += ` GROUP BY id ORDER BY payments.created_at DESC `;
       }
       let totalPayments = 0;
       let allPayments = [];
-      const totalPaymentsRaw = await PaymentNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      const totalPaymentsRaw = await PaymentNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where + ' GROUP BY payments.id ', []);
       if (totalPaymentsRaw && totalPaymentsRaw.rows && totalPaymentsRaw.rows.length > 0) {
-        totalPayments = totalPaymentsRaw.rows[0].totalCount;
+
+        totalPayments  = totalPaymentsRaw.rows.length;
+
         _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborderItems;
 
         let limitSQL = ` LIMIT ${_pagination.skip}, ${_pagination.limit} `;
