@@ -9,6 +9,7 @@ import { OfferCreateComponent } from './offer-create/offer-create.component';
 import { OfferEditComponent } from './offer-edit/offer-edit.component';
 import { OfferReadComponent } from './offer-read/offer-read.component';
 import {AllProductModalComponent} from "./offer-list/components/all-product-modal.component";
+import { AnonderJhorComponent } from './anonder-jhor/anonder-jhor.component';
 
 @NgModule({
   imports: [
@@ -25,7 +26,8 @@ import {AllProductModalComponent} from "./offer-list/components/all-product-moda
     OfferEditComponent,
     OfferCreateComponent,
     OfferReadComponent,
-    AllProductModalComponent
+    AllProductModalComponent,
+    AnonderJhorComponent
   ]
 })
 export class OfferModule { }
