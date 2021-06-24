@@ -253,7 +253,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private openPaymentGatewayModal(message) {
         this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
-        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.title = 'Payment has been failed';
         this.paymentGatewayErrorModalRef.content.message = message;
     }
 

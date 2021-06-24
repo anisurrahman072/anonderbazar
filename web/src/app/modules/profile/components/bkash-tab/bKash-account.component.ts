@@ -109,11 +109,15 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success',{
+                            timeOut: 10000,
+                        });
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
-                        this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
+                        this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!',{
+                            timeOut: 10000,
+                        });
                     })
             }
         } else {
@@ -131,14 +135,18 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success', {
+                            timeOut: 10000,
+                        });
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
                         if (err && err.error && err.error.statusMessage) {
                             this.toastService.error(err.error.statusMessage, err.error.statusCode);
                         } else {
-                            this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
+                            this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!',{
+                                timeOut: 10000,
+                            });
                         }
                     })
             }
