@@ -3,12 +3,13 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import * as ___ from "lodash";
-import {Title} from '@angular/platform-browser';
 import {OfferService} from "../../../services";
 import {CmsService, ProductService} from "../../../services";
 import * as fromStore from "../../../state-management";
 import {Offer} from "../../../models";
 import {Subscription} from "rxjs/Subscription";
+import { Title } from '@angular/platform-browser';
+import {error} from "util";
 
 @Component({
     selector: 'app-home-page',
@@ -82,7 +83,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     //Event method for getting all the data for the page
     private getFeatureProducts() {
-        this.featureProducts = this.productService.fetchFlashDealsProducts();
+        this.productService.getFlashDealsProducts()
+            .subscribe(data => {
+                this.featureProducts = data.filter(product => {
+                    return product.warehouse_id.status == 2;
+                }).slice(0,4);
+            }, error => {
+                console.log("Error occurred!", error);
+            })
     }
 
     private addPageTitleNMetaTag() {

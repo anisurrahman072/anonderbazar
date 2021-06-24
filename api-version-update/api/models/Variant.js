@@ -17,6 +17,10 @@ module.exports = {
       type: 'number',
       columnType: 'integer',
       required: true
+    },
+    warehouseVariants: {
+      collection: 'warehouseVariant',
+      via: 'variant_id'
     }
   },
   tableName: 'variants',

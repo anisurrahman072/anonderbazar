@@ -29,6 +29,9 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     agreedToBKashTermsConditions: boolean = false;
     showBKashAgreementTerm: boolean = false;
 
+    isNotAcceptTerms: boolean = false;
+    isInvalidWallet: boolean = false;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -106,11 +109,15 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success',{
+                            timeOut: 10000,
+                        });
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
-                        this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
+                        this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!',{
+                            timeOut: 10000,
+                        });
                     })
             }
         } else {
@@ -128,14 +135,18 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                     .subscribe((res: any) => {
                         this.loaderService.hideLoader();
                         this.fetchbKashWallets();
-                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success');
+                        this.toastService.success('bKash payment agreement has been successfully cancelled.', 'Success', {
+                            timeOut: 10000,
+                        });
                     }, (err) => {
                         console.log(err);
                         this.loaderService.hideLoader();
                         if (err && err.error && err.error.statusMessage) {
                             this.toastService.error(err.error.statusMessage, err.error.statusCode);
                         } else {
-                            this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!');
+                            this.toastService.error('Problem in cancelling bKash Payment Agreement.', 'Oppss!',{
+                                timeOut: 10000,
+                            });
                         }
                     })
             }
@@ -143,11 +154,18 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     createBKashAgreement() {
+        let number = this.bKashWalletNoToAdd.replace(/[^0-9]/g,'');
+        if(!number || (number && number.length != 11)){
+            this.isInvalidWallet = true;
+            this.bKashWalletNoToAdd = '';
+            return false;
+        }
         if (!this.showBKashAgreementTerm) {
             this.showBKashAgreementTerm = true;
             return;
         }
         if (!(this.bKashWalletNoToAdd && this.agreedToBKashTermsConditions)) {
+            this.isNotAcceptTerms = true;
             return false;
         }
 

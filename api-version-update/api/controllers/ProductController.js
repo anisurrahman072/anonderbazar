@@ -120,8 +120,9 @@ module.exports = {
       if (req.query.ids && Array.isArray(req.query.ids) && req.query.ids.length > 0) {
         let products = await Product.find({
           id: req.query.ids,
-          deletedAt: null
-        });
+          deletedAt: null,
+          approval_status: 2
+        }).populate('warehouse_id');
         let productsById = _.keyBy(products, 'id');
 
         let productsByFrontendPosition = products.map(product => {
@@ -651,7 +652,9 @@ module.exports = {
 
       let rawSelect = `
             SELECT COUNT(*) as productCount, brand_id   FROM products
-            WHERE deleted_at IS NULL AND brand_id IN (${allIds.join(',')})
+            LEFT JOIN warehouses as warehouse on warehouse.id = products.warehouse_id
+            WHERE products.deleted_at IS NULL AND warehouse.deleted_at IS NULL AND warehouse.status = 2
+             AND products.approval_status = 2 AND brand_id IN (${allIds.join(',')})
             GROUP BY brand_id
       `;
 
@@ -682,18 +685,35 @@ module.exports = {
     try {
       let brandId = req.param('brand_id');
 
-      let allProducts = await Product.find({
-        deletedAt: null,
-        brand_id: brandId
-      }).sort([
-        {frontend_position: 'ASC'},
-        {updatedAt: 'DESC'},
-      ]);
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+          products.id as id,
+          products.code  as code,
+          products.name as name,
+          products.price,
+          products.vendor_price as vendor_price,
+          products.image as image,
+          products.category_id  as category_id ,
+          products.subcategory_id  as subcategory_id ,
+          products.type_id   as type_id  ,
+          products.brand_id    as brand_id   ,
+          products.quantity as quantity,
+          products.promotion as promotion,
+          products.promo_price as promo_price,
+          products.warehouse_id
+      `;
+      let fromSQL = ' FROM products  ';
+      fromSQL += ' LEFT JOIN warehouses as warehouse ON warehouse.id = products.warehouse_id    ';
+      let _where = ` WHERE  products.brand_id = ${brandId}  AND  products.approval_status = 2  AND  products.deleted_at IS NULL  AND
+         warehouse.status = 2  AND  warehouse.deleted_at IS NULL ORDER BY products.frontend_position ASC,  products.updated_at DESC  `;
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all products by brand ID',
-        data: allProducts
+        data: rawResult.rows
       });
     } catch (error) {
       return res.status(400).json({
@@ -714,7 +734,7 @@ module.exports = {
       }).limit(params.limit).skip(params.skip).sort([
         {frontend_position: 'ASC'},
         {updatedAt: 'DESC'},
-      ]);
+      ]).populate('warehouse_id');
 
       return res.status(200).json({
         success: true,
@@ -775,12 +795,16 @@ module.exports = {
       let fromSQL = ' FROM product_suborder_items as subOrderItems';
       fromSQL += ' LEFT JOIN product_suborders as subOrders ON subOrderItems.product_suborder_id = subOrders.id ';
       fromSQL += ' LEFT JOIN products as products ON products.id = subOrderItems.product_id ';
+      fromSQL += ' LEFT JOIN warehouses as warehouse ON warehouse.id = products.warehouse_id ';
 
       let _where = `
           WHERE subOrders.status <> ${SUB_ORDER_STATUSES.canceled}
           AND subOrders.deleted_at IS NULL
           AND subOrderItems.deleted_at IS NULL
           AND products.deleted_at IS NULL
+          AND warehouse.deleted_at IS NULL
+          AND warehouse.status = 2
+          AND products.approval_status = 2
         `;
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
 
@@ -805,22 +829,38 @@ module.exports = {
     try {
       const params = req.allParams();
 
-      let allProducts = await Product.find({
-        approval_status: params.approval_status,
-        deletedAt: null
-      }).limit(params.limit).sort([
-        {createdAt: 'DESC'},
-        {frontend_position: 'ASC'},
-        {updatedAt: 'DESC'},
-      ]);
+      const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+          products.id as id,
+          products.code  as code,
+          products.name as name,
+          products.price,
+          products.vendor_price as vendor_price,
+          products.image as image,
+          products.category_id  as category_id ,
+          products.subcategory_id  as subcategory_id ,
+          products.type_id   as type_id  ,
+          products.brand_id    as brand_id   ,
+          products.quantity as quantity,
+          products.promotion as promotion,
+          products.promo_price as promo_price,
+          products.warehouse_id
+      `;
+      let fromSQL = ' FROM products  ';
+      fromSQL += ' LEFT JOIN warehouses as warehouse ON warehouse.id = products.warehouse_id    ';
+      let _where = ` WHERE  products.approval_status = ${params.approval_status}  AND  products.deleted_at IS NULL  AND
+         warehouse.status = 2  AND  warehouse.deleted_at IS NULL ORDER BY products.created_at DESC,  products.frontend_position ASC,  products.updated_at DESC  LIMIT 4 `;
+
+      const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
       return res.status(200).json({
         success: true,
         message: 'Successfully fetched all Feedback products',
-        data: allProducts
+        data: rawResult.rows
       });
     } catch (error) {
-      console.log(error);
+      console.log('Error is: ', error);
     }
   },
 
@@ -913,6 +953,6 @@ module.exports = {
         error
       });
     }
-  }
-
+  },
 };
+

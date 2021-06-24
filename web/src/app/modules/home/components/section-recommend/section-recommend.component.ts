@@ -35,7 +35,10 @@ export class RecommendComponent implements OnInit {
     private getRecommendedProducts(limit, skip) {
         this.productService.getRecommendedProducts(limit, skip)
             .subscribe(products => {
-                this.dataProductList.push(...products.data);
+                let recommendedProducts = products.data.filter(product => {
+                    return product.warehouse_id.status == 2;
+                })
+                this.dataProductList.push(...recommendedProducts);
 
                 /** finding out the products exists in the offer store*/
                 this.dataProductList.forEach(product => {

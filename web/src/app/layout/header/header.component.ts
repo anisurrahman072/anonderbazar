@@ -75,6 +75,7 @@ export class HeaderComponent implements OnInit {
 
     // init the component
     ngOnInit() {
+        this.store.dispatch(new fromStore.LoadCart());
         this.currentUser$ = this.store.select<any>(fromStore.getCurrentUser);
         if (this.authService.getCurrentUserId()) {
             this.isUser = true;

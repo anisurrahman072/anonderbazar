@@ -12,11 +12,10 @@ import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../services/validator/form-validator.service";
-import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_STATUS} from "../../../../environments/global_config";
-import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
+import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../environments/global_config";
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
-import {PAYMENT_METHODS} from '../../../../environments/global_config';
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 
@@ -141,8 +140,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // Billing
             billing_id: ['', []],
-            firstName: ['', [Validators.required]],
-            lastName: ['', [Validators.required]],
+            firstName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
+            lastName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             postCode: ['', [Validators.required]],
@@ -153,8 +152,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // Shipping
             shipping_id: ['', []],
-            shippingFirstName: ['', [Validators.required]],
-            shippingLastName: ['', [Validators.required]],
+            shippingFirstName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
+            shippingLastName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             shippingPostCode: ['', [Validators.required]],
@@ -193,6 +192,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
+        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
@@ -217,7 +217,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             })
             .concatMap((divisionList: any) => {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
-                    this.divisionSearchOptions = divisionList;
+                    this.divisionSearchOptions = divisionList.sort((a, b) => a.name.localeCompare(b.name));
                     return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
@@ -257,7 +257,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private openPaymentGatewayModal(message) {
         this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
-        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.title = 'Payment has been failed';
         this.paymentGatewayErrorModalRef.content.message = message;
     }
 
@@ -858,12 +858,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         if (type == 'shipping') {
             this.updateGrandTotal();
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.shippingZilaSearchOptions = result;
+                this.shippingZilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.shippingUpazilaSearchOptions = [];
             });
         } else {
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.zilaSearchOptions = result;
+                this.zilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.upazilaSearchOptions = [];
             });
         }
@@ -874,12 +874,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         var zilaId = $event.target.value;
         if (type == 'shipping') {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.shippingUpazilaSearchOptions = result;
+                this.shippingUpazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
             this.updateGrandTotal(true, zilaId);
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.upazilaSearchOptions = result;
+                this.upazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
         }
     }

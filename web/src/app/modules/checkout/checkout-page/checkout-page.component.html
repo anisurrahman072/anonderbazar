@@ -53,6 +53,9 @@
                                     <span *ngIf="(getSignUpFormControl('shippingFirstName').dirty || showFormError) && getSignUpFormControl('shippingFirstName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>First name is required!
                                     </span>
+                                    <span *ngIf="(getSignUpFormControl('shippingFirstName').dirty) && getSignUpFormControl('shippingFirstName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
+                                    </span>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
@@ -62,6 +65,9 @@
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('shippingLastName').dirty || showFormError) && getSignUpFormControl('shippingLastName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!
+                                    </span>
+                                    <span *ngIf="(getSignUpFormControl('shippingLastName').dirty) && getSignUpFormControl('shippingLastName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
                                     </span>
                                 </div>
                             </div>
@@ -191,6 +197,9 @@
                                     <span *ngIf="(getSignUpFormControl('firstName').dirty || showFormError) && getSignUpFormControl('firstName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>First name is required!
                                     </span>
+                                    <span *ngIf="(getSignUpFormControl('firstName').dirty) && getSignUpFormControl('firstName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
+                                    </span>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
@@ -200,6 +209,9 @@
                                 <div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('lastName').dirty || showFormError) && getSignUpFormControl('lastName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!
+                                    </span>
+                                    <span *ngIf="(getSignUpFormControl('lastName').dirty) && getSignUpFormControl('lastName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
                                     </span>
                                 </div>
                             </div>
@@ -495,7 +507,7 @@
                         </mat-radio-group>
                     </div>
                     <div *ngIf="isShowOfflineForm">
-                        <mat-radio-group formControlName="offlinePaymentMethods" style="display: flex">
+                        <mat-radio-group class="payment-method-radio-btn" formControlName="offlinePaymentMethods" style="display: flex">
                             <mat-radio-button value="cashInAdvance"
                                               (click)="showOfflinePaymentMethods(true, false, false, false)">
                                 <p class="defaultParagraph">Cash In Advance</p>
@@ -616,7 +628,7 @@
                                 (click)="formCheckout($event, checkoutForm.value, bKashWalletModalTemplate)">
                             <a>Confirm payment</a>
                         </button>
-                        <button type="submit" class="Summarybtn" *ngIf="isPartiallyPayable && !isShowOfflineForm"
+                        <button type="submit" class="Summarybtn" id="sum-btn-w-o-payment" *ngIf="isPartiallyPayable && !isShowOfflineForm"
                                 (click)="formConfirmWithoutPayment($event, checkoutForm.value)"
                                 [disabled]="!termsAndPolicy">
                             <a>Confirm without payment</a>

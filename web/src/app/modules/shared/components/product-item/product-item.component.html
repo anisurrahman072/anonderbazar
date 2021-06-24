@@ -59,18 +59,18 @@
             </ul>
             <ul class="button-icon" style="z-index: 99991;">
                 <li class="btn3 mb-3">
-                  <span *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
+                  <span class="image-btn" *ngIf="!(favourites$ | async | isaddedtofavourite: product?.id)">
                       <a class="wishlist" title="wishlist" (click)="addToFavourite($event, product)"><img
                               src="assets/images/heart.svg" alt="heart"></a>
                   </span>
-                    <span *ngIf="(favourites$ | async | isaddedtofavourite: product?.id) as fav">
+                   <span class="image-btn" *ngIf="(favourites$ | async | isaddedtofavourite: product?.id) as fav">
                       <a class="wishlist" title="Wishlisted" (click)="removeFromFavourite($event, fav)"><img
                               src="assets/images/heart-red.svg" alt="heart"></a>
-                  </span>
+                   </span>
                 </li>
                 <li class="btn3 mb-3">
-                    <a class="add_to_cart_button" title="add to cart" (click)="addToCartClickHandler($event, product)">
-                        <ng-container *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
+                    <a class="add_to_cart_button image-btn" title="add to cart" (click)="addToCartClickHandler($event, product)">
+                        <ng-container class="image-btn" *ngIf="!(cart$ | async | isaddedtocart: product?.id); else addedInCart">
                             <img src="assets/images/cart.svg" alt="cart">
                         </ng-container>
                         <ng-template #addedInCart>
@@ -79,7 +79,7 @@
                     </a>
                 </li>
                 <li class="btn3">
-                <span *ngIf="!(compare$|async|isaddedtocompare:product)">
+                <span class="image-btn" *ngIf="!(compare$|async|isaddedtocompare:product)">
                   <a class="compare" *ngIf="(compare$|async).length<3" (click)=" addToCompare($event, product)"
                      title="compare"> <img src="assets/images/compare.svg" alt="compare">
                   </a>
@@ -87,9 +87,8 @@
                      title="compare"> <img src="assets/images/compare.svg" alt="compare">  </a>
                 </span>
 
-                    <span *ngIf="(compare$|async|isaddedtocompare:product)">
-                      <a class="compare" title="added in compare list"
-                         (click)="removeFromCompare($event, product)"> <img
+                    <span class="image-btn" *ngIf="(compare$|async|isaddedtocompare:product)">
+                      <a class="compare" title="added in compare list" (click)="removeFromCompare($event, product)"> <img
                               src="assets/images/compare-red.svg" alt="compare">
                       </a>
                   </span>

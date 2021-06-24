@@ -793,11 +793,24 @@ table.variations-table tbody {
   margin-top: 150px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767.98px) {
   #universal {
     margin-top: 0;
   }
   #add-cartbtn {
     margin-left: 20px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .add-cart {
+    justify-content: space-between;
+    margin-left: 23px;
+  }
+}
+
+@media (max-width: 375.98px) {
+  .add-cart {
+    margin-left: 30px;
   }
 }

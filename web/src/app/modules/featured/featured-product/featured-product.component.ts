@@ -22,7 +22,14 @@ export class FeaturedProductComponent implements OnInit {
   }
 
   private getFeatureProducts() {
-    this.productList = this.productService.fetchFlashDealsProducts();
+    this.productService.getFlashDealsProducts()
+        .subscribe(data => {
+          this.productList = data.filter(product => {
+            return product.warehouse_id.status == 2;
+          })
+        }, error => {
+          console.log("Error occurred!", error);
+        })
   }
 
   private addPageTitle() {

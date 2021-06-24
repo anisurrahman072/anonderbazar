@@ -359,6 +359,26 @@
                     <!--weight-->
 
                 </div>
+
+                <div class="col-md-6">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
+                            <label> Discount Price </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="promo_price" [placeholder]="'Enter discount'"
+                                   [nzSize]="'large'">
+
+                            <div
+                                    *ngIf="getFormControl('promo_price').dirty&&getFormControl('promo_price').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                    <!--discount price-->
+
+                </div>
+
                 <div class="col-md-6">
                     <div nz-row>
                         <div nz-col [nzSpan]="7">

@@ -266,7 +266,9 @@ export class CategoryPageComponent implements OnInit {
                 .subscribe((result: any) => {
                     console.log('filterSearchObservable-result', result.data);
                     if (result && result.data) {
-                        this.allProductsByCategory = result.data;
+                        this.allProductsByCategory = result.data.filter(product => {
+                            return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
+                        });
 
                         /** finding out the products exists in the offer store*/
                         this.allProductsByCategory.forEach(product => {

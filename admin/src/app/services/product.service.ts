@@ -141,8 +141,7 @@ export class ProductService {
     }
 
     productExcel(value): Observable<any> {
-        console.log(value);
-        return this.http.get(this.EndPoint2 + `/product-excel?type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
+        return this.http.get(this.EndPoint2 + `/product-excel?warehouse_id=${value.warehouse_id}&type_id=${value.type_id}&category_id=${value.category}&subcategory_id=${value.subcategory}`, {responseType: 'blob'});
     }
 
     submitDataForBulkUpdate(data): Observable<any> {

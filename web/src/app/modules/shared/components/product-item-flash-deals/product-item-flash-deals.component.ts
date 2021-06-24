@@ -90,6 +90,7 @@ export class ProductItemFlashDealComponent implements OnInit {
     addToCart(product: any, callback?) {
         if (this.product.product_variants.length > 0) {
             this.router.navigate([`/product-details/${product.id}`]);
+            this.toastr.info('Please select product variant!', 'Note');
             return false;
         }
         if (this.authService.getCurrentUserId()) {

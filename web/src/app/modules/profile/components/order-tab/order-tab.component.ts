@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild } from '@angular/core';
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {MatPaginator} from "@angular/material";
@@ -37,6 +37,8 @@ export class OrderTabComponent implements OnInit {
     PAYMENT_STATUS: any = PAYMENT_STATUS;
     isShownConfirm: boolean = false;
 
+    orderStatus;
+
     /*
     * constructor for OrderTabComponent
     */
@@ -65,6 +67,8 @@ export class OrderTabComponent implements OnInit {
                 this.convertMilliSecondToHourMinute();
 
                 this.dashboardData = allData[2];
+                // console.log('this.dashboardData==>', this.dashboardData);
+                // console.log('this.dashboardData total==>', this.dashboardData.totalOrder);
             }, error => {
                 console.log(error);
             });
@@ -122,9 +126,33 @@ export class OrderTabComponent implements OnInit {
     //Event called for getting order data
     getFilteredOrderList() {
         if (this.statusFilter == 'all') {
-            return this.orderList;
+            this.orderStatus = this.orderList;
+            if (this.orderStatus.length <= 0) {
+                document.querySelector(".table-hide").classList.add("hidden-class");
+                document.querySelector(".page-hide").classList.add("hidden-class");
+                document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            }
+
+            if (this.orderStatus.length > 0) {
+                document.querySelector(".table-hide").classList.remove("hidden-class");
+                document.querySelector(".page-hide").classList.remove("hidden-class");
+                document.querySelector(".hide-no-product").classList.add("hidden-class");
+            }
+            return this.orderStatus;
         } else {
-            return this.orderList.filter(x => x.status == +this.statusFilter);
+            this.orderStatus = this.orderList.filter(x => x.status == +this.statusFilter);
+            if (this.orderStatus.length <= 0) {
+                document.querySelector(".table-hide").classList.add("hidden-class");
+                document.querySelector(".page-hide").classList.add("hidden-class");
+                document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            }
+
+            if (this.orderStatus.length > 0) {
+                document.querySelector(".table-hide").classList.remove("hidden-class");
+                document.querySelector(".page-hide").classList.remove("hidden-class");
+                document.querySelector(".hide-no-product").classList.add("hidden-class");
+            }
+            return this.orderStatus;
         }
     }
 

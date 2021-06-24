@@ -140,4 +140,11 @@ mat-sidenav {
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 767.98px) {
+  .scroll-for-mobile {
+    overflow-x: hidden;
+  }
+}
+
 //Loading css end

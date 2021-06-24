@@ -142,6 +142,7 @@
 
             <nz-table #nzTableDownload nzShowQuickJumper [nzBordered]="true" [nzData]="allUser" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
+                      nzShowQuickJumper
                       [(nzPageIndex)]="userPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="total"
                       (nzPageIndexChange)="getPageData($event, true)"

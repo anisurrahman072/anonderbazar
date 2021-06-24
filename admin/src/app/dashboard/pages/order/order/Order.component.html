@@ -1,6 +1,9 @@
 <section>
     <nz-card class="card-height order-list-card" nzTitle="Order list" [nzExtra]="extra">
         <ng-template #extra>
+            <button nz-button [nzType]="'primary'" (click)='showOrdersBalkModal()'>
+                <i class="anticon anticon-download"></i><span> Download Orders as Bulk </span>
+            </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
@@ -184,17 +187,17 @@
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 400px;">
                         <div *ngFor="let transaction of data.transactions">
-                            <p style="margin-bottom: 15px;">amount: {{transaction.amount}}, Payment
-                                Type: {{transaction.paymentType}}, Transaction Key: {{transaction.transactionKey}},
-                                Transaction Time: {{transaction.transactionTime}}</p>
+                            <p style="margin: 0px;">Amount: {{transaction.amount}}</p>
+                            <p style="margin: 0px;">Payment Type: {{transaction.paymentType}}</p>
+                            <p style="margin: 0px;" *ngIf="transaction.paymentType != PAYMENT_METHODS.CASH_PAYMENT_TYPE">Transaction Key: {{transaction.transactionKey}}</p>
+                            <p style="margin-bottom: 15px;">Transaction Time: {{transaction.transactionTime}}</p>
                         </div>
                     </td>
                     <td style="width: 300px;">
                         <p>Postal Code: {{data.postal_code}}</p>
                         <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
                         <p>
-                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}
-                            , {{data.division_name}}
+                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}, {{data.division_name}}
                         </p>
                     </td>
                     <td style="width: 200px;">
@@ -227,8 +230,8 @@
               (ngSubmit)="submitForm($event, validateProductForm.value)">
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="csvOrders" [nzFrontPagination]="false"
-                      [nzLoading]="_isSpinning"
                       nzShowQuickJumper
+                      [nzLoading]="_isSpinning"
                       [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="orderCsvTotal"
                       (nzPageIndexChange)="getData($event, true)"
@@ -300,5 +303,40 @@
                 </div>
             </div>
         </form>
+    </ng-template>
+</nz-modal>
+
+<!-- Download as bulk -->
+<nz-modal [nzFooter]="null"
+          nzWidth="60%"
+          [nzVisible]="isOrdersBulkVisible"
+          [nzTitle]="'Download orders as bulk'"
+          [nzContent]="modalOrdersBulkContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalOrdersBulkContent>
+        <div    nz-row>
+            <div    nz-col [nzSpan]="3">
+                <label> Enter Date </label>
+            </div>
+            <div nz-col [nzSpan]="15">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  00:00:00"
+                        [(ngModel)]="searchStartDateOrdersBulk"
+                        nzPlaceHolder="Start date">
+                </nz-date-picker>&nbsp;
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  23:59:59"
+                        [(ngModel)]="searchEndDateOrdersBulk"
+                        nzPlaceHolder="End date">
+                </nz-date-picker>
+            </div>
+            <div nz-col [nzSpan]="1">
+                <button nz-col nz-button [nzType]="'primary'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
+            </div>
+        </div>
     </ng-template>
 </nz-modal>

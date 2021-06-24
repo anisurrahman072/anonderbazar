@@ -38,7 +38,15 @@
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>
-        <div class="row text-center">
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 text-center"
+             style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
+             *ngIf="cms_detail.allproducts && cms_detail.allproducts.length <= 0">
+            <img class="img-fluid" src="../../../../assets/images/No_Product_Found.png"
+                 alt="No Product is available.">
+        </div>
+
+        <div class="row text-center" *ngIf="cms_detail.allproducts && cms_detail.allproducts.length > 12">
             <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next">
             </pagination-controls>
         </div>
