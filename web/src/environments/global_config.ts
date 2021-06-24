@@ -57,3 +57,10 @@ export const ORDER_TYPE = {
     REGULAR_ORDER: 1,
     PARTIAL_PAYMENT_ORDER: 2
 }
+
+export const WAREHOUSE_STATUS = {
+    PENDING: 0,
+    PROCESSING: 1,
+    ACTIVE: 2,
+    INACTIVE: 3
+}

@@ -26,6 +26,7 @@ import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {Subscription} from "rxjs/Subscription";
+import {WAREHOUSE_STATUS} from '../../../../environments/global_config';
 
 @Component({
     selector: "app-category-page",
@@ -250,12 +251,13 @@ export class CategoryPageComponent implements OnInit {
                     console.log('filterSearchObservable-result', result);
                     if (result && result.data) {
                         this.allProductsByCategory = result.data.filter(product => {
+                            console.log('this.allProductsByCategory if==>', this.allProductsByCategory);
                             return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
                         });
                     } else {
                         this.allProductsByCategory = [];
                     }
-                    console.log('this.allProductsByCategory', this.allProductsByCategory);
+                    console.log('this.allProductsByCategory==>', this.allProductsByCategory);
 
                     this.isLoading = false;
                     // this.loaderService.hideLoader();
@@ -632,7 +634,9 @@ export class CategoryPageComponent implements OnInit {
         this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
-                this.allProductsByCategory = result.data;
+                this.allProductsByCategory = result.data.filter(product => {
+                    return product.warehouse_id.status === WAREHOUSE_STATUS.ACTIVE
+                });
                 // this.loaderService.hideLoader();
             }, (err) => {
                 console.log('generateSearchFilterResult', err);
@@ -776,6 +780,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = true;
         this.sortTitle = 'price';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
+        console.log('this.sortTerm==>', this.sortTerm);
         this.generateSearchFilterResult();
     }
 
