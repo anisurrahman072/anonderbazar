@@ -3,6 +3,7 @@ const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
+const OfferService = require('../services/OfferService');
 
 module.exports = {
   generateRandomString: function () {
@@ -173,20 +174,130 @@ module.exports = {
     return paymentTemp;
   },
 
-  calcCartTotal: function (cart, cartItems) {
+  getRegularOfferStore: async function() {
+    let finalCollectionOfProducts = {};
+    await OfferService.offerDurationCheck();
+    let _where = {};
+    _where.deletedAt = null;
+    _where.offer_deactivation_time = null;
+    const requestedOffer = await Offer.find({where: _where});
+
+    if (requestedOffer.length === 0) {
+      finalCollectionOfProducts = {};
+      return finalCollectionOfProducts;
+    }
+
+    for (let offer = 0; offer < requestedOffer.length; offer++) {
+      const thisOffer = requestedOffer[offer];
+      let offerObj = {
+        calculation_type: thisOffer.calculation_type,
+        discount_amount: thisOffer.discount_amount,
+      };
+
+      /**if selection_type === 'Vendor wise'*/
+      if (thisOffer.selection_type === 'Vendor wise') {
+
+        let products = await Product.find({
+          status: 2,
+          approval_status: 2,
+          deletedAt: null,
+          warehouse_id: thisOffer.vendor_id
+        });
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+      /**if selection_type === 'Brand wise'*/
+      if (thisOffer.selection_type === 'Brand wise') {
+        let _where = {};
+        _where.brand_id = thisOffer.brand_id;
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+        let products = await Product.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+
+      /**if selection_type === 'Category wise'*/
+      if (thisOffer.selection_type === 'Category wise') {
+        let _where = {};
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+
+        if (thisOffer.subSubCategory_Id) {
+          _where.subcategory_id = thisOffer.subSubCategory_Id;
+        } else if (thisOffer.subCategory_Id) {
+          _where.category_id = thisOffer.subCategory_Id;
+        } else if (thisOffer.category_id) {
+          _where.type_id = thisOffer.category_id;
+        }
+
+        let products = await Product.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+
+      /** if selection_type === 'Product wise' */
+      if (thisOffer.selection_type === 'Product wise') {
+        let _where = {};
+        _where.regular_offer_id = thisOffer.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        let products = await RegularOfferProducts.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.product_id] = offerObj;
+          });
+        }
+      }
+    }
+
+    return finalCollectionOfProducts;
+  },
+
+  calcCartTotal: async function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
-    cartItems.forEach(async (cartItem) => {
+    for (let cartItem of cartItems) {
       if (cartItem.product_quantity > 0) {
         let productPrice = cartItem.product_total_price;
-        if (!cartItem.product_id.promotion) {
+        console.log('offerProducts: before');
+
+        /**Method called to get all the offerd products*/
+        let offerProducts = await this.getRegularOfferStore();
+        /**Method getRegularOfferStore END*/
+
+        console.log('offerProducts', offerProducts);
+
+        if (!(offerProducts && offerProducts[cartItem.product_id.id])) {
           let productUnitPrice = cartItem.product_id.price;
           productPrice = productUnitPrice * cartItem.product_quantity;
         }
+
+        /*if (!cartItem.product_id.promotion) {
+          let productUnitPrice = cartItem.product_id.price;
+          productPrice = productUnitPrice * cartItem.product_quantity;
+        }*/
+
         grandOrderTotal += productPrice;
         totalQty += cartItem.product_quantity;
+        console.log('grand totallllllllll: ', grandOrderTotal);
       }
-    });
+    }
     return {
       grandOrderTotal,
       totalQty
@@ -238,7 +349,7 @@ module.exports = {
   createOrder: async (db, orderDatPayload, cartItems) => {
 
     console.log('ttttttttttttt1');
-    console.log('orderDatPayload', orderDatPayload);
+    console.log('orderDatPayload rouzex', orderDatPayload);
 
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
 
@@ -261,8 +372,12 @@ module.exports = {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
       let cartItemsTemp = cartItems.filter(
-        asset => asset.product_id.warehouse_id === thisWarehouseID
+        asset => {
+          return asset.product_id.warehouse_id === thisWarehouseID;
+        }
       );
+
+      console.log('cartItemsTemp: ', cartItemsTemp);
 
       let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
       let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');

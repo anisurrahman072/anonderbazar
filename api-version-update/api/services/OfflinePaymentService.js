@@ -14,10 +14,12 @@ module.exports = {
       grandOrderTotal,
       totalQty
     } = PaymentService.calcCartTotal(cart, cartItems);
+    console.log('offline: RRRRR: total', grandOrderTotal);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
 
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
+    console.log('offline: RRRRR: courier', courierCharge);
 
     logger.orderLog(authUser.id, 'Courier Charge: ', courierCharge);
 
