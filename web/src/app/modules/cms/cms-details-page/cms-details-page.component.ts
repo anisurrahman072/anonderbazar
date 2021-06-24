@@ -16,7 +16,7 @@ export class CmsDetailsPageComponent implements OnInit {
     regularOfferedProducts;
     products: any = [];
     offers: any = [];
-    p: any;
+    page: any;
     private queryParams: any;
 
     /**offer related variables*/
@@ -38,7 +38,7 @@ export class CmsDetailsPageComponent implements OnInit {
     ngOnInit() {
         this.route.queryParams.subscribe(queryparams => {
             if (queryparams['page']) {
-                this.p = +queryparams['page'];
+                this.page = +queryparams['page'];
             }
         });
 
@@ -95,6 +95,6 @@ export class CmsDetailsPageComponent implements OnInit {
         query.page = event;
 
         this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
-        this.p = event;
+        this.page = event;
     }
 }

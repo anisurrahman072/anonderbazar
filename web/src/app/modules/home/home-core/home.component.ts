@@ -10,6 +10,7 @@ import {Offer} from "../../../models";
 import {Subscription} from "rxjs/Subscription";
 import { Title } from '@angular/platform-browser';
 import {error} from "util";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
     selector: 'app-home-page',
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         private title: Title,
         private offerService: OfferService,
         private store: Store<fromStore.HomeState>,
+        private toastr: ToastrService
     ) {
     }
 
@@ -76,7 +78,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this.cmsDataForPageSectionSubsection = results[1];
                 }
             }, (error) => {
-                // TODO: handle error
+                console.log(error);
+                this.toastr.error('Sorry! There was a problem!', 'Sorry!');
             });
     }
 
