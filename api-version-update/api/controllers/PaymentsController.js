@@ -6,6 +6,17 @@
  */
 const {pagination} = require('../../libs/pagination');
 const Promise = require('bluebird');
+const {
+  APPROVED_PAYMENT_APPROVAL_STATUS,
+  PENDING_PAYMENT_APPROVAL_STATUS,
+  PAYMENT_STATUS_PAID,
+  PAYMENT_STATUS_UNPAID,
+  PAYMENT_STATUS_PARTIALLY_PAID,
+} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
+const {getGlobalConfig} = require('../../libs/helper');
+const moment = require('moment');
+
 module.exports = {
   //Method called for getting all payment data
   //Model models/Payment.js
@@ -72,7 +83,7 @@ module.exports = {
         _where += ` AND payments.created_at LIKE '${req.query.dateSearchValue}%' `;
       }
 
-      let _sort ='';
+      let _sort = '';
       if (req.query.sortValue && req.query.sortKey) {
         _sort += ` GROUP BY id ORDER BY payments.${req.query.sortKey} ${req.query.sortValue} `;
       } else {
@@ -83,7 +94,7 @@ module.exports = {
       const totalPaymentsRaw = await PaymentNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where + ' GROUP BY payments.id ', []);
       if (totalPaymentsRaw && totalPaymentsRaw.rows && totalPaymentsRaw.rows.length > 0) {
 
-        totalPayments  = totalPaymentsRaw.rows.length;
+        totalPayments = totalPaymentsRaw.rows.length;
 
         _pagination.limit = _pagination.limit ? _pagination.limit : totalSuborderItems;
 
@@ -114,5 +125,91 @@ module.exports = {
       });
     }
   },
+
+  changeApprovalStatus: async (req, res) => {
+    try {
+      const paymentId = req.query.paymentId;
+      const status = req.query.status;
+      const orderId = req.query.orderId;
+
+      const globalConfigs = getGlobalConfig();
+
+      /** Find how much time expended for this order */
+      let now = moment(new Date());
+      let createdAt = moment(order.createdAt);
+      let duration = moment.duration(now.diff(createdAt));
+      let expendedHour = Math.floor(duration.asHours());
+
+
+      let updatedPayment = await Payment.update({id: paymentId}, {
+        approval_status: status
+      });
+
+      let order = await Order.findOne({
+        id: orderId,
+        deletedAt: null
+      });
+
+      let finalPaidAmount = order.paid_amount + updatedPayment.payment_amount;
+
+      /** Check how many payments are pending for this order of payment */
+      let pendingPayments = await Payment.find({
+        order_id: orderId,
+        approval_status: PENDING_PAYMENT_APPROVAL_STATUS,
+        deletedAt: null
+      });
+
+      let _set = {
+        paid_amount: finalPaidAmount
+      };
+
+      if (pendingPayments && pendingPayments.length === 0) {
+
+        if (finalPaidAmount < order.total_price) {
+          _set.status = ORDER_STATUSES.canceled;
+
+          await Suborder.update({product_order_id: orderId}, {status: ORDER_STATUSES.canceled});
+        }
+      }
+      else {
+
+      }
+
+
+
+
+
+
+      if (status === APPROVED_PAYMENT_APPROVAL_STATUS) {
+
+
+
+        /** END */
+
+        /** Update Paid_amount & payment_status with checking previous payment status */
+
+        if (finalPaidAmount >= order.total_price) {
+          _set.payment_status = PAYMENT_STATUS_PAID;
+        } else {
+          if (order.payment_status === PAYMENT_STATUS_UNPAID) {
+            _set.payment_status = PAYMENT_STATUS_PARTIALLY_PAID;
+          }
+        }
+        let updatedOrder = await Order.update({id: orderId}, _set);
+        /** END */
+
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated the approval status'
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating the approval status',
+      });
+    }
+  }
 };
 

@@ -19,6 +19,10 @@ export class PaymentService {
             ;
     }
 
+    changeApprovalStatus(paymentId, status): Observable<any> {
+        return this.http.get(this.EndPoint + `?paymentId=${paymentId}&status=${status}`);
+    }
+
     getAllPayment(page: number,
                   limit: number,
                   nameSearchValue: string,

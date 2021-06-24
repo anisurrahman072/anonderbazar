@@ -262,6 +262,10 @@ export class PaymentComponent implements OnInit {
     };
 
     changeApprovalStatus($event, paymentId, paymentApprovalStatus){
-        console.log("aaaaa; ", $event, paymentId, paymentApprovalStatus);
+        this.paymentService.changeApprovalStatus(paymentId, paymentApprovalStatus)
+            .subscribe(data => {
+                console.log("The updated data is: ", data);
+                this.getPageData();
+            })
     }
 }

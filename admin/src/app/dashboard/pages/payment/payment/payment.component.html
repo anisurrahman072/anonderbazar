@@ -151,8 +151,8 @@
                             N/A
                         </td>
                         <td style="width: 200px;">
-                            <nz-select style="width: 170px;" [(ngModel)]="data.approval_status"
-                                       nzAllowClear (ngModelChange)="changeApprovalStatus($event, data.id, data.approval_status);"
+                            <nz-select style="width: 170px;" [(ngModel)]="datum.approval_status"
+                                       nzAllowClear (ngModelChange)="changeApprovalStatus($event, datum.id, datum.order_id, datum.approval_status);"
                                        [nzPlaceHolder]="'Select Approval Status'"
                                        [nzNotFoundContent]="'Not found'">
                                 <nz-option *ngFor="let option of approvalOptions" [nzLabel]="option.label"
