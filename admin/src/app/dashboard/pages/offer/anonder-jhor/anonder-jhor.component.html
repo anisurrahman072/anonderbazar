@@ -1,4 +1,5 @@
 <section>
+    <!--anonder jhor card-->
     <nz-card class="card-height" nzTitle="Anonder Jhor" [nzExtra]="extra">
         <ng-template #extra>
             <button (click)="isAnonderJhorEdit = !isAnonderJhorEdit; editAnonderJhor()" nz-button
@@ -47,16 +48,11 @@
                     <div nz-col [nzSpan]="7">
                         <label>Status</label>
                     </div>
-                    <div *ngIf="anonderJhorData.status; else inactive">
+                    <div nz-col [nzSpan]="12">
                         <nz-switch [ngModel]="status"
                                    (ngModelChange)="jhorActiveStatusChange($event)">
                         </nz-switch>
                     </div>
-                    <ng-template #inactive>
-                        <nz-switch [ngModel]="status"
-                                   (ngModelChange)="jhorActiveStatusChange($event)">
-                        </nz-switch>
-                    </ng-template>
                 </div>
 
             </ng-container>
@@ -126,4 +122,119 @@
             <!--edit section ends-->
         </nz-spin>
     </nz-card>
+    <!--anonder jhor card ends-->
+
+    <!--anonder Jhor offer card-->
+    <nz-card class="card-height" nzTitle="Regular Offer list" [nzExtra]="jhor">
+        <ng-template #jhor>
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-download"></i><span>Add New</span>
+                <!--show the add new modal-->
+            </button>
+        </ng-template>
+        <ng-container>
+            <nz-spin [nzSpinning]="_isSpinning">
+                <nz-table #nzTable
+                          nzShowQuickJumper
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="anonderJhorOffersData"
+                          [nzLoading]="loading"
+                          [nzTotal]="anonderJhorOfferTotal"
+                          [(nzPageIndex)]="anonderJhorOfferPage"
+                          [(nzPageSize)]="anonderJhorOfferLimit"
+                          (nzPageIndexChange)="getAllAnonderJhorOffersData()"
+                >
+                    <thead>
+                    <tr>
+                        <th>
+                            <span> Category </span>
+                        </th>
+                        <th>
+                            <span> Sub-Category </span>
+                        </th>
+                        <th>
+                            <span> Sub-Sub-Category </span>
+                        </th>
+                        <th>
+                            <span> Start Time </span>
+                        </th>
+                        <th>
+                            <span> End Time </span>
+                        </th>
+                        <th>
+                            <span> Status </span>
+                        </th>
+                        <th>
+                            <span> Discount Amount </span>
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let datum of nzTable.data;let i=index">
+                        <td>
+                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.sub_category_id.name}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.sub_sub_category_id.name}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.end_date | date : 'medium'}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-switch [ngModel]="offerStatus"
+                                       (ngModelChange)="offerActiveStatusChange($event, datum.id)">
+                            </nz-switch>
+                        </td>
+
+                        <td *ngIf="datum.calculation_type === 'percentage'">
+                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
+                        </td>
+                        <td *ngIf="datum.calculation_type === 'absolute'">
+                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-button-group>
+
+                                <button *ngIf="'offer-edit'|accessControl"
+                                        [routerLink]="['/dashboard/offer/edit', datum.id]" nz-button
+                                        [nzType]="'primary'" [nzSize]="'default'">
+                                    <i class="anticon anticon-edit"></i>
+                                </button>
+                                <ng-container>
+                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
+                                                   [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
+                                                   (nzOnConfirm)="deleteAnonderJhorOffer(i,datum.id)">
+                                        <a nz-popconfirm>
+                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <i class="anticon anticon-delete "></i>
+                                            </button>
+
+                                        </a>
+                                    </nz-popconfirm>
+                                </ng-container>
+                            </nz-button-group>
+                        </td>
+                    </tr>
+                    </tbody>
+                </nz-table>
+            </nz-spin>
+        </ng-container>
+    </nz-card>
+    <!--anonder Jhor offer card ends-->
 </section>

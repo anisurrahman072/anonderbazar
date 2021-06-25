@@ -20,10 +20,18 @@ export class AnonderJhorComponent implements OnInit {
     AnonderJhorBannerImageFileEdit: any;
     status: Boolean = false;
 
+    /** Anonder Jhor Offers variables */
+    anonderJhorOffersData: any = [];
+    anonderJhorOfferLimit: number = 10;
+    anonderJhorOfferPage: number = 1;
+    anonderJhorOfferTotal: number = 0;
+    offerStatus: Boolean = false;
+
     /** Common Variables */
     validateForm: FormGroup;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
+    loading: boolean = false;
 
 
     constructor(
@@ -35,6 +43,7 @@ export class AnonderJhorComponent implements OnInit {
 
     ngOnInit() {
         this.getAnonderJhor();
+        this.getAllAnonderJhorOffersData();
     }
 
     /** Method called to get data of anonder Jhor */
@@ -56,9 +65,24 @@ export class AnonderJhorComponent implements OnInit {
             });
     }
 
-    /** Event Method called to change the status of anonder jhor offer */
+    /** Method called to get all data of anonder Jhor offers */
+    getAllAnonderJhorOffersData() {
+        this._isSpinning = true;
+        this.offerService.getAllAnonderJhorOffersData(this.anonderJhorOfferLimit, this.anonderJhorOfferPage)
+            .subscribe(result => {
+                this.loading = false;
+                console.log('getAnonderJhorOffersData data: ', result);
+                this.anonderJhorOffersData = result.data;
+                this.anonderJhorOfferTotal = result.total;
+                this._isSpinning = false;
+            }, error => {
+                this._isSpinning = false;
+                console.log('error: ', error);
+            })
+    }
+
+    /** Event Method called to change the status of anonder jhor */
     jhorActiveStatusChange(event) {
-        console.log('event: ', event);
         this.offerService.jhorActiveStatusChange(event)
             .subscribe(result => {
                 console.log('status : ', result);
@@ -67,6 +91,20 @@ export class AnonderJhorComponent implements OnInit {
                 }
                 this.status = result.status;
                 this.getAnonderJhor();
+            });
+    }
+
+    /** Event Method called to change the status of anonder jhor offers */
+    offerActiveStatusChange(event, offerId) {
+        let data = {event, offerId}
+        this.offerService.offerActiveStatusChange(data)
+            .subscribe(result => {
+                console.log('status : ', result);
+                if(result.code === 'NOT_ALLOWED') {
+                    this._notification.error('Sorry!', 'Offer time or Jhor offer ended, you can not change status');
+                }
+                this.offerStatus = result.status;
+                this.getAllAnonderJhorOffersData();
             });
     }
 
@@ -147,9 +185,21 @@ export class AnonderJhorComponent implements OnInit {
         }
     }
 
-    //Event method for setting up form in validation
+    /** Event method for setting up form in validation */
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
+
+    /** Event method for deleting anonder jhor offer */
+    deleteAnonderJhorOffer(index, id) {
+        this._isSpinning = true;
+        this.offerService.deleteAnonderJhorOffer(id).subscribe(result => {
+            this._notification.warning(' Delete', "Anonder Jhor Offer Successfully");
+            this._isSpinning = false;
+            this.getAllAnonderJhorOffersData();
+        }, (err) => {
+            this._isSpinning = false;
+        });
+    };
 
 }

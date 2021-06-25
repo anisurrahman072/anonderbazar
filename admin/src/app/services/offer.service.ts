@@ -73,4 +73,20 @@ export class OfferService {
     jhorActiveStatusChange(data): Observable<any> {
         return this.http.post(`${this.EndPoint1}/jhorActiveStatusChange`, data);
     }
+
+    getAllAnonderJhorOffersData(anonderJhorOfferLimit = 10, anonderJhorOfferPage = 1): Observable<any> {
+        return  this.http
+            .get(`${this.EndPoint1}/getAllAnonderJhorOffersData?limit=${anonderJhorOfferLimit}&page=${anonderJhorOfferPage}`)
+            .map(response => response);
+    }
+
+    offerActiveStatusChange(data): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/offerActiveStatusChange`, data);
+    }
+
+    /** method called to delete a Anonder Jhor offer */
+    deleteAnonderJhorOffer(id): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/deleteAnonderJhorOffer`, id)
+            .map(response => response);
+    }
 }

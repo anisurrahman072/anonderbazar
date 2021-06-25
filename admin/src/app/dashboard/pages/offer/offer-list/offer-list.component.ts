@@ -13,7 +13,6 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private offerProductIds: any = [];
     regularOfferData: any = [];
-    anonderJhorOfferData: any = [];
     currentProduct: any = {};
     currentOffer: any = {};
 
@@ -52,17 +51,13 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     // init the component
     ngOnInit() {
         this.getRegularOfferData();
-        this.getJhorOfferData();
     };
 
     /**Event method for getting all the data for the Regular offer*/
     getRegularOfferData() {
         this._isSpinning = true;
         this.offerService
-            .allRegularOffer(
-                this.homeOfferLimit,
-                this.homeOfferPage
-            )
+            .allRegularOffer(this.homeOfferLimit, this.homeOfferPage)
             .subscribe(result => {
                 this.loading = false;
                 console.log('getRegularOfferData', result);
@@ -75,44 +70,13 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     };
 
-    /**Event method for getting all Anonder Jhor data for the page*/
-    getJhorOfferData() {
-        this._isSpinning = true;
-        this.cmsService
-            .getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'},
-                this.homeOfferLimit,
-                this.homeOfferPage)
-            .subscribe(result1 => {
-                this.loading = false;
-                this.anonderJhorOfferData = result1.data;
-                this._isSpinning = false;
-            }, error => {
-                this._isSpinning = false;
-            });
-    };
-
-
     /**Event method for deleting regular offer*/
     deleteRegularOffer(index, id) {
         this._isSpinning = true;
         this.offerService.delete(id).subscribe(result => {
-            this._notification.warning('Regular Offer Delete', "Deleted Successfully");
+            this._notification.warning('Offer Delete', "Deleted Successfully");
             this._isSpinning = false;
             this.getRegularOfferData();
-            this.getJhorOfferData();
-        }, (err) => {
-            this._isSpinning = false;
-        });
-    };
-
-    /**Event method for deleting Anonder Jhor offer*/
-    deleteJhorOffer(index, id) {
-        this._isSpinning = true;
-        this.cmsService.delete(id).subscribe(result => {
-            this._notification.warning('Parent Offer Delete', "Deleted Successfully");
-            this._isSpinning = false;
-            this.getRegularOfferData();
-            this.getJhorOfferData();
         }, (err) => {
             this._isSpinning = false;
         });

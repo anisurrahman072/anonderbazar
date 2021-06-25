@@ -48,7 +48,6 @@ module.exports = {
     image: {
       type: 'json',
       columnType: 'text',
-      required: true,
     }
   },
 
