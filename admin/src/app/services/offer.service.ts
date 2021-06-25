@@ -8,6 +8,7 @@ import {Observable} from "rxjs/Observable";
 })
 export class OfferService {
     private EndPoint = `${environment.API_ENDPOINT}/offer`;
+    private EndPoint1 = `${environment.API_ENDPOINT}/anonderJhor`;
 
     constructor(private http: HttpClient) {
     }
@@ -58,5 +59,18 @@ export class OfferService {
 
     activeStatusChange(data): Observable<any> {
         return this.http.post(`${this.EndPoint}/activeStatusChange`, data);
+    }
+
+    /** AnonderJhor starts from here */
+    getAnonderJhor(): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAnonderJhor`);
+    }
+
+    updateAnonderJhor(data): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/updateAnonderJhor`, data);
+    }
+
+    jhorActiveStatusChange(data): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/jhorActiveStatusChange`, data);
     }
 }

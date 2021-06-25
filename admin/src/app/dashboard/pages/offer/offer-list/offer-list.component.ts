@@ -13,11 +13,11 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private offerProductIds: any = [];
     regularOfferData: any = [];
-    anonderjhorOfferData: any = [];
+    anonderJhorOfferData: any = [];
     currentProduct: any = {};
     currentOffer: any = {};
 
-    private anonderjhorOffers: any = [];
+    private anonderJhorOffers: any = [];
     allOffers: any = [];
     allProducts: any = [];
 
@@ -84,7 +84,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.homeOfferPage)
             .subscribe(result1 => {
                 this.loading = false;
-                this.anonderjhorOfferData = result1.data;
+                this.anonderJhorOfferData = result1.data;
                 this._isSpinning = false;
             }, error => {
                 this._isSpinning = false;
