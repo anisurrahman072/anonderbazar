@@ -4,6 +4,7 @@ import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import {NzNotificationService} from "ng-zorro-antd";
+import {FileHolder, UploadMetadata} from "angular2-image-upload";
 
 @Component({
     selector: 'app-anonder-jhor',
@@ -15,7 +16,7 @@ export class AnonderJhorComponent implements OnInit {
     /** Anonder Jhor variables */
     anonderJhorData: any;
     isAnonderJhorEdit: Boolean = false;
-    AnonderJhorBannerImageFile: File;
+    anonderJhorBannerImageFile: File;
     AnonderJhorBannerImageFileEdit: any;
     status: Boolean = false;
 
@@ -55,11 +56,24 @@ export class AnonderJhorComponent implements OnInit {
             });
     }
 
+    /** Event Method called to change the status of anonder jhor offer */
+    jhorActiveStatusChange(event) {
+        console.log('event: ', event);
+        this.offerService.jhorActiveStatusChange(event)
+            .subscribe(result => {
+                console.log('status : ', result);
+                if(result.code === 'INVALID_ACTION') {
+                    this._notification.error('Sorry!', 'Offer time ended, you can not change status');
+                }
+                this.status = result.status;
+                this.getAnonderJhor();
+            });
+    }
+
     /** Event method called for editing anonder jhor */
     editAnonderJhor() {
         if (this.isAnonderJhorEdit) {
             this.validateForm = this.fb.group({
-                bannerImage: ['', [Validators.required]],
                 startDate: ['', [Validators.required]],
                 endDate: ['', [Validators.required]],
             });
@@ -73,7 +87,7 @@ export class AnonderJhorComponent implements OnInit {
             this.validateForm.patchValue(payload);
 
             if (this.anonderJhorData && this.anonderJhorData.banner_image) {
-                this.AnonderJhorBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.banner_image.image);
+                this.AnonderJhorBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.banner_image);
             }
 
             this._isSpinning = false;
@@ -94,11 +108,11 @@ export class AnonderJhorComponent implements OnInit {
         formData.append('startDate', moment(value.startDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('endDate', moment(value.endDate).format('YYYY-MM-DD HH:mm:ss'));
 
-        if (this.AnonderJhorBannerImageFile) {
-            formData.append('hasBannerImage', 'true');
-            formData.append('image', this.AnonderJhorBannerImageFile, this.AnonderJhorBannerImageFile.name);
+        if (this.anonderJhorBannerImageFile) {
+            formData.append('hasImage', 'true');
+            formData.append('image', this.anonderJhorBannerImageFile, this.anonderJhorBannerImageFile.name);
         } else {
-            formData.append('hasBannerImage', 'false');
+            formData.append('hasImage', 'false');
         }
 
         this.offerService.updateAnonderJhor(formData).subscribe(result => {
@@ -115,6 +129,15 @@ export class AnonderJhorComponent implements OnInit {
         });
     };
 
+    onJhorBannerRemoved(file: FileHolder) {
+        this.anonderJhorBannerImageFile = null;
+    }
+
+    onBeforejhorBannerUpload = (metadata: UploadMetadata) => {
+        this.anonderJhorBannerImageFile = metadata.file;
+        return metadata;
+    }
+
     /** Event method for resetting the form */
     resetForm($event: MouseEvent) {
         $event ? $event.preventDefault() : null;
@@ -124,18 +147,9 @@ export class AnonderJhorComponent implements OnInit {
         }
     }
 
-    /** Event Method called to change the status of anonder jhor offer */
-    jhorActiveStatusChange(event) {
-        console.log('event: ', event);
-        this.offerService.jhorActiveStatusChange(event)
-            .subscribe(result => {
-                console.log('status : ', result);
-                if(result.code === 'INVALID_ACTION') {
-                    this._notification.error('Sorry!', 'Offer time ended, you can not change status');
-                }
-                this.status = result.status;
-                this.getAnonderJhor();
-            });
+    //Event method for setting up form in validation
+    getFormControl(name) {
+        return this.validateForm.controls[name];
     }
 
 }
