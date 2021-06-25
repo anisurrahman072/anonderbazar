@@ -25,6 +25,7 @@ import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
 import {QueryMessageModalComponent} from "./components/query-message-modal/query-message-modal.component";
 import { TimerPipe} from "../../pipes/timer.pipe";
 import {OrderTypePipe} from "../../pipes/order-type";
+import {PaymentApprovalStatusPipe} from "../../pipes/payment-approval-status";
 import {ImageUploadModule} from "angular2-image-upload";
 
 const declaredComponents = [
@@ -85,7 +86,8 @@ const sharedComponents = [
     ],
     declarations: [
         declaredComponents,
-        OrderTypePipe
+        OrderTypePipe,
+        PaymentApprovalStatusPipe
     ],
     exports: sharedComponents,
     entryComponents: [QueryMessageModalComponent]

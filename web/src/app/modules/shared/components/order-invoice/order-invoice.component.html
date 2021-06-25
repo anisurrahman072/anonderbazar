@@ -145,17 +145,18 @@
                         </div>
                         <div class="col-md-6">
                             <div style="margin-bottom: 10px;">
-                                <h5>Payment Type: {{data.order_type | ordertype}}</h5>
+                                <h5>Payment Type: <b>{{data.order_type | ordertype}}</b></h5>
                             </div>
-                            <div class="bill-info-right" *ngIf="payment">
+                            <div class="bill-info-right" *ngIf="payment && data.order_type == ORDER_TYPE.REGULAR_ORDER">
                                 <h5>Payment Info</h5>
                                 <p> Payment method: {{payment.payment_type}}</p>
                                 <p *ngIf="payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE &&
-                                          payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"> Transaction
-                                    id: {{payment.transection_key}}</p>
+                                          payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE &&
+                                          payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE">
+                                    Transaction id: {{payment.transection_key}}
+                                </p>
 
-                                <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
-                                     style="margin-top: 20px !important;">
+                                <div *ngIf="payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 20px !important;">
                                     <h5>Offline payment method details</h5>
                                     <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
                                         <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
@@ -166,7 +167,7 @@
                                     </div>
                                     <ng-template #notBankTransfer>
                                         <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
-                                        <div (click)="isAddModalVisible(modalContent)" style="cursor: pointer;">
+                                        <div (click)="isAddModalVisible(modalContent, paymentDetails.money_receipt)" style="cursor: pointer;">
                                             <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}"
                                                  alt="money-receipt" style="height: 100px;">
                                         </div>
@@ -181,10 +182,10 @@
         </mat-card>
     </div>
 
-    <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0 && payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+    <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
         <mat-card-title>Transaction log</mat-card-title>
-        <mat-card class="example-card">
-            <mat-card-content *ngFor="let payment of allPaymentsLog;" class="mb-3">
+        <mat-card class="example-card" *ngFor="let payment of allPaymentsLog;">
+            <mat-card-content class="mb-3">
                 <div style="display: flex; flex-direction: row; align-items: center;">
                     <div class="circle fa">
                         <i class="fa fa-check" aria-hidden="true"></i>
@@ -192,8 +193,26 @@
                     <div style="margin-left: 30px;">
                         <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
                         <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
-                        <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE">Payment transaction: {{payment.transection_key}}</p>
+                        <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
+                                payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
+                                payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">Payment transaction: {{payment.transection_key}}</p>
                         <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
+
+                        <p style="margin: 0px;" *ngIf="payment.details && payment.details.offline_payment_method &&
+                                    data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
+                        <p style="margin: 0px;" *ngIf="payment.details && payment.details.offline_payment_method">Offline payment method: {{payment.details.offline_payment_method}}</p>
+
+                        <div *ngIf="payment.details && payment.details.offline_payment_method  && payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
+                            <p style="margin: 0px;" >Transaction ID: {{payment.details.transactionId}}</p>
+                            <p style="margin: 0px;" >Bank Name: {{payment.details.bankName}}</p>
+                            <p style="margin: 0px;" >Branch Name: {{payment.details.branchName}}</p>
+                            <p style="margin: 0px;" >Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
+                        </div>
+                        <div *ngIf="payment.details && payment.details.offline_payment_method  && payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
+                                (click)="isAddModalVisible(modalContent, payment.details.money_receipt)" style="cursor: pointer;">
+                            <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                                 alt="money-receipt" style="height: 100px;">
+                        </div>
                     </div>
                 </div>
             </mat-card-content>
@@ -204,7 +223,7 @@
 <ng-template #modalContent>
     <h4>Money Receipt</h4>
     <div style="padding: 20px;">
-        <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}">
+        <img src="{{IMAGE_ENDPOINT + '/'+currentMoneyReceiptToShow}}">
     </div>
 </ng-template>
 

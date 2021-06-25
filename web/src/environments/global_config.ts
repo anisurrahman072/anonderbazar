@@ -64,3 +64,16 @@ export const WAREHOUSE_STATUS = {
     ACTIVE: 2,
     INACTIVE: 3
 }
+
+export const PAYMENT_APPROVAL_STATUS = {
+    PENDING: 1,
+    APPROVED: 2,
+    REJECTED: 3
+}
+
+export const OFFLINE_PAYMENT_METHODS = {
+    CASH_IN_ADVANCE: 'cashInAdvance',
+    BANK_TRANSFER: 'bankTransfer',
+    BANK_DEPOSIT: 'bankDeposit',
+    MOBILE_TRANSFER: 'mobileTransfer'
+}

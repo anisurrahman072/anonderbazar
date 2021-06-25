@@ -19,7 +19,7 @@ import * as _moment from 'moment';
 import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
 import {BsModalService} from "ngx-bootstrap/modal";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
-import {ORDER_STATUSES, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS} from '../../../../../environments/global_config';
+import {ORDER_STATUSES, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS, PAYMENT_APPROVAL_STATUS, OFFLINE_PAYMENT_METHODS} from '../../../../../environments/global_config';
 import {forkJoin} from "rxjs/observable/forkJoin";
 import {QueryMessageModalComponent} from "../query-message-modal/query-message-modal.component";
 import {LoaderService} from "../../../../services/ui/loader.service";
@@ -47,6 +47,8 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
     ORDER_TYPE: any = ORDER_TYPE;
     PAYMENT_STATUS: any = PAYMENT_STATUS;
+    PAYMENT_APPROVAL_STATUS = PAYMENT_APPROVAL_STATUS;
+    OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
 
     allRemainingTime: any[] = [];
     globalPartialPaymentDuration: number;
@@ -58,6 +60,8 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
     PAYMENT_METHODS = PAYMENT_METHODS;
     moneyReceiptModalRef: BsModalRef;
+
+    currentMoneyReceiptToShow: any = '';
 
     constructor(private route: ActivatedRoute,
                 private suborderService: SuborderService,
@@ -116,12 +120,14 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
 
                     this.isAllowedForPay = this.globalPartialPaymentDuration >= expendedHour && data[0].status != ORDER_STATUSES.CANCELED_ORDER
                         && data[0].payment_status != PAYMENT_STATUS.PAID && data[0].payment_status != PAYMENT_STATUS.NOT_APPLICABLE
-                        && (data[0].paid_amount < data[0].total_price);
+                        && data[0].paid_amount < data[0].total_price && this.data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER;
 
                     this.allPaymentsLog = data[2];
                     this.allPaymentsLog.forEach(data => {
-                        return data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
-                    })
+                        data.details = JSON.parse(data.details);
+                        data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
+                        return data;
+                    });
                 })
         });
     }
@@ -209,7 +215,8 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
         }).join(',');
     }
 
-    isAddModalVisible(modalContent) {
+    isAddModalVisible(modalContent, moneyReceipt) {
+        this.currentMoneyReceiptToShow = moneyReceipt;
         this.moneyReceiptModalRef = this.modalService.show(modalContent);
     }
 }
