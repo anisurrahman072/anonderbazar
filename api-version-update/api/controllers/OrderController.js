@@ -870,5 +870,35 @@ module.exports = {
         message: 'Error occurred while refunding the order. ',error,
       });
     }
+  },
+
+  getAllProductsByOrderId: async (req, res) => {
+    try {
+      const ProductQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+      product.offline_payment,
+      product.id
+       `;
+      let fromSQL = ' FROM product_orders as orders ';
+      fromSQL += ' LEFT JOIN product_suborders as suborders ON suborders.product_order_id = orders.id';
+      fromSQL += ' LEFT JOIN product_suborder_items as suborderItems ON suborderItems.product_suborder_id = suborders.id';
+      fromSQL += ' LEFT JOIN products as product ON product.id = suborderItems.product_id';
+
+      let _where = ' WHERE orders.deleted_at IS NULL AND suborders.deleted_at IS NULL AND suborderItems.deleted_at IS NULL ';
+
+      if(req.query.orderId){
+        _where += ` AND orders.id = ${req.query.orderId}  `;
+      }
+
+      const rawResult = await ProductQuery(rawSelect + fromSQL + _where, []);
+
+      return res.status(200).json(rawResult.rows);
+    }
+    catch (error){
+      return res.status(400).json({
+        message: 'Failed to fetch the products!'
+      });
+    }
   }
 };

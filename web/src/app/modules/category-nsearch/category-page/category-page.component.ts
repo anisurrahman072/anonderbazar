@@ -29,6 +29,7 @@ import {Subscription} from "rxjs/Subscription";
 import {Offer} from "../../../models";
 import {Store} from "@ngrx/store";
 import * as fromStore from "../../../state-management";
+import {WAREHOUSE_STATUS} from '../../../../environments/global_config';
 
 @Component({
     selector: "app-category-page",
@@ -267,6 +268,7 @@ export class CategoryPageComponent implements OnInit {
                     console.log('filterSearchObservable-result', result.data);
                     if (result && result.data) {
                         this.allProductsByCategory = result.data.filter(product => {
+                            console.log('this.allProductsByCategory if==>', this.allProductsByCategory);
                             return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
                         });
 
@@ -277,6 +279,8 @@ export class CategoryPageComponent implements OnInit {
                     } else {
                         this.allProductsByCategory = [];
                     }
+                    console.log('this.allProductsByCategory==>', this.allProductsByCategory);
+
                     this.isLoading = false;
                     // this.loaderService.hideLoader();
 
@@ -652,7 +656,9 @@ export class CategoryPageComponent implements OnInit {
         this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
-                this.allProductsByCategory = result.data;
+                this.allProductsByCategory = result.data.filter(product => {
+                    return product.warehouse_id.status === WAREHOUSE_STATUS.ACTIVE
+                });
 
                 /** finding out the products exists in the offer store*/
                 this.allProductsByCategory.forEach(product => {
@@ -801,6 +807,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = true;
         this.sortTitle = 'price';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
+        console.log('this.sortTerm==>', this.sortTerm);
         this.generateSearchFilterResult();
     }
 

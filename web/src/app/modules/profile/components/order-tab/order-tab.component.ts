@@ -127,31 +127,31 @@ export class OrderTabComponent implements OnInit {
     getFilteredOrderList() {
         if (this.statusFilter == 'all') {
             this.orderStatus = this.orderList;
-            if (this.orderStatus.length <= 0) {
-                document.querySelector(".table-hide").classList.add("hidden-class");
-                document.querySelector(".page-hide").classList.add("hidden-class");
-                document.querySelector(".hide-no-product").classList.remove("hidden-class");
-            }
-
-            if (this.orderStatus.length > 0) {
-                document.querySelector(".table-hide").classList.remove("hidden-class");
-                document.querySelector(".page-hide").classList.remove("hidden-class");
-                document.querySelector(".hide-no-product").classList.add("hidden-class");
-            }
+            // if (this.orderStatus.length <= 0) {
+            //     document.querySelector(".table-hide").classList.add("hidden-class");
+            //     document.querySelector(".page-hide").classList.add("hidden-class");
+            //     document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            // }
+            //
+            // if (this.orderStatus.length > 0) {
+            //     document.querySelector(".table-hide").classList.remove("hidden-class");
+            //     document.querySelector(".page-hide").classList.remove("hidden-class");
+            //     document.querySelector(".hide-no-product").classList.add("hidden-class");
+            // }
             return this.orderStatus;
         } else {
             this.orderStatus = this.orderList.filter(x => x.status == +this.statusFilter);
-            if (this.orderStatus.length <= 0) {
-                document.querySelector(".table-hide").classList.add("hidden-class");
-                document.querySelector(".page-hide").classList.add("hidden-class");
-                document.querySelector(".hide-no-product").classList.remove("hidden-class");
-            }
-
-            if (this.orderStatus.length > 0) {
-                document.querySelector(".table-hide").classList.remove("hidden-class");
-                document.querySelector(".page-hide").classList.remove("hidden-class");
-                document.querySelector(".hide-no-product").classList.add("hidden-class");
-            }
+            // if (this.orderStatus.length <= 0) {
+            //     document.querySelector(".table-hide").classList.add("hidden-class");
+            //     document.querySelector(".page-hide").classList.add("hidden-class");
+            //     document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            // }
+            //
+            // if (this.orderStatus.length > 0) {
+            //     document.querySelector(".table-hide").classList.remove("hidden-class");
+            //     document.querySelector(".page-hide").classList.remove("hidden-class");
+            //     document.querySelector(".hide-no-product").classList.add("hidden-class");
+            // }
             return this.orderStatus;
         }
     }

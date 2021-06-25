@@ -101,5 +101,54 @@ module.exports = {
           return order;
         });
     return order;
+  },
+
+  makePartialPayment: async function(customer, order, request, globalConfigs){
+    const amountToPay = parseFloat(request.body.amount_to_pay);
+    if (amountToPay <= 0) {
+      throw new Error('Invalid Payment Amount.');
+    }
+
+    /** Creating payment details */
+    let paymentDetails = {
+      offline_payment_method: request.body.offlinePaymentMethod
+    };
+
+    if (request.body.offlinePaymentMethod === BANK_TRANSFER_OFFLINE_PAYMENT) {
+      paymentDetails = {
+        ...paymentDetails,
+        ...JSON.parse(request.body.bankTransfer)
+      };
+    } else {
+      if (request.body.hasImage === 'true') {
+        const uploaded = await uploadImages(request.file('image'));
+        if (uploaded.length === 0) {
+          throw new Error('No image was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+        paymentDetails.money_receipt = newPath;
+      }
+    }
+    /** END */
+
+    await sails.getDatastore()
+      .transaction(async (db) => {
+        await Order.updateOne({
+          id: order.id
+        }, {
+          partial_offline_payment_approval_status: 1
+        }).usingConnection(db);
+
+        await Payment.create({
+          payment_amount: amountToPay,
+          user_id: customer.id,
+          order_id: order.id,
+          payment_type: OFFLINE_PAYMENT_TYPE,
+          details: JSON.stringify(paymentDetails),
+          status: 1
+        }).fetch().usingConnection(db);
+
+      });
   }
 };
