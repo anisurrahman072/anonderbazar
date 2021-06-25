@@ -8,7 +8,7 @@ import {AppSettings} from "../../../../config/app.config";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
 import * as moment from 'moment';
 import {forkJoin} from "rxjs/observable/forkJoin";
-import {ORDER_STATUSES, PAYMENT_STATUS} from "../../../../../environments/global_config";
+import {ORDER_STATUSES, PAYMENT_STATUS, ORDER_TYPE} from "../../../../../environments/global_config";
 import {timer} from 'rxjs/observable/timer';
 import {Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
@@ -100,7 +100,7 @@ export class OrderTabComponent implements OnInit {
 
             if (this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
                 && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE
-                && order.paid_amount < order.total_price) {
+                && order.paid_amount < order.total_price && order.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER) {
                 order.isAllowedForPay = true;
             } else {
                 order.isAllowedForPay = false;

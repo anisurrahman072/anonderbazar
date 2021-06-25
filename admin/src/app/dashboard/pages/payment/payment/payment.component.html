@@ -1,7 +1,8 @@
 <section>
     <nz-card class="card-height" [nzExtra]="extra" [nzTitle]="cardTitle">
         <ng-template #extra>
-            <button *ngIf="'payment-create'| accessControl" (click)="getPageData(true)">
+            <button *ngIf="'payment-create'| accessControl" (click)="getPageData(true)"
+                    nz-button>
                 <span> All Partial Offline Payment </span>
             </button>
             <button *ngIf="'payment-create'| accessControl"
