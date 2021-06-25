@@ -7,6 +7,7 @@ import {OrderReadComponent} from './order-read/Order-read.component';
 import {OrderRoutingModule} from './order-routing.module';
 import {UiModule} from "../../shared/ui.module";
 import {ProductModule} from "../product/product.module";
+import {PaymentApprovalStatusPipe} from "../../../pipes/payment-approval-status";
 
 @NgModule({
     imports: [
@@ -21,6 +22,7 @@ import {ProductModule} from "../product/product.module";
     declarations: [
         OrderComponent,
         OrderReadComponent,
+        PaymentApprovalStatusPipe
     ]
 })
 export class OrderModule {

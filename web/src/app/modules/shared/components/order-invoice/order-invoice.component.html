@@ -156,6 +156,7 @@
                                     Transaction id: {{payment.transection_key}}
                                 </p>
 
+                                <!-- Only if Payment method is OFFLINE payment then this section will show START -->
                                 <div *ngIf="payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 20px !important;">
                                     <h5>Offline payment method details</h5>
                                     <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
@@ -173,6 +174,7 @@
                                         </div>
                                     </ng-template>
                                 </div>
+                                <!-- Only if Payment method is OFFLINE payment then this section will show END -->
                             </div>
                         </div>
                     </div>
@@ -198,21 +200,26 @@
                                 payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">Payment transaction: {{payment.transection_key}}</p>
                         <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
 
-                        <p style="margin: 0px;" *ngIf="payment.details && payment.details.offline_payment_method &&
-                                    data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
-                        <p style="margin: 0px;" *ngIf="payment.details && payment.details.offline_payment_method">Offline payment method: {{payment.details.offline_payment_method}}</p>
+                        <!-- Only true if the payment is an Offline Payment START -->
+                        <div *ngIf="payment.details && payment.details.offline_payment_method">
+                            <p style="margin: 0px;" *ngIf="data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER">
+                                Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
+                            <p style="margin: 0px;">Offline payment method: {{payment.details.offline_payment_method}}</p>
 
-                        <div *ngIf="payment.details && payment.details.offline_payment_method  && payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
-                            <p style="margin: 0px;" >Transaction ID: {{payment.details.transactionId}}</p>
-                            <p style="margin: 0px;" >Bank Name: {{payment.details.bankName}}</p>
-                            <p style="margin: 0px;" >Branch Name: {{payment.details.branchName}}</p>
-                            <p style="margin: 0px;" >Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
+                            <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
+                                <p style="margin: 0px;" >Transaction ID: {{payment.details.transactionId}}</p>
+                                <p style="margin: 0px;" >Bank Name: {{payment.details.bankName}}</p>
+                                <p style="margin: 0px;" >Branch Name: {{payment.details.branchName}}</p>
+                                <p style="margin: 0px;" >Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
+                            </div>
+                            <div *ngIf="payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
+                                 (click)="isAddModalVisible(modalContent, payment.details.money_receipt)" style="cursor: pointer;">
+                                <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                                     alt="money-receipt" style="height: 100px;">
+                            </div>
                         </div>
-                        <div *ngIf="payment.details && payment.details.offline_payment_method  && payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
-                                (click)="isAddModalVisible(modalContent, payment.details.money_receipt)" style="cursor: pointer;">
-                            <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
-                                 alt="money-receipt" style="height: 100px;">
-                        </div>
+                        <!-- Only true if the payment is an Offline Payment END -->
+
                     </div>
                 </div>
             </mat-card-content>
