@@ -13,7 +13,7 @@ module.exports = {
   getAnonderJhor: async (req, res) => {
     try {
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      console.log('anonderJhorData: aaa', anonderJhorData);
+      /*console.log('anonderJhorData: aaa', anonderJhorData);*/
       return res.status(200).json({
         success: true,
         message: 'AnonderJhor Data fetched successfully',
@@ -62,7 +62,7 @@ module.exports = {
 
   updateAnonderJhor: async (req, res) => {
     try {
-      console.log('in jhor update: ', req.body);
+      /*console.log('in jhor update: ', req.body);*/
       let body = req.body;
       if (body.hasImage === 'true') {
         req.file('image').upload(imageUploadConfig(), async (err, files) => {
@@ -134,8 +134,8 @@ module.exports = {
         .populate('sub_sub_category_id');
 
       let totalAnonderJhorOffersData = await AnonderJhorOffers.count().where(_where);
-      console.log('jhor offrs data: ', allAnonderJhorOffersData);
-      console.log('total offrs data: ', totalAnonderJhorOffersData);
+      /*console.log('jhor offrs data: ', allAnonderJhorOffersData);
+      console.log('total offrs data: ', totalAnonderJhorOffersData);*/
 
       res.status(200).json({
         success: true,
@@ -206,6 +206,104 @@ module.exports = {
       });
     }
   },
+
+  anonderJhorOfferInsert: async (req, res) => {
+    try {
+      let body = req.body;
+      if (req.body.hasImage === 'true') {
+        req.file('image').upload(imageUploadConfig(), async (err, files) => {
+          if (err) {
+            return res.serverError(err);
+          }
+
+          if (files.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
+
+          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+
+          body.image = '/' + newPath;
+
+          let offerData = {
+            image: body.image,
+            calculation_type: body.calculationType,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            category_id: body.categoryId
+          };
+
+          if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
+            offerData.sub_sub_category_id = body.subSubCategoryId;
+            const subSubCat = await AnonderJhorOffers.findOne({
+              sub_sub_category_id: body.subSubCategoryId,
+              status: 1
+            });
+            if (subSubCat !== undefined) {
+              return res.status(200).json({
+                code: 'INVALID_SUBSUBCAT',
+                message: 'Subsub category already in another anonder jhor offer'
+              });
+            }
+          }
+          if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
+            offerData.sub_category_id = body.subCategoryId;
+          }
+
+          let data = await AnonderJhorOffers.create(offerData).fetch();
+
+          return res.status(200).json({
+            success: true,
+            message: 'Anonder jhor Offer created successfully',
+            data
+          });
+
+        });
+
+      } else {
+        let offerData = {
+          calculation_type: body.calculationType,
+          discount_amount: body.discountAmount,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          category_id: body.categoryId
+        };
+
+        if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
+          offerData.sub_sub_category_id = body.subSubCategoryId;
+          const subSubCat = await AnonderJhorOffers.findOne({
+            sub_sub_category_id: body.subSubCategoryId,
+            status: 1
+          });
+          if (subSubCat !== undefined) {
+            return res.status(200).json({
+              code: 'INVALID_SUBSUBCAT',
+              message: 'Subsub category already in another anonder jhor offer'
+            });
+          }
+        }
+
+        if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
+          offerData.sub_category_id = body.subCategoryId;
+        }
+
+        let data = await AnonderJhorOffers.create(offerData).fetch();
+
+        return res.status(200).json({
+          success: true,
+          message: 'Anonder jhor Offer created successfully',
+          data
+        });
+      }
+    } catch (error) {
+      console.log('error in insert offer: ', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error in creating the Anonder jhor  offer',
+        error
+      });
+    }
+  }
 
 };
 

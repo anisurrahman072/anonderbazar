@@ -127,7 +127,7 @@
     <!--anonder Jhor offer card-->
     <nz-card class="card-height" nzTitle="Regular Offer list" [nzExtra]="jhor">
         <ng-template #jhor>
-            <button nz-button [nzType]="'primary'" [nzSize]="'large'">
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="addNew()">
                 <i class="anticon anticon-download"></i><span>Add New</span>
                 <!--show the add new modal-->
             </button>
@@ -237,4 +237,8 @@
         </ng-container>
     </nz-card>
     <!--anonder Jhor offer card ends-->
+
+    <div *ngIf="isAddNew">
+        <app-anonder-jhor-offer-create [isVisible]="isVisible"></app-anonder-jhor-offer-create>
+    </div>
 </section>

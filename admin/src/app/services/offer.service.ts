@@ -89,4 +89,9 @@ export class OfferService {
         return this.http.post(`${this.EndPoint1}/deleteAnonderJhorOffer`, id)
             .map(response => response);
     }
+
+    anonderJhorOfferInsert(data): Observable<any> {
+        return this.http.post(this.EndPoint1 + '/anonderJhorOfferInsert', data)
+            .map(response => response);
+    }
 }

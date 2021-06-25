@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
@@ -100,7 +100,6 @@ export class OfferCreateComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private route: ActivatedRoute,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private productService: ProductService,

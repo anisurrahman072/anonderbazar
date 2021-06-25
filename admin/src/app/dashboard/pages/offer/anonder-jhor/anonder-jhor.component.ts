@@ -26,6 +26,8 @@ export class AnonderJhorComponent implements OnInit {
     anonderJhorOfferPage: number = 1;
     anonderJhorOfferTotal: number = 0;
     offerStatus: Boolean = false;
+    isAddNew: Boolean = false;
+    isVisible: Boolean = false;
 
     /** Common Variables */
     validateForm: FormGroup;
@@ -201,5 +203,10 @@ export class AnonderJhorComponent implements OnInit {
             this._isSpinning = false;
         });
     };
+
+    addNew() {
+        this.isAddNew = !this.isAddNew;
+        this.isVisible = true;
+    }
 
 }
