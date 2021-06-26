@@ -172,6 +172,7 @@ export class OfferEditComponent implements OnInit {
                     };
 
                     this.validateForm.patchValue(payload);
+
                     if (this.data && this.data.image && this.data.image.image) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image.image);
                     }
@@ -261,7 +262,7 @@ export class OfferEditComponent implements OnInit {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Feature Title: ");
+                this._notification.success('Updated', "Offer updated successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
                 this.router.navigate(['/dashboard/offer']);

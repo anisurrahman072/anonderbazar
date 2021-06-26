@@ -106,4 +106,12 @@ export class OfferService {
     getAllSubSubCategories(parentId): Observable<any> {
         return this.http.get(`${this.EndPoint1}/getAllSubSubCategories?parentId=${parentId}`);
     }
+
+    getAnonderJhorOfferById(id): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAnonderJhorOfferById?id=${id}`).map(response => response);
+    }
+
+    updateAnonderJhorOffer(data): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/updateAnonderJhorOffer`, data);
+    }
 }

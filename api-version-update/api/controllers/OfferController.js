@@ -319,7 +319,7 @@ module.exports = {
   getRegularOfferById: async (req, res) => {
     try {
       await OfferService.offerDurationCheck();
-      let regularOffer = await Offer.findOne({id: req.query.id})
+      let regularOffer = await Offer.findOne({id: req.query.id, deletedAt: null})
         .populate('category_id')
         .populate('subCategory_Id')
         .populate('subSubCategory_Id')
@@ -508,7 +508,7 @@ module.exports = {
 
           return res.status(200).json({
             success: true,
-            message: 'Offer created successfully',
+            message: 'Offer update successfully',
             data
           });
 
@@ -590,7 +590,7 @@ module.exports = {
 
         return res.status(200).json({
           success: true,
-          message: 'Offer created successfully',
+          message: 'Offer update successfully',
           data
         });
       }

@@ -180,11 +180,17 @@
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.sub_category_id.name}}</nz-tag>
+                            <nz-tag *ngIf="datum.sub_category_id && datum.sub_category_id.name; else noSub">{{datum.sub_category_id.name}}</nz-tag>
+                            <ng-template #noSub>
+                                <p>Null</p>
+                            </ng-template>
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.sub_sub_category_id.name}}</nz-tag>
+                            <nz-tag *ngIf="datum.sub_sub_category_id && datum.sub_sub_category_id.name; else noSubSub">{{datum.sub_sub_category_id.name}}</nz-tag>
+                            <ng-template #noSubSub>
+                                <p>Null</p>
+                            </ng-template>
                         </td>
 
                         <td>
@@ -211,9 +217,7 @@
                         <td>
                             <nz-button-group>
 
-                                <button *ngIf="'offer-edit'|accessControl"
-                                        [routerLink]="['/dashboard/offer/edit', datum.id]" nz-button
-                                        [nzType]="'primary'" [nzSize]="'default'">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="editJhorOffer(i, datum.id)">
                                     <i class="anticon anticon-edit"></i>
                                 </button>
                                 <ng-container>
@@ -240,5 +244,8 @@
 
     <div *ngIf="isAddNew">
         <app-anonder-jhor-offer-create [isVisible]="isVisible"></app-anonder-jhor-offer-create>
+    </div>
+    <div *ngIf="isEdit">
+        <app-anonder-jhor-offer-edit [isEditVisible]="isEditVisible" [jhorOfferId]="jhorOfferId"></app-anonder-jhor-offer-edit>
     </div>
 </section>

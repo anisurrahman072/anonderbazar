@@ -248,6 +248,7 @@ module.exports = {
               });
             }
           }
+
           if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
             offerData.sub_category_id = body.subCategoryId;
           }
@@ -328,7 +329,11 @@ module.exports = {
 
   getAllSubCategories: async (req, res) => {
     try {
-      let allSubCategories = await Category.find({type_id: 2, parent_id: parseInt(req.query.parentId), deletedAt: null});
+      let allSubCategories = await Category.find({
+        type_id: 2,
+        parent_id: parseInt(req.query.parentId),
+        deletedAt: null
+      });
       return res.status(200).json({
         success: true,
         message: 'all sub-categories fetched successfully',
@@ -345,7 +350,11 @@ module.exports = {
 
   getAllSubSubCategories: async (req, res) => {
     try {
-      let allSubSubCategories = await Category.find({type_id: 2, parent_id: parseInt(req.query.parentId), deletedAt: null});
+      let allSubSubCategories = await Category.find({
+        type_id: 2,
+        parent_id: parseInt(req.query.parentId),
+        deletedAt: null
+      });
       return res.status(200).json({
         success: true,
         message: 'all sub-sub-categories fetched successfully',
@@ -355,6 +364,143 @@ module.exports = {
       console.log(error);
       res.status(400).json({
         message: 'Failed to get all sub-sub-categories',
+        error
+      });
+    }
+  },
+
+  getAnonderJhorOfferById: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+      let anonderJhorOffer = await AnonderJhorOffers.findOne({id: req.query.id})
+        .populate('category_id')
+        .populate('sub_category_id')
+        .populate('sub_sub_category_id');
+
+      res.status(200).json({
+        success: true,
+        message: 'Anonder Jhor Offer data by id',
+        anonderJhorOffer
+      });
+    } catch (error) {
+      console.log('error in getAnonderJhorOfferById: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get Anonder Jhor offer by id',
+        error
+      });
+    }
+  },
+
+  updateAnonderJhorOffer: async (req, res) => {
+    console.log('body updateAnonderJhorOffer: ', req.body);
+    try {
+      let body = req.body;
+      if (req.body.hasImage === 'true') {
+        req.file('image').upload(imageUploadConfig(), async (err, files) => {
+          if (err) {
+            return res.serverError(err);
+          }
+
+          if (files.length === 0) {
+            return res.badRequest('No image was uploaded');
+          }
+
+          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+
+          body.image = '/' + newPath;
+
+          let offerData = {
+            image: body.image,
+            calculation_type: body.calculationType,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            category_id: body.categoryId,
+            anonder_jhor_id: 1,
+            status: 0
+          };
+
+          if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
+            offerData.sub_sub_category_id = body.subSubCategoryId;
+            const subSubCat = await AnonderJhorOffers.findOne({
+              sub_sub_category_id: body.subSubCategoryId,
+              status: 1
+            });
+            if (subSubCat !== undefined) {
+              return res.status(200).json({
+                code: 'INVALID_SUBSUBCAT',
+                message: 'Subsub category already in another anonder jhor offer'
+              });
+            }
+          }else {
+            offerData.sub_sub_category_id = null;
+          }
+
+          if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
+            offerData.sub_category_id = body.subCategoryId;
+          }else {
+            offerData.sub_category_id = null;
+          }
+
+          let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
+
+          return res.status(200).json({
+            success: true,
+            message: 'Anonder Jhor Offer updated successfully',
+            data
+          });
+
+        });
+
+      } else {
+        let offerData = {
+          calculation_type: body.calculationType,
+          discount_amount: body.discountAmount,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          category_id: body.categoryId,
+          anonder_jhor_id: 1,
+          status: 0
+        };
+
+        if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
+          offerData.sub_sub_category_id = body.subSubCategoryId;
+          const subSubCat = await AnonderJhorOffers.findOne({
+            sub_sub_category_id: body.subSubCategoryId,
+            status: 1
+          });
+          if (subSubCat !== undefined) {
+            return res.status(200).json({
+              code: 'INVALID_SUBSUBCAT',
+              message: 'Subsub category already in another anonder jhor offer'
+            });
+          }
+        }else {
+          offerData.sub_sub_category_id = null;
+        }
+
+        if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
+          offerData.sub_category_id = body.subCategoryId;
+        }else {
+          offerData.sub_category_id = null;
+        }
+
+
+        let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
+
+        return res.status(200).json({
+          success: true,
+          message: 'Anonder Jhor Offer updated successfully',
+          data
+        });
+      }
+
+    } catch (error) {
+      console.log('updateOffer error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update Anonder Jhor Offer',
         error
       });
     }

@@ -33,7 +33,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     subSubCategoryId;
 
     /**variables used for storing subCat and subSubCat options*/
-    allCategoryIds
+    allCategoryIds;
     allSubCategoryIds;
     allSubSubCategoryIds;
 

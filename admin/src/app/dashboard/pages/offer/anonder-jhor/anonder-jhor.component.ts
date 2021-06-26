@@ -28,6 +28,9 @@ export class AnonderJhorComponent implements OnInit {
     offerStatus: Boolean = false;
     isAddNew: Boolean = false;
     isVisible: Boolean = false;
+    isEdit: Boolean = false;
+    isEditVisible: Boolean = false;
+    jhorOfferId: number;
 
     /** Common Variables */
     validateForm: FormGroup;
@@ -207,6 +210,12 @@ export class AnonderJhorComponent implements OnInit {
     addNew() {
         this.isAddNew = !this.isAddNew;
         this.isVisible = true;
+    }
+
+    editJhorOffer(index, id) {
+        this.isEdit = !this.isEdit;
+        this.isEditVisible = true;
+        this.jhorOfferId = id;
     }
 
 }
