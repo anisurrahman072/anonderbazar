@@ -52,7 +52,8 @@ export class CmsDetailsPageComponent implements OnInit {
     private get_cms_by_id() {
 
         if (this.id) {
-            this.offerService.getWebRegularOfferById(this.id).subscribe(result => {
+            this.offerService.getWebRegularOfferById(this.id)
+                .subscribe(result => {
                 /**info related to this offer*/
                 this.regularOffer = result.data[0];
 

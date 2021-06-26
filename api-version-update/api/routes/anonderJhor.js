@@ -11,5 +11,7 @@ exports.anonderJhorRoute = {
   'POST /api/v1/anonderJhor/deleteAnonderJhorOffer': 'AnonderJhorController.deleteAnonderJhorOffer',
   'POST /api/v1/anonderJhor/anonderJhorOfferInsert': 'AnonderJhorController.anonderJhorOfferInsert',
   'POST /api/v1/anonderJhor/updateAnonderJhorOffer': 'AnonderJhorController.updateAnonderJhorOffer',
+  'GET /api/v1/anonderJhor/getAnonderJhorAndOffers': 'AnonderJhorController.getAnonderJhorAndOffers',
+  'GET /api/v1/anonderJhor/getWebAnonderJhorOfferById': 'AnonderJhorController.getWebAnonderJhorOfferById',
 
 };

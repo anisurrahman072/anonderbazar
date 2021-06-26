@@ -96,6 +96,7 @@ export class AnonderJhorComponent implements OnInit {
                 }
                 this.status = result.status;
                 this.getAnonderJhor();
+                this.getAllAnonderJhorOffersData();
             });
     }
 
@@ -108,7 +109,6 @@ export class AnonderJhorComponent implements OnInit {
                 if(result.code === 'NOT_ALLOWED') {
                     this._notification.error('Sorry!', 'Offer time or Jhor offer ended, you can not change status');
                 }
-                this.offerStatus = result.status;
                 this.getAllAnonderJhorOffersData();
             });
     }
@@ -165,6 +165,7 @@ export class AnonderJhorComponent implements OnInit {
                 this.resetForm(null);
 
                 this.getAnonderJhor();
+                this.getAllAnonderJhorOffersData();
                 this.isAnonderJhorEdit = false;
             }
         }, () => {

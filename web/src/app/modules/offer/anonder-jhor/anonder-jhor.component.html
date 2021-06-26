@@ -2,8 +2,8 @@
     <div class="container-fluid">
         <!--breadcrumbs-->
         <nav class="woocommerce-breadcrumb breadcrumbs">
-            <a routerLink="/" routerLinkActive="active">Home</a>
-            <a routerLink="/cms" routerLinkActive="active">Offer</a>
+            <a routerLink="/" routerLinkActive="active">Home / </a>
+            <a routerLink="/cms" routerLinkActive="active">Offer / </a>
             <a>Anonder Jhor</a>
         </nav>
 
@@ -13,10 +13,14 @@
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
-                            <div class="post-thumb" *ngIf="regularOffer.image.banner_image; else image">
-                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.banner_image}}"
-                                     alt="{{regularOffer.title}}">
+                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired">
+                                <img width="50%" src="{{  IMAGE_ENDPOINT + anonderJhor.banner_image}}"
+                                     alt="Anonder Jhor">
                             </div>
+                            <ng-template #expired>
+                                <img width="100%" src="../../../../assets/images/expired.png"
+                                     alt="Anonder Jhor">
+                            </ng-template>
                         </div>
 
                     </div>
@@ -24,8 +28,22 @@
             </div>
         </div>
 
-        <div class="row text-center">
-            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next"></pagination-controls>
+        <div class="row" *ngIf="anonderJhorOffers && anonderJhorOffers.length > 0">
+            <ng-template ngFor let-data [ngForOf]="anonderJhorOffers">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
+                    <div class="offer-details">
+                        <div class="offer-img">
+                            <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
+                                <img src="{{IMAGE_ENDPOINT + data.image}}"
+                                     alt="offered product image">
+                            </a>
+                        </div>
+                        <div class="offer-contant">
+                            <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>

@@ -778,6 +778,8 @@ module.exports = {
 
       let finalCollectionOfProducts = {};
       await OfferService.offerDurationCheck();
+      await OfferService.anonderJhorOfferDurationCheck();
+
       let _where = {};
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;

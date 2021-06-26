@@ -129,13 +129,12 @@ module.exports = {
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip
-      }).populate('category_id')
+      }).sort('status DESC')
+        .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
 
       let totalAnonderJhorOffersData = await AnonderJhorOffers.count().where(_where);
-      /*console.log('jhor offrs data: ', allAnonderJhorOffersData);
-      console.log('total offrs data: ', totalAnonderJhorOffersData);*/
 
       res.status(200).json({
         success: true,
@@ -433,13 +432,13 @@ module.exports = {
                 message: 'Subsub category already in another anonder jhor offer'
               });
             }
-          }else {
+          } else {
             offerData.sub_sub_category_id = null;
           }
 
           if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
             offerData.sub_category_id = body.subCategoryId;
-          }else {
+          } else {
             offerData.sub_category_id = null;
           }
 
@@ -476,13 +475,13 @@ module.exports = {
               message: 'Subsub category already in another anonder jhor offer'
             });
           }
-        }else {
+        } else {
           offerData.sub_sub_category_id = null;
         }
 
         if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
           offerData.sub_category_id = body.subCategoryId;
-        }else {
+        } else {
           offerData.sub_category_id = null;
         }
 
@@ -501,6 +500,83 @@ module.exports = {
       res.status(400).json({
         success: false,
         message: 'Failed to update Anonder Jhor Offer',
+        error
+      });
+    }
+  },
+
+  getAnonderJhorAndOffers: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let anonderJhor = await AnonderJhor.findOne({id: 1});
+
+      let anonderJhorOffers;
+      if (anonderJhor.status) {
+        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1});
+        console.log('anonder jhor offers: ', anonderJhorOffers);
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'All anonder jhor offers for the web',
+        data: [anonderJhor, anonderJhorOffers]
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get anonder offer for the web',
+        error
+      });
+    }
+  },
+
+  getWebAnonderJhorOfferById: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let webJhorOfferedProducts;
+
+      let _where = {};
+      _where.id = req.query.id;
+      _where.deletedAt = null;
+      _where.status = 1;
+
+      const requestedJorOffer = await AnonderJhorOffers.findOne({where: _where})
+        .populate('category_id')
+        .populate('sub_category_id')
+        .populate('sub_sub_category_id');
+
+      console.log('requset jhor offer: ', requestedJorOffer);
+
+
+      let _where1 = {};
+      _where1.status = 2;
+      _where1.approval_status = 2;
+      _where1.deletedAt = null;
+
+      if (requestedJorOffer.sub_sub_category_id) {
+        _where1.subcategory_id = requestedJorOffer.sub_sub_category_id.id;
+      } else if (requestedJorOffer.sub_category_id) {
+        _where1.category_id = requestedJorOffer.sub_category_id.id;
+      } else if (requestedJorOffer.category_id) {
+        _where1.type_id = requestedJorOffer.category_id.id;
+      }
+
+      webJhorOfferedProducts = await Product.find({where: _where1});
+      console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);
+
+      res.status(200).json({
+        success: true,
+        message: 'All regular offers for the web with related products data',
+        data: [requestedJorOffer, webJhorOfferedProducts]
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to get regular offer for the web with related products data',
         error
       });
     }

@@ -9,6 +9,7 @@ import {Offer} from "../models";
 export class OfferService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/offer`;
+    private EndPoint1 = `${AppSettings.API_ENDPOINT}/anonderJhor`;
 
     constructor(private http: HttpClient) {
     }
@@ -26,11 +27,19 @@ export class OfferService {
     }
 
     calculateOfferPrice(calculationType, originalPrice, discountAmount) {
-        if(calculationType === 'absolute') {
+        if (calculationType === 'absolute') {
             return originalPrice - discountAmount;
-        }else {
+        } else {
             return originalPrice - (originalPrice * (discountAmount / 100.0));
         }
+    }
+
+    getAnonderJhorAndOffers(): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAnonderJhorAndOffers`);
+    }
+
+    getWebAnonderJhorOfferById(id): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getWebAnonderJhorOfferById?id=${id}`);
     }
 
 }

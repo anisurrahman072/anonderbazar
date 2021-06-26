@@ -125,7 +125,7 @@
     <!--anonder jhor card ends-->
 
     <!--anonder Jhor offer card-->
-    <nz-card class="card-height" nzTitle="Regular Offer list" [nzExtra]="jhor">
+    <nz-card class="card-height" nzTitle="Anonder Jhor Offer list" [nzExtra]="jhor">
         <ng-template #jhor>
             <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="addNew()">
                 <i class="anticon anticon-download"></i><span>Add New</span>
@@ -202,9 +202,16 @@
                         </td>
 
                         <td>
-                            <nz-switch [ngModel]="offerStatus"
-                                       (ngModelChange)="offerActiveStatusChange($event, datum.id)">
-                            </nz-switch>
+                            <div *ngIf="datum.status; else inactive">
+                                <nz-switch [ngModel]="true"
+                                           (ngModelChange)="offerActiveStatusChange($event, datum.id)">
+                                </nz-switch>
+                            </div>
+                            <ng-template #inactive>
+                                <nz-switch [ngModel]="false"
+                                           (ngModelChange)="offerActiveStatusChange($event, datum.id)">
+                                </nz-switch>
+                            </ng-template>
                         </td>
 
                         <td *ngIf="datum.calculation_type === 'percentage'">
