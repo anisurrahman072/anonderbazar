@@ -8,7 +8,7 @@ import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, ORDER_TYPE, OFFLINE_PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
 // import en from "@angular/common/locales/en";
@@ -42,6 +42,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     isAddModalVisible: boolean = false;
 
     allPaymentsLog: any;
+    ORDER_TYPE = ORDER_TYPE;
+    OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
+    currentMoneReceipt: any = '';
 
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
@@ -95,9 +98,12 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                         });
                     }
 
-                    this.allPaymentsLog = data[1];
+                    this.allPaymentsLog = data[1].map(payment => {
+                        payment.details = JSON.parse(payment.details);
+                        return payment;
+                    });
 
-                    console.log('this.data', this.data, this.suborders);
+                    console.log('this.data', this.allPaymentsLog);
                     this._isSpinning = false;
                 }, (err) => {
                     console.log('err', err);
@@ -195,7 +201,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         this.isAddModalVisible = false;
     };
 
-    showAddModalVisible(flag) {
+    showAddModalVisible(flag, currentMoneyReceipt) {
+        this.currentMoneReceipt = currentMoneyReceipt;
         this.isAddModalVisible = flag;
     }
 }
