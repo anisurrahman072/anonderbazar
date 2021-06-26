@@ -94,4 +94,16 @@ export class OfferService {
         return this.http.post(this.EndPoint1 + '/anonderJhorOfferInsert', data)
             .map(response => response);
     }
+
+    getAllCategories(): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAllCategories`);
+    }
+
+    getAllSubCategories(parentId): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAllSubCategories?parentId=${parentId}`);
+    }
+
+    getAllSubSubCategories(parentId): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAllSubSubCategories?parentId=${parentId}`);
+    }
 }

@@ -230,7 +230,9 @@ module.exports = {
             discount_amount: body.discountAmount,
             start_date: body.offerStartDate,
             end_date: body.offerEndDate,
-            category_id: body.categoryId
+            category_id: body.categoryId,
+            anonder_jhor_id: 1,
+            status: 0
           };
 
           if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -266,7 +268,9 @@ module.exports = {
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          category_id: body.categoryId
+          category_id: body.categoryId,
+          anonder_jhor_id: 1,
+          status: 0
         };
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -303,7 +307,58 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  getAllCategories: async (req, res) => {
+    try {
+      let allCategories = await Category.find({type_id: 2, parent_id: 0, deletedAt: null});
+      return res.status(200).json({
+        success: true,
+        message: 'all categories fetched successfully',
+        data: allCategories
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to get all categories',
+        error
+      });
+    }
+  },
+
+  getAllSubCategories: async (req, res) => {
+    try {
+      let allSubCategories = await Category.find({type_id: 2, parent_id: parseInt(req.query.parentId), deletedAt: null});
+      return res.status(200).json({
+        success: true,
+        message: 'all sub-categories fetched successfully',
+        data: allSubCategories
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to get all sub-categories',
+        error
+      });
+    }
+  },
+
+  getAllSubSubCategories: async (req, res) => {
+    try {
+      let allSubSubCategories = await Category.find({type_id: 2, parent_id: parseInt(req.query.parentId), deletedAt: null});
+      return res.status(200).json({
+        success: true,
+        message: 'all sub-sub-categories fetched successfully',
+        data: allSubSubCategories
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to get all sub-sub-categories',
+        error
+      });
+    }
+  },
 
 };
 

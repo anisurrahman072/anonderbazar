@@ -32,7 +32,7 @@
                            nzShowSearch
                            [nzPlaceHolder]=" 'Select Category'"
                            [(ngModel)]="categoryId" style="margin: 10px 0;"
-                           (ngModelChange)="getAllOptions('', '$event' )">
+                           (ngModelChange)="getAllSubCategories($event); finalSelectionType(true, false, $event)">
                     <nz-option *ngFor="let option of allCategoryIds" [nzLabel]="option.name"
                                [nzValue]="option.id">
                     </nz-option>
@@ -42,7 +42,7 @@
                         formControlName="subCategoryId" nzAllowClear nzShowSearch
                         [nzPlaceHolder]=" 'Select Sub-Category'"
                         [(ngModel)]="subCategoryId" style="margin: 10px 0;"
-                        (ngModelChange)="getAllOptions('', '', $event)">
+                        (ngModelChange)="getAllSubSubCategories($event); finalSelectionType(false, true, $event)">
                     <nz-option *ngFor="let option of allSubCategoryIds" [nzLabel]="option.name"
                                [nzValue]="option.id">
                     </nz-option>
