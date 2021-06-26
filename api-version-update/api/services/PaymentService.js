@@ -175,12 +175,21 @@ module.exports = {
   getRegularOfferStore: async function () {
     let finalCollectionOfProducts = {};
     await OfferService.offerDurationCheck();
+    await OfferService.anonderJhorOfferDurationCheck();
+
     let _where = {};
     _where.deletedAt = null;
     _where.offer_deactivation_time = null;
+
     const requestedOffer = await Offer.find({where: _where});
 
-    if (requestedOffer.length === 0) {
+    let _where1 = {};
+    _where1.deletedAt = null;
+    _where1.status = 1;
+
+    const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
+
+    if (requestedOffer.length === 0  && requetedJhorOffer.length === 0) {
       finalCollectionOfProducts = {};
       return finalCollectionOfProducts;
     }
@@ -261,6 +270,35 @@ module.exports = {
             finalCollectionOfProducts[product.product_id] = offerObj;
           });
         }
+      }
+    }
+
+    for (let jhorOffer = 0; jhorOffer < requetedJhorOffer.length; jhorOffer++) {
+      const thisJhorOffer = requetedJhorOffer[jhorOffer];
+
+      let jhorOfferObj = {
+        calculation_type: thisJhorOffer.calculation_type,
+        discount_amount: thisJhorOffer.discount_amount
+      };
+
+      let _where2 = {};
+      _where2.status = 2;
+      _where2.approval_status = 2;
+      _where2.deletedAt = null;
+
+      if (thisJhorOffer.sub_sub_category_id) {
+        _where2.subcategory_id = thisJhorOffer.sub_sub_category_id;
+      } else if (thisJhorOffer.sub_category_id) {
+        _where2.category_id = thisJhorOffer.sub_category_id;
+      } else if (thisJhorOffer.category_id) {
+        _where2.type_id = thisJhorOffer.category_id;
+      }
+
+      let products = await Product.find({where: _where2});
+      if (products.length > 0) {
+        products.forEach(product => {
+          finalCollectionOfProducts[product.id] = jhorOfferObj;
+        });
       }
     }
 

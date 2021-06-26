@@ -94,8 +94,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     /** Event method for submitting the form */
     submitForm = ($event, value) => {
         console.log('value.categoryId: ', value.categoryId);
-        console.log('this.subCategoryId: ',this.subCategoryId);
-        console.log('this.subSubCategoryId: ',this.subSubCategoryId);
+        console.log('this.subCategoryId: ', this.subCategoryId);
+        console.log('this.subSubCategoryId: ', this.subSubCategoryId);
 
         $event.preventDefault();
         this._isSpinning = true;
@@ -129,16 +129,17 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         }
 
         this.offerService.updateAnonderJhorOffer(formData).subscribe(result => {
-            if (result.code === 'INVALID_SUBSUBCAT') {
+            /*if (result.code === 'INVALID_SUBSUBCAT') {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
-            } else {
-                this._notification.success('Updated', "Anonder Jhor offer Updated successfully");
-                this._isSpinning = false;
-                this.resetForm(null);
-                this.isEditVisible = false;
-                this.router.navigate(['/dashboard/offer/anonder-jhor']);
-            }
+            } else {*/
+            this._notification.success('Updated', "Anonder Jhor offer Updated successfully");
+            this._isSpinning = false;
+            this.resetForm(null);
+            this.isEditVisible = false;
+            this.router.navigate(['/dashboard/offer/anonder-jhor']);
+            window.location.reload();
+            /*}*/
         }, () => {
             this._isSpinning = false;
         });
