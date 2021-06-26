@@ -13,14 +13,16 @@
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
-                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired">
-                                <img width="50%" src="{{  IMAGE_ENDPOINT + anonderJhor.banner_image}}"
-                                     alt="Anonder Jhor">
+                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired" [style.background-image]="'url('+ IMAGE_ENDPOINT + anonderJhor.banner_image + ')'" style="width: 100%; height: 248px">
+                                <div class="col-md-12 text-center">
+                                    <p>this is the tesxt</p>
+                                </div>
                             </div>
                             <ng-template #expired>
                                 <img width="100%" src="../../../../assets/images/expired.png"
                                      alt="Anonder Jhor">
                             </ng-template>
+                            <p style=" color: black; position: absolute">starts at: </p>
                         </div>
 
                     </div>
@@ -28,22 +30,25 @@
             </div>
         </div>
 
-        <div class="row" *ngIf="anonderJhorOffers && anonderJhorOffers.length > 0">
-            <ng-template ngFor let-data [ngForOf]="anonderJhorOffers">
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
-                    <div class="offer-details">
-                        <div class="offer-img">
-                            <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
-                                <img src="{{IMAGE_ENDPOINT + data.image}}"
-                                     alt="offered product image">
-                            </a>
-                        </div>
-                        <div class="offer-contant">
-                            <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
+        <div class="container">
+            <div class="row" *ngIf="anonderJhorOffers && anonderJhorOffers.length > 0" style="margin-top: 30px">
+                <ng-template ngFor let-data [ngForOf]="anonderJhorOffers">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
+                        <div class="offer-details">
+                            <div class="offer-img">
+                                <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
+                                    <img src="{{IMAGE_ENDPOINT + data.image}}"
+                                         alt="offered product image">
+                                </a>
+                            </div>
+                            <div class="offer-contant">
+                                <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </ng-template>
+                </ng-template>
+            </div>
         </div>
+
     </div>
 </div>
