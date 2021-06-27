@@ -5,7 +5,7 @@
  */
 const moment = require('moment');
 const _ = require('lodash');
-const {BKASH_PAYMENT_TYPE, PAYMENT_STATUS_PAID, PAYMENT_STATUS_PARTIALLY_PAID} = require('../../libs/constants');
+const {BKASH_PAYMENT_TYPE, PAYMENT_STATUS_PAID, PAYMENT_STATUS_PARTIALLY_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
 const {sslApiUrl} = require('../../config/softbd');
 const {bKashGrandToken, bKashCreatePayment, bkashRefundTransaction} = require('../../libs/bkashHelper');
 const logger = require('../../libs/softbd-logger').Logger;
@@ -183,7 +183,8 @@ module.exports = {
           payment_type: BKASH_PAYMENT_TYPE,
           details: JSON.stringify(bKashResponse),
           transection_key: bKashResponse.trxID,
-          status: 1
+          status: 1,
+          approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
         });
         const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
 
@@ -335,7 +336,8 @@ module.exports = {
           payment_type: BKASH_PAYMENT_TYPE,
           details: JSON.stringify(bKashResponse),
           transection_key: bKashResponse.trxID,
-          status: 1
+          status: 1,
+          approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
         }).usingConnection(db);
 
         const totalPrice = parseFloat(order.total_price);

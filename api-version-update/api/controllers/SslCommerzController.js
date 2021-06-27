@@ -1,4 +1,9 @@
-const {PAYMENT_STATUS_PARTIALLY_PAID, PAYMENT_STATUS_PAID, SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
+const {
+  PAYMENT_STATUS_PARTIALLY_PAID,
+  PAYMENT_STATUS_PAID,
+  SSL_COMMERZ_PAYMENT_TYPE,
+  APPROVED_PAYMENT_APPROVAL_STATUS
+} = require('../../libs/constants');
 const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
@@ -10,7 +15,7 @@ module.exports = {
   ipnPaymentSuccess: async function (req, res) {
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
-    if(!customer){
+    if (!customer) {
       return res.status(422).json({
         failure: true
       });
@@ -18,7 +23,7 @@ module.exports = {
 
     logger.orderLog(customer.id, '################ SSLCOMMERZ success IPN', '');
     logger.orderLog(customer.id, 'ipnPaymentSuccess-body', req.body);
-    logger.orderLog(customer.id,'ipnPaymentSuccess-query',  req.query);
+    logger.orderLog(customer.id, 'ipnPaymentSuccess-query', req.query);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
       return res.status(422).json({
@@ -31,7 +36,7 @@ module.exports = {
 
       const shippingAddress = await PaymentService.getAddress(req.query.billing_address);
 
-      if(!shippingAddress){
+      if (!shippingAddress) {
         throw new Error('Provided Shipping Address was not found!');
       }
       const sslcommerz = sslcommerzInstance(globalConfigs);
@@ -49,7 +54,7 @@ module.exports = {
       logger.orderLog(customer.id, 'ipnPaymentSuccess-transaction id: (' + hasAlreadyBeenUsed + ' )', req.body.tran_id);
 
       if (hasAlreadyBeenUsed) {
-        logger.orderLog(customer.id, 'ipnPaymentSuccess-hasAlreadyBeenUsed', (hasAlreadyBeenUsed ? 'Yes': 'No'));
+        logger.orderLog(customer.id, 'ipnPaymentSuccess-hasAlreadyBeenUsed', (hasAlreadyBeenUsed ? 'Yes' : 'No'));
         return res.status(422).json({
           failure: true
         });
@@ -147,7 +152,7 @@ module.exports = {
   //Method called when sslCommerzSuccess from frontend
   paymentSuccess: async function (req, res) {
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
-    if(!customer){
+    if (!customer) {
       res.writeHead(301,
         {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Provided customer was not found.')
@@ -159,7 +164,7 @@ module.exports = {
 
     logger.orderLog(customer.id, '################ SSLCOMMERZ success', '');
     logger.orderLog(customer.id, 'paymentSuccess-body', req.body);
-    logger.orderLog(customer.id,'paymentSuccess-query',  req.query);
+    logger.orderLog(customer.id, 'paymentSuccess-query', req.query);
 
     if (!(req.body.tran_id && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
 
@@ -190,7 +195,7 @@ module.exports = {
       });
 
       if (ordersFound && Array.isArray(ordersFound) && ordersFound.length > 0) {
-        logger.orderLog(customer.id, 'paymentSuccess-ordersFound', (ordersFound.length ? 'Yes': 'No'));
+        logger.orderLog(customer.id, 'paymentSuccess-ordersFound', (ordersFound.length ? 'Yes' : 'No'));
         res.writeHead(301,
           {
             Location: sslWebUrl + '/checkout?order=' + ordersFound[0].id
@@ -203,7 +208,7 @@ module.exports = {
       const paidAmount = parseFloat(validationResponse.amount);
 
       const shippingAddress = await PaymentService.getAddress(req.query.billing_address);
-      if(!shippingAddress){
+      if (!shippingAddress) {
         throw new Error('Provided Shipping Address was not found!');
       }
 
@@ -312,7 +317,7 @@ module.exports = {
   ipnPaymentSuccessForPartial: async function (req, res) {
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
-    if(!customer){
+    if (!customer) {
       return res.status(400).json({
         failure: true
       });
@@ -320,7 +325,7 @@ module.exports = {
 
     logger.orderLog(customer.id, '################ SSLCOMMERZ success IPN (Partial)', '');
     logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-body', req.body);
-    logger.orderLog(customer.id,'ipnPaymentSuccessForPartial-query',  req.query);
+    logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-query', req.query);
 
     const tranId = req.body.tran_id;
 
@@ -356,7 +361,7 @@ module.exports = {
       const hasAlreadyBeenUsed = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (hasAlreadyBeenUsed) {
-        logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-hasPaymentTransactionBeenUsed', (hasAlreadyBeenUsed ? 'Yes': 'No'));
+        logger.orderLog(customer.id, 'ipnPaymentSuccessForPartial-hasPaymentTransactionBeenUsed', (hasAlreadyBeenUsed ? 'Yes' : 'No'));
         return res.status(422).json({
           failure: true
         });
@@ -374,7 +379,8 @@ module.exports = {
             order_id: order.id,
             payment_type: SSL_COMMERZ_PAYMENT_TYPE,
             details: JSON.stringify(req.body),
-            status: 1
+            status: 1,
+            approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
           }).fetch().usingConnection(db);
 
           const totalPrice = parseFloat(order.total_price);
@@ -415,7 +421,7 @@ module.exports = {
   paymentSuccessPartial: async function (req, res) {
 
     let customer = await PaymentService.getTheCustomer(req.query.user_id);
-    if(!customer){
+    if (!customer) {
       return res.status(400).json({
         failure: true
       });
@@ -423,7 +429,7 @@ module.exports = {
 
     logger.orderLog(customer.id, '################ SSLCOMMERZ success (Partial)', '');
     logger.orderLog(customer.id, 'paymentSuccessPartial-body', req.body);
-    logger.orderLog(customer.id,'paymentSuccessPartial-query',  req.query);
+    logger.orderLog(customer.id, 'paymentSuccessPartial-query', req.query);
 
     const tranId = req.body.tran_id;
     if (!(tranId && req.query.user_id && req.body.val_id && req.query.billing_address && req.query.shipping_address)) {
@@ -457,7 +463,7 @@ module.exports = {
       const numberOfTransaction = await hasPaymentTransactionBeenUsed(SSL_COMMERZ_PAYMENT_TYPE, tranId);
 
       if (numberOfTransaction) {
-        logger.orderLog(customer.id, 'paymentSuccessPartial-hasPaymentTransactionBeenUsed', (numberOfTransaction ? 'Yes': 'No'));
+        logger.orderLog(customer.id, 'paymentSuccessPartial-hasPaymentTransactionBeenUsed', (numberOfTransaction ? 'Yes' : 'No'));
         res.writeHead(301,
           {
             Location: sslWebUrl + '/profile/orders/invoice/' + order.id
@@ -479,7 +485,8 @@ module.exports = {
             order_id: order.id,
             payment_type: SSL_COMMERZ_PAYMENT_TYPE,
             details: JSON.stringify(req.body),
-            status: 1
+            status: 1,
+            approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
           }).fetch().usingConnection(db);
 
           const totalPrice = parseFloat(order.total_price);
