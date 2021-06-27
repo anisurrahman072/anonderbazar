@@ -232,3 +232,33 @@
   padding-left: 2px;
   font-size: 12px;
 }
+
+@media screen and (max-width: 368px) {
+  .productlist-overlay-icon .button-icon .btn3 {
+    width: 25px;
+    height: 25px;
+    background: #fff;
+    border-radius: 50px;
+    text-align: center;
+    padding: 5px 0;
+  }
+
+  .image-btn {
+    position: relative;
+    bottom: 30%;
+  }
+
+  .productlist-overlay-icon .button {
+    top: 16%;
+    right: 35%;
+  }
+
+  .productlist-overlay-icon .button .btn1 {
+    padding: 5px 5px;
+    margin-bottom: 15px;
+  }
+
+  .productlist-overlay-icon .button .btn2 {
+    padding: 5px 5px;
+  }
+}

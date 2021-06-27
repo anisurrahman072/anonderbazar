@@ -1,6 +1,10 @@
 <section>
     <nz-card class="card-height" [nzExtra]="extra" [nzTitle]="cardTitle">
         <ng-template #extra>
+            <button *ngIf="'payment-create'| accessControl" (click)="getPageData(true)"
+                    nz-button>
+                <span> All Partial Offline Payment </span>
+            </button>
             <button *ngIf="'payment-create'| accessControl"
                     routerLink="/dashboard/payment/create" nz-button
                      >
@@ -12,6 +16,7 @@
             <nz-spin [nzSpinning]="_isSpinning">
                 <nz-table #nzTable
                           nzShowSizeChanger
+                          nzShowQuickJumper
                           [nzFrontPagination]="false"
                           [nzData]="data"
                           [nzLoading]="loading"
@@ -33,6 +38,15 @@
                         </th>
                         <th >
                             <span> Vendor Name </span>
+                        </th>
+                        <th >
+                            <span> Order Details </span>
+                        </th>
+                        <th >
+                            <span> Offline Payment Details </span>
+                        </th>
+                        <th >
+                            <span> Approval Status </span>
                         </th>
                         <th>
                             <span> Transaction ID</span>
@@ -65,6 +79,25 @@
                         </th>
                         <th>
                         </th>
+
+
+
+                        <th>
+                        </th>
+                        <th>
+                        </th>
+                        <th>
+                            <nz-select style="width: 170px;" [(ngModel)]="approvalStatusSearchValue"
+                                       nzAllowClear (ngModelChange)="page = 1; getPageData();"
+                                       [nzPlaceHolder]="'Select Approval Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of approvalOptions" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                </nz-option>
+                            </nz-select>
+                        </th>
+
+
                         <th>
                             <input nz-input placeholder="Transaction ID" [(ngModel)]="transactionSearchValue"
                                    (ngModelChange)="page=1;getPageData()">
@@ -108,6 +141,35 @@
                         <td>{{datum.order_id}}</td>
                         <td>{{datum.suborder_id}}</td>
                         <td>{{datum.receiver_name || 'n/a'}}</td>
+                        <td>
+                            <button nz-button [nzSize]="'default'" (click)="showOrderDetailsModal(datum.orderDetails)">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                        </td>
+                        <td *ngIf="datum.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                            <button nz-button [nzSize]="'default'" (click)="showOfflinePaymentDetailsModal(datum.paymentDetails)">
+                                <i class="fa fa-money"></i>
+                            </button>
+                        </td>
+                        <td *ngIf="datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                            N/A
+                        </td>
+                        <td style="width: 200px;" *ngIf="datum.order_type == ORDER_TYPE.PARTIAL_ORDER_TYPE && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                            <nz-select style="width: 170px;" [(ngModel)]="datum.approval_status"
+                                       nzAllowClear (ngModelChange)="changeApprovalStatus($event, datum.id, datum.order_id, datum.approval_status);"
+                                       [nzPlaceHolder]="'Select Approval Status'"
+                                       [nzNotFoundContent]="'Not found'">
+                                <nz-option *ngFor="let option of approvalOptions" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                </nz-option>
+                            </nz-select>
+                        </td>
+                        <td *ngIf="datum.order_type !== ORDER_TYPE.PARTIAL_ORDER_TYPE || datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.APPROVED">APPROVED</p>
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.PENDING">PENDING</p>
+                            <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.REJECTED">REJECTED</p>
+                        </td>
+
                         <td>{{datum.transection_key}}</td>
                         <td>{{datum.payment_type}}</td>
                         <td>{{datum.payment_amount }}</td>
@@ -172,3 +234,73 @@
         </ng-container>
     </nz-card>
 </section>
+
+<!-- Order details Modal -->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isOrderDetailsVisible"
+          [nzTitle]="'Orders details for payment'"
+          [nzContent]="modalOrderDetials"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalOrderDetials>
+        <div *ngIf="currentOrderDetails && currentOrderDetails.length > 0">
+            <nz-table #nzTable
+                      [nzData]="currentOrderDetails"
+                      [nzLoading]="_isSpinning"
+                      [nzShowPagination]="false"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            <span>Product Name</span>
+                        </th>
+                        <th>
+                            <span>Product Quantity</span>
+                        </th>
+                        <th>
+                            <span>Product Total Price</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of nzTable.data">
+                        <td>{{data.productName}}</td>
+                        <td>{{data.productQty}}</td>
+                        <td>{{data.productTotalPrice}}</td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </ng-template>
+</nz-modal>
+
+<!-- Offline payment details modal -->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isOfflinePaymentDetailVisible"
+          [nzTitle]="'Offline payment details'"
+          [nzContent]="modalOfflinePaymentDetail"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalOfflinePaymentDetail>
+        <div *ngIf="currentOfflinePaymentDetails">
+            <div *ngIf="currentOfflinePaymentDetails.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER; else otherOfflinePayment">
+                <h5>Offline Payment Method: {{currentOfflinePaymentDetails.offline_payment_method}}</h5>
+                <p>Transaction ID: {{currentOfflinePaymentDetails.transactionId}}</p>
+                <p>Bank Name: {{currentOfflinePaymentDetails.bankName}}</p>
+                <p>Branch Name: {{currentOfflinePaymentDetails.branchName}}</p>
+                <p>Account Number For Bank: {{currentOfflinePaymentDetails.accountNumberForBank}}</p>
+            </div>
+            <ng-template #otherOfflinePayment>
+                <div>
+                    <h5>Offline Payment Method: {{currentOfflinePaymentDetails.offline_payment_method}}</h5>
+                    <p style="margin-top: 20px;">Money Receipt</p>
+                    <img src="{{IMAGE_ENDPOINT + '/'+currentOfflinePaymentDetails.money_receipt}}" alt="money-receipt">
+                </div>
+            </ng-template>
+        </div>
+    </ng-template>
+</nz-modal>

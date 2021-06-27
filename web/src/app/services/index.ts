@@ -22,3 +22,4 @@ export * from './suborder-item-variant.service';
 export * from './cms.service';
 export * from './lottery.service';
 export * from './investor.service';
+export * from './global-config.service';

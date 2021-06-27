@@ -1,3 +1,8 @@
+.defaultParagraph {
+  margin: 0px !important;
+  white-space: nowrap !important;
+}
+
 .block-form {
   border: 1px solid #ececec;
   padding: 10px;
@@ -132,6 +137,10 @@ select {
   padding: 10px 85px;
   margin-top: 20px;
 }
+//for Confirm without payment btn
+#sum-btn-w-o-payment {
+  padding: 10px 64px;
+}
 
 .Summarybtn a {
   color: #ffffff;
@@ -206,3 +215,15 @@ button:disabled {
 button:disabled a {
   cursor: not-allowed;
 }
+
+@media (max-width: 767.98px) {
+  .payment-method-radio-btn {
+    flex-direction: column;
+    padding-left: 3.125rem;
+  }
+
+  .send-btn1 {
+    text-align: center;
+  }
+}
+

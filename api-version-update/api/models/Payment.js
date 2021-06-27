@@ -18,7 +18,12 @@ module.exports = {
     },
     suborder_id: {
       model: 'suborder',
-      required: true
+      required: false
+    },
+    approval_status: {
+      type: 'number',
+      defaultsTo: 1,
+      columnType: 'tinyint'
     },
     receiver_id: {
       model: 'user',
@@ -29,6 +34,11 @@ module.exports = {
       columnType: 'varchar',
       required: false,
       allowNull: true
+    },
+    transaction_type: {
+      type: 'number',
+      columnType: 'integer',
+      defaultsTo: 1
     },
     details: {
       type: 'string',
@@ -61,9 +71,8 @@ module.exports = {
   customToJSON: function () {
     return this;
   },
-
   // generating transection key before creating a row
-  beforeCreate: function (req, next) {
+  /* beforeCreate: function (req, next) {
 
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
     let string_length = 16;
@@ -75,6 +84,6 @@ module.exports = {
     req.transection_key = randomstring;
 
     next();
-  },
+  },*/
 };
 

@@ -9,6 +9,8 @@ import {catchError} from "rxjs/operators";
 export class OrderService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/order`;
+    private EndPoint2 = `${AppSettings.API_ENDPOINT}/order`;
+    private EndPoint3 = `${AppSettings.API_ENDPOINT}/partial-order`;
 
     constructor(private http: HttpClient) {
     }
@@ -51,5 +53,25 @@ export class OrderService {
     placeOrder(data): Observable<any> {
         return this.http.post(`${this.EndPoint}/placeOrder`, data)
             .map((response) => response);
+    }
+
+    placeOrderWithoutPayment(data): Observable<any>{
+        return this.http.post(`${this.EndPoint3}/placeOrderWithoutPayment`, data);
+    }
+
+    makePartialPayment(orderId, data): Observable<any>{
+        return this.http.post(`${this.EndPoint3}/make-payment/${orderId}`,data);
+    }
+
+    deleteOrder(orderId): Observable<any>{
+        return this.http.delete(`${this.EndPoint}/deleteOrder/${orderId}`);
+    }
+
+    confirmOrderByOffline(value): Observable<any>{
+        return this.http.post(`${this.EndPoint}/confirmOrderInOffline`, value);
+    }
+
+    getAllProductsByOrderId(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllProductsByOrderId?orderId=${orderId}`);
     }
 }

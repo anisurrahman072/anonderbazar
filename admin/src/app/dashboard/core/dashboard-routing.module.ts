@@ -141,6 +141,16 @@ const routes: Routes = [
                     '../pages/requisition/requisition.module#RequisitionModule'
             },
             {
+                path: 'canceled-order' /* /canceled-order  */,
+                loadChildren:
+                    '../pages/canceled-order/canceled-order.module#CanceledOrderModule'
+            },
+            {
+                path: 'questions' /* /questions  */,
+                loadChildren:
+                    '../pages/questions/questions.module#QuestionsModule'
+            },
+            {
                 path: '' /* /dashboard  */,
                 component: DashboardHomeComponent
             }

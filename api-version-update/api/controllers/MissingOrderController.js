@@ -7,9 +7,10 @@
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {dhakaZilaId} = require('../../config/softbd');
 const _ = require('lodash');
-const {calculateCourierCharge, calcCartTotal} = require('../../libs/helper');
+const {calculateCourierCharge} = require('../../libs/helper');
 const SmsService = require('../services/SmsService');
 const EmailService = require('../services/EmailService');
+const {SSL_COMMERZ_PAYMENT_TYPE} = require('../../libs/constants');
 
 module.exports = {
   findSSLTransaction: async (req, res) => {
@@ -170,7 +171,7 @@ module.exports = {
       /** Start DB transaction **/
       let {smsPhone, orderForMail, order} = await sails.getDatastore()
         .transaction(async (db) => {
-          let paymentType = 'SSLCommerce';
+          let paymentType = SSL_COMMERZ_PAYMENT_TYPE;
           let sslCommerztranId = req.body.ssl_transaction_id;
           let shippingAddressId = req.body.shippingAddressId;
           const paidAmount = parseFloat(transResponse.element[0].amount);
@@ -225,7 +226,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = await calcCartTotal(cart, cartItems);
+          } = PaymentService.calcCartTotal(cart, cartItems);
 
           let noShippingCharge = false;
 
@@ -408,7 +409,7 @@ module.exports = {
               user_id: req.body.customerId,
               order_id: order.id,
               suborder_id: subordersTemp[i].id,
-              payment_type: 'SSLCommerce',
+              payment_type: SSL_COMMERZ_PAYMENT_TYPE,
               payment_amount: subordersTemp[i].total_price,
               transection_key: sslCommerztranId,
               details: JSON.stringify(sslCommerzResponse),

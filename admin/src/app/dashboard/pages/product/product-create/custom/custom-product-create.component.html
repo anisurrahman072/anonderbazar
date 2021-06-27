@@ -144,7 +144,24 @@
                     </div>
                 </div>
             </div>
-            <!--type_id-->
+
+            <div nz-row class="form-row" *ngIf="currentUser.group_id === 'admin' ">
+                <div nz-col [nzSpan]="7">
+                    <label>Choose Warehouse </label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <nz-select formControlName="warehouse_id" nzAllowClear
+                               [nzPlaceHolder]="'Select Warehouse'"
+                               [nzNotFoundContent]="'Not found'"
+                               nzShowSearch
+                               [(ngModel)]="warehouseId">
+                        <nz-option *ngFor="let option of warehouseSearchOptions" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                </div>
+            </div>
+            <!-- warehouse_id -->
 
         </div>
         <div class="col-md-6">
@@ -171,7 +188,7 @@
 
     <div class="row">
         <div class="col-md-6" *ngIf="categorySearchOptions.length>0">
-            <div nz-ro class="form-row"w>
+            <div nz-ro class="form-row" w>
                 <div nz-col [nzSpan]="7">
                     <label> Product s-category </label>
                 </div>
@@ -224,7 +241,7 @@
                 </div>
                 <div nz-col [nzSpan]="12">
                     <nz-select style="width: 100%" formControlName="tag" [nzPlaceHolder]="'Insert tag'"
-                               [(ngModel)]="tag"  [nzMode]="'tags'">
+                               [(ngModel)]="tag" [nzMode]="'tags'">
                         <nz-option *ngFor="let option of tagOptions" [nzLabel]="option.label" [nzValue]="option.label"
                                    [nzDisabled]="option.disabled">
                         </nz-option>
@@ -339,7 +356,7 @@
     <div nz-row class="form-row">
         <div nz-col [nzOffset]="7" [nzSpan]="12">
             <button nz-button [nzType]="'primary'" [nzSize]="'large'"
-                    [disabled]="!validateForm.valid || isSubmit == false">Save
+                    [disabled]="!validateForm.valid || isSubmit == false || (currentUser.group_id === 'admin' && !warehouseId)">Save
             </button>
             <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
         </div>

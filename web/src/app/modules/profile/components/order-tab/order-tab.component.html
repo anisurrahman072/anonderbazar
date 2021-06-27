@@ -7,7 +7,7 @@
                 <span>All Orders</span>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-sm-6 col-6 mb-4">
             <div class="counters4 counter text-center cursor-pointer" (click)="statusFilter='1'">
                 <h4>{{dashboardData.pendingOrder}}</h4>
@@ -21,13 +21,13 @@
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6 col-6 mb-4">
-            <div class="counters2 counter text-center cursor-pointer" (click)="statusFilter='3'">
+            <div class="counters2 counter text-center cursor-pointer" (click)="statusFilter='11'">
                 <h4>{{dashboardData.deliveredOrder}}</h4>
                 <span>Delivered</span>
             </div>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6 col-6 mb-4">
-            <div class="counters3 counter text-center cursor-pointer" (click)="statusFilter='4'">
+            <div class="counters3 counter text-center cursor-pointer" (click)="statusFilter='12'">
                 <h4>{{dashboardData.canceledOrder}}</h4>
                 <span>Canceled</span>
             </div>
@@ -39,38 +39,117 @@
     <div class="category-head justify-content-between d-flex">
         <div class="titel">
             <h4>{{(statusFilter | orderstatus).label | titlecase}} orders</h4>
-        </div> 
-    </div>
-    <div class="order-list">
-        <ul class="justify-content-between" *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
-            <li class="text-1">{{item?.createdAt | date}}</li>
-            <li class="text-2">
-                <button color="accent" style="padding-left: 0px; width:200px" routerLink="/profile/orders/invoice/{{item.id}}">
-                    ৳ {{item?.total_price}}
-                </button>
-            </li>
-            <li class="list-1 button button-order-center" *ngIf="item.status == 1">
-                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
-            </li>
-            <li class="list-2 button button-order-center" *ngIf="item.status == 2">
-                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
-            </li>
-            <li class="list-3 button button-order-center" *ngIf="item.status == 11">
-                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
-            </li>
-            <li class="list-4 button button-order-center" *ngIf="item.status == 12">
-                <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
-            </li>
-            <li class="icon">
-                <button mat-mini-fab color="basic" routerLink="/profile/orders/invoice/{{item.id}}">
-                    <i class="fa fa-angle-right"></i>
-                </button>
-            </li>
-        </ul>
-        <div class="text-center">
-            <pagination-controls (pageChange) = "currentPage = $event" previousLabel="Previous"
-                                 nextLabel="Next">
-            </pagination-controls>
         </div>
+    </div>
+
+    <div class="table-responsive">
+        <table style="width: 100%;" class="table table-bordered table-hide" *ngIf="orderList && orderList.length > 0">
+            <thead>
+            <tr>
+                <th style="width: 13%;text-align: center;" class="text-2">Order Date</th>
+                <th style="width: 10%;text-align: center;" class="text-2">Total price</th>
+                <th style="width: 20%;text-align: center;" class="text-2">Remaining time to pay</th>
+                <th style="width: 15%;text-align: center;" class="text-2">Make Payment</th>
+                <th style="width: 15%;text-align: center;" class="text-2">Payment Status</th>
+                <th style="width: 12%;text-align: center;" class="text-2">Order Status</th>
+                <th style="width: 15%;text-align: center;" class="text-2">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of (getFilteredOrderList() | paginate: { itemsPerPage: limit, currentPage: currentPage})">
+                <td style="width: 13%;text-align: center;" class="text-1 pr-2">{{item?.createdAt | date}}</td>
+                <td style="width: 10%;text-align: center;" class="text-2 pl-2 pr-2">
+                    <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
+                        ৳ {{item?.total_price}}
+                    </button>
+                </td>
+
+                <!--Remaining time to pay-->
+                <td style="width: 20%;text-align: center; cursor: pointer; color: #FF0000; "
+                    class="text-2 list-4 button button-order-center"
+                    *ngIf="remainingTimeInHourMinute && remainingTimeInHourMinute.length > 0 && item.isAllowedForPay"
+                    (click)="makePartialPayment(item)">
+                    {{remainingTimeInHourMinute[item.id]}} remaining
+                </td>
+                <td style="width: 20%;text-align: center;" class="text-2 pl-2  pr-2" *ngIf="!item.isAllowedForPay">
+                    <button color="accent" style="padding-left: 0;" routerLink="/profile/orders/invoice/{{item.id}}">
+                        N/A
+                    </button>
+                </td>
+                <!--Remaining time to pay END-->
+
+                <!--Make Payment-->
+                <td style="width: 15%;text-align: center;" class="text-2 pl-2  pr-2" *ngIf="item.isAllowedForPay">
+                    <button class="make-payment-btn" (click)="makePartialPayment(item)">
+                        Make Payment
+                    </button>
+                </td>
+                <td style="width: 15%;text-align: center;" class="text-2 pl-2  pr-2" *ngIf="!item.isAllowedForPay">
+                    <button color="accent" style="padding-left: 0px;" routerLink="/profile/orders/invoice/{{item.id}}">
+                        N/A
+                    </button>
+                </td>
+                <!--Make Payment END-->
+
+                <!--Payment status-->
+                <td style="width: 15%;text-align: center;" class="button button-order-center"
+                    *ngIf="item.payment_status == 1">
+                    <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
+                </td>
+                <td style="width: 15%;text-align: center;" class="button button-order-center"
+                    *ngIf="item.payment_status == 2">
+                    <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
+                </td>
+                <td style="width: 15%;text-align: center;" class="button button-order-center"
+                    *ngIf="item.payment_status == 3 || item.payment_status == 4">
+                    <a routerLink="/profile/orders/invoice/{{item.id}}">{{(item.payment_status | paymentstatus).label }} </a>
+                </td>
+                <!--Payment status END-->
+
+                <!--Order status-->
+                <td style="width: 12%;text-align: center;" class="list-1 button button-order-center"
+                    *ngIf="item.status == 1">
+                    <a style="color: #1115f8"
+                       routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
+                </td>
+                <td style="width: 12%;text-align: center;" class="list-2 button button-order-center"
+                    *ngIf="item.status == 2">
+                    <a style="color: #FFB963;"
+                       routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
+                </td>
+                <td style="width: 12%;text-align: center;" class="list-3 button button-order-center"
+                    *ngIf="item.status == 11">
+                    <a style="color: #2ECE79;"
+                       routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
+                </td>
+                <td style="width: 12%;text-align: center;" class="list-4 button button-order-center"
+                    *ngIf="item.status == 12">
+                    <a style="color: #FF0000;"
+                       routerLink="/profile/orders/invoice/{{item.id}}">{{(item.status | orderstatus).label }} </a>
+                </td>
+                <!--Order status END-->
+
+                <td style="width: 15%;text-align: center;" class="icon">
+                    <button mat-mini-fab color="basic" (click)="cancelOrder(item.id)" *ngIf="item.status != 12">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </button>
+                    <button mat-mini-fab color="basic" routerLink="/profile/orders/invoice/{{item.id}}">
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+<!--    <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 ml-3 text-center hide-no-product"-->
+<!--         style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;">-->
+<!--        <h1>No Order Found</h1>-->
+<!--    </div>-->
+
+    <div class="text-center div-hide" *ngIf="dashboardData.totalOrder > 20">
+        <pagination-controls (pageChange)="currentPage = $event" previousLabel="Previous"
+                             nextLabel="Next">
+        </pagination-controls>
     </div>
 </div>

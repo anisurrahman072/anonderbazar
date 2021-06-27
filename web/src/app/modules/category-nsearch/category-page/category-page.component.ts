@@ -1,6 +1,6 @@
 import {HttpClient} from "@angular/common/http";
 import {Options, LabelType} from "ng5-slider";
-import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
     Component,
     Injector,
@@ -25,9 +25,9 @@ import {AppSettings} from "../../../config/app.config";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
 import {combineLatest} from "rxjs/observable/combineLatest";
-import {concatMap} from "rxjs/operator/concatMap";
 import {Subscription} from "rxjs/Subscription";
-import {a} from "@angular/core/src/render3";
+import {WAREHOUSE_STATUS} from '../../../../environments/global_config';
+
 @Component({
     selector: "app-category-page",
     templateUrl: "./category-page.component.html",
@@ -233,10 +233,14 @@ export class CategoryPageComponent implements OnInit {
                     this.allSubSubCategory = results[0];
                     this.categoryB = null;
                     this.categoryB = results[1];
-                    this.categoryTitle = results[1].code;
-                    this.categoryTitleName = results[1].name;
-                    console.log('this.categoryTitle', this.categoryTitle);
-                    console.log('this.categoryTitleName', this.categoryTitleName);
+
+                    if (!_.isNull(results[1]) && !_.isNull(results[1].code)) {
+                        this.categoryTitle = results[1].code;
+                    }
+                    if (!_.isNull(results[1]) && !_.isNull(results[1].name)) {
+                        this.categoryTitleName = results[1].name;
+                    }
+
                     this.allSubSubCategory = results[2];
                     this.subcategoryB = results[3];
                     this.subsubcategoryB = results[4];
@@ -246,10 +250,15 @@ export class CategoryPageComponent implements OnInit {
                 .subscribe((result: any) => {
                     console.log('filterSearchObservable-result', result);
                     if (result && result.data) {
-                        this.allProductsByCategory = result.data;
+                        this.allProductsByCategory = result.data.filter(product => {
+                            console.log('this.allProductsByCategory if==>', this.allProductsByCategory);
+                            return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
+                        });
                     } else {
                         this.allProductsByCategory = [];
                     }
+                    console.log('this.allProductsByCategory==>', this.allProductsByCategory);
+
                     this.isLoading = false;
                     // this.loaderService.hideLoader();
 
@@ -625,7 +634,9 @@ export class CategoryPageComponent implements OnInit {
         this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
                 console.log('generateSearchFilterResult-result', result);
-                this.allProductsByCategory = result.data;
+                this.allProductsByCategory = result.data.filter(product => {
+                    return product.warehouse_id.status === WAREHOUSE_STATUS.ACTIVE
+                });
                 // this.loaderService.hideLoader();
             }, (err) => {
                 console.log('generateSearchFilterResult', err);
@@ -769,6 +780,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = true;
         this.sortTitle = 'price';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
+        console.log('this.sortTerm==>', this.sortTerm);
         this.generateSearchFilterResult();
     }
 

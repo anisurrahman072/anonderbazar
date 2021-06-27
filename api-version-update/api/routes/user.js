@@ -7,5 +7,8 @@ exports.userRoutes = {
   'POST /api/v1/user/checkPhone': 'UserController.checkPhone',
   'POST /api/v1/user/checkUsername': 'UserController.checkUsername',
   'GET /api/v1/user/all-customers': 'UserController.getAllCustomers',
-  'GET /api/v1/user/all-shop-users': 'UserController.getAllShopUsers'
+  'GET /api/v1/user/all-shop-users': 'UserController.getAllShopUsers',
+  'GET /api/v1/auth/verifyUserPhone': 'AuthController.verifyUserPhone',
+  'GET /api/v1/auth/resendVerificationCode': 'AuthController.resendOTPCode',
+  'PUT /api/v1/auth/passwordChange': 'AuthController.passwordChange',
 };

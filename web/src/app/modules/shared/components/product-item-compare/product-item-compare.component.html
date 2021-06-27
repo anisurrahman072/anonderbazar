@@ -1,4 +1,4 @@
-<div class="reward-details"   *ngIf="product"  (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false"> 
+<div class="reward-details"   *ngIf="product"  (mouseover)="isDisplay = true" (mouseleave)="isDisplay = false">
         <div class="product-overlay-img">
         <img class="product-img" src="{{IMAGE_ENDPOINT + product.image}}" alt="">
         <div class="productlist-icon" style="position: absolute;
@@ -30,7 +30,7 @@
             <span *ngIf="product.promotion">৳. <del>{{product.price}}</del> {{product.promo_price}}</span>
             <div class="add-cartbtn pl-0 mb-4">
                 <ul class="button">
-                    <li class="btn1"><button (click)="buyNow(product)">Buy Now</button></li> 
+                    <li class="btn1"><button (click)="buyNow(product)">Buy Now</button></li>
                     <li class=""><button class="remove" (click)="removeFromCompare(product)">Remove</button></li>
                 </ul>
             </div>

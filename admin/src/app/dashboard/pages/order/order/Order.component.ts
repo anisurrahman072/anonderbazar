@@ -7,7 +7,7 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
@@ -37,7 +37,13 @@ export class OrderComponent implements OnInit, OnDestroy {
     statusSearchValue: string = '';
 
     searchStartDate: any;
+    paymentStatusSearchValue: any;
+    paymentTypeSearchValue: any;
+    orderTypeSearchValue: any;
     searchEndDate: any;
+
+    searchStartDateOrdersBulk: any;
+    searchEndDateOrdersBulk: any;
 
     orderData = [];
     orderTotal: number = 0;
@@ -50,15 +56,22 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     private statusData: any;
     options: any[] = GLOBAL_CONFIGS.ORDER_STATUSES;
+    paymentOptions: any[] = GLOBAL_CONFIGS.PAYMENT_STATUS;
+    paymentTypes: any[] = GLOBAL_CONFIGS.PAYMENT_TYPES;
+    orderTypes: any[] = GLOBAL_CONFIGS.ORDER_TYPE;
+    paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
     isProductVisible = false;
+    isOrdersBulkVisible = false;
 
     csvOrders: any = [];
     private csvPageSelectAll = [];
     private storedCsvOrders: any = [];
 
     submitting: boolean = false;
+
+    PAYMENT_METHODS = PAYMENT_METHODS;
 
     constructor(
         private orderService: OrderService,
@@ -148,13 +161,43 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.orderDataSubscription = this.orderService.getAllOrdersGrid({
             date: JSON.stringify(dateSearchValue),
             status: this.statusSearchValue,
+            payment_status: this.paymentStatusSearchValue,
+            payment_type: this.paymentTypeSearchValue,
+            order_type: this.orderTypeSearchValue,
             customerName: this.customerNameFilter,
             orderNumber: this.orderNumberFilter
         }, page, limit)
             .subscribe(result => {
-                console.log('getallorders', result);
                 if (!forCsv) {
-                    this.orderData = result.data;
+
+                    let allData = result.data;
+                    allData = allData.map(data => {
+                        let transactions = [];
+
+                        if (!data.paymentAmount) {
+                            return {...data, transactions};
+                        } else {
+                            let transactionsCount = data.paymentAmount.split(',').length;
+
+                            let paymentAmounts = data.paymentAmount.split(',');
+                            let paymentTypes = data.paymentType.split(',');
+                            let transactionKeys = data.transactionKey.split(',');
+                            let transactionTimes = data.transactionTime.split(',');
+
+                            for (let i = 0; i < transactionsCount; i++) {
+                                let transaction = {
+                                    amount: Math.trunc(paymentAmounts[i]),
+                                    paymentType: paymentTypes[i],
+                                    transactionKey: transactionKeys[i],
+                                    transactionTime: transactionTimes[i]
+                                }
+                                transactions.push(transaction);
+                            }
+                            return {...data, transactions};
+                        }
+                    })
+
+                    this.orderData = allData;
                     this.orderTotal = result.total;
                 } else {
                     this.csvOrders = result.data.map((item) => {
@@ -200,14 +243,15 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
 
     selectAllCsv($event) {
-
         const isChecked = !!$event.target.checked;
-        console.log('selectAllCsv', isChecked);
+
         if (!isChecked) {
             this.storedCsvOrders[this.csvPage - 1] = [];
         }
+
         this.csvPageSelectAll[this.csvPage - 1] = isChecked;
         const len = this.csvOrders.length;
+
         for (let i = 0; i < len; i++) {
             this.csvOrders[i].checked = isChecked;
             if (isChecked) {
@@ -219,7 +263,6 @@ export class OrderComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log('this.storedCsvOrders', this.storedCsvOrders[this.csvPage - 1]);
     }
 
 
@@ -249,6 +292,10 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.getData(null, true);
     };
 
+    showOrdersBalkModal() {
+        this.isOrdersBulkVisible = true;
+    }
+
 
     //Event method for resetting all filters
     resetAllFilter() {
@@ -267,7 +314,6 @@ export class OrderComponent implements OnInit, OnDestroy {
             status: $event,
             changed_by: this.currentUser.id
         }).subscribe((res) => {
-            console.log(res);
             this._notification.create('success', 'Successful Message', 'Order status has been updated successfully');
             this.suborderService.updateByOrderId(id, {status: $event})
                 .subscribe(arg => {
@@ -281,8 +327,21 @@ export class OrderComponent implements OnInit, OnDestroy {
             this._notification.create('error', 'Error', 'Something went wrong');
             $event = oldStatus;
         });
+    }
 
-
+    changePaymentStatusConfirm($event, id, oldStatus) {
+        this._isSpinning = true;
+        this.orderService.updatePaymentStatus(id, {
+            payment_status: $event,
+            changed_by: this.currentUser.id
+        }).subscribe(data => {
+            this._isSpinning = false;
+            this._notification.create('success', 'Successful Message', 'Order Payment status has been updated successfully');
+        }, error => {
+            console.log(error);
+            this._isSpinning = false;
+            this._notification.create('error', 'Error Message', 'Error occurred while updating the payment status!');
+        })
     }
 
     //Method for csv download
@@ -299,7 +358,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
             if (suborderItem.all_coupons) {
                 const couponArr = suborderItem.all_coupons.split(',');
-                console.log('couponArr', suborderItem.all_coupons, couponArr);
                 allCouponCodes = couponArr.map((coupon) => {
                     return '1' + ___.padStart(coupon, 6, '0')
                 }).join('|');
@@ -330,6 +388,12 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Date': (suborderItem.created_at) ? moment(suborderItem.created_at).format('DD/MM/YYYY h:m a') : 'N/a',
                 'SSLCommerce Transaction Id': suborderItem.ssl_transaction_id ? suborderItem.ssl_transaction_id : '',
                 'Coupon Product Code': allCouponCodes,
+                'postal Code': suborderItem.postal_code,
+                'Transactions': suborderItem.transactions,
+                'Upazila Name': suborderItem.upazila_name,
+                'Zila Name': suborderItem.zila_name,
+                'Division Name': suborderItem.division_name,
+                'Address': suborderItem.address,
             });
 
         });
@@ -352,6 +416,12 @@ export class OrderComponent implements OnInit, OnDestroy {
             'Date',
             'SSLCommerce Transaction Id',
             'Coupon Product Code',
+            'postal Code',
+            'Transactions',
+            'Upazila Name',
+            'Zila Name',
+            'Division Name',
+            'Address'
         ];
         this.exportService.downloadFile(csvData, header);
     }
@@ -359,7 +429,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     //Event method for submitting the form
     submitForm = ($event, value) => {
         this.submitting = true;
-        let orderIds = ___.flatten(this.storedCsvOrders).map(item => {
+
+        /** the array indexes which has the data are being filtered and the ids
+         *  of those data's are being map out and taken into "orderIds" variable*/
+        let orderIds = ___.flatten(this.storedCsvOrders.filter(arr => {
+            return arr.length > 0;
+        })).map(item => {
             return item.id;
         });
         if (orderIds.length === 0) {
@@ -370,9 +445,36 @@ export class OrderComponent implements OnInit, OnDestroy {
         this._isSpinning = true;
         this.subOrderTimeSub = this.suborderItemService.allOrderItemsByOrderIds(orderIds)
             .subscribe((result: any) => {
-                console.log('submitForm', result);
                 this._isSpinning = false;
-                this.dowonloadCSV(result.data);
+
+                let allData = result.data;
+                allData = allData.map(data => {
+                    let transactions = [];
+
+                    if (!data.paymentAmount) {
+                        return {...data, transactions};
+                    } else {
+                        let transactionsCount = data.paymentAmount.split(',').length;
+
+                        let paymentAmounts = data.paymentAmount.split(',');
+                        let paymentTypes = data.paymentType.split(',');
+                        let transactionKeys = data.transactionKey.split(',');
+                        let transactionTimes = data.transactionTime.split(',');
+
+                        for (let i = 0; i < transactionsCount; i++) {
+                            let transaction = {
+                                Amount: paymentAmounts[i],
+                                Type: paymentTypes[i],
+                                Transaction_Key: transactionKeys[i],
+                                Time: transactionTimes[i]
+                            }
+                            transactions.push(transaction);
+                        }
+                        return {...data, transactions};
+                    }
+                })
+
+                this.dowonloadCSV(allData);
                 this.submitting = false;
             }, (err) => {
                 console.log(err);
@@ -407,11 +509,136 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     handleOk = e => {
         this.isProductVisible = false;
+        this.isOrdersBulkVisible = false;
     };
 
     handleCancel = e => {
         this.isProductVisible = false;
+        this.isOrdersBulkVisible = false;
     };
+
+    onSubmitOrdersBulkDownload() {
+        this.isOrdersBulkVisible = false;
+        if (!this.searchStartDateOrdersBulk) {
+            this._notification.error('Missing Start date!', 'Please provide start date!');
+        }
+
+        let dateSearchValue = {
+            from: null,
+            to: null,
+        };
+
+
+        if (this.searchStartDateOrdersBulk) {
+            if (this.searchStartDateOrdersBulk.constructor.name === 'Moment') {
+                dateSearchValue.from = this.searchStartDateOrdersBulk.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.from = this.searchStartDateOrdersBulk;
+            }
+        } else {
+            dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        }
+
+        if (this.searchEndDateOrdersBulk) {
+            if (this.searchEndDateOrdersBulk.constructor.name === 'Moment') {
+                dateSearchValue.to = this.searchEndDateOrdersBulk.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                dateSearchValue.to = this.searchEndDateOrdersBulk;
+            }
+        } else {
+            dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
+        }
+
+
+        this.orderService.getOrdersByDate({
+            date: JSON.stringify(dateSearchValue)
+        })
+            .subscribe(result => {
+                console.log("result is: ", result);
+                if (!(Array.isArray(result) && result.length > 0)) {
+                    this._notification.info('Not found!', 'No product found in this time');
+                    return false;
+                }
+                let csvData = [];
+                let varients = "";
+                result.forEach(suborderItem => {
+                    csvData.push({
+                        'Order Date': _moment(suborderItem.orderCreatedAt).format('DD-MM-YYYY'),
+                        'Order Time': _moment(suborderItem.orderCreatedAt).format('h:m a'),
+                        'Order Id': suborderItem.order_id,
+                        'SubOrder Id': suborderItem.suborder_id,
+                        'Customer Name': suborderItem.customer_name,
+                        'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
+                        'Customer Division': suborderItem.division_name,
+                        'Customer District': suborderItem.zila_name,
+                        'Customer Upazila': suborderItem.upazila_name,
+                        'Customer House/Road/Block/Village': suborderItem.address.split(',').join('/'),
+                        'Category': suborderItem.categoryName,
+                        'Product Name': suborderItem.product_name,
+                        'Product SKU': suborderItem.product_code,
+                        'MRP': suborderItem.originalPrice,
+                        'Vendor Price': suborderItem.vendorPrice,
+                        'Discount Price': suborderItem.discountPrice,
+                        'Quantity': suborderItem.product_quantity,
+                        'Shipping Charge': suborderItem.courier_charge,
+                        'Total': suborderItem.product_total_price,
+                        'Grand Total': suborderItem.total_price,
+                        'Payment Method': suborderItem.paymentType,
+                        'Transaction ID': suborderItem.transactionKey,
+                        'Payment Amount': suborderItem.paymentAmount,
+                        'Transaction Time': _moment(suborderItem.transactionTime).format('DD-MM-YYYY h:m a'),
+                        'Remaining Amount': suborderItem.dueAmount,
+                        'Vendor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                        'Vendor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
+                        'Vendor Address': suborderItem.vendor_address.split(',').join('/'),
+                        'Suborder Status': typeof this.statusOptions[suborderItem.sub_order_status] !== 'undefined' ? this.statusOptions[suborderItem.sub_order_status] : 'Unrecognized Status',
+                        'Suborder Changed By': ((suborderItem.suborder_changed_by_name) ? suborderItem.suborder_changed_by_name : ''),
+                        'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',
+                        'Order Status Changed By': ((suborderItem.order_changed_by_name) ? suborderItem.order_changed_by_name : ''),
+                    });
+                });
+                const header = [
+                    'Order Date',
+                    'Order Time',
+                    'Order Id',
+                    'SubOrder Id',
+                    'Customer Name',
+                    'Customer Phone',
+                    'Customer Division',
+                    'Customer District',
+                    'Customer Upazila',
+                    'Customer House/Road/Block/Village',
+                    'Category',
+                    'Product Name',
+                    'Product SKU',
+                    'MRP',
+                    'Vendor Price',
+                    'Discount Price',
+                    'Quantity',
+                    'Shipping Charge',
+                    'Total',
+                    'Grand Total',
+                    'Payment Method',
+                    'Transaction ID',
+                    'Payment Amount',
+                    'Transaction Time',
+                    'Remaining Amount',
+                    'Vendor Name',
+                    'Vendor Phone',
+                    'Vendor Address',
+                    'Suborder Status',
+                    'Suborder Changed By',
+                    'Order Status',
+                    'Order Status Changed By'
+                ];
+                this.exportService.downloadFile(csvData, header);
+                this._notification.success('Success', 'Successfully fetched all products.');
+
+            }, error => {
+                console.log("Error: ", error);
+                this._notification.error('Error occurred!', 'Something wrong happened!');
+            })
+    }
 
 
 }

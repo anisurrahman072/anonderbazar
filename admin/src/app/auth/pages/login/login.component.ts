@@ -23,9 +23,11 @@ export class LoginComponent implements OnInit {
         message: ''
     };
 
-    constructor(private fb: FormBuilder, private router: Router,
+    constructor(private fb: FormBuilder, 
+				private router: Router,
                 private authService: AuthService,
                 private uiService: UIService) {
+
         this.validateForm = this.fb.group({
             userName: ['', [Validators.required]],
             password: ['', [Validators.required]],

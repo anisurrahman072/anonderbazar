@@ -2,9 +2,9 @@ const moment = require('moment');
 const _ = require('lodash');
 const EmailService = require('./EmailService');
 const SmsService = require('./SmsService');
-const {calcCartTotal} = require('../../libs/helper');
-const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('./bKash');
-const {sslApiUrl, dhakaZilaId} = require('../../config/softbd');
+const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
+const {bKashCreatePayment, bKashGrandToken, bKashCreateAgreement} = require('../../libs/bkashHelper.js');
+const {sslApiUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
 const {
   generateRandomString,
@@ -134,6 +134,68 @@ module.exports = {
 
     return order.id;
   },
+
+  /*placeCashOnDeliveryOrder: async (authUser, orderDetails, addresses, globalConfigs, cart, courierCharge, cartItems) => {
+    const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
+    const {paymentType, grandOrderTotal, totalQuantity} = orderDetails;
+
+    try {
+      const {
+        order,
+        orderForMail,
+        subordersTemp
+      } = await sails.getDatastore()
+        .transaction(async (db) => {
+          let {subordersTemp, order, allOrderedProductsInventory} = await PaymentService.placeOrder(authUser.id, cart.id, grandOrderTotal, totalQuantity, billingAddress.id, shippingAddress.id, courierCharge, cartItems, paymentType, db);
+
+          let paymentTemp = [];
+
+          for (let i = 0; i < subordersTemp.length; i++) {
+            let payment = await Payment.create({
+              user_id: authUser.id,
+              order_id: order.id,
+              suborder_id: subordersTemp[i].id,
+              payment_type: paymentType,
+              payment_amount: subordersTemp[i].total_price,
+              status: 1
+            }).fetch().usingConnection(db);
+
+            paymentTemp.push(payment);
+          }
+
+          let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
+
+          await PaymentService.updateCart(cart.id, db, cartItems);
+
+          await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+          return {
+            order,
+            orderForMail,
+            subordersTemp
+          };
+        });
+
+      await PaymentService.sendSms(authUser, order);
+
+      await PaymentService.sendEmail(orderForMail);
+
+      // End /Delete Cart after submitting the order
+      let d = Object.assign({}, order);
+      d.suborders = subordersTemp;
+
+      return d;
+    }
+    catch (finalError) {
+      console.log('finalError', finalError);
+      return res.status(400).json({
+        message: 'There was a problem in processing the order.',
+        additionalMessage: finalError.message
+      });
+    }
+
+  },*/
+
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
     console.log('################# placeSSlCommerzOrder ##################### ');
@@ -243,7 +305,7 @@ module.exports = {
       shippingAddress
     } = addresses;
 
-    let tokenRes = await bKashGrandToken();
+    let tokenRes = await bKashGrandToken(authUser);
 
     let finalBillingAddressId = null;
     let finalShippingAddressId = null;
@@ -282,7 +344,7 @@ module.exports = {
 
       const paymentTransactionLog = await PaymentTransactionLog.create({
         user_id: authUser.id,
-        payment_type: 'bKash',
+        payment_type: BKASH_PAYMENT_TYPE ,
         payment_amount: grandOrderTotal,
         payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
         status: '1',
@@ -306,7 +368,7 @@ module.exports = {
         'merchantInvoiceNumber': paymentTransactionLog.id
       };
 
-      const bKashResponse = await bKashCreatePayment(tokenRes.id_token, payloadData);
+      const bKashResponse = await bKashCreatePayment(authUser, tokenRes.id_token, payloadData);
 
       if (bKashResponse.statusMessage === 'Successful' && bKashResponse.transactionStatus === 'Initiated') {
         await PaymentTransactionLog.updateOne({
@@ -487,27 +549,19 @@ module.exports = {
     }*/
   },
 
-  createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
+  /*createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
     const {billingAddressId, shippingAddressId} = addressIds;
 
-    let cart = await Cart.findOne({
-      user_id: customer.id,
-      deletedAt: null
-    }).usingConnection(db);
+    let cart = await PaymentService.getCart(customer.id);
 
     if (!cart) {
       throw new Error('Associated Shipping Cart was not found!');
     }
 
-    let cartItems = await CartItem.find({
-      cart_id: cart.id,
-      deletedAt: null
-    }).populate('cart_item_variants')
-      .populate('product_id')
-      .usingConnection(db);
+    let cartItems = await PaymentService.getCartItems(cart.id);
 
     if (!cartItems || cartItems.length === 0) {
       throw new Error('Associated Shipping Cart Items were not found!');
@@ -570,141 +624,9 @@ module.exports = {
       throw new Error('Paid amount and order amount are different.');
     }
 
-    let order = await Order.create({
-      user_id: customer.id,
-      cart_id: cart.id,
-      total_price: grandOrderTotal,
-      total_quantity: totalQty,
-      billing_address: billingAddressId,
-      shipping_address: shippingAddressId,
-      courier_charge: courierCharge,
-      ssl_transaction_id: sslCommerztranId,
-      status: 1
-    }).fetch().usingConnection(db);
+    let {subordersTemp, order, allOrderedProductsInventory, allGeneratedCouponCodes} = await PaymentService.placeOrder(customer.id, cart.id, grandOrderTotal, totalQty, billingAddressId, shippingAddressId, courierCharge, cartItems, paymentType, db, sslCommerztranId);
 
-    /** Get unique warehouse Id for suborder................START......................... */
-
-    let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
-
-    let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
-
-    /** Get unique warehouse Id for suborder..................END......................... */
-
-    let subordersTemp = [];
-
-    let i = 0; // i init for loop
-    let allOrderedProductsInventory = [];
-
-    /** Generate Necessary sub orders according to warehouse Start **/
-    let allGeneratedCouponCodes = [];
-    for (i = 0; i < uniqueWarehouseIds.length; i++) {
-      let thisWarehouseID = uniqueWarehouseIds[i];
-
-      let cartItemsTemp = cartItems.filter(
-        asset => asset.product_id.warehouse_id === thisWarehouseID
-      );
-
-      let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
-      let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
-
-      let suborder = await Suborder.create({
-        product_order_id: order.id,
-        warehouse_id: uniqueWarehouseIds[i],
-        total_price: suborderTotalPrice,
-        total_quantity: suborderTotalQuantity,
-        status: 1
-      }).fetch().usingConnection(db);
-
-      let suborderItemsTemp = [];
-      for (let k = 0; k < cartItemsTemp.length; k++) {
-        let thisCartItem = cartItemsTemp[k];
-
-        let newSuborderItemPayload = {
-          product_suborder_id: suborder.id,
-          product_id: thisCartItem.product_id.id,
-          warehouse_id: thisCartItem.product_id.warehouse_id,
-          product_quantity: thisCartItem.product_quantity,
-          product_total_price: thisCartItem.product_total_price,
-          status: 1
-        };
-
-        const orderedProductInventory = {
-          product_id: thisCartItem.product_id.id,
-          ordered_quantity: thisCartItem.product_quantity,
-          existing_quantity: thisCartItem.product_id.quantity
-        };
-
-        let newEndDate = new Date();
-        newEndDate.setDate(new Date(
-          new Date(order.createdAt).getTime() +
-          ((thisCartItem.product_id.produce_time *
-            thisCartItem.product_quantity) /
-            60 /
-            8) *
-          86400000
-        ).getDate() + 1);
-
-        let suborderItem = await SuborderItem.create(newSuborderItemPayload).fetch().usingConnection(db);
-
-        if (thisCartItem.product_id && !!thisCartItem.product_id.is_coupon_product) {
-          for (let t = 0; t < thisCartItem.product_quantity; t++) {
-            allGeneratedCouponCodes.push({
-              quantity: thisCartItem.product_quantity,
-              product_id: thisCartItem.product_id.id,
-              user_id: customer.id,
-              order_id: order.id,
-              suborder_id: suborder.id,
-              suborder_item_id: suborderItem.id
-            });
-          }
-        }
-
-        let suborderItemVariantsTemp = [];
-        if (thisCartItem.cart_item_variants.length > 0) {
-          for (let j = 0; j < thisCartItem.cart_item_variants.length; j++) {
-            let thisCartItemVariant = thisCartItem.cart_item_variants[j];
-            let newSuborderItemVariantPayload = {
-              product_suborder_item_id: suborderItem.id,
-              product_id: thisCartItemVariant.product_id,
-              variant_id: thisCartItemVariant.variant_id,
-              warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-              product_variant_id: thisCartItemVariant.product_variant_id
-            };
-
-            if (typeof orderedProductInventory.variantPayload === 'undefined') {
-              orderedProductInventory.variantPayload = [];
-
-            }
-
-            orderedProductInventory.variantPayload.push({
-              product_id: thisCartItemVariant.product_id,
-              variant_id: thisCartItemVariant.variant_id,
-              warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
-            });
-
-            let suborderItemVariant = await SuborderItemVariant.create(
-              newSuborderItemVariantPayload
-            ).fetch().usingConnection(db);
-
-            suborderItemVariantsTemp.push(suborderItemVariant);
-          }
-        }
-
-        let d = Object.assign({}, suborderItem);
-        d.suborderItemVariants = suborderItemVariantsTemp;
-        suborderItemsTemp.push(d);
-
-        allOrderedProductsInventory.push(orderedProductInventory);
-      }
-
-      let d = Object.assign({}, suborder);
-      d.suborderItems = suborderItemsTemp;
-      subordersTemp.push(d);
-    }
-
-    /** Generate Necessary sub orders according to warehouse End **/
-
-    /** .............Payment Section ........... */
+    /!** .............Payment Section ........... *!/
 
     let paymentTemp = [];
 
@@ -736,36 +658,14 @@ module.exports = {
     }
 
     // Start/Delete Cart after submitting the order
-    let orderForMail = await Order.findOne({id: order.id})
-      .populate('user_id')
-      .populate('shipping_address')
-      .usingConnection(db);
-
-    let allOrderedProducts = [];
-    for (let i = 0; i < subordersTemp.length; i++) {
-      let items = await SuborderItem.find({where: {product_suborder_id: subordersTemp[i].id}}).populate('product_id').usingConnection(db);
-      for (let index = 0; index < items.length; index++) {
-        allOrderedProducts.push(items[index]);
-      }
-    }
-
-    orderForMail.orderItems = allOrderedProducts;
+    let orderForMail = await PaymentService.findAllOrderedProducts(order.id, db, subordersTemp);
     orderForMail.payments = paymentTemp;
 
-    await Cart.update({id: cart.id}, {deletedAt: new Date()}).usingConnection(db);
+    await PaymentService.updateCart(cart.id, db, cartItems);
 
-    for (let i = 0; i < cartItems.length; i++) {
-      await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
-      await CartItemVariant.update(
-        {cart_item_id: cartItems[i].id},
-        {deletedAt: new Date()}
-      ).usingConnection(db);
-    }
+    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
 
-    for (let i = 0; i < allOrderedProductsInventory.length; i++) {
-      const quantityToUpdate = parseFloat(allOrderedProductsInventory[i].existing_quantity) - parseFloat(allOrderedProductsInventory[i].ordered_quantity);
-      await Product.update({id: allOrderedProductsInventory[i].product_id}, {quantity: quantityToUpdate}).usingConnection(db);
-    }
+    console.log('successfully created:', orderForMail, allCouponCodes, order, subordersTemp, noShippingCharge, shippingAddress);
 
     return {
       orderForMail,
@@ -776,7 +676,8 @@ module.exports = {
       shippingAddress
     };
 
-  },
+  },*/
+
   bKashSaveOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
 
     await PaymentTransactionLog.updateOne({
@@ -813,7 +714,7 @@ module.exports = {
         } = await this.createOrder(
           db,
           customer, {
-            paymentType: 'bKash',
+            paymentType: BKASH_PAYMENT_TYPE,
             paidAmount: parseFloat(bKashResponse.amount),
             sslCommerztranId: null,
             paymentResponse: bKashResponse

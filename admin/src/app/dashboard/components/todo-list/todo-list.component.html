@@ -26,7 +26,7 @@
 
                 <div class="col-md-12">
                     <div class="heading-todo-news">
-                        <nz-table #nzTable [nzPageSize]="5" [nzData]="data" [nzLoading]="_isSpinning">
+                        <nz-table #nzTable [nzPageSize]="5" [nzData]="data" [nzLoading]="_isSpinning" nzShowQuickJumper>
                             <thead>
                             <tr>
                                 <th><span> Order </span></th>
@@ -98,7 +98,7 @@
 
                 <div class="col-md-12">
                     <div class="heading-todo-news">
-                        <nz-table #nzTables [nzPageSize]="5" [nzData]="newData" [nzLoading]="_isSpinning">
+                        <nz-table #nzTables [nzPageSize]="5" [nzData]="newData" [nzLoading]="_isSpinning" nzShowQuickJumper>
                             <thead>
                             <tr>
                                 <th><span> Order </span></th>
@@ -162,7 +162,7 @@
           (nzOnOk)="handleOk($event)"
 >
     <ng-template #modalContent>
-        <nz-table #nzTable [nzData]="allDataTodayTodo">
+        <nz-table #nzTable [nzData]="allDataTodayTodo" nzShowQuickJumper>
             <thead>
             <tr>
                 <th><span> Order </span></th>
@@ -226,7 +226,7 @@
           (nzOnOk)="handleAllOk($event)"
 >
     <ng-template #modalContentAll>
-        <nz-table #nzTables [nzData]="allDataAllTodo">
+        <nz-table #nzTables [nzData]="allDataAllTodo" nzShowQuickJumper>
             <thead>
             <tr>
                 <th><span> Order </span></th>

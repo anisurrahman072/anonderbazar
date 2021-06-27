@@ -37,8 +37,8 @@ export class AddressTabComponent implements OnInit {
 
         //adding form validation
         this.addAddressForm = this.fb.group({
-            first_name: ['', Validators.required],
-            last_name: ['', Validators.required],
+            first_name: ['', [Validators.required]],
+            last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -49,8 +49,8 @@ export class AddressTabComponent implements OnInit {
 
         //adding edit form validation
         this.editAddressForm = this.fb.group({
-            first_name: ['', Validators.required],
-            last_name: ['', Validators.required],
+            first_name: ['', [Validators.required]],
+            last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -70,7 +70,7 @@ export class AddressTabComponent implements OnInit {
         this.getAddressList();
 
         this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
+            this.divisionSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
         });
     }
 
@@ -108,7 +108,7 @@ export class AddressTabComponent implements OnInit {
     divisionChange($event) {
         var divisionId = $event.value;
         this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-            this.zilaSearchOptions = result;
+            this.zilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
         });
     }
 
@@ -116,7 +116,7 @@ export class AddressTabComponent implements OnInit {
     zilaChange($event) {
         var zilaId = $event.value;
         this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-            this.upazilaSearchOptions = result;
+            this.upazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
         });
     }
 
@@ -141,9 +141,9 @@ export class AddressTabComponent implements OnInit {
     //Event called for fillup the edit form data
     addressEdit(address) {
         this.areaService.getAllZilaByDivisionId(address.division_id.id).subscribe(result => {
-            this.zilaSearchOptions = result;
+            this.zilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             this.areaService.getAllUpazilaByZilaId(address.zila_id.id).subscribe(result => {
-                this.upazilaSearchOptions = result;
+                this.upazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.editAddressForm.patchValue({
                     first_name: address.first_name,
                     last_name: address.last_name,

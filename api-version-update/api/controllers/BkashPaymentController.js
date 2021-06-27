@@ -5,17 +5,18 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {bKashCancelAgreement} = require('../services/bKash');
-const {calcCartTotal} = require('../../libs/helper');
-const {sslWebUrl, sslApiUrl, dhakaZilaId} = require('../../config/softbd');
-const {createBKashPayment, bKashSaveOrder} = require('../services/checkout');
+const {BKASH_PAYMENT_TYPE} = require('../../libs/constants');
+const {getAuthUser, getGlobalConfig} = require('../../libs/helper');
+const {sslWebUrl, sslApiUrl} = require('../../config/softbd');
 const {
   bKashGrandToken,
   bKashCreateAgreement,
   bKashExecutePayment,
   bKashExecuteAgreement,
-  bKasQueryPayment
-} = require('../services/bKash');
+  bKasQueryPayment,
+  bKashCancelAgreement
+} = require('../../libs/bkashHelper.js');
+const logger = require('../../libs/softbd-logger').Logger;
 
 module.exports = {
 
@@ -36,7 +37,8 @@ module.exports = {
   grandToken: async (req, res) => {
 
     try {
-      let tokenRes = await bKashGrandToken();
+      const authUser = req.token.userInfo;
+      let tokenRes = await bKashGrandToken(authUser);
 
       return res.status(200).json(tokenRes);
     } catch (error) {
@@ -47,7 +49,6 @@ module.exports = {
   },
   createAgreement: async (req, res) => {
 
-    sails.log('createAgreement', req.query);
     if (!req.query.id_token) {
       return res.status(422).json({
         statusMessage: 'Invalid Request',
@@ -57,14 +58,19 @@ module.exports = {
 
     try {
 
-      const authUser = req.token.userInfo;
+      const authUser = getAuthUser(req);
+
+      logger.orderLog(authUser.id, '######## createAgreement bkash ########');
+      logger.orderLog(authUser.id, 'Body: ', req.body);
+      logger.orderLog(authUser.id, 'Query: ', req.query);
+
       const callbackURL = sslApiUrl + '/bkash-payment/agreement-callback/' + authUser.id;
 
       let tokenRes = await bKashCreateAgreement(req.query.id_token, authUser.id, req.query.wallet_no, callbackURL);
 
       if (tokenRes.statusMessage === 'Successful' && tokenRes.agreementStatus === 'Initiated') {
         const bkashCustomerWallet = await BkashCustomerWallet.create({
-          user_id: req.token.userInfo.id,
+          user_id: authUser.id,
           wallet_no: tokenRes.payerReference,
           payment_id: tokenRes.paymentID,
           full_response: JSON.stringify({id_token: req.query.id_token, ...tokenRes})
@@ -93,7 +99,8 @@ module.exports = {
     }
     try {
 
-      const authUser = req.token.userInfo;
+      const authUser = getAuthUser(req);
+      logger.orderLog(authUser.id, '######## Cancel Agreement bkash ########');
 
       const foundAgreements = await BkashCustomerWallet.find({
         agreement_id: req.body.agreement_id,
@@ -109,7 +116,7 @@ module.exports = {
         });
       }
 
-      let cancelAgreementRes = await bKashCancelAgreement(req.body.id_token, req.body.agreement_id);
+      let cancelAgreementRes = await bKashCancelAgreement(authUser, req.body.id_token, req.body.agreement_id);
 
       if (cancelAgreementRes.statusMessage === 'Successful' && cancelAgreementRes.agreementStatus === 'Cancelled') {
         const bkashCustomerWallet = await BkashCustomerWallet.updateOne({
@@ -129,23 +136,20 @@ module.exports = {
     }
   },
   agreementCallback: async (req, res) => {
-    sails.log('agreementCallback');
-    sails.log(req.query);
+    let customer = await PaymentService.getTheCustomer(req.param('id'));
 
-    let customer = await User.findOne({id: req.param('id'), deletedAt: null});
-
-    if (!customer) {
-
+    if(!customer){
       res.writeHead(301, {
-        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Invalid Request! Customer was not found!')
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Provided customer was not found.')
       });
-
       res.end();
-
-      return;
     }
+    logger.orderLog(customer.id, '######## agreementCallback bkash ########');
+    logger.orderLog(customer.id, 'body', req.body);
+    logger.orderLog(customer.id, 'query', req.query);
 
     try {
+
       const userWallets = await BkashCustomerWallet.find({
         user_id: customer.id,
         payment_id: req.query.paymentID,
@@ -153,14 +157,7 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length === 1)) {
-
-        res.writeHead(301, {
-          Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Invalid Request!')
-        });
-
-        res.end();
-
-        return;
+        throw new Error('Invalid Request!');
       }
 
       const userWallet = userWallets[0];
@@ -176,7 +173,7 @@ module.exports = {
             row_status: 2
           });
 
-        const bKashResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
+        const bKashResponse = await bKashExecuteAgreement(customer, userWallet.full_response.id_token, req.query.paymentID);
 
         if (bKashResponse.agreementStatus === 'Completed' && bKashResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
@@ -198,7 +195,7 @@ module.exports = {
       }
 
       let messageToShow = '';
-      if(req.query.status === 'failure'){
+      if (req.query.status === 'failure') {
         messageToShow = 'Your Agreement Creation Request has failed';
       } else {
         messageToShow = 'Your Agreement Creation Request has been cancelled';
@@ -219,20 +216,47 @@ module.exports = {
     } catch (error) {
       sails.log(error);
       res.writeHead(301, {
-        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent('Problem in generating bKash Payment Agreement')
+        Location: sslWebUrl + '/profile/bkash-accounts?bKashError=' + encodeURIComponent(error.message)
       });
       res.end();
     }
   },
   paymentCallback: async (req, res) => {
+    const orderId = req.query.order_id;
+    let redirectUrl = sslWebUrl + '/checkout';
 
-    sails.log('paymentCallback');
-    sails.log(req.query);
+    let originalOrder = null;
+    if (orderId) {
+      redirectUrl = sslWebUrl + '/profile/orders/invoice/' + orderId;
+
+      originalOrder = await Order.findOne({id: req.param('order_id'), deletedAt: null})
+        .populate('shipping_address')
+        .populate('billing_address');
+
+      if (!originalOrder) {
+        res.writeHead(301, {
+          Location: redirectUrl + '?bKashError=' + encodeURIComponent('Invalid bKash payment request. Order doesn\'t exist.')
+        });
+        res.end();
+        return;
+      }
+    }
+
+    let customer = await PaymentService.getTheCustomer(req.param('userId'));
+    if(!customer){
+      res.writeHead(301, {
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent('Provided customer was not found.')
+      });
+      res.end();
+    }
+
+    logger.orderLog(customer.id, '######## paymentCallback bkash ########');
+    logger.orderLog(customer.id, 'body', req.body);
+    logger.orderLog(customer.id, 'query', req.query);
 
     if (!(req.param('userId') && req.param('paymentTransId') && req.query.paymentID && req.query.status)) {
-
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid request')
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent('Invalid bKash payment request')
       });
       res.end();
       return;
@@ -240,28 +264,7 @@ module.exports = {
 
     try {
 
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
-
-      if (!globalConfigs) {
-
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
-        });
-        res.end();
-        return;
-      }
-
-      let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
-
-      if (!customer) {
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Customer was not found!')
-        });
-        res.end();
-        return;
-      }
+      const globalConfigs = await getGlobalConfig();
 
       const transactionLog = await PaymentTransactionLog.findOne({
         id: req.param('paymentTransId'),
@@ -269,33 +272,23 @@ module.exports = {
         deletedAt: null
       });
 
-      sails.log('transactionLog', transactionLog);
+      logger.orderLog(customer.id, 'transactionLog', transactionLog);
 
       // eslint-disable-next-line eqeqeq
       if (!(transactionLog && transactionLog.id && transactionLog.status == 2)) {
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid order request!')
-        });
-        res.end();
-        return;
+        throw new Error('Invalid bkash order request!');
       }
 
       const transactionDetails = JSON.parse(transactionLog.details);
 
-      sails.log('transactionDetails', transactionDetails);
-
       if (!(transactionDetails.id_token && transactionDetails.bKashResponse && transactionDetails.payerReference &&
         transactionDetails.shippingAddressId && transactionDetails.billingAddressId)) {
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid order request!')
-        });
-        res.end();
-        return;
+        throw new Error('Invalid bkash order request!');
       }
 
       if (req.query.status === 'success') {
         try {
-          const bKashResponse = await bKashExecutePayment(transactionDetails.id_token, {
+          const bKashResponse = await bKashExecutePayment(customer, transactionDetails.id_token, {
             paymentID: req.query.paymentID
           });
 
@@ -308,64 +301,74 @@ module.exports = {
                 payerReference: transactionDetails.payerReference,
                 billingAddressId: transactionDetails.billingAddressId,
                 shippingAddressId: transactionDetails.shippingAddressId,
+                trxID: bKashResponse.trxID,
                 bKashResponse
               })
             });
+
             let messageToSend = 'There was a problem in processing the order.';
-            if(bKashResponse && bKashResponse.statusMessage){
+            if (bKashResponse && bKashResponse.statusMessage) {
               messageToSend = bKashResponse.statusMessage;
             }
-            res.writeHead(301, {
-              Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(messageToSend)
-            });
-            res.end();
-            return;
+            throw new Error(messageToSend);
           }
 
-          const order = await bKashSaveOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
-
-          if (order && order.id) {
+          if (orderId) {
+            await BkashService.savePartialPayment(customer, originalOrder, bKashResponse, transactionLog, transactionDetails);
             res.writeHead(301,
-              {Location: sslWebUrl + '/checkout?order=' + order.id}
+              {Location: redirectUrl + '?bKashSuccess=' + encodeURIComponent('Your payment transaction was successful.')}
             );
             res.end();
             return;
-          }
-
-          res.writeHead(301, {
-            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
-          });
-          res.end();
-          return;
-
-        } catch (bKashExecuteError) {
-          if (bKashExecuteError.name === 'AbortError') {
-            const bKashResponse = await bKasQueryPayment(transactionDetails.id_token, {
-              paymentID: req.query.paymentID
-            });
-
-            const order = await bKashSaveOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
+          } else {
+            const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
 
             if (order && order.id) {
               res.writeHead(301,
-                {Location: sslWebUrl + '/checkout?order=' + order.id}
+                {Location: redirectUrl + '?order=' + order.id}
               );
               res.end();
               return;
             }
-            res.writeHead(301, {
-              Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
-            });
-            res.end();
-            return;
+            throw new Error('There was a problem in creating the order.');
           }
 
+        } catch (bKashExecuteError) {
+          if (bKashExecuteError.name === 'AbortError') {
+            const bKashResponse = await bKasQueryPayment(customer, transactionDetails.id_token, {
+              paymentID: req.query.paymentID
+            });
+
+            if (orderId) {
+              await BkashService.savePartialPayment(customer, originalOrder, bKashResponse, transactionLog, transactionDetails);
+              res.writeHead(301,
+                {Location: redirectUrl + '?bKashSuccess=' + encodeURIComponent('Your payment transaction was successful.')}
+              );
+              res.end();
+              return;
+            } else {
+              const order = await BkashService.createOrder(bKashResponse, transactionLog.id, transactionDetails, customer, globalConfigs);
+
+              if (order && order.id) {
+                res.writeHead(301,
+                  {Location: redirectUrl + '?order=' + order.id}
+                );
+                res.end();
+                return;
+              }
+              res.writeHead(301, {
+                Location: redirectUrl + '?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+              });
+              res.end();
+              return;
+            }
+          }
           throw bKashExecuteError;
         }
       }
 
       let messageToShow = '';
-      if(req.query.status === 'failure'){
+      if (req.query.status === 'failure') {
         messageToShow = 'Your bKash Payment Creation Request has failed';
       } else {
         messageToShow = 'Your bKash Payment Creation Request has been cancelled';
@@ -385,7 +388,7 @@ module.exports = {
       });
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(messageToShow)
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent(messageToShow)
       });
       res.end();
 
@@ -393,7 +396,7 @@ module.exports = {
       sails.log(error);
 
       res.writeHead(301, {
-        Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('There was a problem in processing the order.')
+        Location: redirectUrl + '?bKashError=' + encodeURIComponent(error.message)
       });
       res.end();
     }
@@ -405,46 +408,12 @@ module.exports = {
 
     try {
 
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
+      let globalConfigs = await getGlobalConfig();
 
-      if (!globalConfigs) {
+      let customer = await PaymentService.getTheCustomer(req.param('userId'));
 
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Global config was not found!')
-        });
-        res.end();
-        return;
-      }
-
-      let customer = await User.findOne({id: req.param('userId'), deletedAt: null});
-
-      if (!customer) {
-
-        res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Customer was not found!')
-        });
-        res.end();
-        return;
-      }
-
-      let cart = await Cart.findOne({
-        user_id: customer.id,
-        deletedAt: null
-      });
-
-      let cartItems = await CartItem.find({
-        cart_id: cart.id,
-        deletedAt: null
-      })
-        .populate('cart_item_variants')
-        .populate('product_id');
-
-      let {
-        grandOrderTotal,
-        totalQty
-      } = calcCartTotal(cart, cartItems);
+      let cart = await PaymentService.getCart(customer.id);
+      let cartItems = await PaymentService.getCartItems(cart.id);
 
       const userWallets = await BkashCustomerWallet.find({
         user_id: customer.id,
@@ -454,7 +423,6 @@ module.exports = {
       });
 
       if (!(userWallets && userWallets.length === 1)) {
-
         res.writeHead(301, {
           Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
         });
@@ -475,30 +443,17 @@ module.exports = {
         return;
       }
 
-      const billingAddress = await PaymentAddress.findOne({id: userWallet.full_response.billingAddressId});
-      const shippingAddress = await PaymentAddress.findOne({id: userWallet.full_response.shippingAddressId});
+      const billingAddress = await PaymentService.getAddress( userWallet.full_response.billingAddressId);
+      const shippingAddress = await PaymentService.getAddress( userWallet.full_response.shippingAddressId);
 
       if (!(shippingAddress && shippingAddress.id && billingAddress && billingAddress.id)) {
         res.writeHead(301, {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Invalid Request')
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Shipping / Billing address was not found.')
         });
         res.end();
         return;
       }
 
-      let noShippingCharge = false;
-      if (cartItems && cartItems.length > 0) {
-        const couponProductFound = cartItems.filter((cartItem) => {
-          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-        });
-        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
-      }
-
-      if (!noShippingCharge) {
-        // eslint-disable-next-line eqeqeq
-        let shippingCharge = shippingAddress.zila_id == dhakaZilaId ? globalConfigs.dhaka_charge : globalConfigs.outside_dhaka_charge;
-        grandOrderTotal += shippingCharge;
-      }
 
       if (req.query.status === 'success') {
 
@@ -509,7 +464,7 @@ module.exports = {
             row_status: 2
           });
 
-        const bKashExecAgreementResponse = await bKashExecuteAgreement(userWallet.full_response.id_token, req.query.paymentID);
+        const bKashExecAgreementResponse = await bKashExecuteAgreement(customer, userWallet.full_response.id_token, req.query.paymentID);
 
         if (bKashExecAgreementResponse.agreementStatus === 'Completed' && bKashExecAgreementResponse.statusMessage === 'Successful') {
           await BkashCustomerWallet.updateOne({
@@ -524,16 +479,25 @@ module.exports = {
             })
           });
 
-          const bKashPaymentResponse = await createBKashPayment(customer, {
-            payerReference: bKashExecAgreementResponse.payerReference,
-            agreement_id: bKashExecAgreementResponse.agreementID,
-            grandOrderTotal,
-            totalQuantity: totalQty
-          }, {
-            adminPaymentAddress: null,
-            billingAddress: billingAddress,
-            shippingAddress: shippingAddress
-          });
+          const bKashPaymentResponse = await BkashService.placeOrder(
+            customer,
+            {
+              payment_id: bKashExecAgreementResponse.paymentID,
+              agreement_id: bKashExecAgreementResponse.agreementID,
+              payerReference: bKashExecAgreementResponse.payerReference,
+            },
+            req.allParams(),
+            {
+              paymentType: BKASH_PAYMENT_TYPE
+            },
+            {
+              billingAddress,
+              shippingAddress
+            },
+            globalConfigs,
+            cart,
+            cartItems
+          );
 
           res.writeHead(301, {
             Location: sslWebUrl + '/checkout?bkashURL=' + encodeURIComponent(bKashPaymentResponse.bkashURL)

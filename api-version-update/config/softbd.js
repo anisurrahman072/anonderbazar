@@ -46,6 +46,8 @@ module.exports = {
       'payment_execute': 'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
       'payment_query': 'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/payment/status',
       'transaction_search': 'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/general/searchTransaction',
+      'refund_transaction': 'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/payment/refund',
+      'refund_status': 'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/payment/refund',
     },
     'sandbox': {
       'app_key': '4f6o0cjiki2rfm34kfdadl1eqq',
@@ -62,6 +64,8 @@ module.exports = {
       'payment_execute': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
       'payment_query': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/payment/status',
       'transaction_search': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/general/searchTransaction',
+      'refund_transaction': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/payment/refund',
+      'refund_status': 'https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout/payment/refund',
     }
   }
 };

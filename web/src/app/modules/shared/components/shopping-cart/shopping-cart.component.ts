@@ -14,7 +14,6 @@ import {ShoppingModalService} from '../../../../services/ui/shoppingModal.servic
 import {Product} from '../../../../models';
 import {NotificationsService} from 'angular2-notifications';
 import {AppSettings} from '../../../../config/app.config';
-import {type} from "os";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
@@ -28,11 +27,9 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     @Input('app-shopping-cart') cartItem;
 
     private d: Subscription;
-    private currentCart: any;
     data: Product;
     isModalShown$: Observable<boolean>;
     cartItem_quantity: any;
-    grandTotal: any;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
@@ -92,13 +89,18 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
     //Method for remove from cart item
     removeCartItem(id) {
-        this.progress.start('mainLoader');
-        this.cartItemService.delete(id).subscribe(result => {
-            this.store.dispatch(new fromStore.LoadCart());
-            this._notify.error('remove from cart succeeded');
-            this.progress.complete('mainLoader');
-
-        });
+        let isConfirmed = window.confirm("Are you sure want to delete the product?");
+        if(isConfirmed){
+            this.progress.start('mainLoader');
+            this.cartItemService.delete(id).subscribe(result => {
+                this.store.dispatch(new fromStore.LoadCart());
+                this._notify.success('remove from cart succeeded');
+                this.progress.complete('mainLoader');
+            });
+        }
+        else {
+            return false;
+        }
     }
 
 
@@ -142,24 +144,6 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
     //Method for change cart item quantity
     changeCartItemQuantity(cartItem, action) {
-        /*        if(action == 'increase'){
-                    let maxProductQuantity = cartItem.product_id.quantity;
-                    if (cartItem.product_quantity < maxProductQuantity) {
-                        cartItem.product_quantity += 1;
-                        cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-                    } else {
-                        this.toastr.error('Unable to increase quantity!', 'Sorry!');
-                        return false;
-                    }
-                } else {
-                    if (cartItem.product_quantity > 1) {
-                        cartItem.product_quantity -= 1;
-                        cartItem.product_total_price = cartItem.product_unit_price * cartItem.product_quantity;
-                    } else {
-                        this.toastr.error('Unable to decrease quantity!', 'Sorry!');
-                        return false;
-                    }
-                }*/
         this.updateCartItem(cartItem, action);
     }
 

@@ -129,6 +129,15 @@
                     Vendor Order
                 </a>
             </li>
+
+            <li nz-menu-item *ngIf="'canceled-order'|accessControl">
+                <a routerLink="/dashboard/canceled-order" routerLinkActive="ant-menu-item-selected"
+                   [routerLinkActiveOptions]="{exact:true}">
+                    <i class="anticon anticon-file"></i>
+                    Canceled Order
+                </a>
+            </li>
+
             <li nz-menu-item *ngIf="'requisition'|accessControl">
                 <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
                    routerLink="/dashboard/requisition">
@@ -160,6 +169,17 @@
             </li>
         </ul>
     </li>
+
+    <li nz-menu-item *ngIf="'questions'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/questions">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Questions</span>
+        </span>
+        </a>
+    </li>
+
     <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>

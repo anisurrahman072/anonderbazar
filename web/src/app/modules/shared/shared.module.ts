@@ -6,6 +6,7 @@ import {
     SuborderInvoiceComponent
 } from "./components";
 import {ProductItemCompareComponent} from "./components/product-item-compare/product-item-compare.component";
+import {PartialPaymentModalComponent} from "./components/partial-payment-modal/partial-payment-modal.component";
 import {ProductItemWholeSaleComponent} from "./components/product-item-wholesale/product-item-wholesale.component";
 import {ProductItemRewardPointComponent} from "./components/product-item-rewardpoint/product-item-rewardpoint.component";
 import {ProductItemFeedbackComponent} from "./components/product-item-feedback/product-item-feedback.component";
@@ -19,9 +20,15 @@ import {LoginMinComponent} from "./components/login-min/login-min.component";
 import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.component";
 import {MaterialModule} from "../../core/material.module";
 import {OrderStatusPipe} from "../../pipes/order-status";
+import {PaymentStatusPipe} from "../../pipes/payment-status";
 import {IsAddedToCartPipe} from "../../pipes/is-added-to-cart";
+import {QueryMessageModalComponent} from "./components/query-message-modal/query-message-modal.component";
+import { TimerPipe} from "../../pipes/timer.pipe";
+import {OrderTypePipe} from "../../pipes/order-type";
+import {PaymentApprovalStatusPipe} from "../../pipes/payment-approval-status";
+import {ImageUploadModule} from "angular2-image-upload";
 
-const sharedComponents = [
+const declaredComponents = [
     ProductItemComponent,
     ProductItemWholeSaleComponent,
     ProductItemRewardPointComponent,
@@ -31,16 +38,20 @@ const sharedComponents = [
     ProductItemFlashDealComponent,
     CategoryItemComponent,
     ProductItemCompareComponent,
+    PartialPaymentModalComponent,
     IsAddedToComparePipe,
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
     OrderStatusPipe,
+    PaymentStatusPipe,
     LoginMinComponent,
     ShoppingCartComponent,
     SuborderInvoiceComponent,
-    OrderInvoiceComponent
+    OrderInvoiceComponent,
+    QueryMessageModalComponent,
+    TimerPipe
 ];
-const sharedComponents1 = [
+const sharedComponents = [
     ProductItemComponent,
     ProductItemWholeSaleComponent,
     ProductItemFeedbackComponent,
@@ -53,11 +64,15 @@ const sharedComponents1 = [
     IsAddedToFavouritePipe,
     IsAddedToCartPipe,
     OrderStatusPipe,
+    PaymentStatusPipe,
     ShoppingCartComponent,
     LoginMinComponent,
     SuborderInvoiceComponent,
     OrderInvoiceComponent,
     ProductItemCompareComponent,
+    PartialPaymentModalComponent,
+    QueryMessageModalComponent,
+    TimerPipe
 ];
 
 @NgModule({
@@ -67,9 +82,15 @@ const sharedComponents1 = [
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
+        ImageUploadModule.forRoot(),
     ],
-    declarations: sharedComponents,
-    exports: sharedComponents1
+    declarations: [
+        declaredComponents,
+        OrderTypePipe,
+        PaymentApprovalStatusPipe
+    ],
+    exports: sharedComponents,
+    entryComponents: [QueryMessageModalComponent]
 
 })
 export class SharedModule {

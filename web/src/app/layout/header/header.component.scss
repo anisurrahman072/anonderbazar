@@ -6,12 +6,14 @@
   box-shadow: 1px 5px 5px 0 rgba(0, 0, 0, 0);
   z-index: 1;
 }
+
 .sticky-header-fixed {
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 99999
 }
+
 .main-top {
   margin-top: 15px;
 }
@@ -272,7 +274,8 @@ form.advanced-search {
   background: #FF0000;
   color: #fff;
 }
-.mat-card{
+
+.mat-card {
   padding: 10px !important;
 }
 
@@ -289,6 +292,7 @@ form.advanced-search {
 .badge-warning[href] {
   background-color: #c67605;
 }
+
 .countLabel {
   font-size: 11px;
   background: #FF0000;
@@ -298,7 +302,7 @@ form.advanced-search {
   margin-left: -10px;
 }
 
-.src-box{
+.src-box {
   border-left: 2px solid #FF0000;
   border-top: 2px solid #FF0000;
   border-bottom: 2px solid #FF0000;
@@ -306,30 +310,48 @@ form.advanced-search {
   border-bottom-left-radius: 5px;
 }
 
-.search-icon{
+.search-icon {
   background-color: #FF0000;
+  position: absolute;
+  height: 40px;
+  right: 0;
+  top: 0;
   display: flex;
   align-items: center;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.icon{
+.icon {
   color: white;
 }
 
 @media screen and (max-width: 425px) {
-  .header_top_area{
+  .header_top_area {
     padding-bottom: 20px;
   }
-  .container-fluid{
+  .container-fluid {
     padding-left: 12px !important;
   }
 }
 
 @media screen and (max-width: 320px) {
-  .container-fluid{
+  .container-fluid {
     padding-left: 12px !important;
     padding-right: 30px !important;
   }
 }
+
+/*for the search button*/
+@media screen and (width: 768px) {
+  .search-icon {
+    right: 54px;
+  }
+}
+
+@media screen and (width: 1024px) {
+  .search-icon {
+    right: 50px;
+  }
+}
+

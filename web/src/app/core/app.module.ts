@@ -19,7 +19,7 @@ import {
     CategoryTypeService, FavouriteProductService, OrderService, ProductService,
     ProductVariantService, SuborderItemService, SuborderService, VariantService, WarehouseService, CraftsmanService,
     UserService, WarehouseVariantService, SubrderItemVariantService, CmsService, BrandService, LotteryService,
-    InvestorService
+    InvestorService, GlobalConfigService
 } from "../services";
 import {NgAisModule} from 'angular-instantsearch';
 import {MaterialModule} from "./material.module";
@@ -29,6 +29,7 @@ import {GlobalErrorHandler} from "./app._errorHandler";
 import {NgrxUniversalComponent} from "./components/ngrxUniversal/ngrxUniversal.component";
 import {LoginModalService} from "../services/ui/loginModal.service";
 import {ShoppingModalService} from "../services/ui/shoppingModal.service";
+import {PartialPaymentModalService} from "../services/ui/partial-payment-modal.service";
 import {SharedModule} from "../modules/shared/shared.module";
 import {UIService} from "../services/ui/ui.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -112,6 +113,7 @@ if (environment.production) {
         UIService,
         LoginModalService,
         ShoppingModalService,
+        PartialPaymentModalService,
         UserService,
         ProductService,
         ProductVariantService,
@@ -147,7 +149,8 @@ if (environment.production) {
         LocalStorageService,
         BkashService,
         LotteryService,
-        InvestorService
+        InvestorService,
+        GlobalConfigService,
     ],
     bootstrap: [AppComponent]
 })

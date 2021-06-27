@@ -10,16 +10,18 @@
                 </div>
                 <div class="col-xl-4 col-lg-8 col-md-12 col-sm-12 header-form">
                     <form action="#" method="get">
-                        <div class="header-search-wrapper d-flex">
-                            <input  type="search" class="col-11 form-control src-box" name="q" id="q"
+                        <div class="header-search-wrapper d-flex" style="position:relative;">
+                            <input [(ngModel)]="searchInputValue"  type="search" class="col-11 form-control src-box" name="q" id="q"
                                    placeholder="Search products and more..."
                                    [matAutocomplete]="auto"
                                    [formControl]="stateCtrl" (keyup)="mainSearch($event)"
                                    (keydown.enter)="onPressEnter($event)"
                             >
-                            <div class="search-icon">
-                                <i class="icon col-1 fa fa-search" aria-hidden="true"></i>
-                            </div>
+                            <button class="search-icon" (click)="clickEvent()">
+                                <i class="icon col-1 fa fa-search" aria-hidden="true">
+
+                                </i>
+                            </button>
                         </div>
                     </form>
                     <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]="true" (optionSelected)="dda($event)" [displayWith]="displayFn">

@@ -126,6 +126,10 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
+      else if (req.query.codeSearchValue) {
+        _where += ` AND ( product.code LIKE '%${req.query.codeSearchValue}%' ) `;
+      }
+
       if (req.query.nameSearchValue) {
         _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
@@ -698,10 +702,10 @@ module.exports = {
 
   productExcel: async (req, res) => {
 
-    if (!req.query.type_id || req.query.type_id === 'null') {
+    if ((!req.query.type_id || req.query.type_id === 'null') && (!req.query.warehouse_id || req.query.warehouse_id === 'null')) {
       return res.status(404).json({
         success: false,
-        message: 'Please insert product type & category!'
+        message: 'Please insert product category or Vendor!'
       });
     }
     const authUser = req.token.userInfo;
@@ -738,6 +742,7 @@ module.exports = {
       const ws = wb.addWorksheet('Product List', options);
       const categorySheet = wb.addWorksheet('Category', options);
       const brandSheet = wb.addWorksheet('Brand', options);
+      const variantSheet = wb.addWorksheet('Variant', options);
       let wareHouseSheet;
       if (isAdmin) {
         wareHouseSheet = wb.addWorksheet('Warehouse', options);
@@ -753,6 +758,28 @@ module.exports = {
       brandList.forEach((item, i) => {
         brandSheet.cell(i + 1, 1).string(item.id + '|' + escapeExcel(item.name));
       });
+
+      /** Fetch Variants list */
+      let allVariants = await Variant.find({
+        deletedAt: null
+      }).populate('warehouseVariants');
+
+      let index = 0;
+      allVariants.forEach((variant) => {
+        if(variant.warehouseVariants && variant.warehouseVariants.length > 0){
+          variant.warehouseVariants.forEach((warehouseVariant) => {
+            let str = `${variant.name}=>${warehouseVariant.name}`;
+            if(variant.type == 0){
+              str += `(Price Variation: No)`;
+            }
+            else {
+              str += `(Price Variation: Yes)`;
+            }
+            variantSheet.cell(++index, 1).string(variant.id+','+warehouseVariant.id +'|'+escapeExcel(str));
+          });
+        }
+      });
+
 
       /* Fetch Warehouse List */
       let wareHouseList;
@@ -782,11 +809,15 @@ module.exports = {
       const columnNamesObject = columnListForBulkUpdate(isAdmin);
       if (authUser.group_id.name === 'owner') {
         delete columnNamesObject['Frontend Position'];
+        delete columnNamesObject['Offline Payment'];
+        delete columnNamesObject['Free Shipping'];
+        delete columnNamesObject['Partially Payable'];
+        delete columnNamesObject['Disable Cash on Delivery'];
       }
 
-      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC'];
       if (authUser.group_id.name === 'admin') {
-        letters.splice(letters.length, 0, 'L', 'M');
+        letters.splice(letters.length, 0, 'AD', 'AE', 'AF', 'AG', 'AH', 'AI');
       }
       const columnNameKeys = Object.keys(columnNamesObject);
 
@@ -843,11 +874,23 @@ module.exports = {
                 products.promo_price as promo_price,
                 products.warehouse_id,
                 products.product_details,
+                products.offline_payment,
+                products.free_shipping,
+                products.partially_payable,
+                products.disable_cash_on_delivery,
                 types.name as type_name,
                 category.name as category_name,
                 subCategory.name as subcategory_name,
                 brands.name as brand_name,
-                warehouses.name as warehouse_name
+                warehouses.name as warehouse_name,
+                GROUP_CONCAT(productVariant.id) as productVariantId,
+                GROUP_CONCAT(productVariant.name) as productVariantLabel,
+                GROUP_CONCAT(productVariant.quantity) as productVariantQty,
+                GROUP_CONCAT(variant.id) as variantId,
+                GROUP_CONCAT(variant.name) as variantName,
+                GROUP_CONCAT(variant.type) as variantType,
+                GROUP_CONCAT(warehouseVariant.id) as warehouseVariantId,
+                GROUP_CONCAT(warehouseVariant.name) as warehouseVariantName
       `;
 
       let fromSQL = ` FROM products
@@ -856,10 +899,16 @@ module.exports = {
         LEFT JOIN categories as subCategory ON subCategory.id = products.subcategory_id
         LEFT JOIN warehouses   ON warehouses.id = products.warehouse_id
         LEFT JOIN brands ON brands.id = products.brand_id
+        LEFT JOIN product_variants  as  productVariant  ON productVariant.product_id = products.id
+        LEFT JOIN variants  as  variant  ON variant.id = productVariant.variant_id
+        LEFT JOIN warehouses_variants  as  warehouseVariant  ON warehouseVariant.id = productVariant.warehouses_variant_id
       `;
 
-      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL AND products.type_id = ${req.query.type_id} `;
+      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL `;
 
+      if (req.query.type_id && req.query.type_id !== 'null') {
+        _where += ` AND products.type_id = ${req.query.type_id} `;
+      }
       if (req.query.category_id && req.query.category_id !== 'null') {
         _where += ` AND products.category_id = ${req.query.category_id} `;
       }
@@ -867,12 +916,21 @@ module.exports = {
         _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
-      if (isVendor && authUser.warehouse_id && authUser.warehouse_id.id) {
-        _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
+      if(isVendor){
+        if(authUser.warehouse_id && authUser.warehouse_id.id){
+          _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
+        }
       }
-      _where += ' ORDER BY products.created_at DESC ';
+      else {
+        if(req.query.warehouse_id && req.query.warehouse_id !== 'null'){
+          _where += ` AND products.warehouse_id = ${req.query.warehouse_id} `;
+        }
+      }
+      _where += 'GROUP BY products.id  ORDER BY products.created_at DESC ';
 
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
+
+      console.log('rawResult.rows: ', rawResult.rows);
 
       const products = rawResult.rows;
 
@@ -946,12 +1004,47 @@ module.exports = {
 
         if (authUser.group_id.name === 'admin') {
           ws.cell(row, column++).number(item.frontend_position);
+          ws.cell(row, column++).number(item.offline_payment);
+          ws.cell(row, column++).number(item.free_shipping);
+          ws.cell(row, column++).number(item.partially_payable);
+          ws.cell(row, column++).number(item.disable_cash_on_delivery);
         }
 
         if (item.tag) {
-          ws.cell(row, column).string(item.tag).style(myStyle);
+          ws.cell(row, column++).string(item.tag).style(myStyle);
         } else {
-          ws.cell(row, column).string(null);
+          ws.cell(row, column++).string(null);
+        }
+
+
+
+        if(item.productVariantId && item.productVariantId.split(',').length > 0){
+          let productVariantId = item.productVariantId.split(',');
+          let productVariantLabel = item.productVariantLabel.split(',');
+          let productVariantQty = item.productVariantQty.split(',');
+          let variantId = item.variantId.split(',');
+          let variantName = item.variantName.split(',');
+          let variantType = item.variantType.split(',');
+          let warehouseVariantId = item.warehouseVariantId.split(',');
+          let warehouseVariantName = item.warehouseVariantName.split(',');
+          let productVariantsLength = productVariantId.length;
+
+          console.log('tttttt', productVariantId, productVariantLabel, productVariantQty, variantId, variantName, variantType, warehouseVariantId, warehouseVariantName);
+
+          for(let ind = 0; ind < productVariantsLength; ind++){
+            ws.cell(row, column++).string(productVariantId[ind]);
+            let str = `${variantName[ind]}=>${warehouseVariantName[ind]}`;
+            if(variantType[ind] == 0){
+              str += `(Price Variation: No)`;
+            }
+            else {
+              str += `(Price Variation: Yes)`;
+            }
+            ws.cell(row, column++).string(variantId[ind]+','+warehouseVariantId[ind] +'|'+escapeExcel(str));
+            let variantInfo = productVariantLabel[ind] +' | ' + productVariantQty[ind];
+            ws.cell(row, column++).string(variantInfo);
+            console.log('111111111: ', item.id, ind, str, variantInfo);
+          }
         }
         row++;
 
@@ -978,7 +1071,10 @@ module.exports = {
       let problematicRow = 0;
       let message = '';
 
-      const productCodes = _.map(req.body, 'code');
+      /** Get all product codes in an ARRAY. Then sort the Array on codes. */
+      let productCodes = _.map(req.body, 'code');
+      productCodes = _.sortBy(productCodes);
+
 
       let productsIndex = {};
       if (productCodes && productCodes.length > 0) {
@@ -986,9 +1082,16 @@ module.exports = {
           {
             code: productCodes
           });
-        productsIndex = _.zipObject(productCodes, productsIndex);
-      }
 
+        /** Sort the products Array by codes as previously we sorted the codes Array "productCodes" */
+        productsIndex = _.sortBy(productsIndex, (e) => {
+          return e.code;
+        });
+
+        /** Make an OBJECT of OBJECT where codes are KEY & products are VALUE */
+        productsIndex = _.zipObject(productCodes, productsIndex); // index wise products in object of object
+
+      }
       for (let i = 0; i < len; i++) {
         if (
           !(req.body[i].name !== '' && req.body[i].code !== '' && req.body[i].price !== '' && req.body[i].quantity !== '' &&
@@ -1022,6 +1125,7 @@ module.exports = {
 
       for (let i = 0; i < Object.keys(productsIndex).length; i++) {
         let product = productsIndex[req.body[i].code];
+
         product.weight = parseFloat(req.body[i].weight);
 
         let parts = req.body[i].category.split('|');
@@ -1056,6 +1160,10 @@ module.exports = {
         product.quantity = req.body[i].quantity;
         product.vendor_price = parseFloat(req.body[i].vendor_price);
         product.frontend_position = req.body[i].frontend_position;
+        product.offline_payment = req.body[i].offline_payment;
+        product.free_shipping = req.body[i].free_shipping;
+        product.partially_payable = req.body[i].partially_payable;
+        product.disable_cash_on_delivery = req.body[i].disable_cash_on_delivery;
 
         if (req.body[i].promo_price > 0) {
           product.promo_price = parseFloat(req.body[i].promo_price);
@@ -1071,13 +1179,14 @@ module.exports = {
             product.warehouse_id = parseInt(parts[0].trim(), 10);
           }
         }
+
+        if(req.body[i].allVariants && req.body[i].allVariants.length > 0){
+          product.allVariants = req.body[i].allVariants;
+        }
       }
 
       for (let key in productsIndex) {
         const product = productsIndex[key];
-        console.log('first', product.type_id);
-        console.log('second', product.category_id);
-        console.log('third', product.subcategory_id);
 
         await Product.updateOne({code: key}).set({
           type_id: product.type_id,
@@ -1094,9 +1203,55 @@ module.exports = {
           quantity: product.quantity,
           weight: product.weight,
           frontend_position: product.frontend_position,
+          offline_payment: product.offline_payment,
+          free_shipping: product.free_shipping,
+          partially_payable: product.partially_payable,
+          disable_cash_on_delivery: product.disable_cash_on_delivery,
           tag: product.tag
         });
 
+        if(product.allVariants && product.allVariants.length > 0){
+          let variantsCount = product.allVariants.length;
+          for(let variantIndex = 0; variantIndex < variantsCount; variantIndex++){
+
+            /** If id exists that means the variant will be updated. Other wise it is a new variant that will be added for the product. */
+            if(product.allVariants[variantIndex].id){
+
+              /** Find the product variant & check weather the variant is for this product */
+              let productVariant = await ProductVariant.findOne({
+                id: product.allVariants[variantIndex].id,
+                deletedAt: null
+              });
+              if(productVariant && product.id === productVariant.product_id){
+                let updatedVariant = await ProductVariant.updateOne({
+                  id: product.allVariants[variantIndex].id,
+                  deletedAt: null
+                }).set({
+                  variant_id: product.allVariants[variantIndex].variant_id,
+                  warehouses_variant_id: product.allVariants[variantIndex].warehouses_variant_id,
+                  name: product.allVariants[variantIndex].name,
+                  quantity: product.allVariants[variantIndex].quantity
+                });
+                console.log('updatedVariant: ', updatedVariant);
+              }
+              else {
+                res.status(400).json({
+                  message: `Variant ID has been mis-matched for Product Code: ${product.code}`
+                });
+              }
+            }
+            else {
+              let newVariant = await ProductVariant.create({
+                product_id: product.id,
+                variant_id: product.allVariants[variantIndex].variant_id,
+                warehouses_variant_id: product.allVariants[variantIndex].warehouses_variant_id,
+                name: product.allVariants[variantIndex].name,
+                quantity: product.allVariants[variantIndex].quantity
+              }).fetch();
+              console.log('newVariant: ', newVariant);
+            }
+          }
+        }
         count++;
       }
 
@@ -1105,10 +1260,8 @@ module.exports = {
         message: 'Number of Products successfully updated: ' + count,
       });
     } catch (error) {
-      let message = 'Error in Update products with excel';
       res.status(400).json({
         success: false,
-        message,
         error
       });
     }
@@ -1116,7 +1269,6 @@ module.exports = {
 
   getProductsByName: async (req, res) => {
     try {
-      console.log('rrrr');
       const productNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
       let rawSelect = `
     SELECT

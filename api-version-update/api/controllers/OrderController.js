@@ -7,29 +7,31 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const SmsService = require('../services/SmsService');
-const EmailService = require('../services/EmailService');
-const {createBKashPayment, placeSSlCommerzOrder, placeCouponCashbackOrder, placeNagadPaymentOrder} = require('../services/checkout');
+const {getPaymentService} = require('../../libs/paymentMethods');
+const {getGlobalConfig} = require('../../libs/helper');
+const {getAuthUser} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
-const {asyncForEach, calcCartTotal} = require('../../libs/helper');
-const {adminPaymentAddressId, dhakaZilaId, cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const {asyncForEach} = require('../../libs/helper');
+const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
+const logger = require('../../libs/softbd-logger').Logger;
+const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE, PAYMENT_STATUS_NA, PAYMENT_STATUS_PAID} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
     try {
       const orders = await Order.findOne({id: req.param('id')})
-          .populate('user_id')
-          .populate('billing_address')
-          .populate('shipping_address')
-          .populate('payment')
-          .populate('couponProductCodes', {deletedAt: null})
-          .populate('suborders', {deletedAt: null});
+        .populate('user_id')
+        .populate('billing_address')
+        .populate('shipping_address')
+        .populate('payment')
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('suborders', {deletedAt: null});
 
       console.log('orders', orders.couponProductCodes);
 
       return res.status(200).json(orders);
 
-    } catch (error){
+    } catch (error) {
       console.log(error);
       return res.status(400).json({
         message: false,
@@ -56,71 +58,15 @@ module.exports = {
     }
   },
 
-  //Method called for creating a custom order data
-  //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js
-
-  customOrder: async function (req, res) {
-    try {
-      let cart = await Cart.findOne({
-        user_id: req.body.user_id,
-        deletedAt: null
-      });
-      let suborderitem = await sails.getDatastore()
-        .transaction(async (db) => {
-          let order = await Order.create({
-            user_id: req.body.user_id,
-            cart_id: cart.id,
-            total_price: req.body.price,
-            billing_address: req.body.payment_address_id,
-            total_quantity: req.body.quantity,
-            status: 1,
-            type: 1
-          }).fetch().usingConnection(db);
-
-          let suborder = await Suborder.create({
-            product_order_id: order.id,
-            warehouse_id: req.body.warehouse_id,
-            total_price: req.body.price,
-            total_quantity: req.body.quantity,
-            delivery_date: req.body.current_date,
-            status: 1
-          }).fetch().usingConnection(db);
-
-          return SuborderItem.create({
-            product_suborder_id: suborder.id,
-            product_id: req.body.product_id,
-            warehouse_id: req.body.warehouse_id,
-            product_quantity: req.body.quantity,
-            product_total_price: req.body.price
-          }).fetch().usingConnection(db);
-        });
-
-      if (suborderitem) {
-        return res.json(200, suborderitem);
-      } else {
-        return res.status(400).json({success: false});
-      }
-    } catch (error) {
-      console.log('error', error);
-      return res.status(400).json({success: false});
-    }
-
-  },
   //Method called for creating a custom order data from frontend
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   placeOrderForCashOnDelivery: async function (req, res) {
 
-    const authUser = req.token.userInfo;
-
     try {
 
-      let globalConfigs = await GlobalConfigs.findOne({
-        deletedAt: null
-      });
+      const authUser = getAuthUser(req);
 
-      if (!globalConfigs) {
-        return res.badRequest('Global config was not found!');
-      }
+      let globalConfigs = await getGlobalConfig();
 
       let cart = await Cart.findOne({
         user_id: authUser.id,
@@ -197,7 +143,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = calcCartTotal(cart, cartItems);
+          } = PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 
@@ -442,190 +388,52 @@ module.exports = {
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
 
-    const authUser = req.token.userInfo;
-
-    let globalConfigs = await GlobalConfigs.findOne({
-      deletedAt: null
-    });
-
-    if (!globalConfigs) {
-      return res.badRequest('Global config was not found!');
-    }
-
     try {
+      const authUser = getAuthUser(req);
+      const globalConfigs = await getGlobalConfig();
 
-      let cart = await Cart.findOne({
-        user_id: authUser.id,
-        deletedAt: null
-      });
+      let cart = await PaymentService.getCart(authUser.id);
+      let cartItems = await PaymentService.getCartItems(cart.id);
 
-      let cartItems = await CartItem.find({
-        cart_id: cart.id,
-        deletedAt: null
-      })
-        .populate('cart_item_variants')
-        .populate('product_id');
+      const shippingAddress = await PaymentService.getShippingAddress(authUser, req);
+      const billingAddress = await PaymentService.getBillingAddress(authUser, req, shippingAddress);
 
-      let {
-        grandOrderTotal,
-        totalQty
-      } = calcCartTotal(cart, cartItems);
-
-      let noShippingCharge = false;
-      if (cartItems && cartItems.length > 0) {
-        const couponProductFound = cartItems.filter((cartItem) => {
-          return cartItem.product_id && !!cartItem.product_id.is_coupon_product;
-        });
-        noShippingCharge = couponProductFound && couponProductFound.length > 0 && cartItems.length === couponProductFound.length;
+      if (_.isNull(shippingAddress) || _.isEmpty(shippingAddress)) {
+        throw new Error('No shipping address has been provided.');
       }
 
-      let courierCharge = 0;
-      let adminPaymentAddress = null;
+      logger.orderLog(authUser.id, '######## PLACING ORDER ########');
+      logger.orderLog(authUser.id, 'Payment Method: ', req.param('paymentType'));
+      console.log('Payment Method', req.param('paymentType'));
+      logger.orderLog(authUser.id, 'Order Body: ', req.body);
+      logger.orderLog(authUser.id, 'Order - shipping_address: ', shippingAddress);
+      logger.orderLog(authUser.id, 'Order - billing_address: ', billingAddress);
 
-      if (!noShippingCharge) {
-        if (req.param('shipping_address')) {
-          if (!req.param('shipping_address').id || req.param('shipping_address').id === '') {
-            let shippingAddres = await PaymentAddress.create({
-              user_id: authUser.id,
-              first_name: req.param('shipping_address').firstName,
-              last_name: req.param('shipping_address').lastName,
-              address: req.param('shipping_address').address,
-              country: req.param('shipping_address').address,
-              phone: req.param('shipping_address').phone,
-              postal_code: req.param('shipping_address').postCode,
-              upazila_id: req.param('shipping_address').upazila_id,
-              zila_id: req.param('shipping_address').zila_id,
-              division_id: req.param('shipping_address').division_id,
-              status: 1
-            }).fetch();
+      let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
-            req.param('shipping_address').id = shippingAddres.id;
-          }
-          // eslint-disable-next-line eqeqeq
-          courierCharge = req.body.courierCharge;
-        } else {
-          courierCharge = globalConfigs.outside_dhaka_charge;
-        }
+      let response = await paymentGatewayService.placeOrder(
+        authUser,
+        req.body,
+        req.allParams(),
+        {
+          paymentType: req.param('paymentType')
+        },
+        {
+          billingAddress,
+          shippingAddress
+        },
+        globalConfigs,
+        cart,
+        cartItems,
+        req.file
+      );
 
-      } else {
-        adminPaymentAddress = await PaymentAddress.findOne({
-          id: adminPaymentAddressId
-        });
-      }
-
-      grandOrderTotal += courierCharge;
-
-      if (!noShippingCharge && req.param('billing_address')) {
-        if ((!req.param('billing_address').id || req.param('billing_address').id === '') && req.param('is_copy') === false) {
-
-          let paymentAddress = await PaymentAddress.create({
-            user_id: authUser.id,
-            first_name: req.param('billing_address').firstName,
-            last_name: req.param('billing_address').lastName,
-            address: req.param('billing_address').address,
-            country: req.param('billing_address').address,
-            phone: req.param('billing_address').phone,
-            postal_code: req.param('billing_address').postCode,
-            upazila_id: req.param('billing_address').upazila_id,
-            zila_id: req.param('billing_address').zila_id,
-            division_id: req.param('billing_address').division_id,
-            status: 1
-          }).fetch();
-
-          req.param('billing_address').id = paymentAddress.id;
-
-        } else if (req.param('is_copy') === true && req.param('shipping_address')) {
-          req.param('billing_address').id = req.param('shipping_address').id;
-        }
-      }
-
-      console.log('Place Order - body: ', req.body);
-      console.log('Place Order - shipping_address: ', req.param('shipping_address'));
-      console.log('Place Order - billing_address: ', req.param('billing_address'));
-
-      if (req.param('paymentType') === 'CashBack') {
-
-        const orderId = await placeCouponCashbackOrder(
-          authUser,
-          {
-            paymentType: 'CashBack',
-            grandOrderTotal,
-            totalQuantity: totalQty
-          },
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          courierCharge
-        );
-
-        return res.status(201).json({
-          order_id: orderId
-        });
-      }
-
-      if (req.param('paymentType') === 'SSLCommerce') {
-
-        const sslResponse = await placeSSlCommerzOrder(
-          authUser,
-          {paymentType: 'SSLCommerce', grandOrderTotal, totalQuantity: totalQty},
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs
-        );
-
-        return res.status(200).json(sslResponse);
-
-      }
-
-      if (req.param('paymentType') === 'bKash') {
-        console.log(req.body);
-
-        const bKashResponse = await createBKashPayment(authUser, {
-          payerReference: req.body.payerReference,
-          agreement_id: req.body.agreement_id,
-          paymentType: 'bKash',
-          grandOrderTotal,
-          totalQuantity: totalQty
-        }, {
-          adminPaymentAddress,
-          billingAddress: req.param('billing_address'),
-          shippingAddress: req.param('shipping_address')
-        });
-
-        return res.status(200).json(bKashResponse);
-      }
-
-      if(req.param('paymentType') === 'nagad'){
-        console.log('dddd');
-        const nagadResponse = await placeNagadPaymentOrder(authUser,
-          {
-            paymentType: 'nagad',
-            grandOrderTotal,
-            totalQuantity: totalQty
-          },
-          {
-            adminPaymentAddress,
-            billingAddress: req.param('billing_address'),
-            shippingAddress: req.param('shipping_address')
-          },
-          globalConfigs,
-          courierCharge,
-          req.ip
-        );
-
-        return res.status(201).json({
-          nagadResponse: nagadResponse
-        });
-      }
+      return res.status(200).json(response);
 
     } catch (finalError) {
-      console.log('finalError', finalError);
+      console.log(finalError);
+      logger.orderLogAuth(req, finalError);
+
       return res.status(400).json({
         message: 'There was a problem in processing the order.',
         additionalMessage: finalError.message
@@ -639,19 +447,67 @@ module.exports = {
 
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
-      let rawSelect = 'SELECT orders.id as id,';
-      rawSelect += ' orders.total_quantity, orders.total_price, orders.status, orders.created_at as createdAt, orders.updated_at as updatedAt, ';
-      rawSelect += ' CONCAT(users.first_name, \' \', users.last_name) as  full_name,  CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName  ';
+      let rawSelect = `
+      SELECT
+            orders.id as id,
+            orders.total_quantity,
+            orders.total_price,
+            orders.paid_amount,
+            orders.status,
+            orders.created_at as createdAt,
+            orders.updated_at as updatedAt,
+            orders.payment_status as paymentStatus,
+            orders.order_type as orderType,
+            GROUP_CONCAT(payment.payment_type) as paymentType,
+            GROUP_CONCAT(COALESCE(payment.transection_key, '') SEPARATOR ', ') as transactionKey,
+            GROUP_CONCAT(payment.payment_amount) as paymentAmount,
+            GROUP_CONCAT(payment.created_at) as transactionTime,
+            payment.payment_type,
+            payment_addresses.postal_code,
+            payment_addresses.address,
+            divArea.name as division_name,
+            zilaArea.name as zila_name,
+            upazilaArea.name as upazila_name,
+            CONCAT(users.first_name, \' \', users.last_name) as  full_name,
+            CONCAT(changedBy.first_name, \' \', changedBy.last_name) as changedByName
+      `;
 
-      let fromSQL = ' FROM product_orders as orders  ';
-      fromSQL += '  LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id  ';
-      fromSQL += '  LEFT JOIN users as users ON users.id = orders.user_id  ';
+      let fromSQL = `
+            FROM
+              product_orders as orders
+              LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id
+              LEFT JOIN users as users ON users.id = orders.user_id
+              LEFT JOIN payments as payment ON  orders.id  =   payment.order_id
+              LEFT JOIN payment_addresses ON orders.shipping_address = payment_addresses.id
+              LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
+              LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id
+              LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id
+        `;
 
       let _where = ' WHERE orders.deleted_at IS NULL ';
 
       if (req.query.status) {
         _where += ` AND orders.status = ${req.query.status} `;
       }
+
+      if (req.query.payment_status) {
+        if(req.query.payment_status == PAYMENT_STATUS_PAID) {
+          _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
+        }
+        else{
+          _where += ` AND orders.payment_status = ${req.query.payment_status} `;
+        }
+      }
+
+      if (req.query.order_type) {
+        _where += ` AND orders.order_type = ${req.query.order_type} `;
+      }
+
+      if (req.query.payment_type) {
+        _where += ` AND payment.payment_type = '${req.query.payment_type}' `;
+      }
+
+      console.log('_where: ', _where);
 
       if (req.query.orderNumber) {
         _where += ` AND orders.id = ${req.query.orderNumber} `;
@@ -670,9 +526,8 @@ module.exports = {
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
-
-      _where += ' ORDER BY orders.created_at DESC ';
       const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+      _where += ' GROUP BY orders.id  ORDER BY orders.created_at DESC   ';
       let totalOrder = 0;
       let orders = [];
       if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
@@ -781,7 +636,7 @@ module.exports = {
       });
     }
   },
-
+  //Method called for updating order
   update: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
@@ -794,7 +649,7 @@ module.exports = {
         deletedAt: null
       });
 
-      if(paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12){
+      if (paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12) {
         let returnCashbackAmount = updatedOrder.total_price;
 
         let prevCashbackDetail = await CouponLotteryCashback.findOne({
@@ -814,11 +669,235 @@ module.exports = {
         message: 'Successfully updated status of order',
         data: updatedOrder
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating Order'
+      });
+    }
+  },
+
+  updatePaymentStatus: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set(req.body);
+
+      let userDetail = await User.find({
+        id: updatedOrder.user_id,
+        deletedAt: null
+      });
+
+      let shippingAddresses = await ShippingAddress.find({
+        user_id: userDetail.id,
+        deletedAt: null
+      });
+
+      await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated payment status of order',
+        data: updatedOrder
+      });
+    }
+    catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while updating payment status'
+      });
+    }
+  },
+
+  deleteOrder: async (req, res) => {
+    try {
+      let updatedOrder = await Order.updateOne({
+        deletedAt: null,
+        id: req.param('id')
+      }).set({
+        status: CANCELED_ORDER
+      });
+
+      let subOrders = await Suborder.update({
+        product_order_id: req.param('id'),
+        deletedAt: null
+      }).set({
+        status: CANCELED_ORDER
+      }).fetch();
+
+      console.log('all suborders', subOrders);
+
+      let len = subOrders.length;
+      for (let i = 0; i < len; i++) {
+        let subOrderItem = await SuborderItem.find({
+          product_suborder_id: subOrders[i].id,
+          deletedAt: null
+        });
+
+        let subItemLen = subOrderItem.length;
+        for (let index = 0; index < subItemLen; index++) {
+          let product = await Product.findOne({
+            id: subOrderItem[index].product_id,
+            deletedAt: null
+          });
+
+          let newQuantity = product.quantity + subOrderItem[index].product_quantity;
+          await Product.updateOne({
+            id: product.id,
+            deletedAt: null
+          }).set({
+            quantity: newQuantity
+          });
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully deleted the order.',
+        order: updatedOrder
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while deleting the order. ', error
+      });
+    }
+  },
+
+  getCancelledOrder: async (req, res) => {
+    let params = req.allParams();
+
+    let _where = {};
+    _where.deletedAt = null;
+    _where.order_type = PARTIAL_ORDER_TYPE;
+    _where.status = CANCELED_ORDER;
+    _where.paid_amount = {'!=': 0};
+    if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
+      _where.refund_status = parseInt(params.status);
+    }
+
+    try {
+      let paginate = pagination(params);
+
+      let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
+      console.log('all canceled order:', canceledOrder);
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully fetched cancelled order',
+        data: canceledOrder
+      });
+    } catch (error) {
+      return res.status(200).json({
+        success: false,
+        message: 'Error occurred while fetching cancelled order', error
+      });
+    }
+  },
+
+  refundCancelOrder: async (req, res) => {
+    try {
+      const authUser = getAuthUser(req);
+      const orderId = req.param('id');
+
+      let order = await Order.findOne({
+        id: orderId,
+        deletedAt: null
+      });
+
+      console.log('The order is', order);
+
+      if (!order) {
+        throw new Error('Order not found!');
+      }
+
+      if (order.refund_status) {
+        throw new Error('This order already has been refunded!');
+      }
+
+      let cashBackTransactions = await Payment.find({
+        order_id: orderId,
+        payment_type: CASHBACK_PAYMENT_TYPE,
+        deletedAt: null
+      });
+
+      let cashBackAmountToRefund = 0;
+      cashBackTransactions.forEach(transaction => {
+        cashBackAmountToRefund += transaction.payment_amount;
+      });
+
+
+      let couponLotteryCashback = await CouponLotteryCashback.findOne({
+        user_id: order.user_id,
+        deletedAt: null
+      });
+
+      let newCashbackAmount = couponLotteryCashback.amount + cashBackAmountToRefund;
+
+      await sails.getDatastore()
+        .transaction(async (db) => {
+          if (cashBackAmountToRefund > 0) {
+            await CouponLotteryCashback.update({
+              user_id: order.user_id,
+              deletedAt: null
+            }).set({
+              amount: newCashbackAmount
+            }).usingConnection(db);
+          }
+
+          await Order.updateOne({
+            id: orderId,
+            deletedAt: null
+          }).set({
+            refund_status: 1
+          }).usingConnection(db);
+        });
+
+
+      await PaymentService.sendSmsForRefund(orderId, authUser);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully refunded.',
+
+      });
+    } catch (error) {
+      console.log('Error occurred while refunding the order');
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while refunding the order. ',error,
+      });
+    }
+  },
+
+  getAllProductsByOrderId: async (req, res) => {
+    try {
+      const ProductQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+      product.offline_payment,
+      product.id
+       `;
+      let fromSQL = ' FROM product_orders as orders ';
+      fromSQL += ' LEFT JOIN product_suborders as suborders ON suborders.product_order_id = orders.id';
+      fromSQL += ' LEFT JOIN product_suborder_items as suborderItems ON suborderItems.product_suborder_id = suborders.id';
+      fromSQL += ' LEFT JOIN products as product ON product.id = suborderItems.product_id';
+
+      let _where = ' WHERE orders.deleted_at IS NULL AND suborders.deleted_at IS NULL AND suborderItems.deleted_at IS NULL ';
+
+      if(req.query.orderId){
+        _where += ` AND orders.id = ${req.query.orderId}  `;
+      }
+
+      const rawResult = await ProductQuery(rawSelect + fromSQL + _where, []);
+
+      return res.status(200).json(rawResult.rows);
+    }
+    catch (error){
+      return res.status(400).json({
+        message: 'Failed to fetch the products!'
       });
     }
   }

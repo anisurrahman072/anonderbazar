@@ -3,6 +3,34 @@ const {devEnv, bKash, dhakaZilaId} = require('../config/softbd');
 const AbortController = require('node-abort-controller');
 const _ = require('lodash');
 
+const asyncForEach = async (array, callback) => {
+  if (array && Array.isArray(array) && array.length > 0) {
+    for (let index = 0; index < array.length; index++) {
+      // eslint-disable-next-line callback-return
+      await callback(array[index], index, array);
+    }
+  }
+};
+exports.asyncForEach = asyncForEach;
+const imageUploadConfig = function () {
+
+  if (devEnv) {
+    return {
+      maxBytes: 10000000,
+      dirname: sails.config.appPath + '/.tmp/public',
+    };
+  }
+  return {
+    adapter: require('skipper-s3'),
+    key: 'AKIATYQRUSGN2DDD424I',
+    secret: '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',
+    bucket: 'anonderbazar',
+    maxBytes: 10000000
+  };
+
+};
+exports.imageUploadConfig = imageUploadConfig;
+
 exports.bKashModeConfigKey = function () {
   let bKashModeConfigKey = 'production';
   if (bKash.isSandboxMode) {
@@ -26,15 +54,6 @@ exports.fetchWithTimeout = async function (resource, options) {
   return response;
 };
 
-const asyncForEach = async (array, callback) => {
-  if (array && Array.isArray(array) && array.length > 0) {
-    for (let index = 0; index < array.length; index++) {
-      // eslint-disable-next-line callback-return
-      await callback(array[index], index, array);
-    }
-  }
-};
-exports.asyncForEach = asyncForEach;
 
 exports.initLogPlaceholder = (req, funcName) => {
   sails.log(`call from ${funcName}`);
@@ -62,7 +81,7 @@ exports.calcCartTotal = function (cart, cartItems) {
   let totalQty = 0;
   cartItems.forEach((cartItem) => {
     if (cartItem.product_quantity > 0) {
-    //  console.log('ttttt', cartItem);
+      //  console.log('ttttt', cartItem);
       grandOrderTotal += cartItem.product_total_price;
       totalQty += cartItem.product_quantity;
     }
@@ -80,24 +99,6 @@ exports.escapeExcel = function (str) {
   return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
 };
 
-const imageUploadConfig = function () {
-
-  if (devEnv) {
-    return {
-      maxBytes: 10000000,
-      dirname: sails.config.appPath + '/.tmp/public',
-    };
-  }
-  return {
-    adapter: require('skipper-s3'),
-    key: 'AKIATYQRUSGN2DDD424I',
-    secret: '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',
-    bucket: 'anonderbazar',
-    maxBytes: 10000000
-  };
-
-};
-exports.imageUploadConfig = imageUploadConfig;
 
 exports.uploadImgAsync = (param, option = {}) => {
   return new Promise(((resolve, reject) => {
@@ -111,7 +112,7 @@ exports.uploadImgAsync = (param, option = {}) => {
 };
 
 exports.deleteImages = async (imageList, path) => {
-  asyncForEach(imageList, (item) => {
+  await asyncForEach(imageList, (item) => {
     console.log(item);
 
     let dir = __dirname.split('/api');
@@ -168,6 +169,24 @@ exports.comparePasswords = (passwordProvided, userPassword) => {
     });
   });
 };
+exports.getGlobalConfig = async () => {
+  let globalConfigs = await GlobalConfigs.findOne({
+    deletedAt: null
+  });
+
+  if (!globalConfigs) {
+    throw new Error('Global config was not found!');
+  }
+
+  return globalConfigs;
+};
+
+exports.getAuthUser = (req) => {
+  if (!_.isUndefined(req.token) && !_.isUndefined(req.token.userInfo)) {
+    return req.token.userInfo;
+  }
+  throw new Error('Auth user was not found.');
+};
 
 exports.getContentTypeByFile = function (fileName) {
   var rc = 'application/octet-stream';
@@ -201,7 +220,7 @@ exports.makeUniqueId = function (length) {
 };
 
 
-exports.calculateCourierCharge = async function(freeShipping, allProducts, zilaId){
+exports.calculateCourierCharge = async function (freeShipping, allProducts, zilaId) {
   let courierCharge = 0;
   let maxDhakaDeliveryCharge = 0;
   let maxOutsideDhakaDeliveryCharge = 0;
@@ -218,11 +237,10 @@ exports.calculateCourierCharge = async function(freeShipping, allProducts, zilaI
     maxDhakaDeliveryCharge = Math.max(maxDhakaDeliveryCharge, dhakaCharge);
     maxOutsideDhakaDeliveryCharge = Math.max(maxOutsideDhakaDeliveryCharge, outsideDhakaCharge);
   });
-  if(!freeShipping){
-    if(zilaId === dhakaZilaId){
+  if (!freeShipping) {
+    if (zilaId === dhakaZilaId) {
       courierCharge = maxDhakaDeliveryCharge;
-    }
-    else {
+    } else {
       courierCharge = maxOutsideDhakaDeliveryCharge;
     }
   }

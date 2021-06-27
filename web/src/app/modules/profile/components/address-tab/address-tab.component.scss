@@ -1,25 +1,31 @@
 .example-card {
-    max-width: 400px;
-  }
-  
-  .example-header-image {
+  max-width: 400px;
+}
+
+.example-header-image {
   //   background-image: url({{IMAGE_ENDPOINTuser.avatar}});
-    background-size: cover;
-    border: 1px solid black;
+  background-size: cover;
+  border: 1px solid black;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+}
+
+.example-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.example-container > * {
+  width: 100%;
+}
+
+@media (max-width: 375.98px) {
+  .btm-btn {
+    min-width: 80px;
   }
-  .center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 30%;
-  }
-  
-  .example-container {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .example-container > * {
-      width: 100%;
-    }
-  
+}

@@ -29,6 +29,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'getAll': true,
     'uniqueCheckName': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
@@ -178,11 +179,12 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
-    'getShippingCharge': true,
+    'getGlobalConfig': true,
     'create': ['isAuthorized', 'isAdmin'],
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
-    'updateShippingCharge': ['isAuthorized', 'isAdmin']
+    'updateGlobalConfig': ['isAuthorized', 'isAdmin'],
+    'getShippingCharge': true,
   },
   GroupController: {
     '*': false,
@@ -209,6 +211,9 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
+  },
+  QuestionsController: {
+    '*': true
   },
   ProductsController: {
     'index': true,
@@ -245,7 +250,12 @@ module.exports.policies = {
   },
   PaymentsController: {
     '*': false,
-    'getAll': ['isAuthorized']
+    'getAll': ['isAuthorized'],
+    'changeApprovalStatus': ['isAuthorized', 'isAdmin']
+  },
+  OrderPartialPaymentController: {
+    '*': ['isAuthorized', 'isCustomer'],
+    'refundPayments': ['isAuthorized', 'isAdmin']
   },
   PRStatusController: {
     '*': false,
@@ -288,6 +298,7 @@ module.exports.policies = {
   },
   OrderController: {
     '*': ['isAuthorized'],
+    'deleteOrder': true,
     'sslcommerzsuccess': true,
     'sslcommerzfail': true,
     'sslcommerzerror': true,
@@ -297,13 +308,16 @@ module.exports.policies = {
     'replace': false,
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
+    'updatePaymentStatus': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
     'allOrders': ['isAuthorized', 'isAdmin'],
+    'getCancelledOrder': ['isAuthorized', 'isAdmin'],
+    'refundCancelOrder': ['isAuthorized', 'isAdmin']
   },
   MissingOrderController: {
-    '*': true
+    '*': ['isAuthorized', 'isOwnerOrAdmin']
   },
   ShippingAddressController: {
     '*': false,
@@ -339,6 +353,7 @@ module.exports.policies = {
     'findOne': true,
     'getSuborderItems': true,
     'getByOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getOrdersByDate': ['isAuthorized', 'isOwnerOrAdmin'],
     'getBySubOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],

@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <nz-table #nzTable [nzPageSize]="5" [nzData]="data">
+                <nz-table #nzTable [nzPageSize]="5" [nzData]="data" nzShowQuickJumper>
                     <thead  >
                         <tr>
                             <th   ><span> Picture </span></th>
@@ -585,7 +585,7 @@
                                 <div nz-col [nzSpan]="7"   ></div>
                                 <div nz-col [nzSpan]="12"   >
                                     <nz-table #basicTable [nzFrontPagination]="false" [nzSize]="'small'"
-                                        [nzData]="addedPrices">
+                                        [nzData]="addedPrices" nzShowQuickJumper>
                                         <thead>
                                             <tr>
                                                 <th class="col-sm-2">Title</th>

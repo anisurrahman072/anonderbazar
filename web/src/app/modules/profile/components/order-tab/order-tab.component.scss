@@ -23,14 +23,17 @@
   background-color: #ffffff;
   margin-bottom: 10px;
 }
+
 .order-list .list-1 .button {
-  background: rgba(255,185,99,0.4);
+  background: rgba(255, 185, 99, 0.4);
   padding: 10px 20px 5px 20px;
 }
-.order-list ul .text-1{
+
+.order-list ul .text-1 {
   padding-top: 10px;
 }
-.text-2 button{
+
+.text-2 button {
   padding-top: 10px;
   background: transparent;
 }
@@ -39,25 +42,46 @@
   background: #ffffff;
   padding: 10px 30px;
 }
+
 .counters2 {
   background: #ffffff;
   padding: 10px 30px;
 }
+
 .counters3 {
   background: #ffffff;
   padding: 10px 30px;
 }
+
 .counters4 {
   background: #ffffff;
   padding: 10px 30px;
 }
-.my-account-counter-2{
+
+.my-account-counter-2 {
   padding: 0 0 40px 0px;
 }
 
-.button-order-center{
-  width: 110px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+.button-order-center {
+  padding: 10px;
   text-align: center;
+}
+
+.warn {
+  /*&::ng-deep */
+}
+
+::ng-deep popover-container .popover {
+  background-color: blue !important;
+}
+
+.hidden-class {
+  display: none;
+}
+
+.make-payment-btn {
+  padding: 3px !important;
+  background-color: #9fcdff !important;
+  border-radius: 5px;
+  border: 1px solid darkblue;
 }

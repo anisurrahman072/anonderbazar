@@ -29,9 +29,9 @@ exports.categoryRoutes = {
   'PUT /api/v1/category_product/:id': [
     {controller: 'CategoryController', action: 'updateProduct'}
   ],
-  'GET /api/v1/category/withSubcategoriesforSpecific': [
+  /*'GET /api/v1/category/withSubcategoriesforSpecific': [
     {controller: 'CategoryController', action: 'withSubcategoriesforSpecific'}
-  ],
+  ],*/
   'DELETE /api/v1/category/remove-image/:id/:type': [
     {controller: 'CategoryController', action: 'removeImage'}
   ],

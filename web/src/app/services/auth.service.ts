@@ -8,6 +8,7 @@ import {UserService} from "./user.service";
 import {catchError} from "rxjs/operators";
 import {of} from "rxjs/observable/of";
 import {LocalStorageService} from "./local-storage.service";
+// import {response} from "express";
 
 @Injectable()
 export class AuthService {
@@ -113,6 +114,27 @@ export class AuthService {
             .post(AppSettings.API_ENDPOINT + '/auth/signup', data)
             .map(response => response);
     }
+
+    /** Password Change section */
+    passwordChange(data): Observable<any> {
+        return this.http
+            .put(AppSettings.API_ENDPOINT + '/auth/passwordChange', data)
+            .map(response => response);
+    }
+
+    /**verify OTP section*/
+    verifyUserPhone(code, signedUpUserName): Observable<any> {
+        return this.http
+            .get(`${this.EndPoint}/verifyUserPhone?verificationCode=${code}&signedUpUserName=${signedUpUserName}`)
+            .map(response => response);
+    }
+
+    resendOTPCode(signedUpUserName): Observable<any> {
+        return this.http
+            .get(`${this.EndPoint}/resendOTPCode?signedUpUserName=${signedUpUserName}`)
+            .map(response => response);
+    }
+    /**verify OTP section ends*/
 
     usernameUnique(data): Observable<any> {
         return this.http

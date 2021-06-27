@@ -133,7 +133,46 @@
 .submitBTN {
   border: 1px solid #FF0000;
   padding: 10px 56px;
-  color: #FF0000;
+  color: white;
   margin-top: 20px;
-  background-color: white;
+  background-color: #FF0000;
+}
+
+.averageRating {
+  font-family: Helvetica, serif;
+  font-size: 62.5455px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 73px;
+}
+
+.totalRatings {
+  font-family: Helvetica, serif;
+  font-size: 17px;
+  color: #979494;
+}
+
+.filled-star {
+  width: 40px;
+  height: 38px
+}
+
+.userRatingStars {
+  width: 15px;
+  height: 14px;
+}
+
+.absoluteStars {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  height: 38px;
+}
+
+.absoluteUserStars {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  height: 28px;
+  margin-top: -24px;
 }

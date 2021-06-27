@@ -9,8 +9,16 @@ export class FormValidatorService {
     constructor(private authService: AuthService,) {
     }
 
+    // static alphabetValidator(control) {
+    //     if (RegExp('^[a-zA-Z]+$').test(control.value)) {
+    //         return null;
+    //     } else {
+    //         return {'onlyName': true};
+    //     }
+    // }
+
     static phoneNumberValidator(control) {
-        if (RegExp('(^([+]{1}[8]{2}|0088)?(01){1}[3-9]{1}\\d{8})$').test(control.value)) {
+        if (RegExp('(^(01){1}[3-9]{1}\\d{8})$').test(control.value)) {
             return null;
         } else {
             return {'phoneNumber': true};
@@ -18,10 +26,21 @@ export class FormValidatorService {
     }
 
     static emailValidator(control) {
-        if (control.value.match(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)) {
+        if (!control.value) {
+            return null;
+        }
+        else if (RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/).test(control.value)) {
             return null;
         } else {
             return {'email': true};
+        }
+    }
+
+    static passwordValidator(control) {
+        if (RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})').test(control.value)) {
+            return null;
+        } else {
+            return {'password': true};
         }
     }
 

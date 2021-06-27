@@ -1,6 +1,7 @@
 const {sslcommerzInstance} = require('../libs/sslcommerz');
 const _ = require('lodash');
 const axios = require('axios');
+const {SSL_COMMERZ_PAYMENT_TYPE} = require('../libs/constants');
 const {makeUniqueId} = require('../libs/helper');
 const {adminPaymentAddressId, sslCommerzSMSConfig} = require('../config/softbd');
 
@@ -161,7 +162,7 @@ module.exports = {
             user_id: customer.id,
             order_id: order.id,
             suborder_id: suborder.id,
-            payment_type: 'SSLCommerce',
+            payment_type: SSL_COMMERZ_PAYMENT_TYPE,
             payment_amount: productPrice * totalQty,
             details: JSON.stringify(sslCommerzResponse),
             transection_key: ssl_transaction_id,

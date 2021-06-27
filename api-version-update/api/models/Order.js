@@ -45,6 +45,27 @@ module.exports = {
       required: true,
       columnType: 'decimal',
     },
+    paid_amount: {
+      type: 'number',
+      allowNull: true,
+      defaultsTo: 0.00,
+      columnType: 'decimal'
+    },
+    order_type: {
+      type: 'number',
+      defaultsTo: 1,
+      columnType: 'tinyint'
+    },
+    payment_status: {
+      type: 'number',
+      defaultsTo: 4,
+      columnType: 'tinyint'
+    },
+    partial_offline_payment_approval_status: {
+      type: 'number',
+      defaultsTo: 3,
+      columnType: 'tinyint'
+    },
     type: {
       type: 'number',
       columnType: 'integer',
@@ -65,6 +86,12 @@ module.exports = {
       columnType: 'integer',
       required: false,
       defaultsTo: 1,
+    },
+    refund_status: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 0,
     },
     courier_status: {
       type: 'number',

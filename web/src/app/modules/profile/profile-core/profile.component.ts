@@ -4,14 +4,13 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {User} from "../../../models/";
 import {AuthService, FavouriteProductService, LotteryService, UserService} from "../../../services";
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, NavigationStart, NavigationEnd} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
 import {NotificationsService} from "angular2-notifications";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {AppSettings} from "../../../config/app.config";
 import {LoaderService} from "../../../services/ui/loader.service";
 import {ToastrService} from "ngx-toastr";
-
 
 @Component({
     selector: "app-profile",
@@ -36,12 +35,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
     isWishlist: boolean;
     isProfile: boolean;
     isAddress: boolean;
-/*    favouriteProducts$: Observable<FavouriteProduct[]>;
-    favouriteProducts: FavouriteProduct[];
-    profileRouterLink = [
-        {label: "Favourites", path: "/profile/favourites"},
-        {label: "Orders", path: "/profile/orders"}
-    ];*/
+
     options: { value: number; label: string; icon: string }[];
     view: any[] = [700, 400];
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
@@ -74,7 +68,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         private favouriteProductService: FavouriteProductService,
         public loaderService: LoaderService,
         private toastService: ToastrService,
-        private lotteryService: LotteryService
+        private lotteryService: LotteryService,
 
     ) {
         this.options = [
@@ -165,7 +159,6 @@ export class ProfileComponent implements OnInit, OnDestroy  {
             if(res){
                 this.lotteryService.getCashbackByUserId(this.user.id)
                     .subscribe((data) => {
-                        console.log('Amount paici: ', data);
                         if(data.length === 0){
                             this.cashbackAmount = 0;
                         }
@@ -187,9 +180,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.imageDone = true;
         this.imageEdit = false;
     }
-
-// Event for switching to order view
-    switchToOrder() {
+    // Event for switching to order view
+    private switchToOrder() {
         this.isDashboard = false;
         this.isOrder = true;
         this.isWishlist = false;
@@ -197,9 +189,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to dashboard view
-    switchToDashBoard() {
+    private switchToDashBoard() {
         this.isDashboard = true;
         this.isOrder = false;
         this.isWishlist = false;
@@ -207,9 +198,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to wishlist view
-    switchToWishlist() {
+    private switchToWishlist() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = true;
@@ -217,20 +207,17 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isMessage = false;
         this.isAddress = false;
     }
-
     // Event for switching to profile settings view
-    switchToProfileSettings() {
+    private switchToProfileSettings() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
         this.isProfile = true;
         this.isAddress = false;
         this.isMessage = false;
-
     }
-
     // Event for switching to address settings view
-    switchToAddressSettings() {
+    private switchToAddressSettings() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
@@ -238,9 +225,8 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isAddress = true;
         this.isMessage = false;
     }
-
     // Event for switching to message view
-    switchToMessages() {
+    private switchToMessages() {
         this.isDashboard = false;
         this.isOrder = false;
         this.isWishlist = false;
@@ -248,23 +234,19 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.isAddress = false;
         this.isMessage = true;
     }
-
     // Event for increasing step
-    setStep(index: number) {
+    private setStep(index: number) {
         this.step = index;
     }
-
     //Event for removing image
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
-
     //Called before image upload
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
     };
-
     //Event method for getting profile data
     getPageData() {
         this.userService
@@ -274,7 +256,6 @@ export class ProfileComponent implements OnInit, OnDestroy  {
                 this.ImageFileEdit = [];
             });
     }
-
     //Event method for updating profile image
     updateImage() {
         const formData: FormData = new FormData();
@@ -309,5 +290,13 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
         this._notify.success("Logout Successfull.");
         this.router.navigate(['/']);
+    }
+
+    scrollItem(el: HTMLElement) {
+        this.router.events.subscribe((evt) => {
+            if ((evt instanceof NavigationEnd)) {
+                el.scrollIntoView();
+            }
+        });
     }
 }

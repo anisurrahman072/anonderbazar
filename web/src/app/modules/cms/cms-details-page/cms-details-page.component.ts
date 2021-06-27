@@ -31,7 +31,7 @@ export class CmsDetailsPageComponent implements OnInit {
     // init the component
     ngOnInit() {
         this.route.queryParams.subscribe(queryparams => {
-            if(queryparams['page']){
+            if (queryparams['page']) {
                 this.p = +queryparams['page'];
             }
         });
@@ -48,7 +48,6 @@ export class CmsDetailsPageComponent implements OnInit {
         if (this.id) {
             this.cmsService.getById(this.id).subscribe(result => {
                 this.cms_post_by_id = result;
-                console.log('this.cms_post_by_id', this.cms_post_by_id);
 
                 if (!(this.cms_post_by_id && this.cms_post_by_id.data_value && Array.isArray(this.cms_post_by_id.data_value) && this.cms_post_by_id.data_value.length > 0)) {
                     return false;
@@ -75,7 +74,9 @@ export class CmsDetailsPageComponent implements OnInit {
 
                     this.productservice.getByIds(this.cms_detail.products)
                         .subscribe(result => {
-                            this.cms_detail.allproducts = result;
+                            this.cms_detail.allproducts = result.filter(product => {
+                                return product.warehouse_id.status == 2;
+                            });
                         }, (err) => {
                             console.log(err);
                         });
@@ -88,7 +89,7 @@ export class CmsDetailsPageComponent implements OnInit {
     private addPageTitle() {
         if (this.cms_detail) {
             this.title.setTitle(this.cms_detail.title + ' - Anonderbazar');
-        }else {
+        } else {
             this.title.setTitle('Offer Detail - Anonderbazar');
         }
     }

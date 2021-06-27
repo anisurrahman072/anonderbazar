@@ -1,0 +1,80 @@
+<section>
+    <nz-card class="card-height" nzTitle="Canceled Order">
+        <nz-table #nzTable
+                  (nzPageIndexChange)="getPageData($event)"
+                  [(nzPageIndex)]="page"
+                  [(nzPageSize)]="limit"
+                  [nzData]="cancelledOrders"
+                  [nzFrontPagination]="false"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="total"
+                  [nzShowSizeChanger]="true"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <span> Order </span>
+                </th>
+                <th>
+                    <span> Date </span>
+                </th>
+                <th>
+                    <span>Customer</span>
+                </th>
+                <th>
+                    <span>Quantity</span>
+                </th>
+                <th>
+                    <span>Total amount</span>
+                </th>
+                <th>
+                    <span>Paid amount</span>
+                </th>
+                <th>
+                    <span>Refund status</span>
+                </th>
+            </tr>
+            <tr>
+                <th> </th>
+                <th ></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>
+                    <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
+                               nzAllowClear (ngModelChange)="page = 1; getPageData();"
+                               [nzPlaceHolder]="'Select Status'"
+                               [nzNotFoundContent]="'Not found'">
+                        <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                   [nzValue]="option.value">
+                        </nz-option>
+                    </nz-select>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of nzTable.data">
+                <td>
+                    {{data.id}}
+                </td>
+                <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                <td style="width: 220px;">{{data.full_name}}</td>
+                <td style="width: 100px;">{{data.total_quantity}}</td>
+                <td style="width: 100px;">{{data.total_price}}</td>
+                <td style="width: 100px;">{{data.paid_amount}}</td>
+                <td style="width: 200px;">
+                    <nz-select style="width: 170px;" [(ngModel)]="data.refund_status"
+                               nzAllowClear (ngModelChange)="refundCancelOrder($event, data.id, data.refund_status);"
+                               [nzPlaceHolder]="'Select Status'"
+                               [nzNotFoundContent]="'Not found'">
+                        <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                   [nzValue]="option.value">
+                        </nz-option>
+                    </nz-select>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+</section>
