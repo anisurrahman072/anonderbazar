@@ -109,8 +109,8 @@ export class LoginMinComponent implements OnInit, OnDestroy {
         })
 
         this.validateSignUpForm = this.fb.group({
-            first_name: ['', [Validators.required, FormValidatorService.alphabetValidator]],
-            last_name: ['', [FormValidatorService.alphabetValidator]],
+            first_name: ['', [Validators.required]],
+            last_name: ['', []],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator], [this.formValidatorService.phoneNumberUniqueValidator.bind(this)]],
             email: ['', [FormValidatorService.emailValidator]],
             gender: ['', []],

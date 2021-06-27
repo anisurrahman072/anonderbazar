@@ -80,7 +80,7 @@
 
                 <!--Make Payment-->
                 <td style="width: 15%;text-align: center;" class="text-2 pl-2  pr-2" *ngIf="item.isAllowedForPay">
-                    <button color="accent" style="padding-left: 0px;" (click)="makePartialPayment(item)">
+                    <button class="make-payment-btn" (click)="makePartialPayment(item)">
                         Make Payment
                     </button>
                 </td>
@@ -147,7 +147,7 @@
 <!--        <h1>No Order Found</h1>-->
 <!--    </div>-->
 
-    <div class="text-center page-hide" *ngIf="dashboardData.totalOrder > 20">
+    <div class="text-center div-hide" *ngIf="dashboardData.totalOrder > 20">
         <pagination-controls (pageChange)="currentPage = $event" previousLabel="Previous"
                              nextLabel="Next">
         </pagination-controls>
