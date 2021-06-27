@@ -140,8 +140,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // Billing
             billing_id: ['', []],
-            firstName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
-            lastName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
+            firstName: ['', [Validators.required]],
+            lastName: ['', []],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             postCode: ['', [Validators.required]],
@@ -152,8 +152,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // Shipping
             shipping_id: ['', []],
-            shippingFirstName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
-            shippingLastName: ['', [Validators.required, FormValidatorService.alphabetValidator]],
+            shippingFirstName: ['', [Validators.required]],
+            shippingLastName: ['', []],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             shippingPostCode: ['', [Validators.required]],
@@ -217,7 +217,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             })
             .concatMap((divisionList: any) => {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
-                    this.divisionSearchOptions = divisionList.sort((a, b) => a.name.localeCompare(b.name));
+                    // this.divisionSearchOptions = divisionList.sort((a, b) => a.name.localeCompare(b.name));
+                    this.divisionSearchOptions = divisionList;
                     return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
@@ -1024,10 +1025,30 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //Method for proceed to pay
     processToPay() {
-        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
+        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
+
+        // console.log('this.isCopy==>', this.isCopy);
+        // console.log('this.cartData==>', this.cartData);
+        // console.log('this.checkoutForm==>', this.checkoutForm);
+
+        // if (!this.noShippingCharge && this.isCopy) {
+        //     // console.log('call copyAll');
+        //     this.copyAll();
+        // }
+
+        // if (this.checkoutForm.invalid) {
+        //     this.showFormError = true;
+        //     this.toastr.error("Edit or Re-input your address information correctly and update your address information.", "Please!", {
+        //         positionClass: 'toast-top-right'
+        //     });
+        //     window.scroll(0, 0);
+        //     return false;
+        // }
+
         if (!this.noShippingCharge && this.isCopy) {
             this.copyAll();
         }
+
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
