@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs/Observable";
+import {Subject} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -10,10 +11,23 @@ export class OfferService {
     private EndPoint = `${environment.API_ENDPOINT}/offer`;
     private EndPoint1 = `${environment.API_ENDPOINT}/anonderJhor`;
 
+    private reloadOfferListSub: Subject<boolean>;
+    private readonly reloadOfferListObserve: Observable<boolean>;
+
     constructor(private http: HttpClient) {
+        this.reloadOfferListSub = new Subject<boolean>();
+        this.reloadOfferListObserve = this.reloadOfferListSub.asObservable();
     }
 
-    getAllOptions(offerSelectionType = '', catId = '', subCatId = '' ): Observable<any> {
+    reloadOfferListObservable() {
+        return this.reloadOfferListObserve;
+    }
+
+    reloadOfferList() {
+        this.reloadOfferListSub.next(true);
+    }
+
+    getAllOptions(offerSelectionType = '', catId = '', subCatId = ''): Observable<any> {
         return this.http.get(`${this.EndPoint}/getAllOptions?offerSelectionType=${offerSelectionType}&catId=${catId}&subCatId=${subCatId}`);
     }
 
@@ -23,9 +37,9 @@ export class OfferService {
     }
 
     allRegularOffer(specialOfferLimit = 10, specialOfferPage = 1): Observable<any> {
-      return  this.http
-          .get(`${this.EndPoint}/allRegularOffer?limit=${specialOfferLimit}&page=${specialOfferPage}`)
-          .map(response => response);
+        return this.http
+            .get(`${this.EndPoint}/allRegularOffer?limit=${specialOfferLimit}&page=${specialOfferPage}`)
+            .map(response => response);
     }
 
     /**method called to delete a regular offer*/
@@ -39,7 +53,7 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/getRegularOfferById?id=${id}`).map(response => response);
     }
 
-    getRelatedOfferProducts(id, page= 1, limit = 20): Observable<any> {
+    getRelatedOfferProducts(id, page = 1, limit = 20): Observable<any> {
         const skip = (page - 1) * limit;
         return this.http.get(`${this.EndPoint}/getRelatedOfferProducts?id=${id}&page=${page}&skip=${skip}&limit=${limit}`)
             .map(response => response);
@@ -75,7 +89,7 @@ export class OfferService {
     }
 
     getAllAnonderJhorOffersData(anonderJhorOfferLimit = 10, anonderJhorOfferPage = 1): Observable<any> {
-        return  this.http
+        return this.http
             .get(`${this.EndPoint1}/getAllAnonderJhorOffersData?limit=${anonderJhorOfferLimit}&page=${anonderJhorOfferPage}`)
             .map(response => response);
     }

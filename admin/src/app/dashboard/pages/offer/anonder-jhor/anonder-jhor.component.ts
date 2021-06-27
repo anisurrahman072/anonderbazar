@@ -1,17 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-anonder-jhor',
     templateUrl: './anonder-jhor.component.html',
     styleUrls: ['./anonder-jhor.component.css']
 })
-export class AnonderJhorComponent implements OnInit {
+export class AnonderJhorComponent implements OnInit, OnDestroy {
 
     /** Anonder Jhor variables */
     anonderJhorData: any;
@@ -37,6 +38,7 @@ export class AnonderJhorComponent implements OnInit {
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
     loading: boolean = false;
+    private sub: Subscription;
 
 
     constructor(
@@ -49,6 +51,11 @@ export class AnonderJhorComponent implements OnInit {
     ngOnInit() {
         this.getAnonderJhor();
         this.getAllAnonderJhorOffersData();
+
+        this.sub = this.offerService.reloadOfferListObservable()
+            .subscribe(() => {
+                this.getAllAnonderJhorOffersData();
+            });
     }
 
     /** Method called to get data of anonder Jhor */
@@ -57,11 +64,11 @@ export class AnonderJhorComponent implements OnInit {
             .subscribe(result => {
                 this._isSpinning = true
                 console.log('anonder jhor data: ', result.data);
-                if(result.data) {
+                if (result.data) {
                     this.anonderJhorData = result.data;
                     this.status = this.anonderJhorData.status;
                     this._isSpinning = false;
-                }else {
+                } else {
                     this._isSpinning = false;
                     this._notification.error('failed', 'Sorry, something went wrong');
                 }
@@ -91,7 +98,7 @@ export class AnonderJhorComponent implements OnInit {
         this.offerService.jhorActiveStatusChange(event)
             .subscribe(result => {
                 console.log('status : ', result);
-                if(result.code === 'INVALID_ACTION') {
+                if (result.code === 'INVALID_ACTION') {
                     this._notification.error('Sorry!', 'Offer time ended, you can not change status');
                 }
                 this.status = result.status;
@@ -106,7 +113,7 @@ export class AnonderJhorComponent implements OnInit {
         this.offerService.offerActiveStatusChange(data)
             .subscribe(result => {
                 console.log('status : ', result);
-                if(result.code === 'NOT_ALLOWED') {
+                if (result.code === 'NOT_ALLOWED') {
                     this._notification.error('Sorry!', 'Offer time or Jhor offer ended, you can not change status');
                 }
                 this.getAllAnonderJhorOffersData();
@@ -137,7 +144,7 @@ export class AnonderJhorComponent implements OnInit {
         }
     }
 
-/** Event method for submitting the form */
+    /** Event method for submitting the form */
     submitForm = ($event, value) => {
         $event.preventDefault();
         this._isSpinning = true;
@@ -217,6 +224,10 @@ export class AnonderJhorComponent implements OnInit {
         this.isEdit = !this.isEdit;
         this.isEditVisible = true;
         this.jhorOfferId = id;
+    }
+
+    ngOnDestroy(): void {
+        this.sub ? this.sub.unsubscribe() : '';
     }
 
 }

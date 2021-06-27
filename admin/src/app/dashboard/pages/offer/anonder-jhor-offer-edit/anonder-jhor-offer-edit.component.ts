@@ -16,10 +16,11 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     @Input() isEditVisible: Boolean;
     @Input() jhorOfferId;
+    @ViewChild('Image')
+
+    Image: any;
     validateForm: FormGroup;
     ImageFile: File;
-    @ViewChild('Image')
-    Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
     ImageFileEdit: any;
@@ -138,7 +139,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.resetForm(null);
             this.isEditVisible = false;
             this.router.navigate(['/dashboard/offer/anonder-jhor']);
-            window.location.reload();
+            // window.location.reload();
+            this.offerService.reloadOfferList();
             /*}*/
         }, () => {
             this._isSpinning = false;
