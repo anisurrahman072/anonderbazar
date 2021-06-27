@@ -13,16 +13,25 @@
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
-                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired" [style.background-image]="'url('+ IMAGE_ENDPOINT + anonderJhor.banner_image + ')'" style="width: 100%; height: 248px">
+                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired"
+                                 [style.background-image]="'url('+ IMAGE_ENDPOINT + anonderJhor.banner_image + ')'"
+                                 style="width: 100%; height: 164px; margin-top: 15px">
                                 <div class="col-md-12 text-center">
-                                    <p>this is the tesxt</p>
+                                    <img style="width: 120px; height: 39px; margin-top: 12px"
+                                         src="../../../../assets/images/jhor-Logo.png"
+                                         alt="Anonder Jhor"><br>
+                                    <img style="width: 150px; height: 27px; margin-top: 12px"
+                                         src="../../../../assets/images/anonder-jhor-word.png"
+                                         alt="Anonder Jhor">
+                                    <h6 class="mt-4">Ends at:
+                                        <span class="mx-3" style="font-size: 42px; color: red" id="ends_at"></span>
+                                    </h6>
                                 </div>
                             </div>
                             <ng-template #expired>
-                                <img width="100%" src="../../../../assets/images/expired.png"
+                                <img style="width: 100%" src="../../../../assets/images/expired.png"
                                      alt="Anonder Jhor">
                             </ng-template>
-                            <p style=" color: black; position: absolute">starts at: </p>
                         </div>
 
                     </div>
@@ -36,13 +45,21 @@
                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
                         <div class="offer-details">
                             <div class="offer-img">
-                                <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
-                                    <img src="{{IMAGE_ENDPOINT + data.image}}"
-                                         alt="offered product image">
-                                </a>
-                            </div>
-                            <div class="offer-contant">
-                                <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">View Offer details<i class="fa fa-angle-right"></i></a>
+                                <div style="background-color: whitesmoke">
+                                    <div class="col-md-12 text-center" style="height: 50px;">
+                                        <h1 class="my-2" style="position:absolute;">Timer here</h1>
+                                    </div>
+                                    <div class="product-discount-badge">
+                                        <span>12%</span>
+                                    </div>
+                                    <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
+                                        <p class="banner text-center">
+                                            <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>
+                                        </p>
+                                        <img src="{{IMAGE_ENDPOINT + data.image}}"
+                                             alt="offered product image">
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

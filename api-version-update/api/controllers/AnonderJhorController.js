@@ -513,7 +513,10 @@ module.exports = {
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
-        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1});
+        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1})
+          .populate('category_id')
+          .populate('sub_category_id')
+          .populate('sub_sub_category_id');
         console.log('anonder jhor offers: ', anonderJhorOffers);
       }
 
