@@ -37,8 +37,8 @@ export class AddressTabComponent implements OnInit {
 
         //adding form validation
         this.addAddressForm = this.fb.group({
-            first_name: ['', Validators.required],
-            last_name: ['', Validators.required],
+            first_name: ['', [Validators.required]],
+            last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -49,8 +49,8 @@ export class AddressTabComponent implements OnInit {
 
         //adding edit form validation
         this.editAddressForm = this.fb.group({
-            first_name: ['', Validators.required],
-            last_name: ['', Validators.required],
+            first_name: ['', [Validators.required]],
+            last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -70,7 +70,7 @@ export class AddressTabComponent implements OnInit {
         this.getAddressList();
 
         this.areaService.getAllDivision().subscribe(result => {
-            this.divisionSearchOptions = result;
+            this.divisionSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
         });
     }
 

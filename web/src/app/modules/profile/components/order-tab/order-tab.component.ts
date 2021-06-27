@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {MatPaginator} from "@angular/material";
@@ -51,6 +51,7 @@ export class OrderTabComponent implements OnInit {
                 private router: Router,
                 private _notify: NotificationsService,
                 public loaderService: LoaderService,
+                private el: ElementRef
     ) {
     }
 
@@ -87,7 +88,7 @@ export class OrderTabComponent implements OnInit {
             })
     }
 
-    loadAllOrders(allOrder){
+    loadAllOrders(allOrder) {
         this.orderList = [];
         let orders = allOrder.map(order => {
             let now = moment(new Date());
@@ -125,32 +126,51 @@ export class OrderTabComponent implements OnInit {
 
     //Event called for getting order data
     getFilteredOrderList() {
+        // let document = this.el.nativeElement;
         if (this.statusFilter == 'all') {
             this.orderStatus = this.orderList;
             // if (this.orderStatus.length <= 0) {
-            //     document.querySelector(".table-hide").classList.add("hidden-class");
-            //     document.querySelector(".page-hide").classList.add("hidden-class");
-            //     document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     if (!(document.querySelector(".table-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".table-hide").classList.add("hidden-class");
+            //         document.querySelector(".div-hide").classList.add("hidden-class");
+            //     }
+            //     if (document.querySelector(".hide-no-product").classList.contains("hidden-class")) {
+            //         document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     }
             // }
             //
             // if (this.orderStatus.length > 0) {
-            //     document.querySelector(".table-hide").classList.remove("hidden-class");
-            //     document.querySelector(".page-hide").classList.remove("hidden-class");
-            //     document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     if (document.querySelector(".table-hide").classList.contains("hidden-class")) {
+            //         document.querySelector(".table-hide").classList.remove("hidden-class");
+            //         document.querySelector(".div-hide").classList.remove("hidden-class");
+            //     }
+            //     if(!(document.querySelector(".hide-no-product").classList.add("hidden-class"))) {
+            //         document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     }
             // }
             return this.orderStatus;
         } else {
             this.orderStatus = this.orderList.filter(x => x.status == +this.statusFilter);
             // if (this.orderStatus.length <= 0) {
-            //     document.querySelector(".table-hide").classList.add("hidden-class");
-            //     document.querySelector(".page-hide").classList.add("hidden-class");
-            //     document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     if (!(document.querySelector(".table-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".table-hide").classList.add("hidden-class");
+            //     }
+            //     if (!(document.querySelector(".div-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".div-hide").classList.add("hidden-class");
+            //     }
+            //     if (document.querySelector(".hide-no-product").classList.contains("hidden-class")) {
+            //         document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     }
             // }
             //
             // if (this.orderStatus.length > 0) {
-            //     document.querySelector(".table-hide").classList.remove("hidden-class");
-            //     document.querySelector(".page-hide").classList.remove("hidden-class");
-            //     document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     if (document.querySelector(".table-hide").classList.contains("hidden-class")) {
+            //         document.querySelector(".table-hide").classList.remove("hidden-class");
+            //         document.querySelector(".div-hide").classList.remove("hidden-class");
+            //     }
+            //     if (!(document.querySelector(".hide-no-product").classList.contains("hidden-class"))) {
+            //         document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     }
             // }
             return this.orderStatus;
         }
@@ -161,9 +181,9 @@ export class OrderTabComponent implements OnInit {
         this.partialPaymentModalService.showPartialModal(true, order.id);
     }
 
-    cancelOrder(oderId){
+    cancelOrder(oderId) {
         let confirm = window.confirm('Are you confirm to delete the order?');
-        if(confirm){
+        if (confirm) {
             this.loaderService.showLoader();
             this.orderService.deleteOrder(oderId)
                 .concatMap(data => {
