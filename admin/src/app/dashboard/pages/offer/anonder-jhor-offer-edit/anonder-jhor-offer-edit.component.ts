@@ -138,8 +138,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this._isSpinning = false;
             this.resetForm(null);
             this.isEditVisible = false;
-            this.router.navigate(['/dashboard/offer/anonder-jhor']);
-            // window.location.reload();
             this.offerService.reloadOfferList();
             /*}*/
         }, () => {
@@ -158,10 +156,12 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     handleOk = (e) => {
         this.isEditVisible = false;
+        this.offerService.reloadOfferList();
     }
 
     handleCancel = (e) => {
         this.isEditVisible = false;
+        this.offerService.reloadOfferList();
     }
 
     /** Event method for removing picture */

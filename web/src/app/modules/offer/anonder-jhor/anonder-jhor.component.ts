@@ -1,19 +1,34 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {OfferService} from "../../../services";
-import {Observable} from 'rxjs/Rx';
 import {AppSettings} from "../../../config/app.config";
-import {setInterval} from "timers";
+import {timer} from "rxjs/observable/timer";
+import * as moment from "moment";
+
 
 @Component({
     selector: 'app-anonder-jhor',
     templateUrl: './anonder-jhor.component.html',
     styleUrls: ['./anonder-jhor.component.scss']
 })
-export class AnonderJhorComponent implements OnInit {
+export class AnonderJhorComponent implements OnInit, OnDestroy {
     anonderJhor;
     anonderJhorOffers;
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     banner_name;
+
+    jhorStartDate;
+    jhorEndDate;
+    jhorRemainingTimeToStart;
+    jhorRemainingTimeToEnd;
+    presentTime;
+
+    jhorRemainingTimeToEndInDigit;
+    jhorRemainingTimeToStartInDigit;
+    remainingOfferTime: any[] = [];
+
+    expire: Boolean = false;
+    sub1;
+    sub2;
 
     constructor(
         private offerService: OfferService
@@ -21,6 +36,7 @@ export class AnonderJhorComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.presentTime = new Date().getTime();
         this.offerService.getAnonderJhorAndOffers()
             .subscribe(result => {
                 console.log('jhor and offers result: ', result);
@@ -28,23 +44,17 @@ export class AnonderJhorComponent implements OnInit {
                     if (result.data[0]) {
                         this.anonderJhor = result.data[0];
 
-                        let jhorStartTime = new Date(this.anonderJhor.start_date).getTime();
-                        let jhorEndTime = new Date(this.anonderJhor.end_date).getTime();
+                        this.jhorStartDate = new Date(this.anonderJhor.start_date).getTime();
+                        this.jhorEndDate = new Date(this.anonderJhor.end_date).getTime();
 
+                        this.jhorRemainingTimeToStart = this.jhorStartDate - this.presentTime;
+                        this.jhorRemainingTimeToEnd = this.jhorEndDate - this.presentTime;
 
-                        setInterval(function () {
-                            let presentTime = new Date().getTime();
-                            let timeDifference = jhorEndTime - presentTime;
-
-                            let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                            let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-                            let seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-
-                            document.getElementById("ends_at").innerHTML = days + "d " + hours + "h "
-                                + minutes + "m " + seconds + "s ";
-                        }, 1000)
-
+                        if (this.jhorRemainingTimeToStart > 0) {
+                            this.jhorStartsIn();
+                        } else {
+                            this.jhorEndsIn();
+                        }
                     }
                     if (result.data[1]) {
                         this.anonderJhorOffers = result.data[1];
@@ -58,11 +68,56 @@ export class AnonderJhorComponent implements OnInit {
                             } else if (offers.category_id) {
                                 offers.banner_name = offers.category_id.name;
                             }
+
+
                         })
                         console.log('banner name added: ', this.anonderJhorOffers);
                     }
                 }
             })
+    }
+
+    jhorStartsIn() {
+        this.sub1 = timer(0, 1000)
+            .subscribe(data => {
+                this.jhorRemainingTimeToStart -= 1000;
+                this.convertToHours();
+            })
+    }
+
+    convertToHours() {
+        if (this.jhorRemainingTimeToStart === 0) {
+            this.jhorRemainingTimeToStartInDigit = `0 : 0 : 0 `;
+        } else {
+            let seconds = moment.duration(this.jhorRemainingTimeToStart).seconds();
+            let minutes = moment.duration(this.jhorRemainingTimeToStart).minutes();
+            let hours = Math.trunc(moment.duration(this.jhorRemainingTimeToStart).asHours());
+            this.jhorRemainingTimeToStartInDigit = `${hours} : ${minutes} : ${seconds} `;
+        }
+    }
+
+    jhorEndsIn() {
+        this.sub2 = timer(0, 1000)
+            .subscribe(data => {
+                this.jhorRemainingTimeToEnd -= 1000;
+                this.convertMilliSecondToHourMinuteSec();
+            })
+    }
+
+    convertMilliSecondToHourMinuteSec() {
+        if (this.jhorRemainingTimeToEnd === 0) {
+            this.jhorRemainingTimeToEndInDigit = `0 : 0 : 0 `;
+        } else {
+            let seconds = moment.duration(this.jhorRemainingTimeToEnd).seconds();
+            let minutes = moment.duration(this.jhorRemainingTimeToEnd).minutes();
+            let hours = Math.trunc(moment.duration(this.jhorRemainingTimeToEnd).asHours());
+            this.jhorRemainingTimeToEndInDigit = `${hours} : ${minutes} : ${seconds} `;
+        }
+    }
+
+    ngOnDestroy(): void {
+            this.sub1 ? this.sub1.unsubscribe() : '';
+            this.sub2 ? this.sub2.unsubscribe() : '';
     }
 
 }

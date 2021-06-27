@@ -103,7 +103,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this._isSpinning = false;
                 this.resetForm(null);
                 this.isVisible = false;
-                this.router.navigate(['/dashboard/offer/anonder-jhor']);
+                this.offerService.reloadOfferList();
             }
         }, error => {
             this.submitting = false;

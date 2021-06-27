@@ -23,9 +23,30 @@
                                     <img style="width: 150px; height: 27px; margin-top: 12px"
                                          src="../../../../assets/images/anonder-jhor-word.png"
                                          alt="Anonder Jhor">
-                                    <h6 class="mt-4">Ends at:
-                                        <span class="mx-3" style="font-size: 42px; color: red" id="ends_at"></span>
-                                    </h6>
+
+
+                                    <div *ngIf="jhorRemainingTimeToStart > 0; else endIn">
+                                        <div>
+                                            <p style="margin-left: -186px; color: red">Starts at: </p>
+                                            <h6 style="margin-top: 10px">
+                                            <span class="mx-3" style="font-size: 42px; color: red">
+                                            {{jhorRemainingTimeToStartInDigit}}
+                                        </span>
+                                            </h6>
+                                        </div>
+                                    </div>
+
+                                    <ng-template #endIn>
+                                        <div>
+                                            <p style="margin-left: -186px; color: red">Ends at: </p>
+                                            <h6 style="margin-top: 10px">
+                                            <span class="mx-3" style="font-size: 42px; color: red">
+                                            {{jhorRemainingTimeToEndInDigit}}
+                                        </span>
+                                            </h6>
+                                        </div>
+                                    </ng-template>
+
                                 </div>
                             </div>
                             <ng-template #expired>
@@ -50,8 +71,12 @@
                                         <h1 class="my-2" style="position:absolute;">Timer here</h1>
                                     </div>
                                     <div class="product-discount-badge">
-                                        <span>12%</span>
+                                        <span *ngIf="data.calculation_type === 'percentage'; else fixed">{{data.discount_amount}}
+                                            %</span>
                                     </div>
+                                    <ng-template #fixed>
+                                        <span>{{data.discount_amount}} tk</span>
+                                    </ng-template>
                                     <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
                                         <p class="banner text-center">
                                             <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>

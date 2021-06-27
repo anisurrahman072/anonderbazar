@@ -9,7 +9,7 @@
   height: 50px;
   display: inline-block;
   padding-top: 13px;
-  padding-left: 2px;
+  padding-left: 10px;
   font-size: 12px;
   z-index: 100;
 }
@@ -24,4 +24,21 @@
   padding: 20px;
   height: 12px;
 }
+
+
+#timer {
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  color: #999;
+  letter-spacing: -1px;
+}
+#timer span {
+  font-size: 60px;
+  color: #333;
+  margin: 0 3px 0 15px;
+}
+#timer span:first-child {
+  margin-left: 0;
+}
+
 
