@@ -47,7 +47,7 @@
                     <div class="image-contain">
                         <div *ngFor="let data of carouselOffers">
                             <a routerLink="/cms/cms-details/{{data.id}}">
-                                <img src="{{IMAGE_ENDPOINT + data.data_value[0].small_image + IMAGE_EXT}}"
+                                <img src="{{IMAGE_ENDPOINT + data.image.small_image + IMAGE_EXT}}"
                                      alt="offered product image" class="sideImage">
                             </a>
                         </div>

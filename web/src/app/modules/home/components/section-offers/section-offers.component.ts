@@ -22,50 +22,25 @@ export class OfferComponent implements OnInit {
     carouselOffers: any;
     allOffers: any;
 
-    constructor(private cmsService: CmsService, private productservice: ProductService) {
+    constructor() {
     }
 
     //Event method for getting all the data for the page
-    ngOnInit() {
-
-        console.log('this.homeOfferData', this.homeOfferData);
-
+   /* ngOnInit() {
+        console.log("rrrrrrrrrrr: ", this.homeOfferData);
         if (!___.isUndefined(this.homeOfferData) && !___.isEmpty(this.homeOfferData['POST_HOME_PARENTOFFER'])) {
             this.allOffers = this.homeOfferData['POST_HOME_PARENTOFFER'];
             this.allOffers = this.allOffers.filter(offer => {
                  return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInHome === "true");
             }).slice(0, 4);
+        }
+    }*/
 
-            /*if (this.homeOfferData.data_value[0].offers && this.homeOfferData.data_value[0].offers.length > 0) {
-                this.homeOfferData.data_value[0].alloffers = [];
-                this.cmsService.getByIds(this.homeOfferData.data_value[0].offers)
-                    .subscribe(result => {
-                        this.homeOfferData.data_value[0].alloffers = result;
-                    }, (err) => {
-                        console.log(err);
-                    });
-            }
-
-            if (!___.isEmpty(this.homeOfferData['POST_HOME_PARENTOFFER']) && this.homeOfferData['POST_HOME_BOTTOM'].length > 0) {
-                console.log('aaaannn', this.homeOfferData['POST_HOME_BOTTOM']);
-                this.homeOfferData.data_value[0].allproducts = [];
-                this.productservice.getByIds(this.homeOfferData.data_value[0].products)
-                    .subscribe(result => {
-                        this.homeOfferData.data_value[0].allproducts = result;
-                    }, (err) => {
-                        console.log(err);
-                    });
-            }
-
-            if (this.homeOfferData.data_value[0].products && this.homeOfferData.data_value[0].products.length > 0) {
-                this.homeOfferData.data_value[0].allproducts = [];
-                this.productservice.getByIds(this.homeOfferData.data_value[0].products)
-                    .subscribe(result => {
-                        this.homeOfferData.data_value[0].allproducts = result;
-                    }, (err) => {
-                        console.log(err);
-                    });
-            }*/
+    ngOnInit() {
+        if (!___.isUndefined(this.homeOfferData) && !___.isEmpty(this.homeOfferData)) {
+            this.allOffers = this.homeOfferData.filter(offer => {
+                return (offer.show_in_homepage === true);
+            }).slice(0, 4);
         }
     }
 }

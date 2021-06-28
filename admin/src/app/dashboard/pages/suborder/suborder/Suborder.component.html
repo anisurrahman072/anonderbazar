@@ -179,6 +179,7 @@
               (ngSubmit)="submitFormCSV($event,validateProductForm.value)">
             <nz-spin [nzSpinning]="_isSpinningCsv">
                 <nz-table #nzTableCsv [nzBordered]="true" [nzData]="subOrdersForCsv"
+                          nzShowQuickJumper
                           [nzFrontPagination]="false"
                           [nzLoading]="_isSpinningCsv"
                           [nzTotal]="totalCsv"

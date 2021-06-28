@@ -25,5 +25,8 @@ export interface Product {
     type_id?: any,
     category_id?: any,
     product_images?: any,
-    subcategory_id?: any
+    subcategory_id?: any,
+    offerPrice?: any,
+    calculationType?: any,
+    discountAmount?: any,
 }

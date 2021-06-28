@@ -416,5 +416,8 @@ module.exports.policies = {
   },
   SslCommerzController: {
     '*': true
+  },
+  OfferController: {
+    '*': true
   }
 };

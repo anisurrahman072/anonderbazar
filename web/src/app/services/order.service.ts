@@ -9,7 +9,6 @@ import {catchError} from "rxjs/operators";
 export class OrderService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/order`;
-    private EndPoint2 = `${AppSettings.API_ENDPOINT}/order`;
     private EndPoint3 = `${AppSettings.API_ENDPOINT}/partial-order`;
 
     constructor(private http: HttpClient) {

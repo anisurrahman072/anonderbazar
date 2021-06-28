@@ -67,7 +67,7 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = PaymentService.calcCartTotal(cart, cartItems);
+      } = await PaymentService.calcCartTotal(cart, cartItems);
 
       logger.orderLog(customer.id, 'courierCharge', courierCharge);
       logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
@@ -219,7 +219,7 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = PaymentService.calcCartTotal(cart, cartItems);
+      } = await PaymentService.calcCartTotal(cart, cartItems);
 
       /** adding shipping charge with grandtotal */
       grandOrderTotal += courierCharge;

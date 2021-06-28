@@ -27,7 +27,7 @@ module.exports = {
         .populate('couponProductCodes', {deletedAt: null})
         .populate('suborders', {deletedAt: null});
 
-      console.log('orders', orders.couponProductCodes);
+      console.log('orders rouzex', orders);
 
       return res.status(200).json(orders);
 
@@ -143,7 +143,7 @@ module.exports = {
           let {
             grandOrderTotal,
             totalQty
-          } = PaymentService.calcCartTotal(cart, cartItems);
+          } = await PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 
@@ -387,6 +387,7 @@ module.exports = {
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
+    console.log('rozuiex n placeorder: ');
 
     try {
       const authUser = getAuthUser(req);
@@ -427,7 +428,6 @@ module.exports = {
         cartItems,
         req.file
       );
-
       return res.status(200).json(response);
 
     } catch (finalError) {

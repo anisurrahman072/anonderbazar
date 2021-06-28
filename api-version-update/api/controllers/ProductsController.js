@@ -20,6 +20,9 @@ module.exports = {
   //Model models/Product.js
   index: async (req, res) => {
     try {
+      /*      /!**checking if the options have the offer time or not*!/
+      OfferService.offerDurationCheck();*/
+
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
@@ -126,13 +129,28 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      else if (req.query.codeSearchValue) {
+      if (req.query.codeSearchValue) {
         _where += ` AND ( product.code LIKE '%${req.query.codeSearchValue}%' ) `;
       }
 
       if (req.query.nameSearchValue) {
         _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
+
+
+      if (req.query.shopSearchValue) {
+        _where += ` AND warehouse.name LIKE '%${req.query.shopSearchValue}%'  `;
+      }
+      if (req.query.brandSearchValue) {
+        _where += ` AND brand.name LIKE '%${req.query.brandSearchValue}%'  `;
+      }
+      if (req.query.categorySearchValue) {
+        _where += ` AND category.name LIKE '%${req.query.categorySearchValue}%'  `;
+      }
+      if (req.query.subCategorySearchValue) {
+        _where += ` AND subcategory.name LIKE '%${req.query.subCategorySearchValue}%'  `;
+      }
+
 
       let _sort = '';
       if (req.query.sortKey && req.query.sortValue) {
@@ -1300,8 +1318,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',
@@ -1342,8 +1359,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',

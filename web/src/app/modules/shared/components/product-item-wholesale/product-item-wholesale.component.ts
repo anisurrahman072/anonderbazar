@@ -1,21 +1,16 @@
-import {Component, Directive, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AppSettings} from "../../../../config/app.config";
 import {Router} from "@angular/router";
-import {FavouriteProduct, Product} from "../../../../models/index";
+import {FavouriteProduct, Product} from "../../../../models";
 import * as fromStore from "../../../../state-management/index";
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
-import {WOW} from "ngx-wow/services/wow.service";
 import {AuthService, CartItemService, FavouriteProductService} from "../../../../services";
-import {catchError, map} from "rxjs/operators";
-import * as cartActions from "../../../../state-management/actions/cart.action";
-import {of} from "rxjs/observable/of";
 import {NotificationsService} from "angular2-notifications";
 import {LoginModalService} from "../../../../services/ui/loginModal.service";
 import {CompareService} from "../../../../services/compare.service";
 import { NgProgress } from '@ngx-progressbar/core';
 import { ToastrService } from 'ngx-toastr';
-
 
 @Component({
     selector: 'app-product-item-wholesale',
@@ -49,7 +44,7 @@ export class ProductItemWholeSaleComponent implements OnInit {
     ngOnInit() {
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
-        this.product = this.dataProductWholeSale; 
+        this.product = this.dataProductWholeSale;
         this.cart$ = this.store.select<any>(fromStore.getCart);
         this.cart$.subscribe(result => {
             if (result) {
@@ -71,13 +66,13 @@ export class ProductItemWholeSaleComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price; 
+            let product_total_price: number =  this.product.promotion ? this.product.promo_price : this.product.price;
             const cartItemData={
                 cart_id:  this.cartId,
                 product_id: this.product.id,
                 product_quantity: 1,
                 product_total_price: product_total_price,
-            }; 
+            };
             this.cartItemService
                 .insert(cartItemData)
                 .subscribe(
@@ -153,7 +148,7 @@ export class ProductItemWholeSaleComponent implements OnInit {
             this.loginModalService.showLoginModal(true)
 
         }
-    } 
+    }
     erroralert() {
         this._notify.error('compare list is full, delete first!!!');
     }
@@ -163,5 +158,5 @@ export class ProductItemWholeSaleComponent implements OnInit {
         this.addToCart(product, ()=>{
             this.router.navigate([`/checkout`]);
         });
-    } 
+    }
 }
