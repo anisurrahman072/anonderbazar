@@ -66,6 +66,13 @@ module.exports = {
     valuesToSet.last_name = he.encode(valuesToSet.last_name);
     valuesToSet.address = he.encode(valuesToSet.address);
     return proceed();
+  },
+
+  beforeUpdate: function (valuesToSet, proceed) {
+    valuesToSet.first_name = he.encode(valuesToSet.first_name);
+    valuesToSet.last_name = he.encode(valuesToSet.last_name);
+    valuesToSet.address = he.encode(valuesToSet.address);
+    return proceed();
   }
 };
 

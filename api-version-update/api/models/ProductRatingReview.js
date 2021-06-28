@@ -32,5 +32,10 @@ module.exports = {
   beforeCreate: function (valuesToSet, proceed) {
     valuesToSet.review = he.encode(valuesToSet.review);
     return proceed();
+  },
+
+  beforeUpdate: function (valuesToSet, proceed) {
+    valuesToSet.review = he.encode(valuesToSet.review);
+    return proceed();
   }
 };

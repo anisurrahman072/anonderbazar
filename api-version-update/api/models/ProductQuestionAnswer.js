@@ -35,6 +35,13 @@ module.exports = {
     valuesToSet.question = he.encode(valuesToSet.question);
     valuesToSet.answer = he.encode(valuesToSet.answer);
     return proceed();
+  },
+
+  beforeUpdate: function (valuesToSet, proceed) {
+    valuesToSet.question = he.encode(valuesToSet.question);
+    valuesToSet.answer = he.encode(valuesToSet.answer);
+    return proceed();
   }
+
 };
 
