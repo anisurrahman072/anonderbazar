@@ -37,6 +37,8 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     allSubCategoryIds;
     allSubSubCategoryIds;
 
+    anonderJhorData;
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
@@ -56,6 +58,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
 
     ngOnInit() {
         this.getAllCategories()
+        this.getAnonderJhor();
     }
 
     //Event method for submitting the form
@@ -76,6 +79,14 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
+        let offerTime = new Date(value.offerEndDate).getTime();
+        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+
+        if(offerTime > jhorTime) {
+            this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
+            this._isSpinning = false;
+            return;
+        }
 
         if (value.subCategoryId) {
             formData.append('subCategoryId', this.subCategoryId);
@@ -186,5 +197,23 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
 
     handleCancel = (e) => {
         this.isVisible = false;
+    }
+
+    /** Method called to get data of anonder Jhor */
+    getAnonderJhor() {
+        this.offerService.getAnonderJhor()
+            .subscribe(result => {
+                this._isSpinning = true
+                console.log('anonder jhor data: ', result.data);
+                if (result.data) {
+                    this.anonderJhorData = result.data;
+                    this._isSpinning = false;
+                } else {
+                    this._isSpinning = false;
+                    this._notification.error('failed', 'Sorry, something went wrong');
+                }
+            }, () => {
+                this._isSpinning = false;
+            });
     }
 }

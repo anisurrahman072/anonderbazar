@@ -38,6 +38,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     allSubCategoryIds;
     allSubSubCategoryIds;
 
+    anonderJhorData;
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
@@ -47,6 +49,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.getAnonderJhor();
         this.getAllCategories()
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
@@ -114,6 +117,14 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
+        let offerTime = new Date(value.offerEndDate).getTime();
+        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+
+        if(offerTime > jhorTime) {
+            this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
+            this._isSpinning = false;
+            return;
+        }
 
         if (value.subCategoryId) {
             formData.append('subCategoryId', this.subCategoryId);
@@ -225,6 +236,24 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     /** Event method for setting up form in validation */
     getFormControl(name) {
         return this.validateForm.controls[name];
+    }
+
+    /** Method called to get data of anonder Jhor */
+    getAnonderJhor() {
+        this.offerService.getAnonderJhor()
+            .subscribe(result => {
+                this._isSpinning = true
+                console.log('anonder jhor data: ', result.data);
+                if (result.data) {
+                    this.anonderJhorData = result.data;
+                    this._isSpinning = false;
+                } else {
+                    this._isSpinning = false;
+                    this._notification.error('failed', 'Sorry, something went wrong');
+                }
+            }, () => {
+                this._isSpinning = false;
+            });
     }
 
 }

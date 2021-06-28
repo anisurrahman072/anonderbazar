@@ -15,7 +15,7 @@
                         <div class="banner-image" style="overflow: hidden;">
                             <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired"
                                  [style.background-image]="'url('+ IMAGE_ENDPOINT + anonderJhor.banner_image + ')'"
-                                 style="width: 100%; height: 164px; margin-top: 15px">
+                                 style="width: 100%; height: 190px; margin-top: 15px">
                                 <div class="col-md-12 text-center">
                                     <img style="width: 120px; height: 39px; margin-top: 12px"
                                          src="../../../../assets/images/jhor-Logo.png"
@@ -27,23 +27,27 @@
 
                                     <div *ngIf="jhorRemainingTimeToStart > 0; else endIn">
                                         <div>
-                                            <p style="margin-left: -186px; color: red">Starts at: </p>
-                                            <h6 style="margin-top: 10px">
-                                            <span class="mx-3" style="font-size: 42px; color: red">
-                                            {{jhorRemainingTimeToStartInDigit}}
-                                        </span>
-                                            </h6>
+                                            <p style="margin-left: -186px; color: red; font-size: 20px">Starts at: </p>
+                                            <p style="margin-top: 10px; font-size: 30px; font-weight: 400">
+                                            <span style="font-size: 30px; color: #FFFFFF">
+                                                <ng-template ngFor let-time [ngForOf]="jhorRemainingTimeToStartInDigit">
+                                                    <span class="digit">{{time}}</span>
+                                                </ng-template>
+                                            </span>
+                                            </p>
                                         </div>
                                     </div>
 
                                     <ng-template #endIn>
                                         <div>
-                                            <p style="margin-left: -186px; color: red">Ends at: </p>
-                                            <h6 style="margin-top: 10px">
-                                            <span class="mx-3" style="font-size: 42px; color: red">
-                                            {{jhorRemainingTimeToEndInDigit}}
-                                        </span>
-                                            </h6>
+                                            <p style="margin-left: -186px; color: red;  font-size: 20px">Ends at: </p>
+                                            <p style="margin-top: 10px; font-size: 30px; font-weight: 400">
+                                            <span style="font-size: 30px; color: #FFFFFF">
+                                                <ng-template ngFor let-time [ngForOf]="jhorRemainingTimeToEndInDigit">
+                                                    <span class="digit">{{time}}</span>
+                                                </ng-template>
+                                            </span>
+                                            </p>
                                         </div>
                                     </ng-template>
 
@@ -67,8 +71,24 @@
                         <div class="offer-details">
                             <div class="offer-img">
                                 <div style="background-color: whitesmoke">
-                                    <div class="col-md-12 text-center" style="height: 50px;">
-                                        <h1 class="my-2" style="position:absolute;">Timer here</h1>
+                                    <div class="col-md-12 text-center" style="height: 50px;"
+                                         *ngIf="offerRemainingTimeToEndInDigit && offerRemainingTimeToEndInDigit[data.id]">
+                                        <p class="my-2" style="position:absolute;color: #ED1C24; font-size: 25px"
+                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] > presentTime">
+                                            Starts at {{data.start_date | date:'shortTime'}}
+                                        </p>
+
+                                        <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
+                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] < presentTime">
+                                            <ng-template ngFor let-time [ngForOf]="offerRemainingTimeToEndInDigit[data.id]">
+                                                <span class="digit">{{time}}</span>
+                                            </ng-template>
+                                        </p>
+
+                                        <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
+                                           *ngIf="offerEndTime[data.id] && offerEndTime[data.id] < presentTime">
+                                            Expired
+                                        </p>
                                     </div>
                                     <div class="product-discount-badge">
                                         <span *ngIf="data.calculation_type === 'percentage'; else fixed">{{data.discount_amount}}
@@ -82,7 +102,7 @@
                                             <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>
                                         </p>
                                         <img src="{{IMAGE_ENDPOINT + data.image}}"
-                                             alt="offered product image">
+                                             alt="offered product image" style="margin-top: 5px">
                                     </a>
                                 </div>
                             </div>

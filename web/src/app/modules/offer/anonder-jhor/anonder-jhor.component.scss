@@ -1,7 +1,7 @@
 .product-discount-badge {
   position: absolute;
   left: 30px;
-  top:63px;
+  top:69px;
   background: #FF0000;
   border-radius: 30px 30px 30px 30px;
   color: white;
@@ -16,7 +16,7 @@
 
 .banner {
   position: absolute;
-  top: 49px;
+  top: 55px;
   background: rgb(0, 0, 0); /* Fallback color */
   background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
   color: #f1f1f1;
@@ -41,4 +41,19 @@
   margin-left: 0;
 }
 
+.digit {
+  display: inline-block;
+  border: 1px solid whitesmoke;
+  background: linear-gradient(0deg, black, red);
+  padding: 4px 5px;
+  border-radius: 5px;
+  font-weight: 600;
+}
 
+.digit:nth-child(2n+1) {
+  margin-left: 5px;
+}
+
+.digit:nth-child(2n) {
+  margin-left: -5px;
+}
