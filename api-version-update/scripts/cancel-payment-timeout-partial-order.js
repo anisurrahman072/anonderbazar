@@ -1,4 +1,4 @@
-const {PARTIAL_ORDER_TYPE, PAYMENT_STATUS_PAID} = require('../libs/constants');
+const {PARTIAL_ORDER_TYPE, PAYMENT_STATUS_PAID, PENDING_SOME_OFFLINE_PAYMENTS_APPROVAL_STATUS} = require('../libs/constants');
 const {getGlobalConfig} = require('../libs/helper');
 const moment = require('moment');
 const {ORDER_STATUSES} = require('../libs/orders');
@@ -22,6 +22,7 @@ module.exports = {
         order_type: PARTIAL_ORDER_TYPE,
         status: {'!=': ORDER_STATUSES.canceled},
         payment_status: {'!=': PAYMENT_STATUS_PAID},
+        partial_offline_payment_approval_status: {'!=': PENDING_SOME_OFFLINE_PAYMENTS_APPROVAL_STATUS},
         deletedAt: null
       });
 
