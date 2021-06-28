@@ -29,4 +29,8 @@ module.exports = {
     },
   },
   tableName: 'product_rating_review',
+  beforeCreate: function (valuesToSet, proceed) {
+    valuesToSet.review = he.encode(valuesToSet.review);
+    return proceed();
+  }
 };

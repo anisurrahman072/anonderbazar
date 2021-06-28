@@ -31,5 +31,10 @@ module.exports = {
     }
   },
   tableName: 'product_question_answer',
+  beforeCreate: function (valuesToSet, proceed) {
+    valuesToSet.question = he.encode(valuesToSet.question);
+    valuesToSet.answer = he.encode(valuesToSet.answer);
+    return proceed();
+  }
 };
 
