@@ -13,7 +13,10 @@ const {
   PAYMENT_STATUS_UNPAID,
   PAYMENT_STATUS_PARTIALLY_PAID,
   OFFLINE_PAYMENT_TYPE,
-  CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS
+  CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS,
+  REGULAR_ORDER_TYPE,
+  PARTIAL_ORDER_TYPE,
+  REJECTED_PAYMENT_APPROVAL_STATUS
 } = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {getGlobalConfig} = require('../../libs/helper');
@@ -84,9 +87,14 @@ module.exports = {
       if (req.query.approvalStatusSearchValue) {
         _where += ` AND payments.approval_status = ${req.query.approvalStatusSearchValue} `;
       }
-      if (req.query.orderType) {
+
+      if (req.query.orderType && req.query.orderType === 'bothRegularPartialOfflinePayments') {
+        _where += ` AND (p_order.order_type = ${REGULAR_ORDER_TYPE} OR p_order.order_type = ${PARTIAL_ORDER_TYPE} )`;
+      }
+      if (req.query.orderType && req.query.orderType !== 'bothRegularPartialOfflinePayments') {
         _where += ` AND p_order.order_type = ${req.query.orderType} `;
       }
+
       console.log('req.query.dateSearchValue', req.query.dateSearchValue);
       if (req.query.dateSearchValue) {
         _where += ` AND payments.created_at LIKE '${req.query.dateSearchValue}%' `;
@@ -148,63 +156,86 @@ module.exports = {
         deletedAt: null
       });
 
-      let updatedPayment = await Payment.updateOne({id: paymentId}, {
-        approval_status: status
-      });
-
-      let pendingPayments = await Payment.find({
-        order_id: orderId,
-        payment_type: OFFLINE_PAYMENT_TYPE,
-        approval_status: PENDING_PAYMENT_APPROVAL_STATUS,
-        deletedAt: null
-      });
-
       let _set = {};
-      let finalPaidAmount = order.paid_amount;
-
-      /** Check weather the PAYMENT PAID amount can change payment status of the Order */
-      if (status == APPROVED_PAYMENT_APPROVAL_STATUS) {
-        console.log('Status == Approved', updatedPayment, updatedPayment.payment_amount, finalPaidAmount);
-
-        finalPaidAmount += updatedPayment.payment_amount;
-        _set.paid_amount = finalPaidAmount;
-
-        if (finalPaidAmount >= order.total_price) {
-          _set.payment_status = PAYMENT_STATUS_PAID;
-        } else {
-          if (order.payment_status == PAYMENT_STATUS_UNPAID) {
-            _set.payment_status = PAYMENT_STATUS_PARTIALLY_PAID;
-          }
-        }
-      }
-      /** END */
-
-      /** Take decision weather the ORDER should be cancelled or NOT */
-      if (pendingPayments && pendingPayments.length === 0 ){
-
-        /** Update offline payment approval status to CONFIRMED_ALL */
-        _set.partial_offline_payment_approval_status = CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS;
+      if (order.order_type == REGULAR_ORDER_TYPE) {
+        /** At present REGULAR OFFLINE order creates multiple payments log for each suborders. So we use here update. */
+        await Payment.update({order_id: order.id}, {
+          approval_status: status
+        });
         /** END */
 
-        if(finalPaidAmount < order.total_price) {
+        if (status == APPROVED_PAYMENT_APPROVAL_STATUS) {
+          _set.paid_amount = order.total_price;
+          _set.payment_status = PAYMENT_STATUS_PAID;
+          _set.status = ORDER_STATUSES.processing;
+        } else if(status == REJECTED_PAYMENT_APPROVAL_STATUS){
+          _set.status = ORDER_STATUSES.canceled;
+          _set.payment_status = PAYMENT_STATUS_UNPAID;
 
-          /** Calculate ORDER expended hour */
-          let now = moment(new Date());
-          let createdAt = moment(order.createdAt);
-          let duration = moment.duration(now.diff(createdAt));
-          let expendedHour = Math.floor(duration.asHours());
-          /** END */
-          console.log('Expended time ', expendedHour, globalConfigs.partial_payment_duration );
+          await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.canceled});
+        }
+      } else {
+        /** At present PARTIAL OFFLINE payment creates single payment log for a single payment. So we use here updateOne.  */
+        let updatedPayment = await Payment.updateOne({id: paymentId}, {
+          approval_status: status
+        });
+        /** END */
 
-          if (expendedHour > globalConfigs.partial_payment_duration) {
-            _set.status = ORDER_STATUSES.canceled;
-            await Suborder.update({product_order_id: orderId}, {status: ORDER_STATUSES.canceled});
+        let pendingPayments = await Payment.find({
+          order_id: orderId,
+          payment_type: OFFLINE_PAYMENT_TYPE,
+          approval_status: PENDING_PAYMENT_APPROVAL_STATUS,
+          deletedAt: null
+        });
+
+        let finalPaidAmount = order.paid_amount;
+
+        /** Check weather the PAYMENT PAID amount can change payment status of the Order */
+        if (status == APPROVED_PAYMENT_APPROVAL_STATUS) {
+          console.log('Status == Approved', updatedPayment, updatedPayment.payment_amount, finalPaidAmount);
+
+          finalPaidAmount += updatedPayment.payment_amount;
+          _set.paid_amount = finalPaidAmount;
+
+          if (finalPaidAmount >= order.total_price) {
+            _set.payment_status = PAYMENT_STATUS_PAID;
+            _set.status = ORDER_STATUSES.processing;
+          } else {
+            if (order.payment_status == PAYMENT_STATUS_UNPAID) {
+              _set.payment_status = PAYMENT_STATUS_PARTIALLY_PAID;
+            }
           }
         }
-      }
-      /** END */
+        /** END */
 
-      console.log('_set: ', _set);
+        /** Take decision weather the ORDER should be cancelled or NOT */
+        if (pendingPayments && pendingPayments.length === 0) {
+
+          /** Update offline payment approval status to CONFIRMED_ALL */
+          _set.partial_offline_payment_approval_status = CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS;
+          /** END */
+
+          if (finalPaidAmount < order.total_price) {
+
+            /** Calculate ORDER expended hour */
+            let now = moment(new Date());
+            let createdAt = moment(order.createdAt);
+            let duration = moment.duration(now.diff(createdAt));
+            let expendedHour = Math.floor(duration.asHours());
+            /** END */
+            console.log('Expended time ', expendedHour, globalConfigs.partial_payment_duration);
+
+            if (expendedHour > globalConfigs.partial_payment_duration) {
+              _set.status = ORDER_STATUSES.canceled;
+              await Suborder.update({product_order_id: orderId}, {status: ORDER_STATUSES.canceled});
+            }
+          }
+        }
+        /** END */
+
+        console.log('_set: ', _set);
+      }
+
       let updatedOrder = await Order.update({id: orderId}, _set);
 
       return res.status(200).json({
@@ -215,7 +246,7 @@ module.exports = {
     } catch (error) {
       return res.status(400).json({
         success: false,
-        message: 'Error occurred while updating the approval status. ',error,
+        message: 'Error occurred while updating the approval status. ', error,
       });
     }
   }

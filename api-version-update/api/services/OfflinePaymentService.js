@@ -1,5 +1,5 @@
 const logger = require('../../libs/softbd-logger').Logger;
-const {PAYMENT_STATUS_UNPAID, OFFLINE_PAYMENT_TYPE, BANK_TRANSFER_OFFLINE_PAYMENT} = require('../../libs/constants');
+const {PAYMENT_STATUS_UNPAID, OFFLINE_PAYMENT_TYPE, BANK_TRANSFER_OFFLINE_PAYMENT, PENDING_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
 const {uploadImages} = require('../../libs/helper');
 
 
@@ -72,7 +72,7 @@ module.exports = {
             user_id: authUser.id,
             cart_id: cart.id,
             total_price: grandOrderTotal,
-            paid_amount: grandOrderTotal,
+            paid_amount: 0,
             payment_status: PAYMENT_STATUS_UNPAID,
             total_quantity: totalQty,
             billing_address: billingAddress.id,
@@ -87,7 +87,8 @@ module.exports = {
             order_id: order.id,
             payment_type: OFFLINE_PAYMENT_TYPE,
             details: JSON.stringify(paymentDetails),
-            status: 1
+            status: 1,
+            approval_status: PENDING_PAYMENT_APPROVAL_STATUS
           });
 
           await PaymentService.updateCart(cart.id, db, cartItems);
