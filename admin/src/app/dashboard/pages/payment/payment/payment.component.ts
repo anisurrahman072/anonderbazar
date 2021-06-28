@@ -5,6 +5,7 @@ import {environment} from "../../../../../environments/environment";
 import {PAYMENT_METHODS, OFFLINE_PAYMENT_METHODS, GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_APPROVAL_STATUS_TYPES} from "../../../../../environments/global_config";
 import {NzNotificationService} from "ng-zorro-antd";
 import moment from "moment";
+import * as ___ from 'lodash';
 
 @Component({
     selector: 'app-payment',
@@ -54,6 +55,9 @@ export class PaymentComponent implements OnInit {
     approvalOptions = GLOBAL_CONFIGS.PAYMENT_APPROVAL_STATUS_TYPES;
     ORDER_TYPE = ORDER_TYPE;
     PAYMENT_APPROVAL_STATUS_TYPES = PAYMENT_APPROVAL_STATUS_TYPES;
+
+    partial_offline_payments:boolean = false;
+    regular_offline_payments:boolean = false;
 
     constructor(
         private paymentService: PaymentService,
@@ -112,15 +116,47 @@ export class PaymentComponent implements OnInit {
     }
 
     //Event method for getting all the data for the page
-    getPageData(showPartialOfflinePayments = false) {
+    getPageData(showPartialOfflinePayments = false, showRegularOfflinePayments = false) {
         console.log('this.dateSearchValue', this.dateSearchValue);
         let dateSearchVal = '';
         if(this.dateSearchValue){
             dateSearchVal = moment(this.dateSearchValue).format('YYYY-MM-DD');
         }
         let orderType = null;
-        if(showPartialOfflinePayments){
+        if(showPartialOfflinePayments && !showRegularOfflinePayments){
             orderType = ORDER_TYPE.PARTIAL_ORDER_TYPE;
+            this.paymentTypeSearchValue = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
+
+            this.nameSearchValue = '';
+            this.orderNumberSearchValue = '';
+            this.suborderNumberSearchValue = '';
+            this.userIdSearchValue = '';
+            this.transactionSearchValue = '';
+            this.paymentAmountSearchValue = '';
+            dateSearchVal = '';
+            this.statusSearchValue = '';
+            this.receiver_id = '';
+            this.approvalStatusSearchValue = '';
+            this.sortKey = '';
+        }
+        if(showRegularOfflinePayments && !showPartialOfflinePayments){
+            orderType = ORDER_TYPE.REGULAR_ORDER_TYPE;
+            this.paymentTypeSearchValue = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
+
+            this.nameSearchValue = '';
+            this.orderNumberSearchValue = '';
+            this.suborderNumberSearchValue = '';
+            this.userIdSearchValue = '';
+            this.transactionSearchValue = '';
+            this.paymentAmountSearchValue = '';
+            dateSearchVal = '';
+            this.statusSearchValue = '';
+            this.receiver_id = '';
+            this.approvalStatusSearchValue = '';
+            this.sortKey = '';
+        }
+        if(showRegularOfflinePayments && showPartialOfflinePayments){
+            orderType = 'bothRegularPartialOfflinePayments';
             this.paymentTypeSearchValue = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
 
             this.nameSearchValue = '';
