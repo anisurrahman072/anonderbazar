@@ -199,8 +199,7 @@
 
                 <!-- Only true if the payment is an Offline Payment START -->
                 <div *ngIf="payment.details && payment.details.offline_payment_method">
-                    <p style="margin: 0px;" *ngIf="data.order_type == ORDER_TYPE.PARTIAL_ORDER_TYPE">
-                        Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
+                    <p style="margin: 0px;">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
                     <p style="margin: 0px;">Offline payment method: {{payment.details.offline_payment_method}}</p>
 
                     <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
