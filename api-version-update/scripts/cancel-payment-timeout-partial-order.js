@@ -15,7 +15,7 @@ module.exports = {
 
   fn: async function (inputs, exits) {
 
-    sails.log('Running custom shell script... (`sails run cancel-timeout-partial-order`)');
+    sails.log('Running custom shell script... (`sails run cancel-payment-timeout-partial-order`)');
 
     try {
       let partialOrders = await Order.find({
@@ -45,7 +45,7 @@ module.exports = {
           await StatusChange.create({
             order_id: partialOrders[i].id,
             suborder_id: null,
-            changed_by: null,
+            changed_by: 9306,
             date: new Date(),
             status: ORDER_STATUSES.canceled
           });
@@ -60,7 +60,7 @@ module.exports = {
             return {
               order_id: null,
               suborder_id: sub.id,
-              changed_by: null,
+              changed_by: 9306,
               date: new Date(),
               status: SUB_ORDER_STATUSES.canceled
             };

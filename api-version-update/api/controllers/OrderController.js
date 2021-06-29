@@ -7,6 +7,7 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const {ORDER_STATUSES} = require('../../libs/orders');
 const {getPaymentService} = require('../../libs/paymentMethods');
 const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
@@ -491,6 +492,7 @@ module.exports = {
       }
 
       if (req.query.payment_status) {
+        // eslint-disable-next-line eqeqeq
         if(req.query.payment_status == PAYMENT_STATUS_PAID) {
           _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
         }
@@ -649,7 +651,7 @@ module.exports = {
         deletedAt: null
       });
 
-      if (paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12) {
+      if (paymentDetail.length > 0 && paymentDetail[0].payment_type === 'CashBack' && req.body.status === ORDER_STATUSES.canceled) {
         let returnCashbackAmount = updatedOrder.total_price;
 
         let prevCashbackDetail = await CouponLotteryCashback.findOne({

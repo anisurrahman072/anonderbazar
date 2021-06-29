@@ -4,9 +4,10 @@ const {
   CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS
 } = require('../libs/constants');
 const Promise = require('bluebird');
+const moment = require('moment');
 const {NOT_APPLICABLE_OFFLINE_PAYMENTS_APPROVAL_STATUS} = require('../libs/constants');
 const {ORDER_STATUSES} = require('../libs/orders');
-const {SUB_ORDER_STATUSES} = require('../libs/subOrders');
+const fs = require('fs');
 
 const exludedOrderIds = [
   2204, 2205, 3192, 3194, 3196, 3201, 3203, 3204, 3206, 3208, 3209, 3212, 3213, 3214, 3215, 3217, 3218, 3220, 3221, 3222, 3223, 3224, 3225, 3227, 3229, 3232,
@@ -17,21 +18,16 @@ const exludedOrderIds = [
   3433, 3435, 3436, 3441, 3443, 3444, 3445, 3446, 3447, 3449, 3451, 3456, 3457, 3458, 3460, 3461, 3465, 3467, 3468, 3470, 3471, 3472, 3473, 3475, 3478, 3479,
   3484, 3485, 3486, 3490, 3491, 3492, 3493, 3496, 3497, 3498, 3499, 3500, 3501, 3502, 3504, 3506, 3507, 3508, 3509, 3511, 3512, 3516, 3517, 3519, 3521, 3522,
   3529, 3530, 3531, 3532, 3533, 3536, 3556, 3564, 3566, 3567, 3576, 3577, 3580, 3581, 3584, 3588, 3591, 3599, 3602, 3603, 3604, 3605, 3607
-];
-
+].join(',');
 
 module.exports = {
 
-
   friendlyName: 'Reverse Cancel payment timeout partial order',
-
-
   description: 'This script will auto run in linux server & will auto cancel the orders that were timed out for partial pay',
-
 
   fn: async function (inputs, exits) {
 
-    sails.log('Running custom shell script... (`sails run reverse-cancel-timeout-partial-order`)');
+    sails.log('Running custom shell script... (`sails run reverse-cancel-payment-timeout-partial-order`)');
 
     try {
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
@@ -39,51 +35,52 @@ module.exports = {
       let rawQuery = `
       SELECT
             orders.id as id,
-            orders.created_at,
-            orders.updated_at,
-            orders.status
+            orders.user_id as user_id
       FROM
-              product_orders as orders
-
+            product_orders as orders
       WHERE
             orders.deleted_at IS NULL AND
             orders.order_type = ${PARTIAL_ORDER_TYPE} AND
             orders.payment_status != ${PAYMENT_STATUS_PAID} AND
             orders.status = ${ORDER_STATUSES.canceled} AND
             orders.partial_offline_payment_approval_status IN (${NOT_APPLICABLE_OFFLINE_PAYMENTS_APPROVAL_STATUS}, ${CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS}) AND
-            orders.id NOT IN (${exludedOrderIds.join(',')})
+            orders.id NOT IN (${exludedOrderIds})
       `;
 
       const rawResult = await orderQuery(rawQuery, []);
-
       const partialOrders = rawResult.rows;
+      const partialOrderIds = partialOrders.map(row => row.id);
 
-      const len = partialOrders.length;
+      const currentDate = moment();
+      fs.writeFileSync('./reverse-partial-order-cancellation-' + currentDate.format('YYYY-MM-DD-HH-mm') + '.json', partialOrderIds.join(','), 'utf8');
+      /*
+           const len = partialOrderIds.length;
 
-      for (let i = 0; i < len; i++) {
-        let deletedOrder = await Order.updateOne({
-          id: partialOrders[i].id
-        }).set({
-          status: ORDER_STATUSES.pending
-        });
+               for (let i = 0; i < len; i++) {
+             await Order.updateOne({
+               id: partialOrders[i].id
+             }).set({
+               status: ORDER_STATUSES.pending
+             });
 
-        await Suborder.update({
-          product_order_id: partialOrders[i].id
-        }).set({
-          status: SUB_ORDER_STATUSES.pending
-        });
+             await Suborder.update({
+               product_order_id: partialOrders[i].id
+             }).set({
+               status: SUB_ORDER_STATUSES.pending
+             });
 
-        let user = await User.findOne({
-          id: partialOrders[i].user_id,
-          deletedAt: null
-        });
+             let user = await User.findOne({
+               id: partialOrders[i].user_id,
+               deletedAt: null
+             });
 
-        let smsText = `Your order ${deletedOrder.id} has been canceled!`;
-        console.log(smsText);
+             let smsText = `Your order ${partialOrders[i].id} has been canceled!`;
+             console.log(smsText);
 
-        SmsService.sendingOneSmsToOne([user.phone], smsText);
+             SmsService.sendingOneSmsToOne([user.phone], smsText);
 
-      }
+           }
+     */
       return exits.success();
     } catch (error) {
       console.log('The cancel payment timeout for partial orders has been failed!');
