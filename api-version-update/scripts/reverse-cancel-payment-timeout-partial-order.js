@@ -8,6 +8,8 @@ const moment = require('moment');
 const {NOT_APPLICABLE_OFFLINE_PAYMENTS_APPROVAL_STATUS} = require('../libs/constants');
 const {ORDER_STATUSES} = require('../libs/orders');
 const fs = require('fs');
+const {SUB_ORDER_STATUSES} = require('../libs/subOrders');
+const {getGlobalConfig} = require('../libs/helper');
 
 const exludedOrderIds = [
   2204, 2205, 3192, 3194, 3196, 3201, 3203, 3204, 3206, 3208, 3209, 3212, 3213, 3214, 3215, 3217, 3218, 3220, 3221, 3222, 3223, 3224, 3225, 3227, 3229, 3232,
@@ -30,12 +32,15 @@ module.exports = {
     sails.log('Running custom shell script... (`sails run reverse-cancel-payment-timeout-partial-order`)');
 
     try {
+      const globalConfigs = await getGlobalConfig();
+
       const orderQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
 
       let rawQuery = `
       SELECT
             orders.id as id,
-            orders.user_id as user_id
+            orders.user_id as user_id,
+            orders.created_at as created_at
       FROM
             product_orders as orders
       WHERE
@@ -49,38 +54,42 @@ module.exports = {
 
       const rawResult = await orderQuery(rawQuery, []);
       const partialOrders = rawResult.rows;
-      const partialOrderIds = partialOrders.map(row => row.id);
+      /* const partialOrderIds = partialOrders.map(row => row.id); */
 
+      const len = partialOrders.length;
+
+      let operatedOrderIds = [];
       const currentDate = moment();
-      fs.writeFileSync('./reverse-partial-order-cancellation-' + currentDate.format('YYYY-MM-DD-HH-mm') + '.json', partialOrderIds.join(','), 'utf8');
-      /*
-           const len = partialOrderIds.length;
+      for (let i = 0; i < len; i++) {
+        let allowedUpTo = moment(partialOrders[i].created_at, 'YYYY-MM-DD HH:mm:ss').add(globalConfigs.partial_payment_duration, 'hours');
 
-               for (let i = 0; i < len; i++) {
-             await Order.updateOne({
-               id: partialOrders[i].id
-             }).set({
-               status: ORDER_STATUSES.pending
-             });
+        if (allowedUpTo.isAfter(currentDate)) {
 
-             await Suborder.update({
-               product_order_id: partialOrders[i].id
-             }).set({
-               status: SUB_ORDER_STATUSES.pending
-             });
+          await Order.updateOne({
+            id: partialOrders[i].id
+          }).set({
+            status: ORDER_STATUSES.pending
+          });
 
-             let user = await User.findOne({
-               id: partialOrders[i].user_id,
-               deletedAt: null
-             });
+          await Suborder.update({
+            product_order_id: partialOrders[i].id
+          }).set({
+            status: SUB_ORDER_STATUSES.pending
+          });
 
-             let smsText = `Your order ${partialOrders[i].id} has been canceled!`;
-             console.log(smsText);
+          let user = await User.findOne({
+            id: partialOrders[i].user_id
+          });
 
-             SmsService.sendingOneSmsToOne([user.phone], smsText);
+          let smsText = `আপনার অর্ডার ${partialOrders[i].id} নাম্বারটি ভুল বসত ক্যান্সেল হয়ে গেছে। যার জন্য আমরা আন্তরিক ভাবে দুঃখিত। এখন আবার অর্ডারটি রিস্টোর করা হয়েছে। ধন্যবাদ আনন্দের বাজারের উপর আস্থা রাখার জন্য।`;
 
-           }
-     */
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+
+          operatedOrderIds.push(partialOrders[i].id);
+        }
+      }
+
+      fs.writeFileSync('./reverse-partial-order-cancellation-' + currentDate.format('YYYY-MM-DD-HH-mm') + '.json', operatedOrderIds.join(','), 'utf8');
       return exits.success();
     } catch (error) {
       console.log('The cancel payment timeout for partial orders has been failed!');

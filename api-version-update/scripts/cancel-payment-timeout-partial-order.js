@@ -28,13 +28,12 @@ module.exports = {
 
       const globalConfigs = await getGlobalConfig();
       const len = partialOrders.length;
-
+      const currentDate = moment();
       for (let i = 0; i < len; i++) {
 
-        let createdAt = moment(partialOrders[i].createdAt, 'YYYY-MM-DD HH:mm:ss');
         let allowedUpTo = moment(partialOrders[i].createdAt, 'YYYY-MM-DD HH:mm:ss').add(globalConfigs.partial_payment_duration, 'hours');
 
-        if (createdAt.gt(allowedUpTo)) {
+        if (allowedUpTo.isBefore(currentDate)) {
 
           let deletedOrder = await Order.updateOne({
             id: partialOrders[i].id
