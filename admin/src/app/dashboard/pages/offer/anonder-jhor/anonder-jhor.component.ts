@@ -109,15 +109,24 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
 
     /** Event Method called to change the status of anonder jhor offers */
     offerActiveStatusChange(event, offerId) {
-        let data = {event, offerId}
-        this.offerService.offerActiveStatusChange(data)
+        this.offerService.getAnonderJhorOfferById(offerId)
             .subscribe(result => {
-                console.log('status : ', result);
-                if (result.code === 'NOT_ALLOWED') {
-                    this._notification.error('Sorry!', 'Offer time or Jhor offer ended, you can not change status');
+                let presentTime = moment();
+                if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
+                    this._notification.error('Time Ended', 'You can not change the status for offer purchase history purpose. You better create a new one');
+                    return;
+                } else {
+                    let data = {event, offerId}
+                    this.offerService.offerActiveStatusChange(data)
+                        .subscribe(result => {
+                            console.log('status : ', result);
+                            if (result.code === 'NOT_ALLOWED') {
+                                this._notification.error('Time Ended!', 'Anonder Jhor offer has ended');
+                            }
+                            this.getAllAnonderJhorOffersData();
+                        });
                 }
-                this.getAllAnonderJhorOffersData();
-            });
+            })
     }
 
     /** Event method called for editing anonder jhor */
@@ -221,9 +230,18 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     }
 
     editJhorOffer(index, id) {
-        this.isEdit = !this.isEdit;
-        this.isEditVisible = true;
-        this.jhorOfferId = id;
+        this.offerService.getAnonderJhorOfferById(id)
+            .subscribe(result => {
+                let presentTime = moment();
+                if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
+                    this._notification.error('Time Ended', 'You can not edit this offer for the history purpose. If you dnt want to keep this, then delete it(products purchased history from this offer will also be deleted)');
+                    return;
+                } else {
+                    this.isEdit = !this.isEdit;
+                    this.isEditVisible = true;
+                    this.jhorOfferId = id;
+                }
+            })
     }
 
     ngOnDestroy(): void {
