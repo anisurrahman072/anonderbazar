@@ -5,6 +5,7 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+const he = require('he');
 
 module.exports = {
 
@@ -35,7 +36,9 @@ module.exports = {
   },
 
   beforeUpdate: function (valuesToSet, proceed) {
-    valuesToSet.review = he.encode(valuesToSet.review);
+    if (valuesToSet && valuesToSet.review) {
+      valuesToSet.review = he.encode(valuesToSet.review);
+    }
     return proceed();
   }
 };

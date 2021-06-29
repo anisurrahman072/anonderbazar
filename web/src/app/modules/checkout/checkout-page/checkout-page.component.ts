@@ -18,6 +18,7 @@ import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import * as he from 'he';
 
 @Component({
     selector: 'app-checkout-page',
@@ -219,8 +220,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
             .subscribe((previousAddresses: any) => {
-                console.log('previous addresses', previousAddresses);
-                this.prevoius_address = previousAddresses;
+                // console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses.map((decode) => {
+                    let address = {...decode};
+                    address.first_name = he.first_name
+                    address.last_name = he.decode(address.last_name)
+                    address.address = he.decode(address.address)
+                    return address;
+                })
                 this.loaderService.hideLoader();
 
             }, (err) => {

@@ -72,9 +72,13 @@ module.exports = {
   },
 
   beforeUpdate: function (valuesToSet, proceed) {
-    valuesToSet.first_name = he.encode(valuesToSet.first_name);
-    valuesToSet.last_name = he.encode(valuesToSet.last_name);
-    valuesToSet.address = he.encode(valuesToSet.address);
+    // console.log("gggg", valuesToSet);
+    if (valuesToSet && valuesToSet.first_name) {
+      valuesToSet.first_name = he.encode(valuesToSet.first_name);
+      valuesToSet.last_name = he.encode(valuesToSet.last_name);
+      valuesToSet.address = he.encode(valuesToSet.address);
+    }
+    // console.log("zzzz", valuesToSet);
     // console.log('valuesToSet.first_name', valuesToSet.first_name);
     // console.log('update valuesToSet==>', valuesToSet);
     return proceed();
