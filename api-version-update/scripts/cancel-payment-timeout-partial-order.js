@@ -1,4 +1,8 @@
-const {PARTIAL_ORDER_TYPE, PAYMENT_STATUS_PAID, PENDING_SOME_OFFLINE_PAYMENTS_APPROVAL_STATUS} = require('../libs/constants');
+const {
+  PARTIAL_ORDER_TYPE,
+  PAYMENT_STATUS_PAID,
+  PENDING_SOME_OFFLINE_PAYMENTS_APPROVAL_STATUS
+} = require('../libs/constants');
 const {getGlobalConfig} = require('../libs/helper');
 const moment = require('moment');
 const {ORDER_STATUSES} = require('../libs/orders');
@@ -6,12 +10,8 @@ const {SUB_ORDER_STATUSES} = require('../libs/subOrders');
 
 module.exports = {
 
-
   friendlyName: 'Cancel payment timeout partial order',
-
-
   description: 'This script will auto run in linux server & will auto cancel the orders that were timed out for partial pay',
-
 
   fn: async function (inputs, exits) {
 
@@ -28,14 +28,13 @@ module.exports = {
 
       const globalConfigs = await getGlobalConfig();
       const len = partialOrders.length;
-      const presentTime = moment();
 
       for (let i = 0; i < len; i++) {
-        let createdAt = moment(partialOrders[i].createdAt);
-        let duration = moment.duration(presentTime.diff(createdAt));
-        let expendedHour = Math.floor(duration.asHours());
 
-        if (expendedHour > globalConfigs.partial_payment_duration) {
+        let createdAt = moment(partialOrders[i].createdAt, 'YYYY-MM-DD HH:mm:ss');
+        let allowedUpTo = moment(partialOrders[i].createdAt, 'YYYY-MM-DD HH:mm:ss').add(globalConfigs.partial_payment_duration, 'hours');
+
+        if (createdAt.gt(allowedUpTo)) {
 
           let deletedOrder = await Order.updateOne({
             id: partialOrders[i].id
@@ -43,11 +42,31 @@ module.exports = {
             status: ORDER_STATUSES.canceled
           });
 
-          await Suborder.update({
+          await StatusChange.create({
+            order_id: partialOrders[i].id,
+            suborder_id: null,
+            changed_by: null,
+            date: new Date(),
+            status: ORDER_STATUSES.canceled
+          });
+
+          const subOrders = await Suborder.update({
             product_order_id: partialOrders[i].id
           }).set({
             status: SUB_ORDER_STATUSES.canceled
+          }).fetch();
+
+          const statusUpdatesSuborders = subOrders.map((sub) => {
+            return {
+              order_id: null,
+              suborder_id: sub.id,
+              changed_by: null,
+              date: new Date(),
+              status: SUB_ORDER_STATUSES.canceled
+            };
           });
+
+          await StatusChange.createEach(statusUpdatesSuborders);
 
           let user = await User.findOne({
             id: partialOrders[i].user_id,
