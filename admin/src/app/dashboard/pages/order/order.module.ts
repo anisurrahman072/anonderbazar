@@ -8,6 +8,7 @@ import {OrderRoutingModule} from './order-routing.module';
 import {UiModule} from "../../shared/ui.module";
 import {ProductModule} from "../product/product.module";
 import {PaymentApprovalStatusPipe} from "../../../pipes/payment-approval-status";
+import {SuborderModule} from "../suborder/suborder.module";
 
 @NgModule({
     imports: [
@@ -17,7 +18,11 @@ import {PaymentApprovalStatusPipe} from "../../../pipes/payment-approval-status"
         ReactiveFormsModule,
         OrderRoutingModule,
         UiModule,
-        ProductModule
+        ProductModule,
+        SuborderModule
+    ],
+    exports: [
+        PaymentApprovalStatusPipe
     ],
     declarations: [
         OrderComponent,
