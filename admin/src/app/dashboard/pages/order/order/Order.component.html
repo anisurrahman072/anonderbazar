@@ -152,7 +152,7 @@
                     <td style="width: 230px;">{{data.full_name}}</td>
                     <td style="width: 100px;">{{data.total_quantity}}</td>
                     <td style="width: 100px;">{{data.total_price}}</td>
-                    <td style="width: 230px;">
+                    <td style="width: 230px;"  *ngIf="'change-payment-status'|accessControl">
                         <span *ngIf="setStatus(i, data.status)"></span>
                         <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
@@ -165,6 +165,7 @@
                             </nz-option>
                         </nz-select>
                     </td>
+                    <td *ngIf="!('change-order-status'|accessControl)">{{data.status | statustype}}</td>
                     <td *ngIf="data.orderType == 1">Regular order</td>
                     <td *ngIf="data.orderType == 2">Partial order</td>
                     <td>{{data.payment_type}}</td>

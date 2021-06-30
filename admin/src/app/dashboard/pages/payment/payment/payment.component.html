@@ -154,7 +154,7 @@
                         <td *ngIf="datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
                             N/A
                         </td>
-                        <td style="width: 200px;" *ngIf="datum.order_type == ORDER_TYPE.PARTIAL_ORDER_TYPE && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                        <td style="width: 200px;" *ngIf="('change-payment-status' | accessControl) && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
                             <nz-select style="width: 170px;" [(ngModel)]="datum.approval_status"
                                        nzAllowClear (ngModelChange)="changeApprovalStatus($event, datum.id, datum.order_id, datum.approval_status);"
                                        [nzPlaceHolder]="'Select Approval Status'"
@@ -164,11 +164,12 @@
                                 </nz-option>
                             </nz-select>
                         </td>
-                        <td *ngIf="datum.order_type !== ORDER_TYPE.PARTIAL_ORDER_TYPE || datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                        <td *ngIf="('change-payment-status' | accessControl) && datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
                             <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.APPROVED">APPROVED</p>
                             <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.PENDING">PENDING</p>
                             <p *ngIf="datum.approval_status === PAYMENT_APPROVAL_STATUS_TYPES.REJECTED">REJECTED</p>
                         </td>
+                        <td *ngIf="!('change-payment-status' | accessControl)"><p>{{datum.approval_status | paymentApprovalStatus}}</p></td>
 
                         <td>{{datum.transection_key}}</td>
                         <td>{{datum.payment_type}}</td>
