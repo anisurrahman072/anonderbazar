@@ -1,13 +1,13 @@
-<home-banner *ngIf="cmsDataForPageSection && cmsDataForPageSectionSubsection"
+<home-banner *ngIf="cmsDataForPageSection && regularOfferData"
              [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"
-             [carouselOffers]="cmsDataForPageSectionSubsection['POST_HOME_PARENTOFFER']"
+             [carouselOffers]="regularOfferData"
 ></home-banner>
-<app-flash-deals *ngIf="featureProducts" [dataProductList]="featureProducts"></app-flash-deals>
-<app-section-offers *ngIf="cmsDataForPageSectionSubsection" [homeOfferData]="cmsDataForPageSectionSubsection"></app-section-offers>
+<app-section-offers *ngIf="regularOfferData" [homeOfferData]="regularOfferData"></app-section-offers>
+<app-flash-deals *ngIf="featureProducts && offerData" [dataProductList]="featureProducts" [offerData]="offerData"></app-flash-deals>
 <home-product-special *ngIf="cmsDataForPageSectionSubsection" [promoCategories]="cmsDataForPageSectionSubsection['POST_HOME_CATEGORY']"></home-product-special>
-<app-section-feedback></app-section-feedback>
+<app-section-feedback [offerData]="offerData"></app-section-feedback>
 <app-section-brand></app-section-brand>
-<app-section-recommend></app-section-recommend>
+<app-section-recommend [offerData]="offerData"></app-section-recommend>
 <app-special-look *ngIf="cmsDataForPageSectionSubsection" [middleblogList]="cmsDataForPageSectionSubsection['POST_HOME_MIDDLE']"></app-special-look>
 <app-business-oportunities *ngIf="cmsDataForPageSection" [serviceFooterData]="cmsDataForPageSection['LAYOUT_HEADER']"></app-business-oportunities>
 <app-section-service *ngIf="cmsDataForPageSectionSubsection"  [serviceFooterList]="cmsDataForPageSectionSubsection['LAYOUT_FOOTER_FEATURE']"></app-section-service>

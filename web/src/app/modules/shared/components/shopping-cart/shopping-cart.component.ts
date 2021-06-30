@@ -89,13 +89,18 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
     //Method for remove from cart item
     removeCartItem(id) {
-        this.progress.start('mainLoader');
-        this.cartItemService.delete(id).subscribe(result => {
-            this.store.dispatch(new fromStore.LoadCart());
-            this._notify.error('remove from cart succeeded');
-            this.progress.complete('mainLoader');
-
-        });
+        let isConfirmed = window.confirm("Are you sure want to delete the product?");
+        if(isConfirmed){
+            this.progress.start('mainLoader');
+            this.cartItemService.delete(id).subscribe(result => {
+                this.store.dispatch(new fromStore.LoadCart());
+                this._notify.success('remove from cart succeeded');
+                this.progress.complete('mainLoader');
+            });
+        }
+        else {
+            return false;
+        }
     }
 
 

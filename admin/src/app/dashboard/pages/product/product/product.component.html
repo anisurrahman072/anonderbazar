@@ -2,11 +2,13 @@
     <nz-card [hidden]="!showList" class="card-height"
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
-        <ng-template #extraTemplate>
-            <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button (click)='showPartialPaymentDurationModal()'>
+        <ng-template #extraTemplate style="width: 85%;">
+            <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button
+                    (click)='showPartialPaymentDurationModal()'>
                 <span> Set Partial Payment duration </span>
             </button>&nbsp;
-            <button *ngIf="'update-global-shipping-charge' | accessControl" nz-button (click)='showShippingChargeModal()'>
+            <button *ngIf="'update-global-shipping-charge' | accessControl" nz-button
+                    (click)='showShippingChargeModal()'>
                 <span> Set Shipping Charge </span>
             </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
@@ -18,6 +20,7 @@
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
+            <br>
             <button routerLink="/dashboard/product/bulk-upload"
                     [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
             >
@@ -35,6 +38,7 @@
 
         <nz-table #nzTable
                   nzShowSizeChanger
+                  nzShowQuickJumper
                   [nzShowPagination]="true"
                   [nzFrontPagination]="false"
                   [nzData]="data"
@@ -174,7 +178,7 @@
                     <ng-container *ngIf="data.image; else noImage">
                         <nz-avatar [routerLink]="['/dashboard/product/details/', data.id]" [nzShape]="'square'"
                                    [nzSrc]="IMAGE_ENDPOINT + data.image + IMG_EXT" [nzSize]="'large'"
-                                   [nzIcon]="'question-circle'"  style="background-color:#1e241c;"></nz-avatar>
+                                   [nzIcon]="'question-circle'" style="background-color:#1e241c;"></nz-avatar>
                     </ng-container>
                     <ng-template #noImage>
                         <nz-tag>No Image</nz-tag>
@@ -190,15 +194,22 @@
                     <a [routerLink]="['/dashboard/product/details/', data.id]">{{data.name}}</a>
                 </td>
                 <td style="text-align: center; width: 137px">
-                    <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
-                    <nz-tag *ngIf="data.promotion == 1">
-                        <del style="color: red">{{data.price}}</del>
-                        {{data.promo_price}}</nz-tag>
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">
+                        <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
+                    </a>
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">
+                        <nz-tag *ngIf="data.promotion == 1">
+                            <del style="color: red">{{data.price}}</del>
+                            {{data.promo_price}}
+                        </nz-tag>
+                    </a>
                 </td>
                 <td style="text-align: center; width: 137.5px">
-                    <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
-                        {{data.quantity}}
-                    </nz-tag>
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">
+                        <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
+                            {{data.quantity}}
+                        </nz-tag>
+                    </a>
                 </td>
                 <td style="text-align: center; width: 139px">
                     <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
@@ -284,12 +295,12 @@
                                         <span> Add Attribute </span>
                                     </button>
                                 </li>
-                                <li nz-menu-item>
+                                <!--<li nz-menu-item>
                                     <button nz-button style="width: 100%"
                                             (click)="showPromotionModal(data)">
                                         <span> Add Discount </span>
                                     </button>
-                                </li>
+                                </li>-->
                             </ul>
                         </nz-dropdown>
                     </nz-button-group>
@@ -320,20 +331,21 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateShippingForm"
               (ngSubmit)="submitFormUpdateGlobalConfig($event, validateShippingForm.value)">
             <div>
-                <div nz-col [nzSpan]="6" >
-                    <label >Charge inside dhaka</label>
+                <div nz-col [nzSpan]="6">
+                    <label>Charge inside dhaka</label>
                 </div>
                 <div nz-col [nzSpan]="18">
-                    <input  nz-input type="number" formControlName="dhaka_charge" placeholder="Enter charge inside Dhaka"
-                            [nzSize]="'large'">
+                    <input nz-input type="number" formControlName="dhaka_charge" placeholder="Enter charge inside Dhaka"
+                           [nzSize]="'large'">
                 </div>
             </div>&nbsp;
             <div nz-row>
-                <div nz-col [nzSpan]="6" >
+                <div nz-col [nzSpan]="6">
                     <label>Charge outside dhaka</label>
                 </div>
                 <div nz-col [nzSpan]="18">
-                    <input nz-input type="number" formControlName="outside_dhaka_charge" placeholder="Enter charge outside Dhaka"
+                    <input nz-input type="number" formControlName="outside_dhaka_charge"
+                           placeholder="Enter charge outside Dhaka"
                            [nzSize]="'large'">
                 </div>
             </div>&nbsp;
@@ -360,12 +372,13 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validatePartialPaymentForm"
               (ngSubmit)="submitFormUpdateGlobalConfig($event, validatePartialPaymentForm.value)">
             <div>
-                <div nz-col [nzSpan]="6" >
-                    <label >Duration in hour</label>
+                <div nz-col [nzSpan]="6">
+                    <label>Duration in hour</label>
                 </div>
                 <div nz-col [nzSpan]="18">
-                    <input  nz-input type="number" formControlName="partial_payment_duration" placeholder="Enter hour for partial payment duration"
-                            [nzSize]="'large'">
+                    <input nz-input type="number" formControlName="partial_payment_duration"
+                           placeholder="Enter hour for partial payment duration"
+                           [nzSize]="'large'">
                 </div>
             </div>&nbsp;
             <div>
@@ -384,7 +397,8 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalVariantContent>
 
-        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false">
+        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false"
+                  nzShowQuickJumper>
             <thead>
             <tr>
                 <th>
@@ -517,7 +531,8 @@
           [nzContent]="modalPromotionContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalPromotionContent>
 
-        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false">
+        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false"
+                  nzShowQuickJumper>
             <thead>
             <tr>
                 <th>
@@ -658,6 +673,7 @@
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allProduct" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
+                      nzShowQuickJumper
                       [(nzPageIndex)]="productPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="total"
                       (nzPageIndexChange)="getProductData($event, 'page', true)"
@@ -666,8 +682,8 @@
                 <thead>
                 <tr>
                     <th>
-                        <input  type="checkbox" id="order_check_all_pr" #excelSelectAll
-                                (change)="selectAllExcel($event)">
+                        <input type="checkbox" id="order_check_all_pr" #excelSelectAll
+                               (change)="selectAllExcel($event)">
                     </th>
                     <th>
                         Code

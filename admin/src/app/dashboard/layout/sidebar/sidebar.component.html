@@ -169,6 +169,17 @@
             </li>
         </ul>
     </li>
+
+    <li nz-menu-item *ngIf="'questions'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/questions">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Questions</span>
+        </span>
+        </a>
+    </li>
+
     <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>
@@ -214,7 +225,7 @@
         </span>
         </a>
     </li>
-    <li nz-menu-item *ngIf="'offer'|accessControl">
+<!--    <li nz-menu-item *ngIf="'offer'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/offer">
         <span>
@@ -222,7 +233,31 @@
             <span class="nav-text">Offer</span>
         </span>
         </a>
+    </li>-->
+
+    <li nz-submenu *ngIf=" 'offer' | accessControl">
+        <span title>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Offer</span>
+        </span>
+        <ul>
+            <li nz-menu-item *ngIf=" 'offer-list' | accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                   routerLink="/dashboard/offer">
+                    <i class="anticon anticon-file"></i>
+                    Regular Offers
+                </a>
+            </li>
+            <li nz-menu-item *ngIf=" 'anonder-jhor' | accessControl">
+                <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+                   routerLink="/dashboard/offer/anonder-jhor">
+                    <i class="anticon anticon-file"></i>
+                    Anonder Jhor
+                </a>
+            </li>
+        </ul>
     </li>
+
     <li nz-menu-item>
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/usercms/post">

@@ -29,6 +29,7 @@ module.exports.policies = {
     '*': false,
     'find': true,
     'findOne': true,
+    'getAll': true,
     'uniqueCheckName': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
@@ -211,6 +212,9 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
   },
+  QuestionsController: {
+    '*': true
+  },
   ProductsController: {
     'index': true,
     'findOne': true,
@@ -246,7 +250,8 @@ module.exports.policies = {
   },
   PaymentsController: {
     '*': false,
-    'getAll': ['isAuthorized']
+    'getAll': ['isAuthorized'],
+    'changeApprovalStatus': ['isAuthorized', 'isAdmin']
   },
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],
@@ -293,6 +298,7 @@ module.exports.policies = {
   },
   OrderController: {
     '*': ['isAuthorized'],
+    'deleteOrder': true,
     'sslcommerzsuccess': true,
     'sslcommerzfail': true,
     'sslcommerzerror': true,
@@ -302,10 +308,13 @@ module.exports.policies = {
     'replace': false,
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
+    'updatePaymentStatus': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
     'allOrders': ['isAuthorized', 'isAdmin'],
+    'getCancelledOrder': ['isAuthorized', 'isAdmin'],
+    'refundCancelOrder': ['isAuthorized', 'isAdmin']
   },
   MissingOrderController: {
     '*': ['isAuthorized', 'isOwnerOrAdmin']
@@ -321,6 +330,7 @@ module.exports.policies = {
   StatusChangeController: {
     'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
     'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
+    'currentTime' : true
   },
   SuborderController: {
     '*': false,
@@ -344,6 +354,7 @@ module.exports.policies = {
     'findOne': true,
     'getSuborderItems': true,
     'getByOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
+    'getOrdersByDate': ['isAuthorized', 'isOwnerOrAdmin'],
     'getBySubOrderIds': ['isAuthorized', 'isOwnerOrAdmin'],
     'destroy': ['isAuthorized', 'isOwnerOrAdmin'],
     'create': ['isAuthorized', 'isOwnerOrAdmin'],
@@ -405,6 +416,9 @@ module.exports.policies = {
     'paymentCallback': true,
   },
   SslCommerzController: {
+    '*': true
+  },
+  OfferController: {
     '*': true
   }
 };

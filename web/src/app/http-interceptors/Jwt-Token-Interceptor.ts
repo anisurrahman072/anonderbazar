@@ -5,12 +5,14 @@ import {Store} from "@ngrx/store";
 import * as fromStore from "../state-management";
 import {JwtHelper} from "angular2-jwt";
 import {LoginModalService} from "../services/ui/loginModal.service";
+import {NotificationsService} from "angular2-notifications";
 
 @Injectable()
 export class JwtTokenInterceptor implements HttpInterceptor {
     public token: string;
 
     constructor(
+        private _notify: NotificationsService,
         private store: Store<fromStore.HomeState>,
         private jwtHelper: JwtHelper,
         private loginModalService: LoginModalService) {
@@ -63,6 +65,12 @@ export class JwtTokenInterceptor implements HttpInterceptor {
                     this.logout();
                     this.loginModalService.showLoginModal(true);
                     // this.uiService.showTokenExpiredNotification('Token has been expired. Please login again.');
+                }else if(error.status === 406) {
+                    this._notify.error("Invalid user OTP code");
+                } else if (error.status === 411) {
+                    this._notify.error("Sorry!! OTP code expired, Resend Code??");
+                } else if (error.status === 412) {
+                    this._notify.error("Sorry, you didn't verify your phone number, VERIFY first");
                 }
             }
             //intercept the respons error and displace it to the console

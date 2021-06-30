@@ -4,21 +4,24 @@ export class GLOBAL_CONFIGS {
     public static bannerImageExtension = '.webp';
     public static otherImageExtension = '.webp';
     public static activePaymentMethods = {
-        cashBack: true,
+        CashBack: true,
         Cash: true,
         SSLCommerce: true,
         bKash: true,
-        Nagad: false
+        Nagad: false,
+        OfflinePay: true
     };
     public static lotteryAdminId = 130;
+    public static bkashTestUsers = [130, 2814];
 }
 
 export const PAYMENT_METHODS = {
     CASH_PAYMENT_TYPE: 'Cash',
-    CASHBACK_PAYMENT_TYPE: 'cashBack',
+    CASHBACK_PAYMENT_TYPE: 'CashBack',
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
-    NAGAD_PAYMENT_TYPE: 'Nagad'
+    NAGAD_PAYMENT_TYPE: 'Nagad',
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
 }
 export const PAYMENT_METHODS_LABELS = {
     'Cash': 'Cash On Delivery',
@@ -53,4 +56,24 @@ export const PAYMENT_STATUS = {
 export const ORDER_TYPE = {
     REGULAR_ORDER: 1,
     PARTIAL_PAYMENT_ORDER: 2
+}
+
+export const WAREHOUSE_STATUS = {
+    PENDING: 0,
+    PROCESSING: 1,
+    ACTIVE: 2,
+    INACTIVE: 3
+}
+
+export const PAYMENT_APPROVAL_STATUS = {
+    PENDING: 1,
+    APPROVED: 2,
+    REJECTED: 3
+}
+
+export const OFFLINE_PAYMENT_METHODS = {
+    CASH_IN_ADVANCE: 'cashInAdvance',
+    BANK_TRANSFER: 'bankTransfer',
+    BANK_DEPOSIT: 'bankDeposit',
+    MOBILE_TRANSFER: 'mobileTransfer'
 }

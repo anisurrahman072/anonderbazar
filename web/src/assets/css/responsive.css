@@ -469,6 +469,8 @@
 
     .cate-img {
         text-align: center;
+        padding-left: 10px;
+        padding-right: 25px
     }
 
     .emi-details .emi-list1 {
@@ -773,7 +775,7 @@
         margin-top: 50px !important;
     }
     .modal-content {
-        margin-top: 265px !important;
+        margin-top: 188px !important;
     }
 
     .col-cart {

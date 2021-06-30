@@ -13,6 +13,7 @@
         </ng-template>
 
         <nz-table #nzTable
+                  nzShowQuickJumper
                   (nzPageIndexChange)="getPageData($event, false)"
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
@@ -139,8 +140,9 @@
         <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
               (ngSubmit)="generateExcel($event, validateProductForm.value)">
 
-            <nz-table #nzTableDownload [nzBordered]="true" [nzData]="allUser" [nzFrontPagination]="false"
+            <nz-table #nzTableDownload nzShowQuickJumper [nzBordered]="true" [nzData]="allUser" [nzFrontPagination]="false"
                       [nzLoading]="_isSpinning"
+                      nzShowQuickJumper
                       [(nzPageIndex)]="userPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="total"
                       (nzPageIndexChange)="getPageData($event, true)"

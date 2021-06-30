@@ -29,7 +29,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
@@ -59,6 +59,7 @@ module.exports = {
           user_id: authUser.id,
           cart_id: cart.id,
           total_price: grandOrderTotal,
+          paid_amount: grandOrderTotal,
           total_quantity: totalQty,
           billing_address: billingAddress.id,
           shipping_address: shippingAddress.id,
@@ -124,6 +125,7 @@ module.exports = {
   },
 
   makePartialPayment: async function (customer, order, request) {
+
     const shippingAddress = order.shipping_address;
     const amountToPay = parseFloat(request.body.amount_to_pay);
     const totalPrice = parseFloat(order.total_price);
@@ -157,6 +159,8 @@ module.exports = {
           status: 1
         }).usingConnection(db);
 
+        console.log('payment created for cashBack', payment);
+
         const totalPaidAmount = paidAmount + amountToPay;
 
         let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
@@ -182,7 +186,10 @@ module.exports = {
       });
 
     if (customer.phone || (shippingAddress && shippingAddress.phone)) {
-      await PaymentService.sendSms(customer, order, [], shippingAddress);
+      await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
+        paidAmount: amountToPay,
+        transaction_id: 'CashBack'
+      });
     }
 
     return payment;

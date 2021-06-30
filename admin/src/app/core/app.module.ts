@@ -61,6 +61,7 @@ import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import {CouponLotteryService} from "../services/coupon-lottery.service";
+import {QuestionsService} from "../services/questions.service";
 registerLocaleData(en);
 
 @NgModule({
@@ -125,6 +126,7 @@ registerLocaleData(en);
         ExcelService,
         CouponLotteryService,
         ChatService,
+        QuestionsService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,

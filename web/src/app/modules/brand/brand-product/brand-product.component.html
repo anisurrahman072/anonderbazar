@@ -13,7 +13,7 @@
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>
-        <div class="row text-center">
+        <div class="row text-center" *ngIf="allProducts && allProducts.length > 12">
             <pagination-controls (pageChange)="p = $event" previousLabel="Previous" nextLabel="Next">
             </pagination-controls>
         </div>

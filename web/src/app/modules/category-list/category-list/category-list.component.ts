@@ -22,6 +22,7 @@ export class CategoryListComponent implements OnInit {
     ngOnInit() {
         this.categoryProductService.getAllCategory().subscribe(result => {
             this.dataCategoryList = result;
+            // console.log('this.dataCategoryList==>', this.dataCategoryList);
         });
 
         this.addPageTitle();

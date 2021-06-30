@@ -7,8 +7,10 @@ import {FileUploadModule} from 'ng2-file-upload';
 import {UiModule} from "../../shared/ui.module";
 import { OfferCreateComponent } from './offer-create/offer-create.component';
 import { OfferEditComponent } from './offer-edit/offer-edit.component';
-import { OfferReadComponent } from './offer-read/offer-read.component';
 import {AllProductModalComponent} from "./offer-list/components/all-product-modal.component";
+import { AnonderJhorComponent } from './anonder-jhor/anonder-jhor.component';
+import { AnonderJhorOfferCreateComponent } from './anonder-jhor-offer-create/anonder-jhor-offer-create.component';
+import { AnonderJhorOfferEditComponent } from './anonder-jhor-offer-edit/anonder-jhor-offer-edit.component';
 
 @NgModule({
   imports: [
@@ -24,8 +26,10 @@ import {AllProductModalComponent} from "./offer-list/components/all-product-moda
     OfferListComponent,
     OfferEditComponent,
     OfferCreateComponent,
-    OfferReadComponent,
-    AllProductModalComponent
+    AllProductModalComponent,
+    AnonderJhorComponent,
+    AnonderJhorOfferCreateComponent,
+    AnonderJhorOfferEditComponent
   ]
 })
 export class OfferModule { }

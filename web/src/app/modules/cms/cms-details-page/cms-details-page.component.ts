@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CmsService, ProductService} from '../../../services';
+import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
 
@@ -12,27 +12,33 @@ import {Title} from "@angular/platform-browser";
 export class CmsDetailsPageComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     id: any;
-    cms_post_by_id: any;
-    cms_detail: any;
+    regularOffer;
+    regularOfferedProducts;
     products: any = [];
     offers: any = [];
-    p: any;
+    page: any;
     private queryParams: any;
+
+    /**offer related variables*/
+    calculationType;
+    discountAmount;
+    originalPrice;
 
     constructor(
         private route: ActivatedRoute,
         private cmsService: CmsService,
         private productservice: ProductService,
         private title: Title,
-        private router: Router
+        private router: Router,
+        private offerService: OfferService,
     ) {
     }
 
     // init the component
     ngOnInit() {
         this.route.queryParams.subscribe(queryparams => {
-            if(queryparams['page']){
-                this.p = +queryparams['page'];
+            if (queryparams['page']) {
+                this.page = +queryparams['page'];
             }
         });
 
@@ -46,49 +52,40 @@ export class CmsDetailsPageComponent implements OnInit {
     private get_cms_by_id() {
 
         if (this.id) {
-            this.cmsService.getById(this.id).subscribe(result => {
-                this.cms_post_by_id = result;
-                console.log('this.cms_post_by_id', this.cms_post_by_id);
+            this.offerService.getWebRegularOfferById(this.id)
+                .subscribe(result => {
+                /**info related to this offer*/
+                this.regularOffer = result.data[0];
 
-                if (!(this.cms_post_by_id && this.cms_post_by_id.data_value && Array.isArray(this.cms_post_by_id.data_value) && this.cms_post_by_id.data_value.length > 0)) {
+                /**stored products in this offer*/
+                this.regularOfferedProducts = result.data[1];
+
+                /** setting discount to every products exists in this offer*/
+                this.regularOfferedProducts.forEach(product => {
+                    this.calculationType = this.regularOffer.calculation_type;
+                    this.discountAmount = this.regularOffer.discount_amount;
+                    this.originalPrice = product.price;
+
+                    product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+
+                    product.calculationType = this.calculationType;
+                    product.discountAmount = this.discountAmount;
+                })
+
+                if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
                     return false;
                 }
 
-                this.cms_detail = this.cms_post_by_id.data_value[0];
-                console.log('this.cms_detail', this.cms_detail);
-                console.log('title', this.cms_detail.title);
                 this.addPageTitle();
-
-                if (this.cms_detail.offers.length > 0) {
-                    this.cms_detail.alloffers = [];
-
-                    this.cmsService.getByIds(this.cms_detail.offers)
-                        .subscribe(result => {
-                            this.cms_detail.alloffers = result;
-                        }, (err) => {
-                            console.log(err);
-                        });
-
-                }
-                if (this.cms_detail.products.length > 0) {
-                    this.cms_detail.allproducts = [];
-
-                    this.productservice.getByIds(this.cms_detail.products)
-                        .subscribe(result => {
-                            this.cms_detail.allproducts = result;
-                        }, (err) => {
-                            console.log(err);
-                        });
-                }
             });
         }
 
     }
 
     private addPageTitle() {
-        if (this.cms_detail) {
-            this.title.setTitle(this.cms_detail.title + ' - Anonderbazar');
-        }else {
+        if (this.regularOffer) {
+            this.title.setTitle(this.regularOffer.title + ' - Anonderbazar');
+        } else {
             this.title.setTitle('Offer Detail - Anonderbazar');
         }
     }
@@ -99,6 +96,6 @@ export class CmsDetailsPageComponent implements OnInit {
         query.page = event;
 
         this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
-        this.p = event;
+        this.page = event;
     }
 }

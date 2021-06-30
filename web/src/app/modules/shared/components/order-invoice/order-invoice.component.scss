@@ -1,16 +1,17 @@
-.circle{
+.circle {
   width: 80px;
-  line-height: 90px;
+  line-height: 77px;
   border-radius: 50%;
   text-align: center;
   font-size: 32px;
   border: 3px solid #000;
 }
 
-.example-card{
+.example-card {
   margin-top: 35px;
   margin-bottom: 25px;
 }
+
 .header-logo img {
   height: 40px;
   width: 100px;
@@ -22,7 +23,7 @@
   text-transform: capitalize;
   font-weight: 500;
   font-size: 25px;
-  margin-top: 20px;
+  //margin-top: 20px;
   margin-bottom: 50px;
 }
 
@@ -43,9 +44,10 @@
 }
 
 .amount-text h5 {
-  font-size: 20px;
+  font-size: 14px;
   text-transform: capitalize;
   line-height: 24px;
+  float: left;
 
 }
 
@@ -72,37 +74,84 @@
   text-transform: capitalize;
   line-height: 24px;
 }
+
 .bill-info-right p {
   font-size: 14px;
   text-transform: capitalize;
   line-height: 24px;
 }
 
-.shopping-info-left h5{
+.shopping-info-left h5 {
   font-size: 18px;
   text-transform: capitalize;
   line-height: 24px;
 }
+
 .shopping-info-left p {
   font-size: 14px;
   text-transform: capitalize;
   line-height: 24px;
 }
-.shopping-info-right h5{
+
+.shopping-info-right h5 {
   font-size: 18px;
   text-transform: capitalize;
   line-height: 24px;
 }
+
 .shopping-info-right p {
   font-size: 14px;
   text-transform: capitalize;
   line-height: 24px;
 }
-.footer{
+
+.footer {
   font-size: 14px;
   text-transform: capitalize;
   margin-left: 35px;
 }
-.btn-profile{
+
+.btn-profile {
   background: #f6f6f6;
 }
+
+.billing-info {
+  margin-bottom: 100px;
+  //margin-left: 30px
+}
+
+@media screen and (max-width: 365.98px) {
+  .table thead th {
+    padding: 1px;
+    font-size: 12px;
+  }
+  .table td, .table th {
+    padding: 1px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 375.98px) {
+  .table td, .table th {
+    padding: 1px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .invoice-head {
+    position: relative;
+    top: -174%;
+  }
+
+  .header-text h4{
+    margin-bottom: 5px
+  }
+
+  .circle {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+  }
+}
+
+

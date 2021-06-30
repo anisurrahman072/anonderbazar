@@ -16,6 +16,7 @@ import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {BrandService} from '../../../../../services/brand.service';
 import {UniqueProductCodeValidator} from "../../../../../services/validator/UniqueProductCodeValidator";
+import {WarehouseService} from "../../../../../services/warehouse.service";
 
 @Component({
     selector: 'app-custom-product-create',
@@ -36,6 +37,7 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];
     typeSearchOptions: any;
+    warehouseId: any = null;
 
     ckConfig = {
         uiColor: '#662d91',
@@ -70,6 +72,7 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
     };
 
     brandSearchOptions: any;
+    warehouseSearchOptions: any;
     inputVisible = false;
     statusOptions = [
         {label: 'Inactive Product', value: 0},
@@ -90,8 +93,8 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
                 private categoryTypeService: CategoryTypeService,
                 private categoryProductService: CategoryProductService,
                 private productService: ProductService,
-                private uniquProductCodeValidator: UniqueProductCodeValidator) {
-
+                private uniquProductCodeValidator: UniqueProductCodeValidator,
+                private warehouseService: WarehouseService) {
     }
 
     // For initiating the section element with data
@@ -105,6 +108,7 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
             min_unit: [1, [Validators.required]],
             alert_quantity: [1, []],
             brand_id: ['', []],
+            warehouse_id: ['', []],
             category_id: ['', [Validators.required]],
             subcategory_id: ['', []],
             quantity: ['', [Validators.required]],
@@ -124,8 +128,11 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
         });
         this.brandService.getAll().subscribe((result: any) => {
             this.brandSearchOptions = result;
-
         });
+        this.warehouseService.getAll(1,20)
+            .subscribe(result => {
+                this.warehouseSearchOptions = result;
+            })
     }
 
     ngOnDestroy() {
@@ -159,7 +166,12 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
             formData.append('subcategory_id', value.subcategory_id);
         }
 
-        formData.append('warehouse_id', this.currentUser.warehouse.id);
+        if(this.currentUser.group_id === 'admin'){
+            formData.append('warehouse_id', value.warehouse_id);
+        }
+        else{
+            formData.append('warehouse_id', this.currentUser.warehouse.id);
+        }
 
         if (this.ImageBlukArray.length > 0) {
             let ImageBluk = [];

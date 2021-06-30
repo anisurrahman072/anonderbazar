@@ -3,6 +3,7 @@ const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
+const OfferService = require('../services/OfferService');
 
 module.exports = {
   generateRandomString: function () {
@@ -19,24 +20,40 @@ module.exports = {
   getTheCustomer: async function (userId) {
     return await User.findOne({id: userId, deletedAt: null});
   },
-  getBillingAddress: async function (req, shippingAddress) {
+  getBillingAddress: async function (authUser, req, shippingAddress) {
     let billingAddress = null;
-    if (req.param('billing_address') && _.isObject(req.param('billing_address'))) {
-      billingAddress = {...req.param('billing_address'), postal_code: req.param('billing_address').postCode};
-      if ((!billingAddress.id || billingAddress.id === '') && req.param('is_copy') === false) {
-        billingAddress = await this.createAddress(billingAddress);
-      } else if (req.param('is_copy') === true && _.isObject(shippingAddress)) {
-        billingAddress = {...shippingAddress};
+    let billing_address = req.param('billing_address');
+    let isCopy = req.param('is_copy');
+    if (billing_address) {
+      if (!_.isObject(billing_address)) {
+        billing_address = JSON.parse(billing_address);
+      }
+      if (_.isString(isCopy)) {
+        isCopy = isCopy === 'true';
+      }
+      if (_.isObject(billing_address)) {
+        billingAddress = {...billing_address, postal_code: billing_address.postCode};
+        if ((!billingAddress.id || billingAddress.id === '') && isCopy === false) {
+          billingAddress = await this.createAddress(authUser, billingAddress);
+        } else if (isCopy === true && _.isObject(shippingAddress)) {
+          billingAddress = {...shippingAddress};
+        }
       }
     }
     return billingAddress;
   },
-  getShippingAddress: async function (req, cartItems = []) {
+  getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
-    if (req.param('shipping_address')) {
-      shippingAddress = {...req.param('shipping_address'), postal_code: req.param('shipping_address').postCode};
+    let shipping_address = req.param('shipping_address');
+
+    if (shipping_address) {
+      if (!_.isObject(shipping_address)) {
+        shipping_address = JSON.parse(shipping_address);
+      }
+
+      shippingAddress = {...shipping_address, postal_code: shipping_address.postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
-        shippingAddress = await this.createAddress(shippingAddress);
+        shippingAddress = await this.createAddress(authUser, shippingAddress);
       }
     }
     /** check whether shipping address is required or not and based on it we're using admin address in case shipping address is not provided */
@@ -45,10 +62,11 @@ module.exports = {
         return await this.getAdminPaymentAddress();
       }
     }
+    console.log('4444', shippingAddress);
     return shippingAddress;
   },
 
-  getAddress: async function(addressId) {
+  getAddress: async function (addressId) {
     return await PaymentAddress.findOne({
       id: addressId
     });
@@ -76,11 +94,11 @@ module.exports = {
     });
   },
 
-  isAllowedForPartialPay: function (order, globalConfigs){
+  isAllowedForPartialPay: function (order, globalConfigs) {
     const currentDate = moment(new Date());
     const orderedDate = moment(order.createdAt);
     const duration = moment.duration(currentDate.diff(orderedDate));
-    const expendedHour =  Math.floor(duration.asHours());
+    const expendedHour = Math.floor(duration.asHours());
     // eslint-disable-next-line eqeqeq
     return !(globalConfigs.partial_payment_duration < expendedHour || order.status == CANCELED_ORDER);
   },
@@ -154,15 +172,170 @@ module.exports = {
     return paymentTemp;
   },
 
-  calcCartTotal: function (cart, cartItems) {
+  getRegularOfferStore: async function () {
+    let finalCollectionOfProducts = {};
+    await OfferService.offerDurationCheck();
+    await OfferService.anonderJhorOfferDurationCheck();
+
+    let _where = {};
+    _where.deletedAt = null;
+    _where.offer_deactivation_time = null;
+
+    const requestedOffer = await Offer.find({where: _where});
+
+    let _where1 = {};
+    _where1.deletedAt = null;
+    _where1.status = 1;
+
+    const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
+
+    if (requestedOffer.length === 0  && requetedJhorOffer.length === 0) {
+      finalCollectionOfProducts = {};
+      return finalCollectionOfProducts;
+    }
+
+    for (let offer = 0; offer < requestedOffer.length; offer++) {
+      const thisOffer = requestedOffer[offer];
+      let offerObj = {
+        calculation_type: thisOffer.calculation_type,
+        discount_amount: thisOffer.discount_amount,
+      };
+
+      /**if selection_type === 'Vendor wise'*/
+      if (thisOffer.selection_type === 'Vendor wise') {
+
+        let products = await Product.find({
+          status: 2,
+          approval_status: 2,
+          deletedAt: null,
+          warehouse_id: thisOffer.vendor_id
+        });
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+      /**if selection_type === 'Brand wise'*/
+      if (thisOffer.selection_type === 'Brand wise') {
+        let _where = {};
+        _where.brand_id = thisOffer.brand_id;
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+        let products = await Product.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+
+      /**if selection_type === 'Category wise'*/
+      if (thisOffer.selection_type === 'Category wise') {
+        let _where = {};
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+
+        if (thisOffer.subSubCategory_Id) {
+          _where.subcategory_id = thisOffer.subSubCategory_Id;
+        } else if (thisOffer.subCategory_Id) {
+          _where.category_id = thisOffer.subCategory_Id;
+        } else if (thisOffer.category_id) {
+          _where.type_id = thisOffer.category_id;
+        }
+
+        let products = await Product.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.id] = offerObj;
+          });
+        }
+      }
+
+      /** if selection_type === 'Product wise' */
+      if (thisOffer.selection_type === 'Product wise') {
+        let _where = {};
+        _where.regular_offer_id = thisOffer.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        let products = await RegularOfferProducts.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.product_id] = offerObj;
+          });
+        }
+      }
+    }
+
+    for (let jhorOffer = 0; jhorOffer < requetedJhorOffer.length; jhorOffer++) {
+      const thisJhorOffer = requetedJhorOffer[jhorOffer];
+
+      let jhorOfferObj = {
+        calculation_type: thisJhorOffer.calculation_type,
+        discount_amount: thisJhorOffer.discount_amount
+      };
+
+      let _where2 = {};
+      _where2.status = 2;
+      _where2.approval_status = 2;
+      _where2.deletedAt = null;
+
+      if (thisJhorOffer.sub_sub_category_id) {
+        _where2.subcategory_id = thisJhorOffer.sub_sub_category_id;
+      } else if (thisJhorOffer.sub_category_id) {
+        _where2.category_id = thisJhorOffer.sub_category_id;
+      } else if (thisJhorOffer.category_id) {
+        _where2.type_id = thisJhorOffer.category_id;
+      }
+
+      let products = await Product.find({where: _where2});
+      if (products.length > 0) {
+        products.forEach(product => {
+          finalCollectionOfProducts[product.id] = jhorOfferObj;
+        });
+      }
+    }
+
+    return finalCollectionOfProducts;
+  },
+
+  calcCartTotal: async function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
-    cartItems.forEach((cartItem) => {
+    for (let cartItem of cartItems) {
       if (cartItem.product_quantity > 0) {
-        grandOrderTotal += cartItem.product_total_price;
+        let productUnitPrice = cartItem.product_id.price;
+        let productFinalPrice = productUnitPrice * cartItem.product_quantity;
+
+        let offerProducts = await this.getRegularOfferStore();
+
+        if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
+          productFinalPrice = productUnitPrice * cartItem.product_quantity;
+        } else {
+          if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute') {
+            let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          } else {
+            let productPrice = productUnitPrice - (productUnitPrice * (offerProducts[cartItem.product_id.id].discount_amount / 100.0));
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          }
+        }
+
+        /*if (!cartItem.product_id.promotion) {
+          let productUnitPrice = cartItem.product_id.price;
+          productPrice = productUnitPrice * cartItem.product_quantity;
+        }*/
+
+        grandOrderTotal += productFinalPrice;
         totalQty += cartItem.product_quantity;
       }
-    });
+    }
     return {
       grandOrderTotal,
       totalQty
@@ -195,7 +368,7 @@ module.exports = {
     return cartItems;
   },
 
-  createAddress: async (address) => {
+  createAddress: async (authUser, address) => {
     return await PaymentAddress.create({
       user_id: authUser.id,
       first_name: address.firstName,
@@ -203,7 +376,7 @@ module.exports = {
       address: address.address,
       country: address.address,
       phone: address.phone,
-      postal_code: address.postCode,
+      postal_code: address.postal_code,
       upazila_id: address.upazila_id,
       zila_id: address.zila_id,
       division_id: address.division_id,
@@ -213,7 +386,11 @@ module.exports = {
 
   createOrder: async (db, orderDatPayload, cartItems) => {
 
+    console.log('ttttttttttttt1');
+    console.log('orderDatPayload rouzex', orderDatPayload);
+
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
+
 
     /** Get unique warehouse Id for suborder................START......................... */
     let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
@@ -228,12 +405,17 @@ module.exports = {
     /** Generate Necessary sub orders according to warehouse Start **/
     let allGeneratedCouponCodes = [];
 
+
     for (let i = 0; i < uniqueWarehouseIds.length; i++) {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
       let cartItemsTemp = cartItems.filter(
-        asset => asset.product_id.warehouse_id === thisWarehouseID
+        asset => {
+          return asset.product_id.warehouse_id === thisWarehouseID;
+        }
       );
+
+      console.log('cartItemsTemp: ', cartItemsTemp);
 
       let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
       let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -399,8 +581,8 @@ module.exports = {
       }
 
       if (smsPhone) {
-        let smsText = `anonderbazar.com এ আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
-        console.log('smsTxt', smsText);
+        let smsText = `আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। অর্ডার নাম্বার: ${order.id}`;
+        console.log('smsTxt', smsText, smsPhone);
         if (allCouponCodes && allCouponCodes.length > 0) {
           if (allCouponCodes.length === 1) {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোড: ' + allCouponCodes.join(',');
@@ -408,6 +590,38 @@ module.exports = {
             smsText += ' আপনার স্বাধীনতার ৫০ এর কুপন কোডগুলি: ' + allCouponCodes.join(',');
           }
         }
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
+  sendSmsForPartialPayment: async (authUser, shippingAddress, orderId, {paidAmount, transaction_id}) => {
+    try {
+      let smsPhone = authUser.phone;
+
+      if (!smsPhone && shippingAddress.phone) {
+        smsPhone = shippingAddress.phone;
+      }
+
+      if (smsPhone) {
+        let smsText = `আপনার পেমেন্টি সফল হয়েছে। ট্রানজেকশন নাম্বার: ${transaction_id}, টাকার পরিমান: ${paidAmount}, অর্ডার নাম্বার: ${orderId}`;
+        console.log('smsTxt', smsText);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
+  sendSmsForRefund: async (orderId, authUser) => {
+    try {
+      let smsPhone = authUser.phone;
+
+      if (smsPhone) {
+        let smsText = `আপনার ট্রানজেকশন টাকা গুলো রিফান্ড করা হয়েছে। অর্ডার নাম্বার: ${orderId}`;
+        console.log('smsTxt', smsText);
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }
     } catch (err) {

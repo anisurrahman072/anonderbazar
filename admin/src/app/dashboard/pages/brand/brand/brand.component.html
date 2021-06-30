@@ -7,6 +7,7 @@
             <button (click)="resetAllFilter()" nz-button>Clear filter</button>
         </ng-template>
         <nz-table #nzTable
+                  nzShowQuickJumper
                   nzShowSizeChanger
                   [nzFrontPagination]="false"
                   [nzShowPagination]="true"
@@ -31,6 +32,9 @@
                 <th nzShowSort nzSortKey="slug">
                     <span>Slug</span>
                 </th>
+                <th nzShowSort nzSortKey="frontend_position">
+                    <span>Frontend Position</span>
+                </th>
                 <th>&nbsp;</th>
             </tr>
             <tr>
@@ -38,6 +42,7 @@
                 <th>
                     <input nz-input placeholder="Name Search" [(ngModel)]="nameSearchValue" (ngModelChange)="page=1; getAllData()">
                 </th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -65,6 +70,9 @@
                 </ng-template>
                 <td>
                     <nz-tag>{{data.slug}}</nz-tag>
+                </td>
+                <td>
+                    <nz-tag>{{data.frontend_position}}</nz-tag>
                 </td>
                 <td>
                     <nz-button-group>

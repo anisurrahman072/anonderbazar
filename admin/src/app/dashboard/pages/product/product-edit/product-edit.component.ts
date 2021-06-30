@@ -153,7 +153,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             category_id: ['', [Validators.required]],
             brand_id: ['', []],
             frontend_position: ['', []],
-            pay_online: ['', []],
+            disable_cash_on_delivery: ['', []],
+            offline_payment: ['', []],
             free_shipping: ['', []],
             partially_payable: ['', []],
             dhaka_charge: ['', []],
@@ -166,6 +167,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
             featured: [false, []],
             is_coupon_product: [false, []],
             weight: ['', []],
+            promo_price: ['', []],
             status: ['', [Validators.required]]
         });
 
@@ -302,9 +304,20 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         formData.append('weight', value.weight);
         formData.append('status', value.status);
         formData.append('frontend_position', value.frontend_position);
-        value.pay_online ? formData.append('pay_online', "1") : formData.append('pay_online', "0");
+        value.disable_cash_on_delivery ? formData.append('disable_cash_on_delivery', "1") : formData.append('disable_cash_on_delivery', "0");
+        value.offline_payment ? formData.append('offline_payment', "1") : formData.append('offline_payment', "0");
         value.free_shipping ? formData.append('free_shipping', "1") : formData.append('free_shipping', "0");
         value.partially_payable ? formData.append('partially_payable', "1") : formData.append('partially_payable', "0");
+
+        if(value.promo_price == 0 || !value.promo_price){
+            formData.append('promotion', "0");
+            formData.append('promo_price', "0");
+        }
+        else if(value.promo_price){
+            formData.append('promotion', "1");
+            formData.append('promo_price', value.promo_price);
+        }
+
         if(!value.free_shipping){
             if (value.dhaka_charge) {
                 formData.append('dhaka_charge', value.dhaka_charge);

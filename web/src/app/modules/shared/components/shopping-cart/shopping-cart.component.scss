@@ -1,18 +1,42 @@
-.quantity{
+.quantity {
   font-size: large;
 }
 
-.variant-key{
+.variant-key {
   color: #979494;
   font-size: 12px;
 }
 
-.variant-value{
+.variant-value {
   font-size: 12px;
   color: #000000;
   font-weight: 500;
   margin-left: 5px;
 }
-.popover-header{
+
+.popover-header {
   color: #000000;
+}
+
+@media (max-width: 367.98px) {
+  .modal-title {
+    margin-left: 21%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .modal-title {
+    margin-left: 27%;
+  }
+}
+
+@media screen and (max-width: 575.98px) {
+ .cart-btn {
+   display: flex;
+ }
+
+.cart-btn .btn2 {
+  margin-bottom: 20px;
+}
+
 }

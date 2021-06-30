@@ -1,0 +1,43 @@
+<nz-card nzTitle="Update Answer" [nzExtra]="extra" *ngIf="data">
+    <ng-template #extra>
+        <button routerLink="/dashboard/questions" nz-button [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> List </span>
+        </button>
+    </ng-template>
+
+    <div nz-row>
+        <div nz-col [nzSpan]="7">
+            <label> Question </label>
+        </div>
+        <div nz-col [nzSpan]="12">
+            <p>{{data.question}}</p>
+        </div>
+    </div>&nbsp;
+
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+
+        <div nz-row>
+            <div nz-col [nzSpan]="7">
+                <label> Answer </label>
+            </div>
+            <div nz-col [nzSpan]="12">
+                <input nz-input formControlName="answer" placeholder="{{data.answer}}" [nzSize]="'large'"
+                       [required]="true">
+
+                <div *ngIf="getFormControl('answer').dirty&&getFormControl('answer').hasError('required')">
+                    Name is required!
+                </div>
+            </div>
+        </div>&nbsp;
+
+        <div nz-row>
+            <div nz-col [nzOffset]="7" [nzSpan]="12">
+                <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid"> Save
+                </button>&nbsp;
+                <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+            </div>
+        </div>
+
+    </form>
+</nz-card>

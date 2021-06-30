@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, TemplateRef} from "@angular/core";
+import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit} from "@angular/core";
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
@@ -6,7 +6,7 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
-import {FavouriteProduct, Product} from "../../../models";
+import {FavouriteProduct, Offer, Product} from "../../../models";
 import {AppSettings} from "../../../config/app.config";
 import {
     AuthService,
@@ -14,10 +14,11 @@ import {
     CartItemVariantService,
     CartService,
     CraftsmanService,
-    FavouriteProductService,
+    FavouriteProductService, OfferService,
     ProductService,
     ProductVariantService
 } from "../../../services";
+import * as _ from "lodash";
 import * as fromStore from "../../../state-management";
 import {LoginModalService} from "../../../services/ui/loginModal.service";
 import {ToastrService} from "ngx-toastr";
@@ -37,23 +38,7 @@ import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
     styleUrls: ["./product-details.component.scss"]
 })
 export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDestroy {
-    productRatingDetail: {
-        totalNumberOfRatings: number;
-        averageRating: number;
-        fiveStar: number;
-        fourStar: number;
-        threeStar: number;
-        twoStar: number;
-        oneStar: number;
-    } = {
-        totalNumberOfRatings: 0,
-        averageRating: 0,
-        fiveStar: 0,
-        fourStar: 0,
-        threeStar: 0,
-        twoStar: 0,
-        oneStar: 0,
-    };
+
     couponProductModalRef: BsModalRef;
     similarProducts: null;
     id: any;
@@ -73,7 +58,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     mainImg: string;
     cartTotalprice: any;
     cartTotalquantity: any;
-    discountPercentage: any;
+    /*discountPercentage: any;*/
     currentUser: Observable<any>;
     product_quantity: any = 1;
     tempRating: any;
@@ -113,6 +98,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     addToWhishlistSuccessProduct: any;
     currentUser$: Observable<any>;
 
+    /**offer related variables*/
+    offer$: Observable<Offer>;
+    offerData: Offer;
+    calculationType;
+    discountAmount;
+    originalPrice;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -137,7 +129,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private partService: PartService,
         public loaderService: LoaderService,
         private favouriteProductService: FavouriteProductService,
-        private _elementRef: ElementRef
+        private _elementRef: ElementRef,
+        private offerService: OfferService,
     ) {
         this.chatForm = this.fb.group({
             message: ["", Validators.required],
@@ -148,7 +141,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Event method for getting all the data for the page
     ngOnInit() {
-        this.productRatingDetail.averageRating = 0;
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            this.offerData = offerData;
+        })
+
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
@@ -205,18 +202,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.getRecentlyViewedProducts();
     }
 
-    /*    buyCouponProduct(product) {
-            if (this.currentUserId) {
-                this.addProductToCart(product, () => {
-                    this.router.navigate([`/checkout`]);
-                    this.couponProductModalRef.hide();
-                });
-            } else {
-                this.couponProductModalRef.hide();
-                this.loginModalService.showLoginModal(true);
-            }
-        }*/
-
     defaultVariantSelection() {
         for (let v of this.productVariants) {
             let variant = v.warehouse_variants[0]
@@ -238,40 +223,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.productDescriptionData = null;
         this.productService.getByIdWithDetails(this.id).subscribe(result => {
             this.loaderService.hideLoader();
-            /*data sent as response from api end => data: [product, questions.rows, rating.rows],*/
-            this.productDescriptionData = [result.data[1], result.data[2], result.data[0]]
+            /** data sent as response from api end => data: [product, questions.rows, rating.rows], */
+            if (!(!_.isUndefined(result.data) && _.isArray(result.data) && result.data.length === 3)) {
+                this.loaderService.hideLoader();
+                this._notify.error('Problem!', "Problem in loading Product Details");
+                return;
+            }
+
+            this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
-
-            /*rating section*/
-            this.productRatingDetail.totalNumberOfRatings = result.data[2].length;
-
-            let totalRating = 0;
-            for (let i = 0; i < result.data[2].length; i++) {
-                totalRating += result.data[2][i].rating;
-
-                if (result.data[2][i].rating === 5) {
-                    this.productRatingDetail.fiveStar += 1;
-                }
-                if (result.data[2][i].rating === 4) {
-                    this.productRatingDetail.fourStar += 1;
-                }
-                if (result.data[2][i].rating === 3) {
-                    this.productRatingDetail.threeStar += 1;
-                }
-                if (result.data[2][i].rating === 2) {
-                    this.productRatingDetail.twoStar += 1;
-                }
-                if (result.data[2][i].rating === 1) {
-                    this.productRatingDetail.oneStar += 1;
-                }
-            }
-            if (totalRating !== 0) {
-                const num = totalRating / this.productRatingDetail.totalNumberOfRatings;
-                this.productRatingDetail.averageRating = Number((Math.round(num * 100) / 100).toFixed(2));
-            } else {
-                this.productRatingDetail.averageRating = 0;
-
-            }
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');
@@ -281,11 +241,22 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
             this.addPageTitleNMetaTag();
 
-            this.discountPercentage = 0;
+            if (this.offerData && this.offerData.finalCollectionOfProducts && this.data.id in this.offerData.finalCollectionOfProducts) {
+                this.calculationType = this.offerData.finalCollectionOfProducts[this.data.id].calculation_type;
+                this.discountAmount = this.offerData.finalCollectionOfProducts[this.data.id].discount_amount;
+                this.originalPrice = this.data.price;
+
+                this.data.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+
+                this.data.calculationType = this.calculationType;
+                this.data.discountAmount = this.discountAmount;
+            }
+
+           /* this.discountPercentage = 0;
 
             if (this.data.promotion) {
                 this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
-            }
+            }*/
 
             if (result.data[0]) {
                 let allImages = [];
@@ -332,7 +303,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     updateFinalprice() {
         if (this.data) {
-            this.unitPrice = this.data.promotion ? this.data.promo_price : this.data.price;
+            this.unitPrice = this.data.offerPrice ? this.data.offerPrice : this.data.price;
             this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
         }
     }
@@ -381,6 +352,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         let qty = this.product_quantity;
 
+        const offerInfo = this.offerData.finalCollectionOfProducts[this.data.id];
+
         if (variants.length == 0) {
             dataPayload = {
                 cart_id: this.cartId,
@@ -388,6 +361,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
+                offerInfo
             };
         } else {
             dataPayload = {
@@ -396,9 +370,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
-                cartItemVariants: variants
+                cartItemVariants: variants,
+                offerInfo
             };
         }
+        console.log('payload: ', dataPayload);
         this.cartItemService
             .insert(dataPayload)
             .subscribe(
@@ -572,24 +548,24 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.updateFinalprice();
     }
 
-
-    showCouponProductModal(template: TemplateRef<any>) {
-        this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
-        document.getElementById('scroll').scrollIntoView({behavior: 'smooth', block: 'end'});
-        /*        setTimeout(() => {
-                    this.scrollToBottom();
-                }, 2000);*/
-    }
-
-    //Method for scroll to bottom
-    scrollToBottom(): void {
-        try {
-            const domElem = this._elementRef.nativeElement.querySelector('#coupon-term-cond-modal-body');
-            domElem.scrollTop = domElem.scrollHeight;
-        } catch (err) {
-            console.log(err);
+    /*
+        showCouponProductModal(template: TemplateRef<any>) {
+            this.couponProductModalRef = this.modalService.show(template, Object.assign({}, {class: 'term-condition-modal modal-lg'}));
+            document.getElementById('scroll').scrollIntoView({behavior: 'smooth', block: 'end'});
+            /!*        setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 2000);*!/
         }
-    }
+
+        //Method for scroll to bottom
+        scrollToBottom(): void {
+            try {
+                const domElem = this._elementRef.nativeElement.querySelector('#coupon-term-cond-modal-body');
+                domElem.scrollTop = domElem.scrollHeight;
+            } catch (err) {
+                console.log(err);
+            }
+        }*/
 
     private addPageTitleNMetaTag() {
         this.title.setTitle(this.data.name);

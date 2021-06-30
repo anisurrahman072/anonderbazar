@@ -6,7 +6,7 @@
             </button>
             <mat-card-header class="center imageDiv">
                 <div mat-card-avatar class="example-header-image" *ngIf="imageShow" style="width: 200px;height: 200px;">
-                    <img class="img-circle avatar-img " alt="Avatar Image" src="{{ user.avatar ? IMAGE_ENDPOINT + user.avatar : './assets/images/default-avatar.jpg' }}" />
+                    <img class="img-circle avatar-img" alt="Avatar Image" src="{{ user.avatar ? IMAGE_ENDPOINT + user.avatar : './assets/images/default-avatar.jpg' }}" />
                 </div>
                 <div *ngIf="imageUpload">
                     <image-upload [max]="1" (removed)="onRemoved($event)" [uploadedFiles]="ImageFileEdit"
@@ -47,13 +47,13 @@
 
                         </mat-form-field>
                         <mat-form-field>
-                            <mat-select placeholder="Gender" formControlName="gender" [(ngModel)]="user.gender">
+                            <mat-select placeholder="Gender" formControlName="gender" [(ngModel)]="user.gender" [disabled]="value">
                                 <mat-option *ngFor="let gender of genderSearchOptions" value="{{ gender.value }}">{{
                                     gender.label }}</mat-option>
                             </mat-select>
                         </mat-form-field>
                         <mat-form-field>
-                            <span matPrefix>+880 &nbsp;</span>
+                            <span matPrefix>+88 &nbsp;</span>
                             <input type="tel" matInput placeholder="Phone Number" formControlName="phone" [(ngModel)]="user.phone"
                                 [readonly]="value ? 'readonly' : null" />
                             <mat-error>

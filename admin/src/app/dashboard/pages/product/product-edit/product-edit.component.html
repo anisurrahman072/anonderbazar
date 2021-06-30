@@ -209,7 +209,15 @@
                 <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
                     <div nz-row class="form-row">
                         <div nz-col [nzSpan]="12">
-                            <label nz-checkbox formControlName="pay_online">Pay online only</label>
+                            <label nz-checkbox formControlName="disable_cash_on_delivery">Disable Cash On Delivery</label>
+                        </div>
+                    </div>
+                    <!--pay online only-->
+                </div>
+                <div class="col-md-6" *ngIf="currentUser.group_id=== 'admin'">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="12">
+                            <label nz-checkbox formControlName="offline_payment">Offline Payment</label>
                         </div>
                     </div>
                     <!--pay online only-->
@@ -351,6 +359,26 @@
                     <!--weight-->
 
                 </div>
+
+                <div class="col-md-6">
+                    <div nz-row>
+                        <div nz-col [nzSpan]="7">
+                            <label> Discount Price </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input formControlName="promo_price" [placeholder]="'Enter discount'"
+                                   [nzSize]="'large'">
+
+                            <div
+                                    *ngIf="getFormControl('promo_price').dirty&&getFormControl('promo_price').hasError('required')">
+                                required!
+                            </div>
+                        </div>
+                    </div>
+                    <!--discount price-->
+
+                </div>
+
                 <div class="col-md-6">
                     <div nz-row>
                         <div nz-col [nzSpan]="7">

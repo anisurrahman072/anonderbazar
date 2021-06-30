@@ -7,6 +7,25 @@
 const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
+  // get all brands
+  getAll: async (req, res) => {
+    try {
+      let allBrands = await Brand.find({
+        deletedAt: null
+      }).sort([
+        {frontend_position: 'ASC'}
+      ]);
+
+      return res.status(200).json(allBrands);
+    }
+    catch (error){
+      return res.status(400).json({
+        success: false,
+        message: error
+      });
+    }
+  },
+
   // destroy a row
   destroy: async (req, res) => {
     try {

@@ -4,7 +4,7 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {User} from "../../../models/";
 import {AuthService, FavouriteProductService, LotteryService, UserService} from "../../../services";
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, NavigationStart, NavigationEnd} from '@angular/router';
 import {PaymentAddressService} from "../../../services/payment-address.service";
 import {NotificationsService} from "angular2-notifications";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
@@ -68,7 +68,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         private favouriteProductService: FavouriteProductService,
         public loaderService: LoaderService,
         private toastService: ToastrService,
-        private lotteryService: LotteryService
+        private lotteryService: LotteryService,
 
     ) {
         this.options = [
@@ -290,5 +290,13 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.store.dispatch(new fromStore.LoadFavouriteProductSuccess([]));
         this._notify.success("Logout Successfull.");
         this.router.navigate(['/']);
+    }
+
+    scrollItem(el: HTMLElement) {
+        this.router.events.subscribe((evt) => {
+            if ((evt instanceof NavigationEnd)) {
+                el.scrollIntoView();
+            }
+        });
     }
 }

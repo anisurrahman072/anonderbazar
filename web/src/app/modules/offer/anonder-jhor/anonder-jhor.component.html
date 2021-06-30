@@ -1,0 +1,116 @@
+<div class="main-container right-sidebar">
+    <div class="container-fluid">
+        <!--breadcrumbs-->
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home / </a>
+            <a routerLink="/cms" routerLinkActive="active">Offer / </a>
+            <a>Anonder Jhor</a>
+        </nav>
+
+        <!--banner section-->
+        <div class="row">
+            <div class="col-sm-6 col-md-12 main-content">
+                <div class="blog-single">
+                    <div class="post-item">
+                        <div class="banner-image" style="overflow: hidden;">
+                            <div class="post-thumb" *ngIf="anonderJhor && anonderJhor.status === 1; else expired"
+                                 [style.background-image]="'url('+ IMAGE_ENDPOINT + anonderJhor.banner_image + ')'"
+                                 style="width: 100%; height: 190px; margin-top: 15px">
+                                <div class="col-md-12 text-center">
+                                    <img style="width: 120px; height: 39px; margin-top: 12px"
+                                         src="../../../../assets/images/jhor-Logo.png"
+                                         alt="Anonder Jhor"><br>
+                                    <img style="width: 150px; height: 27px; margin-top: 12px"
+                                         src="../../../../assets/images/anonder-jhor-word.png"
+                                         alt="Anonder Jhor">
+
+
+                                    <div *ngIf="jhorRemainingTimeToStart > 0; else endIn">
+                                        <div>
+                                            <p style="margin-left: -186px; color: red; font-size: 20px">Starts at: </p>
+                                            <p style="margin-top: 10px; font-size: 30px; font-weight: 400">
+                                            <span style="font-size: 30px; color: #FFFFFF">
+                                                <ng-template ngFor let-time [ngForOf]="jhorRemainingTimeToStartInDigit">
+                                                    <span class="digit">{{time}}</span>
+                                                </ng-template>
+                                            </span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <ng-template #endIn>
+                                        <div>
+                                            <p style="margin-left: -186px; color: red;  font-size: 20px">Ends at: </p>
+                                            <p style="margin-top: 10px; font-size: 30px; font-weight: 400">
+                                            <span style="font-size: 30px; color: #FFFFFF">
+                                                <ng-template ngFor let-time [ngForOf]="jhorRemainingTimeToEndInDigit">
+                                                    <span class="digit">{{time}}</span>
+                                                </ng-template>
+                                            </span>
+                                            </p>
+                                        </div>
+                                    </ng-template>
+
+                                </div>
+                            </div>
+                            <ng-template #expired>
+                                <img style="width: 100%" src="../../../../assets/images/expired.png"
+                                     alt="Anonder Jhor">
+                            </ng-template>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row" *ngIf="anonderJhorOffers && anonderJhorOffers.length > 0" style="margin-top: 30px">
+                <ng-template ngFor let-data [ngForOf]="anonderJhorOffers">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
+                        <div class="offer-details">
+                            <div class="offer-img">
+                                <div style="background-color: whitesmoke">
+                                    <div class="col-md-12 text-center" style="height: 50px;"
+                                         *ngIf="offerRemainingTimeToEndInDigit && offerRemainingTimeToEndInDigit[data.id]">
+                                        <p class="my-2" style="position:absolute;color: #ED1C24; font-size: 25px"
+                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] > presentTime">
+                                            Starts at {{data.start_date | date:'shortTime'}}
+                                        </p>
+
+                                        <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
+                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] < presentTime">
+                                            <ng-template ngFor let-time [ngForOf]="offerRemainingTimeToEndInDigit[data.id]">
+                                                <span class="digit">{{time}}</span>
+                                            </ng-template>
+                                        </p>
+
+                                        <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
+                                           *ngIf="offerEndTime[data.id] && offerEndTime[data.id] < presentTime">
+                                            Expired
+                                        </p>
+                                    </div>
+                                    <div class="product-discount-badge">
+                                        <span *ngIf="data.calculation_type === 'percentage'; else fixed">{{data.discount_amount}}
+                                            %</span>
+                                    </div>
+                                    <ng-template #fixed>
+                                        <span>{{data.discount_amount}} tk</span>
+                                    </ng-template>
+                                    <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
+                                        <p class="banner text-center">
+                                            <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>
+                                        </p>
+                                        <img src="{{IMAGE_ENDPOINT + data.image}}"
+                                             alt="offered product image" style="margin-top: 5px">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+    </div>
+</div>

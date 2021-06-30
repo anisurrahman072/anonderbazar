@@ -1,0 +1,90 @@
+<section>
+    <nz-card class="card-height" nzTitle="Questions asked on products">
+
+        <nz-table #nzTable
+                  nzShowSizeChanger
+                  [nzFrontPagination]="false"
+                  [nzData]="data"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="total"
+                  [(nzPageIndex)]="page"
+                  [(nzPageSize)]="limit"
+                  [nzHideOnSinglePage]="true"
+                  [nzScroll]="{x: '200px'}"
+                  (nzPageIndexChange)="getAllQuestionedProducts()"
+        >
+            <thead>
+
+            <tr>
+                <th style="min-width: 220px"><span>Product Code</span></th>
+                <th style="min-width: 227px"><span>Name</span></th>
+                <th style="min-width: 115px"><span>User</span></th>
+                <th style="min-width: 115px"><span>Username</span></th>
+                <th style="min-width: 200px"><span>Question</span></th>
+                <th style="min-width: 200px"><span>Answer</span></th>
+                <th style="min-width: 111px"><span>Shop Owner</span></th>
+                <th style="min-width: 115px"><span>Answered BY</span></th>
+                <th style="min-width: 94px"><span>Actions</span></th>
+            </tr>
+
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr *ngFor="let data of nzTable.data">
+                <td>{{data.code}}</td>
+                <td>{{data.name}}</td>
+                <td>{{data.first_name}} {{data.last_name}}</td>
+                <td>{{data.username}}</td>
+                <td>{{data.question}}</td>
+                <td>{{data.answer}}</td>
+                <td>{{data.warehouse_name}}</td>
+                <td>{{data.answered_by}}</td>
+                <td>
+                    <nz-button-group>
+
+                        <button *ngIf="'questions-read'|accessControl"
+                                [routerLink]="['/dashboard/questions/details/', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-info-circle"></i>
+                        </button>
+                        <!--<button *ngIf="'questions-answer'|accessControl"
+                                [routerLink]="['/dashboard/questions/answer', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>-->
+                        <button *ngIf="'questions-edit'|accessControl"
+                                [routerLink]="['/dashboard/questions/edit', data.id]"
+                                nz-button [nzSize]="'default'">
+                            <i class="anticon anticon-edit"></i>
+                        </button>
+                    </nz-button-group>
+
+                    <ng-container *ngIf="'questions-delete'|accessControl">
+
+                        <nz-popconfirm [nzTitle]="'Do you want to delete?'" [nzOkText]="'Yes'"
+                                       [nzCancelText]="'No'" (nzOnConfirm)="deleteConfirm(data.id)">
+                            <a nz-popconfirm>
+                                <button nz-button [nzSize]="'default'">
+                                    <i class="anticon anticon-delete"></i>
+                                </button>
+                            </a>
+                        </nz-popconfirm>
+                    </ng-container>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+</section>

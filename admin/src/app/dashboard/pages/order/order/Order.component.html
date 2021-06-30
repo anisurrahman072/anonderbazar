@@ -1,6 +1,9 @@
 <section>
     <nz-card class="card-height order-list-card" nzTitle="Order list" [nzExtra]="extra">
         <ng-template #extra>
+            <button nz-button [nzType]="'primary'" (click)='showOrdersBalkModal()'>
+                <i class="anticon anticon-download"></i><span> Download Orders as Bulk </span>
+            </button>&nbsp;
             <button nz-button [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
@@ -10,6 +13,7 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <nz-table
                 #nzTable
+                nzShowQuickJumper
                 [nzTotal]="orderTotal"
                 [nzData]="orderData"
                 [nzShowSizeChanger]="true"
@@ -27,10 +31,10 @@
                     <th nzWidth="100px">
                         <span> Order </span>
                     </th>
-                    <th nzWidth="220px">
+                    <th nzWidth="230px">
                         <span> Date </span>
                     </th>
-                    <th nzWidth="220px">
+                    <th nzWidth="230px">
                         <span> Customer </span>
                     </th>
                     <th nzWidth="100px">
@@ -39,20 +43,35 @@
                     <th nzWidth="100px">
                         <span>Total</span>
                     </th>
-                    <th nzWidth="200px">
+                    <th nzWidth="230px">
                         <span>Status</span>
                     </th>
-                    <th nzWidth="260px">
+                    <th nzWidth="230px">
+                        <span>Order type </span>
+                    </th>
+                    <th nzWidth="230px">
+                        <span>Payment type </span>
+                    </th>
+                    <th nzWidth="230px">
+                        <span>Payment status </span>
+                    </th>
+                    <th nzWidth="100px">
                         <span>Status Changer</span>
                     </th>
-                    <th><span>Actions</span></th>
+                    <th nzWidth="400px">
+                        <span>Transactions</span>
+                    </th>
+                    <th nzWidth="300px">
+                        <span>shipping_address</span>
+                    </th>
+                    <th nzWidth="200px"><span>Actions</span></th>
                 </tr>
                 <tr>
                     <th nzWidth="100px">
                         <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
-                               (input)=" orderPage = 1; getData(); " >
+                               (input)=" orderPage = 1; getData(); ">
                     </th>
-                    <th nzWidth="220px">
+                    <th nzWidth="230px">
                         <nz-date-picker
                                 nzShowTime
                                 nzFormat="yyyy-MM-dd HH:mm:ss"
@@ -69,13 +88,13 @@
                                 (ngModelChange)="orderPage = 1; getData();">
                         </nz-date-picker>
                     </th>
-                    <th nzWidth="220px">
+                    <th nzWidth="230px">
                         <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
                                placeholder="Customer Name" (input)=" orderPage = 1; getData(); ">
                     </th>
                     <th nzWidth="100px"></th>
                     <th nzWidth="100px"></th>
-                    <th nzWidth="200px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Status'"
@@ -89,8 +108,39 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="260px"></th>
-                    <th>
+                    <th nzWidth="230px">
+                        <nz-select style="width: 170px;" [(ngModel)]="orderTypeSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Order type'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of orderTypes" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th nzWidth="230px">
+                        <nz-select style="width: 170px;" [(ngModel)]="paymentTypeSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Payment type'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of paymentTypes" [nzLabel]="option"
+                                       [nzValue]="option">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th nzWidth="230px">
+                        <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
+                                   nzAllowClear (ngModelChange)="orderPage = 1; getData();"
+                                   [nzPlaceHolder]="'Select Payment Status'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of paymentOptions" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th nzWidth="100px"></th>
+                    <th nzWidth="300px"></th>
+                    <th nzWidth="200px">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </th>
                 </tr>
@@ -98,11 +148,11 @@
                 <tbody>
                 <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
                     <td style="width: 100px;">{{data.id}}</td>
-                    <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                    <td style="width: 220px;">{{data.full_name}}</td>
+                    <td style="width: 230px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td style="width: 230px;">{{data.full_name}}</td>
                     <td style="width: 100px;">{{data.total_quantity}}</td>
                     <td style="width: 100px;">{{data.total_price}}</td>
-                    <td style="width: 200px;">
+                    <td style="width: 230px;"  *ngIf="'change-payment-status'|accessControl">
                         <span *ngIf="setStatus(i, data.status)"></span>
                         <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
@@ -115,8 +165,43 @@
                             </nz-option>
                         </nz-select>
                     </td>
-                    <td style="width: 260px;">{{data.changedByName}}</td>
-                    <td>
+                    <td *ngIf="!('change-order-status'|accessControl)">{{data.status | statustype}}</td>
+                    <td *ngIf="data.orderType == 1">Regular order</td>
+                    <td *ngIf="data.orderType == 2">Partial order</td>
+                    <td>{{data.payment_type}}</td>
+                    <td style="width: 230px;">
+                        <nz-select style="width: 180px;"
+                                   *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                   [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
+                                   (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
+                            <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
+                                       [nzValue]="paymentOption.value">
+                            </nz-option>
+                        </nz-select>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">
+                            Unpaid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">
+                            Partially paid</p>
+                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">
+                            Paid</p>
+                    </td>
+                    <td style="width: 100px;">{{data.changedByName}}</td>
+                    <td style="width: 400px;">
+                        <div *ngFor="let transaction of data.transactions">
+                            <p style="margin: 0px;">Amount: {{transaction.amount}}</p>
+                            <p style="margin: 0px;">Payment Type: {{transaction.paymentType}}</p>
+                            <p style="margin: 0px;" *ngIf="transaction.paymentType != PAYMENT_METHODS.CASH_PAYMENT_TYPE">Transaction Key: {{transaction.transactionKey}}</p>
+                            <p style="margin-bottom: 15px;">Transaction Time: {{transaction.transactionTime}}</p>
+                        </div>
+                    </td>
+                    <td style="width: 300px;">
+                        <p>Postal Code: {{data.postal_code}}</p>
+                        <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
+                        <p>
+                            <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}, {{data.division_name}}
+                        </p>
+                    </td>
+                    <td style="width: 200px;">
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
                                     [routerLink]="['/dashboard/order/details/', data.id]"
@@ -134,7 +219,7 @@
 
 <!--product modal-->
 <nz-modal [nzFooter]="null"
-          nzWidth="70%"
+          nzWidth="95%"
           [nzVisible]="isProductVisible"
           [nzTitle]="'Generate and Download CSV Document'"
           [nzContent]="modalProductContent"
@@ -146,6 +231,7 @@
               (ngSubmit)="submitForm($event, validateProductForm.value)">
 
             <nz-table #nzTableDownload [nzBordered]="true" [nzData]="csvOrders" [nzFrontPagination]="false"
+                      nzShowQuickJumper
                       [nzLoading]="_isSpinning"
                       [(nzPageIndex)]="csvPage" [nzPageSize]="20" [nzHideOnSinglePage]="true"
                       [nzTotal]="orderCsvTotal"
@@ -155,8 +241,20 @@
                 <thead>
                 <tr>
                     <th>
-                        <input  type="checkbox" id="order_check_all_pr" #csvSelectAll
+                        <input type="checkbox" id="order_check_all_pr" #csvSelectAll
                                (change)="selectAllCsv($event)">
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
+                    </th>
+                    <th>
                     </th>
                     <th>
                     </th>
@@ -189,6 +287,11 @@
                     <td>{{data.total_price}}</td>
                     <td>{{getStatusLabel(data.status)}}</td>
                     <td>{{data.changedByName}}</td>
+                    <td>{{data.postal_code}}</td>
+                    <td>{{data.upazila_name}}</td>
+                    <td>{{data.zila_name}}</td>
+                    <td>{{data.division_name}}</td>
+                    <td>{{data.address}}</td>
                 </tr>
                 </tbody>
             </nz-table>
@@ -201,5 +304,40 @@
                 </div>
             </div>
         </form>
+    </ng-template>
+</nz-modal>
+
+<!-- Download as bulk -->
+<nz-modal [nzFooter]="null"
+          nzWidth="60%"
+          [nzVisible]="isOrdersBulkVisible"
+          [nzTitle]="'Download orders as bulk'"
+          [nzContent]="modalOrdersBulkContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalOrdersBulkContent>
+        <div    nz-row>
+            <div    nz-col [nzSpan]="3">
+                <label> Enter Date </label>
+            </div>
+            <div nz-col [nzSpan]="15">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  00:00:00"
+                        [(ngModel)]="searchStartDateOrdersBulk"
+                        nzPlaceHolder="Start date">
+                </nz-date-picker>&nbsp;
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  23:59:59"
+                        [(ngModel)]="searchEndDateOrdersBulk"
+                        nzPlaceHolder="End date">
+                </nz-date-picker>
+            </div>
+            <div nz-col [nzSpan]="1">
+                <button nz-col nz-button [nzType]="'primary'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
+            </div>
+        </div>
     </ng-template>
 </nz-modal>

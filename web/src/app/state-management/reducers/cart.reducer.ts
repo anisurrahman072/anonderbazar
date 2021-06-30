@@ -1,6 +1,5 @@
 import * as fromCart from "../actions/cart.action";
 import {Cart} from "../../models";
-import {CompareState} from "./compare.reducer";
 
 
 export interface CartState {
@@ -24,7 +23,7 @@ export function reducer(state = initialState, action: any): CartState {
             }
         }
         case fromCart.LOAD_CART_SUCCESS: {
-            
+
             const data = action.payload;
             return {
                 ...state,
@@ -43,11 +42,11 @@ export function reducer(state = initialState, action: any): CartState {
         default: {
             return state;
         }
-        
-        
+
+
     }
-    
-    
+
+
 }
 
 export const getCartLoading = (state: CartState) => state.loading;

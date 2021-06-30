@@ -61,6 +61,11 @@ module.exports = {
       defaultsTo: 4,
       columnType: 'tinyint'
     },
+    partial_offline_payment_approval_status: {
+      type: 'number',
+      defaultsTo: 3,
+      columnType: 'tinyint'
+    },
     type: {
       type: 'number',
       columnType: 'integer',
@@ -81,6 +86,12 @@ module.exports = {
       columnType: 'integer',
       required: false,
       defaultsTo: 1,
+    },
+    refund_status: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 0,
     },
     courier_status: {
       type: 'number',

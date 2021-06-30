@@ -5,7 +5,8 @@
  */
 const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
-const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {PAYMENT_STATUS_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
 module.exports = {
 
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
@@ -17,7 +18,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
 
@@ -96,7 +97,8 @@ module.exports = {
       shipping_address: shippingAddressId,
       courier_charge: courierCharge,
       courier_status: 1,
-      ssl_transaction_id: sslCommerztranId
+      ssl_transaction_id: sslCommerztranId,
+      status: ORDER_STATUSES.processing
     }, cartItems);
 
     /** .............Payment Section ........... */
@@ -106,7 +108,8 @@ module.exports = {
       payment_type: paymentType,
       details: JSON.stringify(paymentResponse),
       transection_key: sslCommerztranId,
-      status: 1
+      status: 1,
+      approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
     });
 
     const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
@@ -156,6 +159,7 @@ module.exports = {
       randomstring,
       isPartialPayment: true
     });
+
     logger.orderLog(customer.id, 'SSL Commerz payment request (Partial): ', postBody);
 
     const sslResponse = await sslcommerz.init_transaction(postBody);

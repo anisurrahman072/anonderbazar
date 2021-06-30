@@ -4,12 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-const EmailService = require('../services/EmailService');
+const moment = require('moment');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {ORDER_STATUSES_INDEX} = require('../../libs/orders');
 const {SUB_ORDER_STATUSES_INDEX} = require('../../libs/subOrders');
 
 module.exports = {
+  currentTime: (req, res) => {
+    return res.json({
+      currentTime: moment().format('YYYY-MM-DD HH:mm:ss')
+    });
+  },
   //Method called for changing product order status
   //Model models/Order.js, models/Suborder.js, models/SuborderItem.js
   updatecustom: async (req, res) => {

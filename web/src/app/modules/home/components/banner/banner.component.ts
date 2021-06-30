@@ -25,7 +25,7 @@ export class BannerComponent implements OnInit {
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT_CAROUSEL = GLOBAL_CONFIGS.productImageExtension;
 
-    constructor(private cmsService: CmsService) {
+    constructor() {
     }
 
     //Event method for getting all the data for the page
@@ -75,7 +75,7 @@ export class BannerComponent implements OnInit {
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
                 /*return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");*/
-                return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)));
+                return ((!___.isUndefined(offer.image)) && (!___.isUndefined(offer.image.small_image)));
             }).slice(0,3);
         }
 

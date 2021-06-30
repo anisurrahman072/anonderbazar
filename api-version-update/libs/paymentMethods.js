@@ -4,7 +4,8 @@ const {
   CASH_PAYMENT_TYPE,
   CASHBACK_PAYMENT_TYPE,
   SSL_COMMERZ_PAYMENT_TYPE,
-  PARTIAL_ORDER_TYPE
+  PARTIAL_ORDER_TYPE,
+  OFFLINE_PAYMENT_TYPE
 } = require('./constants');
 
 module.exports = {
@@ -25,6 +26,11 @@ module.exports = {
       }
       case BKASH_PAYMENT_TYPE: {
         paymentGatewayService = BkashService;
+        break;
+      }
+
+      case OFFLINE_PAYMENT_TYPE: {
+        paymentGatewayService = OfflinePaymentService;
         break;
       }
     }
@@ -55,6 +61,10 @@ module.exports = {
       }
       case BKASH_PAYMENT_TYPE: {
         paymentGatewayService = BkashService;
+        break;
+      }
+      case OFFLINE_PAYMENT_TYPE: {
+        paymentGatewayService = OfflinePaymentService;
         break;
       }
     }

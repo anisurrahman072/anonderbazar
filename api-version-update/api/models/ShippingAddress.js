@@ -5,6 +5,8 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+const he = require('he');
+
 module.exports = {
 
   attributes: {
@@ -61,5 +63,20 @@ module.exports = {
     },
   },
   tableName: 'shipping_addresses',
+  beforeCreate: function (valuesToSet, proceed) {
+    valuesToSet.first_name = he.encode(valuesToSet.first_name);
+    valuesToSet.last_name = he.encode(valuesToSet.last_name);
+    valuesToSet.address = he.encode(valuesToSet.address);
+    return proceed();
+  },
+
+  beforeUpdate: function (valuesToSet, proceed) {
+    if (valuesToSet && valuesToSet.first_name) {
+      valuesToSet.first_name = he.encode(valuesToSet.first_name);
+      valuesToSet.last_name = he.encode(valuesToSet.last_name);
+      valuesToSet.address = he.encode(valuesToSet.address);
+    }
+    return proceed();
+  }
 };
 

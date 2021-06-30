@@ -3,8 +3,8 @@ import {RouterModule, Routes} from '@angular/router';
 import {OfferListComponent} from './offer-list/offer-list.component';
 import {OfferCreateComponent} from './offer-create/offer-create.component';
 import {OfferEditComponent} from './offer-edit/offer-edit.component';
-import {OfferReadComponent} from './offer-read/offer-read.component';
 import {AccessControl} from "../../../auth/core/guard/AccessControl.guard";
+import {AnonderJhorComponent} from "./anonder-jhor/anonder-jhor.component";
 
 const routes: Routes = [
     {
@@ -30,10 +30,10 @@ const routes: Routes = [
                 component: OfferEditComponent,
             },
             {
-                path: 'detail/:id',
+                path: 'anonder-jhor',
                 canActivate: [AccessControl],
-                data: {accessData: 'offer-read'},
-                component: OfferReadComponent,
+                data: {accessData: 'anonder-jhor'},
+                component: AnonderJhorComponent,
             },
             {
                 path: '**',

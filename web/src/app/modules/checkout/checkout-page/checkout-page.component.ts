@@ -6,18 +6,19 @@ import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../state-management";
-import {Cart, User} from "../../../models";
+import {Cart, Offer, User} from "../../../models";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../services";
 import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../services/validator/form-validator.service";
-import {GLOBAL_CONFIGS} from "../../../../environments/global_config";
-import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
+import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../environments/global_config";
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
-import {PAYMENT_METHODS} from '../../../../environments/global_config';
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
+import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import * as he from 'he';
 
 @Component({
     selector: 'app-checkout-page',
@@ -34,6 +35,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     paymentGatewayErrorModalRef: BsModalRef;
     currentUser$: Observable<User>;
     cart$: Observable<Cart>;
+    offer$: Observable<Offer>;
 
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
@@ -55,6 +57,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     LIST_IMAGE_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
+    private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
 
     shippingFirstName: string;
     shippingLastName: string;
@@ -81,7 +84,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     authUserWallets: any;
     couponCashbackAmount: number = 0;
 
-    isPayOnlineOnly: boolean = false;
+    disableCashOnDelivery: boolean = false;
+    isOfflinePayable: boolean = false;
     isFreeShipping: boolean = true;
     maxDhakaCharge: number = 0;
     maxOutsideDhakaCharge: number = 0;
@@ -91,6 +95,19 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
+    OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
+    REGULAR_ORDER = ORDER_TYPE.REGULAR_ORDER;
+
+    isPartiallyPayable = true;
+    isShowOfflineForm: boolean = false;
+    isShowCashInAdvanceForm: boolean = false;
+    isShowBankTransferForm: boolean = false;
+    isBankDeposit: boolean = false;
+    isMobileTransfer: boolean = false;
+
+    ImageFile: File = null;
+    BankDepositImageFile: File = null;
+    mobileTransferImageFile: File = null;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -116,10 +133,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnInit() {
 
         this.checkoutForm = this.fb.group({
+            offlinePaymentMethods: ['', []],
+            transactionIdForBank: ['', []],
+            bankName: ['', []],
+            branchName: ['', []],
+            accountNumberForBank: ['', []],
+
             // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
-            lastName: ['', [Validators.required]],
+            lastName: ['', []],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             postCode: ['', [Validators.required]],
@@ -131,7 +154,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Shipping
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
-            shippingLastName: ['', [Validators.required]],
+            shippingLastName: ['', []],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             shippingPostCode: ['', [Validators.required]],
@@ -154,10 +177,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (this.currentUser.couponLotteryCashback && this.currentUser.couponLotteryCashback.length > 0) {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
-
-                if (this.user_id == 130) {
-                    this.showBkashPayment = true;
-                }
+                this.showBkashPayment = this.bKashTestUsers.find((userId) => this.user_id == userId);
             } else {
                 this.user_id = null;
             }
@@ -166,41 +186,53 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            console.log("offeraData: ", offerData);
+        })
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
+        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
-                console.log('globalConfig', globalConfig);
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0];
+                    this.cart$.subscribe((cartData) => {
+                        console.log('cartData', cartData);
+                        if (cartData) {
+                            this.cartData = cartData;
+                            this.setShippingCharge();
+                        } else {
+                            this.cartData = null;
+                        }
+                        this.updateGrandTotal();
+                        this.addPageTitle();
+                    }, (err) => {
+                        console.log(err);
+                        this.toastr.error('Unable to update cart data', 'Sorry!');
+                    });
                     return this.areaService.getAllDivision();
                 }
                 return Observable.throw(new Error('Problem in getting global config.'));
             })
             .concatMap((divisionList: any) => {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
+                    // this.divisionSearchOptions = divisionList.sort((a, b) => a.name.localeCompare(b.name));
                     this.divisionSearchOptions = divisionList;
-                    console.log('this.divisionSearchOptions = result;', this.divisionSearchOptions);
                     return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
-            .concatMap((previousAddresses: any) => {
-                console.log('previous addresses', previousAddresses);
-                this.prevoius_address = previousAddresses;
-                return this.cart$;
-            })
-            .subscribe((cartData) => {
-                console.log('cartData', cartData);
-                if (cartData) {
-                    this.cartData = cartData;
-                    this.setShippingCharge();
-                    this.addPageTitle();
-                } else {
-                    this.cartData = null;
-                }
-                this.updateGrandTotal();
+            .subscribe((previousAddresses: any) => {
+                // console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses.map((decode) => {
+                    let address = {...decode};
+                    address.first_name = he.first_name
+                    address.last_name = he.decode(address.last_name)
+                    address.address = he.decode(address.address)
+                    return address;
+                })
                 this.loaderService.hideLoader();
 
             }, (err) => {
@@ -208,6 +240,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.loaderService.hideLoader();
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
+
 
     }
 
@@ -232,7 +265,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private openPaymentGatewayModal(message) {
         this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
-        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.title = 'Payment has been failed';
         this.paymentGatewayErrorModalRef.content.message = message;
     }
 
@@ -248,21 +281,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.openPaymentGatewayModal(queryParams['bKashError']);
                 this.cdr.detectChanges();
             }, 500);
-        } else if(queryParams['sslCommerzError']){
+        } else if (queryParams['sslCommerzError']) {
             setTimeout(() => {
                 this.openPaymentGatewayModal(queryParams['sslCommerzError']);
                 this.cdr.detectChanges();
             }, 500);
-        }else if (queryParams['bkashURL']) {
+        } else if (queryParams['bkashURL']) {
             window.location.href = queryParams['bkashURL'];
         }
     }
-/*
-    onAgreedToBKashTerms(event: any) {
-        console.log('onAgreedToBKashTerms', event);
-        this.agreedToBKashTermsConditions = event;
 
-    }*/
+    /*
+        onAgreedToBKashTerms(event: any) {
+            console.log('onAgreedToBKashTerms', event);
+            this.agreedToBKashTermsConditions = event;
+
+        }*/
 
     // Method for update cart
     updateCartItem(cartItem, action) {
@@ -306,12 +340,20 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     setShippingCharge() {
-        this.isPayOnlineOnly = false;
+        this.disableCashOnDelivery = false;
+        this.isOfflinePayable = false;
         this.maxDhakaCharge = 0;
         this.maxOutsideDhakaCharge = 0;
+        this.isPartiallyPayable = true;
         this.cartData.data.cart_items.map(item => {
-            if (item.product_id.pay_online) {
-                this.isPayOnlineOnly = true;
+            if (item.product_id.disable_cash_on_delivery) {
+                this.disableCashOnDelivery = true;
+            }
+            if (item.product_id.offline_payment) {
+                this.isOfflinePayable = true;
+            }
+            if (!item.product_id.partially_payable) {
+                this.isPartiallyPayable = false;
             }
             let itemDhakaCharge = 0;
             let itemOutsideDhakaCharge = 0;
@@ -331,6 +373,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loaderService.showLoader();
         this.cartItemService.delete(cartItemId).subscribe(res => {
             this.store.dispatch(new fromStore.LoadCart());
+            // this.setShippingCharge();
+            // this.updateGrandTotal();
             this.toastr.info("Item removed from cart successfully", 'Note');
             this.loaderService.hideLoader();
         }, () => {
@@ -391,19 +435,163 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
     }
-/*
 
-
-    //Event method for resetting the form
-    resetForm($event: MouseEvent) {
-        $event.preventDefault();
-        this.checkoutForm.reset();
-        this.updateGrandTotal();
-        for (const key in this.checkoutForm.controls) {
-            this.checkoutForm.controls[key].markAsPristine();
+    /*
+        //Event method for resetting the form
+        resetForm($event: MouseEvent) {
+            $event.preventDefault();
+            this.checkoutForm.reset();
+            this.updateGrandTotal();
+            for (const key in this.checkoutForm.controls) {
+                this.checkoutForm.controls[key].markAsPristine();
+            }
         }
+    */
+
+    // method for offline order
+    saveOrderForOfflinePayment($event, value) {
+        this.loaderService.showLoader();
+        if (this.cartData && this.cartData.data.cart_items.length <= 0) {
+            this.toastr.error("You have no items in your cart!", "Empty cart!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if (!this.isShowCashInAdvanceForm && !this.isShowBankTransferForm && !this.isBankDeposit && !this.isMobileTransfer) {
+            this.toastr.error("Please select a Offline Payment method to proceed", "Not selected", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+            (this.isBankDeposit && !this.BankDepositImageFile) ||
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
+            this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+        if (this.isShowBankTransferForm && (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank)) {
+            this.toastr.error("Please fill up Bank transfer form correctly!", "Not filled up all fields!!", {
+                positionClass: 'toast-bottom-right'
+            });
+            this.loaderService.hideLoader();
+            return false;
+        }
+
+
+        let billing_address = {
+            id: this.newBillingAddress ? '' : value.billing_id,
+            firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.firstName,
+            lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.lastName,
+            address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.address,
+            country: value.country,
+            phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.phone,
+            postCode: this.noShippingCharge ? '1212' : value.postCode,
+            upazila_id: this.noShippingCharge ? '6561' : value.upazila_id,
+            zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.zila_id,
+            division_id: this.noShippingCharge ? '68' : value.division_id
+        };
+
+        let shipping_address = {
+            id: this.newShippingAddress ? '' : value.shipping_id,
+            firstName: this.noShippingCharge ? (this.currentUser && this.currentUser.first_name) ? this.currentUser.first_name : 'Anonder' : value.shippingFirstName,
+            lastName: this.noShippingCharge ? (this.currentUser && this.currentUser.last_name) ? this.currentUser.last_name : 'Bazar' : value.shippingAddress,
+            address: this.noShippingCharge ? 'Urban Rose, Suite-3B, House-61, Road-24, Gulshan-1' : value.shippingAddress,
+            country: value.shipping_country,
+            phone: this.noShippingCharge ? (this.currentUser && this.currentUser.phone) ? this.currentUser.phone : '+8801958083908' : value.shippingPhone,
+            postCode: this.noShippingCharge ? '1212' : value.shippingPostCode,
+            upazila_id: this.noShippingCharge ? '6561' : value.shipping_upazila_id,
+            zila_id: this.noShippingCharge ? AppSettings.DHAKA_ZILA_ID : value.shipping_zila_id,
+            division_id: this.noShippingCharge ? '68' : value.shipping_division_id
+        };
+
+        const formData: FormData = new FormData();
+        let payLoad = {
+            shipping_address,
+            billing_address,
+            orderType: ORDER_TYPE.REGULAR_ORDER,
+            paymentStatus: PAYMENT_STATUS.UNPAID,
+            is_copy: this.isCopy
+        }
+        formData.append('paymentType', this.OFFLINE_PAYMENT_TYPE);
+        formData.append('shipping_address', JSON.stringify(shipping_address));
+        formData.append('billing_address', JSON.stringify(billing_address));
+        formData.append('orderType', `${ORDER_TYPE.REGULAR_ORDER}`);
+        formData.append('paymentStatus', `${PAYMENT_STATUS.UNPAID}`);
+        formData.append('is_copy', `${this.isCopy}`);
+
+        if (value.paymentType == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE) {
+            if (value.offlinePaymentMethods == 'bankTransfer') {
+                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
+                    this.toastr.error('Error occurred', "Insert all the fields of bank transfer method", {
+                        positionClass: 'toast-bottom-right'
+                    });
+                    return false;
+                }
+                formData.append('offlinePaymentMethod', 'bankTransfer');
+                let bankTransferInfo = {
+                    transactionId: value.transactionIdForBank,
+                    bankName: value.bankName,
+                    branchName: value.branchName,
+                    accountNumberForBank: value.accountNumberForBank
+                }
+                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
+            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
+                formData.append('offlinePaymentMethod', 'cashInAdvance');
+                if (this.ImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.ImageFile, this.ImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            } else if (value.offlinePaymentMethods === 'bankDeposit') {
+                formData.append('offlinePaymentMethod', 'bankDeposit');
+                if (this.BankDepositImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
+                formData.append('offlinePaymentMethod', 'mobileTransfer');
+                if (this.mobileTransferImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
+                } else {
+                    formData.append('hasImage', 'false');
+                }
+            }
+        } else {
+            this.toastr.error('Error occurred', "Insert correct payment method", {
+                positionClass: 'toast-bottom-right'
+            });
+            return false;
+        }
+
+
+        this.orderService.placeOrder(formData)
+            .subscribe(order => {
+                this.store.dispatch(new fromStore.LoadCurrentUser());
+                this.store.dispatch(new fromStore.LoadCart());
+                this.toastr.success("Your order has been placed. Please wait for verification your payment.", "Success!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.router.navigate(['/profile/orders/invoice/', order.id]);
+                this.loaderService.hideLoader();
+            }, error => {
+                this.toastr.error("Error occurred while placing your order.", "Error!", {
+                    positionClass: 'toast-top-right'
+                });
+                this.loaderService.hideLoader();
+            })
     }
-*/
 
 
     // method for confirm without payment
@@ -678,12 +866,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         if (type == 'shipping') {
             this.updateGrandTotal();
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.shippingZilaSearchOptions = result;
+                this.shippingZilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.shippingUpazilaSearchOptions = [];
             });
         } else {
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.zilaSearchOptions = result;
+                this.zilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.upazilaSearchOptions = [];
             });
         }
@@ -694,12 +882,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         var zilaId = $event.target.value;
         if (type == 'shipping') {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.shippingUpazilaSearchOptions = result;
+                this.shippingUpazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
             this.updateGrandTotal(true, zilaId);
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.upazilaSearchOptions = result;
+                this.upazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
         }
     }
@@ -844,10 +1032,30 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //Method for proceed to pay
     processToPay() {
-        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
+        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
+
+        // console.log('this.isCopy==>', this.isCopy);
+        // console.log('this.cartData==>', this.cartData);
+        // console.log('this.checkoutForm==>', this.checkoutForm);
+
+        // if (!this.noShippingCharge && this.isCopy) {
+        //     // console.log('call copyAll');
+        //     this.copyAll();
+        // }
+
+        // if (this.checkoutForm.invalid) {
+        //     this.showFormError = true;
+        //     this.toastr.error("Edit or Re-input your address information correctly and update your address information.", "Please!", {
+        //         positionClass: 'toast-top-right'
+        //     });
+        //     window.scroll(0, 0);
+        //     return false;
+        // }
+
         if (!this.noShippingCharge && this.isCopy) {
             this.copyAll();
         }
+
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
@@ -904,5 +1112,61 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         event.preventDefault();
         this.bKashWalletModalRef.hide();
         this.router.navigate(["/profile/bkash-accounts"]);
+    }
+
+    onRemoved(file: FileHolder) {
+        this.ImageFile = null;
+    }
+
+    onRemovedBankDepositSlip(file: FileHolder) {
+        this.BankDepositImageFile = null;
+    }
+
+    onRemovedMobileTransferSS(file: FileHolder) {
+        this.mobileTransferImageFile = null;
+    }
+
+    onBeforeUpload = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
+            this.ImageFile = metadata.file;
+            return metadata;
+        } else {
+            this.ImageFile = null;
+            return false;
+        }
+    };
+
+    onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
+            this.BankDepositImageFile = metadata.file;
+            return metadata;
+        } else {
+            this.BankDepositImageFile = null;
+            return false;
+        }
+    };
+
+    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
+            this.mobileTransferImageFile = metadata.file;
+            return metadata;
+        } else {
+            this.mobileTransferImageFile = null;
+            return false;
+        }
+    };
+
+    showOfflineForm(flag) {
+        this.isShowOfflineForm = flag;
+    }
+
+    showOfflinePaymentMethods(isCashInAdvance, isBank, isbanlkDeposit, isMobileTransfer) {
+        this.isShowCashInAdvanceForm = isCashInAdvance;
+        this.isShowBankTransferForm = isBank;
+        this.isBankDeposit = isbanlkDeposit;
+        this.isMobileTransfer = isMobileTransfer
     }
 }

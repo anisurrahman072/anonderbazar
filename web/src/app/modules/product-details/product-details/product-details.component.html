@@ -55,8 +55,19 @@
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
-                                <span *ngIf="data.promotion"
-                                      class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
+                                <span *ngIf="data.offerPrice"
+                                      class="product-discount-badge">-{{data.offerPrice.toFixed(2)}}%</span>
+                                <ng-container *ngIf="data.offerPrice">
+                                    <span *ngIf="data.calculationType === 'absolute'; else percentage"
+                                          class="product-discount-badge">
+                                        -{{data.discountAmount}} tk
+                                    </span>
+                                    <ng-template #percentage>
+                                        <span class="product-discount-badge">
+                                            -{{data.discountAmount.toFixed(2)}}%
+                                        </span>
+                                    </ng-template>
+                                </ng-container>
                                 <img style="object-fit: contain; height: auto; width: auto" src="{{primaryPicture}}"
                                      alt="Product Image"/>
                             </div>
@@ -81,9 +92,10 @@
                         <div class="productdetail">
                             <p class="pro-de-1">{{data.brand_id?.name}}</p>
                             <h6 class="pro-de-2">{{data.name}}</h6>
-                            <h6 class="pro-de-3" style="color: red">৳
-                                <del *ngIf="data.promotion">{{ data.price }}</del>
-                                {{ finalprice }}</h6>
+                            <h6 class="pro-de-3" style="color: red">
+                                ৳<del *ngIf="data.offerPrice">{{ data.price }}</del>
+                                {{ finalprice }}
+                            </h6>
                             <div class="sku">
                                 <ul class="d-flex">
                                     <li class="first pl-0">Code: {{data.code}}</li>
@@ -182,8 +194,8 @@
     </div>
 </section>
 
-<app-product-description *ngIf="productDescriptionData && productRatingDetail"
-                         [productDescriptionData]="productDescriptionData" [productRatingDetail]="productRatingDetail"
+<app-product-description *ngIf="productDescriptionData"
+                         [productDescriptionData]="productDescriptionData"
                          [productId]="id" [currentUserId]="currentUserId"></app-product-description>
 <app-related-product *ngIf="similarProducts" [products]="similarProducts"></app-related-product>
 

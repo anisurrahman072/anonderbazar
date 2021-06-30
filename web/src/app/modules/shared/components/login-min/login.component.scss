@@ -86,11 +86,11 @@ label {
     color: #000000;
 }
 
-input[type=text],
+/*input[type=text],
 input[type=email] {
     width: 350px;
     padding: 5px 10px;
-}
+}*/
 
 .has-statusf {
     position: relative;
@@ -291,4 +291,14 @@ input[type=email] {
 }
 .mat-datepicker-content .mat-calendar {
     z-index: 12999999;
+}
+
+.resendButton {
+    padding: 10px 60px;
+    background: #FF0000;
+    border-radius: 0;
+    color: #ffffff;
+    font-size: 12px;
+    margin-right: 30px;
+    height: 40px;
 }
