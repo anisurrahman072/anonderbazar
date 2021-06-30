@@ -4,6 +4,8 @@ const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 const OfferService = require('../services/OfferService');
+const regular_offer = 1;
+const anonder_jhor = 2;
 
 module.exports = {
   generateRandomString: function () {
@@ -189,7 +191,7 @@ module.exports = {
 
     const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
-    if (requestedOffer.length === 0  && requetedJhorOffer.length === 0) {
+    if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
       finalCollectionOfProducts = {};
       return finalCollectionOfProducts;
     }
@@ -431,6 +433,185 @@ module.exports = {
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
         let thisCartItem = cartItemsTemp[k];
+        console.log('thisCartItem: ', thisCartItem);
+
+        /** global section */
+        let itemId = thisCartItem.product_id.id;
+        let itemCatId = thisCartItem.product_id.type_id;
+        let itemSubCatId = thisCartItem.product_id.category_id;
+        let itemSubSubCatId = thisCartItem.product_id.subcategory_id;
+        let itemBrandId = thisCartItem.brand_id;
+        let itemWarehouseId = thisCartItem.warehouse_id;
+
+        let offer_id_number;
+        let offer_type;
+
+        /** offer section */
+
+        let regularOffers = await Offer.find({offer_deactivation_time: null, deletedAt: null});
+        console.log('reglar offer csv: ', regularOffers);
+
+        /** checking if the product exists in Regular offer */
+        if (regularOffers && regularOffers.length > 0) {
+          let regularOfferVendorId = [];
+          let regularOfferBrandId = [];
+          let regularOfferCatId = [];
+          let regularOfferSubCatId = [];
+          let regularOfferSubSubCatId = [];
+          let regularOfferProductsIds = [];
+
+
+          /** storing offer information in the arrays */
+          for (let offer = 0; offer < regularOffers.length; offer++) {
+            if (regularOffers[offer].selection_type === 'Vendor wise') {
+              regularOfferVendorId.push({
+                regularOfferId: regularOffers[offer].id,
+                vendorId: regularOffers[offer].vendor_id
+              });
+            }
+
+            if (regularOffers[offer].selection_type === 'Brand wise') {
+              regularOfferBrandId.push({
+                regularOfferId: regularOffers[offer].id,
+                brandId: regularOffers[offer].brand_id
+              });
+            }
+
+            if (regularOffers[offer].selection_type === 'Category wise') {
+              regularOfferCatId.push({
+                regularOfferId: regularOffers[offer].id,
+                catId: regularOffers[offer].category_id
+              });
+              regularOfferSubCatId.push({
+                regularOfferId: regularOffers[offer].id,
+                subCatId: regularOffers[offer].subCategory_Id
+              });
+              regularOfferSubSubCatId.push({
+                regularOfferId: regularOffers[offer].id,
+                subSubCatId: regularOffers[offer].subSubCategory_Id
+              });
+            }
+
+            if (regularOffers[offer].selection_type === 'Product wise') {
+              let rawSQL = `SELECT
+                                  product_id
+                              FROM
+                                  regular_offer_products
+                              WHERE
+                                  ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
+              const ids = await sails.sendNativeQuery(rawSQL, []);
+              const productIds = ids.rows;
+
+              productIds.forEach(proId => {
+                regularOfferProductsIds.push({
+                  regularOfferId: regularOffers[offer].id,
+                  productId: proId.product_id
+                });
+              });
+            }
+          }
+
+          /** checking if the product item exists in the regular offer */
+          if (regularOfferVendorId && regularOfferVendorId.length > 0) {
+            regularOfferVendorId.forEach(ven => {
+              if (itemWarehouseId === ven.vendorId) {
+                offer_id_number = ven.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if (regularOfferBrandId && regularOfferBrandId.length > 0) {
+            regularOfferBrandId.forEach(bran => {
+              if (itemBrandId === bran.brandId) {
+                offer_id_number = bran.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if (regularOfferCatId && regularOfferCatId.length > 0) {
+            regularOfferCatId.forEach(cat => {
+              if (itemCatId === cat.catId) {
+                offer_id_number = cat.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if (regularOfferSubCatId && regularOfferSubCatId.length > 0) {
+            regularOfferSubCatId.forEach(subCat => {
+              if (itemSubCatId === subCat.subCatId) {
+                offer_id_number = subCat.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if (regularOfferSubSubCatId && regularOfferSubSubCatId.length > 0) {
+            regularOfferSubSubCatId.forEach(subSubCat => {
+              if (itemSubSubCatId === subSubCat.subSubCatId) {
+                offer_id_number = subSubCat.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if(regularOfferProductsIds && regularOfferProductsIds.length > 0) {
+            regularOfferProductsIds.forEach(proId => {
+              if(itemId === proId.productId) {
+                offer_id_number = proId.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+        }
+
+        /** jhor offer */
+        let jhorOffers = await AnonderJhorOffers.find({status: 1, deletedAt: null});
+        console.log('jhor offers csv: ', jhorOffers);
+
+        /** checking if the product exists in anonder jhor offer */
+        if (jhorOffers && jhorOffers.length > 0) {
+          let offerCatId = [];
+          let offerSubCatId = [];
+          let offerSubSubCatId = [];
+
+          jhorOffers.forEach(offer => {
+            offerCatId.push({jhorOfferId: offer.id, catId: offer.category_id});
+            offerSubCatId.push({jhorOfferId: offer.id, subCatId: offer.sub_category_id});
+            offerSubSubCatId.push({jhorOfferId: offer.id, subSubCatId: offer.sub_sub_category_id});
+          });
+
+          if (offerCatId && offerCatId.length > 0) {
+            offerCatId.forEach(cat => {
+              if (itemCatId === cat.catId) {
+                offer_id_number = cat.jhorOfferId;
+                offer_type = anonder_jhor;
+              }
+            });
+          }
+
+          if (offerSubCatId && offerSubCatId.length > 0) {
+            offerSubCatId.forEach(subCat => {
+              if (itemSubCatId === subCat.subCatId) {
+                offer_id_number = subCat.jhorOfferId;
+                offer_type = anonder_jhor;
+              }
+            });
+          }
+
+          if (offerSubSubCatId && offerSubSubCatId.length > 0) {
+            offerSubSubCatId.forEach(subSubCat => {
+              if (itemSubSubCatId === subSubCat.subSubCatId) {
+                offer_id_number = subSubCat.jhorOfferId;
+                offer_type = anonder_jhor;
+              }
+            });
+          }
+        }
+
 
         let newSuborderItemPayload = {
           product_suborder_id: suborder.id,
@@ -438,7 +619,9 @@ module.exports = {
           warehouse_id: thisCartItem.product_id.warehouse_id,
           product_quantity: thisCartItem.product_quantity,
           product_total_price: thisCartItem.product_total_price,
-          status: 1
+          status: 1,
+          offer_type: offer_type,
+          offer_id_number: offer_id_number
         };
 
         const orderedProductInventory = {

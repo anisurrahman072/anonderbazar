@@ -6,6 +6,7 @@ import moment from "moment";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {Subscription} from "rxjs";
+import {ExportService} from "../../../../services/export.service";
 
 @Component({
     selector: 'app-anonder-jhor',
@@ -32,6 +33,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     isEdit: Boolean = false;
     isEditVisible: Boolean = false;
     jhorOfferId: number;
+    orderedOfferedProducts;
+    offerInfo;
 
     /** Common Variables */
     validateForm: FormGroup;
@@ -45,6 +48,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         private fb: FormBuilder,
         private offerService: OfferService,
         private _notification: NzNotificationService,
+        private exportService: ExportService
     ) {
     }
 
@@ -114,12 +118,12 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 let presentTime = moment();
                 if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
                     this._notification.error('Time Ended', 'You can not change the status for offer purchase history purpose. You better create a new one');
+                    this.getAllAnonderJhorOffersData();
                     return;
                 } else {
                     let data = {event, offerId}
                     this.offerService.offerActiveStatusChange(data)
                         .subscribe(result => {
-                            console.log('status : ', result);
                             if (result.code === 'NOT_ALLOWED') {
                                 this._notification.error('Time Ended!', 'Anonder Jhor offer has ended');
                             }
@@ -240,6 +244,51 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.isEdit = !this.isEdit;
                     this.isEditVisible = true;
                     this.jhorOfferId = id;
+                }
+            })
+    }
+
+    generateOfferExcelById(offerId) {
+        this.offerService.generateOfferExcelById(2, offerId)
+            .subscribe(result => {
+                this.orderedOfferedProducts = result.data[0];
+                if (this.orderedOfferedProducts && this.orderedOfferedProducts.length <= 0) {
+                    this._notification.error('No Order', 'None of the products were ordered from this offer, no need to create a CSV file');
+                    return;
+                } else {
+                    this.offerInfo = result.data[1];
+                    let excelData = [];
+                    this.orderedOfferedProducts.forEach(offerItem => {
+                        excelData.push({
+                            'Order id': offerItem.order_id,
+                            'Sub Order id': offerItem.suborder_id,
+                            'product code': offerItem.product_code,
+                            'product name': offerItem.product_name,
+                            'product quantity': offerItem.product_quantity,
+                            'product total price': offerItem.product_total_price,
+                            'warehouse name': offerItem.warehouse_name,
+                        })
+                    });
+
+                    const header = [
+                        'Order id',
+                        'Sub Order id',
+                        'product code',
+                        'product name',
+                        'product quantity',
+                        'product total price',
+                        'warehouse name',
+                    ];
+                    let offer_id = this.offerInfo.id;
+                    let offerName = 'Anonder Jhor';
+                    let offer_calculation_type = this.offerInfo.calculation_type;
+                    let offer_discount_amount = this.offerInfo.discount_amount;
+                    let offer_start_date = moment(this.offerInfo.start_date).format('DD-MM-YYYY HH:mm:ss');
+                    let offer_end_date = moment(this.offerInfo.end_date).format('DD-MM-YYYY HH:mm:ss');
+
+                    let fileName = 'Jhor Offer Orders';
+
+                    this.offerService.downloadFile(excelData, header, fileName, offer_id, offerName, offer_calculation_type, offer_discount_amount, offer_start_date, offer_end_date);
                 }
             })
     }

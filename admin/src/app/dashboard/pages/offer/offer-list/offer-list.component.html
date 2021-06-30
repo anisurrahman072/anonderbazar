@@ -22,6 +22,9 @@
                     <thead>
                     <tr>
                         <th>
+                            <span> ID </span>
+                        </th>
+                        <th>
                             <span> Title </span>
                         </th>
                         <th>
@@ -49,6 +52,10 @@
                     </thead>
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
+                        <td>
+                            <nz-tag>{{datum.id}}</nz-tag>
+                        </td>
+
                         <td>
                             <nz-tag>{{datum.title}}</nz-tag>
                         </td>
@@ -101,10 +108,12 @@
                                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                 <i class="anticon anticon-delete "></i>
                                             </button>
-
                                         </a>
                                     </nz-popconfirm>
                                 </ng-container>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="generateRegularOfferExcelById(datum.id)" title="Download order CSV file">
+                                    <i class="anticon anticon-download"></i>
+                                </button>
                             </nz-button-group>
                         </td>
                     </tr>

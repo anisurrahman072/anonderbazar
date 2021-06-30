@@ -148,6 +148,9 @@
                     <thead>
                     <tr>
                         <th>
+                            <span> ID </span>
+                        </th>
+                        <th>
                             <span> Category </span>
                         </th>
                         <th>
@@ -175,6 +178,10 @@
                     </thead>
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
+                        <td>
+                            <nz-tag>{{datum.id}}</nz-tag>
+                        </td>
+
                         <td>
                             <nz-tag>{{datum.category_id.name}}</nz-tag>
                         </td>
@@ -239,6 +246,9 @@
                                         </a>
                                     </nz-popconfirm>
                                 </ng-container>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="generateOfferExcelById(datum.id)" title="Download order CSV file">
+                                    <i class="anticon anticon-download"></i>
+                                </button>
                             </nz-button-group>
                         </td>
                     </tr>

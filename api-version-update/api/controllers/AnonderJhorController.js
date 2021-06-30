@@ -190,7 +190,10 @@ module.exports = {
 
   deleteAnonderJhorOffer: async (req, res) => {
     try {
-      const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({deletedAt: new Date()});
+      const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({
+        status: 0,
+        deletedAt: new Date()
+      });
 
       return res.status(201).json({
         success: true,
@@ -584,6 +587,61 @@ module.exports = {
       });
     }
   },
+
+  generateOfferExcelById: async (req, res) => {
+    try {
+      let offer_type = parseInt( req.query.offer_type);
+      let offer_id = parseInt(req.query.offer_id);
+
+      let rawSQL = `
+      SELECT
+            product_orders.id AS order_id,
+            product_suborders.id as suborder_id,
+            products.name AS product_name,
+            products.code AS product_code,
+            warehouses.name AS warehouse_name,
+            psi.product_quantity,
+            psi.product_total_price
+        FROM
+            product_suborder_items AS psi
+        LEFT JOIN products ON psi.product_id = products.id
+        LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
+        LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
+        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
+        WHERE
+            psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id}
+        ORDER BY
+            product_orders.id
+        `;
+
+      const offerOrders = await sails.sendNativeQuery(rawSQL, []);
+
+      let offerInfo;
+      if(offer_type === 1) {
+        offerInfo = await Offer.findOne({id: offer_id})
+          .populate('category_id')
+          .populate('subCategory_Id')
+          .populate('subSubCategory_Id');
+      }else {
+        offerInfo = await AnonderJhorOffers.findOne({id: offer_id})
+          .populate('category_id')
+          .populate('sub_category_id')
+          .populate('sub_sub_category_id');
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Offer excel Data fetched successfully',
+        data: [offerOrders.rows, offerInfo]
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to get offer excel Data',
+        error
+      });
+    }
+  }
 
 };
 
