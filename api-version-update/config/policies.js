@@ -330,6 +330,7 @@ module.exports.policies = {
   StatusChangeController: {
     'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
     'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
+    'currentTime' : true
   },
   SuborderController: {
     '*': false,

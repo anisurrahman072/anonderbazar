@@ -12,6 +12,7 @@ import {PaymentReadComponent} from "./payment-read/payment-read.component";
 import {PaymentCreateComponent} from "./payment-create/payment-create.component";
 import {PaymentEditComponent} from "./payment-edit/payment-edit.component";
 import {UiModule} from "../../shared/ui.module";
+import {OrderModule} from "../order/order.module";
 
 @NgModule({
     imports: [
@@ -20,7 +21,8 @@ import {UiModule} from "../../shared/ui.module";
         FileUploadModule,
         ReactiveFormsModule,
         PaymentRoutingModule,
-        UiModule
+        UiModule,
+        OrderModule
     ],
     declarations: [
         PaymentComponent,
