@@ -554,7 +554,7 @@ module.exports = {
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
 
-      console.log('requset jhor offer: ', requestedJorOffer);
+      /*console.log('requset jhor offer: ', requestedJorOffer);*/
 
 
       let _where1 = {};
@@ -562,11 +562,11 @@ module.exports = {
       _where1.approval_status = 2;
       _where1.deletedAt = null;
 
-      if (requestedJorOffer.sub_sub_category_id) {
+      if (requestedJorOffer && requestedJorOffer.sub_sub_category_id) {
         _where1.subcategory_id = requestedJorOffer.sub_sub_category_id.id;
-      } else if (requestedJorOffer.sub_category_id) {
+      } else if (requestedJorOffer && requestedJorOffer.sub_category_id) {
         _where1.category_id = requestedJorOffer.sub_category_id.id;
-      } else if (requestedJorOffer.category_id) {
+      } else if (requestedJorOffer && requestedJorOffer.category_id) {
         _where1.type_id = requestedJorOffer.category_id.id;
       }
 

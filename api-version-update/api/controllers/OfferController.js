@@ -8,6 +8,7 @@
 const {imageUploadConfig} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const OfferService = require('../services/OfferService');
+const moment = require('moment');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -779,17 +780,25 @@ module.exports = {
       let finalCollectionOfProducts = {};
       await OfferService.offerDurationCheck();
       await OfferService.anonderJhorOfferDurationCheck();
+      let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       let _where = {};
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
-      const requestedOffer = await Offer.find({where: _where});
+      const requestedOffer = await Offer.find({
+        where: _where,
+        start_date: {'<=': presentTime},
+        end_date: {'>=': presentTime}
+      });
 
       let _where1 = {};
       _where1.deletedAt = null;
       _where1.status = 1;
-
-      const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
+      const requetedJhorOffer = await AnonderJhorOffers.find({
+        where: _where1,
+        start_date: {'<=': presentTime},
+        end_date: {'>=': presentTime}
+      });
 
 
       if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
