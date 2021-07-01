@@ -56,6 +56,9 @@ export class PaymentComponent implements OnInit {
     ORDER_TYPE = ORDER_TYPE;
     PAYMENT_APPROVAL_STATUS_TYPES = PAYMENT_APPROVAL_STATUS_TYPES;
 
+    PAYMENT_STATUS_CHANGE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus:boolean = false;
+
     partial_offline_payments:boolean = false;
     regular_offline_payments:boolean = false;
 
@@ -94,6 +97,9 @@ export class PaymentComponent implements OnInit {
         this.currentUser = this.authService.getCurrentUser();
         if (this.currentUser.group_id != "admin") {
             this.receiver_id = this.currentUser.id;
+        }
+        if(this.currentUser.id == this.PAYMENT_STATUS_CHANGE_ADMIN_USER){
+            this.isAllowedToUpdatePaymentStatus = true;
         }
         this.cardTitle = this.currentUser.group_id == 4 ? this.currentUser.username + '\'s Financial History' : 'Financial History';
         this.getPageData();
