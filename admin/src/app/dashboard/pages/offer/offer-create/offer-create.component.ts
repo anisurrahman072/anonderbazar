@@ -8,6 +8,7 @@ import {ProductService} from "../../../../services/product.service";
 import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import {a} from "@angular/core/src/render3";
 
 @Component({
     selector: 'app-offer-create',
@@ -16,6 +17,7 @@ import moment from "moment";
 })
 export class OfferCreateComponent implements OnInit {
     validateForm: FormGroup;
+    individualProductFrom: FormGroup;
     ImageFile: File;
     BannerImageFile: File;
     smallOfferImage: File;
@@ -59,6 +61,7 @@ export class OfferCreateComponent implements OnInit {
     isShowHomepage: boolean = false;
 
     Calc_type;
+    Calculation_type;
     /*variables taken for ngmodel in nz-select*/
     selectionType;
     vendorId;
@@ -67,6 +70,7 @@ export class OfferCreateComponent implements OnInit {
     subCategoryId;
     subSubCategoryId;
     isVisible: Boolean = false;
+    isIndividualVisible: Boolean = false;
     allProducts: any = [];
     /**variables used for storing subCat and subSubCat options*/
     subcategoryIDS;
@@ -93,8 +97,10 @@ export class OfferCreateComponent implements OnInit {
 
     allProductTotal = 0;
     selectedProductIds: any;
+    selectedIndividualProductIds: any;
 
     selectedAllProductIds: any = [];
+    individualSelectedProductArray: any = [];
     selectedData;
     allProductSelectAll: any = [false];
 
@@ -115,12 +121,17 @@ export class OfferCreateComponent implements OnInit {
             subCategoryId: ['', []],
             subSubCategoryId: ['', []],
             description: ['', []],
-            discountAmount: ['', [Validators.required]],
-            calculationType: ['', [Validators.required]],
+            discountAmount: ['', []],
+            calculationType: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
         });
+
+        this.individualProductFrom = this.fb.group({
+            Calculation_type: ['', []],
+            discount_amount: ['', []]
+        })
     }
 
     ngOnInit() {
@@ -405,10 +416,12 @@ export class OfferCreateComponent implements OnInit {
         }
         this._notification.success(this.selectedProductIds.length, ' items has been added');
         this.isVisible = false;
+        this.isIndividualVisible = false;
     }
 
     showModal(): void {
         this.isVisible = true;
+        this.isIndividualVisible = true;
         this.getAllProducts(1);
         this.offerService.getAllOptions('Brand wise', '', '')
             .subscribe(result => {
@@ -426,19 +439,19 @@ export class OfferCreateComponent implements OnInit {
 
     handleCancel(): void {
         this.isVisible = false;
+        this.isIndividualVisible = false;
     }
 
-    /**Method called when selection type is changed from the front end*/
+    /**Method called when selection type is changed from the form end*/
     onSelectionTypeSelect(offerSelectionType) {
         this.offerSelectionType = offerSelectionType;
-        /*this.vendorId = event;*/
         this.vendorId = null;
         this.brandId = null;
         this.categoryId = null;
         this.subCategoryId = null;
         this.subSubCategoryId = null;
         this.selectedProductIds = null;
-        if (offerSelectionType && offerSelectionType !== 'Product wise') {
+        if (offerSelectionType && offerSelectionType !== 'Product wise' && offerSelectionType !== 'individual_product') {
             this.getAllOptions(offerSelectionType, '', '');
         }
     }
@@ -467,7 +480,7 @@ export class OfferCreateComponent implements OnInit {
 
     /**Method call when we selection a offer selection type, it does not allow to store previously selected selection type
      it only keeps the finally selected selection type data*/
-    finalSelectionType(vendorId, brandId, categoryId, selectedProductIds, event) {
+    finalSelectionType(vendorId, brandId, categoryId, selectedProductIds, selectedIndividualProductIds, event) {
         if (event) {
             if (vendorId) {
                 this.vendorId = event;
@@ -476,6 +489,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (brandId) {
                 this.vendorId = null;
                 this.brandId = event;
@@ -483,6 +497,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (categoryId) {
                 this.vendorId = null;
                 this.brandId = null;
@@ -490,6 +505,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
                 this.getAllOptions('', event, '')
             } else if (selectedProductIds) {
                 this.vendorId = null;
@@ -497,7 +513,41 @@ export class OfferCreateComponent implements OnInit {
                 this.categoryId = null;
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
+                this.selectedIndividualProductIds = null;
+            } else if (selectedIndividualProductIds) {
+                this.vendorId = null;
+                this.brandId = null;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
+                this.selectedProductIds = null;
             }
         }
+    }
+
+    addIndividualProduct = ($event, value, productId) => {
+
+        console.log('Calculation_type: ', value.Calculation_type);
+        console.log('discount_amount: ', value.discount_amount);
+        console.log('product id: ', productId);
+
+        this.submitting = true;
+        $event.preventDefault();
+        /*this._isSpinning = true;*/
+        for (const key in this.individualProductFrom.controls) {
+            this.individualProductFrom.controls[key].markAsDirty();
+        }
+
+        /**set a condition whether the product being selected is already added or not*/
+        /**show sucess or error notification*/
+
+        this.individualSelectedProductArray = {
+            productId: productId = {
+                Calculation_type: value.Calculation_type,
+                discount_amount: value.discount_amount
+            }
+        }
+        this.individualProductFrom.reset();
+        this.submitting = false;
     }
 }
