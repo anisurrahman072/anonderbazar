@@ -14,7 +14,7 @@ import { EventService } from '../../../../services/event.service';
 import * as moment from 'moment';
 import { EventPriceService } from '../../../../services/event-price.service';
 import {environment} from "../../../../../environments/environment";
-
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-event-edit',
@@ -22,6 +22,8 @@ import {environment} from "../../../../../environments/environment";
   styleUrls: ['./event-edit.component.css']
 })
 export class EventEditComponent implements OnInit {
+  Editor = ClassicEditor;
+
   _isSpinning: boolean = false;
   validateForm: FormGroup;
   ImageFile: File;
@@ -41,7 +43,6 @@ export class EventEditComponent implements OnInit {
   listOfPrice = [];
   addedPrices = [];
   event_starttime: Date = new Date();uri_id: any;
-;
   event_endtime: Date = new Date();
   ckConfig = {
     uiColor: "#662d91",
@@ -144,8 +145,8 @@ export class EventEditComponent implements OnInit {
    // init the component
   ngOnInit() {
     this.status_id = this.route.snapshot.paramMap.get('status');
-    
-    
+
+
     this.sub = this.route.params.subscribe(params => {
       this.id = +params['id']; // (+) converts string 'id' to a number
       this.eventService.getById(this.id).subscribe(result => {

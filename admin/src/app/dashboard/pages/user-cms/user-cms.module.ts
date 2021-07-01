@@ -17,10 +17,10 @@ import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
     CmsRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    CKEditorModule,
     ImageUploadModule.forRoot(),
     NgZorroAntdModule.forRoot(),
-    UiModule
+    UiModule,
+    CKEditorModule
 
     // ScrollbarModule
   ],

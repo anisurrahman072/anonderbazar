@@ -62,14 +62,12 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import {CouponLotteryService} from "../services/coupon-lottery.service";
 import {QuestionsService} from "../services/questions.service";
-import { CKEditorModule  } from '@ckeditor/ckeditor5-angular';
 registerLocaleData(en);
 
 @NgModule({
     declarations: [AppComponent],
     imports: [
         HttpClientModule,
-        CKEditorModule ,
         BrowserModule.withServerTransition({appId: 'my-app'}),
         BrowserAnimationsModule,
         TransferHttpCacheModule,
@@ -77,7 +75,7 @@ registerLocaleData(en);
         PrebootModule.withConfig({appRoot: 'app-root'}),
         BrowserTransferStateModule,
         NgZorroAntdModule,
-        UiModule,
+        UiModule
     ],
     providers: [
         { provide: NZ_I18N, useValue: en_US },

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, NgZone} from '@angular/core';
 import {forkJoin, Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import * as html2canvas from "html2canvas";
 import * as jsPDF from 'jspdf';
 import * as ___ from 'lodash';
@@ -46,9 +46,10 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
     currentMoneReceipt: any = '';
 
-    ordersGridPageNumber = 1;
+    ordersGridPageNumber = null;
 
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
@@ -59,8 +60,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit() {
-        this.ordersGridPageNumber = +this.route.snapshot.paramMap.get("page");
-        console.log("annnn: ", this.ordersGridPageNumber);
+        this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
 
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
@@ -209,5 +209,12 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     showAddModalVisible(flag, currentMoneyReceipt) {
         this.currentMoneReceipt = currentMoneyReceipt;
         this.isAddModalVisible = flag;
+    }
+
+    goToOrdersGridPage(){
+        let query = {
+            page: this.ordersGridPageNumber
+        };
+        this.router.navigate(['/dashboard/order'], {queryParams: query});
     }
 }

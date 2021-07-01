@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../environments/environment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-header',
@@ -11,6 +12,8 @@ import {environment} from "../../../../../../environments/environment";
     styleUrls: ['./cms-header.component.css']
 })
 export class CmsHeaderComponent implements OnInit {
+    Editor = ClassicEditor;
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;
@@ -155,7 +158,7 @@ export class CmsHeaderComponent implements OnInit {
         }
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            this.getData(); 
+            this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);

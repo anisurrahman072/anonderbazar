@@ -5,6 +5,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../../environments/environment";
 import { CmsFeatureFooterService} from "../../../../../../services/cms-feature-footer.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-feature-footer',
@@ -80,6 +81,8 @@ export class CmsFeatureFooterComponent implements OnInit {
     id: any;
     currentFeatureId: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+
+    Editor = ClassicEditor;
 
     constructor(private cmsService: CmsService,
                 private _notification: NzNotificationService,

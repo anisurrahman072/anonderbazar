@@ -7,15 +7,17 @@ import { EventReadComponent } from './event-read/event-read.component';
 import { EventListComponent } from './event-list/event-list.component';
 import {EventManagementRoutingModule} from './event-management-routing.module';
 import {UiModule} from "../../shared/ui.module";
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    EventManagementRoutingModule,
-    UiModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        EventManagementRoutingModule,
+        UiModule,
+        CKEditorModule
+    ],
   declarations: [EventCreateComponent, EventEditComponent, EventReadComponent, EventListComponent]
 })
 export class EventManagementModule { }

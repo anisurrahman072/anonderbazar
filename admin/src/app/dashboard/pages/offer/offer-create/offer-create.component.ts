@@ -8,6 +8,8 @@ import {ProductService} from "../../../../services/product.service";
 import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
     selector: 'app-offer-create',
@@ -15,6 +17,8 @@ import moment from "moment";
     styleUrls: ['./offer-create.component.css']
 })
 export class OfferCreateComponent implements OnInit {
+    Editor = ClassicEditor;
+
     validateForm: FormGroup;
     ImageFile: File;
     BannerImageFile: File;

@@ -204,7 +204,7 @@
                     <td style="width: 200px;">
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
-                                    [routerLink]="['/dashboard/order/details/', data.id],{queryParams: {page: orderPage}}"
+                                    (click)="goToOrderRead(data.id)"
                                     nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-info-circle"> </i>
                             </button>

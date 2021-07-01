@@ -7,6 +7,7 @@ import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {AuthService} from '../../../../../../services/auth.service';
 import {environment} from "../../../../../../../environments/environment";
 import {AddNewCmsService} from "../../../../../../services/add-new-cms.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-post',
@@ -14,6 +15,8 @@ import {AddNewCmsService} from "../../../../../../services/add-new-cms.service";
     styleUrls: ['./user-cms-post.component.css']
 })
 export class UserCmsPostComponent implements OnInit {
+    Editor = ClassicEditor;
+
     currentUser: any;
 
     cmsPostData: any;

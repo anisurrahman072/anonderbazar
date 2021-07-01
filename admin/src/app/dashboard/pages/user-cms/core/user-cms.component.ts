@@ -7,7 +7,7 @@ import {CmsService} from '../../../../services/cms.service';
 import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
 import {AddNewCmsService} from "../../../../services/add-new-cms.service";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms',
@@ -18,8 +18,7 @@ export class UserCmsComponent implements OnInit {
     currentUser: any;
     cmsData: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    editor = ClassicEditor;
-
+    ckConfig = { toolbar: [ 'heading', '|', 'bold', 'italic' ] }
 
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
@@ -75,7 +74,8 @@ export class UserCmsComponent implements OnInit {
     currentPostId: any;
     submitting: boolean = false;
 
-    ckeditorDescription = "<p>jjj</p>";
+    Editor = ClassicEditor;
+
     constructor(
         private cmsService: CmsService,
         private authService: AuthService,

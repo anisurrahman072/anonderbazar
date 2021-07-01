@@ -196,8 +196,11 @@
                             </label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false" debounce="500">
-                            </ckeditor>
+                            <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false" debounce="500">
+                            </ckeditor>-->
+
+                            <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
+
                             <div    *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
                                 required!
                             </div>

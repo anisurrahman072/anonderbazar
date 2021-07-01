@@ -345,9 +345,11 @@
                             <label>Invoice footer</label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <ckeditor formControlName="invoice_footer" [config]="ckConfig" [readonly]="false"
+                            <!--<ckeditor formControlName="invoice_footer" [config]="ckConfig" [readonly]="false"
                                       debounce="500">
-                            </ckeditor>
+                            </ckeditor>-->
+                            <ckeditor [editor]="Editor" formControlName="invoice_footer"></ckeditor>
+
                             <div
                                     *ngIf="getFormControl('invoice_footer').dirty && getFormControl('invoice_footer').hasError('required')">
                                 required!
