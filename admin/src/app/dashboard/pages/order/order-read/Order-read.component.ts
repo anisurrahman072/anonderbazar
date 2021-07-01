@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, NgZone} from '@angular/core';
 import {forkJoin, Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import * as jsPDF from 'jspdf';
 import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
@@ -50,7 +50,10 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
     currentMoneReceipt: any = '';
 
+    ordersGridPageNumber = null;
+
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
@@ -61,6 +64,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit() {
+        this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
+
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -126,24 +131,11 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     }
 
 /*
-    private SavePDFDeprecated() {
+    public SavePDF() {
         let data = document.getElementById('printSection');
-        // data.style.fontFeatureSettings = '"liga" 0';
         this._ngZone.runOutsideAngular(() => {
-            html2canvas(data, {
-                letterRendering: true,
-                allowTaint: true,
-                useCORS: true
-            })
+            html2canvas(data)
                 .then(canvas => {
-                    window.open(canvas.toDataURL('image/png'));
-
-                    var ctx = canvas.getContext('2d');
-                    ctx.webkitImageSmoothingEnabled = true;
-                    ctx.mozImageSmoothingEnabled = true;
-                    ctx.imageSmoothingEnabled = true;
-
-
                     let imgWidth = 178;
                     let pageHeight = 295;
                     let imgHeight = canvas.height * imgWidth / canvas.width;
@@ -151,13 +143,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     let y = 0;
 
                     const contentDataURL = canvas.toDataURL('image/png')
-
-                    const dummyImage = document.getElementById('dummy_image');
-                    dummyImage.setAttribute('src', contentDataURL);
-
                     let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
                     heightLeft -= pageHeight;
-                    pdf.addImage(contentDataURL, 'png', 15, 15, imgWidth, imgHeight);
+                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight);
                     while (heightLeft >= 0) {
                         y = heightLeft - imgHeight;
                         pdf.addPage();
@@ -170,10 +158,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     console.log("Error occurred!", error);
                 });
         });
-
-
     }
- */
+*/
+
     public savePDF() {
         let data = document.getElementById('printSection');
         this._ngZone.runOutsideAngular(() => {
@@ -233,5 +220,12 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     showAddModalVisible(flag, currentMoneyReceipt) {
         this.currentMoneReceipt = currentMoneyReceipt;
         this.isAddModalVisible = flag;
+    }
+
+    goToOrdersGridPage(){
+        let query = {
+            page: this.ordersGridPageNumber
+        };
+        this.router.navigate(['/dashboard/order'], {queryParams: query});
     }
 }

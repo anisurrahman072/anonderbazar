@@ -5,6 +5,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 
 import {environment} from "../../../../../../../environments/environment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-footer',
@@ -12,6 +13,8 @@ import {environment} from "../../../../../../../environments/environment";
     styleUrls: ['./cms-footer.component.css']
 })
 export class CmsFooterComponent implements OnInit {
+    Editor = ClassicEditor;
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;
@@ -78,9 +81,9 @@ export class CmsFooterComponent implements OnInit {
         });
     }
   //Event method for getting all the data for the page
-    ngOnInit() { 
+    ngOnInit() {
         this.getData();
-    } 
+    }
 
     sectionChange(value) {
 
@@ -150,7 +153,7 @@ export class CmsFooterComponent implements OnInit {
         }
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            this.getData(); 
+            this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);

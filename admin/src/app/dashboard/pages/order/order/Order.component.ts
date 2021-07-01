@@ -13,6 +13,7 @@ import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
 import {Subscription} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
 
 const moment = _rollupMoment || _moment;
 
@@ -70,6 +71,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     private storedCsvOrders: any = [];
 
     submitting: boolean = false;
+    ordersGridPageNumber = null;
 
     PAYMENT_METHODS = PAYMENT_METHODS;
 
@@ -80,6 +82,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     isAllowedToUpdatePaymentStatus: boolean = false;
 
     constructor(
+        private route: ActivatedRoute,
+        private router: Router,
         private orderService: OrderService,
         private suborderItemService: SuborderItemService,
         private fb: FormBuilder,
@@ -109,6 +113,11 @@ export class OrderComponent implements OnInit, OnDestroy {
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
+        this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
+        if(this.ordersGridPageNumber){
+            this.orderPage = this.ordersGridPageNumber;
+        }
+
         if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
             this.isAllowedToUpdateOrderStatus = true;
         }
@@ -650,6 +659,13 @@ export class OrderComponent implements OnInit, OnDestroy {
                 console.log("Error: ", error);
                 this._notification.error('Error occurred!', 'Something wrong happened!');
             })
+    }
+
+    goToOrderRead(orderId){
+        let query = {
+            page: this.orderPage
+        };
+        this.router.navigate(['/dashboard/order/details/', orderId], {queryParams: query});
     }
 
 

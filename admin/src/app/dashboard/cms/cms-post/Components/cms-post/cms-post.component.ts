@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {environment} from "../../../../../../environments/environment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-post',
@@ -11,6 +12,8 @@ import {environment} from "../../../../../../environments/environment";
     styleUrls: ['./cms-post.component.css']
 })
 export class CmsPostComponent implements OnInit {
+    Editor = ClassicEditor;
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;

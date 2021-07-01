@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../../../environments/environment";
 import {CategoryProductService} from '../../../../../../services/category-product.service';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-offer',
@@ -11,6 +12,8 @@ import {CategoryProductService} from '../../../../../../services/category-produc
     styleUrls: ['./cms-offer.component.css']
 })
 export class CmsOfferComponent implements OnInit {
+    Editor = ClassicEditor;
+
     @ViewChild('Image')
     options = [
         {value: 'android', label: 'android'},

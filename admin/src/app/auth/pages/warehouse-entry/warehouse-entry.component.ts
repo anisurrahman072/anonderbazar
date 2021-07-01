@@ -7,6 +7,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {WarehouseService} from '../../../services/warehouse.service';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
     selector: 'app-warehouse-entry',
@@ -14,6 +16,8 @@ import {UserService} from '../../../services/user.service';
     styleUrls: ['./warehouse-entry.component.css']
 })
 export class WarehouseEntryComponent implements OnInit {
+    Editor = ClassicEditor;
+
     validateForm: FormGroup;
     ImageFile: File;
     current = 0;
