@@ -571,7 +571,7 @@ module.exports = {
       }
 
       webJhorOfferedProducts = await Product.find({where: _where1});
-      console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);
+      /*console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);*/
 
       res.status(200).json({
         success: true,

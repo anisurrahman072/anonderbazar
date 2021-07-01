@@ -785,19 +785,19 @@ module.exports = {
       let _where = {};
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
+      _where.start_date =  {'<=': presentTime};
+      _where.end_date = {'>=': presentTime};
       const requestedOffer = await Offer.find({
-        where: _where,
-        start_date: {'<=': presentTime},
-        end_date: {'>=': presentTime}
+        where: _where
       });
 
       let _where1 = {};
       _where1.deletedAt = null;
       _where1.status = 1;
+      _where1.start_date = {'<=': presentTime};
+      _where1.end_date = {'>=': presentTime};
       const requetedJhorOffer = await AnonderJhorOffers.find({
-        where: _where1,
-        start_date: {'<=': presentTime},
-        end_date: {'>=': presentTime}
+        where: _where1
       });
 
 

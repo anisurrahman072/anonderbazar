@@ -43,11 +43,13 @@ export class AnonderJhorDetailsComponent implements OnInit {
                     this.anonderJhorOffer = result.data[0];
                     this.anonderJhorOfferProducts = result.data[1];
                     console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);
-                    console.log('time: ', this.anonderJhorOffer.start_date <= moment());
-                    console.log('time: ', this.anonderJhorOffer.end_date <= moment());
+
+                    let presentTime = (new Date(Date.now())).getTime();
+                    let startTime =  new Date(this.anonderJhorOffer.start_date).getTime()
+                    let endTime = new Date(this.anonderJhorOffer.end_date).getTime();
 
                     /** setting discount to every products exists in this offer*/
-                    if (this.anonderJhorOffer && this.anonderJhorOffer.length > 0 && this.anonderJhorOffer.start_date <= moment() && this.anonderJhorOffer.end_date >= moment()) {
+                    if (this.anonderJhorOffer &&  startTime <= presentTime && endTime >= presentTime) {
                         this.anonderJhorOfferProducts.forEach(product => {
                             this.calculationType = this.anonderJhorOffer.calculation_type;
                             this.discountAmount = this.anonderJhorOffer.discount_amount;
@@ -60,7 +62,7 @@ export class AnonderJhorDetailsComponent implements OnInit {
                         })
                     } else if (!this.anonderJhorOfferProducts || this.anonderJhorOfferProducts.length < 0) {
                         this.toastr.error('There is no products in this offer', 'No Products');
-                    } else if(this.anonderJhorOfferProducts && this.anonderJhorOfferProducts.length < 0){
+                    } else{
                         this.toastr.error('Please wait for the offer to start or reload the page', 'Wait please');
                     }
 
