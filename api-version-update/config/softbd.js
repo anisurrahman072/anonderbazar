@@ -6,13 +6,13 @@ module.exports = {
   adminPaymentAddressId: 75,
   cashOnDeliveryNotAllowedForCategory: 428,
   dhakaZilaId: 2942,
-  sslCommerceSandbox: false,
+  sslCommerceSandbox: true,
   sslCommerzSandboxCred: {
     store_id: 'anond5efeb984e900f',
     store_passwd: 'anond5efeb984e900f@ssl'
   },
-  sslWebUrl: 'https://anonderbazar.com',
-  sslApiUrl: 'https://api.anonderbazar.com/api/v1',
+  sslWebUrl: 'https://test.anonderbazar.com',
+  sslApiUrl: 'https://api-test.anonderbazar.com/api/v1',
   sslCommerzProductionCred: {
     store_id: 'anonderbazarlive@ssl',
     store_passwd: 'i2EFz@ZNt57@t@r'
@@ -30,7 +30,7 @@ module.exports = {
     'sid': 'ANONDERBAZARBULK',
   },
   bKash: {
-    isSandboxMode: false,
+    isSandboxMode: true,
     'production': {
       'app_key': '23qdvpcctmb5lor0b3k17p3qho',
       'app_secret': '10i00q9staf67qfcr65runrb03khco6tiuqvdprvq9vbqsfjg4un',

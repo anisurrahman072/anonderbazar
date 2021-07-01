@@ -131,6 +131,9 @@ export class SuborderComponent implements OnInit {
 
     loading: boolean = false;
 
+    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdateSubOrderStatus: boolean = false;
+
 
     constructor(
         private suborderService: SuborderService,
@@ -171,6 +174,9 @@ export class SuborderComponent implements OnInit {
         });
 
         this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateSubOrderStatus = true;
+        }
 
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {

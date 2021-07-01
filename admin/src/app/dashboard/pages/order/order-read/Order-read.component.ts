@@ -2,17 +2,21 @@ import {Component, OnDestroy, OnInit, NgZone} from '@angular/core';
 import {forkJoin, Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {ActivatedRoute, Router} from '@angular/router';
-import * as html2canvas from "html2canvas";
 import * as jsPDF from 'jspdf';
 import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS, ORDER_TYPE, OFFLINE_PAYMENT_METHODS} from "../../../../../environments/global_config";
+import {
+    GLOBAL_CONFIGS,
+    PAYMENT_METHODS,
+    ORDER_TYPE,
+    OFFLINE_PAYMENT_METHODS
+} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
-// import en from "@angular/common/locales/en";
 import {PaymentService} from "../../../../services/payment.service";
+import domtoimage from 'dom-to-image';
 
 @Component({
     selector: 'app-brand-read',
@@ -126,39 +130,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     }
 
-    //Method for get PDF
-
-    // getPDF() {
-    //     let printContents = document.getElementById('print-section').innerHTML;
-    //     console.log(printContents);
-    //
-    //     let cop = `
-    //       <html>
-    //         <head>
-    //           <title>Order Details</title>
-    //           <style>
-    //           //........Customized style.......
-    //           </style>
-    //         </head>
-    //             <body onload="window.print();window.close()">${printContents}</body>
-    //       </html>`;
-    //
-    //     let specialElementHandlers = {
-    //         '#editor': function (element, renderer) {
-    //             return true;
-    //         },
-    //         '.controls': function (element, renderer) {
-    //             return true;
-    //         }
-    //     };
-    //     let doc = new jsPDF();
-    //     doc.fromHTML(cop, 15, 15, {
-    //         'width': 170,
-    //         'elementHandlers': specialElementHandlers
-    //     })
-    //     doc.save('Test.pdf');
-    // }
-
+/*
     public SavePDF() {
         let data = document.getElementById('printSection');
         this._ngZone.runOutsideAngular(() => {
@@ -178,6 +150,45 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                         y = heightLeft - imgHeight;
                         pdf.addPage();
                         pdf.addImage(contentDataURL, 'PNG', 15, y, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    pdf.save('invoice.pdf'); // Generated PDF
+                })
+                .catch(error => {
+                    console.log("Error occurred!", error);
+                });
+        });
+    }
+*/
+
+    public savePDF() {
+        let data = document.getElementById('printSection');
+        this._ngZone.runOutsideAngular(() => {
+            domtoimage.toPng(data)
+                .then(dataUrl => {
+                    return new Promise(function (resolved, rejected) {
+                        const i = new Image()
+                        i.onload = function () {
+                            resolved({w: i.width, h: i.height, dataUrl: dataUrl})
+                        };
+                        i.src = dataUrl
+                    });
+                })
+                .then(({w, h, dataUrl}) => {
+
+                    let imgWidth = 178;
+                    let pageHeight = 295;
+                    let imgHeight = h * imgWidth / w;
+                    let heightLeft = imgHeight;
+                    let y = 0;
+
+                    let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
+                    heightLeft -= pageHeight;
+                    pdf.addImage(dataUrl, 'png', 10, 10, imgWidth, imgHeight);
+                    while (heightLeft >= 0) {
+                        y = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(dataUrl, 'PNG', 10, y, imgWidth, imgHeight);
                         heightLeft -= pageHeight;
                     }
                     pdf.save('invoice.pdf'); // Generated PDF

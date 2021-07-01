@@ -75,6 +75,12 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     PAYMENT_METHODS = PAYMENT_METHODS;
 
+    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdateOrderStatus: boolean = false;
+
+    PAYMENT_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus: boolean = false;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -110,6 +116,13 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
         if(this.ordersGridPageNumber){
             this.orderPage = this.ordersGridPageNumber;
+        }
+
+        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateOrderStatus = true;
+        }
+        if(this.currentUser.id == this.PAYMENT_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdatePaymentStatus = true;
         }
         this.getData();
     }
