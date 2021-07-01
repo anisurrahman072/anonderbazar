@@ -8,6 +8,8 @@ import {SuborderService} from "../../../../services/suborder.service";
 import {OrderService} from "../../../../services/order.service";
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {AuthService} from "../../../../services/auth.service";
 
 const moment = _rollupMoment || _moment;
 
@@ -41,13 +43,17 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     ];
     order_id: any;
     suborder_id: any;
+    paymentApprovalStatus: any;
+    PAYMENT_STATUS_CHANGE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus:boolean = false;
 
     constructor(private router: Router, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
-                private paymentService: PaymentService) {
+                private paymentService: PaymentService,
+                private authService: AuthService) {
 
     }
     // init the component
@@ -63,15 +69,21 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
             payment_date: ['', [Validators.required]],
         });
 
-/*        this.orderService.getAll().subscribe(result => {
-            this.orderSearchOptions = result;
-        });*/
+        this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.PAYMENT_STATUS_CHANGE_ADMIN_USER){
+            this.isAllowedToUpdatePaymentStatus = true;
+        }
+
+        /*        this.orderService.getAll().subscribe(result => {
+                    this.orderSearchOptions = result;
+                });*/
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.paymentService.getByIdNoPop(this.id)
                 .subscribe(result => {
                     this.data = result;
                     console.log('payment', this.data);
+                    this.paymentApprovalStatus = this.data.status;
 
                     this.validateForm.patchValue({
                         order_id: this.data.suborder_id,

@@ -3,6 +3,7 @@ import {OrderService} from "../../../../services/order.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import * as ___ from 'lodash';
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
     selector: 'app-canceled-order',
@@ -20,14 +21,23 @@ export class CanceledOrderComponent implements OnInit {
     options: any[] = GLOBAL_CONFIGS.REFUND_STATUS;
     statusSearchValue: any = null;
 
+    currentUser: any;
+    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdateRefundStatus: boolean = false;
+
     constructor(
         private orderService: OrderService,
-        private _notification: NzNotificationService
+        private _notification: NzNotificationService,
+        private authService: AuthService
     ) {
     }
 
     ngOnInit() {
         this.getPageData();
+        this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateRefundStatus = true;
+        }
     }
 
     getPageData($event?: any) {

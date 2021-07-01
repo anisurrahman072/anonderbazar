@@ -168,6 +168,9 @@ export class ProductComponent implements OnInit, OnDestroy {
         });
 
         this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.PRODUCT_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateProduct = true;
+        }
         if(this.currentUser.id)
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
