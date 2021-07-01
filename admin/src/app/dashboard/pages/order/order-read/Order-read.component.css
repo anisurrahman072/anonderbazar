@@ -1,3 +1,7 @@
+#printSection p {
+    font-size: 16px;
+}
+
 .circle{
     width: 80px;
     line-height: 77px;
@@ -7,12 +11,31 @@
     border: 3px solid #000;
 }
 
+#printSection h4 {
+    font-size: 20px;
+}
+
+#printSection h5 {
+    font-size: 18px;
+}
+
+#printSection h6 {
+    font-size: 16px;
+}
+
 .order-items thead tr th {
     text-align: center;
+    font-size: 16px;
 }
+
+.order-items tbody tr td {
+    font-size: 16px;
+}
+
 .order-items thead tr th.price-type {
     text-align: right;
 }
+
 .order-items tbody tr td.price-type {
     text-align: right;
 }
