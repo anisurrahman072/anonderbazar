@@ -8,10 +8,14 @@ import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
 import {environment} from "../../../../../environments/environment";
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS, ORDER_TYPE, OFFLINE_PAYMENT_METHODS} from "../../../../../environments/global_config";
+import {
+    GLOBAL_CONFIGS,
+    PAYMENT_METHODS,
+    ORDER_TYPE,
+    OFFLINE_PAYMENT_METHODS
+} from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
-// import en from "@angular/common/locales/en";
 import {PaymentService} from "../../../../services/payment.service";
 
 @Component({
@@ -156,9 +160,17 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     public SavePDF() {
         let data = document.getElementById('printSection');
+        // data.style.fontFeatureSettings = '"liga" 0';
         this._ngZone.runOutsideAngular(() => {
-            html2canvas(data)
+            html2canvas(data, {
+                letterRendering:true
+            })
                 .then(canvas => {
+                    var ctx = canvas.getContext('2d');
+                    ctx.webkitImageSmoothingEnabled = true;
+                    ctx.mozImageSmoothingEnabled = true;
+                    ctx.imageSmoothingEnabled = true;
+
                     let imgWidth = 178;
                     let pageHeight = 295;
                     let imgHeight = canvas.height * imgWidth / canvas.width;
@@ -168,7 +180,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     const contentDataURL = canvas.toDataURL('image/png')
                     let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
                     heightLeft -= pageHeight;
-                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight);
+                    pdf.addImage(contentDataURL, 'png', 15, 15, imgWidth, imgHeight);
                     while (heightLeft >= 0) {
                         y = heightLeft - imgHeight;
                         pdf.addPage();

@@ -10,7 +10,7 @@
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
         </ng-template>
-        <div *ngIf="data && suborders" id="printSection">
+        <div *ngIf="data && suborders" id="printSection" style="font-variant: none; color: #000000; font-family: Verdana, sans-serif; font-size: 14px;">
             <div class="row">
                 <div class="col-md-6">
                     <div class="header-logo">
@@ -119,7 +119,7 @@
             <div class="row" style="margin-bottom: 10px; margin-left: 30px">
                 <div class="col-md-6">
                     <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
-                        <h5>BILLING INFORMATION</h5>
+                        <h4>BILLING INFORMATION</h4>
                         <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
                         <p>{{paymentAddress.address}}</p>
                         <p *ngIf="paymentAddress.upazila_id && paymentAddress.zila_id && paymentAddress.division_id">
@@ -128,7 +128,7 @@
                         <p>T: {{paymentAddress.phone}}</p>
                     </div>
                     <div class="shopping-info-left" *ngIf="shippingAddress; else alternateShipping">
-                        <h5>SHIPPING/DELIVERY INFORMATION</h5>
+                        <h4>SHIPPING/DELIVERY INFORMATION</h4>
                         <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
                         <p>{{shippingAddress.address}}</p>
                         <p>
