@@ -29,7 +29,7 @@
                 <label> Vendor Order </label>
             </div>
             <div class="col-md-8">
-                <div class="form-group"><input nz-input formControlName="suborder_id" [nzSize]="'large'"> </div>
+                <div class="form-group"><input nz-input formControlName="suborder_id" [nzSize]="'large'"></div>
                 <div
                         *ngIf="getFormControl('suborder_id').dirty&&getFormControl('suborder_id').hasError('required')">
                     required!
@@ -46,8 +46,8 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group"><input nz-input formControlName="user_id"
-                      [readOnly]="true"
-                       [nzSize]="'large'" [ngModel]="customer?.username">
+                                               [readOnly]="true"
+                                               [nzSize]="'large'" [ngModel]="customer?.username">
                 </div>
             </div>
         </div>
@@ -60,9 +60,9 @@
             </div>
             <div class="col-md-8">
 
-                <div class="form-group"> <input nz-input formControlName="receiver_id"
-                       [readOnly]="true"
-                       [nzSize]="'large'" [ngModel]="currentUser?.username">
+                <div class="form-group"><input nz-input formControlName="receiver_id"
+                                               [readOnly]="true"
+                                               [nzSize]="'large'" [ngModel]="currentUser?.username">
                 </div>
             </div>
         </div>
@@ -75,14 +75,14 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group">
-                <nz-select formControlName="payment_type" nzPlaceHolder="Select payment type">
-                    <nz-option
-                            *ngFor="let option of paymentTypeOptions"
-                            [nzLabel]="option.label"
-                            [nzValue]="option.value"
-                            [nzDisabled]="option.disabled">
-                    </nz-option>
-                </nz-select>
+                    <nz-select formControlName="payment_type" nzPlaceHolder="Select payment type">
+                        <nz-option
+                                *ngFor="let option of paymentTypeOptions"
+                                [nzLabel]="option.label"
+                                [nzValue]="option.value"
+                                [nzDisabled]="option.disabled">
+                        </nz-option>
+                    </nz-select>
                 </div>
                 <div
                         *ngIf="getFormControl('payment_type').dirty&&getFormControl('payment_type').hasError('required')">
@@ -99,9 +99,9 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group">
-                <input nz-input formControlName="payment_amount"
-                       [placeholder]="'Enter payment amount'"
-                       [nzSize]="'large'">
+                    <input nz-input formControlName="payment_amount"
+                           [placeholder]="'Enter payment amount'"
+                           [nzSize]="'large'">
                 </div>
                 <div
                         *ngIf="getFormControl('payment_amount').dirty&&getFormControl('payment_amount').hasError('required')">
@@ -118,7 +118,7 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group">
-                <nz-date-picker formControlName="payment_date" [nzPlaceHolder]="'Enter Date'"></nz-date-picker>
+                    <nz-date-picker formControlName="payment_date" [nzPlaceHolder]="'Enter Date'"></nz-date-picker>
                 </div>
                 <div
                         *ngIf="getFormControl('payment_date').dirty&&getFormControl('payment_date').hasError('required')">
@@ -135,14 +135,17 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group">
-                <nz-select formControlName="status" nzPlaceHolder="Select Status">
-                    <nz-option
-                            *ngFor="let option of statusOptions"
-                            [nzLabel]="option.label"
-                            [nzValue]="option.value"
-                            [nzDisabled]="option.disabled">
-                    </nz-option>
-                </nz-select>
+                    <nz-select formControlName="status" nzPlaceHolder="Select Status"
+                               *ngIf="isAllowedToUpdatePaymentStatus">
+                        <nz-option
+                                *ngFor="let option of statusOptions"
+                                [nzLabel]="option.label"
+                                [nzValue]="option.value"
+                                [nzDisabled]="option.disabled">
+                        </nz-option>
+                    </nz-select>
+                    <div *ngIf="!isAllowedToUpdatePaymentStatus"><p>{{paymentApprovalStatus | paymentApprovalStatus}}</p></div>
+
                 </div>
                 <div
                         *ngIf="getFormControl('status').dirty&&getFormControl('status').hasError('required')">
