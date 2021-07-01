@@ -2,7 +2,7 @@
     <nz-spin [nzSpinning]="_isSpinning">
         <ng-template #extra>
             <button nz-button [nzType]="'primary'"
-                    [nzSize]="'large'" (click)="SavePDF()">
+                    [nzSize]="'large'" (click)="savePDF()">
                 <i class="anticon anticon-download"></i><span> Save  </span>
             </button>&nbsp;
             <button routerLink="/dashboard/order" nz-button [nzType]="'primary'"
@@ -10,214 +10,229 @@
                 <i class="anticon anticon-file-text"></i><span> List </span>
             </button>
         </ng-template>
-        <div *ngIf="data && suborders" id="printSection" style="font-variant: none; color: #000000; font-family: Verdana, sans-serif; font-size: 14px;">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="header-logo">
-                        <img style="height:100px !important" src="assets/images/logo.png" class="img-responsive"
-                             alt="img">
+        <div id="printSection" style="font-variant: none; color: #000000;">
+            <div *ngIf="data && suborders" style="margin-bottom: 30px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="header-logo">
+                            <img style="height:100px !important" src="assets/images/logo.png" class="img-responsive"
+                                 alt="img">
+                        </div>
+                        <div class="invoice-inner-left"><br>
+                            <br>
+                            <p>Hi, {{data.user_id.first_name}} {{data.user_id.last_name}}. </p>
+                            <p>Thank you for shopping from our store.</p>
+                            <p>Your order is <span style="color: #ed1c24">{{options[data.status]}}</span>.</p>
+                            <br>
+                            <br>
+                        </div>
                     </div>
-                    <div class="invoice-inner-left"><br>
-                        <br>
-                        <p>Hi, {{data.user_id.first_name}} {{data.user_id.last_name}}. </p>
-                        <p>Thank you for shopping from our store.</p>
-                        <p>Your order is <span style="color: #ed1c24">{{options[data.status]}}</span>.</p>
-                        <br>
-                        <br>
+                    <div class="col-md-6 text-right">
+                        <div class="header-text">
+                            <h4>Invoice</h4>
+                        </div>
+                        <div class="invoice-inner-right">
+                            <p>OrderID # {{data.id}}</p>
+                            <p><span style="color: #ed1c24">Order date # {{data.createdAt}}</span></p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 text-right">
-                    <div class="header-text">
-                        <h4>Invoice</h4>
-                    </div>
-                    <div class="invoice-inner-right">
-                        <p>OrderID # {{data.id}}</p>
-                        <p><span style="color: #ed1c24">Order date # {{data.createdAt}}</span></p>
-                    </div>
-                </div>
-            </div>
 
-            <table class="table table-striped table-hover table-bordered order-items" *ngFor="let suborder of suborders">
-                <thead>
-                <tr>
-                    <th colspan="6">Vendor Name: {{suborder.warehouse_id.name}}</th>
-                </tr>
-                <tr>
-                    <th>Sub-Order: {{suborder.id}}</th>
-                    <th>Product name</th>
-                    <th>SKU (Code)</th>
-                    <th class="price-type">Price</th>
-                    <th class="price-type">Quantity</th>
-                    <th class="price-type">Total Price</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let suborderItem of suborder.suborderItems">
-                    <td>{{suborderItem.product_id.id}}</td>
-                    <td>{{suborderItem.product_id.name}}
-                        <br>
-                        <ng-container
-                                *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
+                <table class="table table-striped table-hover table-bordered order-items"
+                       *ngFor="let suborder of suborders">
+                    <thead>
+                    <tr>
+                        <th colspan="6">Vendor Name: {{suborder.warehouse_id.name}}</th>
+                    </tr>
+                    <tr>
+                        <th>Sub-Order: {{suborder.id}}</th>
+                        <th>Product name</th>
+                        <th>SKU (Code)</th>
+                        <th class="price-type">Price</th>
+                        <th class="price-type">Quantity</th>
+                        <th class="price-type">Total Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let suborderItem of suborder.suborderItems">
+                        <td>{{suborderItem.product_id.id}}</td>
+                        <td>{{suborderItem.product_id.name}}
+                            <br>
+                            <ng-container
+                                    *ngIf="suborderItem.orderitemvariant && suborderItem.orderitemvariant.length>0">
                             <span *ngFor="let variant of suborderItem.orderitemvariant">
                               {{variant.variant_id.name}}:<small>{{variant.warehouse_variant_id.name}}</small>
                             </span>
-                        </ng-container>
-                        <ng-container *ngIf="data && data.couponProductCodes.length > 0">
-                            <h6 style="margin-top: 15px;">Coupon Codes</h6>
-                            <p style="background-color: #ffffff; overflow-wrap: anywhere; padding: 5px; border-radius: 10px;">
-                                {{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}
-                            </p>
-                        </ng-container>
-                    </td>
-                    <td>{{suborderItem.product_id.code}}</td>
-                    <td class="price-type">৳. {{suborderItem.product_total_price / suborderItem.product_quantity}}</td>
-                    <td class="price-type">{{suborderItem.product_quantity}}</td>
-                    <td class="price-type">৳. {{suborderItem.product_total_price}}</td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="row" style="margin-bottom: 15px">
-                <div class="col-md-6"></div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h6>Shipping Price</h6>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h5>৳. {{data.courier_charge}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="margin-bottom: 15px">
-                <div class="col-md-6"></div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h5>Grand Total</h5>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h5>৳. {{data.total_price}}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="margin-bottom: 100px">
-                <div class="col-md-6"></div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h5>Paid amount</h5>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="amount-text text-right">
-                        <h5>৳. {{data.paid_amount}}</h5>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row" style="margin-bottom: 10px; margin-left: 30px">
-                <div class="col-md-6">
-                    <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
-                        <h4>BILLING INFORMATION</h4>
-                        <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
-                        <p>{{paymentAddress.address}}</p>
-                        <p *ngIf="paymentAddress.upazila_id && paymentAddress.zila_id && paymentAddress.division_id">
-                            {{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}
-                            , {{paymentAddress.division_id.name}}</p>
-                        <p>T: {{paymentAddress.phone}}</p>
-                    </div>
-                    <div class="shopping-info-left" *ngIf="shippingAddress; else alternateShipping">
-                        <h4>SHIPPING/DELIVERY INFORMATION</h4>
-                        <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
-                        <p>{{shippingAddress.address}}</p>
-                        <p>
-                            {{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
-                            , {{shippingAddress.division_id.name}}</p>
-                        <p>T: {{shippingAddress.phone}}</p>
-                    </div>
-                    <ng-template #alternateShipping>
-                        <div *ngIf="userPhone" class="shopping-info-left">
-                            <h5>SHIPPING/DELIVERY INFORMATION</h5>
-                            <p style="margin-top: 20px;">Cell Phone: {{userPhone}}</p>
+                            </ng-container>
+                            <ng-container *ngIf="data && data.couponProductCodes.length > 0">
+                                <h6 style="margin-top: 15px;">Coupon Codes</h6>
+                                <p style="background-color: #ffffff; overflow-wrap: anywhere; padding: 5px; border-radius: 10px;">
+                                    {{couponCodeGenerator(data.couponProductCodes, suborderItem.id)}}
+                                </p>
+                            </ng-container>
+                        </td>
+                        <td>{{suborderItem.product_id.code}}</td>
+                        <td class="price-type">
+                            ৳. {{suborderItem.product_total_price / suborderItem.product_quantity}}</td>
+                        <td class="price-type">{{suborderItem.product_quantity}}</td>
+                        <td class="price-type">৳. {{suborderItem.product_total_price}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="row" style="margin-bottom: 15px">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h6>Shipping Price</h6>
                         </div>
-                    </ng-template>
-                </div>
-                <div class="col-md-6">
-                    <div style="margin-bottom: 10px;">
-                        <h4>Order Type: <b>{{data.order_type | ordertype}}</b></h4>
                     </div>
-                    <div class="bill-info-right" *ngIf="payment && data.order_type == ORDER_TYPE.REGULAR_ORDER_TYPE">
-                        <h5 *ngIf="payment.payment_type === 'SSLCommerce'; else elseBlock">Payment Method: SSLCOMMERZ</h5>
-                        <ng-template #elseBlock><h5>Payment Type: {{payment.payment_type}}</h5></ng-template>
-                        <p *ngIf="payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE &&
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>৳. {{data.courier_charge}}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 15px">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>Grand Total</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>৳. {{data.total_price}}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 100px">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>Paid amount</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="amount-text text-right">
+                            <h5>৳. {{data.paid_amount}}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 10px; margin-left: 30px">
+                    <div class="col-md-6">
+                        <div class="bill-info-left" style="margin-bottom: 50px;" *ngIf="paymentAddress">
+                            <h4>BILLING INFORMATION</h4>
+                            <p>{{paymentAddress.first_name}} {{paymentAddress.last_name}}</p>
+                            <p>{{paymentAddress.address}}</p>
+                            <p *ngIf="paymentAddress.upazila_id && paymentAddress.zila_id && paymentAddress.division_id">
+                                {{paymentAddress.upazila_id.name}}, {{paymentAddress.zila_id.name}}
+                                , {{paymentAddress.division_id.name}}</p>
+                            <p>T: {{paymentAddress.phone}}</p>
+                        </div>
+                        <div class="shopping-info-left" *ngIf="shippingAddress; else alternateShipping">
+                            <h4>SHIPPING/DELIVERY INFORMATION</h4>
+                            <p>{{shippingAddress.first_name}} {{shippingAddress.last_name}}</p>
+                            <p>{{shippingAddress.address}}</p>
+                            <p>
+                                {{shippingAddress.upazila_id.name}}, {{shippingAddress.zila_id.name}}
+                                , {{shippingAddress.division_id.name}}</p>
+                            <p>T: {{shippingAddress.phone}}</p>
+                        </div>
+                        <ng-template #alternateShipping>
+                            <div *ngIf="userPhone" class="shopping-info-left">
+                                <h5>SHIPPING/DELIVERY INFORMATION</h5>
+                                <p style="margin-top: 20px;">Cell Phone: {{userPhone}}</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="margin-bottom: 10px;">
+                            <h4>Order Type: <b>{{data.order_type | ordertype}}</b></h4>
+                        </div>
+                        <div class="bill-info-right"
+                             *ngIf="payment && data.order_type == ORDER_TYPE.REGULAR_ORDER_TYPE">
+                            <h5 *ngIf="payment.payment_type === 'SSLCommerce'; else elseBlock">Payment Method:
+                                SSLCOMMERZ</h5>
+                            <ng-template #elseBlock><h5>Payment Type: {{payment.payment_type}}</h5></ng-template>
+                            <p *ngIf="payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE &&
                                   payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE &&
                                   payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE">
-                            Transaction id: {{payment.transection_key}}
-                        </p>
+                                Transaction id: {{payment.transection_key}}
+                            </p>
 
-                        <!-- Only if Payment method is OFFLINE payment then this section will show START -->
-                        <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 10px !important;">
-                            <h4>Offline payment method details</h4>
-                            <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
-                                <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
-                                <p>Transaction number: {{paymentDetails.transactionId}}</p>
-                                <p>Bank name: {{paymentDetails.bankName}}</p>
-                                <p>Branch name: {{paymentDetails.branchName}}</p>
-                                <p>Account Number: {{paymentDetails.accountNumberForBank}}</p>
-                            </div>
-                            <ng-template #notBankTransfer>
-                                <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
-                                <div (click)="showAddModalVisible(true, paymentDetails.money_receipt)" style="cursor: pointer;">
-                                    <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}" alt="money-receipt" style="height: 100px;">
+                            <!-- Only if Payment method is OFFLINE payment then this section will show START -->
+                            <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                 style="margin-top: 10px !important;">
+                                <h4>Offline payment method details</h4>
+                                <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
+                                    <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                                    <p>Transaction number: {{paymentDetails.transactionId}}</p>
+                                    <p>Bank name: {{paymentDetails.bankName}}</p>
+                                    <p>Branch name: {{paymentDetails.branchName}}</p>
+                                    <p>Account Number: {{paymentDetails.accountNumberForBank}}</p>
                                 </div>
-                            </ng-template>
+                                <ng-template #notBankTransfer>
+                                    <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
+                                    <div (click)="showAddModalVisible(true, paymentDetails.money_receipt)"
+                                         style="cursor: pointer;">
+                                        <img src="{{IMAGE_ENDPOINT + '/'+paymentDetails.money_receipt}}"
+                                             alt="money-receipt" style="height: 100px;">
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <!-- Only if Payment method is OFFLINE payment then this section will show END -->
                         </div>
-                        <!-- Only if Payment method is OFFLINE payment then this section will show END -->
                     </div>
                 </div>
+                <span class="footer" style="margin-top: 50px; display: inline-block;">Happy Shopping!</span>
             </div>
-            <span class="footer" style="margin-top: 50px; display: inline-block;">Happy Shopping!</span>
+            <nz-card nzTitle="Transaction log" *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
+                <nz-card *ngFor="let payment of allPaymentsLog;" style="margin-bottom: 10px !important;">
+                    <div style="color: black; display: flex; flex-direction: row; align-items: center;">
+                        <div class="circle fa">
+                            <i class="fa fa-check" aria-hidden="true" style="color: black;"></i>
+                        </div>
+                        <div style="margin-left: 30px;">
+                            <p style="margin: 0;">Payment method: {{payment.payment_type}}</p>
+                            <p style="margin: 0;">Paid amount: {{payment.payment_amount}}</p>
+                            <p style="margin: 0;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
+                                payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
+                                payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">
+                                Payment transaction: {{payment.transection_key}}</p>
+                            <p style="margin: 0;">Transaction time: {{payment.createdAt}}</p>
+
+                            <!-- Only true if the payment is an Offline Payment START -->
+                            <div *ngIf="payment.details && payment.details.offline_payment_method">
+                                <p style="margin: 0;">Approval Status:
+                                    <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
+                                <p style="margin: 0;">Offline payment
+                                    method: {{payment.details.offline_payment_method}}</p>
+
+                                <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
+                                    <p style="margin: 0;">Transaction ID: {{payment.details.transactionId}}</p>
+                                    <p style="margin: 0;">Bank Name: {{payment.details.bankName}}</p>
+                                    <p style="margin: 0;">Branch Name: {{payment.details.branchName}}</p>
+                                    <p style="margin: 0;">Account Number For
+                                        Bank: {{payment.details.accountNumberForBank}}</p>
+                                </div>
+                                <div *ngIf="payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
+                                     (click)="showAddModalVisible(true, payment.details.money_receipt)"
+                                     style="cursor: pointer;">
+                                    <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                                         alt="money-receipt" style="height: 100px;">
+                                </div>
+                            </div>
+                            <!-- Only true if the payment is an Offline Payment END -->
+                        </div>
+                    </div>
+                </nz-card>
+            </nz-card>
         </div>
+
     </nz-spin>
 </nz-card>
 
-<nz-card nzTitle="Transaction log" *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
-    <nz-card *ngFor="let payment of allPaymentsLog;" style="margin-bottom: 10px !important;">
-        <div style="display: flex; flex-direction: row; align-items: center;">
-            <div class="circle fa">
-                <i class="fa fa-check" aria-hidden="true" style="color: black;"></i>
-            </div>
-            <div style="margin-left: 30px;">
-                <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
-                <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
-                <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
-                                payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
-                                payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">
-                    Payment transaction: {{payment.transection_key}}</p>
-                <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
-
-                <!-- Only true if the payment is an Offline Payment START -->
-                <div *ngIf="payment.details && payment.details.offline_payment_method">
-                    <p style="margin: 0px;">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
-                    <p style="margin: 0px;">Offline payment method: {{payment.details.offline_payment_method}}</p>
-
-                    <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
-                        <p style="margin: 0px;">Transaction ID: {{payment.details.transactionId}}</p>
-                        <p style="margin: 0px;">Bank Name: {{payment.details.bankName}}</p>
-                        <p style="margin: 0px;">Branch Name: {{payment.details.branchName}}</p>
-                        <p style="margin: 0px;">Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
-                    </div>
-                    <div *ngIf="payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
-                            (click)="showAddModalVisible(true, payment.details.money_receipt)" style="cursor: pointer;">
-                        <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}" alt="money-receipt" style="height: 100px;">
-                    </div>
-                </div>
-                <!-- Only true if the payment is an Offline Payment END -->
-            </div>
-        </div>
-    </nz-card>
-</nz-card>
 
 <nz-modal [nzFooter]="null"
           [nzVisible]="isAddModalVisible"
