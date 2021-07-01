@@ -46,6 +46,8 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
     currentMoneReceipt: any = '';
 
+    ordersGridPageNumber = 1;
+
     constructor(private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
@@ -57,6 +59,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit() {
+        this.ordersGridPageNumber = +this.route.snapshot.paramMap.get("page");
+        console.log("annnn: ", this.ordersGridPageNumber);
+
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
