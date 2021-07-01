@@ -48,8 +48,6 @@
     "angularx-flatpickr": "^5.0.1",
     "bootstrap": "^3.3.7",
     "ckeditor": "^4.12.1",
-    "ckeditor4-angular": "^2.2.1",
-    "ckeditor5-build-classic": "^1.0.0",
     "cloudinary-core": "^2.5.0",
     "core-js": "^2.5.6",
     "date-and-time": "^0.6.3",
