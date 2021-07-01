@@ -7,6 +7,7 @@ import {CmsService} from '../../../../services/cms.service';
 import {AuthService} from '../../../../services/auth.service';
 import {environment} from "../../../../../environments/environment";
 import {AddNewCmsService} from "../../../../services/add-new-cms.service";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms',
@@ -17,6 +18,8 @@ export class UserCmsComponent implements OnInit {
     currentUser: any;
     cmsData: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
+    editor = ClassicEditor;
+
 
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
@@ -31,37 +34,37 @@ export class UserCmsComponent implements OnInit {
 
     validateForm: FormGroup;
     ImageFile: File;
-    ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    // ckConfig = {
+    //     uiColor: '#662d91',
+    //     toolbarGroups: [
+    //         {
+    //             name: 'basicstyles',
+    //             group: [
+    //                 'Bold',
+    //                 'Italic',
+    //                 'Underline',
+    //                 'Strike',
+    //                 'Subscript',
+    //                 'Superscript',
+    //                 '-',
+    //                 'JustifyLeft',
+    //                 'JustifyCenter',
+    //                 'JustifyRight',
+    //                 'JustifyBlock',
+    //                 '-',
+    //                 'BidiLtr',
+    //                 'BidiRtl',
+    //                 'Language'
+    //             ]
+    //         },
+    //         {
+    //             name: 'paragraph',
+    //             groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+    //         },
+    //         {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
+    //     ],
+    //     removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
+    // };
     @ViewChild('Image')
     Image: any;
 
@@ -72,6 +75,7 @@ export class UserCmsComponent implements OnInit {
     currentPostId: any;
     submitting: boolean = false;
 
+    ckeditorDescription = "<p>jjj</p>";
     constructor(
         private cmsService: CmsService,
         private authService: AuthService,

@@ -168,13 +168,15 @@ module.exports = {
           _set.paid_amount = order.total_price;
           _set.payment_status = PAYMENT_STATUS_PAID;
           _set.status = ORDER_STATUSES.processing;
+
+          await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
         } else if(status == REJECTED_PAYMENT_APPROVAL_STATUS){
           _set.status = ORDER_STATUSES.canceled;
           _set.payment_status = PAYMENT_STATUS_UNPAID;
 
           await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.canceled});
         }
-      } else {
+      } else if(order.order_type == PARTIAL_ORDER_TYPE){
         /** At present PARTIAL OFFLINE payment creates single payment log for a single payment. So we use here updateOne.  */
         let updatedPayment = await Payment.updateOne({id: paymentId}, {
           approval_status: status
@@ -200,6 +202,8 @@ module.exports = {
           if (finalPaidAmount >= order.total_price) {
             _set.payment_status = PAYMENT_STATUS_PAID;
             _set.status = ORDER_STATUSES.processing;
+
+            await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
           } else {
             if (order.payment_status == PAYMENT_STATUS_UNPAID) {
               _set.payment_status = PAYMENT_STATUS_PARTIALLY_PAID;
@@ -218,14 +222,12 @@ module.exports = {
           if (finalPaidAmount < order.total_price) {
 
             /** Calculate ORDER expended hour */
-            let now = moment(new Date());
-            let createdAt = moment(order.createdAt);
-            let duration = moment.duration(now.diff(createdAt));
-            let expendedHour = Math.floor(duration.asHours());
+            const currentDate = moment();
+            let allowedUpTo = moment(order.createdAt, 'YYYY-MM-DD HH:mm:ss').add(globalConfigs.partial_payment_duration, 'hours');
             /** END */
-            console.log('Expended time ', expendedHour, globalConfigs.partial_payment_duration);
+            console.log('allowedUpTo time ', allowedUpTo, currentDate);
 
-            if (expendedHour > globalConfigs.partial_payment_duration) {
+            if (allowedUpTo.isBefore(currentDate)) {
               _set.status = ORDER_STATUSES.canceled;
               await Suborder.update({product_order_id: orderId}, {status: ORDER_STATUSES.canceled});
             }

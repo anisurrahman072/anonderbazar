@@ -392,6 +392,8 @@ module.exports = {
           if (totalPrice <= totalPaidAmount) {
             paymentStatus = PAYMENT_STATUS_PAID;
             orderStatus = ORDER_STATUSES.processing;
+
+            await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
           }
 
           await Order.updateOne({id: order.id}).set({

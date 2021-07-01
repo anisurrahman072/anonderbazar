@@ -48,10 +48,19 @@
                     </div>
                     <div nz-col [nzSpan]="17">
 
-                        <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
+                        <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
                                   debounce="500">
 
-                        </ckeditor>
+                        </ckeditor>-->
+                        <!--<ckeditor
+                            #editor
+                            formControlName="description"
+                            [(ngModel)]="ckeditorDescription"
+                            id="description"
+                            name="description"
+                            type="divarea">
+                        </ckeditor>-->
+                        <ckeditor name="myckeditor" debounce="300" [editor]="editor"></ckeditor>
 
                         <div *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
                             Please input description !

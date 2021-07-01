@@ -9,6 +9,7 @@ import { ImageUploadModule } from 'angular2-image-upload';
 import { CmsRoutingModule } from './user-cms-routing.module';
 import { UiModule } from '../../shared/ui.module';
 import { UserCmsPostReadComponent } from './user-cms-post-read/user-cms-post-read.component';
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { UserCmsPostReadComponent } from './user-cms-post-read/user-cms-post-rea
     CmsRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-
+    CKEditorModule,
     ImageUploadModule.forRoot(),
     NgZorroAntdModule.forRoot(),
     UiModule
