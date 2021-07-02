@@ -11,17 +11,19 @@ import {AllProductModalComponent} from "./offer-list/components/all-product-moda
 import { AnonderJhorComponent } from './anonder-jhor/anonder-jhor.component';
 import { AnonderJhorOfferCreateComponent } from './anonder-jhor-offer-create/anonder-jhor-offer-create.component';
 import { AnonderJhorOfferEditComponent } from './anonder-jhor-offer-edit/anonder-jhor-offer-edit.component';
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    OfferRoutingModule,
-    UiModule,
-    FormsModule,
-    FileUploadModule,
-    ReactiveFormsModule,
-    UiModule
-  ],
+    imports: [
+        CommonModule,
+        OfferRoutingModule,
+        UiModule,
+        FormsModule,
+        FileUploadModule,
+        ReactiveFormsModule,
+        UiModule,
+        CKEditorModule
+    ],
   declarations: [
     OfferListComponent,
     OfferEditComponent,

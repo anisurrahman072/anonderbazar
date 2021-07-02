@@ -8,6 +8,8 @@ import { AuthService } from "../../../../services/auth.service";
 import { EventService } from "../../../../services/event.service";
 import { EventPriceService } from "../../../../services/event-price.service";
 import { splitMatchedQueriesDsl } from "@angular/core/src/view/util";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
   selector: "app-event-create",
@@ -15,6 +17,8 @@ import { splitMatchedQueriesDsl } from "@angular/core/src/view/util";
   styleUrls: ["./event-create.component.css"]
 })
 export class EventCreateComponent implements OnInit {
+  Editor = ClassicEditor;
+
   _isSpinning: boolean = false;
   validateForm: FormGroup;
   ImageFile: File[] = [];

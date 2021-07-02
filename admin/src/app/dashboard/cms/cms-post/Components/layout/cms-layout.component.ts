@@ -8,6 +8,7 @@ import {Component, OnInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {CmsService} from '../../../../../services/cms.service';
 import {environment} from "../../../../../../environments/environment";
 import { CmsFeatureFooterService } from "../../../../../services/cms-feature-footer.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-layout',
@@ -15,6 +16,8 @@ import { CmsFeatureFooterService } from "../../../../../services/cms-feature-foo
     styleUrls: ['./cms-layout.component.css']
 })
 export class CmsLayoutComponent implements OnInit {
+    Editor = ClassicEditor;
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;

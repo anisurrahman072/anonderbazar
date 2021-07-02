@@ -75,7 +75,7 @@ registerLocaleData(en);
         PrebootModule.withConfig({appRoot: 'app-root'}),
         BrowserTransferStateModule,
         NgZorroAntdModule,
-        UiModule,
+        UiModule
     ],
     providers: [
         { provide: NZ_I18N, useValue: en_US },

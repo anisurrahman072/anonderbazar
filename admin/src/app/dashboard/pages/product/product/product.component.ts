@@ -18,6 +18,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as ___ from 'lodash';
 import {ExportService} from "../../../../services/export.service";
 import {GlobalConfigsService} from "../../../../services/global-configs.service";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 type SearchSubject = { field: string, query: string };
 
@@ -109,6 +110,9 @@ export class ProductComponent implements OnInit, OnDestroy {
     validatePartialPaymentForm: FormGroup;
     globalConfig: any;
 
+    PRODUCT_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PRODUCT_UPDATE_ADMIN_USER;
+    isAllowedToUpdateProduct:boolean = false;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -164,6 +168,10 @@ export class ProductComponent implements OnInit, OnDestroy {
         });
 
         this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.PRODUCT_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateProduct = true;
+        }
+
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';

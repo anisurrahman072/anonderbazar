@@ -152,7 +152,7 @@
                     <td style="width: 230px;">{{data.full_name}}</td>
                     <td style="width: 100px;">{{data.total_quantity}}</td>
                     <td style="width: 100px;">{{data.total_price}}</td>
-                    <td style="width: 230px;"  *ngIf="'change-payment-status'|accessControl">
+                    <td style="width: 230px;"  *ngIf="isAllowedToUpdateOrderStatus">
                         <span *ngIf="setStatus(i, data.status)"></span>
                         <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
@@ -165,11 +165,11 @@
                             </nz-option>
                         </nz-select>
                     </td>
-                    <td *ngIf="!('change-order-status'|accessControl)">{{data.status | statustype}}</td>
+                    <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
                     <td *ngIf="data.orderType == 1">Regular order</td>
                     <td *ngIf="data.orderType == 2">Partial order</td>
                     <td>{{data.payment_type}}</td>
-                    <td style="width: 230px;">
+                    <td style="width: 230px;"  *ngIf="isAllowedToUpdatePaymentStatus">
                         <nz-select style="width: 180px;"
                                    *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
@@ -184,6 +184,11 @@
                             Partially paid</p>
                         <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">
                             Paid</p>
+                    </td>
+                    <td *ngIf="!isAllowedToUpdatePaymentStatus">
+                        <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
+                        <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
+                        <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">Paid</p>
                     </td>
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 400px;">
@@ -204,7 +209,7 @@
                     <td style="width: 200px;">
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
-                                    [routerLink]="['/dashboard/order/details/', data.id]"
+                                    (click)="goToOrderRead(data.id)"
                                     nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-info-circle"> </i>
                             </button>

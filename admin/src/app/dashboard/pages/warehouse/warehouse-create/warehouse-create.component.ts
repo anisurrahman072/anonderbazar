@@ -10,6 +10,7 @@ import {UserService} from "../../../../services/user.service";
 import {UniqueEmailValidator} from "../../../../services/validator/UniqueEmailValidator";
 import {UniqueUsernameValidator} from "../../../../services/validator/UniqueUsernameValidator";
 import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneValidator";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-warehouse-create',
@@ -17,6 +18,8 @@ import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneVa
     styleUrls: ['./warehouse-create.component.css']
 })
 export class WarehouseCreateComponent implements OnInit {
+    Editor = ClassicEditor;
+
     @ViewChild('Image') Image;
     validateForm: FormGroup;
     AvatarImageFile: File;
