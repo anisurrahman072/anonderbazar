@@ -516,7 +516,7 @@ module.exports = {
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
-        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1})
+        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null})
           .populate('category_id')
           .populate('sub_category_id')
           .populate('sub_sub_category_id');
@@ -547,7 +547,6 @@ module.exports = {
       let _where = {};
       _where.id = req.query.id;
       _where.deletedAt = null;
-      _where.status = 1;
 
       const requestedJorOffer = await AnonderJhorOffers.findOne({where: _where})
         .populate('category_id')

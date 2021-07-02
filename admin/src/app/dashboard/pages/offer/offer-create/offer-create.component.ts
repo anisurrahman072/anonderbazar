@@ -22,7 +22,7 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -52,7 +52,7 @@ export class OfferCreateComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
     _isSpinning: any = false;
     submitting: boolean = false;
 

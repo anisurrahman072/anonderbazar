@@ -3,6 +3,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {CmsService} from '../../../../services/cms.service';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-offer-list',
@@ -22,6 +23,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     allProducts: any = [];
 
     offers = [];
+    presentTime = (new Date(Date.now())).getTime();
 
     homeOfferLimit: number = 10;
     homeOfferPage: number = 1;
@@ -39,7 +41,8 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private _notification: NzNotificationService,
         private cmsService: CmsService,
-        private offerService: OfferService
+        private offerService: OfferService,
+        private router: Router
     ) {
 
     }
@@ -86,13 +89,28 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     };
 
-    activeStatusChange(event, offerId) {
-        console.log('event: ', event);
+    activeStatusChange(event, offerId, end_date) {
+        let endTime = (new Date(end_date)).getTime();
+
+        if(endTime < this.presentTime) {
+            this._notification.error('Time ended', 'You can not CHANGE the status.You can delete if you dnt need this, but it will also delete the order history related to this offer');
+            return;
+        }
+
         let data = {event, offerId}
         this.offerService.activeStatusChange(data)
             .subscribe(result => {
                 this.getRegularOfferData();
             });
+    }
+
+    canEdit(offerId, end_date) {
+        let endTime = (new Date(end_date)).getTime();
+        if(endTime < this.presentTime) {
+            this._notification.error('Time ended', 'You can not EDIT.You can delete if you dnt need this, but it will also delete the order history related to this offer');
+            return;
+        }
+        this.router.navigate(['/dashboard/offer/edit', offerId]);
     }
 
     generateRegularOfferExcelById(offerId) {

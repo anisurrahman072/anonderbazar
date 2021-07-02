@@ -28,6 +28,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     jhorOffersRemainingTime: any[] = [];
     offerStartTime = [];
     offerEndTime = [];
+    jhorStartDate;
 
     expire: Boolean = false;
     sub1;
@@ -50,10 +51,10 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     if (result.data[0]) {
                         this.anonderJhor = result.data[0];
 
-                        let jhorStartDate = new Date(this.anonderJhor.start_date).getTime();
+                        this.jhorStartDate = new Date(this.anonderJhor.start_date).getTime();
                         let jhorEndDate = new Date(this.anonderJhor.end_date).getTime();
 
-                        this.jhorRemainingTimeToStart = jhorStartDate - this.presentTime;
+                        this.jhorRemainingTimeToStart = this.jhorStartDate - this.presentTime;
                         this.jhorRemainingTimeToEnd = jhorEndDate - this.presentTime;
 
                         if (this.jhorRemainingTimeToStart > 0) {
@@ -225,19 +226,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.offerRemainingTimeToEndInDigit[offer.id] = this.offerRemainingTimeToEndInDigit[offer.id].split("");
                 })
         });
-    }
-
-    convertOfferEndsInToTime() {
-        /*this.anonderJhorOffers.forEach(offer => {
-            if(this.jhorOffersRemainingTime[offer.id] === 0) {
-                this.offerRemainingTimeToEndInDigit[offer.id] = `0 : 0 : 0 `;
-            }else {
-                let seconds = moment.duration(this.jhorOffersRemainingTime[offer.id]).seconds();
-                let minutes = moment.duration(this.jhorOffersRemainingTime[offer.id]).minutes();
-                let hours = Math.trunc(moment.duration(this.jhorOffersRemainingTime[offer.id]).asHours());
-                this.offerRemainingTimeToEndInDigit[offer.id] = `${hours} : ${minutes} : ${seconds} `;
-            }
-        })*/
     }
 
     ngOnDestroy(): void {
