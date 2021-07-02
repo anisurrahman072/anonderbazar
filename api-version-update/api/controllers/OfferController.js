@@ -273,7 +273,10 @@ module.exports = {
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip
-      });
+      }).sort([
+        {id: 'DESC'},
+        {end_date: 'DESC'},
+      ]);
 
       let totalRegularOffer = await Offer.count().where(_where);
 

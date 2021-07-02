@@ -12,6 +12,7 @@
                 </div>
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onRemoved($event)"
+                                  [uploadedFiles]='ImageFileEdit'
                                   (uploadStateChanged)="onUploadStateChanged($event)"
                                   [beforeUpload]="onBeforeUpload">
                     </image-upload>

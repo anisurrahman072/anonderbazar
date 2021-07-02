@@ -23,7 +23,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     ImageFile: File;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
-    ImageFileEdit: any;
+    ImageFileEdit: any = [];
     data: any;
 
     categoryId;
@@ -50,7 +50,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     ngOnInit() {
         this.getAnonderJhor();
-        this.getAllCategories()
+        this.getAllCategories();
+
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
             subCategoryId: ['', []],
@@ -63,7 +64,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         this.offerService.getAnonderJhorOfferById(this.jhorOfferId)
             .subscribe(result => {
-                console.log(result.anonderJhorOffer);
+                console.log('test rou', result.anonderJhorOffer);
 
                 this.data = result.anonderJhorOffer;
 
@@ -91,15 +92,16 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
                 this._isSpinning = false;
             }, () => {
+                this._notification.error('Failed', 'Failed to get data for this offer edit');
                 this._isSpinning = false;
             });
     }
 
     /** Event method for submitting the form */
     submitForm = ($event, value) => {
-        console.log('value.categoryId: ', value.categoryId);
+        /*console.log('value.categoryId: ', value.categoryId);
         console.log('this.subCategoryId: ', this.subCategoryId);
-        console.log('this.subSubCategoryId: ', this.subSubCategoryId);
+        console.log('this.subSubCategoryId: ', this.subSubCategoryId);*/
 
         $event.preventDefault();
         this._isSpinning = true;
@@ -185,6 +187,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     /** Event method for storing image in variable */
     onBeforeUpload = (metadata: UploadMetadata) => {
+        console.log('befor upload: ', metadata.file);
         this.ImageFile = metadata.file;
         return metadata;
     }
@@ -197,7 +200,9 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllSubCategories(event) {
+        console.log('sstart ime: ', event);
         if (event) {
+            console.log('is in if');
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
                     this.allSubCategoryIds = result.data;
