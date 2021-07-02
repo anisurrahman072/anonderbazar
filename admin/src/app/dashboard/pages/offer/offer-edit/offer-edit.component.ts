@@ -216,6 +216,7 @@ export class OfferEditComponent implements OnInit {
         formData.append('discountAmount', value.discountAmount);
         formData.append('showInHome', showInHome);
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
+        formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('frontend_position', value.frontend_position);
 
         if (this.selectedProductIds) {
