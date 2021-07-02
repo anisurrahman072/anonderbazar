@@ -16,6 +16,7 @@ import {UserService} from "../../../../services/user.service";
 import {UniqueEmailValidator} from "../../../../services/validator/UniqueEmailValidator";
 import {UniqueUsernameValidator} from "../../../../services/validator/UniqueUsernameValidator";
 import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneValidator";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-warehouse-edit',
@@ -23,6 +24,8 @@ import {UniquePhoneValidator} from "../../../../services/validator/UniquePhoneVa
     styleUrls: ['./warehouse-edit.component.css']
 })
 export class WarehouseEditComponent implements OnInit, OnDestroy {
+    Editor = ClassicEditor;
+
     @ViewChild('Image') Image;
     id: number;
     userId: number;

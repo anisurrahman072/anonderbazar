@@ -79,11 +79,19 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
-        let offerTime = new Date(value.offerEndDate).getTime();
-        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+        let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
+        let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
-        if(offerTime > jhorTime) {
-            this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
+        if(offerStartTime < jhorStartTime) {
+            this._notification.error('Wrong start Time', 'Start time is before anonder jhor start time');
+            this._isSpinning = false;
+            return;
+        }
+
+        if(offerEndTime > jhorEndTime) {
+            this._notification.error('Wrong End Time', 'End Date is out of the Anonder Jhor End Date');
             this._isSpinning = false;
             return;
         }

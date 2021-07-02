@@ -8,6 +8,8 @@ import {ProductService} from "../../../../services/product.service";
 import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 import {a} from "@angular/core/src/render3";
 
 @Component({
@@ -16,6 +18,8 @@ import {a} from "@angular/core/src/render3";
     styleUrls: ['./offer-create.component.css']
 })
 export class OfferCreateComponent implements OnInit {
+    Editor = ClassicEditor;
+
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
     ImageFile: File;
@@ -24,7 +28,7 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -54,7 +58,7 @@ export class OfferCreateComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
     _isSpinning: any = false;
     submitting: boolean = false;
 

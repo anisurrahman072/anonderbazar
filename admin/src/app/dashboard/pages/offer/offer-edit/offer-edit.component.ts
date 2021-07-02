@@ -9,6 +9,8 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
     selector: 'app-offer-edit',
@@ -16,6 +18,8 @@ import {ProductService} from "../../../../services/product.service";
     styleUrls: ['./offer-edit.component.css']
 })
 export class OfferEditComponent implements OnInit {
+    Editor = ClassicEditor;
+
     validateForm: FormGroup;
     ImageFile: File;
     BannerImageFile: File;
@@ -212,6 +216,7 @@ export class OfferEditComponent implements OnInit {
         formData.append('discountAmount', value.discountAmount);
         formData.append('showInHome', showInHome);
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
+        formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('frontend_position', value.frontend_position);
 
         if (this.selectedProductIds) {

@@ -25,8 +25,7 @@
         </div>
 
         <div class="row text-center" *ngIf="anonderJhorOfferProducts && anonderJhorOfferProducts.length > 12">
-            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next">
-            </pagination-controls>
+            <pagination-controls (pageChange)="page = $event" previousLabel="Previous" nextLabel="Next"></pagination-controls>
         </div>
     </div>
 </div>

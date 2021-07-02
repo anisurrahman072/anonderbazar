@@ -129,7 +129,10 @@ export const GLOBAL_CONFIGS = {
         {value: 1, label: 'Pending'},
         {value: 2, label: 'Approved'},
         {value: 3, label: 'Rejected'}
-    ]
+    ],
+    PAYMENT_STATUS_CHANGE_ADMIN_USER: 9424,
+    ORDER_STATUS_CHANGE_ADMIN_USER: 9425,
+    PRODUCT_UPDATE_ADMIN_USER: 9426
 };
 
 export const ORDER_TYPE = {

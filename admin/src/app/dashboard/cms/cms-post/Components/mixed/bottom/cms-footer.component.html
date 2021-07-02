@@ -11,10 +11,7 @@
                         </div>
 
 
-                        <div nz-col [nzSpan]="12"      >
-
-
-
+                        <div nz-col [nzSpan]="12">
                             <nz-select formControlName="section" [nzPlaceHolder]=" 'input search text'" [(ngModel)]="selectedSection" (ngModelChange)="sectionChange($event)">
                                 <nz-option *ngFor="let option of sectionoptionsData" [nzLabel]="option.section" [nzValue]="option.section">
 
@@ -82,9 +79,11 @@
                             <label>Description</label>
                         </div>
                         <div nz-col [nzSpan]="12"      >
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
+                            <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
-                            </ckeditor>
+                            </ckeditor>-->
+                            <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
+
                             <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
                             </div>

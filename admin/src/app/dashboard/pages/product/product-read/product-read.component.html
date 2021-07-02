@@ -1,7 +1,7 @@
 <nz-card nzTitle="Product Details" [nzExtra]="extra">
     <ng-template #extra>
         <nz-button-group>
-            <button *ngIf="'product-edit'|accessControl" [routerLink]="['/dashboard/product/edit', id]" [queryParams]="{status: status}" nz-button [nzType]="'primary'"
+            <button *ngIf="('product-edit'|accessControl) && isAllowedToUpdateProduct" [routerLink]="['/dashboard/product/edit', id]" [queryParams]="{status: status}" nz-button [nzType]="'primary'"
                 [nzSize]="'large'">
                 <i class="anticon anticon-edit"></i><span>Edit</span>
             </button>&nbsp;

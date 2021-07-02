@@ -79,15 +79,15 @@
                                         </p>
 
                                         <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
-                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] < presentTime">
+                                           *ngIf="offerStartTime[data.id] && offerStartTime[data.id] < presentTime && offerEndTime[data.id] > presentTime">
                                             <ng-template ngFor let-time [ngForOf]="offerRemainingTimeToEndInDigit[data.id]">
                                                 <span class="digit">{{time}}</span>
                                             </ng-template>
                                         </p>
 
                                         <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 25px"
-                                           *ngIf="offerEndTime[data.id] && offerEndTime[data.id] < presentTime">
-                                            Expired
+                                           *ngIf="offerEndTime[data.id] && offerEndTime[data.id] < presentTime && offerEndTime[data.id] > jhorStartDate">
+                                            <span style="color: red">EXPIRED</span>
                                         </p>
                                     </div>
                                     <div class="product-discount-badge">

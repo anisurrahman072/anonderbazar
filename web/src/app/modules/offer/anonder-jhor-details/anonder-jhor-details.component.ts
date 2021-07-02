@@ -45,7 +45,7 @@ export class AnonderJhorDetailsComponent implements OnInit {
                     console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);
 
                     let presentTime = (new Date(Date.now())).getTime();
-                    let startTime =  new Date(this.anonderJhorOffer.start_date).getTime()
+                    let startTime =  new Date(this.anonderJhorOffer.start_date).getTime();
                     let endTime = new Date(this.anonderJhorOffer.end_date).getTime();
 
                     /** setting discount to every products exists in this offer*/
@@ -87,13 +87,13 @@ export class AnonderJhorDetailsComponent implements OnInit {
         }
     }
 
-    onPageChange(event) {
+    /*onPageChange(event) {
         window.scroll(0, 0);
         let query: any = {};
         query.page = event;
 
         this.router.navigate(['/offers/anonder-jhor-detail', this.route.snapshot.params], {queryParams: query});
         this.page = event;
-    }
+    }*/
 
 }

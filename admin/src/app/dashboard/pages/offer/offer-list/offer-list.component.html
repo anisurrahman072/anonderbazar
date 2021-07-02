@@ -42,9 +42,9 @@
                         <th>
                             <span> Status </span>
                         </th>
-                        <th>
+<!--                        <th>
                             <span> Description </span>
-                        </th>
+                        </th>-->
                         <th>
                             Action
                         </th>
@@ -81,22 +81,21 @@
                         <td>
                             <div *ngIf="datum.offer_deactivation_time === null; else inactive">
                                 <nz-switch [ngModel]="true"
-                                           (ngModelChange)="activeStatusChange($event, datum.id)"
+                                           (ngModelChange)="activeStatusChange($event, datum.id, datum.end_date)"
                                 >
                                 </nz-switch>
                             </div>
                             <ng-template #inactive>
                                 <nz-switch [ngModel]="false"
-                                           (ngModelChange)="activeStatusChange($event, datum.id)">
+                                           (ngModelChange)="activeStatusChange($event, datum.id, datum.end_date)">
                                 </nz-switch>
                             </ng-template>
                         </td>
-                        <td [innerHTML]="datum.description"></td>
+                        <!--<td [innerHTML]="datum.description"></td>-->
                         <td>
                             <nz-button-group>
 
-                                <button *ngIf="'offer-edit'|accessControl"
-                                        [routerLink]="['/dashboard/offer/edit', datum.id]" nz-button
+                                <button *ngIf="'offer-edit'|accessControl" (click)="canEdit(datum.id, datum.end_date)" nz-button
                                         [nzType]="'primary'" [nzSize]="'default'">
                                     <i class="anticon anticon-edit"></i>
                                 </button>

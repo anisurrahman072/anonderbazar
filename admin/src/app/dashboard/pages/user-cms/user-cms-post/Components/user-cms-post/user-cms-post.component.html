@@ -58,14 +58,11 @@
                         </div>
                         <div nz-col [nzSpan]="12">
 
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
-                                      debounce="500 ">
-
-                            </ckeditor>
+                            <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
 
                             <div *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <br>

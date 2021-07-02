@@ -129,7 +129,11 @@ module.exports = {
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip
-      }).sort('status DESC')
+      }).sort([
+        {id: 'DESC'},
+        {end_date: 'DESC'},
+        {status: 'DESC'},
+      ])
         .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
@@ -508,19 +512,25 @@ module.exports = {
     }
   },
 
+
   getAnonderJhorAndOffers: async (req, res) => {
     try {
       await OfferService.anonderJhorOfferDurationCheck();
 
       let anonderJhor = await AnonderJhor.findOne({id: 1});
+      let jhorStartTime = anonderJhor.start_date;
+
+      let _where = {};
+      _where.deletedAt = null;
+      _where.end_date = {'>=' : jhorStartTime};
+      _where.status = 1;
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
-        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1})
+        anonderJhorOffers = await AnonderJhorOffers.find({where: _where})
           .populate('category_id')
           .populate('sub_category_id')
           .populate('sub_sub_category_id');
-        console.log('anonder jhor offers: ', anonderJhorOffers);
       }
 
       res.status(200).json({
@@ -547,7 +557,6 @@ module.exports = {
       let _where = {};
       _where.id = req.query.id;
       _where.deletedAt = null;
-      _where.status = 1;
 
       const requestedJorOffer = await AnonderJhorOffers.findOne({where: _where})
         .populate('category_id')
@@ -590,7 +599,7 @@ module.exports = {
 
   generateOfferExcelById: async (req, res) => {
     try {
-      let offer_type = parseInt( req.query.offer_type);
+      let offer_type = parseInt(req.query.offer_type);
       let offer_id = parseInt(req.query.offer_id);
 
       let rawSQL = `
@@ -617,12 +626,12 @@ module.exports = {
       const offerOrders = await sails.sendNativeQuery(rawSQL, []);
 
       let offerInfo;
-      if(offer_type === 1) {
+      if (offer_type === 1) {
         offerInfo = await Offer.findOne({id: offer_id})
           .populate('category_id')
           .populate('subCategory_Id')
           .populate('subSubCategory_Id');
-      }else {
+      } else {
         offerInfo = await AnonderJhorOffers.findOne({id: offer_id})
           .populate('category_id')
           .populate('sub_category_id')

@@ -55,8 +55,7 @@
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
-                                <span *ngIf="data.offerPrice"
-                                      class="product-discount-badge">-{{data.offerPrice.toFixed(2)}}%</span>
+                                <!--<span *ngIf="data.offerPrice" class="product-discount-badge">-{{data.offerPrice.toFixed(2)}}%</span>-->
                                 <ng-container *ngIf="data.offerPrice">
                                     <span *ngIf="data.calculationType === 'absolute'; else percentage"
                                           class="product-discount-badge">
