@@ -62,6 +62,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
+    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdateOrderStatus: boolean = false;
+
+    PAYMENT_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus: boolean = false;
+
     isProductVisible = false;
     isOrdersBulkVisible = false;
 
@@ -103,6 +109,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     // init the component
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateOrderStatus = true;
+        }
+        if(this.currentUser.id == this.PAYMENT_STATUS_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdatePaymentStatus = true;
+        }
         this.getData();
     }
 

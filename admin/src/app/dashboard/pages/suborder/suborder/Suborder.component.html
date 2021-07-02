@@ -126,7 +126,7 @@
                 <td>{{data.total_quantity}}</td>
                 <td>{{data.total_price}}</td>
                 <td>
-                    <div *ngIf="currentUser.group_id === 'admin'; else loggedOut">
+                    <div *ngIf="currentUser.group_id === 'admin' && isAllowedToUpdateSubOrderStatus; else loggedOut">
                         <span *ngIf="setStatus(i, data.status)"></span>
                         <nz-select style="width: 180px;" [(ngModel)]="data.status"
                                    nzPlaceHolder="choose option"
