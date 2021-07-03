@@ -511,6 +511,38 @@
           (nzOnCancel)="handleCancel()"
           nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
+        <!--Individually added products table-->
+        <nz-table #nzTableIndividuallySelected
+                  [nzData]="individuallySelectedData"
+                  [nzLoading]="_isSpinning"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <span> Product Code </span>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Calculation Type </span>
+                </th>
+                <th>
+                    <span> Discount Amount </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableIndividuallySelected.data;let i=index;">
+                <td>{{datum.code}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.calculation_type}}</td>
+                <td>{{datum.discount_amount}}</td>
+            </tr>
+            </tbody>
+        </nz-table>
+
+        <!--product to add individually-->
         <nz-table #nzTableIndividualProduct
                   nzShowSizeChanger
                   nzShowQuickJumper
@@ -576,7 +608,7 @@
                 <td>{{datum.price}}</td>
                 <td>
                     <form nz-form [formGroup]="individualProductFrom"
-                          (ngSubmit)="addIndividualProduct($event,individualProductFrom.value, datum.id)">
+                          (ngSubmit)="addIndividualProduct($event,individualProductFrom.value, datum.id, datum.code, datum.name)">
 
                         <nz-select [nzPlaceHolder]=" 'Calculation Type'" formControlName="Calculation_type"
                                    [(ngModel)]="Calculation_type" nzAllowClear nzShowSearch

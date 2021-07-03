@@ -109,6 +109,14 @@ export class OfferCreateComponent implements OnInit {
     individuallySelectedProductsCalculation: any = [];
     individuallySelectedProductsAmount: any = [];
 
+    individuallySelectedData: any = [{
+        id: 12,
+        code: 1234,
+        name: name,
+        calculation_type: 'wergh',
+        discount_amount: 23
+    }];
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
@@ -170,7 +178,8 @@ export class OfferCreateComponent implements OnInit {
 
         if (this.individuallySelectedProductsId) {
             formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
-        }if (this.individuallySelectedProductsCalculation) {
+        }
+        if (this.individuallySelectedProductsCalculation) {
             formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
         }
         if (this.individuallySelectedProductsAmount) {
@@ -562,7 +571,7 @@ export class OfferCreateComponent implements OnInit {
         }
     }
 
-    addIndividualProduct = ($event, value, productId) => {
+    addIndividualProduct = ($event, value, productId, code, name) => {
         this.submitting = true;
         $event.preventDefault();
         for (const key in this.individualProductFrom.controls) {
@@ -575,7 +584,6 @@ export class OfferCreateComponent implements OnInit {
             return;
         }
 
-        /**develop system to remove a data*/
 
         let exists: Boolean = false;
         if (this.individuallySelectedProductsId) {
@@ -589,16 +597,22 @@ export class OfferCreateComponent implements OnInit {
             })
         }
 
-        if(exists === false) {
+        if (exists === false) {
             this.individuallySelectedProductsId.push(productId);
             this.individuallySelectedProductsCalculation.push(value.Calculation_type);
             this.individuallySelectedProductsAmount.push(value.discount_amount);
+
+            /** keeping data in an array to show the selected products and to remove a product if i want */
+            this.individuallySelectedData.push({
+                id: productId,
+                code: code,
+                name: name,
+                calculation_type: value.Calculation_type,
+                discount_amount: value.discount_amount
+            })
             this._notification.success('Added', 'Product added successfully');
         }
 
-
-
-        console.log('offer prodcuts; ', this.individuallySelectedProductsId);
         this.individualProductFrom.reset();
         this.submitting = false;
 
