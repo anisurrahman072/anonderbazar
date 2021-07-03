@@ -141,6 +141,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
+            // lastName: ['', [Validators.required]],
             lastName: ['', []],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -153,6 +154,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Shipping
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
+            // shippingLastName: ['', [Validators.required]],
             shippingLastName: ['', []],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -223,7 +225,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 // console.log('previous addresses', previousAddresses);
                 this.prevoius_address = previousAddresses.map((decode) => {
                     let address = {...decode};
-                    address.first_name = he.first_name
+                    address.first_name = he.decode(address.first_name)
                     address.last_name = he.decode(address.last_name)
                     address.address = he.decode(address.address)
                     return address;
@@ -908,6 +910,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 zila_id: formValue.shipping_zila_id,
                 division_id: formValue.shipping_division_id,
             });
+            // console.log('formValue==>', formValue);
 
             let zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
             let upZila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
@@ -1027,16 +1030,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //Method for proceed to pay
     processToPay() {
-        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
+        // console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
 
         // console.log('this.isCopy==>', this.isCopy);
         // console.log('this.cartData==>', this.cartData);
         // console.log('this.checkoutForm==>', this.checkoutForm);
 
-        // if (!this.noShippingCharge && this.isCopy) {
-        //     // console.log('call copyAll');
-        //     this.copyAll();
-        // }
+        if (!this.noShippingCharge && this.isCopy) {
+            // console.log('call copyAll');
+            this.copyAll();
+        }
 
         // if (this.checkoutForm.invalid) {
         //     this.showFormError = true;
@@ -1047,9 +1050,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         //     return false;
         // }
 
-        if (!this.noShippingCharge && this.isCopy) {
-            this.copyAll();
-        }
+        // if (!this.noShippingCharge && this.isCopy) {
+        //     this.copyAll();
+        // }
 
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
