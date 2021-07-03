@@ -489,9 +489,11 @@
                             <label> Product Description </label>
                         </div>
                         <div nz-col [nzSpan]="16">
-                            <ckeditor [(ngModel)]="product_details" formControlName="product_details"
+                            <ckeditor [editor]="Editor" formControlName="product_details" [config]="config"></ckeditor>
+
+                            <!--<ckeditor [(ngModel)]="product_details" formControlName="product_details"
                                       [config]="ckConfig" [readonly]="false" debounce="500">
-                            </ckeditor>
+                            </ckeditor>-->
 
                             <div
                                     *ngIf="getFormControl('product_details').dirty && getFormControl('product_details').hasError('required')">

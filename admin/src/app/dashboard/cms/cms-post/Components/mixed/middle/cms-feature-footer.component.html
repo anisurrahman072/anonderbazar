@@ -1,5 +1,6 @@
 <nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Banner'" [nzContent]="editmodalContent"
-          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)" [nzMaskClosable]="false">
+          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)" [nzMaskClosable]="false"
+          [nzWidth]="1200" >
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
@@ -72,7 +73,7 @@
                                       debounce="500 ">
 
                             </ckeditor>-->
-                            <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                             <div *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !

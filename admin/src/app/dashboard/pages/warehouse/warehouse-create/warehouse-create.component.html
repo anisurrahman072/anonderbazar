@@ -348,7 +348,7 @@
                             <!--<ckeditor formControlName="invoice_footer" [config]="ckConfig" [readonly]="false"
                                       debounce="500">
                             </ckeditor>-->
-                            <ckeditor [editor]="Editor" formControlName="invoice_footer"></ckeditor>
+                            <ckeditor [editor]="Editor" formControlName="invoice_footer" [config]="config"></ckeditor>
 
                             <div
                                     *ngIf="getFormControl('invoice_footer').dirty && getFormControl('invoice_footer').hasError('required')">
