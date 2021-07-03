@@ -60,15 +60,23 @@
                             <nz-tag>{{datum.title}}</nz-tag>
                         </td>
 
-                        <td *ngIf="datum.calculation_type === 'percentage'">
+                        <td *ngIf="datum.calculation_type === 'percentage' && datum.selection_type !== 'individual_product'">
                             <nz-tag>{{datum.discount_amount}} %</nz-tag>
                         </td>
-                        <td *ngIf="datum.calculation_type === 'absolute'">
+                        <td *ngIf="datum.calculation_type === 'absolute'  && datum.selection_type !== 'individual_product'">
                             <nz-tag>{{datum.discount_amount}} tk</nz-tag>
                         </td>
 
-                        <td>
-                            <nz-tag>{{datum.selection_type}}</nz-tag>
+                        <td *ngIf="datum.selection_type === 'individual_product'">
+                            <nz-tag >Per Product</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.selection_type !== 'individual_product'">
+                            <nz-tag >{{datum.selection_type}}</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.selection_type === 'individual_product'">
+                            <nz-tag >Per Product</nz-tag>
                         </td>
 
                         <td>

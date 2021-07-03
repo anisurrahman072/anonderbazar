@@ -93,21 +93,46 @@ module.exports = {
 
           body.image = '/' + newPath;
 
-          let offerData = {
-            title: body.title,
-            image: {
-              image: body.image,
-              small_image: body.small_image,
-              banner_image: body.banner_image,
-            },
-            selection_type: body.selection_type,
-            description: body.description,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
+          let offerData = {};
+          let individualProductsIds;
+          let individualProductsCalculations;
+          let individualProductsAmounts;
+
+          if (body.selection_type === 'individual_product') {
+            individualProductsIds = body.individuallySelectedProductsId.split(',');
+            individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+            individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          } else {
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              calculation_type: body.calculationType,
+              discount_amount: body.discountAmount,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          }
 
           if (body.frontend_position) {
             offerData.frontend_position = body.frontend_position;
@@ -145,6 +170,33 @@ module.exports = {
           let data = await Offer.create(offerData).fetch();
           /**console.log('offer fetched data from database: with image: ', data);*/
 
+          /**for individually selected products*/
+          if (individualProductsIds && individualProductsIds.length > 0) {
+            for (let id = 0; id < individualProductsIds.length; id++) {
+              let product_id = parseInt(individualProductsIds[id]);
+              let calculationType = individualProductsCalculations[id];
+              let discountAmount = parseInt(individualProductsAmounts[id]);
+              let existedProduct = await RegularOfferProducts.findOne({
+                product_id: product_id,
+                product_deactivation_time: null
+              });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              } else {
+                await RegularOfferProducts.create({
+                  regular_offer_id: data.id,
+                  product_id: product_id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              }
+            }
+          }
+
           let regular_offer_product_ids;
           if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
             regular_offer_product_ids = body.selectedProductIds.split(',');
@@ -174,16 +226,37 @@ module.exports = {
         });
 
       } else {
-        let offerData = {
-          title: body.title,
-          description: body.description,
-          selection_type: body.selection_type,
-          calculation_type: body.calculationType,
-          discount_amount: body.discountAmount,
-          start_date: body.offerStartDate,
-          end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
-        };
+        let offerData = {};
+        let individualProductsIds;
+        let individualProductsCalculations;
+        let individualProductsAmounts;
+
+        if (body.selection_type === 'individual_product') {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+          individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+          individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        } else {
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            calculation_type: body.calculationType,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        }
+
 
         if (body.frontend_position) {
           offerData.frontend_position = body.frontend_position;
@@ -220,6 +293,33 @@ module.exports = {
 
         let data = await Offer.create(offerData).fetch();
         /**console.log('offer fetched data from database: ', data);*/
+
+        /**for individually selected products*/
+        if (individualProductsIds && individualProductsIds.length > 0) {
+          for (let id = 0; id < individualProductsIds.length; id++) {
+            let product_id = parseInt(individualProductsIds[id]);
+            let calculationType = individualProductsCalculations[id];
+            let discountAmount = parseInt(individualProductsAmounts[id]);
+            let existedProduct = await RegularOfferProducts.findOne({
+              product_id: product_id,
+              product_deactivation_time: null
+            });
+            if (existedProduct !== undefined) {
+              await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                regular_offer_id: data.id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount
+              });
+            } else {
+              await RegularOfferProducts.create({
+                regular_offer_id: data.id,
+                product_id: product_id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount
+              });
+            }
+          }
+        }
 
         let regular_offer_product_ids;
         if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
@@ -760,6 +860,16 @@ module.exports = {
         });
       }
 
+      /**if selection_type === 'individual_product'*/
+      if (requestedOffer.selection_type === 'individual_product') {
+        let _where = {};
+        _where.regular_offer_id = req.query.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
+          .populate('product_id');
+      }
+
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web with related products data',
@@ -788,20 +898,17 @@ module.exports = {
       let _where = {};
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
-      _where.start_date =  {'<=': presentTime};
+      _where.start_date = {'<=': presentTime};
       _where.end_date = {'>=': presentTime};
-      const requestedOffer = await Offer.find({
-        where: _where
-      });
+      const requestedOffer = await Offer.find({where: _where});
 
       let _where1 = {};
       _where1.deletedAt = null;
       _where1.status = 1;
       _where1.start_date = {'<=': presentTime};
       _where1.end_date = {'>=': presentTime};
-      const requetedJhorOffer = await AnonderJhorOffers.find({
-        where: _where1
-      });
+
+      const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
 
       if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
@@ -886,6 +993,24 @@ module.exports = {
           if (products.length > 0) {
             products.forEach(product => {
               finalCollectionOfProducts[product.product_id] = offerObj;
+            });
+          }
+        }
+
+        /** if selection_type === 'individual_product' */
+        if (thisOffer.selection_type === 'individual_product') {
+          let _where = {};
+          _where.regular_offer_id = thisOffer.id;
+          _where.product_deactivation_time = null;
+          _where.deletedAt = null;
+          let products = await RegularOfferProducts.find({where: _where});
+
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.product_id] = {
+                calculation_type: product.calculation_type,
+                discount_amount: product.discount_amount * 1.0,
+              };
             });
           }
         }

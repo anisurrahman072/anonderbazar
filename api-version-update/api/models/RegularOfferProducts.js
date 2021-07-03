@@ -19,6 +19,14 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
     },
+    calculation_type: {
+      type: 'string',
+      columnType: 'varchar',
+    },
+    discount_amount: {
+      type: 'number',
+      columnType: 'decimal',
+    },
   },
   tableName: 'regular_offer_products'
 };

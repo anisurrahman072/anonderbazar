@@ -54,12 +54,10 @@ module.exports = {
     calculation_type: {
       type: 'string',
       columnType: 'varchar',
-      required: true
     },
     discount_amount: {
       type: 'number',
       columnType: 'decimal',
-      required: true
     },
     start_date: {
       type: 'ref',

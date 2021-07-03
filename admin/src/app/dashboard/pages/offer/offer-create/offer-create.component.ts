@@ -10,8 +10,6 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-import {a} from "@angular/core/src/render3";
-
 @Component({
     selector: 'app-offer-create',
     templateUrl: './offer-create.component.html',
@@ -104,9 +102,12 @@ export class OfferCreateComponent implements OnInit {
     selectedIndividualProductIds: any;
 
     selectedAllProductIds: any = [];
-    individualSelectedProductArray: any = [];
     selectedData;
     allProductSelectAll: any = [false];
+
+    individuallySelectedProductsId: any = [];
+    individuallySelectedProductsCalculation: any = [];
+    individuallySelectedProductsAmount: any = [];
 
     constructor(
         private router: Router,
@@ -167,6 +168,15 @@ export class OfferCreateComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
+        if (this.individuallySelectedProductsId) {
+            formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+        }if (this.individuallySelectedProductsCalculation) {
+            formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        }
+        if (this.individuallySelectedProductsAmount) {
+            formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        }
+
         if (value.vendorId) {
             formData.append('vendor_id', this.vendorId);
         }
@@ -192,21 +202,33 @@ export class OfferCreateComponent implements OnInit {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
-            formData.append('hasImage', 'false');
+            this._notification.error('Offer Main Image', 'Offer Main Image is required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasImage', 'false');*/
         }
 
         if (this.smallOfferImage) {
             formData.append('hasSmallImage', 'true');
             formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
         } else {
-            formData.append('hasSmallImage', 'false');
+            this._notification.error('Offer Image Beside Carousel', 'Offer Image Beside Carousel required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasSmallImage', 'false');*/
         }
 
         if (this.BannerImageFile) {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         } else {
-            formData.append('hasBannerImage', 'false');
+            this._notification.error('Offer Banner Image', 'Banner Image required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasBannerImage', 'false');*/
         }
 
         this.offerService.offerInsert(formData).subscribe(result => {
@@ -216,9 +238,12 @@ export class OfferCreateComponent implements OnInit {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Feature Title: ");
+                this._notification.success('Offer Added', "Offer Added Successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
+                this.individuallySelectedProductsId = [];
+                this.individuallySelectedProductsCalculation = [];
+                this.individuallySelectedProductsAmount = [];
                 this.router.navigate(['/dashboard/offer']);
             }
         }, error => {
@@ -423,9 +448,13 @@ export class OfferCreateComponent implements OnInit {
         this.isIndividualVisible = false;
     }
 
-    showModal(): void {
-        this.isVisible = true;
-        this.isIndividualVisible = true;
+    showModal(value): void {
+        if (value === 'individual') {
+            this.isIndividualVisible = true;
+        } else {
+            this.isVisible = true;
+        }
+
         this.getAllProducts(1);
         this.offerService.getAllOptions('Brand wise', '', '')
             .subscribe(result => {
@@ -443,6 +472,10 @@ export class OfferCreateComponent implements OnInit {
 
     handleCancel(): void {
         this.isVisible = false;
+        this.isIndividualVisible = false;
+    }
+
+    doneAddingIndividualProduct() {
         this.isIndividualVisible = false;
     }
 
@@ -530,28 +563,44 @@ export class OfferCreateComponent implements OnInit {
     }
 
     addIndividualProduct = ($event, value, productId) => {
-
-        console.log('Calculation_type: ', value.Calculation_type);
-        console.log('discount_amount: ', value.discount_amount);
-        console.log('product id: ', productId);
-
         this.submitting = true;
         $event.preventDefault();
-        /*this._isSpinning = true;*/
         for (const key in this.individualProductFrom.controls) {
             this.individualProductFrom.controls[key].markAsDirty();
         }
 
-        /**set a condition whether the product being selected is already added or not*/
-        /**show sucess or error notification*/
-
-        this.individualSelectedProductArray = {
-            productId: productId = {
-                Calculation_type: value.Calculation_type,
-                discount_amount: value.discount_amount
-            }
+        if (value.Calculation_type === undefined || value.Calculation_type === null || value.discount_amount === null || value.discount_amount === '') {
+            this._notification.error('Sorry!!', 'Please input proper data');
+            this.submitting = false;
+            return;
         }
+
+        /**develop system to remove a data*/
+
+        let exists: Boolean = false;
+        if (this.individuallySelectedProductsId) {
+            this.individuallySelectedProductsId.forEach(product => {
+                if (productId === product.id) {
+                    this._notification.error('Exists', 'Product already added');
+                    this.submitting = false;
+                    exists = true
+                    return;
+                }
+            })
+        }
+
+        if(exists === false) {
+            this.individuallySelectedProductsId.push(productId);
+            this.individuallySelectedProductsCalculation.push(value.Calculation_type);
+            this.individuallySelectedProductsAmount.push(value.discount_amount);
+            this._notification.success('Added', 'Product added successfully');
+        }
+
+
+
+        console.log('offer prodcuts; ', this.individuallySelectedProductsId);
         this.individualProductFrom.reset();
         this.submitting = false;
+
     }
 }

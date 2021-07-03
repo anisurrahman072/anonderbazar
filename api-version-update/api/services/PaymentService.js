@@ -178,16 +178,21 @@ module.exports = {
     let finalCollectionOfProducts = {};
     await OfferService.offerDurationCheck();
     await OfferService.anonderJhorOfferDurationCheck();
+    let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
     let _where = {};
     _where.deletedAt = null;
     _where.offer_deactivation_time = null;
+    _where.start_date = {'<=': presentTime};
+    _where.end_date = {'>=': presentTime};
 
     const requestedOffer = await Offer.find({where: _where});
 
     let _where1 = {};
     _where1.deletedAt = null;
     _where1.status = 1;
+    _where1.start_date = {'<=': presentTime};
+    _where1.end_date = {'>=': presentTime};
 
     const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
@@ -270,6 +275,24 @@ module.exports = {
         if (products.length > 0) {
           products.forEach(product => {
             finalCollectionOfProducts[product.product_id] = offerObj;
+          });
+        }
+      }
+
+      /** if selection_type === 'individual_product' */
+      if (thisOffer.selection_type === 'individual_product') {
+        let _where = {};
+        _where.regular_offer_id = thisOffer.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        let products = await RegularOfferProducts.find({where: _where});
+
+        if (products.length > 0) {
+          products.forEach(product => {
+            finalCollectionOfProducts[product.product_id] = {
+              calculation_type: product.calculation_type,
+              discount_amount: product.discount_amount * 1.0,
+            };
           });
         }
       }
@@ -459,6 +482,7 @@ module.exports = {
           let regularOfferSubCatId = [];
           let regularOfferSubSubCatId = [];
           let regularOfferProductsIds = [];
+          let regularOfferIndividualProductsIds = [];
 
 
           /** storing offer information in the arrays */
@@ -504,6 +528,24 @@ module.exports = {
 
               productIds.forEach(proId => {
                 regularOfferProductsIds.push({
+                  regularOfferId: regularOffers[offer].id,
+                  productId: proId.product_id
+                });
+              });
+            }
+
+            if (regularOffers[offer].selection_type === 'individual_product') {
+              let rawSQL = `SELECT
+                                  product_id
+                              FROM
+                                  regular_offer_products
+                              WHERE
+                                  ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
+              const ids = await sails.sendNativeQuery(rawSQL, []);
+              const productIds = ids.rows;
+
+              productIds.forEach(proId => {
+                regularOfferIndividualProductsIds.push({
                   regularOfferId: regularOffers[offer].id,
                   productId: proId.product_id
                 });
@@ -560,6 +602,15 @@ module.exports = {
           if(regularOfferProductsIds && regularOfferProductsIds.length > 0) {
             regularOfferProductsIds.forEach(proId => {
               if(itemId === proId.productId) {
+                offer_id_number = proId.regularOfferId;
+                offer_type = regular_offer;
+              }
+            });
+          }
+
+          if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
+            regularOfferIndividualProductsIds.forEach(proId => {
+              if (itemId === proId.productId) {
                 offer_id_number = proId.regularOfferId;
                 offer_type = regular_offer;
               }

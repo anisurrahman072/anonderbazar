@@ -94,6 +94,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if(endTime < this.presentTime) {
             this._notification.error('Time ended', 'You can not CHANGE the status.You can delete if you dnt need this, but it will also delete the order history related to this offer');
+            this.getRegularOfferData();
             return;
         }
 

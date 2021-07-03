@@ -13,9 +13,7 @@ export class CmsDetailsPageComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     id: any;
     regularOffer;
-    regularOfferedProducts;
-    products: any = [];
-    offers: any = [];
+    regularOfferedProducts: any = [];
     page: any;
     private queryParams: any;
 
@@ -54,30 +52,43 @@ export class CmsDetailsPageComponent implements OnInit {
         if (this.id) {
             this.offerService.getWebRegularOfferById(this.id)
                 .subscribe(result => {
-                /**info related to this offer*/
-                this.regularOffer = result.data[0];
+                    /**info related to this offer*/
+                    this.regularOffer = result.data[0];
 
-                /**stored products in this offer*/
-                this.regularOfferedProducts = result.data[1];
+                    /** setting discount to every products exists in this offer */
+                    if (this.regularOffer.selection_type === "individual_product") {
+                        result.data[1].forEach(product => {
+                            this.calculationType = product.calculation_type;
+                            this.discountAmount = product.discount_amount;
+                            this.originalPrice = product.product_id.price;
 
-                /** setting discount to every products exists in this offer*/
-                this.regularOfferedProducts.forEach(product => {
-                    this.calculationType = this.regularOffer.calculation_type;
-                    this.discountAmount = this.regularOffer.discount_amount;
-                    this.originalPrice = product.price;
+                            product.product_id.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
 
-                    product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+                            product.product_id.calculationType = this.calculationType;
+                            product.product_id.discountAmount = this.discountAmount;
+                            this.regularOfferedProducts.push(product.product_id);
+                        })
+                    } else {
+                        /**stored products in this offer*/
+                        this.regularOfferedProducts = result.data[1];
+                        this.regularOfferedProducts.forEach(product => {
+                            this.calculationType = this.regularOffer.calculation_type;
+                            this.discountAmount = this.regularOffer.discount_amount;
+                            this.originalPrice = product.price;
 
-                    product.calculationType = this.calculationType;
-                    product.discountAmount = this.discountAmount;
-                })
+                            product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
 
-                if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
-                    return false;
-                }
+                            product.calculationType = this.calculationType;
+                            product.discountAmount = this.discountAmount;
+                        })
+                    }
 
-                this.addPageTitle();
-            });
+                    if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
+                        return false;
+                    }
+
+                    this.addPageTitle();
+                });
         }
 
     }
