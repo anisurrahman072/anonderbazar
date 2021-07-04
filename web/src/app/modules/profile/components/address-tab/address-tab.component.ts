@@ -39,6 +39,7 @@ export class AddressTabComponent implements OnInit {
         //adding form validation
         this.addAddressForm = this.fb.group({
             first_name: ['', [Validators.required]],
+            // last_name: ['', [Validators.required]],
             last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],

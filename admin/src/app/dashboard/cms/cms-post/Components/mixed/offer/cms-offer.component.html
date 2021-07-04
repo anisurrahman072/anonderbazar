@@ -1,5 +1,6 @@
 <nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Offer'" [nzContent]="editmodalContent"
-          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)">
+          (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)"
+          [nzWidth]="1200" >
     <ng-template #editmodalContent>
         <nz-spin [nzSpinning]="_isSpinning">
             <form nz-form [formGroup]="editValidateForm" id="editValidateForm"
@@ -115,7 +116,7 @@
                                   debounce="500 ">
 
                         </ckeditor>-->
-                        <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
+                        <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
                         <div
                                 *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                             Please input description !

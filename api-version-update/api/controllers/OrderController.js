@@ -15,7 +15,15 @@ const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
-const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE, PAYMENT_STATUS_NA, PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {
+  CANCELED_ORDER,
+  PARTIAL_ORDER_TYPE,
+  CASHBACK_PAYMENT_TYPE,
+  PAYMENT_STATUS_NA,
+  PAYMENT_STATUS_PAID,
+  REJECTED_PAYMENT_APPROVAL_STATUS,
+  APPROVED_PAYMENT_APPROVAL_STATUS
+} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -35,20 +43,17 @@ module.exports = {
     } catch (error) {
       console.log(error);
       return res.status(400).json({
-        message: false,
-        error
+        message: false, error
       });
     }
-  },
-  index: (req, res) => {
+  }, index: (req, res) => {
     try {
       return res.json({message: 'Not Authorized'});
     } catch (error) {
       console.log(error);
       return res.json({error: error});
     }
-  },
-  // destroy a row
+  }, // destroy a row
   destroy: async (req, res) => {
     try {
       const order = await Order.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
@@ -70,8 +75,7 @@ module.exports = {
       let globalConfigs = await getGlobalConfig();
 
       let cart = await Cart.findOne({
-        user_id: authUser.id,
-        deletedAt: null
+        user_id: authUser.id, deletedAt: null
       });
 
       if (!cart) {
@@ -79,8 +83,7 @@ module.exports = {
       }
 
       let cartItems = await CartItem.find({
-        cart_id: cart.id,
-        deletedAt: null
+        cart_id: cart.id, deletedAt: null
       })
         .populate('cart_item_variants')
         .populate('product_id');
@@ -108,9 +111,7 @@ module.exports = {
       }
 
       const {
-        order,
-        orderForMail,
-        subordersTemp
+        order, orderForMail, subordersTemp
       } = await sails.getDatastore()
         .transaction(async (db) => {
 
@@ -142,8 +143,7 @@ module.exports = {
           }
 
           let {
-            grandOrderTotal,
-            totalQty
+            grandOrderTotal, totalQty
           } = await PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
@@ -187,9 +187,7 @@ module.exports = {
 
           let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
 
-          let uniqueWarehouseIds = uniqueTempWarehouses.map(
-            o => o.product_id.warehouse_id
-          );
+          let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
 
           /** get unique warehouse Id for suborder..................END.........................*/
 
@@ -202,9 +200,7 @@ module.exports = {
           for (i = 0; i < uniqueWarehouseIds.length; i++) {
             let thisWarehouseID = uniqueWarehouseIds[i];
 
-            let cartItemsTemp = cartItems.filter(
-              asset => asset.product_id.warehouse_id === thisWarehouseID
-            );
+            let cartItemsTemp = cartItems.filter(asset => asset.product_id.warehouse_id === thisWarehouseID);
 
             let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
             let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -237,14 +233,7 @@ module.exports = {
               };
 
               let newEndDate = new Date();
-              newEndDate.setDate(new Date(
-                new Date(order.createdAt).getTime() +
-                ((thisCartItem.product_id.produce_time *
-                  thisCartItem.product_quantity) /
-                  60 /
-                  8) *
-                86400000
-              ).getDate() + 1);
+              newEndDate.setDate(new Date(new Date(order.createdAt).getTime() + ((thisCartItem.product_id.produce_time * thisCartItem.product_quantity) / 60 / 8) * 86400000).getDate() + 1);
 
               let suborderItem = await SuborderItem.create(newSuborderItemPayload).fetch().usingConnection(db);
 
@@ -274,9 +263,7 @@ module.exports = {
                     warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
                   });
 
-                  let suborderItemVariant = await SuborderItemVariant.create(
-                    newSuborderItemVariantPayload
-                  ).fetch().usingConnection(db);
+                  let suborderItemVariant = await SuborderItemVariant.create(newSuborderItemVariantPayload).fetch().usingConnection(db);
                   suborderItemVariantsTemp.push(suborderItemVariant);
                 }
               }
@@ -332,10 +319,7 @@ module.exports = {
 
           for (let i = 0; i < cartItems.length; i++) {
             await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
-            await CartItemVariant.update(
-              {cart_item_id: cartItems[i].id},
-              {deletedAt: new Date()}
-            ).usingConnection(db);
+            await CartItemVariant.update({cart_item_id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
           }
 
           for (let i = 0; i < allOrderedProductsInventory.length; i++) {
@@ -344,9 +328,7 @@ module.exports = {
             await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate}).usingConnection(db);
           }
           return {
-            order,
-            orderForMail,
-            subordersTemp
+            order, orderForMail, subordersTemp
           };
         });
 
@@ -377,14 +359,12 @@ module.exports = {
     } catch (finalError) {
       console.log('finalError', finalError);
       return res.status(400).json({
-        message: 'There was a problem in processing the order.',
-        additionalMessage: finalError.message
+        message: 'There was a problem in processing the order.', additionalMessage: finalError.message
       });
 
     }
 
-  },
-  //Method called for creating a custom order data from frontend with sslcommerz
+  }, //Method called for creating a custom order data from frontend with sslcommerz
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
@@ -413,22 +393,11 @@ module.exports = {
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
-      let response = await paymentGatewayService.placeOrder(
-        authUser,
-        req.body,
-        req.allParams(),
-        {
-          paymentType: req.param('paymentType')
-        },
-        {
-          billingAddress,
-          shippingAddress
-        },
-        globalConfigs,
-        cart,
-        cartItems,
-        req.file
-      );
+      let response = await paymentGatewayService.placeOrder(authUser, req.body, req.allParams(), {
+        paymentType: req.param('paymentType')
+      }, {
+        billingAddress, shippingAddress
+      }, globalConfigs, cart, cartItems, req.file);
       return res.status(200).json(response);
 
     } catch (finalError) {
@@ -436,8 +405,7 @@ module.exports = {
       logger.orderLogAuth(req, finalError);
 
       return res.status(400).json({
-        message: 'There was a problem in processing the order.',
-        additionalMessage: finalError.message
+        message: 'There was a problem in processing the order.', additionalMessage: finalError.message
       });
     }
   },
@@ -493,10 +461,9 @@ module.exports = {
 
       if (req.query.payment_status) {
         // eslint-disable-next-line eqeqeq
-        if(req.query.payment_status == PAYMENT_STATUS_PAID) {
+        if (req.query.payment_status == PAYMENT_STATUS_PAID) {
           _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
-        }
-        else{
+        } else {
           _where += ` AND orders.payment_status = ${req.query.payment_status} `;
         }
       }
@@ -557,13 +524,10 @@ module.exports = {
       console.log('error', error);
       let message = 'Error in getting all orders with pagination';
       return res.status(400).json({
-        success: false,
-        message,
-        error
+        success: false, message, error
       });
     }
-  },
-  //Method called for getting all order data
+  }, //Method called for getting all order data
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js, models/SuborderItemVariant.js
   getAllOrder: async (req, res) => {
     try {
@@ -617,8 +581,7 @@ module.exports = {
                   .populate('variant_id')
                   .populate('product_suborder_item_id')
                   .populate('warehouse_variant_id')
-                  .populate('product_variant_id')
-                );
+                  .populate('product_variant_id'));
               });
               item.suborderItemVariants = varientitems;
             });
@@ -632,31 +595,25 @@ module.exports = {
       console.log(error);
       let message = 'Error in getting all orders with pagination';
       res.status(400).json({
-        success: false,
-        message,
-        error
+        success: false, message, error
       });
     }
-  },
-  //Method called for updating order
+  }, //Method called for updating order
   update: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
+        deletedAt: null, id: req.param('id')
       }).set(req.body);
 
       let paymentDetail = await Payment.find({
-        order_id: updatedOrder.id,
-        deletedAt: null
+        order_id: updatedOrder.id, deletedAt: null
       });
 
       if (paymentDetail.length > 0 && paymentDetail[0].payment_type === 'CashBack' && req.body.status === ORDER_STATUSES.canceled) {
         let returnCashbackAmount = updatedOrder.total_price;
 
         let prevCashbackDetail = await CouponLotteryCashback.findOne({
-          deletedAt: null,
-          user_id: paymentDetail[0].user_id
+          deletedAt: null, user_id: paymentDetail[0].user_id
         });
 
         await CouponLotteryCashback.updateOne({
@@ -667,47 +624,73 @@ module.exports = {
       }
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully updated status of order',
-        data: updatedOrder
+        success: true, message: 'Successfully updated status of order', data: updatedOrder
       });
     } catch (error) {
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while updating Order'
+        success: false, message: 'Error occurred while updating Order'
       });
     }
   },
 
   updatePaymentStatus: async (req, res) => {
     try {
+      let order = await Order.findOne({
+        id: req.param('id'),
+        deletedAt: null
+      });
+
+      if (order.order_type == PARTIAL_ORDER_TYPE) {
+        return res.status(200).json({
+          success: false, message: 'Use Order => Financial Transaction grid to update Partial Orders payment status.'
+        });
+      }
+
+      let _set = {
+        paid_amount: 0,
+        payment_status: req.body.payment_status,
+        changed_by: req.body.changed_by,
+        status: ORDER_STATUSES.canceled
+      };
+
+      let payment_set = {
+        approval_status: REJECTED_PAYMENT_APPROVAL_STATUS
+      };
+
+      if (req.body.payment_status == PAYMENT_STATUS_PAID) {
+        _set.paid_amount = order.total_price;
+        _set.status = ORDER_STATUSES.processing;
+
+        payment_set.approval_status = APPROVED_PAYMENT_APPROVAL_STATUS;
+      }
+
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
-      }).set(req.body);
+        id: req.param('id'),
+        deletedAt: null
+      }).set(_set);
+
+      await Payment.update({
+        order_id: req.param('id'),
+        deletedAt: null
+      }).set(payment_set);
 
       let userDetail = await User.find({
-        id: updatedOrder.user_id,
-        deletedAt: null
+        id: updatedOrder.user_id, deletedAt: null
       });
 
       let shippingAddresses = await ShippingAddress.find({
-        user_id: userDetail.id,
-        deletedAt: null
+        user_id: userDetail.id, deletedAt: null
       });
 
-      await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
+      console.log('The set are: ', payment_set, _set);
+      // await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully updated payment status of order',
-        data: updatedOrder
+        success: true, message: 'Successfully updated payment status of order', data: updatedOrder
       });
-    }
-    catch (error) {
+    } catch (error) {
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while updating payment status'
+        success: false, message: 'Error occurred while updating payment status'
       });
     }
   },
@@ -715,15 +698,13 @@ module.exports = {
   deleteOrder: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
+        deletedAt: null, id: req.param('id')
       }).set({
         status: CANCELED_ORDER
       });
 
       let subOrders = await Suborder.update({
-        product_order_id: req.param('id'),
-        deletedAt: null
+        product_order_id: req.param('id'), deletedAt: null
       }).set({
         status: CANCELED_ORDER
       }).fetch();
@@ -733,21 +714,18 @@ module.exports = {
       let len = subOrders.length;
       for (let i = 0; i < len; i++) {
         let subOrderItem = await SuborderItem.find({
-          product_suborder_id: subOrders[i].id,
-          deletedAt: null
+          product_suborder_id: subOrders[i].id, deletedAt: null
         });
 
         let subItemLen = subOrderItem.length;
         for (let index = 0; index < subItemLen; index++) {
           let product = await Product.findOne({
-            id: subOrderItem[index].product_id,
-            deletedAt: null
+            id: subOrderItem[index].product_id, deletedAt: null
           });
 
           let newQuantity = product.quantity + subOrderItem[index].product_quantity;
           await Product.updateOne({
-            id: product.id,
-            deletedAt: null
+            id: product.id, deletedAt: null
           }).set({
             quantity: newQuantity
           });
@@ -755,15 +733,12 @@ module.exports = {
       }
 
       return res.status(200).json({
-        success: true,
-        message: 'successfully deleted the order.',
-        order: updatedOrder
+        success: true, message: 'successfully deleted the order.', order: updatedOrder
       });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while deleting the order. ', error
+        success: false, message: 'Error occurred while deleting the order. ', error
       });
     }
   },
@@ -787,14 +762,11 @@ module.exports = {
       console.log('all canceled order:', canceledOrder);
 
       return res.status(200).json({
-        success: true,
-        message: 'successfully fetched cancelled order',
-        data: canceledOrder
+        success: true, message: 'successfully fetched cancelled order', data: canceledOrder
       });
     } catch (error) {
       return res.status(200).json({
-        success: false,
-        message: 'Error occurred while fetching cancelled order', error
+        success: false, message: 'Error occurred while fetching cancelled order', error
       });
     }
   },
@@ -805,8 +777,7 @@ module.exports = {
       const orderId = req.param('id');
 
       let order = await Order.findOne({
-        id: orderId,
-        deletedAt: null
+        id: orderId, deletedAt: null
       });
 
       console.log('The order is', order);
@@ -820,9 +791,7 @@ module.exports = {
       }
 
       let cashBackTransactions = await Payment.find({
-        order_id: orderId,
-        payment_type: CASHBACK_PAYMENT_TYPE,
-        deletedAt: null
+        order_id: orderId, payment_type: CASHBACK_PAYMENT_TYPE, deletedAt: null
       });
 
       let cashBackAmountToRefund = 0;
@@ -832,8 +801,7 @@ module.exports = {
 
 
       let couponLotteryCashback = await CouponLotteryCashback.findOne({
-        user_id: order.user_id,
-        deletedAt: null
+        user_id: order.user_id, deletedAt: null
       });
 
       let newCashbackAmount = couponLotteryCashback.amount + cashBackAmountToRefund;
@@ -842,16 +810,14 @@ module.exports = {
         .transaction(async (db) => {
           if (cashBackAmountToRefund > 0) {
             await CouponLotteryCashback.update({
-              user_id: order.user_id,
-              deletedAt: null
+              user_id: order.user_id, deletedAt: null
             }).set({
               amount: newCashbackAmount
             }).usingConnection(db);
           }
 
           await Order.updateOne({
-            id: orderId,
-            deletedAt: null
+            id: orderId, deletedAt: null
           }).set({
             refund_status: 1
           }).usingConnection(db);
@@ -861,15 +827,13 @@ module.exports = {
       await PaymentService.sendSmsForRefund(orderId, authUser);
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully refunded.',
+        success: true, message: 'Successfully refunded.',
 
       });
     } catch (error) {
       console.log('Error occurred while refunding the order');
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while refunding the order. ',error,
+        success: false, message: 'Error occurred while refunding the order. ', error,
       });
     }
   },
@@ -889,15 +853,14 @@ module.exports = {
 
       let _where = ' WHERE orders.deleted_at IS NULL AND suborders.deleted_at IS NULL AND suborderItems.deleted_at IS NULL ';
 
-      if(req.query.orderId){
+      if (req.query.orderId) {
         _where += ` AND orders.id = ${req.query.orderId}  `;
       }
 
       const rawResult = await ProductQuery(rawSelect + fromSQL + _where, []);
 
       return res.status(200).json(rawResult.rows);
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         message: 'Failed to fetch the products!'
       });
