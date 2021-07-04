@@ -22,7 +22,8 @@ const {
   PAYMENT_STATUS_NA,
   PAYMENT_STATUS_PAID,
   REJECTED_PAYMENT_APPROVAL_STATUS,
-  APPROVED_PAYMENT_APPROVAL_STATUS
+  APPROVED_PAYMENT_APPROVAL_STATUS,
+  CUSTOMER_USER_GROUP_NAME
 } = require('../../libs/constants');
 
 module.exports = {
@@ -38,10 +39,20 @@ module.exports = {
 
       console.log('orders rouzex', orders);
 
+      const authUser = getAuthUser(req);
+
+      if(authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id){
+        return res.status(400).json({
+          success: false,
+          code: 'userIdMissMatched',
+          message: 'Yo are only authorized to see your orders Invoice!'
+        });
+      }
+
       return res.status(200).json(orders);
 
     } catch (error) {
-      console.log(error);
+      console.log('Error', error);
       return res.status(400).json({
         message: false, error
       });

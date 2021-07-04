@@ -175,7 +175,7 @@
                                    *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE; else showOnlyPaymentStatus;"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
-                            <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
+                            <nz-option *ngFor="let paymentOption of changePaymentOptions" [nzLabel]="paymentOption.label"
                                        [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
