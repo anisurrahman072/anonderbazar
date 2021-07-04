@@ -30,9 +30,9 @@ export class OfferCreateComponent implements OnInit {
             ],
             heading: {
                 options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
                 ]
             },
             shouldNotGroupWhenFull: true,
@@ -644,10 +644,7 @@ export class OfferCreateComponent implements OnInit {
     }
 
     removeIndividualProduct(productId) {
-        let index = this.individuallySelectedData.map(obj => obj.id).indexOf(productId);
-        if (index > -1) {
-            this.individuallySelectedData.splice(index, 1);
-        }
+        this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 }

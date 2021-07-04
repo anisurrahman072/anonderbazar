@@ -64,8 +64,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         this.offerService.getAnonderJhorOfferById(this.jhorOfferId)
             .subscribe(result => {
-                console.log('test rou', result.anonderJhorOffer);
-
                 this.data = result.anonderJhorOffer;
 
                 this.categoryId = this.data.category_id.id;
@@ -119,11 +117,19 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
-        let offerTime = new Date(value.offerEndDate).getTime();
-        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+        let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
+        let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
-        if(offerTime > jhorTime) {
+        if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
+            this._isSpinning = false;
+            return;
+        }
+
+        if (offerStartTime > offerEndTime || offerStartTime < jhorStartTime) {
+            this._notification.error('Wrong Date', 'Please enter date and time properly');
             this._isSpinning = false;
             return;
         }
@@ -193,6 +199,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllCategories() {
+        console.log('getAllCategories: ', event);
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
@@ -200,32 +207,32 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllSubCategories(event) {
-        console.log('sstart ime: ', event);
         if (event) {
-            console.log('is in if');
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
                     this.allSubCategoryIds = result.data;
-                    this.allSubSubCategoryIds = null;
-                    this.subCategoryId = null;
-                    this.subSubCategoryId = null;
+                    this.finalSelectionType(true, false, false, event);
                 })
         }
     }
 
     getAllSubSubCategories(event) {
-        console.log('evet in sub sub', event);
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
                     this.allSubSubCategoryIds = result.data;
-                    this.subSubCategoryId = null;
+                    this.finalSelectionType(false, true, false, event);
                 })
         }
-        console.log('inside get all sub sub: ', this.subSubCategoryId);
     }
 
-    finalSelectionType(catId, subCatId, event) {
+    getSubSubCategoryId(event) {
+        if (event) {
+            this.finalSelectionType(false, false, true, event);
+        }
+    }
+
+    finalSelectionType(catId, subCatId, subSubCatId, event) {
         if (event) {
             if (catId) {
                 this.categoryId = event;
@@ -234,6 +241,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             } else if (subCatId) {
                 this.subCategoryId = event;
                 this.subSubCategoryId = null;
+            } else if (subSubCatId) {
+                this.subSubCategoryId = event;
             }
         }
     }

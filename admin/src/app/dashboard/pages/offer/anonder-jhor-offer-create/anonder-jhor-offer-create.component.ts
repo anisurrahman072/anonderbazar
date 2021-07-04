@@ -96,6 +96,12 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             return;
         }
 
+        if (offerStartTime > offerEndTime) {
+            this._notification.error('Wrong Date', 'Please enter date and time properly');
+            this._isSpinning = false;
+            return;
+        }
+
         if (value.subCategoryId) {
             formData.append('subCategoryId', this.subCategoryId);
         }

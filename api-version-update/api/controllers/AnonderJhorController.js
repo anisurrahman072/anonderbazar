@@ -519,11 +519,12 @@ module.exports = {
 
       let anonderJhor = await AnonderJhor.findOne({id: 1});
       let jhorStartTime = anonderJhor.start_date;
+      let jhorEndTime = anonderJhor.end_date;
 
       let _where = {};
       _where.deletedAt = null;
-      _where.end_date = {'>=' : jhorStartTime};
-      _where.status = 1;
+      _where.start_date = {'>=' : jhorStartTime};
+      _where.end_date = {'<=' : jhorEndTime};
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
