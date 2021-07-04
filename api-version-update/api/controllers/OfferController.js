@@ -410,6 +410,9 @@ module.exports = {
       if (regularOfferInfo.selection_type === 'Product wise') {
         await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
       }
+      if (regularOfferInfo.selection_type === 'individual_product') {
+        await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
+      }
       return res.status(201).json(regularOffer);
     } catch (error) {
       console.log(error);
@@ -746,11 +749,15 @@ module.exports = {
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
+        }else if (regularOfferInfo.selection_type === 'individual_product') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
         }
       } else {
         await Offer.updateOne({id: req.body.offerId}).set({offer_deactivation_time: new Date()});
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
+        }else if (regularOfferInfo.selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
         }
       }
