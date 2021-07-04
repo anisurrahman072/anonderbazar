@@ -463,8 +463,8 @@ module.exports = {
         let itemCatId = thisCartItem.product_id.type_id;
         let itemSubCatId = thisCartItem.product_id.category_id;
         let itemSubSubCatId = thisCartItem.product_id.subcategory_id;
-        let itemBrandId = thisCartItem.brand_id;
-        let itemWarehouseId = thisCartItem.warehouse_id;
+        let itemBrandId = thisCartItem.product_id.brand_id;
+        let itemWarehouseId = thisCartItem.product_id.warehouse_id;
 
         let offer_id_number;
         let offer_type;
@@ -517,14 +517,16 @@ module.exports = {
             }
 
             if (regularOffers[offer].selection_type === 'Product wise') {
+              console.log('regular offer info in product wise: ', regularOffers[offer]);
               let rawSQL = `SELECT
                                   product_id
                               FROM
                                   regular_offer_products
                               WHERE
-                                  ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
+                                  regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
               const ids = await sails.sendNativeQuery(rawSQL, []);
               const productIds = ids.rows;
+              console.log('pro wise ids: ', productIds);
 
               productIds.forEach(proId => {
                 regularOfferProductsIds.push({
@@ -535,14 +537,16 @@ module.exports = {
             }
 
             if (regularOffers[offer].selection_type === 'individual_product') {
+              console.log('regular offer info in inidi wise: ', regularOffers[offer]);
               let rawSQL = `SELECT
                                   product_id
                               FROM
                                   regular_offer_products
                               WHERE
-                                  ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
+                                  regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
               const ids = await sails.sendNativeQuery(rawSQL, []);
               const productIds = ids.rows;
+              console.log('individual_product wise ids: ', productIds);
 
               productIds.forEach(proId => {
                 regularOfferIndividualProductsIds.push({
@@ -600,8 +604,10 @@ module.exports = {
           }
 
           if(regularOfferProductsIds && regularOfferProductsIds.length > 0) {
+            console.log('regularOfferProductsIds', regularOfferProductsIds);
             regularOfferProductsIds.forEach(proId => {
               if(itemId === proId.productId) {
+                console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
                 offer_id_number = proId.regularOfferId;
                 offer_type = regular_offer;
               }
@@ -609,8 +615,10 @@ module.exports = {
           }
 
           if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
+            console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);
             regularOfferIndividualProductsIds.forEach(proId => {
               if (itemId === proId.productId) {
+                console.log('in individual ise: item id, productid: ', itemId, proId.productId);
                 offer_id_number = proId.regularOfferId;
                 offer_type = regular_offer;
               }

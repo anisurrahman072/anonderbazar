@@ -176,23 +176,26 @@ module.exports = {
               let product_id = parseInt(individualProductsIds[id]);
               let calculationType = individualProductsCalculations[id];
               let discountAmount = parseInt(individualProductsAmounts[id]);
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
-              });
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                  regular_offer_id: data.id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              } else {
-                await RegularOfferProducts.create({
-                  regular_offer_id: data.id,
+
+              if (product_id) {
+                let existedProduct = await RegularOfferProducts.findOne({
                   product_id: product_id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
+                  product_deactivation_time: null
                 });
+                if (existedProduct !== undefined) {
+                  await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                    regular_offer_id: data.id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                } else {
+                  await RegularOfferProducts.create({
+                    regular_offer_id: data.id,
+                    product_id: product_id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                }
               }
             }
           }
@@ -300,24 +303,28 @@ module.exports = {
             let product_id = parseInt(individualProductsIds[id]);
             let calculationType = individualProductsCalculations[id];
             let discountAmount = parseInt(individualProductsAmounts[id]);
-            let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id,
-              product_deactivation_time: null
-            });
-            if (existedProduct !== undefined) {
-              await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                regular_offer_id: data.id,
-                calculation_type: calculationType,
-                discount_amount: discountAmount
-              });
-            } else {
-              await RegularOfferProducts.create({
-                regular_offer_id: data.id,
+
+            if (product_id) {
+              let existedProduct = await RegularOfferProducts.findOne({
                 product_id: product_id,
-                calculation_type: calculationType,
-                discount_amount: discountAmount
+                product_deactivation_time: null
               });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              } else {
+                await RegularOfferProducts.create({
+                  regular_offer_id: data.id,
+                  product_id: product_id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              }
             }
+
           }
         }
 
@@ -674,23 +681,26 @@ module.exports = {
               let product_id = parseInt(individualProductsIds[id]);
               let calculationType = individualProductsCalculations[id];
               let discountAmount = parseInt(individualProductsAmounts[id]);
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
-              });
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                  regular_offer_id: data.id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              } else {
-                await RegularOfferProducts.create({
-                  regular_offer_id: data.id,
+
+              if (product_id) {
+                let existedProduct = await RegularOfferProducts.findOne({
                   product_id: product_id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
+                  product_deactivation_time: null
                 });
+                if (existedProduct !== undefined) {
+                  await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                    regular_offer_id: data.id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                } else {
+                  await RegularOfferProducts.create({
+                    regular_offer_id: data.id,
+                    product_id: product_id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                }
               }
             }
           }
@@ -803,23 +813,26 @@ module.exports = {
             let product_id = parseInt(individualProductsIds[id]);
             let calculationType = individualProductsCalculations[id];
             let discountAmount = parseInt(individualProductsAmounts[id]);
-            let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id,
-              product_deactivation_time: null
-            });
-            if (existedProduct !== undefined) {
-              await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                regular_offer_id: data.id,
-                calculation_type: calculationType,
-                discount_amount: discountAmount
-              });
-            } else {
-              await RegularOfferProducts.create({
-                regular_offer_id: data.id,
+
+            if (product_id) {
+              let existedProduct = await RegularOfferProducts.findOne({
                 product_id: product_id,
-                calculation_type: calculationType,
-                discount_amount: discountAmount
+                product_deactivation_time: null
               });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              } else {
+                await RegularOfferProducts.create({
+                  regular_offer_id: data.id,
+                  product_id: product_id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              }
             }
           }
         }
@@ -902,7 +915,7 @@ module.exports = {
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
-        }else if (regularOfferInfo.selection_type === 'individual_product') {
+        } else if (regularOfferInfo.selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
         }
       } else {
@@ -910,7 +923,7 @@ module.exports = {
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
-        }else if (regularOfferInfo.selection_type === 'individual_product') {
+        } else if (regularOfferInfo.selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
         }
       }

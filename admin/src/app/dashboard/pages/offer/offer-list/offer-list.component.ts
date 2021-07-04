@@ -123,7 +123,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                     return;
                 } else {
                     this.offerInfo = result.data[1];
-                    console.log('offer info: ', this.offerInfo);
+                    console.log('this.orderedOfferedProducts: ', this.orderedOfferedProducts);
                     let excelData = [];
                     this.orderedOfferedProducts.forEach(offerItem => {
                         excelData.push({
