@@ -3,7 +3,7 @@
         <div class="mt-5">
             <h1>{{post.data_value[0].title}}</h1>
         </div>
-        <div  class="mt-5">
+        <div  class="mt-5" *ngIf="post.data_value[0] && post.data_value[0].image">
             <img height="250px" width="375px" class="img  img-responsive " alt="{{post.name}}"
                  style="margin: auto;" src="{{  IMAGE_ENDPOINT + post.data_value[0].image}}" />
         </div>
