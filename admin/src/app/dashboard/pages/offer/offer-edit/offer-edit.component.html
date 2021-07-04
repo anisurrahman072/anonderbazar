@@ -88,7 +88,7 @@
                                [nzPlaceHolder]=" 'Selection Type'" nzAllowClear nzShowSearch
                                style="margin: 10px 0;"
                                (ngModelChange)="onSelectionTypeSelect($event)">
-                        <nz-option *ngFor="let option of ['Vendor wise', 'Brand wise', 'Category wise', 'Product wise']"
+                        <nz-option *ngFor="let option of ['Vendor wise', 'Brand wise', 'Category wise', 'Product wise','individual_product']"
                                    [nzLabel]="option" [nzValue]="option">
                         </nz-option>
                     </nz-select>
@@ -159,6 +159,16 @@
                         </small>
                     </div>
 
+                    <div *ngIf="offerSelectionType === 'individual_product'">
+                        <a nz-button style="margin-bottom: 10px" [nzType]="'primary'" (click)="showIndividualOfferModal();">
+                            <span>See Individual Products</span>
+                        </a>
+                        <!--<small *ngIf="selectedProductIds && selectedProductIds.length > 0" style="margin: 5px 10px 0 0">
+                            {{selectedProductIds.length}}
+                            products added in the offer list
+                        </small>-->
+                    </div>
+
                 </div>
             </div>
 
@@ -176,7 +186,7 @@
                 </div>
             </div>-->
 
-            <div nz-row style="margin-top: 20px">
+            <div *ngIf="offerSelectionType !== 'individual_product'" nz-row style="margin-top: 20px">
                 <div nz-col [nzSpan]="7">
                     <label> Calculation Type </label>
                 </div>
@@ -249,7 +259,7 @@
     </nz-spin>
 </nz-card>
 
-<!--Related offer product modal-->
+<!-- offer Related product modal-->
 <nz-modal [nzFooter]="null" [(nzVisible)]="isVisible" nzTitle="Products in this offer"
           (nzOnCancel)="handleOfferCancel()"
           nzWidth="90%">
@@ -370,7 +380,6 @@
         </div>
     </nz-spin>
 </nz-modal>
-
 
 <!-- modal for adding more products to the existing offer-->
 <nz-modal [nzFooter]="null" [(nzVisible)]="isProductModal" nzTitle="Add Products to the offer"
@@ -581,3 +590,226 @@
     </nz-spin>
 </nz-modal>
 
+<!--Related offer Individual product modal-->
+<nz-modal [nzFooter]="null" [(nzVisible)]="isIndividualVisible" nzTitle="Individual Products in this offer"
+          (nzOnCancel)="handleOfferCancel()"
+          nzWidth="90%">
+    <nz-spin [nzSpinning]="_isSpinning">
+        <nz-table #nzTableProdIndividual1
+                  nzShowSizeChanger
+                  nzShowQuickJumper
+                  [nzFrontPagination]="false"
+                  [nzTotal]="totalOfferedIndividualProducts"
+                  [nzData]="offeredIndividualProducts"
+                  [nzLoading]="_isSpinning"
+                  [(nzPageIndex)]="allProductPage"
+                  [(nzPageSize)]="allProductLimit"
+                  (nzPageIndexChange)="getRelatedOfferIndividualProducts($event)"
+        >
+            <thead>
+            <tr>
+                <th>
+                </th>
+                <th>
+                    <span> Product Code </span>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Original Price </span>
+                </th>
+                <th>
+                    <span> Calculation Type </span>
+                </th>
+                <th>
+                    <span> Discount Amount </span>
+                </th>
+                <th>
+                    <span> Delete </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableProdIndividual1.data;let i=index;">
+                <td>
+                </td>
+                <td>{{datum.code}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.price}}</td>
+                <td>{{datum.calculation_type}}</td>
+                <td>{{datum.discount_amount}}</td>
+                <td>
+                    <ng-container>
+                        <nz-popconfirm
+                                [nzTitle]="'Are you sure you want to delete?'"
+                                [nzOkText]="'Delete'"
+                                [nzCancelText]="'Cancel'"
+                                (nzOnConfirm)="removeIndividualProductFromOffer(datum.id)">
+                            <a nz-popconfirm>
+                                <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                    <i class="anticon anticon-delete "></i>
+                                </button>
+                            </a>
+                        </nz-popconfirm>
+                    </ng-container>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+        <div>
+            <button nz-button class="login-form-button" [nzType]="'primary'"
+                    (click)="handleOfferCancel()" style="float: right; display: inline-block">
+                <span>Cancel</span>
+            </button>
+        </div>
+        <div>
+            <a nz-button style="margin:0 10px 0 10px" [nzType]="'primary'" (click)="showIndividualProductModal();">
+                <span>Add More Individual Products</span>
+            </a>
+        </div>
+    </nz-spin>
+</nz-modal>
+
+<!-- modal for adding more "Individual" products to the existing offer-->
+<nz-modal [nzFooter]="null" [(nzVisible)]="isIndividualVisible" nzTitle="Add Individual Products to the offer"
+          (nzOnCancel)="handleIndividualProductCancel()"
+          nzWidth="90%">
+    <nz-spin [nzSpinning]="_isSpinning">
+        <!--Individually added products table-->
+        <nz-table #nzTableIndividuallySelected
+                  [nzData]="individuallySelectedData"
+                  [nzLoading]="_isSpinning"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <span> Product Code </span>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Calculation Type </span>
+                </th>
+                <th>
+                    <span> Discount Amount </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableIndividuallySelected.data;let i=index;">
+                <td>{{datum.code}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.calculation_type}}</td>
+                <td>{{datum.discount_amount}}</td>
+            </tr>
+            </tbody>
+        </nz-table>
+
+        <!--product to add individually-->
+        <nz-table #nzTableIndividualProduct
+                  nzShowSizeChanger
+                  nzShowQuickJumper
+                  [nzFrontPagination]="false"
+                  [nzData]="allProducts"
+                  [nzLoading]="_isSpinning"
+                  [nzTotal]="allProductTotal"
+                  [(nzPageIndex)]="allProductPage"
+                  [(nzPageSize)]="allProductLimit"
+                  (nzPageIndexChange)="getAllProducts($event)"
+        >
+            <thead>
+            <tr>
+                <th>
+                    <span> Product Code </span>
+                </th>
+                <th>
+                    <span> Product Name </span>
+                </th>
+                <th>
+                    <span> Shop Owner </span>
+                </th>
+                <th>
+                    <span> Original Price </span>
+                </th>
+                <th>
+                    <span> Offer Info </span>
+                </th>
+            </tr>
+            <tr>
+                <th style="text-align: center;" colspan="5"><span style="color: red">N. B. </span>Search and Add product
+                    Individually, not multiple product at a time
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <input nz-input placeholder="Code" [(ngModel)]="allProductCodeSearch"
+                           (ngModelChange)="allProductCodeChangeHandler($event)">
+                </th>
+                <th>
+                    <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
+                           (ngModelChange)="allProductNameChangeHandler($event)">
+                </th>
+                <th>
+                    <nz-select nzPlaceHolder="Vendor"
+                               [(ngModel)]="allVendorSearch" style="width: 130px;"
+                               nzShowSearch nzAllowClear
+                               (ngModelChange)="allProductShopOwnerChangeHandler($event)">
+                        <nz-option *ngFor="let option of allModalVendors" [nzLabel]="option.name"
+                                   [nzValue]="option.name">
+                        </nz-option>
+                    </nz-select>
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let datum of nzTableIndividualProduct.data;let i=index;">
+                <td>{{datum.code}}</td>
+                <td>{{datum.name}}</td>
+                <td>{{datum.warehouse_name}}</td>
+                <td>{{datum.price}}</td>
+                <td>
+                    <form nz-form [formGroup]="individualProductFrom"
+                          (ngSubmit)="addIndividualProduct($event,individualProductFrom.value, datum.id, datum.code, datum.name)">
+
+                        <nz-select [nzPlaceHolder]=" 'Calculation Type'" formControlName="Calculation_type"
+                                   [(ngModel)]="Calculation_type" nzAllowClear nzShowSearch
+                                   style="margin-bottom: 4px">
+                            <nz-option nzLabel="percentage" nzValue="percentage"></nz-option>
+                            <nz-option nzLabel="absolute amount" nzValue="absolute"></nz-option>
+                        </nz-select>
+
+                        <input nz-input [placeholder]="'Discount Amount'" [nzSize]="'large'" type="number"
+                               formControlName="discount_amount" style="margin-bottom: 4px">
+
+                        <button nz-button title="Add to Offer"
+                                [nzType]="'primary'" [nzSize]="'default'"
+                                [disabled]="!individualProductFrom.valid || submitting"
+                                style="margin: 0 3px 3px 4px">Add
+                            <i class="anticon anticon-plus"></i>
+                        </button>
+                    </form>
+                    <button nz-button title="Remove from offer"
+                            [nzType]="'warning'" [nzSize]="'default'"
+                            style="color: red; position: absolute; margin-left: 118px; margin-top: -35px"> Remove
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+        <div>
+            <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                    (click)="doneAddingIndividualProduct()">
+                <span>Done</span>
+            </button>
+            <button nz-button class="login-form-button" [nzType]="'primary'"
+                    (click)="handleCancel()" style="float: right; display: inline-block">
+                <span>Cancel</span>
+            </button>
+        </div>
+    </nz-spin>
+</nz-modal>

@@ -27,7 +27,7 @@ export class OfferEditComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -57,7 +57,7 @@ export class OfferEditComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
     _isSpinning: any = false;
     sub: any;
     id: any;
@@ -70,8 +70,12 @@ export class OfferEditComponent implements OnInit {
     productIds;
     offeredProducts;
     totalOfferedProducts;
+    offeredIndividualProducts;
+    totalOfferedIndividualProducts;
     isVisible: Boolean = false;
+    isIndividualVisible: Boolean = false;
     isProductModal: Boolean = false;
+    isIndividualProductModal: Boolean = false;
     allProductPage: number = 1;
     allProductLimit: number = 20;
 
@@ -107,6 +111,8 @@ export class OfferEditComponent implements OnInit {
 
     isShowHomepage: boolean;
 
+    individuallySelectedData: any = [];
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -130,8 +136,8 @@ export class OfferEditComponent implements OnInit {
             subCategoryId: ['', []],
             subSubCategoryId: ['', []],
             description: ['', []],
-            discountAmount: ['', [Validators.required]],
-            calculationType: ['', [Validators.required]],
+            discountAmount: ['', []],
+            calculationType: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
@@ -470,17 +476,44 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
+    getRelatedOfferIndividualProducts(event: any) {
+        if (event) {
+            this.allProductPage = event;
+        }
+        this._isSpinning = true;
+        this.offerService.getRelatedOfferIndividualProducts(this.id, this.allProductPage, this.allProductLimit)
+            .subscribe(result => {
+                console.log('individual result: here: ', result.data);
+                this.offeredIndividualProducts = result.data;
+                this.totalOfferedIndividualProducts = result.total;
+                this._isSpinning = false;
+            }, err => {
+                this._isSpinning = false;
+            })
+    }
+
+
     showOfferModal() {
         this.isVisible = true;
         this.getRelatedOfferProducts(1);
     }
 
+    showIndividualOfferModal() {
+        this.isIndividualVisible = true;
+        this.getRelatedOfferIndividualProducts(1);
+    }
+
     handleOfferCancel(): void {
         this.isVisible = false;
+        this.isIndividualVisible = false;
     }
 
     handleProductCancel(): void {
         this.isProductModal = false;
+    }
+
+    handleIndividualProductCancel(): void {
+        this.isIndividualProductModal = false;
     }
 
 
@@ -502,8 +535,31 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
+    removeIndividualProductFromOffer(productId) {
+        this.offerService.removeIndividualProductFromOffer(productId, this.id)
+            .subscribe(res => {
+                this._notification.create(
+                    "success",
+                    "Removed",
+                    'Individual Product removed successfully'
+                );
+                this.getRelatedOfferIndividualProducts(this.allProductPage);
+            }, err => {
+                this._notification.create(
+                    "error",
+                    "failed",
+                    'Failed to remove Individual product'
+                );
+            })
+    }
+
     showProductModal() {
         this.isProductModal = true;
+        this.getAllProducts(1);
+    }
+
+    showIndividualProductModal() {
+        this.isIndividualProductModal = true;
         this.getAllProducts(1);
     }
 

@@ -59,8 +59,18 @@ export class OfferService {
             .map(response => response);
     }
 
+    getRelatedOfferIndividualProducts(id, page = 1, limit = 20): Observable<any> {
+        const skip = (page - 1) * limit;
+        return this.http.get(`${this.EndPoint}/getRelatedOfferIndividualProducts?id=${id}&page=${page}&skip=${skip}&limit=${limit}`)
+            .map(response => response);
+    }
+
     removeProductFromOffer(productId, offerId): Observable<any> {
         return this.http.delete(`${this.EndPoint}/removeProductFromOffer?productId=${productId}&offerId=${offerId}`)
+    }
+
+    removeIndividualProductFromOffer(productId, offerId): Observable<any> {
+        return this.http.delete(`${this.EndPoint}/removeIndividualProductFromOffer?productId=${productId}&offerId=${offerId}`)
     }
 
     updateOffer(data): Observable<any> {
@@ -134,7 +144,6 @@ export class OfferService {
     }
 
 
-
     /** CSV generator for offers */
 
     downloadFile(data: any, header: any, fileName?: any, offer_id?: any, offerName?: any, offer_calculation_type?: any, offer_discount_amount?: any, offer_start_date?: any, offer_end_date?: any, selection_type?: any) {
@@ -168,7 +177,7 @@ export class OfferService {
         str += ` ,Offer Name , ${offerName}, , Offer id , ${offer_id}\r\n`;
         str += ` ,offer_calculation_type , ${offer_calculation_type}, ,offer_start_date , ${offer_start_date}\r\n`;
         str += ` ,offer_discount_amount, ${offer_discount_amount}, , offer_end_date , ${offer_end_date}\r\n`;
-        if(offerName === 'Regular offer') {
+        if (offerName === 'Regular offer') {
             str += ` ,selection_type, ${selection_type}\r\n`;
         }
         str += '\r\n';

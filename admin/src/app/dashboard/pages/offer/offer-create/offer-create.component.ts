@@ -109,13 +109,7 @@ export class OfferCreateComponent implements OnInit {
     individuallySelectedProductsCalculation: any = [];
     individuallySelectedProductsAmount: any = [];
 
-    individuallySelectedData: any = [{
-        id: 12,
-        code: 1234,
-        name: name,
-        calculation_type: 'wergh',
-        discount_amount: 23
-    }];
+    individuallySelectedData: any = [];
 
     constructor(
         private router: Router,
@@ -603,13 +597,14 @@ export class OfferCreateComponent implements OnInit {
             this.individuallySelectedProductsAmount.push(value.discount_amount);
 
             /** keeping data in an array to show the selected products and to remove a product if i want */
-            this.individuallySelectedData.push({
+            this.individuallySelectedData = this.individuallySelectedData.concat([{
                 id: productId,
                 code: code,
                 name: name,
                 calculation_type: value.Calculation_type,
                 discount_amount: value.discount_amount
-            })
+            }]);
+
             this._notification.success('Added', 'Product added successfully');
         }
 

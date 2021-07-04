@@ -487,6 +487,45 @@ module.exports = {
     }
   },
 
+  getRelatedOfferIndividualProducts: async (req, res) => {
+    try {
+      await OfferService.offerDurationCheck();
+      let _pagination = pagination(req.query);
+      let rawSQL = `
+      SELECT
+            regular_offer_products.*,
+            products.*
+        FROM
+            regular_offer_products
+        LEFT JOIN products ON regular_offer_products.product_id = products.id
+        WHERE
+            regular_offer_products.regular_offer_id = ${req.query.id} and regular_offer_products.deleted_at is null
+        LIMIT ${_pagination.skip}, ${_pagination.limit}
+      `;
+
+      const products = await sails.sendNativeQuery(rawSQL, []);
+      const totalProducts = await RegularOfferProducts.count().where({
+        regular_offer_id: req.query.id,
+        deletedAt: null,
+        product_deactivation_time: null
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'All individual products with detail info related to this regular offer',
+        data: products.rows,
+        total: totalProducts
+      });
+    } catch (error) {
+      console.log('getRelatedOfferProducts error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to get related offer individual products',
+        error
+      });
+    }
+  },
+
   removeProductFromOffer: async (req, res) => {
     try {
       const removedProduct = await RegularOfferProducts.updateOne({
@@ -496,6 +535,21 @@ module.exports = {
       return res.status(201).json(removedProduct);
     } catch (error) {
       console.log('removeProductFromOffer error: ', error);
+      res.status(400).json({
+        message: 'Failed to delete the offered product'
+      });
+    }
+  },
+
+  removeIndividualProductFromOffer: async (req, res) => {
+    try {
+      const removedProduct = await RegularOfferProducts.updateOne({
+        product_id: req.query.productId,
+        regular_offer_id: req.query.offerId
+      }).set({deletedAt: new Date(), product_deactivation_time: new Date()});
+      return res.status(201).json(removedProduct);
+    } catch (error) {
+      console.log('removeIndividualProductFromOffer error: ', error);
       res.status(400).json({
         message: 'Failed to delete the offered product'
       });
