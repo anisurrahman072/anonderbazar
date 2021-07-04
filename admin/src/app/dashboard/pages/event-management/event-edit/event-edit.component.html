@@ -196,7 +196,7 @@
                             <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false" debounce="500">
                             </ckeditor>-->
 
-                            <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                             <div    *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')">
                                 required!

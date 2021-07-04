@@ -7,7 +7,7 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS, ORDER_TYPE} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
@@ -74,6 +74,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     ordersGridPageNumber = null;
 
     PAYMENT_METHODS = PAYMENT_METHODS;
+    ORDER_TYPE = ORDER_TYPE;
 
     ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
     isAllowedToUpdateOrderStatus: boolean = false;

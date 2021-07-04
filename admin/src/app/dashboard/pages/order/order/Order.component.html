@@ -166,30 +166,34 @@
                         </nz-select>
                     </td>
                     <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
-                    <td *ngIf="data.orderType == 1">Regular order</td>
-                    <td *ngIf="data.orderType == 2">Partial order</td>
+                    <td *ngIf="data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE">Regular order</td>
+                    <td *ngIf="data.orderType == ORDER_TYPE.PARTIAL_ORDER_TYPE">Partial order</td>
                     <td>{{data.payment_type}}</td>
+
                     <td style="width: 230px;"  *ngIf="isAllowedToUpdatePaymentStatus">
                         <nz-select style="width: 180px;"
-                                   *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                                   *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE; else showOnlyPaymentStatus;"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
                             <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
                                        [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">
-                            Unpaid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">
-                            Partially paid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">
-                            Paid</p>
+                        <ng-template #showOnlyPaymentStatus>
+                            <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">
+                                Unpaid</p>
+                            <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">
+                                Partially paid</p>
+                            <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">
+                                Paid</p>
+                        </ng-template>
                     </td>
                     <td *ngIf="!isAllowedToUpdatePaymentStatus">
                         <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">Paid</p>
                     </td>
+
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 400px;">
                         <div *ngFor="let transaction of data.transactions">
