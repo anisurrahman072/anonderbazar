@@ -633,11 +633,21 @@ export class OfferCreateComponent implements OnInit {
                 discount_amount: value.discount_amount
             }]);
 
+            console.log('individuallySelectedData: ', this.individuallySelectedData);
+
             this._notification.success('Added', 'Product added successfully');
         }
 
         this.individualProductFrom.reset();
         this.submitting = false;
 
+    }
+
+    removeIndividualProduct(productId) {
+        let index = this.individuallySelectedData.map(obj => obj.id).indexOf(productId);
+        if (index > -1) {
+            this.individuallySelectedData.splice(index, 1);
+        }
+        this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 }

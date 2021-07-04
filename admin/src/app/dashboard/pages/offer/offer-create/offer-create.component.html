@@ -535,6 +535,9 @@
                 <th>
                     <span> Discount Amount </span>
                 </th>
+                <th>
+                    <span> Remove Product </span>
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -543,6 +546,12 @@
                 <td>{{datum.name}}</td>
                 <td>{{datum.calculation_type}}</td>
                 <td>{{datum.discount_amount}}</td>
+                <td>
+                    <button nz-button [nzType]="'danger'" [nzSize]="'default'"
+                            (click)="removeIndividualProduct(datum.id)">
+                        <i class="anticon anticon-delete "></i>
+                    </button>
+                </td>
             </tr>
             </tbody>
         </nz-table>
@@ -632,11 +641,6 @@
                             <i class="anticon anticon-plus"></i>
                         </button>
                     </form>
-                    <button nz-button title="Remove from offer"
-                            [nzType]="'warning'" [nzSize]="'default'"
-                            style="color: red; position: absolute; margin-left: 118px; margin-top: -35px"> Remove
-                        <i class="anticon anticon-close"></i>
-                    </button>
                 </td>
             </tr>
             </tbody>
