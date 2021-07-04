@@ -114,6 +114,10 @@ export const GLOBAL_CONFIGS = {
         {value: 2, label: 'Partially paid'},
         {value: 3, label: 'Paid'},
     ],
+    REGULAR_OFFLINE_ORDER_PAYMENT_STATUS_CHANGE: [
+        {value: 1, label: 'Unpaid'},
+        {value: 3, label: 'Paid'}
+    ],
     ORDER_TYPE: [
         {value: 1, label: 'Regular order'},
         {value: 2, label: 'Partial order'},

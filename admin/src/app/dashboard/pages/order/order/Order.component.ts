@@ -63,6 +63,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
+    changePaymentOptions: any[] = GLOBAL_CONFIGS.REGULAR_OFFLINE_ORDER_PAYMENT_STATUS_CHANGE;
+
     isProductVisible = false;
     isOrdersBulkVisible = false;
 
