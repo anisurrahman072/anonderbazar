@@ -290,7 +290,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 }
             }
         }, (error) => {
-            this._notify.error('Problem!', "Problem in loading the product");
+            if(error.error && error.error.code && error.error.code === 'warehouseNotFound'){
+                this._notify.info('Warehouse problem!', error.error.message);
+                this.router.navigate(['/']);
+            } else {
+                this._notify.error('Problem!', "Problem in loading the product");
+            }
         });
     }
 

@@ -13,6 +13,7 @@ const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
+const {ACTIVE_WAREHOUSE_STATUS} = require('../../libs/constants');
 
 module.exports = {
 
@@ -32,6 +33,20 @@ module.exports = {
           .populate('subcategory_id')
           .populate('product_images', {deletedAt: null})
           .populate('product_variants', {deletedAt: null});
+
+        console.log('My product: ', product);
+
+        if(!product || product.){
+
+        }
+
+        if(!product.warehouse_id || product.warehouse_id.deletedAt || product.warehouse_id.status != ACTIVE_WAREHOUSE_STATUS){
+          return res.status(400).json({
+            success: false,
+            code: 'warehouseNotFound',
+            message: `${product.name} warehouse has been rejected!`
+          });
+        }
 
         await storeToCache(key, product);
       }

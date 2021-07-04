@@ -38,3 +38,8 @@ exports.ADMIN_USER_GROUP_NAME = 'admin';
 exports.CUSTOMER_USER_GROUP_NAME = 'customer';
 exports.SUPPLIER_USER_GROUP_NAME = 'supplier';
 exports.OWNER_USER_GROUP_NAME = 'owner';
+
+exports.PENDING_WAREHOUSE_STATUS = 0;
+exports.PROCESSING_WAREHOUSE_STATUS = 1;
+exports.ACTIVE_WAREHOUSE_STATUS = 2;
+exports.INACTIVE_WAREHOUSE_STATUS = 3;
