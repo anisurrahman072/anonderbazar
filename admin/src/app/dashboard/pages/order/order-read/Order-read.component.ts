@@ -51,6 +51,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     currentMoneReceipt: any = '';
 
     ordersGridPageNumber = null;
+    ordersGridDate = null;
+    ordersGridStatus = null;
+    ordersGridPaymentStatus = null;
+    ordersGridPaymentType = null;
+    ordersGridOrderType = null;
+    ordersGridCustomerName = null;
+    ordersGridOrderNumber = null;
+
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -65,6 +73,13 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     // init the component
     ngOnInit() {
         this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
+        this.ordersGridDate = this.route.snapshot.queryParamMap.get("date");
+        this.ordersGridStatus = +this.route.snapshot.queryParamMap.get("status");
+        this.ordersGridPaymentStatus = +this.route.snapshot.queryParamMap.get("payment_status");
+        this.ordersGridPaymentType = this.route.snapshot.queryParamMap.get("payment_type");
+        this.ordersGridOrderType = +this.route.snapshot.queryParamMap.get("order_type");
+        this.ordersGridCustomerName = this.route.snapshot.queryParamMap.get("customerName");
+        this.ordersGridOrderNumber = +this.route.snapshot.queryParamMap.get("orderNumber");
 
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
@@ -224,7 +239,14 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     goToOrdersGridPage(){
         let query = {
-            page: this.ordersGridPageNumber
+            page: this.ordersGridPageNumber,
+            date: this.ordersGridDate,
+            status: this.ordersGridStatus,
+            payment_status: this.ordersGridPaymentStatus,
+            payment_type: this.ordersGridPaymentType,
+            order_type: this.ordersGridOrderType,
+            customerName: this.ordersGridCustomerName,
+            orderNumber: this.ordersGridOrderNumber
         };
         this.router.navigate(['/dashboard/order'], {queryParams: query});
     }
