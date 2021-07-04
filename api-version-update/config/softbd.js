@@ -6,6 +6,12 @@ module.exports = {
   adminPaymentAddressId: 75,
   cashOnDeliveryNotAllowedForCategory: 428,
   dhakaZilaId: 2942,
+  s3Config: {
+    key: 'AKIATYQRUSGN2DDD424I',
+    secret: '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',
+    bucket: 'anonderbazar',
+    maxBytes: 10000000
+  },
   sslCommerceSandbox: true,
   sslCommerzSandboxCred: {
     store_id: 'anond5efeb984e900f',
