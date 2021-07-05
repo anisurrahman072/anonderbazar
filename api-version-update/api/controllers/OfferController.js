@@ -951,7 +951,11 @@ module.exports = {
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
 
-      let webRegularOffers = await Offer.find({where: _where});
+      let webRegularOffers = await Offer.find({where: _where})
+        .sort([
+          {frontend_position: 'ASC'},
+          {id: 'DESC'}
+        ]);
 
       res.status(200).json({
         success: true,

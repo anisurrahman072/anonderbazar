@@ -270,8 +270,13 @@ export class OfferEditComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if (this.individuallySelectedProductsId) {
-            formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+            if (this.individuallySelectedProductsId.length <= 0) {
+                this._notification.error('No Product', 'Please add products for this offer');
+                return;
+            } else {
+                formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+            }
         }
         if (this.individuallySelectedProductsCalculation) {
             formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
@@ -390,7 +395,7 @@ export class OfferEditComponent implements OnInit {
             this.allProductPage = event;
         }
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch, 2)
             .subscribe(result => {
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
@@ -726,8 +731,8 @@ export class OfferEditComponent implements OnInit {
 
         let exists: Boolean = false;
         if (this.individuallySelectedProductsId) {
-            this.individuallySelectedProductsId.forEach(product => {
-                if (productId === product.id) {
+            this.individuallySelectedProductsId.forEach(id => {
+                if (productId === id) {
                     this._notification.error('Exists', 'Product already added');
                     this.submitting = false;
                     exists = true
@@ -761,10 +766,12 @@ export class OfferEditComponent implements OnInit {
     }
 
     removeIndividualProduct(productId) {
-        let index = this.individuallySelectedData.map(obj => obj.id).indexOf(productId);
-        if (index > -1) {
-            this.individuallySelectedData.splice(index, 1);
-        }
+        let index = this.individuallySelectedProductsId.indexOf(productId);
+        this.individuallySelectedProductsId.splice(index, 1);
+        this.individuallySelectedProductsCalculation.splice(index, 1);
+        this.individuallySelectedProductsAmount.splice(index, 1);
+
+        this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 

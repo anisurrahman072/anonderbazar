@@ -3,6 +3,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
+import {error} from "util";
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
     selector: 'app-page-cms_details',
@@ -29,6 +31,7 @@ export class CmsDetailsPageComponent implements OnInit {
         private title: Title,
         private router: Router,
         private offerService: OfferService,
+        private _notify: NotificationsService
     ) {
     }
 
@@ -88,6 +91,8 @@ export class CmsDetailsPageComponent implements OnInit {
                     }
 
                     this.addPageTitle();
+                }, error => {
+                    this._notify.error('Expired', 'Offer does not exists anymore');
                 });
         }
 
