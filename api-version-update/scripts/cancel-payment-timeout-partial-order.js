@@ -46,7 +46,8 @@ module.exports = {
             suborder_id: null,
             changed_by: 9306,
             date: new Date(),
-            status: ORDER_STATUSES.canceled
+            status: ORDER_STATUSES.canceled,
+            order_status: ORDER_STATUSES.canceled,
           });
 
           const subOrders = await Suborder.update({
