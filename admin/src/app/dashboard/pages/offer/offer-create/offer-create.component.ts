@@ -194,6 +194,15 @@ export class OfferCreateComponent implements OnInit {
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
 
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+
+        if (offerStartTime > offerEndTime) {
+            this._notification.error('Wrong Date', 'Sorry offer not created, End Date is earlier than the start date');
+            this._isSpinning = false;
+            this.router.navigate(['/dashboard/offer']);
+        }
+
         if (this.selectedProductIds) {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
