@@ -10,6 +10,8 @@ import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {ImageService} from "../../../../services/image.service";
+import {DesignImagesService} from "../../../../services/design-images.service";
 
 
 @Component({
@@ -148,6 +150,7 @@ export class OfferEditComponent implements OnInit {
     individuallySelectedProductsAmount: any = [];
 
     individuallySelectedData: any = [];
+    ImageFilePath = null;
 
     constructor(
         private router: Router,
@@ -156,7 +159,8 @@ export class OfferEditComponent implements OnInit {
         private fb: FormBuilder,
         private cmsService: CmsService,
         private offerService: OfferService,
-        private productService: ProductService
+        private productService: ProductService,
+        private designImagesService: DesignImagesService
     ) {
     }
 
@@ -226,6 +230,7 @@ export class OfferEditComponent implements OnInit {
                     this.validateForm.patchValue(payload);
 
                     if (this.data && this.data.image && this.data.image.image) {
+                        this.ImageFilePath = this.data.image.image;
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image.image);
                     }
 
@@ -355,6 +360,22 @@ export class OfferEditComponent implements OnInit {
 //Event method for removing picture
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
+
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.ImageFilePath}`);
+        if(this.ImageFilePath){
+            formData.append('id', `${this.id}`);
+            formData.append('tableName', `offers`);
+            formData.append('column', `image`);
+        }
+        this.ImageFilePath = null;
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                console.log("ttttttt", data);
+            }, error => {
+                console.log("9999999", error);
+            })
     }
 
     onBannerRemoved(file: FileHolder) {
@@ -367,6 +388,22 @@ export class OfferEditComponent implements OnInit {
 
 //Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+        if(this.ImageFileEdit && this.ImageFileEdit.length > 0){
+            formData.append('oldImagePath', `${this.ImageFileEdit[0]}`);
+            formData.append('id', `${this.id}`);
+            formData.append('tableName', `offers`);
+            formData.append('column', `image`);
+            formData.append('format', `JSON`);
+        }
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                console.log("The data");
+                this.ImageFileEdit.push(this.IMAGE_ENDPOINT + data.path);
+            })
+
         this.ImageFile = metadata.file;
         return metadata;
     }

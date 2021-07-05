@@ -29,6 +29,7 @@ const {missingOrderRoute} = require('./missingOrder');
 const {questionsRoute} = require('./questions');
 const {offerRoute} = require('./offer');
 const {anonderJhorRoute} = require('./anonderJhor');
+const {ImageRoute} = require('./image');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -62,4 +63,5 @@ exports.allRouter = {
   ...questionsRoute,
   ...offerRoute,
   ...anonderJhorRoute,
+  ...ImageRoute
 };

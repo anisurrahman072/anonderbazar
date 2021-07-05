@@ -194,6 +194,9 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
+  ImageController: {
+    '*': true
+  },
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
