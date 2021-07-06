@@ -183,7 +183,7 @@ module.exports = {
                   product_deactivation_time: null
                 });
                 if (existedProduct !== undefined) {
-                  await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  await RegularOfferProducts.update({product_id: product_id}).set({
                     regular_offer_id: data.id,
                     calculation_type: calculationType,
                     discount_amount: discountAmount
@@ -213,7 +213,7 @@ module.exports = {
                 product_deactivation_time: null
               });
               if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+                await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
               } else {
                 await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
               }
@@ -974,10 +974,29 @@ module.exports = {
 
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
+    console.log('req.query.sortData: ', req.query.sortData);
     try {
       await OfferService.offerDurationCheck();
 
       let webRegularOfferedProducts;
+
+      let _sort = [];
+      let sortData;
+      if(req.query.sortData){
+        sortData = JSON.parse(req.query.sortData);
+        if(sortData.code === 'newest'){
+          let obj = {
+            createdAt: sortData.order
+          };
+          _sort.push(obj);
+        } else if (sortData.code === 'price'){
+          let obj = {
+            price: sortData.order
+          };
+          _sort.push(obj);
+        }
+      }
+      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -992,7 +1011,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Brand wise'*/
@@ -1002,7 +1021,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Category wise'*/
@@ -1020,7 +1039,7 @@ module.exports = {
           _where.type_id = requestedOffer.category_id;
         }
 
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Product wise'*/
@@ -1032,9 +1051,55 @@ module.exports = {
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
           .populate('product_id');
 
+        console.log('sortData: ', sortData);
+        if(sortData && sortData.code === 'newest'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+        else if(sortData && sortData.code === 'price'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+
         webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
           return data.product_id;
         });
+
+
       }
 
       /**if selection_type === 'individual_product'*/
@@ -1045,6 +1110,49 @@ module.exports = {
         _where.deletedAt = null;
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
           .populate('product_id');
+
+        if(sortData && sortData.code === 'newest'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+        else if(sortData && sortData.code === 'price'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
       }
 
       res.status(200).json({
