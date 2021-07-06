@@ -471,7 +471,14 @@ module.exports = {
 
         /** offer section */
 
-        let regularOffers = await Offer.find({offer_deactivation_time: null, deletedAt: null});
+        const presentTime = (new Date(Date.now())).getTime();
+        let _where = {};
+        _where.offer_deactivation_time = null;
+        _where.deletedAt = null;
+        _where.start_date = {'<=': presentTime};
+        _where.end_date = {'>=': presentTime};
+
+        let regularOffers = await Offer.find({where: _where});
         console.log('reglar offer csv: ', regularOffers);
 
         /** checking if the product exists in Regular offer */
@@ -603,10 +610,10 @@ module.exports = {
             });
           }
 
-          if(regularOfferProductsIds && regularOfferProductsIds.length > 0) {
+          if (regularOfferProductsIds && regularOfferProductsIds.length > 0) {
             console.log('regularOfferProductsIds', regularOfferProductsIds);
             regularOfferProductsIds.forEach(proId => {
-              if(itemId === proId.productId) {
+              if (itemId === proId.productId) {
                 console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
                 offer_id_number = proId.regularOfferId;
                 offer_type = regular_offer;
@@ -628,7 +635,13 @@ module.exports = {
         }
 
         /** jhor offer */
-        let jhorOffers = await AnonderJhorOffers.find({status: 1, deletedAt: null});
+        let _where1 = {};
+        _where1.status = 1;
+        _where1.deletedAt = null;
+        _where1.start_date = {'<=': presentTime};
+        _where1.end_date = {'>=': presentTime};
+
+        let jhorOffers = await AnonderJhorOffers.find({where: _where1});
         console.log('jhor offers csv: ', jhorOffers);
 
         /** checking if the product exists in anonder jhor offer */
