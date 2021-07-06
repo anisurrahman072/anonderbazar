@@ -1,6 +1,6 @@
 <div class="main-container right-sidebar" *ngIf="anonderJhorOffer && anonderJhorOfferProducts">
     <div class="container-fluid">
-        <nav class="woocommerce-breadcrumb breadcrumbs">
+        <nav class="woocommerce-breadcrumb breadcrumbs" style="margin-bottom: 20px">
             <a routerLink="/" routerLinkActive="active">Home / </a>
             <a routerLink="/cms" routerLinkActive="active">Offer / </a>
             <a *ngIf="anonderJhorOffer.sub_sub_category_id; else noSubSub">
@@ -12,7 +12,8 @@
         </nav>
 
         <div class="row" *ngIf='anonderJhorOfferProducts && anonderJhorOfferProducts.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (anonderJhorOfferProducts | paginate: { itemsPerPage: 12, currentPage: page }) ; let i=index">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 mb-4 offer_container"
+                 *ngFor="let product of (anonderJhorOfferProducts | paginate: { itemsPerPage: 12, currentPage: page }) ; let i=index">
                 <app-product-item [dataProduct]="product"></app-product-item>
             </div>
         </div>
@@ -23,9 +24,9 @@
             <img class="img-fluid" src="../../../../assets/images/No_Product_Found.png"
                  alt="No Product is available.">
         </div>
-
-        <div class="row text-center" *ngIf="anonderJhorOfferProducts && anonderJhorOfferProducts.length > 12">
-            <pagination-controls (pageChange)="page = $event" previousLabel="Previous" nextLabel="Next"></pagination-controls>
-        </div>
+    </div>
+    <div *ngIf="anonderJhorOfferProducts && anonderJhorOfferProducts.length > 12"
+         style="margin-top: 20px; text-align: center">
+        <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""></pagination-controls>
     </div>
 </div>

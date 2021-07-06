@@ -288,11 +288,22 @@ export class OfferEditComponent implements OnInit {
             formData.append('brand_id', value.brandId);
         }
 
-        if (value.categoryId) {
-            formData.append('category_id', value.categoryId);
-        }
-        if (value.subCategoryId) {
-            formData.append('subCategory_Id', value.subCategoryId);
+        if (value.selectionType === 'Category wise') {
+            if (!this.categoryId) {
+                this._notification.error('Category!', 'Select one category please');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('category_id', this.categoryId);
+            }
+
+            if (!this.subCategoryId) {
+                this._notification.error('Sub Category!', 'Setting offer to a whole category by mistake is not allowed');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('subCategory_Id', this.subCategoryId);
+            }
         }
         if (value.subSubCategoryId) {
             formData.append('subSubCategory_Id', value.subSubCategoryId);
