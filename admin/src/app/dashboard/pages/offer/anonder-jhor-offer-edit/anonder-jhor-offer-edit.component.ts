@@ -54,7 +54,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
-            subCategoryId: ['', []],
+            subCategoryId: ['', [Validators.required]],
             subSubCategoryId: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
@@ -112,6 +112,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         formData.append('id', this.jhorOfferId);
         formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
@@ -134,9 +135,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             return;
         }
 
-        if (value.subCategoryId) {
-            formData.append('subCategoryId', this.subCategoryId);
-        }
         if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', this.subSubCategoryId);
         }
