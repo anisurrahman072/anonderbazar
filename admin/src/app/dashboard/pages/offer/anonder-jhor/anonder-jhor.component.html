@@ -144,34 +144,38 @@
                           [(nzPageIndex)]="anonderJhorOfferPage"
                           [(nzPageSize)]="anonderJhorOfferLimit"
                           (nzPageIndexChange)="getAllAnonderJhorOffersData()"
+                          [nzScroll]="{ x:'1000px',y: '350px'  }"
                 >
                     <thead>
                     <tr>
-                        <th>
+                        <th nz-th [nzWidth]="'100px'">
                             <span> ID </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'">
                             <span> Category </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'">
                             <span> Sub-Category </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'">
                             <span> Sub-Sub-Category </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'200px'">
                             <span> Start Time </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'200px'">
                             <span> End Time </span>
                         </th>
-                        <th>
-                            <span> Status </span>
-                        </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'">
                             <span> Discount Amount </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> Status </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span>Force stopped</span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
                             Action
                         </th>
                     </tr>
@@ -208,6 +212,13 @@
                             <nz-tag>{{datum.end_date | date : 'medium'}}</nz-tag>
                         </td>
 
+                        <td *ngIf="datum.calculation_type === 'percentage'">
+                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
+                        </td>
+                        <td *ngIf="datum.calculation_type === 'absolute'">
+                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                        </td>
+
                         <td>
                             <div *ngIf="datum.status; else inactive">
                                 <nz-switch [ngModel]="true"
@@ -221,17 +232,24 @@
                             </ng-template>
                         </td>
 
-                        <td *ngIf="datum.calculation_type === 'percentage'">
-                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
-                        </td>
-                        <td *ngIf="datum.calculation_type === 'absolute'">
-                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                        <td>
+                            <div *ngIf="datum.force_stop; else running">
+                                <nz-switch [ngModel]="true" nzCheckedChildren="stopped" nzUnCheckedChildren="running"
+                                           (ngModelChange)="offerForceStop($event, datum.id)">
+                                </nz-switch>
+                            </div>
+                            <ng-template #running>
+                                <nz-switch [ngModel]="false" nzCheckedChildren="stopped" nzUnCheckedChildren="running"
+                                           (ngModelChange)="offerForceStop($event, datum.id)">
+                                </nz-switch>
+                            </ng-template>
                         </td>
 
                         <td>
                             <nz-button-group>
 
-                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="editJhorOffer(i, datum.id)">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'"
+                                        (click)="editJhorOffer(i, datum.id)">
                                     <i class="anticon anticon-edit"></i>
                                 </button>
                                 <ng-container>
@@ -246,7 +264,8 @@
                                         </a>
                                     </nz-popconfirm>
                                 </ng-container>
-                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="generateOfferExcelById(datum.id)" title="Download order CSV file">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'"
+                                        (click)="generateOfferExcelById(datum.id)" title="Download order CSV file">
                                     <i class="anticon anticon-download"></i>
                                 </button>
                             </nz-button-group>
@@ -263,6 +282,7 @@
         <app-anonder-jhor-offer-create [isVisible]="isVisible"></app-anonder-jhor-offer-create>
     </div>
     <div *ngIf="isEdit">
-        <app-anonder-jhor-offer-edit [isEditVisible]="isEditVisible" [jhorOfferId]="jhorOfferId"></app-anonder-jhor-offer-edit>
+        <app-anonder-jhor-offer-edit [isEditVisible]="isEditVisible"
+                                     [jhorOfferId]="jhorOfferId"></app-anonder-jhor-offer-edit>
     </div>
 </section>

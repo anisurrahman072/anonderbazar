@@ -97,13 +97,15 @@
                                     <ng-template #fixed>
                                         <span>{{data.discount_amount}} tk</span>
                                     </ng-template>
-                                    <a routerLink="/offers/anonder-jhor-detail/{{data.id}}">
-                                        <p class="banner text-center">
-                                            <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>
-                                        </p>
-                                        <img src="{{IMAGE_ENDPOINT + data.image}}"
-                                             alt="offered product image" style="margin-top: 5px">
-                                    </a>
+                                    <div>
+                                        <a (click)="routerLinkToOfferDetail(data.id)">
+                                            <p class="banner text-center">
+                                                <span style="position: absolute;margin: -10px;">{{data.banner_name}}</span>
+                                            </p>
+                                            <img src="{{IMAGE_ENDPOINT + data.image}}"
+                                                 alt="offered product image" style="margin-top: 5px">
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
