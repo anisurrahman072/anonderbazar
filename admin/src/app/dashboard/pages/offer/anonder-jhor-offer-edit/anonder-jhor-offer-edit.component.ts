@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
@@ -69,6 +69,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                 this.categoryId = this.data.category_id.id;
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
+
+                console.log('getAnonderJhorOfferById', this.categoryId, this.subCategoryId, this.subSubCategoryId);
 
                 this.ImageFileEdit = [];
 
@@ -191,13 +193,11 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     /** Event method for storing image in variable */
     onBeforeUpload = (metadata: UploadMetadata) => {
-        console.log('befor upload: ', metadata.file);
         this.ImageFile = metadata.file;
         return metadata;
     }
 
     getAllCategories() {
-        console.log('getAllCategories: ', event);
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
@@ -205,21 +205,29 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllSubCategories(event) {
+
         if (event) {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubCategories', result);
+                    if(this.allSubCategoryIds){
+                        this.finalSelectionType(true, false, false, event);
+                    }
                     this.allSubCategoryIds = result.data;
-                    this.finalSelectionType(true, false, false, event);
-                })
+                });
         }
     }
 
     getAllSubSubCategories(event) {
+
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubSubCategories', result);
+                    if(this.allSubSubCategoryIds){
+                        this.finalSelectionType(false, true, false, event);
+                    }
                     this.allSubSubCategoryIds = result.data;
-                    this.finalSelectionType(false, true, false, event);
                 })
         }
     }
