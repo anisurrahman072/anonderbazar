@@ -45,10 +45,10 @@
             <img class="img-fluid" src="../../../../assets/images/No_Product_Found.png"
                  alt="No Product is available.">
         </div>
-
-        <div class="row text-center" *ngIf="regularOfferedProducts && regularOfferedProducts.length > 12">
-            <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previous" nextLabel="Next">
-            </pagination-controls>
-        </div>
+    </div>
+    <div *ngIf="regularOfferedProducts && regularOfferedProducts.length > 12"
+         style="margin-top: 20px; text-align: center">
+        <pagination-controls (pageChange)="onPageChange($event)" previousLabel="" nextLabel="">
+        </pagination-controls>
     </div>
 </div>
