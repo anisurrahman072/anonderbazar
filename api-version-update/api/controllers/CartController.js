@@ -136,7 +136,6 @@ module.exports = {
         user_id: req.param('user_id'),
         deletedAt: null
       });
-      console.log('My cart id: ', cart.id);
 
       if (!cart) {
         let cart = await Cart.create({
