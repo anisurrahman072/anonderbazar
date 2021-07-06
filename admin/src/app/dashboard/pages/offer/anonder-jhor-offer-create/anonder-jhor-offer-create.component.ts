@@ -124,7 +124,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Feature Title: ");
+                this._notification.success('Offer Added', "Offer under anonder jhor created successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
                 this.isVisible = false;

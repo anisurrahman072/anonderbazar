@@ -108,6 +108,10 @@ export class OfferService {
         return this.http.post(`${this.EndPoint1}/offerActiveStatusChange`, data);
     }
 
+    offerForceStop(data): Observable<any> {
+        return this.http.post(`${this.EndPoint1}/offerForceStop`, data);
+    }
+
     /** method called to delete a Anonder Jhor offer */
     deleteAnonderJhorOffer(id): Observable<any> {
         return this.http.post(`${this.EndPoint1}/deleteAnonderJhorOffer`, id)

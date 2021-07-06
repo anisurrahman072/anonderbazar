@@ -2,6 +2,7 @@ exports.anonderJhorRoute = {
   'GET /api/v1/anonderJhor/getAnonderJhor': 'AnonderJhorController.getAnonderJhor',
   'POST /api/v1/anonderJhor/jhorActiveStatusChange': 'AnonderJhorController.jhorActiveStatusChange',
   'POST /api/v1/anonderJhor/offerActiveStatusChange': 'AnonderJhorController.offerActiveStatusChange',
+  'POST /api/v1/anonderJhor/offerForceStop': 'AnonderJhorController.offerForceStop',
   'POST /api/v1/anonderJhor/updateAnonderJhor': 'AnonderJhorController.updateAnonderJhor',
   'GET /api/v1/anonderJhor/getAllAnonderJhorOffersData': 'AnonderJhorController.getAllAnonderJhorOffersData',
   'GET /api/v1/anonderJhor/getAllCategories': 'AnonderJhorController.getAllCategories',

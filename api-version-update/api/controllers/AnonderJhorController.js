@@ -164,6 +164,56 @@ module.exports = {
 
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
       const presentTime = (new Date(Date.now())).getTime();
+
+      let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      let jhorOfferStartTime = jhorOfferData.start_date.getTime();
+      let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+
+      if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
+        return res.status(200).json({
+          code: 'NOT_ALLOWED',
+          message: 'status can not be changed'
+        });
+      }
+
+      let anonderJhorOffer;
+
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({status: req.body.event});
+      } else {
+        /*check time and change force status;*/
+        if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event, force_stop: 1});
+        } else {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event});
+        }
+      }
+
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully updated offer status',
+        status: anonderJhorOffer.status
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to update offer status',
+        error
+      });
+    }
+  },
+
+  offerForceStop: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let anonderJhorData = await AnonderJhor.findOne({id: 1});
+      const presentTime = (new Date(Date.now())).getTime();
       let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
       let jhorOfferEndTime = jhorOfferData.end_date.getTime();
 
@@ -174,8 +224,15 @@ module.exports = {
         });
       }
 
-      let anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
-        .set({status: req.body.event});
+      /** when event value is true it means, request to force stop, value for force stop is 1 */
+      let anonderJhorOffer;
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 0});
+      } else {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 1});
+      }
 
       res.status(200).json({
         success: true,
@@ -238,7 +295,8 @@ module.exports = {
             end_date: body.offerEndDate,
             category_id: body.categoryId,
             anonder_jhor_id: 1,
-            status: 0
+            status: 0,
+            force_stop: 1
           };
 
           if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -277,7 +335,8 @@ module.exports = {
           end_date: body.offerEndDate,
           category_id: body.categoryId,
           anonder_jhor_id: 1,
-          status: 0
+          status: 0,
+          force_stop: 1
         };
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -424,7 +483,8 @@ module.exports = {
             end_date: body.offerEndDate,
             category_id: body.categoryId,
             anonder_jhor_id: 1,
-            status: 0
+            status: 0,
+            force_stop: 1
           };
 
           if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -467,7 +527,8 @@ module.exports = {
           end_date: body.offerEndDate,
           category_id: body.categoryId,
           anonder_jhor_id: 1,
-          status: 0
+          status: 0,
+          force_stop: 1
         };
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -523,8 +584,9 @@ module.exports = {
 
       let _where = {};
       _where.deletedAt = null;
-      _where.start_date = {'>=' : jhorStartTime};
-      _where.end_date = {'<=' : jhorEndTime};
+      _where.start_date = {'>=': jhorStartTime};
+      _where.end_date = {'<=': jhorEndTime};
+      _where.force_stop = {'!=': 1};
 
       let anonderJhorOffers;
       if (anonderJhor.status) {

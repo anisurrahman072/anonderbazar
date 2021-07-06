@@ -3,6 +3,8 @@ import {OfferService} from "../../../services";
 import {AppSettings} from "../../../config/app.config";
 import {timer} from "rxjs/observable/timer";
 import * as moment from "moment";
+import {Router} from "@angular/router";
+import {NotificationsService} from "angular2-notifications";
 
 
 @Component({
@@ -38,7 +40,9 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     presentDate = new Date();
 
     constructor(
-        private offerService: OfferService
+        private offerService: OfferService,
+        private router: Router,
+        private _notify: NotificationsService,
     ) {
     }
 
@@ -226,6 +230,14 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.offerRemainingTimeToEndInDigit[offer.id] = this.offerRemainingTimeToEndInDigit[offer.id].split("");
                 })
         });
+    }
+
+    routerLinkToOfferDetail(id) {
+        if (this.offerEndTime[id] && this.offerEndTime[id] < this.presentTime && this.offerEndTime[id] > this.jhorStartDate) {
+            this._notify.error('Expired!!', 'Offer expired');
+        } else {
+            this.router.navigate(['/offers/anonder-jhor-detail/', id]);
+        }
     }
 
     ngOnDestroy(): void {

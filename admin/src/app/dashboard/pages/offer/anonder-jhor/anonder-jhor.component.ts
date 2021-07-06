@@ -125,6 +125,29 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.offerService.offerActiveStatusChange(data)
                         .subscribe(result => {
                             if (result.code === 'NOT_ALLOWED') {
+                                this._notification.error('Time Ended!', 'Anonder Jhor offer has ended or forcefully stopped');
+                            }
+                            this.getAllAnonderJhorOffersData();
+                        });
+                }
+            })
+    }
+
+    /** Event Method called to forcefully stop the anonder jhor offers */
+    offerForceStop(event, offerId) {
+        console.log('eve: ', event);
+        this.offerService.getAnonderJhorOfferById(offerId)
+            .subscribe(result => {
+                let presentTime = moment();
+                if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
+                    this._notification.error('Time Ended', 'No use, Time already ended');
+                    this.getAllAnonderJhorOffersData();
+                    return;
+                } else {
+                    let data = {event, offerId}
+                    this.offerService.offerForceStop(data)
+                        .subscribe(result => {
+                            if (result.code === 'NOT_ALLOWED') {
                                 this._notification.error('Time Ended!', 'Anonder Jhor offer has ended');
                             }
                             this.getAllAnonderJhorOffersData();
