@@ -271,12 +271,7 @@ export class OfferEditComponent implements OnInit {
         }
 
         if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
-            if (this.individuallySelectedProductsId.length <= 0) {
-                this._notification.error('No Product', 'Please add products for this offer');
-                return;
-            } else {
-                formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
-            }
+            formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
         }
         if (this.individuallySelectedProductsCalculation) {
             formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
