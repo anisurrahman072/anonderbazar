@@ -1,4 +1,26 @@
+const _ = require('lodash');
+
 module.exports = {
+  /** Calculate a product price according to offer*/
+  calcProductOfferPrice: async (product) => {
+    let productFinalPrice;
+    let offerProducts = await PaymentService.getRegularOfferStore();
+
+    if (!(offerProducts && !_.isUndefined(offerProducts[product.id]) && offerProducts[product.id])) {
+      productFinalPrice = product.price * product.quantity;
+    } else {
+      if (offerProducts && offerProducts[product.id].calculation_type === 'absolute') {
+        let productPrice = product.price - offerProducts[product.id].discount_amount;
+        productFinalPrice = productPrice * product.quantity;
+      } else {
+        let productPrice = product.price - (product.price * (offerProducts[product.id].discount_amount / 100.0));
+        productFinalPrice = productPrice * product.quantity;
+      }
+    }
+    return productFinalPrice;
+  },
+  /** Calculate a product offer price END */
+
   /**checking if the options have the offer time or not*/
   offerDurationCheck: async () => {
     let allOffers = await Offer.find({deletedAt: null});

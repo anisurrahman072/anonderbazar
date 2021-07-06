@@ -195,15 +195,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
-        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0];
-                    this.cart$.subscribe((cartData) => {
+                    /*this.cart$.subscribe((cartData) => {
                         console.log('cartData', cartData);
                         if (cartData) {
                             this.cartData = cartData;
+                            console.log("Cart info: ", cartData);
                             this.setShippingCharge();
                         } else {
                             this.cartData = null;
@@ -213,7 +213,27 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     }, (err) => {
                         console.log(err);
                         this.toastr.error('Unable to update cart data', 'Sorry!');
-                    });
+                    });*/
+                    // TODO: load cart with 200ms
+                    setTimeout(() => {
+                        this.store.dispatch(new fromStore.LoadCart());
+                            this.cart$.subscribe((cartData) => {
+                                console.log('cartDataee', cartData);
+                                if (cartData) {
+                                    this.cartData = cartData;
+                                    console.log("Cart info: ", cartData);
+                                    this.setShippingCharge();
+                                } else {
+                                    this.cartData = null;
+                                }
+                                this.updateGrandTotal();
+                                this.addPageTitle();
+                            }, (err) => {
+                                console.log(err);
+                                this.toastr.error('Unable to update cart data', 'Sorry!');
+                            });
+                    }, 1000);
+
                     return this.areaService.getAllDivision();
                 }
                 return Observable.throw(new Error('Problem in getting global config.'));
