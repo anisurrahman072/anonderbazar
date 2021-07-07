@@ -16,7 +16,7 @@
                 <div nz-col [nzSpan]="12">
                     <input nz-input formControlName="title" [placeholder]="'Enter title'"
                            [nzSize]="'large'">
-                    <div *ngIf="getFormControl('title').dirty&&getFormControl('title').hasError('required')">
+                    <div *ngIf="getFormControl('title').dirty && getFormControl('title').hasError('required')">
                         Title is required!
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                                 [nzLabel]="option" [nzValue]="option">
                         </nz-option>
                     </nz-select>
-                    <div *ngIf="getFormControl('selectionType').dirty&&getFormControl('selectionType').hasError('required')"
+                    <div *ngIf="getFormControl('selectionType').dirty && getFormControl('selectionType').hasError('required')"
                          style="color: red">
                         Please select to add products to this offer
                     </div>
@@ -131,18 +131,18 @@
                     </nz-select>
                     <!--Select Sub-Category-->
                     <nz-select
-                            *ngIf="offerSelectionType === 'Category wise' && categoryId !== null && categoryId !== undefined "
+                            *ngIf="offerSelectionType === 'Category wise' && categoryId"
                             formControlName="subCategoryId" nzAllowClear nzShowSearch
                             [nzPlaceHolder]=" 'Select Sub-Category'"
                             [ngModel]="subCategoryId" style="margin: 10px 0;"
-                            (ngModelChange)="getAllOptions('', '', $event); finalSelectionType(false, false, false, true,false,false, $event)">
+                            (ngModelChange)="getAllOptions('', '', $event); ">
                         <nz-option *ngFor="let option of subcategoryIDS" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
                     <!--Select Sub-Sub-Category-->
                     <nz-select
-                            *ngIf="offerSelectionType === 'Category wise' && subCategoryId !== null && subCategoryId !== undefined "
+                            *ngIf="offerSelectionType === 'Category wise' && subCategoryId && subSubCategoryIDS && subSubCategoryIDS.length"
                             formControlName="subSubCategoryId" nzAllowClear nzShowSearch
                             [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
                             [(ngModel)]="subSubCategoryId" style="margin: 10px 0;">
@@ -172,21 +172,6 @@
 
                 </div>
             </div>
-
-            <!-- <div nz-row>
-                 <div nz-col [nzSpan]="7">
-                     <label> Short description </label>
-                 </div>
-                 <div nz-col [nzSpan]="12">
-                     <ckeditor formControlName="description"
-                               [config]="ckConfig" [readonly]="false "
-                               debounce="500 ">
-                     </ckeditor>
-                     <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
-
-                 </div>
-             </div>-->
-
             <div *ngIf="offerSelectionType !== 'individual_product'" nz-row style="margin-top: 20px">
                 <div nz-col [nzSpan]="7">
                     <label> Calculation Type </label>
@@ -198,14 +183,14 @@
                         <nz-option nzLabel="percentage" nzValue="percentage"></nz-option>
                         <nz-option nzLabel="absolute amount" nzValue="absolute"></nz-option>
                     </nz-select>
-                    <div *ngIf="getFormControl('calculationType').dirty&&getFormControl('calculationType').hasError('required')"
+                    <div *ngIf="getFormControl('calculationType').dirty && getFormControl('calculationType').hasError('required')"
                          style="color: red">
                         Please Select Calculation Type
                     </div>
 
                     <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
                            [nzSize]="'large'" style="margin: 10px 0" type="number">
-                    <div *ngIf="getFormControl('discountAmount').dirty&&getFormControl('discountAmount').hasError('required')"
+                    <div *ngIf="getFormControl('discountAmount').dirty && getFormControl('discountAmount').hasError('required')"
                          style="color: red">
                         Please insert the discount amount
                     </div>
@@ -225,7 +210,7 @@
                             formControlName="offerStartDate"
                             nzPlaceHolder="Start Date">
                     </nz-date-picker>
-                    <div *ngIf="getFormControl('offerStartDate').dirty&&getFormControl('offerStartDate').hasError('required')"
+                    <div *ngIf="getFormControl('offerStartDate').dirty && getFormControl('offerStartDate').hasError('required')"
                          style="color: red">
                         Please set offer start date & time
                     </div>
@@ -235,7 +220,7 @@
                             formControlName="offerEndDate"
                             nzPlaceHolder="End Date">
                     </nz-date-picker>
-                    <div *ngIf="getFormControl('offerEndDate').dirty&&getFormControl('offerEndDate').hasError('required')"
+                    <div *ngIf="getFormControl('offerEndDate').dirty && getFormControl('offerEndDate').hasError('required')"
                          style="color: red">
                         Please set offer end date & time
                     </div>
@@ -287,18 +272,6 @@
                 <th>
                     <span> Product Name </span>
                 </th>
-                <!--                <th>
-                                    <span> Shop Owner </span>
-                                </th>
-                                <th>
-                                    <span> Brand </span>
-                                </th>
-                                <th>
-                                    <span> Category </span>
-                                </th>
-                                <th>
-                                    <span> Sub-Category </span>
-                                </th>-->
                 <th>
                     <span> Price </span>
                 </th>
@@ -306,50 +279,13 @@
                     <span> Delete </span>
                 </th>
             </tr>
-            <!--<tr>
-                <th>
-                </th>
-                <th>
-                    <input nz-input placeholder="Code" [(ngModel)]="allProductCodeSearch"
-                           (ngModelChange)="allProductCodeChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
-                           (ngModelChange)="allProductNameChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Shop Owner" [(ngModel)]="allShopOwnerSearch"
-                           (ngModelChange)="allProductShopOwnerChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Brand" [(ngModel)]="allBrandSearch"
-                           (ngModelChange)="allProductBrandChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Category" [(ngModel)]="allCategorySearch"
-                           (ngModelChange)="allProductCategoryChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Sub Category" [(ngModel)]="allSubCategorySearch"
-                           (ngModelChange)="allProductSubCategoryChangeHandler($event)">
-                </th>
-                <th>
 
-                </th>
-                &lt;!&ndash;<th>
-                </th>&ndash;&gt;
-            </tr>-->
             </thead>
             <tbody>
             <tr *ngFor="let datum of nzTableProd1.data;let i=index;">
-                <td>
-                </td>
+                <td>&nbsp;</td>
                 <td>{{datum.code}}</td>
                 <td>{{datum.name}}</td>
-                <!--                <td>{{datum.warehouse_name}}</td>
-                                <td>{{datum.brand_name}}</td>
-                                <td>{{datum.type_name}}</td>
-                                <td>{{datum.category_name}}</td>-->
                 <td>{{datum.price}}</td>
                 <td>
                     <ng-container>
@@ -401,10 +337,6 @@
         >
             <thead>
             <tr>
-                <!--<th>
-                    <label nz-checkbox [(ngModel)]="allProductSelectAll[allProductPage - 1]"
-                           (ngModelChange)="selectAllProducts($event)"></label>
-                </th>-->
                 <th>
                     <span> Product Code </span>
                 </th>
@@ -415,71 +347,9 @@
                     <span> Price </span>
                 </th>
             </tr>
-            <!--<tr>
-                <th>
-                </th>
-                <th>
-                    <input nz-input placeholder="Code" [(ngModel)]="allProductCodeSearch"
-                           (ngModelChange)="allProductCodeChangeHandler($event)">
-                </th>
-                <th>
-                    <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
-                           (ngModelChange)="allProductNameChangeHandler($event)">
-                </th>
-                <th>
-                    <nz-select nzPlaceHolder="Vendor"
-                               [(ngModel)]="allVendorSearch" style="width: 130px;"
-                               nzShowSearch nzAllowClear
-                               (ngModelChange)="allProductShopOwnerChangeHandler($event)">
-                        <nz-option *ngFor="let option of allModalVendors" [nzLabel]="option.name"
-                                   [nzValue]="option.name">
-                        </nz-option>
-                    </nz-select>
-                </th>
-                <th>
-                    <nz-select nzPlaceHolder="Brand"
-                               [(ngModel)]="allBrandSearch" style="width: 130px;"
-                               nzShowSearch nzAllowClear
-                               (ngModelChange)="allProductBrandChangeHandler($event)">
-                        <nz-option *ngFor="let option of allModalBrands" [nzLabel]="option.name"
-                                   [nzValue]="option.name">
-                        </nz-option>
-                    </nz-select>
-                </th>
-                <th>
-                    <nz-select nzPlaceHolder="Category"
-                               [(ngModel)]="allCategorySearch" style="width: 130px;"
-                               nzShowSearch nzAllowClear
-                               (ngModelChange)="allProductCategoryChangeHandler($event)">
-                        <nz-option *ngFor="let option of allModalCategories" [nzLabel]="option.name"
-                                   [nzValue]="option.name">
-                        </nz-option>
-                    </nz-select>
-                </th>
-                <th>
-                    <nz-select nzPlaceHolder="Sub Category"
-                               [(ngModel)]="allSubCategorySearch" style="width: 130px;"
-                               nzShowSearch nzAllowClear
-                               (ngModelChange)="allProductSubCategoryChangeHandler($event)">
-                        <nz-option *ngFor="let option of allModalSubCategories" [nzLabel]="option.name"
-                                   [nzValue]="option.name">
-                        </nz-option>
-                    </nz-select>
-                </th>
-                <th>
-
-                </th>
-                &lt;!&ndash;<th>
-                </th>&ndash;&gt;
-            </tr>-->
             </thead>
             <tbody>
             <tr *ngFor="let datum of nzTableSelected.data;let i=index;">
-                <!--<td>
-                    <label nz-checkbox [(ngModel)]="datum.checked"
-                           (ngModelChange)="_refreshStatus($event, datum.id)">
-                    </label>
-                </td>-->
                 <td>{{datum.code}}</td>
                 <td>{{datum.name}}</td>
                 <td>{{datum.price}}</td>
@@ -521,9 +391,6 @@
                 <th>
                     <span> Sub-Category </span>
                 </th>
-                <!--<th>
-                    <span> Sub-Sub-Category </span>
-                </th>-->
                 <th>
                     <span> Price </span>
                 </th>
@@ -555,11 +422,7 @@
                     <input nz-input placeholder="Sub Category" [(ngModel)]="allSubCategorySearch"
                            (ngModelChange)="allProductSubCategoryChangeHandler($event)">
                 </th>
-                <th>
-
-                </th>
-                <!--<th>
-                </th>-->
+                <th>&nbsp;</th>
             </tr>
             </thead>
             <tbody>
@@ -678,7 +541,6 @@
           (nzOnCancel)="handleIndividualProductModal()"
           nzWidth="90%">
     <nz-spin [nzSpinning]="_isSpinning">
-        <!--Individually added products table-->
         <nz-table #nzTableIndividuallySelected
                   [nzData]="individuallySelectedData"
                   [nzLoading]="_isSpinning"
@@ -754,8 +616,8 @@
                     <input nz-input placeholder="Name" [(ngModel)]="allProductNameSearch"
                            (ngModelChange)="allProductNameChangeHandler($event)">
                 </th>
-                <th></th>
-                <th></th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
             </tr>
             <tr>
                 <th style="text-align: center;" colspan="5">

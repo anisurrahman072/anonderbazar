@@ -419,11 +419,19 @@ module.exports = {
 
   updateOffer: async (req, res) => {
     try {
+
       let body = {...req.body};
+
+      console.log('body', body);
+
+      let offer = await Offer.findOne({id: body.id});
 
       if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
+
+        console.log('files', files);
+
         if (files.length === 0) {
           return res.badRequest('No file was uploaded');
         }
@@ -467,11 +475,33 @@ module.exports = {
             const newPathBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
             body.small_image = '/' + newPathBanner;
           }
+        } else if (body.hasImage === 'true') {
+          body.image = '/' + newPath;
+        } else if (body.hasBannerImage === 'true') {
+          body.banner_image = '/' + newPath;
+        } else if (body.hasSmallImage === 'true') {
+          body.small_image = '/' + newPath;
         }
 
       }
 
-      let offerData = {};
+      let offerData = {image: {}};
+      if (body.image) {
+        offerData.image.image = body.image;
+      } else {
+        offerData.image.image = offer.image && offer.image.image ? offer.image.image : '';
+      }
+      if (body.small_image) {
+        offerData.image.small_image = body.small_image;
+      } else {
+        offerData.image.small_image = offer.image && offer.image.small_image ? offer.image.small_image : '';
+      }
+      if (body.banner_image) {
+        offerData.image.banner_image = body.banner_image;
+      } else {
+        offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
+      }
+
       let individualProductsIds;
       let individualProductsCalculations;
       let individualProductsAmounts;
@@ -482,12 +512,8 @@ module.exports = {
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
         offerData = {
+          ...offerData,
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
           selection_type: body.selection_type,
           description: body.description,
           start_date: body.offerStartDate,
@@ -496,12 +522,8 @@ module.exports = {
         };
       } else {
         offerData = {
+          ...offerData,
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
           selection_type: body.selection_type,
           description: body.description,
           calculation_type: body.calculationType,
@@ -553,9 +575,9 @@ module.exports = {
       /** for individually selected products */
       if (individualProductsIds && individualProductsIds.length > 0) {
         for (let id = 0; id < individualProductsIds.length; id++) {
-          let product_id = parseInt(individualProductsIds[id]);
+          let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id]);
+          let discountAmount = parseInt(individualProductsAmounts[id], 10);
 
           if (product_id) {
             let existedProduct = await RegularOfferProducts.findOne({
@@ -624,7 +646,7 @@ module.exports = {
   getSelectedProductsInfo: async (req, res) => {
     try {
 
-      if(!req.query.data){
+      if (!req.query.data) {
         return res.status(422).json({
           message: 'Invalid Request',
         });

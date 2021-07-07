@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -11,13 +11,13 @@ import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-
 @Component({
     selector: 'app-offer-edit',
     templateUrl: './offer-edit.component.html',
     styleUrls: ['./offer-edit.component.css']
 })
 export class OfferEditComponent implements OnInit {
+
     Editor = ClassicEditor;
     config = {
         toolbar: {
@@ -53,40 +53,9 @@ export class OfferEditComponent implements OnInit {
     ImageFile: File;
     BannerImageFile: File;
     smallOfferImage: File;
-    @ViewChild('Image')
-    Image: any;
+
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    /*ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
+
     _isSpinning: any = false;
     submitting: boolean = false;
     sub: any;
@@ -655,9 +624,11 @@ export class OfferEditComponent implements OnInit {
             } else if (subCatId) {
                 this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
                     .subscribe(result => {
+                        this.finalSelectionType(false, false, false, true,false,false, subCatId);
                         this.subSubCategoryIDS = result.data;
                     })
             }
+
         }
     }
 
