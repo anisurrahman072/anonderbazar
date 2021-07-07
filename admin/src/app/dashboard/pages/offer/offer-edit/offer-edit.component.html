@@ -69,7 +69,8 @@
                     <label>Banner Image</label>
                 </div>
                 <div nz-col [nzSpan]="12">
-                    <image-upload [max]="1" (removed)="onBannerRemoved($event)" [uploadedFiles]='BannerImageFileEdit'
+                    <image-upload [max]="1" (removed)="onBannerRemoved($event)"
+                                  [uploadedFiles]='BannerImageFileEdit'
                                   [beforeUpload]="onBeforeBannerUpload">
                     </image-upload>
                     <div *ngIf="!ImageFile">

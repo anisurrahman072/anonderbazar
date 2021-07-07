@@ -580,6 +580,7 @@ module.exports = {
           }
 
           const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+          body.image = '/' + newPath;
 
           if (files.length === 2) {
             if (req.body.hasBannerImage) {
@@ -596,8 +597,6 @@ module.exports = {
             let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
             body.banner_image = '/' + bannerImagePath;
           }
-
-          body.image = '/' + newPath;
 
           let offerData = {};
           let individualProductsIds;
