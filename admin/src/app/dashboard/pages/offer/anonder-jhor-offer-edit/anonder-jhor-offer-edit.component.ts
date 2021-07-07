@@ -125,6 +125,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
         let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
+        console.log('(value.offerEndDate; ', value.offerEndDate);
+
         if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
             this._isSpinning = false;

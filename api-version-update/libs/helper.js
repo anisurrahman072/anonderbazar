@@ -98,6 +98,7 @@ const imageUploadConfig = function () {
   if (devEnv) {
     return {
       maxBytes: 10000000,
+      /*maxBytes: 50*1024*1024,*/
       dirname: sails.config.appPath + '/.tmp/public',
     };
   }

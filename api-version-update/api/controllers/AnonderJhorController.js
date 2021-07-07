@@ -299,7 +299,24 @@ module.exports = {
             force_stop: 1
           };
 
-          if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
+          if(!body.subSubCategoryId) {
+            let _whereSubExists = {};
+            _whereSubExists.deletedAt = null;
+            _whereSubExists.sub_sub_category_id = null;
+            _whereSubExists.start_date = {'>=': body.offerEndDate};
+            _whereSubExists.end_date = {'<=': body.offerStartDate};
+
+            /*let rawSQL = `
+            SELECT
+            `;*/
+
+            let subExists = await AnonderJhorOffers.find({where: _whereSubExists});
+            console.log('subexists: ', subExists);
+            console.log('end time: ', body.offerEndDate);
+          }
+
+          /*format('YYYY-MM-DD HH:mm:ss')*/
+          /*if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
             offerData.sub_sub_category_id = body.subSubCategoryId;
             const subSubCat = await AnonderJhorOffers.findOne({
               sub_sub_category_id: body.subSubCategoryId,
@@ -311,7 +328,11 @@ module.exports = {
                 message: 'Subsub category already in another anonder jhor offer'
               });
             }
-          }
+          }*/
+
+          /*if(!body.subSubCategoryId) {
+            console.log('body.subSubCategoryId: in not', body.subSubCategoryId);
+          }*/
 
           if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
             offerData.sub_category_id = body.subCategoryId;
@@ -458,10 +479,10 @@ module.exports = {
   },
 
   updateAnonderJhorOffer: async (req, res) => {
-    console.log('body updateAnonderJhorOffer: ', req.body);
     try {
       let body = req.body;
       if (req.body.hasImage === 'true') {
+        console.log('isndes if');
         req.file('image').upload(imageUploadConfig(), async (err, files) => {
           if (err) {
             return res.serverError(err);
@@ -533,10 +554,15 @@ module.exports = {
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
           offerData.sub_sub_category_id = body.subSubCategoryId;
-          const subSubCat = await AnonderJhorOffers.findOne({
-            sub_sub_category_id: body.subSubCategoryId,
-            status: 1
-          });
+
+          let _wheresub = {};
+          _wheresub.sub_sub_category_id = body.subSubCategoryId;
+          _wheresub.status = 1;
+          _wheresub.id = {'!=': parseInt(req.body.id)};
+          _wheresub.deletedAt = null;
+
+          const subSubCat = await AnonderJhorOffers.findOne({where: _wheresub});
+
           if (subSubCat !== undefined) {
             return res.status(200).json({
               code: 'INVALID_SUBSUBCAT',
@@ -553,6 +579,7 @@ module.exports = {
           offerData.sub_category_id = null;
         }
 
+        console.log('end check offerEndDate: ', req.body.offerEndDate);
 
         let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
 

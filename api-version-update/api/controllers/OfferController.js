@@ -140,6 +140,7 @@ module.exports = {
 
           if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
             offerData.subSubCategory_Id = body.subSubCategory_Id;
+
             const subSubCat = await Offer.findOne({
               subSubCategory_Id: body.subSubCategory_Id,
               offer_deactivation_time: null
