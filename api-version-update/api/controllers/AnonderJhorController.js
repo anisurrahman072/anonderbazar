@@ -84,7 +84,7 @@ module.exports = {
 
       return res.status(200).json({
         success: true,
-        message: 'Anonder Jhor updated successfully',
+        message: 'Anonder Jhor has been updated successfully',
         data
       });
 
@@ -144,14 +144,18 @@ module.exports = {
     try {
       await OfferService.anonderJhorOfferDurationCheck();
 
-      let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      const presentTime = (new Date(Date.now())).getTime();
+      const anonderJhorData = await AnonderJhor.findOne({id: 1});
+      const presentTime = moment();
 
-      let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
-      let jhorOfferStartTime = jhorOfferData.start_date.getTime();
-      let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+      const jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      // let jhorOfferStartTime = jhorOfferData.start_date.getTime();
+      // let jhorOfferEndTime = jhorOfferData.end_date.getTime();
 
-      if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
+      const jhorOfferStartTime = moment(jhorOfferData.start_date);
+      const jhorOfferEndTime = moment(jhorOfferData.end_date);
+
+      // if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
+      if (presentTime.isAfter(jhorOfferEndTime) || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
         return res.status(200).json({
           code: 'NOT_ALLOWED',
           message: 'status can not be changed'
@@ -164,8 +168,9 @@ module.exports = {
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({status: req.body.event});
       } else {
-        /*check time and change force status;*/
-        if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
+        /** check time and change force status; */
+        // if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
+        if (presentTime.isAfter(jhorOfferStartTime) && presentTime.isBefore(jhorOfferEndTime)) {
           anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
             .set({status: req.body.event, force_stop: 1});
         } else {
@@ -195,11 +200,12 @@ module.exports = {
       await OfferService.anonderJhorOfferDurationCheck();
 
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      const presentTime = (new Date(Date.now())).getTime();
-      let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
-      let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+      const presentTime = moment();
+      const jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      const jhorOfferEndTime = moment(jhorOfferData.end_date).getTime();
 
-      if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0) {
+      // if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0) {
+      if (presentTime.isAfter(jhorOfferEndTime) || anonderJhorData.status === 0) {
         return res.status(200).json({
           code: 'NOT_ALLOWED',
           message: 'status can not be changed'
@@ -325,11 +331,12 @@ module.exports = {
 
   getAllSubCategories: async (req, res) => {
     try {
-      let allSubCategories = await Category.find({
+      const allSubCategories = await Category.find({
         type_id: 2,
-        parent_id: parseInt(req.query.parentId),
+        parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
+
       return res.status(200).json({
         success: true,
         message: 'all sub-categories fetched successfully',
@@ -348,7 +355,7 @@ module.exports = {
     try {
       let allSubSubCategories = await Category.find({
         type_id: 2,
-        parent_id: parseInt(req.query.parentId),
+        parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
       return res.status(200).json({
@@ -434,7 +441,7 @@ module.exports = {
         offerData.sub_category_id = null;
       }
 
-      let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
+      const data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
 
       return res.status(200).json({
         success: true,
@@ -519,7 +526,6 @@ module.exports = {
       }
 
       webJhorOfferedProducts = await Product.find({where: _where1});
-      /*console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);*/
 
       res.status(200).json({
         success: true,
@@ -538,8 +544,8 @@ module.exports = {
 
   generateOfferExcelById: async (req, res) => {
     try {
-      let offer_type = parseInt(req.query.offer_type);
-      let offer_id = parseInt(req.query.offer_id);
+      let offer_type = parseInt(req.query.offer_type, 10);
+      let offer_id = parseInt(req.query.offer_id, 10);
 
       let rawSQL = `
       SELECT

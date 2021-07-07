@@ -18,10 +18,6 @@ module.exports = {
 
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
-        /*let rawSQL = `SELECT warehouses.id, warehouses.name FROM warehouses  LEFT JOIN offers ON warehouses.id = offers.vendor_id
-              WHERE warehouses.deleted_at IS NULL AND (offers.deleted_at IS NOT NULL OR offers.vendor_id IS NULL) `;
-        allOptions = await sails.sendNativeQuery(rawSQL, []);*/
-
         allOptions = await Warehouse.find({deletedAt: null});
       } else if (req.query.offerSelectionType && req.query.offerSelectionType === 'Brand wise') {
         allOptions = await Brand.find({deletedAt: null});
@@ -44,14 +40,14 @@ module.exports = {
 
       res.status(200).json({
         success: true,
-        message: 'Get all options for shop/ brand/ category',
+        message: 'Get all options for shop / brand / category',
         data: allOptions
       });
     } catch (error) {
       console.log(error);
       res.status(400).json({
         success: false,
-        message: 'failed in Getting all options for shop/ brand/ category',
+        message: 'failed in Getting all options for shop / brand / category',
         error
       });
     }
@@ -62,6 +58,7 @@ module.exports = {
   offerInsert: async function (req, res) {
     try {
       let body = {...req.body};
+
       const files = await uploadImages(req.file('image'));
 
       if (files.length === 0) {
@@ -129,17 +126,18 @@ module.exports = {
           subSubCategory_Id: body.subSubCategory_Id,
           offer_deactivation_time: null
         });
-        if (subSubCat !== undefined) {
+        if (subSubCat) {
           return res.status(200).json({
             code: 'INVALID_SUBSUBCAT',
             message: 'Subsub category already in another offer'
           });
-          /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
         }
       }
+
       if (body.subCategory_Id) {
         offerData.subCategory_Id = body.subCategory_Id;
       }
+
       if (body.category_id) {
         offerData.category_id = body.category_id;
       }
@@ -153,14 +151,13 @@ module.exports = {
       }
 
       let data = await Offer.create(offerData).fetch();
-      /**console.log('offer fetched data from database: with image: ', data);*/
 
-      /**for individually selected products*/
+      /** for individually selected products*/
       if (individualProductsIds && individualProductsIds.length > 0) {
         for (let id = 0; id < individualProductsIds.length; id++) {
-          let product_id = parseInt(individualProductsIds[id]);
+          let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id]);
+          let discountAmount = parseInt(individualProductsAmounts[id], 10);
 
           if (product_id) {
             let existedProduct = await RegularOfferProducts.findOne({
@@ -192,12 +189,12 @@ module.exports = {
 
       if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
         for (let id = 0; id < regular_offer_product_ids.length; id++) {
-          let product_id = parseInt(regular_offer_product_ids[id]);
+          let product_id = parseInt(regular_offer_product_ids[id], 10);
           let existedProduct = await RegularOfferProducts.findOne({
             product_id: product_id,
             product_deactivation_time: null
           });
-          if (existedProduct !== undefined) {
+          if (existedProduct) {
             await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
           } else {
             await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
@@ -228,7 +225,6 @@ module.exports = {
     try {
       await OfferService.offerDurationCheck();
 
-      /**console.log('regular offer request: ', req.query);*/
       let _pagination = pagination(req.query);
 
       let _where = {};
