@@ -66,7 +66,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             .subscribe(result => {
                 this.data = result.anonderJhorOffer;
 
-                this.categoryId = this.data.category_id.id;
+                this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
 
@@ -203,7 +203,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
-            })
+            });
     }
 
     getAllSubCategories(event) {
@@ -257,7 +257,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         this.offerService.getAnonderJhor()
             .subscribe(result => {
                 this._isSpinning = true
-                console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
                     this._isSpinning = false;

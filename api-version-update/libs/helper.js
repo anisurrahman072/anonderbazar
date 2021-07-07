@@ -97,7 +97,7 @@ exports.escapeExcel = function (str) {
 const imageUploadConfig = function () {
   if (devEnv) {
     return {
-      maxBytes: 10000000,
+      maxBytes: 52428800,
       dirname: sails.config.appPath + '/.tmp/public',
     };
   }
