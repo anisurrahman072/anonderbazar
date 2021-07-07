@@ -516,7 +516,7 @@ module.exports = {
         offerData.frontend_position = body.frontend_position;
       }
 
-      if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+      if (body.subSubCategory_Id) {
         offerData.subSubCategory_Id = body.subSubCategory_Id;
         const subSubCat = await Offer.find({
           subSubCategory_Id: body.subSubCategory_Id,
@@ -524,12 +524,11 @@ module.exports = {
           deletedAt: null
         });
 
-        if (subSubCat !== undefined && subSubCat.length > 1) {
+        if (subSubCat && subSubCat.length > 1) {
           return res.status(200).json({
             code: 'INVALID_SUBSUBCAT',
             message: 'Subsub category already in another offer'
           });
-          /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
         }
       }
 
@@ -550,7 +549,6 @@ module.exports = {
       }
 
       let data = await Offer.updateOne({id: body.id}).set(offerData);
-      /** console.log('offer fetched data from database: with image: ', data); */
 
       /** for individually selected products */
       if (individualProductsIds && individualProductsIds.length > 0) {
@@ -587,14 +585,15 @@ module.exports = {
         regular_offer_product_ids = body.selectedProductIds.split(',');
       }
 
+      /** TODO: need to improve the logic. Below code is not optimized in terms of db operation */
       if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
         for (let id = 0; id < regular_offer_product_ids.length; id++) {
-          let product_id = parseInt(regular_offer_product_ids[id]);
+          let product_id = parseInt(regular_offer_product_ids[id], 10);
           let existedProduct = await RegularOfferProducts.findOne({
             product_id: product_id
           });
 
-          if (existedProduct !== undefined) {
+          if (existedProduct) {
             await RegularOfferProducts.updateOne({product_id: product_id}).set({
               regular_offer_id: data.id,
               product_deactivation_time: null,
@@ -612,7 +611,6 @@ module.exports = {
         data
       });
 
-
     } catch (error) {
       console.log('updateOffer error: ', error);
       res.status(400).json({
@@ -625,12 +623,19 @@ module.exports = {
 
   getSelectedProductsInfo: async (req, res) => {
     try {
+
+      if(!req.query.data){
+        return res.status(422).json({
+          message: 'Invalid Request',
+        });
+      }
+
       let selectedIDS = req.query.data.split(',');
       let foundProducts = [];
 
       if (selectedIDS && selectedIDS.length > 0) {
         for (let id = 0; id < selectedIDS.length; id++) {
-          let product_id = parseInt(selectedIDS[id]);
+          let product_id = parseInt(selectedIDS[id], 10);
           if (product_id) {
             let product = await Product.findOne({id: product_id});
             foundProducts.push(product);
@@ -638,14 +643,14 @@ module.exports = {
         }
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Successfully fetched selected products with their detail info',
         data: foundProducts,
       });
     } catch (error) {
       console.log('error: ', error);
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'failed to get selected products info',
         error
@@ -741,7 +746,6 @@ module.exports = {
           _sort.push(obj);
         }
       }
-      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -796,7 +800,6 @@ module.exports = {
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
           .populate('product_id');
 
-        console.log('sortData: ', sortData);
         if (sortData && sortData.code === 'newest') {
           if (sortData.order === 'ASC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
