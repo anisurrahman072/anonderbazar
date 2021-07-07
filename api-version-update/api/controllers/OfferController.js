@@ -5,9 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const {imageUploadConfig} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
-const OfferService = require('../services/OfferService');
 const moment = require('moment');
 const {uploadImages} = require('../../libs/helper');
 
@@ -556,9 +554,9 @@ module.exports = {
       }
 
       let data = await Offer.updateOne({id: body.id}).set(offerData);
-      /**console.log('offer fetched data from database: with image: ', data);*/
+      /** console.log('offer fetched data from database: with image: ', data); */
 
-      /**for individually selected products*/
+      /** for individually selected products */
       if (individualProductsIds && individualProductsIds.length > 0) {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id]);
