@@ -299,21 +299,29 @@ module.exports = {
             force_stop: 1
           };
 
-          if(!body.subSubCategoryId) {
-            let _whereSubExists = {};
+          /*if (!body.subSubCategoryId) {
+            /!*let _whereSubExists = {};
             _whereSubExists.deletedAt = null;
             _whereSubExists.sub_sub_category_id = null;
             _whereSubExists.start_date = {'>=': body.offerEndDate};
-            _whereSubExists.end_date = {'<=': body.offerStartDate};
+            _whereSubExists.end_date = {'<=': body.offerStartDate};*!/
 
-            /*let rawSQL = `
+             let rawSQL = `
             SELECT
-            `;*/
+              id
+          FROM
+              anonder_jhor_offers
+          WHERE
+              (start_date >= ${body.offerEndDate} OR end_date <= ${body.offerStartDate})
+              AND deleted_at = NULL AND sub_sub_category_id = NULL
+            `;
 
             let subExists = await AnonderJhorOffers.find({where: _whereSubExists});
             console.log('subexists: ', subExists);
             console.log('end time: ', body.offerEndDate);
-          }
+          } else {
+            /!*this means subsubcat exists so check whether sub sub cat exist in another offers or not*!/
+          }*/
 
           /*format('YYYY-MM-DD HH:mm:ss')*/
           /*if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -330,7 +338,7 @@ module.exports = {
             }
           }*/
 
-          /*if(!body.subSubCategoryId) {
+          /*if (!body.subSubCategoryId) {
             console.log('body.subSubCategoryId: in not', body.subSubCategoryId);
           }*/
 
