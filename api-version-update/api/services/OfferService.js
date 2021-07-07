@@ -1,8 +1,9 @@
 const _ = require('lodash');
 
 module.exports = {
-  /** Calculate a product price according to offer*/
-  calcProductOfferPrice: async (product) => {
+  /** Calculate a Cart Item Product total price according to offer*/
+  calcCartItemTotalOfferPrice: async (product) => {
+    console.log('For product offer price: ');
     let productFinalPrice;
     let offerProducts = await PaymentService.getRegularOfferStore();
 
