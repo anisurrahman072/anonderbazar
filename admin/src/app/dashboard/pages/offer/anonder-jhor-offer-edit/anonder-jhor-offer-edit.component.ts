@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
@@ -54,7 +54,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
-            subCategoryId: ['', []],
+            subCategoryId: ['', [Validators.required]],
             subSubCategoryId: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
@@ -69,6 +69,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                 this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
+
+                console.log('getAnonderJhorOfferById', this.categoryId, this.subCategoryId, this.subSubCategoryId);
 
                 this.ImageFileEdit = [];
 
@@ -112,6 +114,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         formData.append('id', this.jhorOfferId);
         formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
@@ -121,6 +124,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         let offerEndTime = new Date(value.offerEndDate).getTime();
         let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
         let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
+
+        console.log('(value.offerEndDate; ', value.offerEndDate);
 
         if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
@@ -134,9 +139,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             return;
         }
 
-        if (value.subCategoryId) {
-            formData.append('subCategoryId', this.subCategoryId);
-        }
         if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', this.subSubCategoryId);
         }
@@ -193,13 +195,11 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     /** Event method for storing image in variable */
     onBeforeUpload = (metadata: UploadMetadata) => {
-        console.log('befor upload: ', metadata.file);
         this.ImageFile = metadata.file;
         return metadata;
     }
 
     getAllCategories() {
-        console.log('getAllCategories: ', event);
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
@@ -207,21 +207,29 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllSubCategories(event) {
+
         if (event) {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubCategories', result);
+                    if(this.allSubCategoryIds){
+                        this.finalSelectionType(true, false, false, event);
+                    }
                     this.allSubCategoryIds = result.data;
-                    this.finalSelectionType(true, false, false, event);
-                })
+                });
         }
     }
 
     getAllSubSubCategories(event) {
+
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubSubCategories', result);
+                    if(this.allSubSubCategoryIds){
+                        this.finalSelectionType(false, true, false, event);
+                    }
                     this.allSubSubCategoryIds = result.data;
-                    this.finalSelectionType(false, true, false, event);
                 })
         }
     }

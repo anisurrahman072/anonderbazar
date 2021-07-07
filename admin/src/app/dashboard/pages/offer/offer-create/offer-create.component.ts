@@ -9,6 +9,7 @@ import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {colorSets} from "@swimlane/ngx-charts/release/utils";
 
 @Component({
     selector: 'app-offer-create',
@@ -231,12 +232,24 @@ export class OfferCreateComponent implements OnInit {
             formData.append('brand_id', this.brandId);
         }
 
-        if (value.categoryId) {
-            formData.append('category_id', this.categoryId);
+
+        if (value.selectionType === 'Category wise') {
+            if (!this.categoryId) {
+                this._notification.error('Category!', 'Select one category please');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('category_id', this.categoryId);
+            }
+            if (!this.subCategoryId) {
+                this._notification.error('Sub Category!', 'Setting offer to a whole category by mistake is not allowed');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('subCategory_Id', this.subCategoryId);
+            }
         }
-        if (value.subCategoryId) {
-            formData.append('subCategory_Id', this.subCategoryId);
-        }
+
         if (value.subSubCategoryId) {
             formData.append('subSubCategory_Id', this.subSubCategoryId);
         }

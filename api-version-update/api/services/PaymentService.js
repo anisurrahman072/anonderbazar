@@ -471,7 +471,7 @@ module.exports = {
 
         /** offer section */
 
-        const presentTime = (new Date(Date.now())).getTime();
+        let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
         let _where = {};
         _where.offer_deactivation_time = null;
         _where.deletedAt = null;

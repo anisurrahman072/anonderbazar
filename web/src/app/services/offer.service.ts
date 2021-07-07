@@ -18,8 +18,14 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/getWebRegularOffers`);
     }
 
-    getWebRegularOfferById(id): Observable<any> {
-        return this.http.get(`${this.EndPoint}/getWebRegularOfferById?id=${id}`);
+    getWebRegularOfferById(id, sortData): Observable<any> {
+        let _query = `${this.EndPoint}/getWebRegularOfferById?id=${id}`;
+        if(sortData){
+            sortData = JSON.stringify(sortData);
+            _query += `&sortData=${sortData}`;
+        }
+        console.log("_query: ", _query);
+        return this.http.get(_query);
     }
 
     getRegularOfferStore(): Observable<any> {
