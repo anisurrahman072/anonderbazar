@@ -20,7 +20,7 @@ export class OfferEffect {
             return this.offerService.getRegularOfferStore()
                 .pipe(
                     map(data => {
-                        console.log('getRegularOfferStore-data', data);
+                        /*console.log('getRegularOfferStore-data', data);*/
                         return new offerActions.LoadOfferSuccess(data)
                     }),
                     catchError(error => of(new offerActions.LoadOfferFail(error)))

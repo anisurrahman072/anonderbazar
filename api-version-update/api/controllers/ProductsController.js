@@ -23,6 +23,9 @@ module.exports = {
       /*      /!**checking if the options have the offer time or not*!/
       OfferService.offerDurationCheck();*/
 
+      console.log('rouzex rahim: ', req.query);
+      console.log('rouzex isOffer: ', req.query.isOffer);
+
       const productQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
 
       let _pagination = pagination(req.query);
@@ -76,6 +79,11 @@ module.exports = {
       if (req.query.status) {
         // _where.status = req.query.status;
         _where += ` AND product.status = ${req.query.status}`;
+      }
+
+      if(req.query.productStatus) {
+        let status = parseInt(req.query.productStatus);
+        _where += ` AND product.approval_status = ${status}`;
       }
       if (req.query.warehouse_id) {
         _where += ` AND product.warehouse_id = ${req.query.warehouse_id}`;

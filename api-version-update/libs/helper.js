@@ -2,6 +2,8 @@ const fetch = require('node-fetch');
 const {devEnv, bKash, dhakaZilaId} = require('../config/softbd');
 const AbortController = require('node-abort-controller');
 const _ = require('lodash');
+const fs = require('fs');
+const {s3Config} = require('../config/softbd');
 
 const asyncForEach = async (array, callback) => {
   if (array && Array.isArray(array) && array.length > 0) {
@@ -12,24 +14,7 @@ const asyncForEach = async (array, callback) => {
   }
 };
 exports.asyncForEach = asyncForEach;
-const imageUploadConfig = function () {
 
-  if (devEnv) {
-    return {
-      maxBytes: 10000000,
-      dirname: sails.config.appPath + '/.tmp/public',
-    };
-  }
-  return {
-    adapter: require('skipper-s3'),
-    key: 'AKIATYQRUSGN2DDD424I',
-    secret: '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',
-    bucket: 'anonderbazar',
-    maxBytes: 10000000
-  };
-
-};
-exports.imageUploadConfig = imageUploadConfig;
 
 exports.bKashModeConfigKey = function () {
   let bKashModeConfigKey = 'production';
@@ -76,7 +61,14 @@ exports.baseFilter = (reqBody, Model, localWhere) => {
   return where;
 };
 
-exports.calcCartTotal = function (cart, cartItems) {
+exports.escapeExcel = function (str) {
+  if (!str) {
+    return '';
+  }
+  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
+};
+
+/*exports.calcCartTotal = function (cart, cartItems) {
   let grandOrderTotal = 0;
   let totalQty = 0;
   cartItems.forEach((cartItem) => {
@@ -90,17 +82,9 @@ exports.calcCartTotal = function (cart, cartItems) {
     grandOrderTotal,
     totalQty
   };
-};
+};*/
 
-exports.escapeExcel = function (str) {
-  if (!str) {
-    return '';
-  }
-  return str.replace(/[&]/g, 'and').replace(/['"]/g, '').replace('-', ' ').replace(/\s+/g, ' ');
-};
-
-
-exports.uploadImgAsync = (param, option = {}) => {
+/*exports.uploadImgAsync = (param, option = {}) => {
   return new Promise(((resolve, reject) => {
     param.upload(option, (err, data) => {
       if (err !== null) {
@@ -109,12 +93,22 @@ exports.uploadImgAsync = (param, option = {}) => {
       resolve(data);
     });
   }));
+};*/
+const imageUploadConfig = function () {
+  if (devEnv) {
+    return {
+      maxBytes: 10000000,
+      dirname: sails.config.appPath + '/.tmp/public',
+    };
+  }
+  return {
+    adapter: require('skipper-s3'),
+    ...s3Config
+  };
 };
-
-exports.deleteImages = async (imageList, path) => {
+exports.imageUploadConfig = imageUploadConfig;
+exports.deleteImagesLocal = async (imageList, path) => {
   await asyncForEach(imageList, (item) => {
-    console.log(item);
-
     let dir = __dirname.split('/api');
     let assestsdir = dir[0] + '/assets';
 
@@ -129,6 +123,19 @@ exports.deleteImages = async (imageList, path) => {
     }
   });
 };
+
+exports.deleteImageS3 = async (imageName, path) => {
+  const skipper = require('skipper-s3')({key: s3Config.key, secret: s3Config.secret, bucket: s3Config.bucket});
+  return new Promise((resolve, reject) => {
+    skipper.rm(imageName, (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(result);
+    });
+  });
+};
+
 exports.uploadImages = (imageFile) => {
   return new Promise((resolve, reject) => {
     imageFile.upload(imageUploadConfig(), async (err, uploaded) => {

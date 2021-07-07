@@ -129,7 +129,11 @@ module.exports = {
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip
-      }).sort('status DESC')
+      }).sort([
+        {id: 'DESC'},
+        {end_date: 'DESC'},
+        {status: 'DESC'},
+      ])
         .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
@@ -160,6 +164,56 @@ module.exports = {
 
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
       const presentTime = (new Date(Date.now())).getTime();
+
+      let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      let jhorOfferStartTime = jhorOfferData.start_date.getTime();
+      let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+
+      if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
+        return res.status(200).json({
+          code: 'NOT_ALLOWED',
+          message: 'status can not be changed'
+        });
+      }
+
+      let anonderJhorOffer;
+
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({status: req.body.event});
+      } else {
+        /*check time and change force status;*/
+        if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event, force_stop: 1});
+        } else {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event});
+        }
+      }
+
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully updated offer status',
+        status: anonderJhorOffer.status
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to update offer status',
+        error
+      });
+    }
+  },
+
+  offerForceStop: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let anonderJhorData = await AnonderJhor.findOne({id: 1});
+      const presentTime = (new Date(Date.now())).getTime();
       let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
       let jhorOfferEndTime = jhorOfferData.end_date.getTime();
 
@@ -170,8 +224,15 @@ module.exports = {
         });
       }
 
-      let anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
-        .set({status: req.body.event});
+      /** when event value is true it means, request to force stop, value for force stop is 1 */
+      let anonderJhorOffer;
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 0});
+      } else {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 1});
+      }
 
       res.status(200).json({
         success: true,
@@ -190,7 +251,10 @@ module.exports = {
 
   deleteAnonderJhorOffer: async (req, res) => {
     try {
-      const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({deletedAt: new Date()});
+      const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({
+        status: 0,
+        deletedAt: new Date()
+      });
 
       return res.status(201).json({
         success: true,
@@ -231,7 +295,8 @@ module.exports = {
             end_date: body.offerEndDate,
             category_id: body.categoryId,
             anonder_jhor_id: 1,
-            status: 0
+            status: 0,
+            force_stop: 1
           };
 
           if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -270,7 +335,8 @@ module.exports = {
           end_date: body.offerEndDate,
           category_id: body.categoryId,
           anonder_jhor_id: 1,
-          status: 0
+          status: 0,
+          force_stop: 1
         };
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -417,7 +483,8 @@ module.exports = {
             end_date: body.offerEndDate,
             category_id: body.categoryId,
             anonder_jhor_id: 1,
-            status: 0
+            status: 0,
+            force_stop: 1
           };
 
           if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -460,7 +527,8 @@ module.exports = {
           end_date: body.offerEndDate,
           category_id: body.categoryId,
           anonder_jhor_id: 1,
-          status: 0
+          status: 0,
+          force_stop: 1
         };
 
         if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
@@ -505,19 +573,27 @@ module.exports = {
     }
   },
 
+
   getAnonderJhorAndOffers: async (req, res) => {
     try {
       await OfferService.anonderJhorOfferDurationCheck();
 
       let anonderJhor = await AnonderJhor.findOne({id: 1});
+      let jhorStartTime = anonderJhor.start_date;
+      let jhorEndTime = anonderJhor.end_date;
+
+      let _where = {};
+      _where.deletedAt = null;
+      _where.start_date = {'>=': jhorStartTime};
+      _where.end_date = {'<=': jhorEndTime};
+      _where.force_stop = {'!=': 1};
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
-        anonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null, status: 1})
+        anonderJhorOffers = await AnonderJhorOffers.find({where: _where})
           .populate('category_id')
           .populate('sub_category_id')
           .populate('sub_sub_category_id');
-        console.log('anonder jhor offers: ', anonderJhorOffers);
       }
 
       res.status(200).json({
@@ -544,14 +620,13 @@ module.exports = {
       let _where = {};
       _where.id = req.query.id;
       _where.deletedAt = null;
-      _where.status = 1;
 
       const requestedJorOffer = await AnonderJhorOffers.findOne({where: _where})
         .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
 
-      console.log('requset jhor offer: ', requestedJorOffer);
+      /*console.log('requset jhor offer: ', requestedJorOffer);*/
 
 
       let _where1 = {};
@@ -559,16 +634,16 @@ module.exports = {
       _where1.approval_status = 2;
       _where1.deletedAt = null;
 
-      if (requestedJorOffer.sub_sub_category_id) {
+      if (requestedJorOffer && requestedJorOffer.sub_sub_category_id) {
         _where1.subcategory_id = requestedJorOffer.sub_sub_category_id.id;
-      } else if (requestedJorOffer.sub_category_id) {
+      } else if (requestedJorOffer && requestedJorOffer.sub_category_id) {
         _where1.category_id = requestedJorOffer.sub_category_id.id;
-      } else if (requestedJorOffer.category_id) {
+      } else if (requestedJorOffer && requestedJorOffer.category_id) {
         _where1.type_id = requestedJorOffer.category_id.id;
       }
 
       webJhorOfferedProducts = await Product.find({where: _where1});
-      console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);
+      /*console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);*/
 
       res.status(200).json({
         success: true,
@@ -584,6 +659,61 @@ module.exports = {
       });
     }
   },
+
+  generateOfferExcelById: async (req, res) => {
+    try {
+      let offer_type = parseInt(req.query.offer_type);
+      let offer_id = parseInt(req.query.offer_id);
+
+      let rawSQL = `
+      SELECT
+            product_orders.id AS order_id,
+            product_suborders.id as suborder_id,
+            products.name AS product_name,
+            products.code AS product_code,
+            warehouses.name AS warehouse_name,
+            psi.product_quantity,
+            psi.product_total_price
+        FROM
+            product_suborder_items AS psi
+        LEFT JOIN products ON psi.product_id = products.id
+        LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
+        LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
+        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
+        WHERE
+            psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id}
+        ORDER BY
+            product_orders.id
+        `;
+
+      const offerOrders = await sails.sendNativeQuery(rawSQL, []);
+
+      let offerInfo;
+      if (offer_type === 1) {
+        offerInfo = await Offer.findOne({id: offer_id})
+          .populate('category_id')
+          .populate('subCategory_Id')
+          .populate('subSubCategory_Id');
+      } else {
+        offerInfo = await AnonderJhorOffers.findOne({id: offer_id})
+          .populate('category_id')
+          .populate('sub_category_id')
+          .populate('sub_sub_category_id');
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Offer excel Data fetched successfully',
+        data: [offerOrders.rows, offerInfo]
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to get offer excel Data',
+        error
+      });
+    }
+  }
 
 };
 

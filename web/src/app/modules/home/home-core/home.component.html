@@ -2,7 +2,7 @@
              [carouselBannerData]="cmsDataForPageSection['HOME_CAROUSEL']"
              [carouselOffers]="regularOfferData"
 ></home-banner>
-<app-section-offers *ngIf="regularOfferData" [homeOfferData]="regularOfferData"></app-section-offers>
+<app-section-offers *ngIf="regularOfferData && regularOfferData.length > 0" [homeOfferData]="regularOfferData"></app-section-offers>
 <app-flash-deals *ngIf="featureProducts && offerData" [dataProductList]="featureProducts" [offerData]="offerData"></app-flash-deals>
 <home-product-special *ngIf="cmsDataForPageSectionSubsection" [promoCategories]="cmsDataForPageSectionSubsection['POST_HOME_CATEGORY']"></home-product-special>
 <app-section-feedback [offerData]="offerData"></app-section-feedback>

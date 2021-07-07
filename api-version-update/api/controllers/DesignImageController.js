@@ -1,8 +1,6 @@
 const _ = require('lodash');
-const {Helper} = require('../../libs/HelperClass');
 const {pagination} = require('../../libs/pagination');
-const {uploadImagesWithConfig} = require('../../libs/helper');
-const {imageUploadConfig} = require('../../libs/helper');
+const {imageUploadConfig, deleteImagesLocal, uploadImagesWithConfig} = require('../../libs/helper');
 
 module.exports = {
   //Method called for getting all design image list data
@@ -250,7 +248,7 @@ module.exports = {
 
         try {
           let d = productDesignData.images.filter(p => !oldImages.includes(p));
-          await Helper.deleteImages(d, '');
+          await deleteImagesLocal(d, '');
         } catch (error1) {
           console.log(error1);
         }

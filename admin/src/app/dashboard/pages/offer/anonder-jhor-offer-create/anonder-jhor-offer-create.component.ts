@@ -47,7 +47,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     ) {
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
-            subCategoryId: ['', []],
+            subCategoryId: ['', [Validators.required]],
             subSubCategoryId: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
@@ -74,23 +74,35 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         let formData = new FormData();
 
         formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
-        let offerTime = new Date(value.offerEndDate).getTime();
-        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+        let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
+        let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
-        if(offerTime > jhorTime) {
-            this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
+        if(offerStartTime < jhorStartTime) {
+            this._notification.error('Wrong start Time', 'Start time is before anonder jhor start time');
             this._isSpinning = false;
             return;
         }
 
-        if (value.subCategoryId) {
-            formData.append('subCategoryId', this.subCategoryId);
+        if(offerEndTime > jhorEndTime) {
+            this._notification.error('Wrong End Time', 'End Date is out of the Anonder Jhor End Date');
+            this._isSpinning = false;
+            return;
         }
+
+        if (offerStartTime > offerEndTime) {
+            this._notification.error('Wrong Date', 'Please enter date and time properly');
+            this._isSpinning = false;
+            return;
+        }
+
         if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', this.subSubCategoryId);
         }
@@ -110,7 +122,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Feature Title: ");
+                this._notification.success('Offer Added', "Offer under anonder jhor created successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
                 this.isVisible = false;
