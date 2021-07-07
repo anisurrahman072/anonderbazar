@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -16,9 +16,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     @Input() isEditVisible: Boolean;
     @Input() jhorOfferId;
-    @ViewChild('Image')
 
-    Image: any;
     validateForm: FormGroup;
     ImageFile: File;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -99,9 +97,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     /** Event method for submitting the form */
     submitForm = ($event, value) => {
-        /*console.log('value.categoryId: ', value.categoryId);
-        console.log('this.subCategoryId: ', this.subCategoryId);
-        console.log('this.subSubCategoryId: ', this.subSubCategoryId);*/
 
         $event.preventDefault();
         this._isSpinning = true;
@@ -140,7 +135,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         }
 
         if (value.subSubCategoryId) {
-            formData.append('subSubCategoryId', this.subSubCategoryId);
+            formData.append('subSubCategoryId', value.subSubCategoryId);
         }
 
         if (this.ImageFile) {
@@ -150,17 +145,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
-        this.offerService.updateAnonderJhorOffer(formData).subscribe(result => {
-            /*if (result.code === 'INVALID_SUBSUBCAT') {
-                this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
-                this._isSpinning = false;
-            } else {*/
+        this.offerService.updateAnonderJhorOffer(formData).subscribe((result) => {
             this._notification.success('Updated', "Anonder Jhor offer Updated successfully");
             this._isSpinning = false;
             this.resetForm(null);
             this.isEditVisible = false;
             this.offerService.reloadOfferList();
-            /*}*/
+
         }, () => {
             this._isSpinning = false;
         });
@@ -212,7 +203,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
                     console.log('getAllSubCategories', result);
-                    if(this.allSubCategoryIds){
+                    if (this.allSubCategoryIds) {
                         this.finalSelectionType(true, false, false, event);
                     }
                     this.allSubCategoryIds = result.data;
@@ -226,7 +217,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
                     console.log('getAllSubSubCategories', result);
-                    if(this.allSubSubCategoryIds){
+                    if (this.allSubSubCategoryIds) {
                         this.finalSelectionType(false, true, false, event);
                     }
                     this.allSubSubCategoryIds = result.data;
