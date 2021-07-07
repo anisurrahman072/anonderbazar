@@ -565,9 +565,11 @@ module.exports = {
   },
 
   updateOffer: async (req, res) => {
+    console.log('the iameg body: ', req.body);
     try {
       let body = req.body;
       if (req.body.hasImage === 'true') {
+        console.log('inside imasge');
         req.file('image').upload(imageUploadConfig(), async (err, files) => {
           if (err) {
             return res.serverError(err);
@@ -739,6 +741,7 @@ module.exports = {
         });
 
       } else {
+        console.log('inside imasge else');
         let offerData = {};
         let individualProductsIds;
         let individualProductsCalculations;
