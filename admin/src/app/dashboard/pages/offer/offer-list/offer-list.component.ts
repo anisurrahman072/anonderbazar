@@ -125,19 +125,29 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.offerInfo = result.data[1];
                     console.log('this.orderedOfferedProducts: ', this.orderedOfferedProducts);
                     let excelData = [];
+                    let isShowDiscountAmount = false;
                     this.orderedOfferedProducts.forEach(offerItem => {
-                        excelData.push({
+                        let isFoundDiscountAmount = Object.keys(offerItem).find((value) => value === 'discountAmount' );
+                        if(isFoundDiscountAmount){
+                            isShowDiscountAmount = true;
+                        }
+                        let data = {
                             'Order id': offerItem.order_id,
                             'Sub Order id': offerItem.suborder_id,
                             'product code': offerItem.product_code,
                             'product name': offerItem.product_name,
                             'product quantity': offerItem.product_quantity,
                             'product total price': offerItem.product_total_price,
-                            'warehouse name': offerItem.warehouse_name,
-                        })
+                            'warehouse name': offerItem.warehouse_name
+                        }
+                        if(isShowDiscountAmount){
+                            data['Discount Amount'] = offerItem.discountAmount
+                        }
+                        excelData.push(data);
                     });
+                    console.log("isShowDiscountAmount: ", isShowDiscountAmount);
 
-                    const header = [
+                    let header = [
                         'Order id',
                         'Sub Order id',
                         'product code',
@@ -146,6 +156,10 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                         'product total price',
                         'warehouse name',
                     ];
+                    if(isShowDiscountAmount){
+                        header.push('Discount Amount');
+                    }
+
                     let offer_id = this.offerInfo.id;
                     let offerName = 'Regular offer';
                     let offer_calculation_type = this.offerInfo.calculation_type;

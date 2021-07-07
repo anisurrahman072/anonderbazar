@@ -9,6 +9,8 @@ const {imageUploadConfig} = require('../../libs/helper');
 const {uploadImages} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
+const {REGULAR_OFFER_TYPE, INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE} = require('../../libs/constants');
+
 module.exports = {
   getAnonderJhor: async (req, res) => {
     try {
@@ -546,7 +548,13 @@ module.exports = {
     try {
       let offer_type = parseInt(req.query.offer_type, 10);
       let offer_id = parseInt(req.query.offer_id, 10);
-
+      let isRegularIndividualProductOffer = false;
+      if(offer_type == REGULAR_OFFER_TYPE){
+        let offerInfo = await Offer.findOne({id: offer_id, deletedAt: null});
+        if(offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE){
+          isRegularIndividualProductOffer = true;
+        }
+      }
       let rawSQL = `
       SELECT
             product_orders.id AS order_id,
@@ -556,19 +564,29 @@ module.exports = {
             warehouses.name AS warehouse_name,
             psi.product_quantity,
             psi.product_total_price
-        FROM
+            `;
+      if(isRegularIndividualProductOffer){
+        rawSQL += `,
+            regular_offer_products.discount_amount AS discountAmount
+        `;
+      }
+      let fromSQL = `FROM
             product_suborder_items AS psi
         LEFT JOIN products ON psi.product_id = products.id
         LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
-        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
-        WHERE
-            psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id}
-        ORDER BY
-            product_orders.id
+        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id`;
+      if(isRegularIndividualProductOffer){
+        fromSQL += `
+        LEFT JOIN regular_offer_products ON regular_offer_products.regular_offer_id = psi.offer_id_number
+        `;
+      }
+
+      let whereSQL = `
+      WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} ORDER BY product_orders.id
         `;
 
-      const offerOrders = await sails.sendNativeQuery(rawSQL, []);
+      const offerOrders = await sails.sendNativeQuery(rawSQL + fromSQL + whereSQL, []);
 
       let offerInfo;
       if (offer_type === 1) {
