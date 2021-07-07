@@ -192,22 +192,20 @@ module.exports = {
           }
 
           /** Update product total price in Suborder Item table as per current state of offer for the product */
-          let currentCartItemPrice = await OfferService.calcProductOfferPrice({
+          let currentCartItemTotalPrice = await OfferService.calcCartItemTotalOfferPrice({
             id: dd.id,
             price: dd.price,
             quantity: cartItems[index].product_quantity
           });
 
-          console.log('Current product price: ', currentCartItemPrice, cartItems[index].product_unit_price);
+          console.log('Cart item prev info: ', cartItems[index].product_unit_price, cartItems[index].product_quantity, cartItems[index].product_total_price);
+          console.log('Cart item prev info: ', currentCartItemTotalPrice/cartItems[index].product_quantity, cartItems[index].product_quantity, currentCartItemTotalPrice);
 
-          if(currentCartItemPrice != cartItems[index].product_unit_price){
-            let currentProductTotalPrice = currentCartItemPrice * cartItems[index].product_quantity;
-            console.log('cart item information: ', currentCartItemPrice, cartItems[index].product_quantity);
+          if(currentCartItemTotalPrice != (cartItems[index].product_unit_price * cartItems[index].product_quantity)){
             console.log('Cart Prev Information: ', cart.total_price);
-            cart.total_price = cart.total_price + (currentProductTotalPrice - cartItems[index].product_total_price);
+            cart.total_price = cart.total_price + (currentCartItemTotalPrice - cartItems[index].product_total_price);
             console.log('Cart Current Information: ', cart.total_price);
-            console.log('Cart Item total information: ', currentProductTotalPrice, cartItems[index].product_total_price);
-            cartItems[index].product_total_price = currentProductTotalPrice;
+            cartItems[index].product_total_price = currentCartItemTotalPrice;
 
             await Cart.updateOne({
               id: cart.id,
@@ -220,8 +218,8 @@ module.exports = {
               id: cartItems[index].id,
               deletedAt: null
             }).set({
-              product_unit_price: currentCartItemPrice,
-              product_total_price: currentProductTotalPrice
+              product_unit_price: currentCartItemTotalPrice / cartItems[index].product_quantity,
+              product_total_price: currentCartItemTotalPrice
             });
           }
 
