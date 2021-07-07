@@ -202,7 +202,7 @@ module.exports = {
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
       const presentTime = moment();
       const jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
-      const jhorOfferEndTime = moment(jhorOfferData.end_date).getTime();
+      const jhorOfferEndTime = moment(jhorOfferData.end_date);
 
       // if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0) {
       if (presentTime.isAfter(jhorOfferEndTime) || anonderJhorData.status === 0) {
