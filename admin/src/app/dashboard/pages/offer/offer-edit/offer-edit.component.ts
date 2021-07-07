@@ -244,7 +244,7 @@ export class OfferEditComponent implements OnInit {
         });
     }
 
-//Event method for submitting the form
+    //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
         this._isSpinning = true;
@@ -320,18 +320,18 @@ export class OfferEditComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
-        if (this.smallOfferImage) {
-            formData.append('hasSmallImage', 'true');
-            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
-        } else {
-            formData.append('hasSmallImage', 'false');
-        }
-
         if (this.BannerImageFile) {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         } else {
             formData.append('hasBannerImage', 'false');
+        }
+
+        if (this.smallOfferImage) {
+            formData.append('hasSmallImage', 'true');
+            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
+        } else {
+            formData.append('hasSmallImage', 'false');
         }
 
         this.offerService.updateOffer(formData).subscribe(result => {
@@ -358,12 +358,12 @@ export class OfferEditComponent implements OnInit {
         }
     }
 
-//Event method for setting up form in validation
+    // Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
 
-//Event method for removing picture
+    // Event method for removing picture
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
     }
@@ -376,7 +376,7 @@ export class OfferEditComponent implements OnInit {
         this.smallOfferImage = null;
     }
 
-//Event method for storing imgae in variable
+    // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         this.ImageFile = metadata.file;
         return metadata;
@@ -558,7 +558,6 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
-
     showOfferModal() {
         this.isVisible = true;
         this.getRelatedOfferProducts(1);
@@ -585,7 +584,6 @@ export class OfferEditComponent implements OnInit {
     handleIndividualOfferedProductCancel(): void {
         this.isIndividualOfferedVisible = false;
     }
-
 
     removeProductFromOffer(productId) {
         this.offerService.removeProductFromOffer(productId, this.id)
@@ -641,7 +639,7 @@ export class OfferEditComponent implements OnInit {
         }
     }
 
-    /**method called to show the available options according to the selection in the offer selection type dropdown*/
+    /** method called to show the available options according to the selection in the offer selection type dropdown */
     getAllOptions(offerSelectionType?, catId?, subCatId?) {
         if (offerSelectionType || catId || subCatId) {
             if (offerSelectionType) {
