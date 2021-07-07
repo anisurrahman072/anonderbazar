@@ -10,7 +10,8 @@ module.exports = {
     key: 'AKIATYQRUSGN2DDD424I',
     secret: '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',
     bucket: 'anonderbazar',
-    maxBytes: 10000000
+    maxBytes: 50 * 1024 * 1024,
+	limit: 50 * 1024 * 1024
   },
   sslCommerceSandbox: true,
   sslCommerzSandboxCred: {
