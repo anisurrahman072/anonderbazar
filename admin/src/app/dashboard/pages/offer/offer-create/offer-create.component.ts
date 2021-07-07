@@ -9,7 +9,7 @@ import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
+import {colorSets} from "@swimlane/ngx-charts/release/utils";
 
 @Component({
     selector: 'app-offer-create',
@@ -31,9 +31,9 @@ export class OfferCreateComponent implements OnInit {
             ],
             heading: {
                 options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
                 ]
             },
             shouldNotGroupWhenFull: true,
@@ -48,13 +48,14 @@ export class OfferCreateComponent implements OnInit {
     };
 
     validateForm: FormGroup;
+    individualProductFrom: FormGroup;
     ImageFile: File;
     BannerImageFile: File;
     smallOfferImage: File;
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -84,13 +85,14 @@ export class OfferCreateComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
     _isSpinning: any = false;
     submitting: boolean = false;
 
     isShowHomepage: boolean = false;
 
     Calc_type;
+    Calculation_type;
     /*variables taken for ngmodel in nz-select*/
     selectionType;
     vendorId;
@@ -99,6 +101,7 @@ export class OfferCreateComponent implements OnInit {
     subCategoryId;
     subSubCategoryId;
     isVisible: Boolean = false;
+    isIndividualVisible: Boolean = false;
     allProducts: any = [];
     /**variables used for storing subCat and subSubCat options*/
     subcategoryIDS;
@@ -125,10 +128,17 @@ export class OfferCreateComponent implements OnInit {
 
     allProductTotal = 0;
     selectedProductIds: any;
+    selectedIndividualProductIds: any;
 
     selectedAllProductIds: any = [];
     selectedData;
     allProductSelectAll: any = [false];
+
+    individuallySelectedProductsId: any = [];
+    individuallySelectedProductsCalculation: any = [];
+    individuallySelectedProductsAmount: any = [];
+
+    individuallySelectedData: any = [];
 
     constructor(
         private router: Router,
@@ -147,12 +157,17 @@ export class OfferCreateComponent implements OnInit {
             subCategoryId: ['', []],
             subSubCategoryId: ['', []],
             description: ['', []],
-            discountAmount: ['', [Validators.required]],
-            calculationType: ['', [Validators.required]],
+            discountAmount: ['', []],
+            calculationType: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
         });
+
+        this.individualProductFrom = this.fb.group({
+            Calculation_type: ['', []],
+            discount_amount: ['', []]
+        })
     }
 
     ngOnInit() {
@@ -180,8 +195,33 @@ export class OfferCreateComponent implements OnInit {
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
 
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+
+        if (offerStartTime > offerEndTime) {
+            this._notification.error('Wrong Date', 'Sorry offer not created, End Date is earlier than the start date');
+            this._isSpinning = false;
+            this.router.navigate(['/dashboard/offer']);
+        }
+
         if (this.selectedProductIds) {
             formData.append('selectedProductIds', this.selectedProductIds);
+        }
+
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+            if (this.individuallySelectedProductsId.length <= 0) {
+                this._notification.error('No Product', 'Please add products for this offer');
+                return;
+            } else {
+                formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+            }
+        }
+
+        if (this.individuallySelectedProductsCalculation) {
+            formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        }
+        if (this.individuallySelectedProductsAmount) {
+            formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
         }
 
         if (value.vendorId) {
@@ -192,12 +232,24 @@ export class OfferCreateComponent implements OnInit {
             formData.append('brand_id', this.brandId);
         }
 
-        if (value.categoryId) {
-            formData.append('category_id', this.categoryId);
+
+        if (value.selectionType === 'Category wise') {
+            if (!this.categoryId) {
+                this._notification.error('Category!', 'Select one category please');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('category_id', this.categoryId);
+            }
+            if (!this.subCategoryId) {
+                this._notification.error('Sub Category!', 'Setting offer to a whole category by mistake is not allowed');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('subCategory_Id', this.subCategoryId);
+            }
         }
-        if (value.subCategoryId) {
-            formData.append('subCategory_Id', this.subCategoryId);
-        }
+
         if (value.subSubCategoryId) {
             formData.append('subSubCategory_Id', this.subSubCategoryId);
         }
@@ -209,21 +261,33 @@ export class OfferCreateComponent implements OnInit {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
-            formData.append('hasImage', 'false');
+            this._notification.error('Offer Main Image', 'Offer Main Image is required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasImage', 'false');*/
         }
 
         if (this.smallOfferImage) {
             formData.append('hasSmallImage', 'true');
             formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
         } else {
-            formData.append('hasSmallImage', 'false');
+            this._notification.error('Offer Image Beside Carousel', 'Offer Image Beside Carousel required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasSmallImage', 'false');*/
         }
 
         if (this.BannerImageFile) {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         } else {
-            formData.append('hasBannerImage', 'false');
+            this._notification.error('Offer Banner Image', 'Banner Image required');
+            this._isSpinning = false;
+            this.submitting = false;
+            return;
+            /*formData.append('hasBannerImage', 'false');*/
         }
 
         this.offerService.offerInsert(formData).subscribe(result => {
@@ -233,9 +297,12 @@ export class OfferCreateComponent implements OnInit {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Feature Title: ");
+                this._notification.success('Offer Added', "Offer Added Successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
+                this.individuallySelectedProductsId = [];
+                this.individuallySelectedProductsCalculation = [];
+                this.individuallySelectedProductsAmount = [];
                 this.router.navigate(['/dashboard/offer']);
             }
         }, error => {
@@ -298,7 +365,7 @@ export class OfferCreateComponent implements OnInit {
         }
 
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allVendorSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allVendorSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch, 2)
             .subscribe(result => {
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
@@ -437,10 +504,16 @@ export class OfferCreateComponent implements OnInit {
         }
         this._notification.success(this.selectedProductIds.length, ' items has been added');
         this.isVisible = false;
+        this.isIndividualVisible = false;
     }
 
-    showModal(): void {
-        this.isVisible = true;
+    showModal(value): void {
+        if (value === 'individual') {
+            this.isIndividualVisible = true;
+        } else {
+            this.isVisible = true;
+        }
+
         this.getAllProducts(1);
         this.offerService.getAllOptions('Brand wise', '', '')
             .subscribe(result => {
@@ -458,19 +531,23 @@ export class OfferCreateComponent implements OnInit {
 
     handleCancel(): void {
         this.isVisible = false;
+        this.isIndividualVisible = false;
     }
 
-    /**Method called when selection type is changed from the front end*/
+    doneAddingIndividualProduct() {
+        this.isIndividualVisible = false;
+    }
+
+    /**Method called when selection type is changed from the form end*/
     onSelectionTypeSelect(offerSelectionType) {
         this.offerSelectionType = offerSelectionType;
-        /*this.vendorId = event;*/
         this.vendorId = null;
         this.brandId = null;
         this.categoryId = null;
         this.subCategoryId = null;
         this.subSubCategoryId = null;
         this.selectedProductIds = null;
-        if (offerSelectionType && offerSelectionType !== 'Product wise') {
+        if (offerSelectionType && offerSelectionType !== 'Product wise' && offerSelectionType !== 'individual_product') {
             this.getAllOptions(offerSelectionType, '', '');
         }
     }
@@ -499,7 +576,7 @@ export class OfferCreateComponent implements OnInit {
 
     /**Method call when we selection a offer selection type, it does not allow to store previously selected selection type
      it only keeps the finally selected selection type data*/
-    finalSelectionType(vendorId, brandId, categoryId, selectedProductIds, event) {
+    finalSelectionType(vendorId, brandId, categoryId, selectedProductIds, selectedIndividualProductIds, event) {
         if (event) {
             if (vendorId) {
                 this.vendorId = event;
@@ -508,6 +585,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (brandId) {
                 this.vendorId = null;
                 this.brandId = event;
@@ -515,6 +593,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (categoryId) {
                 this.vendorId = null;
                 this.brandId = null;
@@ -522,6 +601,7 @@ export class OfferCreateComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
                 this.getAllOptions('', event, '')
             } else if (selectedProductIds) {
                 this.vendorId = null;
@@ -529,7 +609,75 @@ export class OfferCreateComponent implements OnInit {
                 this.categoryId = null;
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
+                this.selectedIndividualProductIds = null;
+            } else if (selectedIndividualProductIds) {
+                this.vendorId = null;
+                this.brandId = null;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
+                this.selectedProductIds = null;
             }
         }
+    }
+
+    addIndividualProduct = ($event, value, productId, code, name) => {
+        this.submitting = true;
+        $event.preventDefault();
+        for (const key in this.individualProductFrom.controls) {
+            this.individualProductFrom.controls[key].markAsDirty();
+        }
+
+        if (value.Calculation_type === undefined || value.Calculation_type === null || value.discount_amount === null || value.discount_amount === '') {
+            this._notification.error('Sorry!!', 'Please input proper data');
+            this.submitting = false;
+            return;
+        }
+
+
+        let exists: Boolean = false;
+        if (this.individuallySelectedProductsId) {
+            this.individuallySelectedProductsId.forEach(id => {
+                if (id === productId) {
+                    this._notification.error('Exists', 'Product already added');
+                    this.submitting = false;
+                    exists = true
+                    return;
+                }
+            })
+        }
+
+        if (exists === false) {
+            this.individuallySelectedProductsId.push(productId);
+            this.individuallySelectedProductsCalculation.push(value.Calculation_type);
+            this.individuallySelectedProductsAmount.push(value.discount_amount);
+
+            /** keeping data in an array to show the selected products and to remove a product if i want */
+            this.individuallySelectedData = this.individuallySelectedData.concat([{
+                id: productId,
+                code: code,
+                name: name,
+                calculation_type: value.Calculation_type,
+                discount_amount: value.discount_amount
+            }]);
+
+            console.log('individuallySelectedData: ', this.individuallySelectedData);
+
+            this._notification.success('Added', 'Product added successfully');
+        }
+
+        this.individualProductFrom.reset();
+        this.submitting = false;
+
+    }
+
+    removeIndividualProduct(productId) {
+        let index = this.individuallySelectedProductsId.indexOf(productId);
+        this.individuallySelectedProductsId.splice(index, 1);
+        this.individuallySelectedProductsCalculation.splice(index, 1);
+        this.individuallySelectedProductsAmount.splice(index, 1);
+
+        this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
+        this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 }

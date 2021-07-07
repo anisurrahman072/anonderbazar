@@ -45,6 +45,10 @@ module.exports = {
       columnType: 'integer',
       required: true,
     },
+    force_stop: {
+      type: 'number',
+      columnType: 'integer',
+    },
     image: {
       type: 'json',
       columnType: 'text',

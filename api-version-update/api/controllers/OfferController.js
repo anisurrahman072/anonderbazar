@@ -8,6 +8,7 @@
 const {imageUploadConfig} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const OfferService = require('../services/OfferService');
+const moment = require('moment');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -92,21 +93,46 @@ module.exports = {
 
           body.image = '/' + newPath;
 
-          let offerData = {
-            title: body.title,
-            image: {
-              image: body.image,
-              small_image: body.small_image,
-              banner_image: body.banner_image,
-            },
-            selection_type: body.selection_type,
-            description: body.description,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
+          let offerData = {};
+          let individualProductsIds;
+          let individualProductsCalculations;
+          let individualProductsAmounts;
+
+          if (body.selection_type === 'individual_product') {
+            individualProductsIds = body.individuallySelectedProductsId.split(',');
+            individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+            individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          } else {
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              calculation_type: body.calculationType,
+              discount_amount: body.discountAmount,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          }
 
           if (body.frontend_position) {
             offerData.frontend_position = body.frontend_position;
@@ -144,6 +170,36 @@ module.exports = {
           let data = await Offer.create(offerData).fetch();
           /**console.log('offer fetched data from database: with image: ', data);*/
 
+          /**for individually selected products*/
+          if (individualProductsIds && individualProductsIds.length > 0) {
+            for (let id = 0; id < individualProductsIds.length; id++) {
+              let product_id = parseInt(individualProductsIds[id]);
+              let calculationType = individualProductsCalculations[id];
+              let discountAmount = parseInt(individualProductsAmounts[id]);
+
+              if (product_id) {
+                let existedProduct = await RegularOfferProducts.findOne({
+                  product_id: product_id,
+                  product_deactivation_time: null
+                });
+                if (existedProduct !== undefined) {
+                  await RegularOfferProducts.update({product_id: product_id}).set({
+                    regular_offer_id: data.id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                } else {
+                  await RegularOfferProducts.create({
+                    regular_offer_id: data.id,
+                    product_id: product_id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                }
+              }
+            }
+          }
+
           let regular_offer_product_ids;
           if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
             regular_offer_product_ids = body.selectedProductIds.split(',');
@@ -157,7 +213,7 @@ module.exports = {
                 product_deactivation_time: null
               });
               if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+                await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
               } else {
                 await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
               }
@@ -173,16 +229,37 @@ module.exports = {
         });
 
       } else {
-        let offerData = {
-          title: body.title,
-          description: body.description,
-          selection_type: body.selection_type,
-          calculation_type: body.calculationType,
-          discount_amount: body.discountAmount,
-          start_date: body.offerStartDate,
-          end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
-        };
+        let offerData = {};
+        let individualProductsIds;
+        let individualProductsCalculations;
+        let individualProductsAmounts;
+
+        if (body.selection_type === 'individual_product') {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+          individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+          individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        } else {
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            calculation_type: body.calculationType,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        }
+
 
         if (body.frontend_position) {
           offerData.frontend_position = body.frontend_position;
@@ -219,6 +296,37 @@ module.exports = {
 
         let data = await Offer.create(offerData).fetch();
         /**console.log('offer fetched data from database: ', data);*/
+
+        /**for individually selected products*/
+        if (individualProductsIds && individualProductsIds.length > 0) {
+          for (let id = 0; id < individualProductsIds.length; id++) {
+            let product_id = parseInt(individualProductsIds[id]);
+            let calculationType = individualProductsCalculations[id];
+            let discountAmount = parseInt(individualProductsAmounts[id]);
+
+            if (product_id) {
+              let existedProduct = await RegularOfferProducts.findOne({
+                product_id: product_id,
+                product_deactivation_time: null
+              });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              } else {
+                await RegularOfferProducts.create({
+                  regular_offer_id: data.id,
+                  product_id: product_id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              }
+            }
+
+          }
+        }
 
         let regular_offer_product_ids;
         if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
@@ -272,7 +380,10 @@ module.exports = {
         where: _where,
         limit: _pagination.limit,
         skip: _pagination.skip
-      });
+      }).sort([
+        {id: 'DESC'},
+        {end_date: 'DESC'},
+      ]);
 
       let totalRegularOffer = await Offer.count().where(_where);
 
@@ -304,6 +415,9 @@ module.exports = {
       const regularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
       const regularOfferInfo = await Offer.findOne({id: req.param('id')});
       if (regularOfferInfo.selection_type === 'Product wise') {
+        await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
+      }
+      if (regularOfferInfo.selection_type === 'individual_product') {
         await RegularOfferProducts.update({regular_offer_id: req.param('id')}).set({deletedAt: new Date()});
       }
       return res.status(201).json(regularOffer);
@@ -380,6 +494,45 @@ module.exports = {
     }
   },
 
+  getRelatedOfferIndividualProducts: async (req, res) => {
+    try {
+      await OfferService.offerDurationCheck();
+      let _pagination = pagination(req.query);
+      let rawSQL = `
+      SELECT
+            regular_offer_products.*,
+            products.*
+        FROM
+            regular_offer_products
+        LEFT JOIN products ON regular_offer_products.product_id = products.id
+        WHERE
+            regular_offer_products.regular_offer_id = ${req.query.id} and regular_offer_products.deleted_at is null
+        LIMIT ${_pagination.skip}, ${_pagination.limit}
+      `;
+
+      const products = await sails.sendNativeQuery(rawSQL, []);
+      const totalProducts = await RegularOfferProducts.count().where({
+        regular_offer_id: req.query.id,
+        deletedAt: null,
+        product_deactivation_time: null
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'All individual products with detail info related to this regular offer',
+        data: products.rows,
+        total: totalProducts
+      });
+    } catch (error) {
+      console.log('getRelatedOfferProducts error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to get related offer individual products',
+        error
+      });
+    }
+  },
+
   removeProductFromOffer: async (req, res) => {
     try {
       const removedProduct = await RegularOfferProducts.updateOne({
@@ -389,6 +542,21 @@ module.exports = {
       return res.status(201).json(removedProduct);
     } catch (error) {
       console.log('removeProductFromOffer error: ', error);
+      res.status(400).json({
+        message: 'Failed to delete the offered product'
+      });
+    }
+  },
+
+  removeIndividualProductFromOffer: async (req, res) => {
+    try {
+      const removedProduct = await RegularOfferProducts.updateOne({
+        product_id: req.query.productId,
+        regular_offer_id: req.query.offerId
+      }).set({deletedAt: new Date(), product_deactivation_time: new Date()});
+      return res.status(201).json(removedProduct);
+    } catch (error) {
+      console.log('removeIndividualProductFromOffer error: ', error);
       res.status(400).json({
         message: 'Failed to delete the offered product'
       });
@@ -428,21 +596,46 @@ module.exports = {
 
           body.image = '/' + newPath;
 
-          let offerData = {
-            title: body.title,
-            image: {
-              image: body.image,
-              small_image: body.small_image,
-              banner_image: body.banner_image,
-            },
-            selection_type: body.selection_type,
-            description: body.description,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
+          let offerData = {};
+          let individualProductsIds;
+          let individualProductsCalculations;
+          let individualProductsAmounts;
+
+          if (body.selection_type === 'individual_product') {
+            individualProductsIds = body.individuallySelectedProductsId.split(',');
+            individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+            individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          } else {
+            offerData = {
+              title: body.title,
+              image: {
+                image: body.image,
+                small_image: body.small_image,
+                banner_image: body.banner_image,
+              },
+              selection_type: body.selection_type,
+              description: body.description,
+              calculation_type: body.calculationType,
+              discount_amount: body.discountAmount,
+              start_date: body.offerStartDate,
+              end_date: body.offerEndDate,
+              show_in_homepage: body.showInHome
+            };
+          }
 
           if (body.frontend_position) {
             offerData.frontend_position = body.frontend_position;
@@ -482,6 +675,36 @@ module.exports = {
           let data = await Offer.updateOne({id: body.id}).set(offerData);
           /**console.log('offer fetched data from database: with image: ', data);*/
 
+          /**for individually selected products*/
+          if (individualProductsIds && individualProductsIds.length > 0) {
+            for (let id = 0; id < individualProductsIds.length; id++) {
+              let product_id = parseInt(individualProductsIds[id]);
+              let calculationType = individualProductsCalculations[id];
+              let discountAmount = parseInt(individualProductsAmounts[id]);
+
+              if (product_id) {
+                let existedProduct = await RegularOfferProducts.findOne({
+                  product_id: product_id,
+                  product_deactivation_time: null
+                });
+                if (existedProduct !== undefined) {
+                  await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                    regular_offer_id: data.id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                } else {
+                  await RegularOfferProducts.create({
+                    regular_offer_id: data.id,
+                    product_id: product_id,
+                    calculation_type: calculationType,
+                    discount_amount: discountAmount
+                  });
+                }
+              }
+            }
+          }
+
           let regular_offer_product_ids;
           if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
             regular_offer_product_ids = body.selectedProductIds.split(',');
@@ -508,23 +731,43 @@ module.exports = {
 
           return res.status(200).json({
             success: true,
-            message: 'Offer update successfully',
+            message: 'Offer updated successfully',
             data
           });
 
         });
 
       } else {
-        let offerData = {
-          title: body.title,
-          description: body.description,
-          selection_type: body.selection_type,
-          calculation_type: body.calculationType,
-          discount_amount: body.discountAmount,
-          start_date: body.offerStartDate,
-          end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
-        };
+        let offerData = {};
+        let individualProductsIds;
+        let individualProductsCalculations;
+        let individualProductsAmounts;
+
+        if (body.selection_type === 'individual_product') {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+          individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+          individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        } else {
+          offerData = {
+            title: body.title,
+            description: body.description,
+            selection_type: body.selection_type,
+            calculation_type: body.calculationType,
+            discount_amount: body.discountAmount,
+            start_date: body.offerStartDate,
+            end_date: body.offerEndDate,
+            show_in_homepage: body.showInHome
+          };
+        }
 
         if (body.frontend_position) {
           offerData.frontend_position = body.frontend_position;
@@ -563,6 +806,36 @@ module.exports = {
 
         let data = await Offer.updateOne({id: body.id}).set(offerData);
         /**console.log('offer fetched data from database: ', data);*/
+
+        /**for individually selected products*/
+        if (individualProductsIds && individualProductsIds.length > 0) {
+          for (let id = 0; id < individualProductsIds.length; id++) {
+            let product_id = parseInt(individualProductsIds[id]);
+            let calculationType = individualProductsCalculations[id];
+            let discountAmount = parseInt(individualProductsAmounts[id]);
+
+            if (product_id) {
+              let existedProduct = await RegularOfferProducts.findOne({
+                product_id: product_id,
+                product_deactivation_time: null
+              });
+              if (existedProduct !== undefined) {
+                await RegularOfferProducts.updateOne({product_id: product_id}).set({
+                  regular_offer_id: data.id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              } else {
+                await RegularOfferProducts.create({
+                  regular_offer_id: data.id,
+                  product_id: product_id,
+                  calculation_type: calculationType,
+                  discount_amount: discountAmount
+                });
+              }
+            }
+          }
+        }
 
         let regular_offer_product_ids;
         if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
@@ -642,11 +915,15 @@ module.exports = {
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
+        } else if (regularOfferInfo.selection_type === 'individual_product') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: null});
         }
       } else {
         await Offer.updateOne({id: req.body.offerId}).set({offer_deactivation_time: new Date()});
         const regularOfferInfo = await Offer.findOne({id: req.body.offerId});
         if (regularOfferInfo.selection_type === 'Product wise') {
+          await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
+        } else if (regularOfferInfo.selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: req.body.offerId}).set({product_deactivation_time: new Date()});
         }
       }
@@ -674,7 +951,11 @@ module.exports = {
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
 
-      let webRegularOffers = await Offer.find({where: _where});
+      let webRegularOffers = await Offer.find({where: _where})
+        .sort([
+          {frontend_position: 'ASC'},
+          {id: 'DESC'}
+        ]);
 
       res.status(200).json({
         success: true,
@@ -693,10 +974,29 @@ module.exports = {
 
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
+    console.log('req.query.sortData: ', req.query.sortData);
     try {
       await OfferService.offerDurationCheck();
 
       let webRegularOfferedProducts;
+
+      let _sort = [];
+      let sortData;
+      if(req.query.sortData){
+        sortData = JSON.parse(req.query.sortData);
+        if(sortData.code === 'newest'){
+          let obj = {
+            createdAt: sortData.order
+          };
+          _sort.push(obj);
+        } else if (sortData.code === 'price'){
+          let obj = {
+            price: sortData.order
+          };
+          _sort.push(obj);
+        }
+      }
+      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -711,7 +1011,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Brand wise'*/
@@ -721,7 +1021,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Category wise'*/
@@ -739,7 +1039,7 @@ module.exports = {
           _where.type_id = requestedOffer.category_id;
         }
 
-        webRegularOfferedProducts = await Product.find({where: _where});
+        webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Product wise'*/
@@ -751,9 +1051,108 @@ module.exports = {
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
           .populate('product_id');
 
+        console.log('sortData: ', sortData);
+        if(sortData && sortData.code === 'newest'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+        else if(sortData && sortData.code === 'price'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+
         webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
           return data.product_id;
         });
+
+
+      }
+
+      /**if selection_type === 'individual_product'*/
+      if (requestedOffer.selection_type === 'individual_product') {
+        let _where = {};
+        _where.regular_offer_id = req.query.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
+          .populate('product_id');
+
+        if(sortData && sortData.code === 'newest'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
+              if (firstCreatedAt.isBefore(secondCreatedAt)) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
+        else if(sortData && sortData.code === 'price'){
+          if(sortData.order === 'ASC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+          } else if(sortData.order === 'DESC'){
+            webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
+              if (a.price > b.price) {
+                return -1;
+              } else {
+                return 1;
+              }
+            });
+          }
+        }
       }
 
       res.status(200).json({
@@ -779,15 +1178,20 @@ module.exports = {
       let finalCollectionOfProducts = {};
       await OfferService.offerDurationCheck();
       await OfferService.anonderJhorOfferDurationCheck();
+      let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       let _where = {};
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
+      _where.start_date = {'<=': presentTime};
+      _where.end_date = {'>=': presentTime};
       const requestedOffer = await Offer.find({where: _where});
 
       let _where1 = {};
       _where1.deletedAt = null;
       _where1.status = 1;
+      _where1.start_date = {'<=': presentTime};
+      _where1.end_date = {'>=': presentTime};
 
       const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
@@ -874,6 +1278,24 @@ module.exports = {
           if (products.length > 0) {
             products.forEach(product => {
               finalCollectionOfProducts[product.product_id] = offerObj;
+            });
+          }
+        }
+
+        /** if selection_type === 'individual_product' */
+        if (thisOffer.selection_type === 'individual_product') {
+          let _where = {};
+          _where.regular_offer_id = thisOffer.id;
+          _where.product_deactivation_time = null;
+          _where.deletedAt = null;
+          let products = await RegularOfferProducts.find({where: _where});
+
+          if (products.length > 0) {
+            products.forEach(product => {
+              finalCollectionOfProducts[product.product_id] = {
+                calculation_type: product.calculation_type,
+                discount_amount: product.discount_amount * 1.0,
+              };
             });
           }
         }

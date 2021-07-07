@@ -12,6 +12,7 @@
                 </div>
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onRemoved($event)"
+                                  [uploadedFiles]='ImageFileEdit'
                                   (uploadStateChanged)="onUploadStateChanged($event)"
                                   [beforeUpload]="onBeforeUpload">
                     </image-upload>
@@ -31,7 +32,7 @@
                                nzShowSearch
                                [nzPlaceHolder]=" 'Select Category'"
                                [(ngModel)]="categoryId" style="margin: 10px 0;"
-                               (ngModelChange)="getAllSubCategories($event); finalSelectionType(true, false, $event)">
+                               (ngModelChange)="getAllSubCategories($event); ">
                         <nz-option *ngFor="let option of allCategoryIds" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>
@@ -41,16 +42,17 @@
                                formControlName="subCategoryId" nzAllowClear nzShowSearch
                                [nzPlaceHolder]=" 'Select Sub-Category'"
                                [(ngModel)]="subCategoryId" style="margin: 10px 0;"
-                               (ngModelChange)="getAllSubSubCategories($event); finalSelectionType(false, true, $event)">
+                               (ngModelChange)="getAllSubSubCategories($event); ">
                         <nz-option *ngFor="let option of allSubCategoryIds" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
                     <!--Select Sub-Sub-Category-->
-                    <nz-select *ngIf="subCategoryId !== null && subCategoryId !== undefined "
+                    <nz-select *ngIf="allSubSubCategoryIds && allSubSubCategoryIds.length > 0 && subCategoryId !== null && subCategoryId !== undefined "
                                formControlName="subSubCategoryId" nzAllowClear nzShowSearch
                                [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
-                               [(ngModel)]="subSubCategoryId" style="margin: 10px 0;">
+                               [(ngModel)]="subSubCategoryId" style="margin: 10px 0;"
+                               (ngModelChange)="getSubSubCategoryId($event);">
                         <nz-option *ngFor="let option of allSubSubCategoryIds" [nzLabel]="option.name"
                                    [nzValue]="option.id">
                         </nz-option>

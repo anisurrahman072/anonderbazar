@@ -101,7 +101,6 @@ const imageUploadConfig = function () {
       dirname: sails.config.appPath + '/.tmp/public',
     };
   }
-  const s3Config = {...s3Config};
   return {
     adapter: require('skipper-s3'),
     ...s3Config
@@ -128,7 +127,7 @@ exports.deleteImagesLocal = async (imageList, path) => {
 exports.deleteImageS3 = async (imageName, path) => {
   const skipper = require('skipper-s3')({key: s3Config.key, secret: s3Config.secret, bucket: s3Config.bucket});
   return new Promise((resolve, reject) => {
-    skipper.rm(imageName, function (err, result) {
+    skipper.rm(imageName, (err, result) => {
       if (err) {
         reject(err);
       }

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
@@ -23,7 +23,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     ImageFile: File;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
-    ImageFileEdit: any;
+    ImageFileEdit: any = [];
     data: any;
 
     categoryId;
@@ -50,10 +50,11 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     ngOnInit() {
         this.getAnonderJhor();
-        this.getAllCategories()
+        this.getAllCategories();
+
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
-            subCategoryId: ['', []],
+            subCategoryId: ['', [Validators.required]],
             subSubCategoryId: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
@@ -63,13 +64,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         this.offerService.getAnonderJhorOfferById(this.jhorOfferId)
             .subscribe(result => {
-                console.log(result.anonderJhorOffer);
-
                 this.data = result.anonderJhorOffer;
 
                 this.categoryId = this.data.category_id.id;
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
+
+                console.log('getAnonderJhorOfferById', this.categoryId, this.subCategoryId, this.subSubCategoryId);
 
                 this.ImageFileEdit = [];
 
@@ -91,15 +92,16 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
                 this._isSpinning = false;
             }, () => {
+                this._notification.error('Failed', 'Failed to get data for this offer edit');
                 this._isSpinning = false;
             });
     }
 
     /** Event method for submitting the form */
     submitForm = ($event, value) => {
-        console.log('value.categoryId: ', value.categoryId);
+        /*console.log('value.categoryId: ', value.categoryId);
         console.log('this.subCategoryId: ', this.subCategoryId);
-        console.log('this.subSubCategoryId: ', this.subSubCategoryId);
+        console.log('this.subSubCategoryId: ', this.subSubCategoryId);*/
 
         $event.preventDefault();
         this._isSpinning = true;
@@ -112,23 +114,29 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
         formData.append('id', this.jhorOfferId);
         formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
 
-        let offerTime = new Date(value.offerEndDate).getTime();
-        let jhorTime = new Date(this.anonderJhorData.end_date).getTime();
+        let offerStartTime = new Date(value.offerStartDate).getTime();
+        let offerEndTime = new Date(value.offerEndDate).getTime();
+        let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
+        let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
-        if(offerTime > jhorTime) {
+        if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
             this._isSpinning = false;
             return;
         }
 
-        if (value.subCategoryId) {
-            formData.append('subCategoryId', this.subCategoryId);
+        if (offerStartTime > offerEndTime || offerStartTime < jhorStartTime) {
+            this._notification.error('Wrong Date', 'Please enter date and time properly');
+            this._isSpinning = false;
+            return;
         }
+
         if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', this.subSubCategoryId);
         }
@@ -197,30 +205,40 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     }
 
     getAllSubCategories(event) {
+
         if (event) {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubCategories', result);
+                    if(this.allSubCategoryIds){
+                        this.finalSelectionType(true, false, false, event);
+                    }
                     this.allSubCategoryIds = result.data;
-                    this.allSubSubCategoryIds = null;
-                    this.subCategoryId = null;
-                    this.subSubCategoryId = null;
-                })
+                });
         }
     }
 
     getAllSubSubCategories(event) {
-        console.log('evet in sub sub', event);
+
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
+                    console.log('getAllSubSubCategories', result);
+                    if(this.allSubSubCategoryIds){
+                        this.finalSelectionType(false, true, false, event);
+                    }
                     this.allSubSubCategoryIds = result.data;
-                    this.subSubCategoryId = null;
                 })
         }
-        console.log('inside get all sub sub: ', this.subSubCategoryId);
     }
 
-    finalSelectionType(catId, subCatId, event) {
+    getSubSubCategoryId(event) {
+        if (event) {
+            this.finalSelectionType(false, false, true, event);
+        }
+    }
+
+    finalSelectionType(catId, subCatId, subSubCatId, event) {
         if (event) {
             if (catId) {
                 this.categoryId = event;
@@ -229,6 +247,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             } else if (subCatId) {
                 this.subCategoryId = event;
                 this.subSubCategoryId = null;
+            } else if (subSubCatId) {
+                this.subSubCategoryId = event;
             }
         }
     }

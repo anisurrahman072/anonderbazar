@@ -44,6 +44,14 @@ module.exports = {
       collection: 'suborderItemVariant',
       via: 'product_suborder_item_id'
     },
+    offer_type: {
+      type: 'number',
+      columnType: 'integer',
+    },
+    offer_id_number: {
+      type: 'number',
+      columnType: 'integer'
+    }
   },
   tableName: 'product_suborder_items',
 };

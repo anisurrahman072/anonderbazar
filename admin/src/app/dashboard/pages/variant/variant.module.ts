@@ -9,8 +9,6 @@ import {VariantEditComponent} from './variant-edit/variant-edit.component';
 import {VariantComponent} from './variant/variant.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FileUploadModule} from 'ng2-file-upload';
-import {ImageUploadModule} from 'angular2-image-upload';
-import {VariantService} from '../../../services/variant.service';
 import {VariantTypePipe} from "../../../pipes/variant-type";
 import {UiModule} from "../../shared/ui.module";
 
@@ -29,7 +27,7 @@ import {UiModule} from "../../shared/ui.module";
         VariantCreateComponent,
         VariantEditComponent,
         VariantTypePipe,
-    
+
     ]
 })
 export class VariantModule {

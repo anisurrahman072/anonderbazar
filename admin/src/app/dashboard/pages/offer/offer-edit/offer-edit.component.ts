@@ -32,9 +32,9 @@ export class OfferEditComponent implements OnInit {
             ],
             heading: {
                 options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
                 ]
             },
             shouldNotGroupWhenFull: true,
@@ -49,13 +49,14 @@ export class OfferEditComponent implements OnInit {
     };
 
     validateForm: FormGroup;
+    individualProductFrom: FormGroup;
     ImageFile: File;
     BannerImageFile: File;
     smallOfferImage: File;
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -85,8 +86,9 @@ export class OfferEditComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
     _isSpinning: any = false;
+    submitting: boolean = false;
     sub: any;
     id: any;
     ImageFileEdit: any;
@@ -98,8 +100,12 @@ export class OfferEditComponent implements OnInit {
     productIds;
     offeredProducts;
     totalOfferedProducts;
+    offeredIndividualProducts;
+    totalOfferedIndividualProducts;
     isVisible: Boolean = false;
+    isIndividualOfferedVisible: Boolean = false;
     isProductModal: Boolean = false;
+    isIndividualProductModal: Boolean = false;
     allProductPage: number = 1;
     allProductLimit: number = 20;
 
@@ -110,6 +116,7 @@ export class OfferEditComponent implements OnInit {
     subSubCategoryId;
     allOptions;
     calculationType;
+    Calculation_type
     offerSelectionType;
 
     /**variables used for storing subCat and subSubCat options*/
@@ -132,8 +139,15 @@ export class OfferEditComponent implements OnInit {
     allSubCategorySearch: string = '';
 
     selectedProductIds: any;
+    selectedIndividualProductIds: any;
 
     isShowHomepage: boolean;
+
+    individuallySelectedProductsId: any = [];
+    individuallySelectedProductsCalculation: any = [];
+    individuallySelectedProductsAmount: any = [];
+
+    individuallySelectedData: any = [];
 
     constructor(
         private router: Router,
@@ -158,12 +172,18 @@ export class OfferEditComponent implements OnInit {
             subCategoryId: ['', []],
             subSubCategoryId: ['', []],
             description: ['', []],
-            discountAmount: ['', [Validators.required]],
-            calculationType: ['', [Validators.required]],
+            discountAmount: ['', []],
+            calculationType: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
         });
+
+        this.individualProductFrom = this.fb.group({
+            Calculation_type: ['', []],
+            discount_amount: ['', []]
+        })
+
         this.sub = this.route.params.subscribe(params => {
             this._isSpinning = true;
             this.id = +params['id']; // (+) converts string 'id' to a number
@@ -244,10 +264,20 @@ export class OfferEditComponent implements OnInit {
         formData.append('discountAmount', value.discountAmount);
         formData.append('showInHome', showInHome);
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
-        formData.append('frontend_position', value.frontend_position);
+        formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
 
         if (this.selectedProductIds) {
             formData.append('selectedProductIds', this.selectedProductIds);
+        }
+
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+            formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+        }
+        if (this.individuallySelectedProductsCalculation) {
+            formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        }
+        if (this.individuallySelectedProductsAmount) {
+            formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
         }
 
         if (value.vendorId) {
@@ -258,14 +288,29 @@ export class OfferEditComponent implements OnInit {
             formData.append('brand_id', value.brandId);
         }
 
-        if (value.categoryId) {
-            formData.append('category_id', value.categoryId);
-        }
-        if (value.subCategoryId) {
-            formData.append('subCategory_Id', value.subCategoryId);
+        if (value.selectionType === 'Category wise') {
+            if (!this.categoryId) {
+                this._notification.error('Category!', 'Select one category please');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('category_id', this.categoryId);
+            }
+
+            if (!this.subCategoryId) {
+                this._notification.error('Sub Category!', 'Setting offer to a whole category by mistake is not allowed');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('subCategory_Id', this.subCategoryId);
+            }
         }
         if (value.subSubCategoryId) {
             formData.append('subSubCategory_Id', value.subSubCategoryId);
+        }
+
+        if (value.frontend_position) {
+            formData.append('frontend_position', value.frontend_position);
         }
 
         if (this.ImageFile) {
@@ -356,7 +401,7 @@ export class OfferEditComponent implements OnInit {
             this.allProductPage = event;
         }
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch, 2)
             .subscribe(result => {
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
@@ -497,9 +542,31 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
+    getRelatedOfferIndividualProducts(event: any) {
+        if (event) {
+            this.allProductPage = event;
+        }
+        this._isSpinning = true;
+        this.offerService.getRelatedOfferIndividualProducts(this.id, this.allProductPage, this.allProductLimit)
+            .subscribe(result => {
+                console.log('individual result: here: ', result.data);
+                this.offeredIndividualProducts = result.data;
+                this.totalOfferedIndividualProducts = result.total;
+                this._isSpinning = false;
+            }, err => {
+                this._isSpinning = false;
+            })
+    }
+
+
     showOfferModal() {
         this.isVisible = true;
         this.getRelatedOfferProducts(1);
+    }
+
+    showIndividualOfferedModal() {
+        this.isIndividualOfferedVisible = true;
+        this.getRelatedOfferIndividualProducts(1);
     }
 
     handleOfferCancel(): void {
@@ -508,6 +575,15 @@ export class OfferEditComponent implements OnInit {
 
     handleProductCancel(): void {
         this.isProductModal = false;
+    }
+
+    handleIndividualProductModal() {
+        this.isIndividualProductModal = false;
+        this.isIndividualOfferedVisible = false;
+    }
+
+    handleIndividualOfferedProductCancel(): void {
+        this.isIndividualOfferedVisible = false;
     }
 
 
@@ -529,15 +605,38 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
+    removeIndividualProductFromOffer(productId) {
+        this.offerService.removeIndividualProductFromOffer(productId, this.id)
+            .subscribe(res => {
+                this._notification.create(
+                    "success",
+                    "Removed",
+                    'Individual Product removed successfully'
+                );
+                this.getRelatedOfferIndividualProducts(this.allProductPage);
+            }, err => {
+                this._notification.create(
+                    "error",
+                    "failed",
+                    'Failed to remove Individual product'
+                );
+            })
+    }
+
     showProductModal() {
         this.isProductModal = true;
+        this.getAllProducts(1);
+    }
+
+    showIndividualProductModal() {
+        this.isIndividualProductModal = true;
         this.getAllProducts(1);
     }
 
     /**Method called when selection type is changed from the front end*/
     onSelectionTypeSelect(offerSelectionType) {
         this.offerSelectionType = offerSelectionType;
-        if (offerSelectionType && offerSelectionType !== 'Product wise') {
+        if (offerSelectionType && offerSelectionType !== 'Product wise' && offerSelectionType !== 'individual_product') {
             this.getAllOptions(offerSelectionType);
         }
     }
@@ -566,7 +665,7 @@ export class OfferEditComponent implements OnInit {
 
     /**Method call when we selection a offer selection type, it does not allow to store previously selected selection type
      it only keeps the finally selected selection type data*/
-    finalSelectionType(vendorId, brandId, categoryId, subCategoryId, selectedProductIds, event) {
+    finalSelectionType(vendorId, brandId, categoryId, subCategoryId, selectedProductIds, selectedIndividualProductIds, event) {
         if (event) {
             if (vendorId) {
                 this.vendorId = event;
@@ -575,6 +674,7 @@ export class OfferEditComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (brandId) {
                 this.vendorId = null;
                 this.brandId = event;
@@ -582,36 +682,103 @@ export class OfferEditComponent implements OnInit {
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (categoryId) {
                 this.vendorId = null;
                 this.brandId = null;
-                console.log("event: ", event);
-                console.log("categoryId: ", this.categoryId);
                 if (this.categoryId !== event) {
                     this.subCategoryId = null;
                     this.subSubCategoryId = null;
                 }
                 this.categoryId = event;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
                 this.getAllOptions('', event, '')
             } else if (subCategoryId) {
                 this.vendorId = null;
                 this.brandId = null;
-                console.log("event: ", event);
-                console.log("subCategoryId: ", this.subCategoryId);
                 if (this.subCategoryId !== event) {
                     this.subSubCategoryId = null;
                 }
                 this.subCategoryId = event;
                 this.selectedProductIds = null;
+                this.selectedIndividualProductIds = null;
             } else if (selectedProductIds) {
                 this.vendorId = null;
                 this.brandId = null;
                 this.categoryId = null;
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
+                this.selectedIndividualProductIds = null;
+            } else if (selectedIndividualProductIds) {
+                this.vendorId = null;
+                this.brandId = null;
+                this.categoryId = null;
+                this.subCategoryId = null;
+                this.subSubCategoryId = null;
+                this.selectedProductIds = null;
             }
         }
+    }
+
+    addIndividualProduct = ($event, value, productId, code, name) => {
+        this.submitting = true;
+        $event.preventDefault();
+        for (const key in this.individualProductFrom.controls) {
+            this.individualProductFrom.controls[key].markAsDirty();
+        }
+
+        if (value.Calculation_type === undefined || value.Calculation_type === null || value.discount_amount === null || value.discount_amount === '') {
+            this._notification.error('Sorry!!', 'Please input proper data');
+            this.submitting = false;
+            return;
+        }
+
+
+        let exists: Boolean = false;
+        if (this.individuallySelectedProductsId) {
+            this.individuallySelectedProductsId.forEach(id => {
+                if (productId === id) {
+                    this._notification.error('Exists', 'Product already added');
+                    this.submitting = false;
+                    exists = true
+                    return;
+                }
+            })
+        }
+
+        if (exists === false) {
+            this.individuallySelectedProductsId.push(productId);
+            this.individuallySelectedProductsCalculation.push(value.Calculation_type);
+            this.individuallySelectedProductsAmount.push(value.discount_amount);
+
+            /** keeping data in an array to show the selected products and to remove a product if i want */
+            this.individuallySelectedData = this.individuallySelectedData.concat([{
+                id: productId,
+                code: code,
+                name: name,
+                calculation_type: value.Calculation_type,
+                discount_amount: value.discount_amount
+            }]);
+
+            console.log('individuallySelectedData: ', this.individuallySelectedData);
+
+            this._notification.success('Added', 'Product added successfully');
+        }
+
+        this.individualProductFrom.reset();
+        this.submitting = false;
+
+    }
+
+    removeIndividualProduct(productId) {
+        let index = this.individuallySelectedProductsId.indexOf(productId);
+        this.individuallySelectedProductsId.splice(index, 1);
+        this.individuallySelectedProductsCalculation.splice(index, 1);
+        this.individuallySelectedProductsAmount.splice(index, 1);
+
+        this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
+        this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 
 

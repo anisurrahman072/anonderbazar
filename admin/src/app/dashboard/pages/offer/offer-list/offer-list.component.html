@@ -22,6 +22,9 @@
                     <thead>
                     <tr>
                         <th>
+                            <span> ID </span>
+                        </th>
+                        <th>
                             <span> Title </span>
                         </th>
                         <th>
@@ -39,9 +42,9 @@
                         <th>
                             <span> Status </span>
                         </th>
-                        <th>
+<!--                        <th>
                             <span> Description </span>
-                        </th>
+                        </th>-->
                         <th>
                             Action
                         </th>
@@ -50,18 +53,30 @@
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
                         <td>
-                            <nz-tag>{{datum.title}}</nz-tag>
-                        </td>
-
-                        <td *ngIf="datum.calculation_type === 'percentage'">
-                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
-                        </td>
-                        <td *ngIf="datum.calculation_type === 'absolute'">
-                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                            <nz-tag>{{datum.id}}</nz-tag>
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.selection_type}}</nz-tag>
+                            <nz-tag>{{datum.title}}</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.calculation_type === 'percentage' && datum.selection_type !== 'individual_product'">
+                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
+                        </td>
+                        <td *ngIf="datum.calculation_type === 'absolute'  && datum.selection_type !== 'individual_product'">
+                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.selection_type === 'individual_product'">
+                            <nz-tag >Per Product</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.selection_type !== 'individual_product'">
+                            <nz-tag >{{datum.selection_type}}</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.selection_type === 'individual_product'">
+                            <nz-tag >Per Product</nz-tag>
                         </td>
 
                         <td>
@@ -74,22 +89,21 @@
                         <td>
                             <div *ngIf="datum.offer_deactivation_time === null; else inactive">
                                 <nz-switch [ngModel]="true"
-                                           (ngModelChange)="activeStatusChange($event, datum.id)"
+                                           (ngModelChange)="activeStatusChange($event, datum.id, datum.end_date)"
                                 >
                                 </nz-switch>
                             </div>
                             <ng-template #inactive>
                                 <nz-switch [ngModel]="false"
-                                           (ngModelChange)="activeStatusChange($event, datum.id)">
+                                           (ngModelChange)="activeStatusChange($event, datum.id, datum.end_date)">
                                 </nz-switch>
                             </ng-template>
                         </td>
-                        <td [innerHTML]="datum.description"></td>
+                        <!--<td [innerHTML]="datum.description"></td>-->
                         <td>
                             <nz-button-group>
 
-                                <button *ngIf="'offer-edit'|accessControl"
-                                        [routerLink]="['/dashboard/offer/edit', datum.id]" nz-button
+                                <button *ngIf="'offer-edit'|accessControl" (click)="canEdit(datum.id, datum.end_date)" nz-button
                                         [nzType]="'primary'" [nzSize]="'default'">
                                     <i class="anticon anticon-edit"></i>
                                 </button>
@@ -101,10 +115,12 @@
                                             <button nz-button [nzType]="'danger'" [nzSize]="'default'">
                                                 <i class="anticon anticon-delete "></i>
                                             </button>
-
                                         </a>
                                     </nz-popconfirm>
                                 </ng-container>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'" (click)="generateRegularOfferExcelById(datum.id)" title="Download order CSV file">
+                                    <i class="anticon anticon-download"></i>
+                                </button>
                             </nz-button-group>
                         </td>
                     </tr>
