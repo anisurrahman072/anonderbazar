@@ -192,7 +192,7 @@ module.exports = {
           }
 
           /** Update product total price in Suborder Item table as per current state of offer for the product */
-          let currentCartItemTotalPrice = await OfferService.calcCartItemTotalOfferPrice({
+          let currentCartItemTotalPrice = await OfferService.calcProductOfferPrice({
             id: dd.id,
             price: dd.price,
             quantity: cartItems[index].product_quantity
