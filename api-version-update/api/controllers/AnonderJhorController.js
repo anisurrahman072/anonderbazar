@@ -6,7 +6,6 @@
  */
 
 const {imageUploadConfig} = require('../../libs/helper');
-const OfferService = require('../services/OfferService');
 const {uploadImages} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 
