@@ -255,7 +255,6 @@ module.exports = {
 
   createOrder: async (db, orderDatPayload, cartItems) => {
 
-    console.log('ttttttttttttt1');
     console.log('orderDatPayload rouzex', orderDatPayload);
 
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
