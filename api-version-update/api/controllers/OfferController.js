@@ -9,6 +9,7 @@ const {imageUploadConfig} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const OfferService = require('../services/OfferService');
 const moment = require('moment');
+const {uploadImages} = require('../../libs/helper');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -60,301 +61,159 @@ module.exports = {
 
   /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
-  offerInsert: async (req, res) => {
+  offerInsert: async function (req, res) {
     try {
-      let body = req.body;
-      if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          if (err) {
-            return res.serverError(err);
-          }
+      let body = {...req.body};
+      const files = await uploadImages(req.file('image'));
 
-          if (files.length === 0) {
-            return res.badRequest('No image was uploaded');
-          }
+      if (files.length === 0) {
+        return res.badRequest('No image was uploaded');
+      }
 
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+      const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+      body.image = '/' + newPath;
 
-          if (files.length === 2) {
-            if (req.body.hasBannerImage) {
-              let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-              body.banner_image = '/' + bannerImagePath;
-            } else if (req.body.hasSmallImage) {
-              let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-              body.small_image = '/' + smallImagePath;
-            }
-          } else if (files.length === 3) {
-            let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-            body.small_image = '/' + smallImagePath;
+      let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
+      body.small_image = '/' + smallImagePath;
 
-            let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
-            body.banner_image = '/' + bannerImagePath;
-          }
+      let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
+      body.banner_image = '/' + bannerImagePath;
 
-          body.image = '/' + newPath;
+      let offerData = {};
+      let individualProductsIds;
+      let individualProductsCalculations;
+      let individualProductsAmounts;
 
-          let offerData = {};
-          let individualProductsIds;
-          let individualProductsCalculations;
-          let individualProductsAmounts;
+      if (body.selection_type === 'individual_product') {
+        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+        individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
-          if (body.selection_type === 'individual_product') {
-            individualProductsIds = body.individuallySelectedProductsId.split(',');
-            individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
-            individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
-
-            offerData = {
-              title: body.title,
-              image: {
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-              },
-              selection_type: body.selection_type,
-              description: body.description,
-              start_date: body.offerStartDate,
-              end_date: body.offerEndDate,
-              show_in_homepage: body.showInHome
-            };
-          } else {
-            offerData = {
-              title: body.title,
-              image: {
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-              },
-              selection_type: body.selection_type,
-              description: body.description,
-              calculation_type: body.calculationType,
-              discount_amount: body.discountAmount,
-              start_date: body.offerStartDate,
-              end_date: body.offerEndDate,
-              show_in_homepage: body.showInHome
-            };
-          }
-
-          if (body.frontend_position) {
-            offerData.frontend_position = body.frontend_position;
-          }
-
-          if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
-            offerData.subSubCategory_Id = body.subSubCategory_Id;
-
-            const subSubCat = await Offer.findOne({
-              subSubCategory_Id: body.subSubCategory_Id,
-              offer_deactivation_time: null
-            });
-            if (subSubCat !== undefined) {
-              return res.status(200).json({
-                code: 'INVALID_SUBSUBCAT',
-                message: 'Subsub category already in another offer'
-              });
-              /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
-            }
-          }
-          if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
-            offerData.subCategory_Id = body.subCategory_Id;
-          }
-          if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-            offerData.category_id = body.category_id;
-          }
-
-          if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-            offerData.brand_id = body.brand_id;
-          }
-
-          if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-            offerData.vendor_id = body.vendor_id;
-          }
-
-          let data = await Offer.create(offerData).fetch();
-          /**console.log('offer fetched data from database: with image: ', data);*/
-
-          /**for individually selected products*/
-          if (individualProductsIds && individualProductsIds.length > 0) {
-            for (let id = 0; id < individualProductsIds.length; id++) {
-              let product_id = parseInt(individualProductsIds[id]);
-              let calculationType = individualProductsCalculations[id];
-              let discountAmount = parseInt(individualProductsAmounts[id]);
-
-              if (product_id) {
-                let existedProduct = await RegularOfferProducts.findOne({
-                  product_id: product_id,
-                  product_deactivation_time: null
-                });
-                if (existedProduct !== undefined) {
-                  await RegularOfferProducts.update({product_id: product_id}).set({
-                    regular_offer_id: data.id,
-                    calculation_type: calculationType,
-                    discount_amount: discountAmount
-                  });
-                } else {
-                  await RegularOfferProducts.create({
-                    regular_offer_id: data.id,
-                    product_id: product_id,
-                    calculation_type: calculationType,
-                    discount_amount: discountAmount
-                  });
-                }
-              }
-            }
-          }
-
-          let regular_offer_product_ids;
-          if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-            regular_offer_product_ids = body.selectedProductIds.split(',');
-          }
-
-          if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
-            for (let id = 0; id < regular_offer_product_ids.length; id++) {
-              let product_id = parseInt(regular_offer_product_ids[id]);
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
-              });
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
-              } else {
-                await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
-              }
-            }
-          }
-
-          return res.status(200).json({
-            success: true,
-            message: 'Offer created successfully',
-            data
-          });
-
-        });
-
+        offerData = {
+          title: body.title,
+          image: {
+            image: body.image,
+            small_image: body.small_image,
+            banner_image: body.banner_image,
+          },
+          selection_type: body.selection_type,
+          description: body.description,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          show_in_homepage: body.showInHome
+        };
       } else {
-        let offerData = {};
-        let individualProductsIds;
-        let individualProductsCalculations;
-        let individualProductsAmounts;
+        offerData = {
+          title: body.title,
+          image: {
+            image: body.image,
+            small_image: body.small_image,
+            banner_image: body.banner_image,
+          },
+          selection_type: body.selection_type,
+          description: body.description,
+          calculation_type: body.calculationType,
+          discount_amount: body.discountAmount,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          show_in_homepage: body.showInHome
+        };
+      }
 
-        if (body.selection_type === 'individual_product') {
-          individualProductsIds = body.individuallySelectedProductsId.split(',');
-          individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
-          individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+      if (body.frontend_position) {
+        offerData.frontend_position = body.frontend_position;
+      }
 
-          offerData = {
-            title: body.title,
-            description: body.description,
-            selection_type: body.selection_type,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
-        } else {
-          offerData = {
-            title: body.title,
-            description: body.description,
-            selection_type: body.selection_type,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
-        }
+      if (body.subSubCategory_Id) {
+        offerData.subSubCategory_Id = body.subSubCategory_Id;
 
-
-        if (body.frontend_position) {
-          offerData.frontend_position = body.frontend_position;
-        }
-
-        if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
-          offerData.subSubCategory_Id = body.subSubCategory_Id;
-          const subSubCat = await Offer.findOne({
-            subSubCategory_Id: body.subSubCategory_Id,
-            offer_deactivation_time: null
+        const subSubCat = await Offer.findOne({
+          subSubCategory_Id: body.subSubCategory_Id,
+          offer_deactivation_time: null
+        });
+        if (subSubCat !== undefined) {
+          return res.status(200).json({
+            code: 'INVALID_SUBSUBCAT',
+            message: 'Subsub category already in another offer'
           });
-          if (subSubCat !== undefined) {
-            return res.status(200).json({
-              code: 'INVALID_SUBSUBCAT',
-              message: 'Subsub category already in another offer'
-            });
-            /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
-          }
+          /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
         }
-        if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
-          offerData.subCategory_Id = body.subCategory_Id;
-        }
-        if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-          offerData.category_id = body.category_id;
-        }
+      }
+      if (body.subCategory_Id) {
+        offerData.subCategory_Id = body.subCategory_Id;
+      }
+      if (body.category_id) {
+        offerData.category_id = body.category_id;
+      }
 
-        if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-          offerData.brand_id = body.brand_id;
-        }
+      if (body.brand_id) {
+        offerData.brand_id = body.brand_id;
+      }
 
-        if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-          offerData.vendor_id = body.vendor_id;
-        }
+      if (body.vendor_id) {
+        offerData.vendor_id = body.vendor_id;
+      }
 
-        let data = await Offer.create(offerData).fetch();
-        /**console.log('offer fetched data from database: ', data);*/
+      let data = await Offer.create(offerData).fetch();
+      /**console.log('offer fetched data from database: with image: ', data);*/
 
-        /**for individually selected products*/
-        if (individualProductsIds && individualProductsIds.length > 0) {
-          for (let id = 0; id < individualProductsIds.length; id++) {
-            let product_id = parseInt(individualProductsIds[id]);
-            let calculationType = individualProductsCalculations[id];
-            let discountAmount = parseInt(individualProductsAmounts[id]);
+      /**for individually selected products*/
+      if (individualProductsIds && individualProductsIds.length > 0) {
+        for (let id = 0; id < individualProductsIds.length; id++) {
+          let product_id = parseInt(individualProductsIds[id]);
+          let calculationType = individualProductsCalculations[id];
+          let discountAmount = parseInt(individualProductsAmounts[id]);
 
-            if (product_id) {
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
-              });
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                  regular_offer_id: data.id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              } else {
-                await RegularOfferProducts.create({
-                  regular_offer_id: data.id,
-                  product_id: product_id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              }
-            }
-
-          }
-        }
-
-        let regular_offer_product_ids;
-        if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-          regular_offer_product_ids = body.selectedProductIds.split(',');
-        }
-
-        if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
-          for (let id = 0; id < regular_offer_product_ids.length; id++) {
-            let product_id = parseInt(regular_offer_product_ids[id]);
+          if (product_id) {
             let existedProduct = await RegularOfferProducts.findOne({
               product_id: product_id,
               product_deactivation_time: null
             });
             if (existedProduct !== undefined) {
-              await RegularOfferProducts.updateOne({product_id: product_id}).set({regular_offer_id: data.id});
+              await RegularOfferProducts.update({product_id: product_id}).set({
+                regular_offer_id: data.id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount
+              });
             } else {
-              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              await RegularOfferProducts.create({
+                regular_offer_id: data.id,
+                product_id: product_id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount
+              });
             }
           }
         }
-
-        return res.status(200).json({
-          success: true,
-          message: 'Offer created successfully',
-          data
-        });
       }
+
+      let regular_offer_product_ids;
+      if (body.selectedProductIds) {
+        regular_offer_product_ids = body.selectedProductIds.split(',');
+      }
+
+      if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+        for (let id = 0; id < regular_offer_product_ids.length; id++) {
+          let product_id = parseInt(regular_offer_product_ids[id]);
+          let existedProduct = await RegularOfferProducts.findOne({
+            product_id: product_id,
+            product_deactivation_time: null
+          });
+          if (existedProduct !== undefined) {
+            await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
+          } else {
+            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+          }
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Offer created successfully',
+        data
+      });
+
+
     } catch (error) {
       console.log('error in insert offer: ', error);
       return res.status(400).json({
@@ -566,308 +425,199 @@ module.exports = {
 
   updateOffer: async (req, res) => {
     try {
-      let body = req.body;
-      if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          if (err) {
-            return res.serverError(err);
-          }
+      let body = {...req.body};
 
-          if (files.length === 0) {
-            return res.badRequest('No image was uploaded');
-          }
+      if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
 
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+        const files = await uploadImages(req.file('image'));
+        if (files.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
 
-          if (files.length === 2) {
-            if (req.body.hasBannerImage) {
-              let bannerImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-              body.banner_image = '/' + bannerImagePath;
-            } else if (req.body.hasSmallImage) {
-              let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-              body.small_image = '/' + smallImagePath;
-            }
-          } else if (files.length === 3) {
-            let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-            body.small_image = '/' + smallImagePath;
-
-            let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
-            body.banner_image = '/' + bannerImagePath;
-          }
+        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+        if (body.hasBannerImage === 'true' && body.hasImage === 'true' && body.hasSmallImage === 'true') {
 
           body.image = '/' + newPath;
 
-          let offerData = {};
-          let individualProductsIds;
-          let individualProductsCalculations;
-          let individualProductsAmounts;
-
-          if (body.selection_type === 'individual_product') {
-            individualProductsIds = body.individuallySelectedProductsId.split(',');
-            individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
-            individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
-
-            offerData = {
-              title: body.title,
-              image: {
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-              },
-              selection_type: body.selection_type,
-              description: body.description,
-              start_date: body.offerStartDate,
-              end_date: body.offerEndDate,
-              show_in_homepage: body.showInHome
-            };
-          } else {
-            offerData = {
-              title: body.title,
-              image: {
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-              },
-              selection_type: body.selection_type,
-              description: body.description,
-              calculation_type: body.calculationType,
-              discount_amount: body.discountAmount,
-              start_date: body.offerStartDate,
-              end_date: body.offerEndDate,
-              show_in_homepage: body.showInHome
-            };
+          if (typeof files[1] !== 'undefined') {
+            const newPathBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + newPathBanner;
           }
 
-          if (body.frontend_position) {
-            offerData.frontend_position = body.frontend_position;
+          if (typeof files[2] !== 'undefined') {
+            const newPathMobile = files[2].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + newPathMobile;
           }
 
-          if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
-            offerData.subSubCategory_Id = body.subSubCategory_Id;
-            const subSubCat = await Offer.find({
-              subSubCategory_Id: body.subSubCategory_Id,
-              offer_deactivation_time: null,
-              deletedAt: null
-            });
+        } else if (body.hasImage === 'true' && body.hasBannerImage === 'true') {
 
-            if (subSubCat !== undefined && subSubCat.length > 1) {
-              return res.status(200).json({
-                code: 'INVALID_SUBSUBCAT',
-                message: 'Subsub category already in another offer'
-              });
-              /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
-            }
+          body.image = '/' + newPath;
+
+          if (typeof files[1] !== 'undefined') {
+            const newPathBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.banner_image = '/' + newPathBanner;
           }
-          if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
-            offerData.subCategory_Id = body.subCategory_Id;
+        } else if (body.hasImage === 'true' && body.hasSmallImage === 'true') {
+
+          body.image = '/' + newPath;
+
+          if (typeof files[1] !== 'undefined') {
+            const newPathBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + newPathBanner;
           }
-          if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-            offerData.category_id = body.category_id;
+        } else if (body.hasBannerImage === 'true' && body.hasSmallImage === 'true') {
+
+          body.banner_image = '/' + newPath;
+
+          if (typeof files[1] !== 'undefined') {
+            const newPathBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.small_image = '/' + newPathBanner;
           }
+        }
 
-          if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-            offerData.brand_id = body.brand_id;
-          }
+      }
 
-          if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-            offerData.vendor_id = body.vendor_id;
-          }
+      let offerData = {};
+      let individualProductsIds;
+      let individualProductsCalculations;
+      let individualProductsAmounts;
 
-          let data = await Offer.updateOne({id: body.id}).set(offerData);
-          /**console.log('offer fetched data from database: with image: ', data);*/
+      if (body.selection_type === 'individual_product') {
+        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+        individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
-          /**for individually selected products*/
-          if (individualProductsIds && individualProductsIds.length > 0) {
-            for (let id = 0; id < individualProductsIds.length; id++) {
-              let product_id = parseInt(individualProductsIds[id]);
-              let calculationType = individualProductsCalculations[id];
-              let discountAmount = parseInt(individualProductsAmounts[id]);
+        offerData = {
+          title: body.title,
+          image: {
+            image: body.image,
+            small_image: body.small_image,
+            banner_image: body.banner_image,
+          },
+          selection_type: body.selection_type,
+          description: body.description,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          show_in_homepage: body.showInHome
+        };
+      } else {
+        offerData = {
+          title: body.title,
+          image: {
+            image: body.image,
+            small_image: body.small_image,
+            banner_image: body.banner_image,
+          },
+          selection_type: body.selection_type,
+          description: body.description,
+          calculation_type: body.calculationType,
+          discount_amount: body.discountAmount,
+          start_date: body.offerStartDate,
+          end_date: body.offerEndDate,
+          show_in_homepage: body.showInHome
+        };
+      }
 
-              if (product_id) {
-                let existedProduct = await RegularOfferProducts.findOne({
-                  product_id: product_id,
-                  product_deactivation_time: null
-                });
-                if (existedProduct !== undefined) {
-                  await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                    regular_offer_id: data.id,
-                    calculation_type: calculationType,
-                    discount_amount: discountAmount
-                  });
-                } else {
-                  await RegularOfferProducts.create({
-                    regular_offer_id: data.id,
-                    product_id: product_id,
-                    calculation_type: calculationType,
-                    discount_amount: discountAmount
-                  });
-                }
-              }
-            }
-          }
+      if (body.frontend_position) {
+        offerData.frontend_position = body.frontend_position;
+      }
 
-          let regular_offer_product_ids;
-          if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-            regular_offer_product_ids = body.selectedProductIds.split(',');
-          }
-
-          if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
-            for (let id = 0; id < regular_offer_product_ids.length; id++) {
-              let product_id = parseInt(regular_offer_product_ids[id]);
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id
-              });
-
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                  regular_offer_id: data.id,
-                  product_deactivation_time: null,
-                  deletedAt: null
-                });
-              } else {
-                await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
-              }
-            }
-          }
-
-          return res.status(200).json({
-            success: true,
-            message: 'Offer updated successfully',
-            data
-          });
-
+      if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
+        offerData.subSubCategory_Id = body.subSubCategory_Id;
+        const subSubCat = await Offer.find({
+          subSubCategory_Id: body.subSubCategory_Id,
+          offer_deactivation_time: null,
+          deletedAt: null
         });
 
-      } else {
-        let offerData = {};
-        let individualProductsIds;
-        let individualProductsCalculations;
-        let individualProductsAmounts;
-
-        if (body.selection_type === 'individual_product') {
-          individualProductsIds = body.individuallySelectedProductsId.split(',');
-          individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
-          individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
-
-          offerData = {
-            title: body.title,
-            description: body.description,
-            selection_type: body.selection_type,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
-        } else {
-          offerData = {
-            title: body.title,
-            description: body.description,
-            selection_type: body.selection_type,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            show_in_homepage: body.showInHome
-          };
-        }
-
-        if (body.frontend_position) {
-          offerData.frontend_position = body.frontend_position;
-        }
-
-        if (body.subSubCategory_Id && body.subSubCategory_Id !== 'null' && body.subSubCategory_Id !== 'undefined') {
-          offerData.subSubCategory_Id = body.subSubCategory_Id;
-          const subSubCat = await Offer.find({
-            subSubCategory_Id: body.subSubCategory_Id,
-            offer_deactivation_time: null,
-            deletedAt: null
+        if (subSubCat !== undefined && subSubCat.length > 1) {
+          return res.status(200).json({
+            code: 'INVALID_SUBSUBCAT',
+            message: 'Subsub category already in another offer'
           });
-
-          if (subSubCat !== undefined && subSubCat.length > 1) {
-            return res.status(200).json({
-              code: 'INVALID_SUBSUBCAT',
-              message: 'Subsub category already in another offer'
-            });
-            /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
-          }
+          /*await Offer.updateOne({subSubCategory_Id: body.subSubCategory_Id}).set({offer_deactivation_time: new Date()});*/
         }
-        if (body.subCategory_Id && body.subCategory_Id !== 'null' && body.subCategory_Id !== 'undefined') {
-          offerData.subCategory_Id = body.subCategory_Id;
-        }
-        if (body.category_id && body.category_id !== 'null' && body.category_id !== 'undefined') {
-          offerData.category_id = body.category_id;
-        }
+      }
 
-        if (body.brand_id && body.brand_id !== 'null' && body.brand_id !== 'undefined') {
-          offerData.brand_id = body.brand_id;
-        }
+      if (body.subCategory_Id) {
+        offerData.subCategory_Id = body.subCategory_Id;
+      }
 
-        if (body.vendor_id && body.vendor_id !== 'null' && body.vendor_id !== 'undefined') {
-          offerData.vendor_id = body.vendor_id;
-        }
+      if (body.category_id) {
+        offerData.category_id = body.category_id;
+      }
 
-        let data = await Offer.updateOne({id: body.id}).set(offerData);
-        /**console.log('offer fetched data from database: ', data);*/
+      if (body.brand_id) {
+        offerData.brand_id = body.brand_id;
+      }
 
-        /**for individually selected products*/
-        if (individualProductsIds && individualProductsIds.length > 0) {
-          for (let id = 0; id < individualProductsIds.length; id++) {
-            let product_id = parseInt(individualProductsIds[id]);
-            let calculationType = individualProductsCalculations[id];
-            let discountAmount = parseInt(individualProductsAmounts[id]);
+      if (body.vendor_id) {
+        offerData.vendor_id = body.vendor_id;
+      }
 
-            if (product_id) {
-              let existedProduct = await RegularOfferProducts.findOne({
-                product_id: product_id,
-                product_deactivation_time: null
-              });
-              if (existedProduct !== undefined) {
-                await RegularOfferProducts.updateOne({product_id: product_id}).set({
-                  regular_offer_id: data.id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              } else {
-                await RegularOfferProducts.create({
-                  regular_offer_id: data.id,
-                  product_id: product_id,
-                  calculation_type: calculationType,
-                  discount_amount: discountAmount
-                });
-              }
-            }
-          }
-        }
+      let data = await Offer.updateOne({id: body.id}).set(offerData);
+      /**console.log('offer fetched data from database: with image: ', data);*/
 
-        let regular_offer_product_ids;
-        if (body.selectedProductIds && body.selectedProductIds !== 'null' && body.selectedProductIds !== 'undefined') {
-          regular_offer_product_ids = body.selectedProductIds.split(',');
-        }
+      /**for individually selected products*/
+      if (individualProductsIds && individualProductsIds.length > 0) {
+        for (let id = 0; id < individualProductsIds.length; id++) {
+          let product_id = parseInt(individualProductsIds[id]);
+          let calculationType = individualProductsCalculations[id];
+          let discountAmount = parseInt(individualProductsAmounts[id]);
 
-        if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
-          for (let id = 0; id < regular_offer_product_ids.length; id++) {
-            let product_id = parseInt(regular_offer_product_ids[id]);
+          if (product_id) {
             let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id
+              product_id: product_id,
+              product_deactivation_time: null
             });
-
-            if (existedProduct !== undefined) {
+            if (existedProduct) {
               await RegularOfferProducts.updateOne({product_id: product_id}).set({
                 regular_offer_id: data.id,
-                product_deactivation_time: null,
-                deletedAt: null
+                calculation_type: calculationType,
+                discount_amount: discountAmount
               });
             } else {
-              await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+              await RegularOfferProducts.create({
+                regular_offer_id: data.id,
+                product_id: product_id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount
+              });
             }
           }
         }
-
-        return res.status(200).json({
-          success: true,
-          message: 'Offer update successfully',
-          data
-        });
       }
+
+      let regular_offer_product_ids;
+      if (body.selectedProductIds) {
+        regular_offer_product_ids = body.selectedProductIds.split(',');
+      }
+
+      if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+        for (let id = 0; id < regular_offer_product_ids.length; id++) {
+          let product_id = parseInt(regular_offer_product_ids[id]);
+          let existedProduct = await RegularOfferProducts.findOne({
+            product_id: product_id
+          });
+
+          if (existedProduct !== undefined) {
+            await RegularOfferProducts.updateOne({product_id: product_id}).set({
+              regular_offer_id: data.id,
+              product_deactivation_time: null,
+              deletedAt: null
+            });
+          } else {
+            await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
+          }
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Offer updated successfully',
+        data
+      });
+
 
     } catch (error) {
       console.log('updateOffer error: ', error);
@@ -983,14 +733,14 @@ module.exports = {
 
       let _sort = [];
       let sortData;
-      if(req.query.sortData){
+      if (req.query.sortData) {
         sortData = JSON.parse(req.query.sortData);
-        if(sortData.code === 'newest'){
+        if (sortData.code === 'newest') {
           let obj = {
             createdAt: sortData.order
           };
           _sort.push(obj);
-        } else if (sortData.code === 'price'){
+        } else if (sortData.code === 'price') {
           let obj = {
             price: sortData.order
           };
@@ -1053,8 +803,8 @@ module.exports = {
           .populate('product_id');
 
         console.log('sortData: ', sortData);
-        if(sortData && sortData.code === 'newest'){
-          if(sortData.order === 'ASC'){
+        if (sortData && sortData.code === 'newest') {
+          if (sortData.order === 'ASC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
               let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
@@ -1064,7 +814,7 @@ module.exports = {
                 return -1;
               }
             });
-          } else if(sortData.order === 'DESC'){
+          } else if (sortData.order === 'DESC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
               let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
@@ -1075,9 +825,8 @@ module.exports = {
               }
             });
           }
-        }
-        else if(sortData && sortData.code === 'price'){
-          if(sortData.order === 'ASC'){
+        } else if (sortData && sortData.code === 'price') {
+          if (sortData.order === 'ASC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               if (a.price > b.price) {
                 return 1;
@@ -1085,7 +834,7 @@ module.exports = {
                 return -1;
               }
             });
-          } else if(sortData.order === 'DESC'){
+          } else if (sortData.order === 'DESC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               if (a.price > b.price) {
                 return -1;
@@ -1112,8 +861,8 @@ module.exports = {
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
           .populate('product_id');
 
-        if(sortData && sortData.code === 'newest'){
-          if(sortData.order === 'ASC'){
+        if (sortData && sortData.code === 'newest') {
+          if (sortData.order === 'ASC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
               let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
@@ -1123,7 +872,7 @@ module.exports = {
                 return -1;
               }
             });
-          } else if(sortData.order === 'DESC'){
+          } else if (sortData.order === 'DESC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               let firstCreatedAt = moment(a.createdAt, 'YYYY-MM-DD HH:mm:ss');
               let secondCreatedAt = moment(b.createdAt, 'YYYY-MM-DD HH:mm:ss');
@@ -1134,9 +883,8 @@ module.exports = {
               }
             });
           }
-        }
-        else if(sortData && sortData.code === 'price'){
-          if(sortData.order === 'ASC'){
+        } else if (sortData && sortData.code === 'price') {
+          if (sortData.order === 'ASC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               if (a.price > b.price) {
                 return 1;
@@ -1144,7 +892,7 @@ module.exports = {
                 return -1;
               }
             });
-          } else if(sortData.order === 'DESC'){
+          } else if (sortData.order === 'DESC') {
             webRegularOfferedProducts = webRegularOfferedProducts.sort((a, b) => {
               if (a.price > b.price) {
                 return -1;
