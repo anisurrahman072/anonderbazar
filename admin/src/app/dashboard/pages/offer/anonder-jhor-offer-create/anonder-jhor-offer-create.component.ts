@@ -1,11 +1,9 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
-import {ProductService} from "../../../../services/product.service";
-import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 
@@ -17,26 +15,22 @@ import moment from "moment";
 export class AnonderJhorOfferCreateComponent implements OnInit {
 
     @Input() isVisible: Boolean;
+
     validateForm: FormGroup;
     ImageFile: File;
-    @ViewChild('Image')
-    Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
     _isSpinning: any = false;
     submitting: boolean = false;
-
     Calc_type;
-    /*variables taken for ngmodel in nz-select*/
     selectionType;
     categoryId;
     subCategoryId;
     subSubCategoryId;
 
-    /**variables used for storing subCat and subSubCat options*/
+    /** variables used for storing subCat and subSubCat options */
     allCategoryIds;
     allSubCategoryIds;
     allSubSubCategoryIds;
-
     anonderJhorData;
 
     constructor(
@@ -63,7 +57,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
 
     //Event method for submitting the form
     submitForm = ($event, value) => {
-        this.submitting = true;
+
         $event.preventDefault();
         this._isSpinning = true;
 
@@ -85,13 +79,13 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
         let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
-        if(offerStartTime < jhorStartTime) {
+        if (offerStartTime < jhorStartTime) {
             this._notification.error('Wrong start Time', 'Start time is before anonder jhor start time');
             this._isSpinning = false;
             return;
         }
 
-        if(offerEndTime > jhorEndTime) {
+        if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong End Time', 'End Date is out of the Anonder Jhor End Date');
             this._isSpinning = false;
             return;
@@ -104,7 +98,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         }
 
         if (value.subSubCategoryId) {
-            formData.append('subSubCategoryId', this.subSubCategoryId);
+            formData.append('subSubCategoryId', value.subSubCategoryId);
         }
 
         if (this.ImageFile) {
@@ -114,9 +108,8 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
-
+        this.submitting = true;
         this.offerService.anonderJhorOfferInsert(formData).subscribe(result => {
-            console.log('jhor offer subimit', result);
             this.submitting = false;
             if (result.code === 'INVALID_SUBSUBCAT') {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
@@ -128,7 +121,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this.isVisible = false;
                 this.offerService.reloadOfferList();
             }
-        }, error => {
+        }, (error) => {
             this.submitting = false;
             this._notification.error('Error Occurred!', "Error occurred while adding offer!");
         });
@@ -168,16 +161,24 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this.allCategoryIds = result.data;
                 this.allSubCategoryIds = null;
                 this.allSubSubCategoryIds = null;
-            })
+            }, error => {
+                this._notification.error('Error Occurred!', "Error occurred while getting all categories!");
+            });
     }
 
     getAllSubCategories(event) {
         if (event) {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
-                    this.allSubCategoryIds = result.data;
+
+                    if (this.allSubCategoryIds) {
+                        this.finalSelectionType(true, false, event);
+                    }
                     this.allSubSubCategoryIds = null;
-                })
+                    this.allSubCategoryIds = result.data;
+                }, error => {
+                    this._notification.error('Error Occurred!', "Error occurred while getting all sub categories!");
+                });
         }
     }
 
@@ -185,18 +186,23 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
+                    if (this.allSubSubCategoryIds) {
+                        this.finalSelectionType(false, true, event);
+                    }
                     this.allSubSubCategoryIds = result.data;
-                })
+                }, (error) => {
+                    this._notification.error('Error Occurred!', "Error occurred while getting all sub sub categories!");
+                });
         }
     }
 
     finalSelectionType(catId, subCatId, event) {
-        if(event){
-            if(catId) {
+        if (event) {
+            if (catId) {
                 this.categoryId = event;
                 this.subCategoryId = null;
                 this.subSubCategoryId = null;
-            }else if(subCatId) {
+            } else if (subCatId) {
                 this.subCategoryId = event;
                 this.subSubCategoryId = null;
             }
@@ -216,7 +222,6 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         this.offerService.getAnonderJhor()
             .subscribe(result => {
                 this._isSpinning = true
-                console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
                     this._isSpinning = false;

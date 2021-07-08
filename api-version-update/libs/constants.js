@@ -43,3 +43,13 @@ exports.PENDING_WAREHOUSE_STATUS = 0;
 exports.PROCESSING_WAREHOUSE_STATUS = 1;
 exports.ACTIVE_WAREHOUSE_STATUS = 2;
 exports.INACTIVE_WAREHOUSE_STATUS = 3;
+
+/** Offer Section constants */
+exports.REGULAR_OFFER_TYPE = 1;
+exports.ANONDER_JHOR_OFFER_TYPE = 2;
+
+exports.CATEGORY_WISE_OFFER_SELECTION_TYPE = 'Category wise';
+exports.BRAND_WISE_OFFER_SELECTION_TYPE = 'Brand wise';
+exports.VENDOR_WISE_OFFER_SELECTION_TYPE = 'Vendor wise';
+exports.PRODUCT_WISE_OFFER_SELECTION_TYPE = 'Product wise';
+exports.INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE = 'individual_product';

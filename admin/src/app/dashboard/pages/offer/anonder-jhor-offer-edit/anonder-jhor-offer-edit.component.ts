@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -16,9 +16,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     @Input() isEditVisible: Boolean;
     @Input() jhorOfferId;
-    @ViewChild('Image')
 
-    Image: any;
     validateForm: FormGroup;
     ImageFile: File;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -66,7 +64,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             .subscribe(result => {
                 this.data = result.anonderJhorOffer;
 
-                this.categoryId = this.data.category_id.id;
+                this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
 
@@ -99,9 +97,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     /** Event method for submitting the form */
     submitForm = ($event, value) => {
-        /*console.log('value.categoryId: ', value.categoryId);
-        console.log('this.subCategoryId: ', this.subCategoryId);
-        console.log('this.subSubCategoryId: ', this.subSubCategoryId);*/
 
         $event.preventDefault();
         this._isSpinning = true;
@@ -125,6 +120,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
         let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
 
+        console.log('(value.offerEndDate; ', value.offerEndDate);
+
         if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
             this._isSpinning = false;
@@ -138,7 +135,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         }
 
         if (value.subSubCategoryId) {
-            formData.append('subSubCategoryId', this.subSubCategoryId);
+            formData.append('subSubCategoryId', value.subSubCategoryId);
         }
 
         if (this.ImageFile) {
@@ -148,17 +145,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
-        this.offerService.updateAnonderJhorOffer(formData).subscribe(result => {
-            /*if (result.code === 'INVALID_SUBSUBCAT') {
-                this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
-                this._isSpinning = false;
-            } else {*/
+        this.offerService.updateAnonderJhorOffer(formData).subscribe((result) => {
             this._notification.success('Updated', "Anonder Jhor offer Updated successfully");
             this._isSpinning = false;
             this.resetForm(null);
             this.isEditVisible = false;
             this.offerService.reloadOfferList();
-            /*}*/
+
         }, () => {
             this._isSpinning = false;
         });
@@ -201,7 +194,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
-            })
+            });
     }
 
     getAllSubCategories(event) {
@@ -210,7 +203,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
                     console.log('getAllSubCategories', result);
-                    if(this.allSubCategoryIds){
+                    if (this.allSubCategoryIds) {
                         this.finalSelectionType(true, false, false, event);
                     }
                     this.allSubCategoryIds = result.data;
@@ -224,7 +217,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
                     console.log('getAllSubSubCategories', result);
-                    if(this.allSubSubCategoryIds){
+                    if (this.allSubSubCategoryIds) {
                         this.finalSelectionType(false, true, false, event);
                     }
                     this.allSubSubCategoryIds = result.data;
@@ -263,7 +256,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         this.offerService.getAnonderJhor()
             .subscribe(result => {
                 this._isSpinning = true
-                console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
                     this._isSpinning = false;

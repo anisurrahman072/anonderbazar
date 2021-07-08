@@ -937,7 +937,6 @@ module.exports = {
   /*route: product/canRateProduct*/
   canRateProduct: async (req, res) => {
     try {
-      console.log('rozux then: ', req.query.userID);
       if (req.query.userID) {
         let rawSQL = `
             SELECT
