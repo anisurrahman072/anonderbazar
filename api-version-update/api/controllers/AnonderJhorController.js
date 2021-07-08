@@ -37,6 +37,7 @@ module.exports = {
       const endDate = moment(anonderJhorData.end_date);
       const presentTime = moment();
 
+      /*endDate < presentTime*/
       if (endDate.isSameOrBefore(presentTime)) {
         await AnonderJhor.updateOne({id: 1}).set({status: 0});
         return res.status(200).json({
@@ -45,7 +46,17 @@ module.exports = {
         });
       }
 
+      if (req.body) {
+        let _where = {};
+
+        _where.deletedAt = null;
+        _where.force_stop = {'!=': 1};
+
+        await AnonderJhorOffers.update({where: _where}).set({status: 1});
+      }
+
       const jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
+
       return res.status(200).json({
         success: true,
         message: 'AnonderJhor status changed successfully',
@@ -284,8 +295,8 @@ module.exports = {
         end_date: body.offerEndDate,
         category_id: body.categoryId,
         anonder_jhor_id: 1,
-        status: 0,
-        force_stop: 1
+        status: 1,
+        force_stop: 0
       };
 
       if (body.subCategoryId) {
@@ -417,8 +428,8 @@ module.exports = {
         end_date: body.offerEndDate,
         category_id: body.categoryId,
         anonder_jhor_id: 1,
-        status: 0,
-        force_stop: 1
+        status: 1,
+        force_stop: 0
       };
 
       if (body.subSubCategoryId) {
@@ -568,9 +579,9 @@ module.exports = {
       let offer_type = parseInt(req.query.offer_type, 10);
       let offer_id = parseInt(req.query.offer_id, 10);
       let isRegularIndividualProductOffer = false;
-      if(offer_type == REGULAR_OFFER_TYPE){
+      if (offer_type == REGULAR_OFFER_TYPE) {
         let offerInfo = await Offer.findOne({id: offer_id, deletedAt: null});
-        if(offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE){
+        if (offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE) {
           isRegularIndividualProductOffer = true;
         }
       }
@@ -584,7 +595,7 @@ module.exports = {
             psi.product_quantity,
             psi.product_total_price
             `;
-      if(isRegularIndividualProductOffer){
+      if (isRegularIndividualProductOffer) {
         rawSQL += `,
             regular_offer_products.discount_amount AS discountAmount
         `;
@@ -595,7 +606,7 @@ module.exports = {
         LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
         LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id`;
-      if(isRegularIndividualProductOffer){
+      if (isRegularIndividualProductOffer) {
         fromSQL += `
         LEFT JOIN regular_offer_products ON regular_offer_products.regular_offer_id = psi.offer_id_number
         `;
