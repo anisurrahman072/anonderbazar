@@ -13,7 +13,7 @@ const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
-const {ACTIVE_WAREHOUSE_STATUS} = require('../../libs/constants');
+const {ACTIVE_WAREHOUSE_STATUS, APPROVED_PRODUCT_APPROVAL_STATUS} = require('../../libs/constants');
 
 module.exports = {
 
@@ -36,15 +36,19 @@ module.exports = {
 
         console.log('My product: ', product);
 
-        if(!product || product.){
-
+        if(!product || product.approval_status != APPROVED_PRODUCT_APPROVAL_STATUS || product.deletedAt){
+          return res.status(400).json({
+            success: false,
+            code: 'productNotFound',
+            message: `${product.name} product has been rejected or deleted!`
+          });
         }
 
         if(!product.warehouse_id || product.warehouse_id.deletedAt || product.warehouse_id.status != ACTIVE_WAREHOUSE_STATUS){
           return res.status(400).json({
             success: false,
             code: 'warehouseNotFound',
-            message: `${product.name} warehouse has been rejected!`
+            message: `${product.name} warehouse has been rejected or deleted!`
           });
         }
 
