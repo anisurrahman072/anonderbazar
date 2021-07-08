@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs";
 
@@ -74,6 +74,8 @@ export class OfferService {
     }
 
     updateOffer(data): Observable<any> {
+        // const _headers = new HttpHeaders().set('Content-Type', 'multipart/form-data');
+        // console.log('_headers', _headers);
         return this.http.post(`${this.EndPoint}/updateOffer`, data);
     }
 

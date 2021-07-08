@@ -19,6 +19,12 @@ export class AnonderJhorDetailsComponent implements OnInit {
     discountAmount;
     originalPrice;
 
+    changeStatusN = false;
+    changeStatusPr = false;
+
+    changeStatusN_ASC = false;
+    changeStatusPr_ASC = false;
+
     constructor(
         private route: ActivatedRoute,
         private title: Title,
@@ -36,8 +42,27 @@ export class AnonderJhorDetailsComponent implements OnInit {
     }
 
     getAnonderJhorOfferById() {
+        let sortData = null;
+        if(this.changeStatusN){
+            sortData = {
+                code: "newest",
+                order: "DESC"
+            }
+            if(this.changeStatusN_ASC){
+                sortData.order = "ASC";
+            }
+        } else if(this.changeStatusPr){
+            sortData = {
+                code: "price",
+                order: "DESC"
+            }
+            if(this.changeStatusPr_ASC){
+                sortData.order = "ASC";
+            }
+        }
+
         if (this.offerId) {
-            this.offerService.getWebAnonderJhorOfferById(this.offerId)
+            this.offerService.getWebAnonderJhorOfferById(this.offerId, sortData)
                 .subscribe(result => {
                     console.log('getWebAnonderJhorOfferById result: ', result);
                     this.anonderJhorOffer = result.data[0];
@@ -95,5 +120,23 @@ export class AnonderJhorDetailsComponent implements OnInit {
         this.router.navigate(['/offers/anonder-jhor-detail', this.route.snapshot.params], {queryParams: query});
         this.page = event;
     }*/
+
+    showNewest() {
+        this.changeStatusN = true;
+        this.changeStatusPr = false;
+
+        this.changeStatusN_ASC = !this.changeStatusN_ASC;
+        this.changeStatusPr_ASC = false;
+        this.getAnonderJhorOfferById();
+    }
+
+    showPrice() {
+        this.changeStatusN = false;
+        this.changeStatusPr = true;
+
+        this.changeStatusN_ASC = false;
+        this.changeStatusPr_ASC = !this.changeStatusPr_ASC;
+        this.getAnonderJhorOfferById();
+    }
 
 }

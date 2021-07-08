@@ -174,162 +174,6 @@ module.exports = {
     return paymentTemp;
   },
 
-  getRegularOfferStore: async function () {
-    let finalCollectionOfProducts = {};
-    await OfferService.offerDurationCheck();
-    await OfferService.anonderJhorOfferDurationCheck();
-    let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-
-    let _where = {};
-    _where.deletedAt = null;
-    _where.offer_deactivation_time = null;
-    _where.start_date = {'<=': presentTime};
-    _where.end_date = {'>=': presentTime};
-
-    const requestedOffer = await Offer.find({where: _where});
-
-    let _where1 = {};
-    _where1.deletedAt = null;
-    _where1.status = 1;
-    _where1.start_date = {'<=': presentTime};
-    _where1.end_date = {'>=': presentTime};
-
-    const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
-
-    if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
-      finalCollectionOfProducts = {};
-      return finalCollectionOfProducts;
-    }
-
-    for (let offer = 0; offer < requestedOffer.length; offer++) {
-      const thisOffer = requestedOffer[offer];
-      let offerObj = {
-        calculation_type: thisOffer.calculation_type,
-        discount_amount: thisOffer.discount_amount,
-      };
-
-      /**if selection_type === 'Vendor wise'*/
-      if (thisOffer.selection_type === 'Vendor wise') {
-
-        let products = await Product.find({
-          status: 2,
-          approval_status: 2,
-          deletedAt: null,
-          warehouse_id: thisOffer.vendor_id
-        });
-
-        if (products.length > 0) {
-          products.forEach(product => {
-            finalCollectionOfProducts[product.id] = offerObj;
-          });
-        }
-      }
-      /**if selection_type === 'Brand wise'*/
-      if (thisOffer.selection_type === 'Brand wise') {
-        let _where = {};
-        _where.brand_id = thisOffer.brand_id;
-        _where.status = 2;
-        _where.approval_status = 2;
-        _where.deletedAt = null;
-        let products = await Product.find({where: _where});
-
-        if (products.length > 0) {
-          products.forEach(product => {
-            finalCollectionOfProducts[product.id] = offerObj;
-          });
-        }
-      }
-
-      /**if selection_type === 'Category wise'*/
-      if (thisOffer.selection_type === 'Category wise') {
-        let _where = {};
-        _where.status = 2;
-        _where.approval_status = 2;
-        _where.deletedAt = null;
-
-        if (thisOffer.subSubCategory_Id) {
-          _where.subcategory_id = thisOffer.subSubCategory_Id;
-        } else if (thisOffer.subCategory_Id) {
-          _where.category_id = thisOffer.subCategory_Id;
-        } else if (thisOffer.category_id) {
-          _where.type_id = thisOffer.category_id;
-        }
-
-        let products = await Product.find({where: _where});
-
-        if (products.length > 0) {
-          products.forEach(product => {
-            finalCollectionOfProducts[product.id] = offerObj;
-          });
-        }
-      }
-
-      /** if selection_type === 'Product wise' */
-      if (thisOffer.selection_type === 'Product wise') {
-        let _where = {};
-        _where.regular_offer_id = thisOffer.id;
-        _where.product_deactivation_time = null;
-        _where.deletedAt = null;
-        let products = await RegularOfferProducts.find({where: _where});
-
-        if (products.length > 0) {
-          products.forEach(product => {
-            finalCollectionOfProducts[product.product_id] = offerObj;
-          });
-        }
-      }
-
-      /** if selection_type === 'individual_product' */
-      if (thisOffer.selection_type === 'individual_product') {
-        let _where = {};
-        _where.regular_offer_id = thisOffer.id;
-        _where.product_deactivation_time = null;
-        _where.deletedAt = null;
-        let products = await RegularOfferProducts.find({where: _where});
-
-        if (products.length > 0) {
-          products.forEach(product => {
-            finalCollectionOfProducts[product.product_id] = {
-              calculation_type: product.calculation_type,
-              discount_amount: product.discount_amount * 1.0,
-            };
-          });
-        }
-      }
-    }
-
-    for (let jhorOffer = 0; jhorOffer < requetedJhorOffer.length; jhorOffer++) {
-      const thisJhorOffer = requetedJhorOffer[jhorOffer];
-
-      let jhorOfferObj = {
-        calculation_type: thisJhorOffer.calculation_type,
-        discount_amount: thisJhorOffer.discount_amount
-      };
-
-      let _where2 = {};
-      _where2.status = 2;
-      _where2.approval_status = 2;
-      _where2.deletedAt = null;
-
-      if (thisJhorOffer.sub_sub_category_id) {
-        _where2.subcategory_id = thisJhorOffer.sub_sub_category_id;
-      } else if (thisJhorOffer.sub_category_id) {
-        _where2.category_id = thisJhorOffer.sub_category_id;
-      } else if (thisJhorOffer.category_id) {
-        _where2.type_id = thisJhorOffer.category_id;
-      }
-
-      let products = await Product.find({where: _where2});
-      if (products.length > 0) {
-        products.forEach(product => {
-          finalCollectionOfProducts[product.id] = jhorOfferObj;
-        });
-      }
-    }
-
-    return finalCollectionOfProducts;
-  },
-
   calcCartTotal: async function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
@@ -338,7 +182,7 @@ module.exports = {
         let productUnitPrice = cartItem.product_id.price;
         let productFinalPrice = productUnitPrice * cartItem.product_quantity;
 
-        let offerProducts = await this.getRegularOfferStore();
+        let offerProducts = await OfferService.getRegularOfferStore();
 
         if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
           productFinalPrice = productUnitPrice * cartItem.product_quantity;
@@ -411,7 +255,6 @@ module.exports = {
 
   createOrder: async (db, orderDatPayload, cartItems) => {
 
-    console.log('ttttttttttttt1');
     console.log('orderDatPayload rouzex', orderDatPayload);
 
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
@@ -453,6 +296,8 @@ module.exports = {
         status: 1
       }).fetch().usingConnection(db);
 
+      let offeredProducts = await OfferService.getRegularOfferStore();
+
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
         let thisCartItem = cartItemsTemp[k];
@@ -469,218 +314,219 @@ module.exports = {
         let offer_id_number;
         let offer_type;
 
-        /** offer section */
+        if(offeredProducts && offeredProducts[itemId]){
+          /** offer section */
+          let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+          let _where = {};
+          _where.offer_deactivation_time = null;
+          _where.deletedAt = null;
+          _where.start_date = {'<=': presentTime};
+          _where.end_date = {'>=': presentTime};
 
-        let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-        let _where = {};
-        _where.offer_deactivation_time = null;
-        _where.deletedAt = null;
-        _where.start_date = {'<=': presentTime};
-        _where.end_date = {'>=': presentTime};
+          let regularOffers = await Offer.find({where: _where});
+          console.log('reglar offer csv: ', regularOffers);
 
-        let regularOffers = await Offer.find({where: _where});
-        console.log('reglar offer csv: ', regularOffers);
-
-        /** checking if the product exists in Regular offer */
-        if (regularOffers && regularOffers.length > 0) {
-          let regularOfferVendorId = [];
-          let regularOfferBrandId = [];
-          let regularOfferCatId = [];
-          let regularOfferSubCatId = [];
-          let regularOfferSubSubCatId = [];
-          let regularOfferProductsIds = [];
-          let regularOfferIndividualProductsIds = [];
+          /** checking if the product exists in Regular offer */
+          if (regularOffers && regularOffers.length > 0) {
+            let regularOfferVendorId = [];
+            let regularOfferBrandId = [];
+            let regularOfferCatId = [];
+            let regularOfferSubCatId = [];
+            let regularOfferSubSubCatId = [];
+            let regularOfferProductsIds = [];
+            let regularOfferIndividualProductsIds = [];
 
 
-          /** storing offer information in the arrays */
-          for (let offer = 0; offer < regularOffers.length; offer++) {
-            if (regularOffers[offer].selection_type === 'Vendor wise') {
-              regularOfferVendorId.push({
-                regularOfferId: regularOffers[offer].id,
-                vendorId: regularOffers[offer].vendor_id
-              });
-            }
+            /** storing offer information in the arrays */
+            for (let offer = 0; offer < regularOffers.length; offer++) {
+              if (regularOffers[offer].selection_type === 'Vendor wise') {
+                regularOfferVendorId.push({
+                  regularOfferId: regularOffers[offer].id,
+                  vendorId: regularOffers[offer].vendor_id
+                });
+              }
 
-            if (regularOffers[offer].selection_type === 'Brand wise') {
-              regularOfferBrandId.push({
-                regularOfferId: regularOffers[offer].id,
-                brandId: regularOffers[offer].brand_id
-              });
-            }
+              if (regularOffers[offer].selection_type === 'Brand wise') {
+                regularOfferBrandId.push({
+                  regularOfferId: regularOffers[offer].id,
+                  brandId: regularOffers[offer].brand_id
+                });
+              }
 
-            if (regularOffers[offer].selection_type === 'Category wise') {
-              regularOfferCatId.push({
-                regularOfferId: regularOffers[offer].id,
-                catId: regularOffers[offer].category_id
-              });
-              regularOfferSubCatId.push({
-                regularOfferId: regularOffers[offer].id,
-                subCatId: regularOffers[offer].subCategory_Id
-              });
-              regularOfferSubSubCatId.push({
-                regularOfferId: regularOffers[offer].id,
-                subSubCatId: regularOffers[offer].subSubCategory_Id
-              });
-            }
+              if (regularOffers[offer].selection_type === 'Category wise') {
+                regularOfferCatId.push({
+                  regularOfferId: regularOffers[offer].id,
+                  catId: regularOffers[offer].category_id
+                });
+                regularOfferSubCatId.push({
+                  regularOfferId: regularOffers[offer].id,
+                  subCatId: regularOffers[offer].subCategory_Id
+                });
+                regularOfferSubSubCatId.push({
+                  regularOfferId: regularOffers[offer].id,
+                  subSubCatId: regularOffers[offer].subSubCategory_Id
+                });
+              }
 
-            if (regularOffers[offer].selection_type === 'Product wise') {
-              console.log('regular offer info in product wise: ', regularOffers[offer]);
-              let rawSQL = `SELECT
+              if (regularOffers[offer].selection_type === 'Product wise') {
+                console.log('regular offer info in product wise: ', regularOffers[offer]);
+                let rawSQL = `SELECT
                                   product_id
                               FROM
                                   regular_offer_products
                               WHERE
                                   regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
-              const ids = await sails.sendNativeQuery(rawSQL, []);
-              const productIds = ids.rows;
-              console.log('pro wise ids: ', productIds);
+                const ids = await sails.sendNativeQuery(rawSQL, []);
+                const productIds = ids.rows;
+                console.log('pro wise ids: ', productIds);
 
-              productIds.forEach(proId => {
-                regularOfferProductsIds.push({
-                  regularOfferId: regularOffers[offer].id,
-                  productId: proId.product_id
+                productIds.forEach(proId => {
+                  regularOfferProductsIds.push({
+                    regularOfferId: regularOffers[offer].id,
+                    productId: proId.product_id
+                  });
                 });
-              });
-            }
+              }
 
-            if (regularOffers[offer].selection_type === 'individual_product') {
-              console.log('regular offer info in inidi wise: ', regularOffers[offer]);
-              let rawSQL = `SELECT
+              if (regularOffers[offer].selection_type === 'individual_product') {
+                console.log('regular offer info in inidi wise: ', regularOffers[offer]);
+                let rawSQL = `SELECT
                                   product_id
                               FROM
                                   regular_offer_products
                               WHERE
                                   regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
-              const ids = await sails.sendNativeQuery(rawSQL, []);
-              const productIds = ids.rows;
-              console.log('individual_product wise ids: ', productIds);
+                const ids = await sails.sendNativeQuery(rawSQL, []);
+                const productIds = ids.rows;
+                console.log('individual_product wise ids: ', productIds);
 
-              productIds.forEach(proId => {
-                regularOfferIndividualProductsIds.push({
-                  regularOfferId: regularOffers[offer].id,
-                  productId: proId.product_id
+                productIds.forEach(proId => {
+                  regularOfferIndividualProductsIds.push({
+                    regularOfferId: regularOffers[offer].id,
+                    productId: proId.product_id
+                  });
                 });
+              }
+            }
+
+            /** checking if the product item exists in the regular offer */
+            if (regularOfferVendorId && regularOfferVendorId.length > 0) {
+              regularOfferVendorId.forEach(ven => {
+                if (itemWarehouseId === ven.vendorId) {
+                  offer_id_number = ven.regularOfferId;
+                  offer_type = regular_offer;
+                }
               });
             }
+
+            if (regularOfferBrandId && regularOfferBrandId.length > 0) {
+              regularOfferBrandId.forEach(bran => {
+                if (itemBrandId === bran.brandId) {
+                  offer_id_number = bran.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
+            if (regularOfferCatId && regularOfferCatId.length > 0) {
+              regularOfferCatId.forEach(cat => {
+                if (itemCatId === cat.catId) {
+                  offer_id_number = cat.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
+            if (regularOfferSubCatId && regularOfferSubCatId.length > 0) {
+              regularOfferSubCatId.forEach(subCat => {
+                if (itemSubCatId === subCat.subCatId) {
+                  offer_id_number = subCat.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
+            if (regularOfferSubSubCatId && regularOfferSubSubCatId.length > 0) {
+              regularOfferSubSubCatId.forEach(subSubCat => {
+                if (itemSubSubCatId === subSubCat.subSubCatId) {
+                  offer_id_number = subSubCat.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
+            if (regularOfferProductsIds && regularOfferProductsIds.length > 0) {
+              console.log('regularOfferProductsIds', regularOfferProductsIds);
+              regularOfferProductsIds.forEach(proId => {
+                if (itemId === proId.productId) {
+                  console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
+                  offer_id_number = proId.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
+            if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
+              console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);
+              regularOfferIndividualProductsIds.forEach(proId => {
+                if (itemId === proId.productId) {
+                  console.log('in individual ise: item id, productid: ', itemId, proId.productId);
+                  offer_id_number = proId.regularOfferId;
+                  offer_type = regular_offer;
+                }
+              });
+            }
+
           }
 
-          /** checking if the product item exists in the regular offer */
-          if (regularOfferVendorId && regularOfferVendorId.length > 0) {
-            regularOfferVendorId.forEach(ven => {
-              if (itemWarehouseId === ven.vendorId) {
-                offer_id_number = ven.regularOfferId;
-                offer_type = regular_offer;
-              }
+          /** jhor offer */
+          let _where1 = {};
+          _where1.status = 1;
+          _where1.deletedAt = null;
+          _where1.start_date = {'<=': presentTime};
+          _where1.end_date = {'>=': presentTime};
+
+          let jhorOffers = await AnonderJhorOffers.find({where: _where1});
+          console.log('jhor offers csv: ', jhorOffers);
+
+          /** checking if the product exists in anonder jhor offer */
+          if (jhorOffers && jhorOffers.length > 0) {
+            let offerCatId = [];
+            let offerSubCatId = [];
+            let offerSubSubCatId = [];
+
+            jhorOffers.forEach(offer => {
+              offerCatId.push({jhorOfferId: offer.id, catId: offer.category_id});
+              offerSubCatId.push({jhorOfferId: offer.id, subCatId: offer.sub_category_id});
+              offerSubSubCatId.push({jhorOfferId: offer.id, subSubCatId: offer.sub_sub_category_id});
             });
-          }
 
-          if (regularOfferBrandId && regularOfferBrandId.length > 0) {
-            regularOfferBrandId.forEach(bran => {
-              if (itemBrandId === bran.brandId) {
-                offer_id_number = bran.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
+            if (offerCatId && offerCatId.length > 0) {
+              offerCatId.forEach(cat => {
+                if (itemCatId === cat.catId) {
+                  offer_id_number = cat.jhorOfferId;
+                  offer_type = anonder_jhor;
+                }
+              });
+            }
 
-          if (regularOfferCatId && regularOfferCatId.length > 0) {
-            regularOfferCatId.forEach(cat => {
-              if (itemCatId === cat.catId) {
-                offer_id_number = cat.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
+            if (offerSubCatId && offerSubCatId.length > 0) {
+              offerSubCatId.forEach(subCat => {
+                if (itemSubCatId === subCat.subCatId) {
+                  offer_id_number = subCat.jhorOfferId;
+                  offer_type = anonder_jhor;
+                }
+              });
+            }
 
-          if (regularOfferSubCatId && regularOfferSubCatId.length > 0) {
-            regularOfferSubCatId.forEach(subCat => {
-              if (itemSubCatId === subCat.subCatId) {
-                offer_id_number = subCat.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
-
-          if (regularOfferSubSubCatId && regularOfferSubSubCatId.length > 0) {
-            regularOfferSubSubCatId.forEach(subSubCat => {
-              if (itemSubSubCatId === subSubCat.subSubCatId) {
-                offer_id_number = subSubCat.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
-
-          if (regularOfferProductsIds && regularOfferProductsIds.length > 0) {
-            console.log('regularOfferProductsIds', regularOfferProductsIds);
-            regularOfferProductsIds.forEach(proId => {
-              if (itemId === proId.productId) {
-                console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
-                offer_id_number = proId.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
-
-          if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
-            console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);
-            regularOfferIndividualProductsIds.forEach(proId => {
-              if (itemId === proId.productId) {
-                console.log('in individual ise: item id, productid: ', itemId, proId.productId);
-                offer_id_number = proId.regularOfferId;
-                offer_type = regular_offer;
-              }
-            });
-          }
-
-        }
-
-        /** jhor offer */
-        let _where1 = {};
-        _where1.status = 1;
-        _where1.deletedAt = null;
-        _where1.start_date = {'<=': presentTime};
-        _where1.end_date = {'>=': presentTime};
-
-        let jhorOffers = await AnonderJhorOffers.find({where: _where1});
-        console.log('jhor offers csv: ', jhorOffers);
-
-        /** checking if the product exists in anonder jhor offer */
-        if (jhorOffers && jhorOffers.length > 0) {
-          let offerCatId = [];
-          let offerSubCatId = [];
-          let offerSubSubCatId = [];
-
-          jhorOffers.forEach(offer => {
-            offerCatId.push({jhorOfferId: offer.id, catId: offer.category_id});
-            offerSubCatId.push({jhorOfferId: offer.id, subCatId: offer.sub_category_id});
-            offerSubSubCatId.push({jhorOfferId: offer.id, subSubCatId: offer.sub_sub_category_id});
-          });
-
-          if (offerCatId && offerCatId.length > 0) {
-            offerCatId.forEach(cat => {
-              if (itemCatId === cat.catId) {
-                offer_id_number = cat.jhorOfferId;
-                offer_type = anonder_jhor;
-              }
-            });
-          }
-
-          if (offerSubCatId && offerSubCatId.length > 0) {
-            offerSubCatId.forEach(subCat => {
-              if (itemSubCatId === subCat.subCatId) {
-                offer_id_number = subCat.jhorOfferId;
-                offer_type = anonder_jhor;
-              }
-            });
-          }
-
-          if (offerSubSubCatId && offerSubSubCatId.length > 0) {
-            offerSubSubCatId.forEach(subSubCat => {
-              if (itemSubSubCatId === subSubCat.subSubCatId) {
-                offer_id_number = subSubCat.jhorOfferId;
-                offer_type = anonder_jhor;
-              }
-            });
+            if (offerSubSubCatId && offerSubSubCatId.length > 0) {
+              offerSubSubCatId.forEach(subSubCat => {
+                if (itemSubSubCatId === subSubCat.subSubCatId) {
+                  offer_id_number = subSubCat.jhorOfferId;
+                  offer_type = anonder_jhor;
+                }
+              });
+            }
           }
         }
 
