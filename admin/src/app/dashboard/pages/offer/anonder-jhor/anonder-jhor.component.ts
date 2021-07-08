@@ -101,7 +101,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     jhorActiveStatusChange(event) {
         this.offerService.jhorActiveStatusChange(event)
             .subscribe(result => {
-                console.log('status : ', result);
                 if (result.code === 'INVALID_ACTION') {
                     this._notification.error('Sorry!', 'Offer time ended, you can not change status');
                 }
