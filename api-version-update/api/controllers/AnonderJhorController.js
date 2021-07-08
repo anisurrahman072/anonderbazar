@@ -512,9 +512,28 @@ module.exports = {
 
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
+      console.log('req.query.sortData: ', req.query.sortData);
       await OfferService.anonderJhorOfferDurationCheck();
 
       let webJhorOfferedProducts;
+
+      let _sort = [];
+      let sortData;
+      if(req.query.sortData){
+        sortData = JSON.parse(req.query.sortData);
+        if(sortData.code === 'newest'){
+          let obj = {
+            createdAt: sortData.order
+          };
+          _sort.push(obj);
+        } else if (sortData.code === 'price'){
+          let obj = {
+            price: sortData.order
+          };
+          _sort.push(obj);
+        }
+      }
+      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -538,7 +557,7 @@ module.exports = {
         _where1.type_id = requestedJorOffer.category_id.id;
       }
 
-      webJhorOfferedProducts = await Product.find({where: _where1});
+      webJhorOfferedProducts = await Product.find({where: _where1}).sort(_sort);
 
       res.status(200).json({
         success: true,
