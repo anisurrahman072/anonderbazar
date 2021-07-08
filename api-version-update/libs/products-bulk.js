@@ -131,6 +131,12 @@ exports.columnListForBulkUpdate = function (isAdmin) {
       validation: 'decimal'
     },
     'Tags': {width: 15},
+    'Main Image': {width: 50},
+    'Image1': {width: 50},
+    'Image2': {width: 50},
+    'Image3': {width: 50},
+    'Image4': {width: 15},
+    'Image5': {width: 15},
 
     'Variant1 Id': {width: 30},
     'Variant1': {
