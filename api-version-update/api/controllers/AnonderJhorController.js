@@ -612,9 +612,11 @@ module.exports = {
         `;
       }
 
-      let whereSQL = `
-      WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} ORDER BY product_orders.id
-        `;
+      let whereSQL = ` WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} `;
+      if (isRegularIndividualProductOffer) {
+        whereSQL += ` AND psi.product_id = regular_offer_products.product_id `;
+      }
+      whereSQL += ` ORDER BY product_orders.id`;
 
       const offerOrders = await sails.sendNativeQuery(rawSQL + fromSQL + whereSQL, []);
 
