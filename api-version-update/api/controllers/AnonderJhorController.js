@@ -597,7 +597,8 @@ module.exports = {
             `;
       if (isRegularIndividualProductOffer) {
         rawSQL += `,
-            regular_offer_products.discount_amount AS discountAmount
+            regular_offer_products.discount_amount AS discountAmount,
+            regular_offer_products.calculation_type AS discountType
         `;
       }
       let fromSQL = `FROM
