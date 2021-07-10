@@ -650,7 +650,7 @@ module.exports = {
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
         LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
 
-        LEFT JOIN payments as payment ON  product_orders.id  =   payment.order_id
+        LEFT JOIN payments as payment ON  product_suborders.id  =   payment.suborder_id
         LEFT JOIN categories   ON categories.id = products.type_id
         LEFT JOIN users as customer ON customer.id = product_orders.user_id
         LEFT JOIN users as orderChangedBy ON orderChangedBy.id = product_orders.changed_by
