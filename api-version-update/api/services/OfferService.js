@@ -5,7 +5,7 @@ module.exports = {
   /** Calculate a product price according to offer*/
   calcProductOfferPrice: async function (product) {
     let productFinalPrice;
-    let offerProducts = await this.getRegularOfferStore();
+    let offerProducts = await this.getAllOfferedProducts();
 
     if (!(offerProducts && !_.isUndefined(offerProducts[product.id]) && offerProducts[product.id])) {
       productFinalPrice = product.price * product.quantity;
@@ -58,7 +58,8 @@ module.exports = {
     }
   },
 
-  getRegularOfferStore: async function () {
+  /** Method called to get all offered products */
+  getAllOfferedProducts: async function () {
     let finalCollectionOfProducts = {};
 
     await this.offerDurationCheck();
@@ -91,7 +92,7 @@ module.exports = {
       const thisOffer = requestedOffer[offer];
       let offerObj = {
         calculation_type: thisOffer.calculation_type,
-        discount_amount: thisOffer.discount_amount,
+        discount_amount: thisOffer.discount_amount * 1.0,
       };
 
       /**if selection_type === 'Vendor wise'*/
