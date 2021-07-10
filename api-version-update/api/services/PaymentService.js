@@ -182,7 +182,7 @@ module.exports = {
         let productUnitPrice = cartItem.product_id.price;
         let productFinalPrice = productUnitPrice * cartItem.product_quantity;
 
-        let offerProducts = await OfferService.getRegularOfferStore();
+        let offerProducts = await OfferService.getAllOfferedProducts();
 
         if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
           productFinalPrice = productUnitPrice * cartItem.product_quantity;
@@ -296,7 +296,7 @@ module.exports = {
         status: 1
       }).fetch().usingConnection(db);
 
-      let offeredProducts = await OfferService.getRegularOfferStore();
+      let offeredProducts = await OfferService.getAllOfferedProducts();
 
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {

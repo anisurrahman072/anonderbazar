@@ -28,8 +28,8 @@ export class OfferService {
         return this.http.get(_query);
     }
 
-    getRegularOfferStore(): Observable<any> {
-        return this.http.get(`${this.EndPoint}/getRegularOfferStore`);
+    getAllOfferedProducts(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllOfferedProducts`);
     }
 
     calculateOfferPrice(calculationType, originalPrice, discountAmount) {
