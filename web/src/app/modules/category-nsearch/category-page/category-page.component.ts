@@ -196,7 +196,7 @@ export class CategoryPageComponent implements OnInit {
             this.productService.getMaxPrice()
         ]).subscribe((results: any) => {
 
-            console.log('Fork Join: ', results);
+            /*console.log('Fork Join: ', results);*/
             if (!_.isNil(results[0])) {
                 this.allBrand = results[0];
             }
@@ -217,7 +217,7 @@ export class CategoryPageComponent implements OnInit {
             this.route.params,
             this.route.queryParams
         ).subscribe((res: any) => {
-            console.log('category-page: ', res);
+            /*console.log('category-page: ', res);*/
             this.isLoading = true;
             const params = res[0];
             const queryParams = res[1];
@@ -246,7 +246,7 @@ export class CategoryPageComponent implements OnInit {
                     return forkJoin(apis);
                 })
                 .concatMap((results: any) => {
-                    console.log('combine result for categories', results);
+                    /*console.log('combine result for categories', results);*/
                     this.allSubSubCategory = results[0];
                     this.categoryB = null;
                     this.categoryB = results[1];
@@ -265,10 +265,10 @@ export class CategoryPageComponent implements OnInit {
                     return this.filterSearchObservable();
                 })
                 .subscribe((result: any) => {
-                    console.log('filterSearchObservable-result', result.data);
+                    /*console.log('filterSearchObservable-result', result.data);*/
                     if (result && result.data) {
                         this.allProductsByCategory = result.data.filter(product => {
-                            console.log('this.allProductsByCategory if==>', this.allProductsByCategory);
+                            /*console.log('this.allProductsByCategory if==>', this.allProductsByCategory);*/
                             return (product.warehouse_id.status == 2 && !product.warehouse_id.deletedAt);
                         });
 
@@ -279,7 +279,7 @@ export class CategoryPageComponent implements OnInit {
                     } else {
                         this.allProductsByCategory = [];
                     }
-                    console.log('this.allProductsByCategory==>', this.allProductsByCategory);
+                    /*console.log('this.allProductsByCategory==>', this.allProductsByCategory);*/
 
                     this.isLoading = false;
                     // this.loaderService.hideLoader();

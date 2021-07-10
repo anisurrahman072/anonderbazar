@@ -56,7 +56,7 @@ export class BrandProductComponent implements OnInit {
             })
             .subscribe(arr => {
                 this.brand = arr[0];
-                console.log('brand',this.brand);
+                /*console.log('brand',this.brand);*/
                 this.addPageTitle();
                 this.allProducts = arr[1].data;
 

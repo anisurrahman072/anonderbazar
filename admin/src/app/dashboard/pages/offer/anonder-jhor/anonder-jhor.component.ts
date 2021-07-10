@@ -7,6 +7,8 @@ import {NzNotificationService} from "ng-zorro-antd";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {Subscription} from "rxjs";
 import {ExportService} from "../../../../services/export.service";
+import * as _moment from "moment";
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-anonder-jhor',
@@ -42,6 +44,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     _isSpinning: any = false;
     loading: boolean = false;
     private sub: Subscription;
+    private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
 
     constructor(
@@ -260,7 +263,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             .subscribe(result => {
                 let presentTime = moment();
                 if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
-                    this._notification.error('Time Ended', 'You can not edit this offer for the history purpose. If you dnt want to keep this, then delete it(products purchased history from this offer will also be deleted)');
+                    this._notification.error('Time Ended', 'You can not edit this offer for the history purpose. If you do not want to keep this, then delete it(products purchased history from this offer will also be deleted)');
                     return;
                 } else {
                     this.isEdit = !this.isEdit;
@@ -282,24 +285,72 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     let excelData = [];
                     this.orderedOfferedProducts.forEach(offerItem => {
                         excelData.push({
+                            'Order Date': _moment(offerItem.orderCreatedAt).format('DD-MM-YYYY'),
+                            'Order Time': _moment(offerItem.orderCreatedAt).format('h:m a'),
                             'Order id': offerItem.order_id,
-                            'Sub Order id': offerItem.suborder_id,
-                            'product code': offerItem.product_code,
+                            'SubOrder Id': offerItem.suborder_id,
+                            'Customer Name': offerItem.customer_name,
+                            'Customer Phone': (offerItem.customer_phone) ? offerItem.customer_phone : 'N/a',
+                            'Customer Division': offerItem.division_name,
+                            'Customer District': offerItem.zila_name,
+                            'Customer Upazila': offerItem.upazila_name,
+                            'Customer House/Road/Block/Village': offerItem.address.split(',').join('/'),
+                            'Category': offerItem.categoryName,
                             'product name': offerItem.product_name,
-                            'product quantity': offerItem.product_quantity,
-                            'product total price': offerItem.product_total_price,
-                            'warehouse name': offerItem.warehouse_name,
+                            'Product SKU': offerItem.product_code,
+                            'MRP': offerItem.originalPrice,
+                            'Vendor Price': offerItem.vendorPrice,
+                            'Quantity': offerItem.product_quantity,
+                            'Shipping Charge': offerItem.courier_charge,
+                            'Total': offerItem.product_total_price,
+                            'Grand Total': offerItem.total_price,
+                            'Payment Method': offerItem.paymentType,
+                            'Transaction ID': offerItem.transactionKey,
+                            'Payment Amount': offerItem.paymentAmount,
+                            'Transaction Time': _moment(offerItem.transactionTime).format('DD-MM-YYYY h:m a'),
+                            'Remaining Amount': offerItem.dueAmount ? offerItem.dueAmount : 0,
+                            'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name : 'N/a',
+                            'Vendor Phone': (offerItem.vendor_phone) ? offerItem.vendor_phone : 'N/a',
+                            'Vendor Address': offerItem.vendor_address.split(',').join('/'),
+                            'Suborder Status': typeof this.statusOptions[offerItem.sub_order_status] !== 'undefined' ? this.statusOptions[offerItem.sub_order_status] : 'Unrecognized Status',
+                            'Suborder Changed By': ((offerItem.suborder_changed_by_name) ? offerItem.suborder_changed_by_name : ''),
+                            'Order Status': typeof this.statusOptions[offerItem.order_status] !== 'undefined' ? this.statusOptions[offerItem.order_status] : 'Unrecognized Status',
+                            'Order Status Changed By': ((offerItem.order_changed_by_name) ? offerItem.order_changed_by_name : ''),
                         })
                     });
 
                     const header = [
+                        'Order Date',
+                        'Order Time',
                         'Order id',
-                        'Sub Order id',
-                        'product code',
+                        'SubOrder Id',
+                        'Customer Name',
+                        'Customer Phone',
+                        'Customer Division',
+                        'Customer District',
+                        'Customer Upazila',
+                        'Customer House/Road/Block/Village',
+                        'Category',
                         'product name',
-                        'product quantity',
-                        'product total price',
-                        'warehouse name',
+                        'Product SKU',
+                        'MRP',
+                        'Vendor Price',
+                        'Quantity',
+                        'Shipping Charge',
+                        'Total',
+                        'Grand Total',
+                        'Payment Method',
+                        'Transaction ID',
+                        'Payment Amount',
+                        'Transaction Time',
+                        'Remaining Amount',
+                        'Vendor Name',
+                        'Vendor Phone',
+                        'Vendor Address',
+                        'Suborder Status',
+                        'Suborder Changed By',
+                        'Order Status',
+                        'Order Status Changed By'
                     ];
                     let offer_id = this.offerInfo.id;
                     let offerName = 'Anonder Jhor';

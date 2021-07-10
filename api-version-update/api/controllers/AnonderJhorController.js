@@ -587,13 +587,55 @@ module.exports = {
       }
       let rawSQL = `
       SELECT
-            product_orders.id AS order_id,
-            product_suborders.id as suborder_id,
-            products.name AS product_name,
-            products.code AS product_code,
-            warehouses.name AS warehouse_name,
-            psi.product_quantity,
-            psi.product_total_price
+           product_orders.id AS order_id,
+           product_suborders.id as suborder_id,
+           products.name AS product_name,
+           products.code AS product_code,
+           warehouses.name AS warehouse_name,
+           psi.product_quantity,
+           psi.product_total_price,
+
+           psi.id,
+           psi.product_id,
+           products.price as originalPrice,
+           products.vendor_price as vendorPrice,
+
+           products.promo_price as discountPrice,
+           psi.warehouse_id,
+
+           psi.status,
+           psi.\`date\`,
+           psi.created_at,
+           product_orders.status as order_status,
+           product_orders.courier_charge as courier_charge,
+           product_orders.total_price as total_price,
+
+
+           product_orders.user_id,
+           product_orders.created_at as orderCreatedAt,
+           product_suborders.status as sub_order_status,
+
+           payment.payment_type as paymentType,
+           payment.transection_key as transactionKey,
+           payment.payment_amount as paymentAmount,
+           payment.created_at as transactionTime,
+
+           CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+           CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
+           CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
+
+           customer.phone as customer_phone,
+
+           warehouses.phone as vendor_phone,
+           warehouses.address as vendor_address,
+           payment_addresses.postal_code,
+           payment_addresses.address,
+           divArea.name as division_name,
+           zilaArea.name as zila_name,
+           upazilaArea.name as upazila_name,
+
+           categories.name as categoryName,
+           (product_orders.total_price - product_orders.paid_amount) as dueAmount
             `;
       if (isRegularIndividualProductOffer) {
         rawSQL += `,
@@ -606,7 +648,19 @@ module.exports = {
         LEFT JOIN products ON psi.product_id = products.id
         LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
-        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id`;
+        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
+
+        LEFT JOIN payments as payment ON  product_orders.id  =   payment.order_id
+        LEFT JOIN categories   ON categories.id = products.type_id
+        LEFT JOIN users as customer ON customer.id = product_orders.user_id
+        LEFT JOIN users as orderChangedBy ON orderChangedBy.id = product_orders.changed_by
+        LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = product_suborders.changed_by
+        LEFT JOIN payment_addresses ON product_orders.shipping_address = payment_addresses.id
+        LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
+        LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id
+        LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id
+
+        `;
       if (isRegularIndividualProductOffer) {
         fromSQL += `
         LEFT JOIN regular_offer_products ON regular_offer_products.regular_offer_id = psi.offer_id_number
@@ -617,7 +671,7 @@ module.exports = {
       if (isRegularIndividualProductOffer) {
         whereSQL += ` AND psi.product_id = regular_offer_products.product_id `;
       }
-      whereSQL += ` ORDER BY product_orders.id`;
+      whereSQL += ` ORDER BY product_orders.id ASC, psi.created_at DESC, psi.id  DESC,  payment.created_at  DESC `;
 
       const offerOrders = await sails.sendNativeQuery(rawSQL + fromSQL + whereSQL, []);
 
