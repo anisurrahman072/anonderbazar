@@ -164,7 +164,7 @@ module.exports = {
               product_id: product_id,
               product_deactivation_time: null
             });
-            if (existedProduct !== undefined) {
+            if (existedProduct) {
               await RegularOfferProducts.update({product_id: product_id}).set({
                 regular_offer_id: data.id,
                 calculation_type: calculationType,
