@@ -141,7 +141,8 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                             'warehouse name': offerItem.warehouse_name
                         }
                         if(isShowDiscountAmount){
-                            data['Discount Amount'] = offerItem.discountAmount
+                            data['Discount Type'] = offerItem.discountType;
+                            data['Discount Amount'] = offerItem.discountAmount;
                         }
                         excelData.push(data);
                     });
@@ -157,6 +158,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                         'warehouse name',
                     ];
                     if(isShowDiscountAmount){
+                        header.push('Discount Type');
                         header.push('Discount Amount');
                     }
 
