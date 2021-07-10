@@ -263,7 +263,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             .subscribe(result => {
                 let presentTime = moment();
                 if (presentTime.diff(result.anonderJhorOffer.end_date) > 0) {
-                    this._notification.error('Time Ended', 'You can not edit this offer for the history purpose. If you dnt want to keep this, then delete it(products purchased history from this offer will also be deleted)');
+                    this._notification.error('Time Ended', 'You can not edit this offer for the history purpose. If you do not want to keep this, then delete it(products purchased history from this offer will also be deleted)');
                     return;
                 } else {
                     this.isEdit = !this.isEdit;
