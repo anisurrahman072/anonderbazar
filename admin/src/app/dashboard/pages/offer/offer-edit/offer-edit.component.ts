@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -13,13 +13,13 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {ImageService} from "../../../../services/image.service";
 import {DesignImagesService} from "../../../../services/design-images.service";
 
-
 @Component({
     selector: 'app-offer-edit',
     templateUrl: './offer-edit.component.html',
     styleUrls: ['./offer-edit.component.css']
 })
 export class OfferEditComponent implements OnInit {
+
     Editor = ClassicEditor;
     config = {
         toolbar: {
@@ -55,40 +55,9 @@ export class OfferEditComponent implements OnInit {
     ImageFile: File;
     BannerImageFile: File;
     smallOfferImage: File;
-    @ViewChild('Image')
-    Image: any;
+
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    /*ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
+
     _isSpinning: any = false;
     submitting: boolean = false;
     sub: any;
@@ -249,7 +218,7 @@ export class OfferEditComponent implements OnInit {
         });
     }
 
-//Event method for submitting the form
+    //Event method for submitting the form
     submitForm = ($event, value) => {
         $event.preventDefault();
         this._isSpinning = true;
@@ -275,7 +244,7 @@ export class OfferEditComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if (this.individuallySelectedProductsId) {
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
             formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
         }
         if (this.individuallySelectedProductsCalculation) {
@@ -293,11 +262,22 @@ export class OfferEditComponent implements OnInit {
             formData.append('brand_id', value.brandId);
         }
 
-        if (value.categoryId) {
-            formData.append('category_id', value.categoryId);
-        }
-        if (value.subCategoryId) {
-            formData.append('subCategory_Id', value.subCategoryId);
+        if (value.selectionType === 'Category wise') {
+            if (!this.categoryId) {
+                this._notification.error('Category!', 'Select one category please');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('category_id', this.categoryId);
+            }
+
+            if (!this.subCategoryId) {
+                this._notification.error('Sub Category!', 'Setting offer to a whole category by mistake is not allowed');
+                this._isSpinning = false;
+                return;
+            } else {
+                formData.append('subCategory_Id', this.subCategoryId);
+            }
         }
         if (value.subSubCategoryId) {
             formData.append('subSubCategory_Id', value.subSubCategoryId);
@@ -314,18 +294,18 @@ export class OfferEditComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
-        if (this.smallOfferImage) {
-            formData.append('hasSmallImage', 'true');
-            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
-        } else {
-            formData.append('hasSmallImage', 'false');
-        }
-
         if (this.BannerImageFile) {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         } else {
             formData.append('hasBannerImage', 'false');
+        }
+
+        if (this.smallOfferImage) {
+            formData.append('hasSmallImage', 'true');
+            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
+        } else {
+            formData.append('hasSmallImage', 'false');
         }
 
         this.offerService.updateOffer(formData).subscribe(result => {
@@ -352,12 +332,12 @@ export class OfferEditComponent implements OnInit {
         }
     }
 
-//Event method for setting up form in validation
+    // Event method for setting up form in validation
     getFormControl(name) {
         return this.validateForm.controls[name];
     }
 
-//Event method for removing picture
+    // Event method for removing picture
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
 
@@ -386,7 +366,7 @@ export class OfferEditComponent implements OnInit {
         this.smallOfferImage = null;
     }
 
-//Event method for storing imgae in variable
+    // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
         let formData = new FormData();
         formData.append('image', metadata.file, metadata.file.name);
@@ -427,7 +407,7 @@ export class OfferEditComponent implements OnInit {
             this.allProductPage = event;
         }
         this._isSpinning = true;
-        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch)
+        this.productService.getAllWithPagination(this.allProductPage, this.allProductLimit, this.offerProductIds, this.allProductNameSearch, this.allProductCodeSearch, this.allShopOwnerSearch, this.allBrandSearch, this.allCategorySearch, this.allSubCategorySearch, 2)
             .subscribe(result => {
                 if (typeof result.data !== 'undefined') {
                     this.allProductTotal = result.total;
@@ -584,7 +564,6 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
-
     showOfferModal() {
         this.isVisible = true;
         this.getRelatedOfferProducts(1);
@@ -611,7 +590,6 @@ export class OfferEditComponent implements OnInit {
     handleIndividualOfferedProductCancel(): void {
         this.isIndividualOfferedVisible = false;
     }
-
 
     removeProductFromOffer(productId) {
         this.offerService.removeProductFromOffer(productId, this.id)
@@ -667,7 +645,7 @@ export class OfferEditComponent implements OnInit {
         }
     }
 
-    /**method called to show the available options according to the selection in the offer selection type dropdown*/
+    /** method called to show the available options according to the selection in the offer selection type dropdown */
     getAllOptions(offerSelectionType?, catId?, subCatId?) {
         if (offerSelectionType || catId || subCatId) {
             if (offerSelectionType) {
@@ -683,9 +661,11 @@ export class OfferEditComponent implements OnInit {
             } else if (subCatId) {
                 this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
                     .subscribe(result => {
+                        this.finalSelectionType(false, false, false, true,false,false, subCatId);
                         this.subSubCategoryIDS = result.data;
                     })
             }
+
         }
     }
 
@@ -763,8 +743,8 @@ export class OfferEditComponent implements OnInit {
 
         let exists: Boolean = false;
         if (this.individuallySelectedProductsId) {
-            this.individuallySelectedProductsId.forEach(product => {
-                if (productId === product.id) {
+            this.individuallySelectedProductsId.forEach(id => {
+                if (productId === id) {
                     this._notification.error('Exists', 'Product already added');
                     this.submitting = false;
                     exists = true
@@ -798,10 +778,12 @@ export class OfferEditComponent implements OnInit {
     }
 
     removeIndividualProduct(productId) {
-        let index = this.individuallySelectedData.map(obj => obj.id).indexOf(productId);
-        if (index > -1) {
-            this.individuallySelectedData.splice(index, 1);
-        }
+        let index = this.individuallySelectedProductsId.indexOf(productId);
+        this.individuallySelectedProductsId.splice(index, 1);
+        this.individuallySelectedProductsCalculation.splice(index, 1);
+        this.individuallySelectedProductsAmount.splice(index, 1);
+
+        this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 

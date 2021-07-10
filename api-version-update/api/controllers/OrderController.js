@@ -379,7 +379,7 @@ module.exports = {
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
-    console.log('rozuiex n placeorder: ');
+    /*console.log('rozuiex n placeorder: ');*/
 
     try {
       const authUser = getAuthUser(req);

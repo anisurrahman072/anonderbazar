@@ -789,6 +789,7 @@ module.exports = {
                  products.promo_price as promo_price,
                  products.price as price,
                  products.name as name,
+                 products.quantity as quantity,
                  subOrderItems.product_id as productId,
                  SUM (subOrderItems.product_quantity) as total_quantity`;
 
@@ -922,7 +923,6 @@ module.exports = {
   /*route: product/canRateProduct*/
   canRateProduct: async (req, res) => {
     try {
-      console.log('rozux then: ', req.query.userID);
       if (req.query.userID) {
         let rawSQL = `
             SELECT

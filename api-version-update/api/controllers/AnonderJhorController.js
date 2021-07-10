@@ -6,14 +6,16 @@
  */
 
 const {imageUploadConfig} = require('../../libs/helper');
-const OfferService = require('../services/OfferService');
+const {uploadImages} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
+const moment = require('moment');
+const {REGULAR_OFFER_TYPE, INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE} = require('../../libs/constants');
 
 module.exports = {
   getAnonderJhor: async (req, res) => {
     try {
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      /*console.log('anonderJhorData: aaa', anonderJhorData);*/
+
       return res.status(200).json({
         success: true,
         message: 'AnonderJhor Data fetched successfully',
@@ -31,20 +33,29 @@ module.exports = {
   jhorActiveStatusChange: async (req, res) => {
     try {
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      const endDate = anonderJhorData.end_date.getTime();
-      const presentTime = (new Date(Date.now())).getTime();
 
-      let jhorStatus;
+      const endDate = moment(anonderJhorData.end_date);
+      const presentTime = moment();
 
-      if (endDate > presentTime) {
-        jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
-      } else {
+      /*endDate < presentTime*/
+      if (endDate.isSameOrBefore(presentTime)) {
         await AnonderJhor.updateOne({id: 1}).set({status: 0});
         return res.status(200).json({
           code: 'INVALID_ACTION',
           message: 'status can not be changed'
         });
       }
+
+      if (req.body) {
+        let _where = {};
+
+        _where.deletedAt = null;
+        _where.force_stop = {'!=': 1};
+
+        await AnonderJhorOffers.update({where: _where}).set({status: 1});
+      }
+
+      const jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
 
       return res.status(200).json({
         success: true,
@@ -62,51 +73,34 @@ module.exports = {
 
   updateAnonderJhor: async (req, res) => {
     try {
-      /*console.log('in jhor update: ', req.body);*/
-      let body = req.body;
+
+      let body = {...req.body};
       if (body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          if (err) {
-            return res.serverError(err);
-          }
+        const files = await uploadImages(req.file('image'));
+        if (files.length === 0) {
+          return res.badRequest('No image was uploaded');
+        }
 
-          if (files.length === 0) {
-            return res.badRequest('No image was uploaded');
-          }
+        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+        body.banner_image = '/' + newPath;
 
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-          body.banner_image = '/' + newPath;
-
-          let jhorData = {
-            start_date: body.startDate,
-            end_date: body.endDate,
-            banner_image: body.banner_image,
-            status: 0
-          };
-
-          let data = await AnonderJhor.updateOne({id: 1}).set(jhorData);
-
-          return res.status(200).json({
-            success: true,
-            message: 'Anonder Jhor updated successfully',
-            data
-          });
-        });
-      } else {
-        let jhorData = {
-          start_date: req.body.startDate,
-          end_date: req.body.endDate,
-          status: 0
-        };
-
-        let data = await AnonderJhor.updateOne({id: 1}).set(jhorData);
-
-        return res.status(200).json({
-          success: true,
-          message: 'AnonderJhor Data updated successfully',
-          data: data
-        });
       }
+
+      let jhorData = {
+        start_date: body.startDate,
+        end_date: body.endDate,
+        banner_image: body.banner_image,
+        status: 0
+      };
+
+      let data = await AnonderJhor.updateOne({id: 1}).set(jhorData);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Anonder Jhor has been updated successfully',
+        data
+      });
+
     } catch (error) {
       console.log(error);
       res.status(400).json({
@@ -149,6 +143,7 @@ module.exports = {
         message: 'All Anonder Jhor offers with pagination',
         data: allAnonderJhorOffersData
       });
+
     } catch (error) {
       console.log(error);
       res.status(400).json({
@@ -162,20 +157,83 @@ module.exports = {
     try {
       await OfferService.anonderJhorOfferDurationCheck();
 
-      let anonderJhorData = await AnonderJhor.findOne({id: 1});
-      const presentTime = (new Date(Date.now())).getTime();
-      let jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
-      let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+      const anonderJhorData = await AnonderJhor.findOne({id: 1});
+      const presentTime = moment();
 
-      if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0) {
+      const jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      // let jhorOfferStartTime = jhorOfferData.start_date.getTime();
+      // let jhorOfferEndTime = jhorOfferData.end_date.getTime();
+
+      const jhorOfferStartTime = moment(jhorOfferData.start_date);
+      const jhorOfferEndTime = moment(jhorOfferData.end_date);
+
+      // if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
+      if (presentTime.isAfter(jhorOfferEndTime) || anonderJhorData.status === 0 || jhorOfferData.force_stop === 1) {
         return res.status(200).json({
           code: 'NOT_ALLOWED',
           message: 'status can not be changed'
         });
       }
 
-      let anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
-        .set({status: req.body.event});
+      let anonderJhorOffer;
+
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({status: req.body.event});
+      } else {
+        /** check time and change force status; */
+        // if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
+        if (presentTime.isAfter(jhorOfferStartTime) && presentTime.isBefore(jhorOfferEndTime)) {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event, force_stop: 1});
+        } else {
+          anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+            .set({status: req.body.event});
+        }
+      }
+
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully updated offer status',
+        status: anonderJhorOffer.status
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to update offer status',
+        error
+      });
+    }
+  },
+
+  offerForceStop: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let anonderJhorData = await AnonderJhor.findOne({id: 1});
+      const presentTime = moment();
+      const jhorOfferData = await AnonderJhorOffers.findOne({id: req.body.offerId});
+      const jhorOfferEndTime = moment(jhorOfferData.end_date);
+
+      // if (presentTime > jhorOfferEndTime || anonderJhorData.status === 0) {
+      if (presentTime.isAfter(jhorOfferEndTime) || anonderJhorData.status === 0) {
+        return res.status(200).json({
+          code: 'NOT_ALLOWED',
+          message: 'status can not be changed'
+        });
+      }
+
+      /** when event value is true it means, request to force stop, value for force stop is 1 */
+      let anonderJhorOffer;
+      if (req.body.event) {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 0});
+      } else {
+        anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
+          .set({force_stop: req.body.event, status: 1});
+      }
 
       res.status(200).json({
         success: true,
@@ -215,97 +273,48 @@ module.exports = {
 
   anonderJhorOfferInsert: async (req, res) => {
     try {
-      let body = req.body;
-      if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          if (err) {
-            return res.serverError(err);
-          }
+      let body = {...req.body};
+      if (body.hasImage === 'true') {
+        const files = await uploadImages(req.file('image'));
 
-          if (files.length === 0) {
-            return res.badRequest('No image was uploaded');
-          }
-
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-
-          body.image = '/' + newPath;
-
-          let offerData = {
-            image: body.image,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            category_id: body.categoryId,
-            anonder_jhor_id: 1,
-            status: 0
-          };
-
-          if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
-            offerData.sub_sub_category_id = body.subSubCategoryId;
-            const subSubCat = await AnonderJhorOffers.findOne({
-              sub_sub_category_id: body.subSubCategoryId,
-              status: 1
-            });
-            if (subSubCat !== undefined) {
-              return res.status(200).json({
-                code: 'INVALID_SUBSUBCAT',
-                message: 'Subsub category already in another anonder jhor offer'
-              });
-            }
-          }
-
-          if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
-            offerData.sub_category_id = body.subCategoryId;
-          }
-
-          let data = await AnonderJhorOffers.create(offerData).fetch();
-
-          return res.status(200).json({
-            success: true,
-            message: 'Anonder jhor Offer created successfully',
-            data
-          });
-
-        });
-
-      } else {
-        let offerData = {
-          calculation_type: body.calculationType,
-          discount_amount: body.discountAmount,
-          start_date: body.offerStartDate,
-          end_date: body.offerEndDate,
-          category_id: body.categoryId,
-          anonder_jhor_id: 1,
-          status: 0
-        };
-
-        if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
-          offerData.sub_sub_category_id = body.subSubCategoryId;
-          const subSubCat = await AnonderJhorOffers.findOne({
-            sub_sub_category_id: body.subSubCategoryId,
-            status: 1
-          });
-          if (subSubCat !== undefined) {
-            return res.status(200).json({
-              code: 'INVALID_SUBSUBCAT',
-              message: 'Subsub category already in another anonder jhor offer'
-            });
-          }
+        if (files.length === 0) {
+          return res.badRequest('No image was uploaded');
         }
 
-        if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
-          offerData.sub_category_id = body.subCategoryId;
-        }
+        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
 
-        let data = await AnonderJhorOffers.create(offerData).fetch();
-
-        return res.status(200).json({
-          success: true,
-          message: 'Anonder jhor Offer created successfully',
-          data
-        });
+        body.image = '/' + newPath;
       }
+
+
+      let offerData = {
+        image: body.image,
+        calculation_type: body.calculationType,
+        discount_amount: body.discountAmount,
+        start_date: body.offerStartDate,
+        end_date: body.offerEndDate,
+        category_id: body.categoryId,
+        anonder_jhor_id: 1,
+        status: 1,
+        force_stop: 0
+      };
+
+      if (body.subCategoryId) {
+        offerData.sub_category_id = body.subCategoryId;
+      }
+
+      if (body.subSubCategoryId) {
+        offerData.sub_sub_category_id = body.subSubCategoryId;
+      }
+
+      let data = await AnonderJhorOffers.create(offerData).fetch();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Anonder jhor Offer has been created successfully',
+        data
+      });
+
     } catch (error) {
       console.log('error in insert offer: ', error);
       return res.status(400).json({
@@ -335,11 +344,12 @@ module.exports = {
 
   getAllSubCategories: async (req, res) => {
     try {
-      let allSubCategories = await Category.find({
+      const allSubCategories = await Category.find({
         type_id: 2,
-        parent_id: parseInt(req.query.parentId),
+        parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
+
       return res.status(200).json({
         success: true,
         message: 'all sub-categories fetched successfully',
@@ -358,7 +368,7 @@ module.exports = {
     try {
       let allSubSubCategories = await Category.find({
         type_id: 2,
-        parent_id: parseInt(req.query.parentId),
+        parent_id: parseInt(req.query.parentId, 10),
         deletedAt: null
       });
       return res.status(200).json({
@@ -399,108 +409,58 @@ module.exports = {
   },
 
   updateAnonderJhorOffer: async (req, res) => {
-    console.log('body updateAnonderJhorOffer: ', req.body);
     try {
-      let body = req.body;
-      if (req.body.hasImage === 'true') {
-        req.file('image').upload(imageUploadConfig(), async (err, files) => {
-          if (err) {
-            return res.serverError(err);
-          }
-
-          if (files.length === 0) {
-            return res.badRequest('No image was uploaded');
-          }
-
-          const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-
-          body.image = '/' + newPath;
-
-          let offerData = {
-            image: body.image,
-            calculation_type: body.calculationType,
-            discount_amount: body.discountAmount,
-            start_date: body.offerStartDate,
-            end_date: body.offerEndDate,
-            category_id: body.categoryId,
-            anonder_jhor_id: 1,
-            status: 0
-          };
-
-          if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
-            offerData.sub_sub_category_id = body.subSubCategoryId;
-            const subSubCat = await AnonderJhorOffers.findOne({
-              sub_sub_category_id: body.subSubCategoryId,
-              status: 1
-            });
-            if (subSubCat !== undefined) {
-              return res.status(200).json({
-                code: 'INVALID_SUBSUBCAT',
-                message: 'Subsub category already in another anonder jhor offer'
-              });
-            }
-          } else {
-            offerData.sub_sub_category_id = null;
-          }
-
-          if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
-            offerData.sub_category_id = body.subCategoryId;
-          } else {
-            offerData.sub_category_id = null;
-          }
-
-          let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
-
-          return res.status(200).json({
-            success: true,
-            message: 'Anonder Jhor Offer updated successfully',
-            data
-          });
-
-        });
-
-      } else {
-        let offerData = {
-          calculation_type: body.calculationType,
-          discount_amount: body.discountAmount,
-          start_date: body.offerStartDate,
-          end_date: body.offerEndDate,
-          category_id: body.categoryId,
-          anonder_jhor_id: 1,
-          status: 0
-        };
-
-        if (body.subSubCategoryId && body.subSubCategoryId !== 'null' && body.subSubCategoryId !== 'undefined') {
-          offerData.sub_sub_category_id = body.subSubCategoryId;
-          const subSubCat = await AnonderJhorOffers.findOne({
-            sub_sub_category_id: body.subSubCategoryId,
-            status: 1
-          });
-          if (subSubCat !== undefined) {
-            return res.status(200).json({
-              code: 'INVALID_SUBSUBCAT',
-              message: 'Subsub category already in another anonder jhor offer'
-            });
-          }
-        } else {
-          offerData.sub_sub_category_id = null;
+      let body = {...req.body};
+      if (body.hasImage === 'true') {
+        const files = await uploadImages(req.file('image'));
+        if (files.length === 0) {
+          return res.badRequest('No image was uploaded');
         }
-
-        if (body.subCategoryId && body.subCategoryId !== 'null' && body.subCategoryId !== 'undefined') {
-          offerData.sub_category_id = body.subCategoryId;
-        } else {
-          offerData.sub_category_id = null;
-        }
-
-
-        let data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
-
-        return res.status(200).json({
-          success: true,
-          message: 'Anonder Jhor Offer updated successfully',
-          data
-        });
+        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
+        body.image = '/' + newPath;
       }
+
+      let offerData = {
+        image: body.image,
+        calculation_type: body.calculationType,
+        discount_amount: body.discountAmount,
+        start_date: body.offerStartDate,
+        end_date: body.offerEndDate,
+        category_id: body.categoryId,
+        anonder_jhor_id: 1,
+        status: 1,
+        force_stop: 0
+      };
+
+      if (body.subSubCategoryId) {
+        offerData.sub_sub_category_id = body.subSubCategoryId;
+        const subSubCat = await AnonderJhorOffers.findOne({
+          sub_sub_category_id: body.subSubCategoryId,
+          status: 1
+        });
+        if (subSubCat) {
+          return res.status(200).json({
+            code: 'INVALID_SUBSUBCAT',
+            message: 'Subsub category already in another anonder jhor offer'
+          });
+        }
+      } else {
+        offerData.sub_sub_category_id = null;
+      }
+
+      if (body.subCategoryId) {
+        offerData.sub_category_id = body.subCategoryId;
+      } else {
+        offerData.sub_category_id = null;
+      }
+
+      const data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Anonder Jhor Offer updated successfully',
+        data
+      });
 
     } catch (error) {
       console.log('updateOffer error: ', error);
@@ -523,8 +483,9 @@ module.exports = {
 
       let _where = {};
       _where.deletedAt = null;
-      _where.start_date = {'>=' : jhorStartTime};
-      _where.end_date = {'<=' : jhorEndTime};
+      _where.start_date = {'>=': jhorStartTime};
+      _where.end_date = {'<=': jhorEndTime};
+      _where.force_stop = {'!=': 1};
 
       let anonderJhorOffers;
       if (anonderJhor.status) {
@@ -551,9 +512,28 @@ module.exports = {
 
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
+      console.log('req.query.sortData: ', req.query.sortData);
       await OfferService.anonderJhorOfferDurationCheck();
 
       let webJhorOfferedProducts;
+
+      let _sort = [];
+      let sortData;
+      if(req.query.sortData){
+        sortData = JSON.parse(req.query.sortData);
+        if(sortData.code === 'newest'){
+          let obj = {
+            createdAt: sortData.order
+          };
+          _sort.push(obj);
+        } else if (sortData.code === 'price'){
+          let obj = {
+            price: sortData.order
+          };
+          _sort.push(obj);
+        }
+      }
+      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -563,9 +543,6 @@ module.exports = {
         .populate('category_id')
         .populate('sub_category_id')
         .populate('sub_sub_category_id');
-
-      /*console.log('requset jhor offer: ', requestedJorOffer);*/
-
 
       let _where1 = {};
       _where1.status = 2;
@@ -580,8 +557,7 @@ module.exports = {
         _where1.type_id = requestedJorOffer.category_id.id;
       }
 
-      webJhorOfferedProducts = await Product.find({where: _where1});
-      /*console.log('webJhorOfferedProducts: ', webJhorOfferedProducts);*/
+      webJhorOfferedProducts = await Product.find({where: _where1}).sort(_sort);
 
       res.status(200).json({
         success: true,
@@ -600,31 +576,104 @@ module.exports = {
 
   generateOfferExcelById: async (req, res) => {
     try {
-      let offer_type = parseInt(req.query.offer_type);
-      let offer_id = parseInt(req.query.offer_id);
-
+      let offer_type = parseInt(req.query.offer_type, 10);
+      let offer_id = parseInt(req.query.offer_id, 10);
+      let isRegularIndividualProductOffer = false;
+      if (offer_type == REGULAR_OFFER_TYPE) {
+        let offerInfo = await Offer.findOne({id: offer_id, deletedAt: null});
+        if (offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE) {
+          isRegularIndividualProductOffer = true;
+        }
+      }
       let rawSQL = `
       SELECT
-            product_orders.id AS order_id,
-            product_suborders.id as suborder_id,
-            products.name AS product_name,
-            products.code AS product_code,
-            warehouses.name AS warehouse_name,
-            psi.product_quantity,
-            psi.product_total_price
-        FROM
+           product_orders.id AS order_id,
+           product_suborders.id as suborder_id,
+           products.name AS product_name,
+           products.code AS product_code,
+           warehouses.name AS warehouse_name,
+           psi.product_quantity,
+           psi.product_total_price,
+
+           psi.id,
+           psi.product_id,
+           products.price as originalPrice,
+           products.vendor_price as vendorPrice,
+
+           products.promo_price as discountPrice,
+           psi.warehouse_id,
+
+           psi.status,
+           psi.\`date\`,
+           psi.created_at,
+           product_orders.status as order_status,
+           product_orders.courier_charge as courier_charge,
+           product_orders.total_price as total_price,
+
+
+           product_orders.user_id,
+           product_orders.created_at as orderCreatedAt,
+           product_suborders.status as sub_order_status,
+
+           payment.payment_type as paymentType,
+           payment.transection_key as transactionKey,
+           payment.payment_amount as paymentAmount,
+           payment.created_at as transactionTime,
+
+           CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+           CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
+           CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
+
+           customer.phone as customer_phone,
+
+           warehouses.phone as vendor_phone,
+           warehouses.address as vendor_address,
+           payment_addresses.postal_code,
+           payment_addresses.address,
+           divArea.name as division_name,
+           zilaArea.name as zila_name,
+           upazilaArea.name as upazila_name,
+
+           categories.name as categoryName,
+           (product_orders.total_price - product_orders.paid_amount) as dueAmount
+            `;
+      if (isRegularIndividualProductOffer) {
+        rawSQL += `,
+            regular_offer_products.discount_amount AS discountAmount,
+            regular_offer_products.calculation_type AS discountType
+        `;
+      }
+      let fromSQL = `FROM
             product_suborder_items AS psi
         LEFT JOIN products ON psi.product_id = products.id
         LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
         LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
-        WHERE
-            psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id}
-        ORDER BY
-            product_orders.id
-        `;
 
-      const offerOrders = await sails.sendNativeQuery(rawSQL, []);
+        LEFT JOIN payments as payment ON  product_suborders.id  =   payment.suborder_id
+        LEFT JOIN categories   ON categories.id = products.type_id
+        LEFT JOIN users as customer ON customer.id = product_orders.user_id
+        LEFT JOIN users as orderChangedBy ON orderChangedBy.id = product_orders.changed_by
+        LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = product_suborders.changed_by
+        LEFT JOIN payment_addresses ON product_orders.shipping_address = payment_addresses.id
+        LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
+        LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id
+        LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id
+
+        `;
+      if (isRegularIndividualProductOffer) {
+        fromSQL += `
+        LEFT JOIN regular_offer_products ON regular_offer_products.regular_offer_id = psi.offer_id_number
+        `;
+      }
+
+      let whereSQL = ` WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} `;
+      if (isRegularIndividualProductOffer) {
+        whereSQL += ` AND psi.product_id = regular_offer_products.product_id `;
+      }
+      whereSQL += ` ORDER BY product_orders.id ASC, psi.created_at DESC, psi.id  DESC,  payment.created_at  DESC `;
+
+      const offerOrders = await sails.sendNativeQuery(rawSQL + fromSQL + whereSQL, []);
 
       let offerInfo;
       if (offer_type === 1) {

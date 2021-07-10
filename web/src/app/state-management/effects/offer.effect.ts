@@ -17,10 +17,9 @@ export class OfferEffect {
     @Effect()
     loadOffer$ = this.actions$.ofType(offerActions.LOAD_OFFER)
         .switchMap(() => {
-            return this.offerService.getRegularOfferStore()
+            return this.offerService.getAllOfferedProducts()
                 .pipe(
                     map(data => {
-                        console.log('getRegularOfferStore-data', data);
                         return new offerActions.LoadOfferSuccess(data)
                     }),
                     catchError(error => of(new offerActions.LoadOfferFail(error)))

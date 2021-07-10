@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
+import {error} from "util";
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
     selector: 'app-page-cms_details',
@@ -21,6 +23,13 @@ export class CmsDetailsPageComponent implements OnInit {
     calculationType;
     discountAmount;
     originalPrice;
+    currentTitle: any;
+
+    changeStatusN = false;
+    changeStatusPr = false;
+
+    changeStatusN_ASC = false;
+    changeStatusPr_ASC = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -29,7 +38,15 @@ export class CmsDetailsPageComponent implements OnInit {
         private title: Title,
         private router: Router,
         private offerService: OfferService,
+        private _notify: NotificationsService
     ) {
+        router.events.forEach((event) => {
+            if(event instanceof NavigationEnd) {
+                if(!this.title.getTitle()){
+                    this.title.setTitle(`${this.currentTitle}`);
+                }
+            }
+        });
     }
 
     // init the component
@@ -49,8 +66,27 @@ export class CmsDetailsPageComponent implements OnInit {
     //Method for cms data by ids
     private get_cms_by_id() {
 
+        let sortData = null;
+        if(this.changeStatusN){
+            sortData = {
+                code: "newest",
+                order: "DESC"
+            }
+            if(this.changeStatusN_ASC){
+                sortData.order = "ASC";
+            }
+        } else if(this.changeStatusPr){
+            sortData = {
+                code: "price",
+                order: "DESC"
+            }
+            if(this.changeStatusPr_ASC){
+                sortData.order = "ASC";
+            }
+        }
+
         if (this.id) {
-            this.offerService.getWebRegularOfferById(this.id)
+            this.offerService.getWebRegularOfferById(this.id, sortData)
                 .subscribe(result => {
                     /**info related to this offer*/
                     this.regularOffer = result.data[0];
@@ -88,6 +124,8 @@ export class CmsDetailsPageComponent implements OnInit {
                     }
 
                     this.addPageTitle();
+                }, error => {
+                    this._notify.error('Expired', 'Offer does not exists anymore');
                 });
         }
 
@@ -96,8 +134,10 @@ export class CmsDetailsPageComponent implements OnInit {
     private addPageTitle() {
         if (this.regularOffer) {
             this.title.setTitle(this.regularOffer.title + ' - Anonderbazar');
+            this.currentTitle = this.title.getTitle();
         } else {
             this.title.setTitle('Offer Detail - Anonderbazar');
+            this.currentTitle = this.title.getTitle();
         }
     }
 
@@ -108,5 +148,23 @@ export class CmsDetailsPageComponent implements OnInit {
 
         this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
         this.page = event;
+    }
+
+    showNewest() {
+        this.changeStatusN = true;
+        this.changeStatusPr = false;
+
+        this.changeStatusN_ASC = !this.changeStatusN_ASC;
+        this.changeStatusPr_ASC = false;
+        this.get_cms_by_id();
+    }
+
+    showPrice() {
+        this.changeStatusN = false;
+        this.changeStatusPr = true;
+
+        this.changeStatusN_ASC = false;
+        this.changeStatusPr_ASC = !this.changeStatusPr_ASC;
+        this.get_cms_by_id();
     }
 }

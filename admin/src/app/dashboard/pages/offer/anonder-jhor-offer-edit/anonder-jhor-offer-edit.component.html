@@ -48,7 +48,7 @@
                         </nz-option>
                     </nz-select>
                     <!--Select Sub-Sub-Category-->
-                    <nz-select *ngIf="subCategoryId !== null && subCategoryId !== undefined "
+                    <nz-select *ngIf="allSubSubCategoryIds && allSubSubCategoryIds.length > 0 && subCategoryId !== null && subCategoryId !== undefined "
                                formControlName="subSubCategoryId" nzAllowClear nzShowSearch
                                [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
                                [(ngModel)]="subSubCategoryId" style="margin: 10px 0;"
