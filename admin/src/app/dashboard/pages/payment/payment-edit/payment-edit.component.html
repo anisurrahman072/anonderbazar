@@ -135,7 +135,8 @@
             </div>
             <div class="col-md-8">
                 <div class="form-group">
-                    <nz-select formControlName="status" nzPlaceHolder="Select Status" *ngIf="isAllowedToUpdatePaymentStatus">
+                    <nz-select formControlName="status" nzPlaceHolder="Select Status"
+                               *ngIf="isAllowedToUpdatePaymentStatus">
                         <nz-option
                                 *ngFor="let option of statusOptions"
                                 [nzLabel]="option.label"
@@ -144,6 +145,7 @@
                         </nz-option>
                     </nz-select>
                     <div *ngIf="!isAllowedToUpdatePaymentStatus"><p>{{paymentApprovalStatus | paymentApprovalStatus}}</p></div>
+
                 </div>
                 <div
                         *ngIf="getFormControl('status').dirty&&getFormControl('status').hasError('required')">

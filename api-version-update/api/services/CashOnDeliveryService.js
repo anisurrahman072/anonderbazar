@@ -22,11 +22,13 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
-
+    } = await PaymentService.calcCartTotal(cart, cartItems);
+    console.log('rou grand', grandOrderTotal);
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
+
     grandOrderTotal += courierCharge;
+    console.log('rou grand total with courier: ', grandOrderTotal);
 
     /** Check weather cashback is valid payment method for the customer */
     if (PaymentService.isAllCouponProduct(cartItems) || this.isCashOnDeliveryAllowed(cartItems)) {

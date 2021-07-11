@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, NgZone} from '@angular/core';
 import {forkJoin, Subscription} from 'rxjs';
 import {NzNotificationService} from 'ng-zorro-antd';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import * as jsPDF from 'jspdf';
 import * as ___ from 'lodash';
 import {OrderService} from '../../../../services/order.service';
@@ -15,7 +15,6 @@ import {
 } from "../../../../../environments/global_config";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
 import * as _moment from 'moment';
-// import en from "@angular/common/locales/en";
 import {PaymentService} from "../../../../services/payment.service";
 import domtoimage from 'dom-to-image';
 
@@ -51,7 +50,18 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     OFFLINE_PAYMENT_METHODS = OFFLINE_PAYMENT_METHODS;
     currentMoneReceipt: any = '';
 
+    ordersGridPageNumber = null;
+    ordersGridDate = null;
+    ordersGridStatus = null;
+    ordersGridPaymentStatus = null;
+    ordersGridPaymentType = null;
+    ordersGridOrderType = null;
+    ordersGridCustomerName = null;
+    ordersGridOrderNumber = null;
+
+
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private _notification: NzNotificationService,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
@@ -62,6 +72,15 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit() {
+        this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
+        this.ordersGridDate = this.route.snapshot.queryParamMap.get("date");
+        this.ordersGridStatus = +this.route.snapshot.queryParamMap.get("status");
+        this.ordersGridPaymentStatus = +this.route.snapshot.queryParamMap.get("payment_status");
+        this.ordersGridPaymentType = this.route.snapshot.queryParamMap.get("payment_type");
+        this.ordersGridOrderType = +this.route.snapshot.queryParamMap.get("order_type");
+        this.ordersGridCustomerName = this.route.snapshot.queryParamMap.get("customerName");
+        this.ordersGridOrderNumber = +this.route.snapshot.queryParamMap.get("orderNumber");
+
         this.options = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
@@ -126,37 +145,38 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     }
 
-    /*
-        public SavePDF() {
-            let data = document.getElementById('printSection');
-            this._ngZone.runOutsideAngular(() => {
-                html2canvas(data)
-                    .then(canvas => {
-                        let imgWidth = 178;
-                        let pageHeight = 295;
-                        let imgHeight = canvas.height * imgWidth / canvas.width;
-                        let heightLeft = imgHeight;
-                        let y = 0;
 
-                        const contentDataURL = canvas.toDataURL('image/png')
-                        let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
+
+    /*public SavePDF() {
+        let data = document.getElementById('printSection');
+        this._ngZone.runOutsideAngular(() => {
+            html2canvas(data)
+                .then(canvas => {
+                    let imgWidth = 178;
+                    let pageHeight = 295;
+                    let imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let y = 0;
+
+                    const contentDataURL = canvas.toDataURL('image/png')
+                    let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
+                    heightLeft -= pageHeight;
+                    pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight);
+                    while (heightLeft >= 0) {
+                        y = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(contentDataURL, 'PNG', 15, y, imgWidth, imgHeight);
                         heightLeft -= pageHeight;
-                        pdf.addImage(contentDataURL, 'PNG', 15, 15, imgWidth, imgHeight);
-                        while (heightLeft >= 0) {
-                            y = heightLeft - imgHeight;
-                            pdf.addPage();
-                            pdf.addImage(contentDataURL, 'PNG', 15, y, imgWidth, imgHeight);
-                            heightLeft -= pageHeight;
-                        }
-                        pdf.save('invoice.pdf'); // Generated PDF
-                    })
-                    .catch(error => {
-                        console.log("Error occurred!", error);
-                    });
-            });
+                    }
+                    pdf.save('invoice.pdf'); // Generated PDF
+                })
+                .catch(error => {
+                    console.log("Error occurred!", error);
+                });
+        });
 
 
-        }*/
+    }*/
 
     public savePDF() {
         let data = document.getElementById('printSection');
@@ -217,5 +237,19 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     showAddModalVisible(flag, currentMoneyReceipt) {
         this.currentMoneReceipt = currentMoneyReceipt;
         this.isAddModalVisible = flag;
+    }
+
+    goToOrdersGridPage(){
+        let query = {
+            page: this.ordersGridPageNumber,
+            date: this.ordersGridDate,
+            status: this.ordersGridStatus,
+            payment_status: this.ordersGridPaymentStatus,
+            payment_type: this.ordersGridPaymentType,
+            order_type: this.ordersGridOrderType,
+            customerName: this.ordersGridCustomerName,
+            orderNumber: this.ordersGridOrderNumber
+        };
+        this.router.navigate(['/dashboard/order'], {queryParams: query});
     }
 }

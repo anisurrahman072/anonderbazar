@@ -8,6 +8,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { UiModule } from '../../../shared/ui.module';
 import { FileUploadModule } from 'ng2-file-upload';
 import { UserCmsPostComponent } from './Components/user-cms-post/user-cms-post.component';
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 const routes: Routes = [
   {
@@ -19,16 +20,17 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    FileUploadModule,
-    ImageUploadModule.forRoot(),
-    NgZorroAntdModule.forRoot(),
-    RouterModule.forChild(routes),
-    UiModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        FileUploadModule,
+        ImageUploadModule.forRoot(),
+        NgZorroAntdModule.forRoot(),
+        RouterModule.forChild(routes),
+        UiModule,
+        CKEditorModule
+    ],
   declarations: [UserCmsPostComponent],
   exports: []
 })

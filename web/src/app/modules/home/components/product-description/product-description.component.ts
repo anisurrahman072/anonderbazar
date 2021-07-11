@@ -98,7 +98,7 @@ export class ProductDescriptionComponent implements OnInit {
         this.review = this.ratingForm.controls.review.value;
         this.rating = this.ratingForm.controls.rating.value;
 
-        /*method called to save data to the database*/
+        /**method called to save data to the database*/
         this.ratingChange(this.rating, this.review);
 
         this.ratingForm.reset();

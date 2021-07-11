@@ -1,12 +1,12 @@
 import {ChangeDetectorRef, Component, OnInit, AfterViewInit, NgZone} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as ___ from 'lodash';
 import * as jspdf from 'jspdf';
 import * as html2canvas from "html2canvas";
 import {AppSettings} from "../../../../config/app.config";
 import {
-    AreaService,
+    AreaService, AuthService,
     GlobalConfigService,
     OrderService,
     SuborderItemService,
@@ -23,6 +23,7 @@ import {ORDER_STATUSES, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS, PAYMENT_APP
 import {forkJoin} from "rxjs/observable/forkJoin";
 import {QueryMessageModalComponent} from "../query-message-modal/query-message-modal.component";
 import {LoaderService} from "../../../../services/ui/loader.service";
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
     selector: 'order-invoice',
@@ -76,7 +77,9 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                 private modalService: BsModalService,
                 public loaderService: LoaderService,
                 private cdr: ChangeDetectorRef,
-                private _ngZone: NgZone) {
+                private _ngZone: NgZone,
+                private _notify: NotificationsService,
+                private router: Router,) {
     }
 
     //Event method for getting all the data for the page
@@ -128,6 +131,14 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                         data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                         return data;
                     });
+                }, error => {
+                    console.log("annnndd: ", error.error);
+                    if(error.error && error.error.code && error.error.code === "userIdMissMatched"){
+                        this._notify.info("User Id not matched.", error.error.message);
+                        this.router.navigate(['profile/orders']);
+                    } else {
+                        this._notify.error("Error occurred", error.error.message);
+                    }
                 })
         });
     }

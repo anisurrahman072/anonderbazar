@@ -5,6 +5,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 
 import {environment} from "../../../../../../../environments/environment";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-footer',
@@ -12,6 +13,36 @@ import {environment} from "../../../../../../../environments/environment";
     styleUrls: ['./cms-footer.component.css']
 })
 export class CmsFooterComponent implements OnInit {
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;
@@ -78,9 +109,9 @@ export class CmsFooterComponent implements OnInit {
         });
     }
   //Event method for getting all the data for the page
-    ngOnInit() { 
+    ngOnInit() {
         this.getData();
-    } 
+    }
 
     sectionChange(value) {
 
@@ -150,7 +181,7 @@ export class CmsFooterComponent implements OnInit {
         }
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            this.getData(); 
+            this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;
             this.resetForm(null);

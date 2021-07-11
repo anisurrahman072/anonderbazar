@@ -7,12 +7,13 @@ import {ExportService} from '../../../../services/export.service';
 import {StatusChangeService} from '../../../../services/statuschange.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SuborderService} from '../../../../services/suborder.service';
-import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, PAYMENT_METHODS, PAYMENT_STATUS, ORDER_TYPE} from "../../../../../environments/global_config";
 import {SuborderItemService} from "../../../../services/suborder-item.service";
 import * as ___ from 'lodash';
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
 import {Subscription} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
 
 const moment = _rollupMoment || _moment;
 
@@ -41,6 +42,10 @@ export class OrderComponent implements OnInit, OnDestroy {
     paymentTypeSearchValue: any;
     orderTypeSearchValue: any;
     searchEndDate: any;
+    dateSearchValue = {
+        from: null,
+        to: null,
+    }
 
     searchStartDateOrdersBulk: any;
     searchEndDateOrdersBulk: any;
@@ -62,11 +67,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     paymentStatus: any = PAYMENT_STATUS;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
-    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
-    isAllowedToUpdateOrderStatus: boolean = false;
-
-    PAYMENT_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
-    isAllowedToUpdatePaymentStatus: boolean = false;
+    changePaymentOptions: any[] = GLOBAL_CONFIGS.REGULAR_OFFLINE_ORDER_PAYMENT_STATUS_CHANGE;
 
     isProductVisible = false;
     isOrdersBulkVisible = false;
@@ -77,9 +78,27 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     submitting: boolean = false;
 
+    ordersGridPageNumber = null;
+    ordersGridDate = null;
+    ordersGridStatus = null;
+    ordersGridPaymentStatus = null;
+    ordersGridPaymentType = null;
+    ordersGridOrderType = null;
+    ordersGridCustomerName = null;
+    ordersGridOrderNumber = null;
+
     PAYMENT_METHODS = PAYMENT_METHODS;
+    ORDER_TYPE = ORDER_TYPE;
+
+    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdateOrderStatus: boolean = false;
+
+    PAYMENT_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus: boolean = false;
 
     constructor(
+        private route: ActivatedRoute,
+        private router: Router,
         private orderService: OrderService,
         private suborderItemService: SuborderItemService,
         private fb: FormBuilder,
@@ -108,7 +127,45 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     // init the component
     ngOnInit(): void {
+        /** If come from Invoice page this section will be executed to add all previous filters */
         this.currentUser = this.authService.getCurrentUser();
+        this.ordersGridPageNumber = +this.route.snapshot.queryParamMap.get("page");
+        this.ordersGridDate = JSON.parse(this.route.snapshot.queryParamMap.get("date"));
+        this.ordersGridStatus = +this.route.snapshot.queryParamMap.get("status");
+        this.ordersGridPaymentStatus = +this.route.snapshot.queryParamMap.get("payment_status");
+        this.ordersGridPaymentType = this.route.snapshot.queryParamMap.get("payment_type");
+        this.ordersGridOrderType = +this.route.snapshot.queryParamMap.get("order_type");
+        this.ordersGridCustomerName = this.route.snapshot.queryParamMap.get("customerName");
+        this.ordersGridOrderNumber = +this.route.snapshot.queryParamMap.get("orderNumber");
+
+        if(this.ordersGridPageNumber){
+            this.orderPage = this.ordersGridPageNumber;
+        }
+        if(this.ordersGridDate){
+            this.searchStartDate = this.ordersGridDate.from;
+            this.searchEndDate = this.ordersGridDate.to;
+        }
+        if(this.ordersGridStatus){
+            this.statusSearchValue = this.ordersGridStatus;
+        }
+        if(this.ordersGridPaymentStatus){
+            this.paymentStatusSearchValue = this.ordersGridPaymentStatus
+        }
+        if(this.ordersGridPaymentType){
+            this.paymentTypeSearchValue = this.ordersGridPaymentType
+        }
+        if(this.ordersGridOrderType){
+            this.orderTypeSearchValue = this.ordersGridOrderType;
+        }
+        if(this.ordersGridCustomerName){
+            this.customerNameFilter = this.ordersGridCustomerName;
+        }
+        if(this.ordersGridOrderNumber){
+            this.orderNumberFilter = this.ordersGridOrderNumber
+        }
+        /** If come from Invoice page this section will be executed to add all previous filters END */
+
+
         if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
             this.isAllowedToUpdateOrderStatus = true;
         }
@@ -137,29 +194,24 @@ export class OrderComponent implements OnInit, OnDestroy {
             }
         }
 
-        let dateSearchValue = {
-            from: null,
-            to: null,
-        };
-
         if (this.searchStartDate) {
             if (this.searchStartDate.constructor.name === 'Moment') {
-                dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                this.dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
             } else {
-                dateSearchValue.from = this.searchStartDate;
+                this.dateSearchValue.from = this.searchStartDate;
             }
         } else {
-            dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            this.dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
 
         if (this.searchEndDate) {
             if (this.searchEndDate.constructor.name === 'Moment') {
-                dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+                this.dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
             } else {
-                dateSearchValue.to = this.searchEndDate;
+                this.dateSearchValue.to = this.searchEndDate;
             }
         } else {
-            dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            this.dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
 
         let page = this.orderPage;
@@ -171,7 +223,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
         this._isSpinning = true;
         this.orderDataSubscription = this.orderService.getAllOrdersGrid({
-            date: JSON.stringify(dateSearchValue),
+            date: JSON.stringify(this.dateSearchValue),
             status: this.statusSearchValue,
             payment_status: this.paymentStatusSearchValue,
             payment_type: this.paymentTypeSearchValue,
@@ -650,6 +702,20 @@ export class OrderComponent implements OnInit, OnDestroy {
                 console.log("Error: ", error);
                 this._notification.error('Error occurred!', 'Something wrong happened!');
             })
+    }
+
+    goToOrderRead(orderId){
+        let query = {
+            page: this.orderPage,
+            date: JSON.stringify(this.dateSearchValue),
+            status: this.statusSearchValue,
+            payment_status: this.paymentStatusSearchValue,
+            payment_type: this.paymentTypeSearchValue,
+            order_type: this.orderTypeSearchValue,
+            customerName: this.customerNameFilter,
+            orderNumber: this.orderNumberFilter
+        };
+        this.router.navigate(['/dashboard/order/details/', orderId], {queryParams: query});
     }
 
 

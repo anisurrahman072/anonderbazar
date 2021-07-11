@@ -7,6 +7,7 @@ import {SignupComponent} from '../pages/signup/signup.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {WarehouseEntryComponent} from '../pages/warehouse-entry/warehouse-entry.component';
 import {UiModule} from "../../dashboard/shared/ui.module";
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 
 // return false;
@@ -26,7 +27,8 @@ const routes: Routes = [
         CommonModule,
         RouterModule.forChild(routes),
         ReactiveFormsModule,
-        UiModule
+        UiModule,
+        CKEditorModule
 
     ],
     declarations: [LoginComponent, SignupComponent, WarehouseEntryComponent, ForgotPasswordComponent]

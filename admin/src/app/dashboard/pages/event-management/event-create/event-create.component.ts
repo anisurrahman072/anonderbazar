@@ -8,6 +8,8 @@ import { AuthService } from "../../../../services/auth.service";
 import { EventService } from "../../../../services/event.service";
 import { EventPriceService } from "../../../../services/event-price.service";
 import { splitMatchedQueriesDsl } from "@angular/core/src/view/util";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
   selector: "app-event-create",
@@ -15,6 +17,36 @@ import { splitMatchedQueriesDsl } from "@angular/core/src/view/util";
   styleUrls: ["./event-create.component.css"]
 })
 export class EventCreateComponent implements OnInit {
+  Editor = ClassicEditor;
+  config = {
+    toolbar: {
+      items: [
+        'heading', '|', 'bold', 'italic', 'link',
+        'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+        'imageUpload',
+        'blockQuote',
+        'insertTable',
+        'mediaEmbed',
+        'undo', 'redo'
+      ],
+      heading: {
+        options: [
+          { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+          { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+          { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+        ]
+      },
+      shouldNotGroupWhenFull: true,
+      image: {
+        toolbar: [
+          'imageTextAlternative',
+          'imageStyle:full',
+          'imageStyle:side'
+        ]
+      }
+    },
+  };
+
   _isSpinning: boolean = false;
   validateForm: FormGroup;
   ImageFile: File[] = [];

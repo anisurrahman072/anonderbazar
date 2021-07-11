@@ -2,8 +2,9 @@
     <nz-card [hidden]="!showList" class="card-height"
              [nzTitle]="status == 1 ? ' Fixed Product List' : (status == 2) ? 'Variable Product List' : 'Fully Customized Product List'"
              [nzExtra]="extraTemplate">
-        <ng-template #extraTemplate  style="width: 85%;">
-            <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button (click)='showPartialPaymentDurationModal()'>
+        <ng-template #extraTemplate style="width: 85%;">
+            <button *ngIf="'update-global-partial-payment-duration' | accessControl" nz-button
+                    (click)='showPartialPaymentDurationModal()'>
                 <span> Set Partial Payment duration </span>
             </button>&nbsp;
             <button *ngIf="'update-global-shipping-charge' | accessControl" nz-button
@@ -18,7 +19,8 @@
             >
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
-            </button><br>
+            </button>
+            <br>
             <button routerLink="/dashboard/product/bulk-upload"
                     [queryParams]="{status: status}" nz-button style="margin-left: 10px;"
             >
@@ -35,8 +37,8 @@
         </ng-template>
 
         <nz-table #nzTable
-                  nzShowQuickJumper
                   nzShowSizeChanger
+                  nzShowQuickJumper
                   [nzShowPagination]="true"
                   [nzFrontPagination]="false"
                   [nzData]="data"
@@ -194,17 +196,20 @@
                 <td style="text-align: center; width: 137px">
                     <a [routerLink]="['/dashboard/product/details/', data.id]">
                         <nz-tag *ngIf="data.promotion == 0">{{data.price}}</nz-tag>
+                    </a>
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">
                         <nz-tag *ngIf="data.promotion == 1">
                             <del style="color: red">{{data.price}}</del>
-                            {{data.promo_price}}</nz-tag>
+                            {{data.promo_price}}
+                        </nz-tag>
                     </a>
                 </td>
                 <td style="text-align: center; width: 137.5px">
-                    <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
-                        <a [routerLink]="['/dashboard/product/details/', data.id]">
+                    <a [routerLink]="['/dashboard/product/details/', data.id]">
+                        <nz-tag [nzColor]="data.quantity < data.alert_quantity? '#f50':''">
                             {{data.quantity}}
-                        </a>
-                    </nz-tag>
+                        </nz-tag>
+                    </a>
                 </td>
                 <td style="text-align: center; width: 139px">
                     <nz-tag>{{data.approval_status == 2 ? 'Yes' : data.approval_status == 1 ? 'No' : 'Rejected'  }}</nz-tag>
@@ -230,7 +235,7 @@
                                 nz-button [nzSize]="'default'">
                             <i class="anticon anticon-info-circle"></i>
                         </button>
-                        <button *ngIf="('product-edit'|accessControl) && isAllowedToUpdateProduct"
+                        <button *ngIf="('product-edit'|accessControl)  && isAllowedToUpdateProduct "
                                 [routerLink]="['/dashboard/product/edit', data.id]"
                                 [queryParams]="{status: status}"
                                 nz-button [nzSize]="'default'">
@@ -290,12 +295,12 @@
                                         <span> Add Attribute </span>
                                     </button>
                                 </li>
-                                <li nz-menu-item>
+                                <!--<li nz-menu-item>
                                     <button nz-button style="width: 100%"
                                             (click)="showPromotionModal(data)">
                                         <span> Add Discount </span>
                                     </button>
-                                </li>
+                                </li>-->
                             </ul>
                         </nz-dropdown>
                     </nz-button-group>
@@ -392,7 +397,8 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalVariantContent>
 
-        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false" nzShowQuickJumper>
+        <nz-table #nzTableVariant [nzBordered]="true" [nzData]="currentProduct_variants" [nzShowPagination]="false"
+                  nzShowQuickJumper>
             <thead>
             <tr>
                 <th>
@@ -525,7 +531,8 @@
           [nzContent]="modalPromotionContent" (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalPromotionContent>
 
-        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false" nzShowQuickJumper>
+        <nz-table #nzTablePromotion [nzBordered]="true" [nzData]="currentProduct" [nzShowPagination]="false"
+                  nzShowQuickJumper>
             <thead>
             <tr>
                 <th>

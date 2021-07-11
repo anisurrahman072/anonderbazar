@@ -35,7 +35,7 @@ export class ProductItemFlashDealComponent implements OnInit {
     cartTotalprice: any;
     cartTotalquantity: any;
     discountBadgeIcon: any;
-    discountPercentage: number = 0;
+    /*discountPercentage: number = 0;*/
 
     constructor(private router: Router, private store: Store<fromStore.HomeState>,
                 private favouriteProductService: FavouriteProductService,
@@ -67,10 +67,10 @@ export class ProductItemFlashDealComponent implements OnInit {
             }
         });
 
-        this.discountPercentage = 0
+        /*this.discountPercentage = 0
         if (this.product.promotion) {
             this.discountPercentage = ((this.product.price - this.product.promo_price) / this.product.price) * 100.0
-        }
+        }*/
     }
 
 
@@ -95,7 +95,8 @@ export class ProductItemFlashDealComponent implements OnInit {
         }
         if (this.authService.getCurrentUserId()) {
             this._progress.start("mainLoader");
-            let product_total_price: number = this.product.promotion ? this.product.promo_price : this.product.price;
+            /*let product_total_price: number = this.product.promotion ? this.product.promo_price : this.product.price;*/
+            let product_total_price: number = this.product.offerPrice ? this.product.offerPrice : this.product.price;
             const cartItemData = {
                 cart_id: this.cartId,
                 product_id: this.product.id,

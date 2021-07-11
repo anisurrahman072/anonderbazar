@@ -74,6 +74,11 @@ module.exports = {
         // _where.status = req.query.status;
         _where += ` AND product.status = ${req.query.status}`;
       }
+
+      if (req.query.productStatus) {
+        let status = parseInt(req.query.productStatus);
+        _where += ` AND product.approval_status = ${status}`;
+      }
       if (req.query.warehouse_id) {
         _where += ` AND product.warehouse_id = ${req.query.warehouse_id}`;
       } else if (req.token && req.token.userInfo.warehouse_id) {
@@ -126,13 +131,28 @@ module.exports = {
         _where += ` AND ( product.code LIKE '%${req.query.search_code}%' ) `;
       }
 
-      else if (req.query.codeSearchValue) {
+      if (req.query.codeSearchValue) {
         _where += ` AND ( product.code LIKE '%${req.query.codeSearchValue}%' ) `;
       }
 
       if (req.query.nameSearchValue) {
         _where += ` AND product.name LIKE '%${req.query.nameSearchValue}%'  `;
       }
+
+
+      if (req.query.shopSearchValue) {
+        _where += ` AND warehouse.name LIKE '%${req.query.shopSearchValue}%'  `;
+      }
+      if (req.query.brandSearchValue) {
+        _where += ` AND brand.name LIKE '%${req.query.brandSearchValue}%'  `;
+      }
+      if (req.query.categorySearchValue) {
+        _where += ` AND category.name LIKE '%${req.query.categorySearchValue}%'  `;
+      }
+      if (req.query.subCategorySearchValue) {
+        _where += ` AND subcategory.name LIKE '%${req.query.subCategorySearchValue}%'  `;
+      }
+
 
       let _sort = '';
       if (req.query.sortKey && req.query.sortValue) {
@@ -766,16 +786,15 @@ module.exports = {
 
       let index = 0;
       allVariants.forEach((variant) => {
-        if(variant.warehouseVariants && variant.warehouseVariants.length > 0){
+        if (variant.warehouseVariants && variant.warehouseVariants.length > 0) {
           variant.warehouseVariants.forEach((warehouseVariant) => {
             let str = `${variant.name}=>${warehouseVariant.name}`;
-            if(variant.type == 0){
+            if (variant.type == 0) {
               str += `(Price Variation: No)`;
-            }
-            else {
+            } else {
               str += `(Price Variation: Yes)`;
             }
-            variantSheet.cell(++index, 1).string(variant.id+','+warehouseVariant.id +'|'+escapeExcel(str));
+            variantSheet.cell(++index, 1).string(variant.id + ',' + warehouseVariant.id + '|' + escapeExcel(str));
           });
         }
       });
@@ -916,13 +935,12 @@ module.exports = {
         _where += ` AND products.subcategory_id = ${req.query.subcategory_id} `;
       }
 
-      if(isVendor){
-        if(authUser.warehouse_id && authUser.warehouse_id.id){
+      if (isVendor) {
+        if (authUser.warehouse_id && authUser.warehouse_id.id) {
           _where += ` AND products.warehouse_id = ${authUser.warehouse_id.id} `;
         }
-      }
-      else {
-        if(req.query.warehouse_id && req.query.warehouse_id !== 'null'){
+      } else {
+        if (req.query.warehouse_id && req.query.warehouse_id !== 'null') {
           _where += ` AND products.warehouse_id = ${req.query.warehouse_id} `;
         }
       }
@@ -1017,8 +1035,7 @@ module.exports = {
         }
 
 
-
-        if(item.productVariantId && item.productVariantId.split(',').length > 0){
+        if (item.productVariantId && item.productVariantId.split(',').length > 0) {
           let productVariantId = item.productVariantId.split(',');
           let productVariantLabel = item.productVariantLabel.split(',');
           let productVariantQty = item.productVariantQty.split(',');
@@ -1031,17 +1048,16 @@ module.exports = {
 
           console.log('tttttt', productVariantId, productVariantLabel, productVariantQty, variantId, variantName, variantType, warehouseVariantId, warehouseVariantName);
 
-          for(let ind = 0; ind < productVariantsLength; ind++){
+          for (let ind = 0; ind < productVariantsLength; ind++) {
             ws.cell(row, column++).string(productVariantId[ind]);
             let str = `${variantName[ind]}=>${warehouseVariantName[ind]}`;
-            if(variantType[ind] == 0){
+            if (variantType[ind] == 0) {
               str += `(Price Variation: No)`;
-            }
-            else {
+            } else {
               str += `(Price Variation: Yes)`;
             }
-            ws.cell(row, column++).string(variantId[ind]+','+warehouseVariantId[ind] +'|'+escapeExcel(str));
-            let variantInfo = productVariantLabel[ind] +' | ' + productVariantQty[ind];
+            ws.cell(row, column++).string(variantId[ind] + ',' + warehouseVariantId[ind] + '|' + escapeExcel(str));
+            let variantInfo = productVariantLabel[ind] + ' | ' + productVariantQty[ind];
             ws.cell(row, column++).string(variantInfo);
             console.log('111111111: ', item.id, ind, str, variantInfo);
           }
@@ -1180,7 +1196,7 @@ module.exports = {
           }
         }
 
-        if(req.body[i].allVariants && req.body[i].allVariants.length > 0){
+        if (req.body[i].allVariants && req.body[i].allVariants.length > 0) {
           product.allVariants = req.body[i].allVariants;
         }
       }
@@ -1210,19 +1226,19 @@ module.exports = {
           tag: product.tag
         });
 
-        if(product.allVariants && product.allVariants.length > 0){
+        if (product.allVariants && product.allVariants.length > 0) {
           let variantsCount = product.allVariants.length;
-          for(let variantIndex = 0; variantIndex < variantsCount; variantIndex++){
+          for (let variantIndex = 0; variantIndex < variantsCount; variantIndex++) {
 
             /** If id exists that means the variant will be updated. Other wise it is a new variant that will be added for the product. */
-            if(product.allVariants[variantIndex].id){
+            if (product.allVariants[variantIndex].id) {
 
               /** Find the product variant & check weather the variant is for this product */
               let productVariant = await ProductVariant.findOne({
                 id: product.allVariants[variantIndex].id,
                 deletedAt: null
               });
-              if(productVariant && product.id === productVariant.product_id){
+              if (productVariant && product.id === productVariant.product_id) {
                 let updatedVariant = await ProductVariant.updateOne({
                   id: product.allVariants[variantIndex].id,
                   deletedAt: null
@@ -1233,14 +1249,12 @@ module.exports = {
                   quantity: product.allVariants[variantIndex].quantity
                 });
                 console.log('updatedVariant: ', updatedVariant);
-              }
-              else {
+              } else {
                 res.status(400).json({
                   message: `Variant ID has been mis-matched for Product Code: ${product.code}`
                 });
               }
-            }
-            else {
+            } else {
               let newVariant = await ProductVariant.create({
                 product_id: product.id,
                 variant_id: product.allVariants[variantIndex].variant_id,
@@ -1300,8 +1314,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',
@@ -1342,8 +1355,7 @@ module.exports = {
         message: 'Successfully fetched all products',
         products: rawResult.rows
       });
-    }
-    catch (error){
+    } catch (error) {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while fetching all products',

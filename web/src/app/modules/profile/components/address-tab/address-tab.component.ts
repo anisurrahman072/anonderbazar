@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService, AreaService} from "../../../../services";
+import {AreaService, AuthService} from "../../../../services";
 import {PaymentAddressService} from "../../../../services/payment-address.service";
-import {Validators, FormGroup, FormBuilder} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
 import {FormValidatorService} from "../../../../services/validator/form-validator.service";
+import * as he from 'he';
 
 @Component({
     selector: "Address-tab",
@@ -38,6 +39,7 @@ export class AddressTabComponent implements OnInit {
         //adding form validation
         this.addAddressForm = this.fb.group({
             first_name: ['', [Validators.required]],
+            // last_name: ['', [Validators.required]],
             last_name: ['', []],
             address: ['', Validators.required],
             postal_code: ['', Validators.required],
@@ -72,12 +74,29 @@ export class AddressTabComponent implements OnInit {
         this.areaService.getAllDivision().subscribe(result => {
             this.divisionSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
         });
+        // console.log('he enocde', he.encode('foo © bar ≠ baz 𝌆 qux'));
+        // console.log('he decode', he.decode('shaon , . / &#x3C;/&#x3E; &#x3C;?&#x3E;'));
     }
 
     //Event method for getting address data
+    // getAddressList() {
+    //     this.paymentAddressService.getpaymentaddress(this.user_id).subscribe(result => {
+    //         this.addresses = result;
+    //     });
+    // }
+
     getAddressList() {
         this.paymentAddressService.getpaymentaddress(this.user_id).subscribe(result => {
-            this.addresses = result;
+            this.addresses = result.map((decode) => {
+                let addresses = {...decode};
+                addresses.first_name = he.decode(addresses.first_name)
+                addresses.last_name = he.decode(addresses.last_name)
+                addresses.address = he.decode(addresses.address)
+                // console.log('dd', addresses.address)
+                return addresses;
+            });
+            // console.log('encoded', result);
+            // console.log('decoded',this.addresses);
         });
     }
 

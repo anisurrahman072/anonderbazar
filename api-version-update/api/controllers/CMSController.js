@@ -97,7 +97,8 @@ module.exports = {
   },
   //Method called for creating offer data
   //Model models/CMS.js
-  offerInsert: async (req, res) => {
+  /*offerInsert: async (req, res) => {
+    console.log('offer insert: data', req.body);
     try {
 
       if (req.body.hasImage === 'true') {
@@ -131,44 +132,20 @@ module.exports = {
           }
 
           body.image = '/' + newPath;
-          let data_value = [];
-
-          if (body.subsection === 'OFFER') {
-            data_value = [
-              {
-                title: req.body.title,
-                description: req.body.description,
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-                link: body.link,
-                offers: [],
-                products: [],
-                showInCarousel: req.body.showInCarousel,
-                showInHome: req.body.showInHome
-              }
-            ];
-          } else {
-            data_value = [
-              {
-                title: req.body.title,
-                description: req.body.description,
-                offers: [],
-                products: [],
-                image: body.image,
-                small_image: body.small_image,
-                banner_image: body.banner_image,
-                showInCarousel: req.body.showInCarousel,
-                showInHome: req.body.showInHome
-              }
-            ];
-          }
 
           let _payload = {
             page: 'POST',
             section: 'HOME',
             sub_section: body.subsection,
-            data_value: data_value
+            title: req.body.title,
+            description: req.body.description,
+            offers: [],
+            products: [],
+            image: body.image,
+            small_image: body.small_image,
+            banner_image: body.banner_image,
+            showInCarousel: req.body.showInCarousel,
+            showInHome: req.body.showInHome
           };
 
           if (body.frontend_position) {
@@ -180,6 +157,7 @@ module.exports = {
           }
 
           let data = await CMS.create(_payload).fetch();
+
           return res.json({
             success: true,
             message: 'cms updated successfully',
@@ -193,7 +171,7 @@ module.exports = {
             title: req.body.title,
             description: req.body.description,
             offers: [],
-            products: [],
+            products: [req.body.productSelectedIDs],
             showInCarousel: req.body.showInCarousel,
             showInHome: req.body.showInHome
           }
@@ -230,7 +208,8 @@ module.exports = {
         error
       });
     }
-  },
+  },*/
+
   //Method called for updating product offer data
   //Model models/CMS.js
   offerProductUpdate: async (req, res) => {
@@ -239,6 +218,7 @@ module.exports = {
       let data = await CMS.updateOne({id: req.body.id}).set({
         data_value: req.body.data_value
       });
+      console.log('dasta: ', data);
 
       return res.json({
         success: true,
@@ -256,7 +236,7 @@ module.exports = {
 
   //Method called for updating child offer data
   //Model models/CMS.js
-  updateOffer: async (req, res) => {
+  /*updateOffer: async (req, res) => {
     try {
       let body = req.body;
       let prevOfferData = await CMS.findOne({
@@ -322,7 +302,7 @@ module.exports = {
               title: body.title,
               description: body.description,
               image: body.image ? body.image : prevOfferData.data_value[0].image,
-              small_image: body.small_image ? body.small_image: prevOfferData.data_value[0].small_image,
+              small_image: body.small_image ? body.small_image : prevOfferData.data_value[0].small_image,
               banner_image: body.banner_image ? body.banner_image : prevOfferData.data_value[0].banner_image,
               link: body.link,
               offers: prevOfferData.data_value[0].offers,
@@ -429,7 +409,7 @@ module.exports = {
         error
       });
     }
-  },
+  },*/
 
   //Method called for creating post data
   //Model models/CMS.js

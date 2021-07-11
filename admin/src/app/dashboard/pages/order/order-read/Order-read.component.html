@@ -1,4 +1,15 @@
-<nz-card nzTitle="Order Details" [nzExtra]="extra">
+<ng-template #nzTitleContent>
+    <div style="display: flex; align-items: baseline;">
+        <button *ngIf="ordersGridPageNumber"
+                (click)="goToOrdersGridPage()"
+                nz-button [nzSize]="'default'">
+            <i class="fa fa-chevron-left"> </i>
+        </button>&nbsp;
+        <h5>Order Details</h5>
+    </div>
+</ng-template>
+
+<nz-card [nzTitle]="nzTitleContent" [nzExtra]="extra">
     <nz-spin [nzSpinning]="_isSpinning">
         <ng-template #extra>
             <button nz-button [nzType]="'primary'"

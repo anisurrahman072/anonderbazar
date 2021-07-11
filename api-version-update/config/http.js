@@ -50,7 +50,7 @@ module.exports.http = {
 
     bodyParser: (function _configureBodyParser() {
       const skipper = require('skipper');
-      return skipper({strict: false});
+      return skipper({strict: false, limit: 50 * 1024 * 1024, maxTimeToBuffer: 1000000 });
     })(),
 
   },

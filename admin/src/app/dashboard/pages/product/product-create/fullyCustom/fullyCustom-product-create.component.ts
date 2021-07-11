@@ -15,6 +15,8 @@ import {CategoryProductService} from '../../../../../services/category-product.s
 import {UserService} from '../../../../../services/user.service';
 import {AuthService} from '../../../../../services/auth.service';
 import {BrandService} from '../../../../../services/brand.service';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 @Component({
     selector: 'app-fully-custom-product-create',
@@ -23,10 +25,41 @@ import {BrandService} from '../../../../../services/brand.service';
 })
 export class FullyCustomProductCreateComponent implements OnInit {
     @ViewChild('Image') Image;
+
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     tagOptions: any = [];
     validateForm: FormGroup;
     ImageFile: File[] = [];
-    ckConfig = {
+    /*ckConfig = {
         uiColor: '#662d91',
         toolbarGroups: [
             {
@@ -56,7 +89,7 @@ export class FullyCustomProductCreateComponent implements OnInit {
             {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
         ],
         removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+    };*/
 
     categorySearchOptions: any = [];
     subcategorySearchOptions: any = [];

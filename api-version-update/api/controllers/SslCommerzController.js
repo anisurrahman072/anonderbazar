@@ -5,6 +5,7 @@ const {
   APPROVED_PAYMENT_APPROVAL_STATUS
 } = require('../../libs/constants');
 const {hasPaymentTransactionBeenUsed} = require('../services/PaymentService');
+const {ORDER_STATUSES} = require('../../libs/orders');
 const {getGlobalConfig} = require('../../libs/helper');
 const {sslWebUrl} = require('../../config/softbd');
 const {sslcommerzInstance} = require('../../libs/sslcommerz');
@@ -67,7 +68,7 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = PaymentService.calcCartTotal(cart, cartItems);
+      } = await PaymentService.calcCartTotal(cart, cartItems);
 
       logger.orderLog(customer.id, 'courierCharge', courierCharge);
       logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
@@ -219,7 +220,7 @@ module.exports = {
       let {
         grandOrderTotal,
         totalQty
-      } = PaymentService.calcCartTotal(cart, cartItems);
+      } = await PaymentService.calcCartTotal(cart, cartItems);
 
       /** adding shipping charge with grandtotal */
       grandOrderTotal += courierCharge;
@@ -387,13 +388,18 @@ module.exports = {
           const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
 
           let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
+          let orderStatus = ORDER_STATUSES.pending;
           if (totalPrice <= totalPaidAmount) {
             paymentStatus = PAYMENT_STATUS_PAID;
+            orderStatus = ORDER_STATUSES.processing;
+
+            await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
           }
 
           await Order.updateOne({id: order.id}).set({
             paid_amount: totalPaidAmount,
             payment_status: paymentStatus,
+            status: orderStatus
           }).usingConnection(db);
 
         });

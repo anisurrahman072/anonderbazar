@@ -63,13 +63,13 @@
                     </th>
                     <th nzWidth="300px">
                         <span>shipping_address</span>
-                    </th >
+                    </th>
                     <th nzWidth="200px"><span>Actions</span></th>
                 </tr>
                 <tr>
                     <th nzWidth="100px">
                         <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
-                               (input)=" orderPage = 1; getData(); " >
+                               (input)=" orderPage = 1; getData(); ">
                     </th>
                     <th nzWidth="230px">
                         <nz-date-picker
@@ -108,7 +108,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="orderTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Order type'"
@@ -118,7 +118,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="paymentTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment type'"
@@ -128,7 +128,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th  nzWidth="230px">
+                    <th nzWidth="230px">
                         <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment Status'"
@@ -140,7 +140,7 @@
                     </th>
                     <th nzWidth="100px"></th>
                     <th nzWidth="300px"></th>
-                    <th  nzWidth="200px">
+                    <th nzWidth="200px">
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </th>
                 </tr>
@@ -165,27 +165,36 @@
                             </nz-option>
                         </nz-select>
                     </td>
+
                     <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
-                    <td *ngIf="data.orderType == 1">Regular order</td>
-                    <td *ngIf="data.orderType == 2">Partial order</td>
+                    <td *ngIf="data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE">Regular order</td>
+                    <td *ngIf="data.orderType == ORDER_TYPE.PARTIAL_ORDER_TYPE">Partial order</td>
                     <td>{{data.payment_type}}</td>
-                    <td style="width: 230px;" *ngIf="isAllowedToUpdatePaymentStatus">
-                        <nz-select style="width: 180px;" *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+
+                    <td style="width: 230px;"  *ngIf="isAllowedToUpdatePaymentStatus">
+                        <nz-select style="width: 180px;"
+                                   *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE; else showOnlyPaymentStatus;"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
                                    (ngModelChange)="changePaymentStatusConfirm($event,data.id,data.paymentStatus)">
-                            <nz-option *ngFor="let paymentOption of paymentOptions" [nzLabel]="paymentOption.label"
+                            <nz-option *ngFor="let paymentOption of changePaymentOptions" [nzLabel]="paymentOption.label"
                                        [nzValue]="paymentOption.value">
                             </nz-option>
                         </nz-select>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
-                        <p *ngIf="data.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && (data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS)">Paid</p>
+                        <ng-template #showOnlyPaymentStatus>
+                            <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">
+                                Unpaid</p>
+                            <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">
+                                Partially paid</p>
+                            <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">
+                                Paid</p>
+                        </ng-template>
                     </td>
                     <td *ngIf="!isAllowedToUpdatePaymentStatus">
                         <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">Paid</p>
                     </td>
+
                     <td style="width: 100px;">{{data.changedByName}}</td>
                     <td style="width: 400px;">
                         <div *ngFor="let transaction of data.transactions">
@@ -205,7 +214,7 @@
                     <td style="width: 200px;">
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
-                                    [routerLink]="['/dashboard/order/details/', data.id]"
+                                    (click)="goToOrderRead(data.id)"
                                     nz-button [nzSize]="'default'">
                                 <i class="anticon anticon-info-circle"> </i>
                             </button>

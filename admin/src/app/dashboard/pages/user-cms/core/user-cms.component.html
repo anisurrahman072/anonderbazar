@@ -14,7 +14,8 @@
 
 <nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Add New'" [nzContent]="modalContent"
           (nzOnCancel)="handleModalCancel($event)"
-          (nzOnOk)="handleModalOk($event)" class="create-modal">
+          (nzOnOk)="handleModalOk($event)" class="create-modal"
+          [nzWidth]="1200" >
     <ng-template #modalContent>
         <nz-spin [nzSpinning]="_isSpinning">
             <form nz-form [formGroup]="validateForm" id="validateForm"
@@ -48,10 +49,8 @@
                     </div>
                     <div nz-col [nzSpan]="17">
 
-                        <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
-                                  debounce="500">
 
-                        </ckeditor>
+                        <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                         <div *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
                             Please input description !

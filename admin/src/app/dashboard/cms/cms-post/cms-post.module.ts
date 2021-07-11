@@ -12,6 +12,7 @@ import {CmsHeaderComponent} from './Components/banner/cms-header.component';
 import {CmsFooterComponent} from './Components/mixed/bottom/cms-footer.component';
 import {CmsOfferComponent} from './Components/mixed/offer/cms-offer.component';
 import {CmsFeatureFooterComponent} from './Components/mixed/middle/cms-feature-footer.component';
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 const routes: Routes = [
     {
@@ -30,7 +31,8 @@ const routes: Routes = [
         ImageUploadModule.forRoot(),
         NgZorroAntdModule,
         RouterModule.forChild(routes),
-        UiModule
+        UiModule,
+        CKEditorModule
     ],
     declarations: [
         CmsPostComponent,

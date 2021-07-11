@@ -1,10 +1,8 @@
 <section>
     <nz-card class="card-height" [nzExtra]="extra" [nzTitle]="cardTitle">
         <ng-template #extra>
-            <button *ngIf="'payment-create'| accessControl" (click)="getPageData(true)"
-                    nz-button>
-                <span> All Partial Offline Payment </span>
-            </button>
+            <label nz-checkbox [(ngModel)]="partial_offline_payments" (click)="getPageData(partial_offline_payments, regular_offline_payments)">Partial Offline Payments</label>
+            <label nz-checkbox [(ngModel)]="regular_offline_payments" (click)="getPageData(partial_offline_payments, regular_offline_payments)">Regular Offline Payments</label>
             <button *ngIf="'payment-create'| accessControl"
                     routerLink="/dashboard/payment/create" nz-button
                      >

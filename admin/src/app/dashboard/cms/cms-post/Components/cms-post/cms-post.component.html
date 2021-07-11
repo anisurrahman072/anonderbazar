@@ -43,7 +43,8 @@
 <nz-modal [nzFooter]="null" [(nzVisible)]="isEditModalVisible" [nzTitle]="'Edit Carousel'"
           [nzContent]="editmodalContent"
           (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)" [nzClosable]="false"
-          [nzMaskClosable]="false">
+          [nzMaskClosable]="false"
+          [nzWidth]="1200" >
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
@@ -117,10 +118,12 @@
                             <label>Description</label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
+                            <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
                                       debounce="500 ">
 
-                            </ckeditor>
+                            </ckeditor>-->
+
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                             <div *ngIf="getEditFormControl('description').dirty && getEditFormControl('description').hasError('required')">
                                 Please input description !

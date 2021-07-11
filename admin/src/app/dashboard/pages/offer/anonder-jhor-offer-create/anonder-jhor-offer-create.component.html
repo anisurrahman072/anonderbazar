@@ -1,0 +1,118 @@
+<nz-modal [nzFooter]="null" [(nzVisible)]="isVisible"
+          nzTitle="Create Anonder Jhor Offer" nzWidth="90%"
+          nzCancelText="Cancel"
+          (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
+    <nz-spin [nzSpinning]="_isSpinning">
+        <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <div nz-row>
+                <div nz-col [nzSpan]="7">
+                    <label>Offer Image</label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <image-upload [max]="1" (removed)="onRemoved($event)"
+                                  (uploadStateChanged)="onUploadStateChanged($event)"
+                                  [beforeUpload]="onBeforeUpload">
+                    </image-upload>
+                    <div *ngIf="!ImageFile">
+                        Please upload an image here!
+                    </div>
+                </div>
+            </div>
+            <div nz-row>
+                <div nz-col [nzSpan]="7">
+                    <label>Select Category</label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <nz-select formControlName="categoryId" nzAllowClear
+                               nzShowSearch
+                               [nzPlaceHolder]=" 'Select Category'"
+                               [(ngModel)]="categoryId" style="margin: 10px 0;"
+                               (ngModelChange)="getAllSubCategories($event); ">
+                        <nz-option *ngFor="let option of allCategoryIds" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--Select Sub-Category-->
+                    <nz-select *ngIf="categoryId"
+                               formControlName="subCategoryId" nzAllowClear nzShowSearch
+                               [nzPlaceHolder]=" 'Select Sub-Category'"
+                               [(ngModel)]="subCategoryId" style="margin: 10px 0;"
+                               (ngModelChange)="getAllSubSubCategories($event); ">
+                        <nz-option *ngFor="let option of allSubCategoryIds" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+                    <!--Select Sub-Sub-Category-->
+                    <nz-select *ngIf="subCategoryId"
+                               formControlName="subSubCategoryId" nzAllowClear nzShowSearch
+                               [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
+                               [(ngModel)]="subSubCategoryId" style="margin: 10px 0;">
+                        <nz-option *ngFor="let option of allSubSubCategoryIds" [nzLabel]="option.name"
+                                   [nzValue]="option.id">
+                        </nz-option>
+                    </nz-select>
+
+                </div>
+            </div>
+            <div nz-row style="margin-top: 20px">
+                <div nz-col [nzSpan]="7">
+                    <label> Calculation Type </label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <nz-select formControlName="calculationType" [nzPlaceHolder]=" 'Select Calculation Type'"
+                               [(ngModel)]="Calc_type" nzAllowClear nzShowSearch>
+                        <nz-option nzLabel="percentage" nzValue="percentage"></nz-option>
+                        <nz-option nzLabel="absolute amount" nzValue="absolute"></nz-option>
+                    </nz-select>
+                    <div *ngIf="getFormControl('calculationType').dirty && getFormControl('calculationType').hasError('required')"
+                         style="color: red">
+                        Please Select Calculation Type
+                    </div>
+
+                    <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
+                           [nzSize]="'large'" style="margin: 10px 0" type="number">
+                    <div *ngIf="getFormControl('discountAmount').dirty && getFormControl('discountAmount').hasError('required')"
+                         style="color: red">
+                        Please insert the discount amount
+                    </div>
+
+                </div>
+            </div>
+            <div nz-row style="margin: 20px 0;">
+                <div nz-col [nzSpan]="7">
+                    <label>Offer Duration</label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <nz-date-picker
+                            nzShowTime
+                            nzFormat="yyyy-MM-dd HH:mm:ss"
+                            formControlName="offerStartDate"
+                            nzPlaceHolder="Start Date">
+                    </nz-date-picker>
+                    <div *ngIf="getFormControl('offerStartDate').dirty && getFormControl('offerStartDate').hasError('required')"
+                         style="color: red">
+                        Please set offer start date & time
+                    </div>
+                    <nz-date-picker
+                            nzShowTime
+                            nzFormat="yyyy-MM-dd HH:mm:ss"
+                            formControlName="offerEndDate"
+                            nzPlaceHolder="End Date">
+                    </nz-date-picker>
+                    <div *ngIf="getFormControl('offerEndDate').dirty && getFormControl('offerEndDate').hasError('required')"
+                         style="color: red">
+                        Please set offer start date & time
+                    </div>
+                </div>
+            </div>
+            <div nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                            [disabled]="!validateForm.valid || submitting">Save
+                    </button>
+                    <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                </div>
+            </div>
+        </form>
+    </nz-spin>
+</nz-modal>

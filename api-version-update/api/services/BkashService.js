@@ -5,6 +5,7 @@
  */
 const moment = require('moment');
 const _ = require('lodash');
+const {ORDER_STATUSES} = require('../../libs/orders');
 const {BKASH_PAYMENT_TYPE, PAYMENT_STATUS_PAID, PAYMENT_STATUS_PARTIALLY_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
 const {sslApiUrl} = require('../../config/softbd');
 const {bKashGrandToken, bKashCreatePayment, bkashRefundTransaction} = require('../../libs/bkashHelper');
@@ -29,7 +30,7 @@ module.exports = {
 
     let {
       grandOrderTotal,
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
     console.log('GrandOrderTotal', grandOrderTotal);
@@ -143,7 +144,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(customer.id, 'Courier Charge: ', courierCharge);
     logger.orderLog(customer.id, 'GrandOrderTotal', grandOrderTotal);
@@ -344,13 +345,18 @@ module.exports = {
         const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
 
         let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
+        let orderStatus = ORDER_STATUSES.pending;
         if (totalPrice <= totalPaidAmount) {
           paymentStatus = PAYMENT_STATUS_PAID;
+          orderStatus = ORDER_STATUSES.processing;
+
+          await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
         }
 
         await Order.updateOne({id: order.id}).set({
           paid_amount: totalPaidAmount,
           payment_status: paymentStatus,
+          status: orderStatus
         }).usingConnection(db);
       });
 

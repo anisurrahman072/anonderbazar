@@ -7,7 +7,7 @@ import {ProductCreateComponent} from './product-create/product-create.component'
 import {ProductEditComponent} from './product-edit/product-edit.component';
 import {ProductComponent} from './product/product.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {CKEditorModule} from 'ng2-ckeditor';
+import {CKEditorModule} from '@ckeditor/ckeditor5-angular';
 import {AddProductDesignComponent} from './product/components/add-product-design/add-product-design.component';
 import {DesignCombinationComponent} from './components/design-combination/design-combination.component';
 import {UiModule} from '../../shared/ui.module';

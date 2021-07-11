@@ -6,7 +6,7 @@ import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../state-management";
-import {Cart, User} from "../../../models";
+import {Cart, Offer, User} from "../../../models";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../services";
 import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
@@ -18,6 +18,7 @@ import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import * as he from 'he';
 
 @Component({
     selector: 'app-checkout-page',
@@ -34,6 +35,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     paymentGatewayErrorModalRef: BsModalRef;
     currentUser$: Observable<User>;
     cart$: Observable<Cart>;
+    offer$: Observable<Offer>;
 
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
@@ -140,6 +142,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
+            // lastName: ['', [Validators.required]],
             lastName: ['', []],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -152,6 +155,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Shipping
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
+            // shippingLastName: ['', [Validators.required]],
             shippingLastName: ['', []],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
@@ -184,18 +188,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            console.log("offeraData: ", offerData);
+        })
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
-        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0];
-                    this.cart$.subscribe((cartData) => {
+                    /*this.cart$.subscribe((cartData) => {
                         console.log('cartData', cartData);
                         if (cartData) {
                             this.cartData = cartData;
+                            console.log("Cart info: ", cartData);
                             this.setShippingCharge();
                         } else {
                             this.cartData = null;
@@ -205,7 +213,27 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     }, (err) => {
                         console.log(err);
                         this.toastr.error('Unable to update cart data', 'Sorry!');
-                    });
+                    });*/
+                    // TODO: load cart with 200ms
+                    setTimeout(() => {
+                        this.store.dispatch(new fromStore.LoadCart());
+                            this.cart$.subscribe((cartData) => {
+                                console.log('cartDataee', cartData);
+                                if (cartData) {
+                                    this.cartData = cartData;
+                                    console.log("Cart info: ", cartData);
+                                    this.setShippingCharge();
+                                } else {
+                                    this.cartData = null;
+                                }
+                                this.updateGrandTotal();
+                                this.addPageTitle();
+                            }, (err) => {
+                                console.log(err);
+                                this.toastr.error('Unable to update cart data', 'Sorry!');
+                            });
+                    }, 1000);
+
                     return this.areaService.getAllDivision();
                 }
                 return Observable.throw(new Error('Problem in getting global config.'));
@@ -219,8 +247,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
             .subscribe((previousAddresses: any) => {
-                console.log('previous addresses', previousAddresses);
-                this.prevoius_address = previousAddresses;
+                // console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses.map((decode) => {
+                    let address = {...decode};
+                    address.first_name = he.decode(address.first_name)
+                    address.last_name = he.decode(address.last_name)
+                    address.address = he.decode(address.address)
+                    return address;
+                })
                 this.loaderService.hideLoader();
 
             }, (err) => {
@@ -455,9 +489,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        if((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
             (this.isBankDeposit && !this.BankDepositImageFile) ||
-            (this.isMobileTransfer && !this.mobileTransferImageFile)){
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
             this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
                 positionClass: 'toast-bottom-right'
             });
@@ -901,6 +935,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 zila_id: formValue.shipping_zila_id,
                 division_id: formValue.shipping_division_id,
             });
+            // console.log('formValue==>', formValue);
 
             let zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
             let upZila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
@@ -1020,16 +1055,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //Method for proceed to pay
     processToPay() {
-        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
+        // console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
 
         // console.log('this.isCopy==>', this.isCopy);
         // console.log('this.cartData==>', this.cartData);
         // console.log('this.checkoutForm==>', this.checkoutForm);
 
-        // if (!this.noShippingCharge && this.isCopy) {
-        //     // console.log('call copyAll');
-        //     this.copyAll();
-        // }
+        if (!this.noShippingCharge && this.isCopy) {
+            // console.log('call copyAll');
+            this.copyAll();
+        }
 
         // if (this.checkoutForm.invalid) {
         //     this.showFormError = true;
@@ -1040,9 +1075,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         //     return false;
         // }
 
-        if (!this.noShippingCharge && this.isCopy) {
-            this.copyAll();
-        }
+        // if (!this.noShippingCharge && this.isCopy) {
+        //     this.copyAll();
+        // }
 
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
@@ -1116,11 +1151,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUpload = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.ImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.ImageFile = null;
             return false;
         }
@@ -1128,11 +1162,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.BankDepositImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.BankDepositImageFile = null;
             return false;
         }
@@ -1140,11 +1173,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.mobileTransferImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.mobileTransferImageFile = null;
             return false;
         }

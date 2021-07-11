@@ -504,9 +504,9 @@ module.exports = {
         return res.json(403, {err: 'forbidden....'});
       }
 
-      const x = new Date(Date.now());
+      const presentTime = new Date(Date.now());
 
-      let activation_time = x.getTime();
+      let activation_time = presentTime.getTime();
 
       if (activation_time > user.verification_code_expire_time) {
         return res.status(200).json({
