@@ -165,6 +165,7 @@
                             </nz-option>
                         </nz-select>
                     </td>
+
                     <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE">Regular order</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.PARTIAL_ORDER_TYPE">Partial order</td>

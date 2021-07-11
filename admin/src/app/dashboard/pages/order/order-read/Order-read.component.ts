@@ -145,8 +145,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
     }
 
-/*
-    public SavePDF() {
+
+
+    /*public SavePDF() {
         let data = document.getElementById('printSection');
         this._ngZone.runOutsideAngular(() => {
             html2canvas(data)
@@ -173,8 +174,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     console.log("Error occurred!", error);
                 });
         });
-    }
-*/
+
+
+    }*/
 
     public savePDF() {
         let data = document.getElementById('printSection');
