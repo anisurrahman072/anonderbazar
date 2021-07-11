@@ -37,6 +37,7 @@ module.exports = {
       const endDate = moment(anonderJhorData.end_date);
       const presentTime = moment();
 
+      /*endDate < presentTime*/
       if (endDate.isSameOrBefore(presentTime)) {
         await AnonderJhor.updateOne({id: 1}).set({status: 0});
         return res.status(200).json({
@@ -45,7 +46,17 @@ module.exports = {
         });
       }
 
+      if (req.body) {
+        let _where = {};
+
+        _where.deletedAt = null;
+        _where.force_stop = {'!=': 1};
+
+        await AnonderJhorOffers.update({where: _where}).set({status: 1});
+      }
+
       const jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
+
       return res.status(200).json({
         success: true,
         message: 'AnonderJhor status changed successfully',
@@ -284,8 +295,8 @@ module.exports = {
         end_date: body.offerEndDate,
         category_id: body.categoryId,
         anonder_jhor_id: 1,
-        status: 0,
-        force_stop: 1
+        status: 1,
+        force_stop: 0
       };
 
       if (body.subCategoryId) {
@@ -417,8 +428,8 @@ module.exports = {
         end_date: body.offerEndDate,
         category_id: body.categoryId,
         anonder_jhor_id: 1,
-        status: 0,
-        force_stop: 1
+        status: 1,
+        force_stop: 0
       };
 
       if (body.subSubCategoryId) {
@@ -568,25 +579,68 @@ module.exports = {
       let offer_type = parseInt(req.query.offer_type, 10);
       let offer_id = parseInt(req.query.offer_id, 10);
       let isRegularIndividualProductOffer = false;
-      if(offer_type == REGULAR_OFFER_TYPE){
+      if (offer_type == REGULAR_OFFER_TYPE) {
         let offerInfo = await Offer.findOne({id: offer_id, deletedAt: null});
-        if(offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE){
+        if (offerInfo.selection_type === INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE) {
           isRegularIndividualProductOffer = true;
         }
       }
       let rawSQL = `
       SELECT
-            product_orders.id AS order_id,
-            product_suborders.id as suborder_id,
-            products.name AS product_name,
-            products.code AS product_code,
-            warehouses.name AS warehouse_name,
-            psi.product_quantity,
-            psi.product_total_price
+           product_orders.id AS order_id,
+           product_suborders.id as suborder_id,
+           products.name AS product_name,
+           products.code AS product_code,
+           warehouses.name AS warehouse_name,
+           psi.product_quantity,
+           psi.product_total_price,
+
+           psi.id,
+           psi.product_id,
+           products.price as originalPrice,
+           products.vendor_price as vendorPrice,
+
+           products.promo_price as discountPrice,
+           psi.warehouse_id,
+
+           psi.status,
+           psi.\`date\`,
+           psi.created_at,
+           product_orders.status as order_status,
+           product_orders.courier_charge as courier_charge,
+           product_orders.total_price as total_price,
+
+
+           product_orders.user_id,
+           product_orders.created_at as orderCreatedAt,
+           product_suborders.status as sub_order_status,
+
+           payment.payment_type as paymentType,
+           payment.transection_key as transactionKey,
+           payment.payment_amount as paymentAmount,
+           payment.created_at as transactionTime,
+
+           CONCAT(customer.first_name, ' ',customer.last_name) as customer_name,
+           CONCAT(orderChangedBy.first_name, ' ',orderChangedBy.last_name) as order_changed_by_name,
+           CONCAT(subOrderChangedBy.first_name, ' ',subOrderChangedBy.last_name) as suborder_changed_by_name,
+
+           customer.phone as customer_phone,
+
+           warehouses.phone as vendor_phone,
+           warehouses.address as vendor_address,
+           payment_addresses.postal_code,
+           payment_addresses.address,
+           divArea.name as division_name,
+           zilaArea.name as zila_name,
+           upazilaArea.name as upazila_name,
+
+           categories.name as categoryName,
+           (product_orders.total_price - product_orders.paid_amount) as dueAmount
             `;
-      if(isRegularIndividualProductOffer){
+      if (isRegularIndividualProductOffer) {
         rawSQL += `,
-            regular_offer_products.discount_amount AS discountAmount
+            regular_offer_products.discount_amount AS discountAmount,
+            regular_offer_products.calculation_type AS discountType
         `;
       }
       let fromSQL = `FROM
@@ -594,16 +648,30 @@ module.exports = {
         LEFT JOIN products ON psi.product_id = products.id
         LEFT JOIN product_suborders ON psi.product_suborder_id = product_suborders.id
         LEFT JOIN product_orders ON product_suborders.product_order_id = product_orders.id
-        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id`;
-      if(isRegularIndividualProductOffer){
+        LEFT JOIN warehouses ON psi.warehouse_id = warehouses.id
+
+        LEFT JOIN payments as payment ON  product_suborders.id  =   payment.suborder_id
+        LEFT JOIN categories   ON categories.id = products.type_id
+        LEFT JOIN users as customer ON customer.id = product_orders.user_id
+        LEFT JOIN users as orderChangedBy ON orderChangedBy.id = product_orders.changed_by
+        LEFT JOIN users as subOrderChangedBy ON subOrderChangedBy.id = product_suborders.changed_by
+        LEFT JOIN payment_addresses ON product_orders.shipping_address = payment_addresses.id
+        LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
+        LEFT JOIN areas as zilaArea ON zilaArea.id = payment_addresses.zila_id
+        LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id
+
+        `;
+      if (isRegularIndividualProductOffer) {
         fromSQL += `
         LEFT JOIN regular_offer_products ON regular_offer_products.regular_offer_id = psi.offer_id_number
         `;
       }
 
-      let whereSQL = `
-      WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} ORDER BY product_orders.id
-        `;
+      let whereSQL = ` WHERE psi.offer_type = ${offer_type} AND psi.offer_id_number = ${offer_id} `;
+      if (isRegularIndividualProductOffer) {
+        whereSQL += ` AND psi.product_id = regular_offer_products.product_id `;
+      }
+      whereSQL += ` ORDER BY product_orders.id ASC, psi.created_at DESC, psi.id  DESC,  payment.created_at  DESC `;
 
       const offerOrders = await sails.sendNativeQuery(rawSQL + fromSQL + whereSQL, []);
 

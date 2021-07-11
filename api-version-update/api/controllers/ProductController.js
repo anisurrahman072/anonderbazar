@@ -808,6 +808,7 @@ module.exports = {
                  products.promo_price as promo_price,
                  products.price as price,
                  products.name as name,
+                 products.quantity as quantity,
                  subOrderItems.product_id as productId,
                  SUM (subOrderItems.product_quantity) as total_quantity`;
 

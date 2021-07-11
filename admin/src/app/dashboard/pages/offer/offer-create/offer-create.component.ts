@@ -283,7 +283,7 @@ export class OfferCreateComponent implements OnInit {
             formData.append('hasBannerImage', 'true');
             formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
         } else {
-            this._notification.error('Offer Banner Image', 'Banner Image required');
+            this._notification.error('Offer Banner Image', 'Banner Image is required');
             this._isSpinning = false;
             this.submitting = false;
             return;
@@ -291,13 +291,12 @@ export class OfferCreateComponent implements OnInit {
         }
 
         this.offerService.offerInsert(formData).subscribe(result => {
-            console.log('submit rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', result);
             this.submitting = false;
             if (result.code === 'INVALID_SUBSUBCAT') {
                 this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
                 this._isSpinning = false;
             } else {
-                this._notification.success('Offer Added', "Offer Added Successfully");
+                this._notification.success('Success', "Offer Added Successfully");
                 this._isSpinning = false;
                 this.resetForm(null);
                 this.individuallySelectedProductsId = [];
@@ -307,7 +306,7 @@ export class OfferCreateComponent implements OnInit {
             }
         }, error => {
             this.submitting = false;
-            this._notification.error('Error Occurred!', "Error occurred while adding offer!");
+            this._notification.error('Error!', "Error occurred while adding offer!");
         });
     };
 

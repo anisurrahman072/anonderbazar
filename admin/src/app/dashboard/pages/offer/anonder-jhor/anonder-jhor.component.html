@@ -172,7 +172,7 @@
                         <th nz-th [nzWidth]="'150px'">
                             <span> Status </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'200px'">
                             <span>Force stopped</span>
                         </th>
                         <th nz-th [nzWidth]="'150px'">
@@ -234,12 +234,12 @@
 
                         <td>
                             <div *ngIf="datum.force_stop; else running">
-                                <nz-switch [ngModel]="true" nzCheckedChildren="stopped" nzUnCheckedChildren="running"
+                                <nz-switch [ngModel]="true" nzCheckedChildren="forcefully stopped" nzUnCheckedChildren=""
                                            (ngModelChange)="offerForceStop($event, datum.id)">
                                 </nz-switch>
                             </div>
                             <ng-template #running>
-                                <nz-switch [ngModel]="false" nzCheckedChildren="stopped" nzUnCheckedChildren="running"
+                                <nz-switch [ngModel]="false" nzCheckedChildren="forcefully stopped" nzUnCheckedChildren=""
                                            (ngModelChange)="offerForceStop($event, datum.id)">
                                 </nz-switch>
                             </ng-template>

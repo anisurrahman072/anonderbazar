@@ -5,6 +5,7 @@ import {timer} from "rxjs/observable/timer";
 import * as moment from "moment";
 import {Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
+import {ToastrService} from "ngx-toastr";
 
 
 @Component({
@@ -42,7 +43,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     constructor(
         private offerService: OfferService,
         private router: Router,
-        private _notify: NotificationsService,
+        private toastr: ToastrService
     ) {
     }
 
@@ -234,7 +235,9 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
 
     routerLinkToOfferDetail(id) {
         if (this.offerEndTime[id] && this.offerEndTime[id] < this.presentTime && this.offerEndTime[id] > this.jhorStartDate) {
-            this._notify.error('Expired!!', 'Offer expired');
+            this.toastr.error('Offer Expired', 'Sorry!!');
+        } else if (this.offerStartTime[id] && this.offerStartTime[id] > this.presentTime) {
+            this.toastr.error('Please wait for the offer to start', 'Not started yet');
         } else {
             this.router.navigate(['/offers/anonder-jhor-detail/', id]);
         }
