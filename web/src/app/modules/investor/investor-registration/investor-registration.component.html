@@ -1,38 +1,93 @@
 <div class="container-fluid">
-    <div class="row">
-        <mat-card class="form-card">
-            <mat-toolbar>
-                <span>Become an Investor</span>
-            </mat-toolbar>
-            <form [formGroup]="investorForm"  class="example-container mt-2" (ngSubmit)="onInvestorFormSubmit($event, investorForm.value)">
-                <mat-card-content>
-                    <div class="example-container">
-                        <mat-form-field>
-                            <input matInput placeholder="First name" formControlName="first_name" />
-                        </mat-form-field>
-                        <mat-form-field>
-                            <input matInput placeholder="Last name" formControlName="last_name" />
-                        </mat-form-field>
-                        <mat-form-field>
-                            <input matInput placeholder="Email" formControlName="email" />
-                        </mat-form-field>
-                        <mat-form-field>
-                            <span matPrefix>+88 &nbsp;</span>
-                            <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
-                            <mat-error>
-                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('required')"><i
-                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
-                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('phoneNumber')"><i
-                                        class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                </mat-card-content>
-                <div class="button-row">
-                    <button mat-button color="primary" type="submit" [disabled]="investorForm.invalid">Submit</button>
-                </div>
-            </form>
-        </mat-card>
+    <div class="column">
+        <h1 style="margin-top: 30px;">Become an investor</h1>
+        <p style="font-size: 20px; margin-top: 20px;"><b>Why become an investor at anonderbazar?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">At anonderbazar, we believe in growing together. Anonderbazar is offering an engaging program which allows you to not only invest and earn a profit but to proceed with the plan you like just with a simple click. We offer you a hassle free and easy to go investment program.</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>কেন আনন্দেরবাজারে আপনি বিনিয়োগকারী হবেন?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">আনন্দেরবাজার নিয়ে এসেছে এক আকর্ষণীয় প্রোগাম যা আপনাকে দিবে একজন সফল বিনিয়োগকারী হয়ে ওঠার সুবর্ণ সুযোগ।  ‘ Become an Investor’ প্রোগামে আপনি পাচ্ছেন বিনিয়োগ ও লাভ আয়ের সুযোগ এবং সেই সাথে থাকছে কাঙ্খিত প্লান বেছে নেওয়ার সুবিধা  কারণ আনন্দেরবাজারে আমরা একসাথে এগিয়ে চলা তে বিশ্বাসী।</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>What do you get by becoming an investor?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">Becoming an investor at anonderbazar gives you full freedom of how you want to carry your plan. You can invest a specific amount and your invested money will be used to purchase certain products on which you’ll receive your amount of profit which is 48% per annum. A promised amount of profit which is 3%-4% will be sent to your bank account every month without fail. You can receive this profit on monthly, half-yearly or yearly basis.</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>একজন বিনিয়োগকারী হিসেবে আপনি কী পাচ্ছেন?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">আনন্দেরবাজার একজন বিনিয়োগকারী হিসেবে আপনাকে দিচ্ছে আপনার প্লান টি বেছে নেওয়ার পূর্ণ স্বাধীনতা।  আপনার বিনিয়োগ করা অর্থ নির্দিষ্ট পণ্য ক্রয় করতে ব্যবহার হবে এবং পরবর্তীতে আপনি পাবেন প্রতি বছর  ৪৮% লাভ অর্থাৎ প্রতি মাসে ৩%-৪% লাভ পাওয়ার সুযোগ যা পৌছে যাবে আপনার নির্ধারিত ব্যাংক একাউন্টে নির্ধারিত সময়ের মধ্যে।  লাভের সমপরিমাণ টাকা আপনি মাসিক, অর্ধ বার্ষিক অথবা বার্ষিক প্লানের ভিত্তিতে গ্রহণ করতে পারবেন।</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>Don’t want to continue?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">We understand you and your needs at anonderbazar. That is why be it for any reason, if you don’t want to continue, you can take back your invested money after 6 months of your investment</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>আর বিনিয়োগ করতে চাচ্ছেন না?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">একটি পরিবার হিসেবে আপনার চাওয়া পাওয়া আমাদের কাছে অত্যন্ত মূল্যবান। তাই যে কোনো কারণবশত আপনি আপনার বিনিয়োগকৃত অর্থ ফেরত নিতে চাইলে বিনিয়োগের ৬ মাস পরে আপনার জন্য রয়েছে সেই সুযোগ ও ব্যবস্থা</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>How to become an investor?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">If you are interested to be an investor at anonderbazar, mail us your details at investor@anonderbazar.com</p>
+        </div>
+
+        <p style="font-size: 20px; margin-top: 20px;"><b>কীভাবে একজন বিনিয়োগকারী হবেন?</b></p>
+        <div style="display: flex; margin-top: 10px;">
+            <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
+            <p style="font-size: 15px;">আপনি একজন বিনিয়োগকারী হিসেবে আনন্দেরবাজার পরিবারের সাথে যুক্ত হতে চাইলে, আপনার বিস্তারিত তথ্য আমাদের মেইল করতে পারেন investor@anonderbazar.com</p>
+        </div>
 
     </div>
+    <button class="btn btn-block text-center btn-registration btn-primary" (click)="isAddModalVisible(modalContent)" style="display: block; width: 20%; margin: 30px auto 50px;">
+        Register
+    </button>
 </div>
+
+
+<ng-template #modalContent>
+    <mat-card class="form-card">
+        <mat-toolbar>
+            <span>Become an Investor</span>
+        </mat-toolbar>
+        <form [formGroup]="investorForm"  class="example-container mt-2" (ngSubmit)="onInvestorFormSubmit($event, investorForm.value, modalContent)">
+            <mat-card-content>
+                <div class="example-container">
+                    <mat-form-field>
+                        <input matInput placeholder="First name" formControlName="first_name" />
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Last name" formControlName="last_name" />
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Email" formControlName="email" />
+                    </mat-form-field>
+                    <mat-form-field>
+                        <span matPrefix>+88 &nbsp;</span>
+                        <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
+                        <mat-error>
+                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('required')"><i
+                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                            <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('phoneNumber')"><i
+                                    class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </mat-card-content>
+            <div class="button-row">
+                <button mat-button color="primary" type="submit" [disabled]="investorForm.invalid">Submit</button>
+            </div>
+        </form>
+    </mat-card>
+</ng-template>

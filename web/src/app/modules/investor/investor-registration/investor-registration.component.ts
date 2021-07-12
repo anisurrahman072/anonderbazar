@@ -5,6 +5,8 @@ import {InvestorService} from "../../../services/investor.service";
 import {NotificationsService} from "angular2-notifications";
 import {Router} from "@angular/router";
 import {NgProgress} from "@ngx-progressbar/core";
+import {BsModalRef} from "ngx-bootstrap/modal/bs-modal-ref.service";
+import {BsModalService} from "ngx-bootstrap/modal";
 
 @Component({
   selector: 'app-investor-registration',
@@ -14,12 +16,14 @@ import {NgProgress} from "@ngx-progressbar/core";
 export class InvestorRegistrationComponent implements OnInit {
 
   investorForm: FormGroup;
+  moneyReceiptModalRef: BsModalRef;
 
   constructor(private fb: FormBuilder,
               private investorService: InvestorService,
               private _notify: NotificationsService,
               private router: Router,
-              public progress: NgProgress,) {
+              public progress: NgProgress,
+              private modalService: BsModalService,) {
     this.investorForm = this.fb.group({
       first_name: ["", Validators.required],
       last_name: ["", Validators.required],
@@ -31,13 +35,13 @@ export class InvestorRegistrationComponent implements OnInit {
   ngOnInit() {
   }
 
-  onInvestorFormSubmit($event, value){
+  onInvestorFormSubmit($event, value, modalContent){
+    this.moneyReceiptModalRef.hide();
     this.progress.start('mainLoader');
     this.investorService.registerInvestor(value)
         .subscribe(data => {
           this.progress.complete('mainLoader');
           this._notify.success('Successfully submitted the Investor form');
-          this.router.navigate([`/home`]);
         }, error => {
           this.progress.complete('mainLoader');
           this._notify.warn('Error occurred while submitting the form');
@@ -46,6 +50,10 @@ export class InvestorRegistrationComponent implements OnInit {
 
   getInvestorFormControl(type) {
     return this.investorForm.controls[type];
+  }
+
+  isAddModalVisible(modalContent) {
+    this.moneyReceiptModalRef = this.modalService.show(modalContent);
   }
 
 }
