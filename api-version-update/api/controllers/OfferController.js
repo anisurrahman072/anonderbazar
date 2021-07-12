@@ -58,6 +58,7 @@ module.exports = {
   offerInsert: async function (req, res) {
     try {
       let body = {...req.body};
+      let upload_type = body.upload_type ? body.upload_type : 'modal';
 
       const files = await uploadImages(req.file('image'));
 
@@ -86,7 +87,6 @@ module.exports = {
           products.forEach(product => {
             individualProductsIds.push(product.id);
           });
-          console.log('individualProductsIds: ', individualProductsIds);
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }
@@ -105,7 +105,8 @@ module.exports = {
           description: body.description,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          upload_type: upload_type
         };
       } else {
         offerData = {
@@ -121,7 +122,7 @@ module.exports = {
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
         };
       }
 
@@ -178,14 +179,14 @@ module.exports = {
               await RegularOfferProducts.update({product_id: product_id}).set({
                 regular_offer_id: data.id,
                 calculation_type: calculationType,
-                discount_amount: discountAmount
+                discount_amount: discountAmount,
               });
             } else {
               await RegularOfferProducts.create({
                 regular_offer_id: data.id,
                 product_id: product_id,
                 calculation_type: calculationType,
-                discount_amount: discountAmount
+                discount_amount: discountAmount,
               });
             }
           }
@@ -429,10 +430,8 @@ module.exports = {
 
   updateOffer: async (req, res) => {
     try {
-
       let body = {...req.body};
-
-      console.log('body', body);
+      let upload_type = body.upload_type ? body.upload_type : 'modal';
 
       let offer = await Offer.findOne({id: body.id});
 
@@ -512,12 +511,21 @@ module.exports = {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
 
-      let individualProductsIds;
+      let individualProductsIds = [];
       let individualProductsCalculations;
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        if (body.uploadType && body.uploadType === 'csv') {
+          const codes = body.individuallySelectedCodes.split(',');
+          const products = await Product.find({code: codes});
+          products.forEach(product => {
+            individualProductsIds.push(product.id);
+          });
+        } else {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+        }
+
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
@@ -528,7 +536,8 @@ module.exports = {
           description: body.description,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          upload_type: upload_type
         };
       } else {
         offerData = {
@@ -592,7 +601,8 @@ module.exports = {
           if (product_id) {
             let existedProduct = await RegularOfferProducts.findOne({
               product_id: product_id,
-              product_deactivation_time: null
+              product_deactivation_time: null,
+              deletedAt: null
             });
             if (existedProduct) {
               await RegularOfferProducts.updateOne({product_id: product_id}).set({
@@ -617,15 +627,15 @@ module.exports = {
         regular_offer_product_ids = body.selectedProductIds.split(',');
       }
 
-      /** TODO: need to improve the logic. Below code is not optimized in terms of db operation */
+      
+      let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
+      let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
       if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
         for (let id = 0; id < regular_offer_product_ids.length; id++) {
           let product_id = parseInt(regular_offer_product_ids[id], 10);
-          let existedProduct = await RegularOfferProducts.findOne({
-            product_id: product_id
-          });
 
-          if (existedProduct) {
+          if (offeredProductsIDS.includes(product_id)) {
             await RegularOfferProducts.updateOne({product_id: product_id}).set({
               regular_offer_id: data.id,
               product_deactivation_time: null,

@@ -24,9 +24,8 @@ class OfferBulk {
     templateUrl: './offer-create.component.html',
     styleUrls: ['./offer-create.component.css']
 })
-export class OfferCreateComponent implements OnInit {
-    Editor = ClassicEditor;
 
+export class OfferCreateComponent implements OnInit {
     /** csv related variables */
     isUpload: Boolean = false;
     isLoading: boolean = false;
@@ -35,6 +34,7 @@ export class OfferCreateComponent implements OnInit {
     wrongCodes = [];
     private individuallySelectedCodes: any = [];
     continue: Boolean = false;
+    uploadType;
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
@@ -84,9 +84,6 @@ export class OfferCreateComponent implements OnInit {
     offerSelectionType;
     allOptions;
 
-    uploadType;
-
-
     allProductTotal = 0;
     selectedProductIds: any;
     selectedIndividualProductIds: any;
@@ -126,7 +123,6 @@ export class OfferCreateComponent implements OnInit {
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
             uploadType: ['', []],
-            csvUpload: ['', []],
         });
 
         this.individualProductFrom = this.fb.group({
@@ -199,6 +195,7 @@ export class OfferCreateComponent implements OnInit {
                 return;
             } else {
                 formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+                formData.append('upload_type', 'csv');
             }
         }
 
@@ -662,6 +659,7 @@ export class OfferCreateComponent implements OnInit {
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 
+    /** Event Method for generating the empty sample csv file to add offer individual Product wise */
     generateExcel() {
         let excelData = [];
         const header = [

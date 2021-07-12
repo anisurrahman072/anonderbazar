@@ -75,6 +75,10 @@ module.exports = {
       type: 'boolean',
       columnType: 'integer',
       defaultsTo: false
+    },
+    upload_type: {
+      type: 'string',
+      columnType: 'varchar'
     }
   },
   tableName: 'offers',
