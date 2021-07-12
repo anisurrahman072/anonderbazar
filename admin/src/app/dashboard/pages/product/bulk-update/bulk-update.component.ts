@@ -26,6 +26,12 @@ class ProductBulk {
     partially_payable: number = 0;
     disable_cash_on_delivery: number = 0;
     tag: string = "";
+    image: string = "";
+    image1: string = "";
+    image2: string = "";
+    image3: string = "";
+    image4: string = "";
+    image5: string = "";
     variant1_id: number = 0;
     variant1: string = "";
     variant1_info: string = "";
