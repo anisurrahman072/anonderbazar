@@ -87,6 +87,10 @@ export class OfferService {
         return this.http.post(`${this.EndPoint}/activeStatusChange`, data);
     }
 
+    checkIndividualProductsCodesValidity(codes): Observable<any> {
+        return this.http.get(`${this.EndPoint}/checkIndividualProductsCodesValidity?codes=${codes}`);
+    }
+
     /** AnonderJhor starts from here */
     getAnonderJhor(): Observable<any> {
         return this.http.get(`${this.EndPoint1}/getAnonderJhor`);
@@ -160,9 +164,6 @@ export class OfferService {
         const url = window.URL.createObjectURL(blob);
 
         a.href = url;
-        if (fileName) {
-
-        }
         if (fileName) {
             a.download = `${fileName}.csv`;
         } else {

@@ -174,40 +174,34 @@
 
                         <!--select individual_product-->
                         <div *ngIf="offerSelectionType === 'individual_product'">
-                            <a nz-button style="margin-bottom: 10px" [nzType]="'primary'"
-                               (click)="showModal('individual'); finalSelectionType(false, false, false, false,true, $event)">
-                                <span>Add Individual Products</span>
-                            </a><br>
-                            <small *ngIf="selectedProductIds && selectedProductIds.length > 0"
-                                   style="margin: 5px 10px 0 0">
-                                {{selectedProductIds.length}}
-                                products added in the individual product offer list
-                            </small>
-                        </div>
+                            <nz-select formControlName="uploadType"
+                                       [nzPlaceHolder]=" 'Select the product selection way'"
+                                       [(ngModel)]="uploadType" nzAllowClear nzShowSearch
+                                       (ngModelChange)="showCSVModal($event)">
+                                <nz-option nzLabel="From Modal" nzValue="modal"></nz-option>
+                                <nz-option nzLabel="From CSV" nzValue="csv"></nz-option>
+                            </nz-select>
 
+                            <ng-container *ngIf="uploadType && uploadType === 'modal'">
+                                <a nz-button style="margin: 10px 10px 0 0" [nzType]="'primary'"
+                                   (click)="showModal('individual'); finalSelectionType(false, false, false, false,true, $event)">
+                                    <span>Add Individual Products</span>
+                                </a><br>
+                                <small *ngIf="selectedProductIds && selectedProductIds.length > 0"
+                                       style="margin: 5px 10px 0 0">
+                                    {{selectedProductIds.length}}
+                                    products added in the individual product offer list
+                                </small>
+                            </ng-container>
+                            <ng-container *ngIf="uploadType && uploadType === 'csv'">
+                                <a nz-button [nzSize]="'large'" [nzType]="'primary'" (click)="isUpload = true"
+                                   style="margin: 10px 10px 0 0">
+                                    Show CSV Modal
+                                </a>
+                            </ng-container>
+                        </div>
                     </div>
                 </div>
-
-                <!--short Description-->
-                <!--<div nz-row>
-                    <div nz-col [nzSpan]="7">
-                        <label> Short description </label>
-                    </div>
-                    <div nz-col [nzSpan]="12">
-
-                        <ckeditor formControlName="description"
-                                  [config]="ckConfig" [readonly]="false "
-                                  debounce="500 ">
-                        </ckeditor>
-                        <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
-                <ckeditor formControlName="description"
-                          [config]="ckConfig" [readonly]="false "
-                          debounce="500 ">
-                </ckeditor>
-                <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
-
-                    </div>
-                </div>-->
 
                 <div *ngIf="offerSelectionType !== 'individual_product'" nz-row style="margin-top: 20px">
                     <div nz-col [nzSpan]="7">
@@ -264,11 +258,13 @@
                 </div>
 
                 <div nz-row>
-                    <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <div nz-col [nzOffset]="7" [nzSpan]="12" style="margin-top: 20px">
                         <button nz-button [nzType]="'primary'" [nzSize]="'large'"
                                 [disabled]="!validateForm.valid || submitting">Save
                         </button>
-                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        <button nz-button [nzSize]="'large'" (click)="resetForm($event)" style="margin-left: 10px">
+                            Reset
+                        </button>
                     </div>
                 </div>
             </form>
@@ -656,5 +652,56 @@
                 <span>Cancel</span>
             </button>
         </div>
+    </nz-spin>
+</nz-modal>
+
+
+<!--CSV upload modal-->
+<nz-modal [nzFooter]="null" [(nzVisible)]="isUpload" nzTitle="Add Products to the offer"
+          (nzOnCancel)="handleCancelUpload()"
+          nzWidth="70%">
+    <nz-spin [nzSpinning]="_isSpinning">
+        <div>
+            <section>
+                <div class="row" style="display: flex; justify-content: center;">
+                    <nz-card class="card-height" style="width: 70%;margin-bottom: 20px" [nzTitle]="title">
+                        <ng-template #title>
+                            Upload Individual Offered Products
+                        </ng-template>
+                        <ng-container #body>
+                            <div class="form-group">
+                                <button [disabled]="isLoading" type="button" id="download_bulk_excel"
+                                        (click)="generateExcel()">
+                                    <span>Download Sample CSV</span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label for="upload_bulk_import">Upload CSV</label>
+                                <input type="file" id="upload_bulk_import"
+                                       (change)="onCSVUpload($event)"/>
+                            </div>
+                            <p *ngIf="total > 0">{{total}} products has been added</p>
+                        </ng-container>
+                    </nz-card>
+
+                </div>
+            </section>
+            <button nz-button class="login-form-button" [nzType]="'primary'" [nzSize]="'large'"
+                    (click)="doneUploadingCSV()" [disabled]="!continue">
+                <span>Add Product(s)</span>
+            </button>
+            <button nz-button class="login-form-button" [nzType]="'primary'"
+                    (click)="handleCancelUpload()" style="float: right; display: inline-block">
+                <span>Cancel</span>
+            </button>
+        </div>
+
+        <div style="margin-top: 20px" *ngIf="wrongCodes && wrongCodes.length > 0">
+            <h4 style="margin-bottom: 20px; color: red">Invalid product codes found, Please fix and upload them again</h4>
+            <ng-container *ngFor="let code of wrongCodes; let i=index">
+                <b style="margin-left: 30px">{{i+1}} : {{code}}</b><br>
+            </ng-container>
+        </div>
+
     </nz-spin>
 </nz-modal>

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -9,7 +9,15 @@ import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {colorSets} from "@swimlane/ngx-charts/release/utils";
+import {ExportService} from "../../../../services/export.service";
+import {ExcelService} from "../../../../services/excel.service";
+
+class OfferBulk {
+    code: string = "";
+    calculation_type: string = "";
+    discount_amount: number = 0;
+
+}
 
 @Component({
     selector: 'app-offer-create',
@@ -18,34 +26,15 @@ import {colorSets} from "@swimlane/ngx-charts/release/utils";
 })
 export class OfferCreateComponent implements OnInit {
     Editor = ClassicEditor;
-    config = {
-        toolbar: {
-            items: [
-                'heading', '|', 'bold', 'italic', 'link',
-                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
-                'imageUpload',
-                'blockQuote',
-                'insertTable',
-                'mediaEmbed',
-                'undo', 'redo'
-            ],
-            heading: {
-                options: [
-                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
-                ]
-            },
-            shouldNotGroupWhenFull: true,
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:full',
-                    'imageStyle:side'
-                ]
-            }
-        },
-    };
+
+    /** csv related variables */
+    isUpload: Boolean = false;
+    isLoading: boolean = false;
+    private importedProducts: OfferBulk[] = [];
+    total: number = 0;
+    wrongCodes = [];
+    private individuallySelectedCodes: any = [];
+    continue: Boolean = false;
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
@@ -55,37 +44,7 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    /*ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
+
     _isSpinning: any = false;
     submitting: boolean = false;
 
@@ -125,6 +84,8 @@ export class OfferCreateComponent implements OnInit {
     offerSelectionType;
     allOptions;
 
+    uploadType;
+
 
     allProductTotal = 0;
     selectedProductIds: any;
@@ -146,6 +107,8 @@ export class OfferCreateComponent implements OnInit {
         private fb: FormBuilder,
         private productService: ProductService,
         private offerService: OfferService,
+        private exportService: ExportService,
+        private excelService: ExcelService,
     ) {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
@@ -162,6 +125,8 @@ export class OfferCreateComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            uploadType: ['', []],
+            csvUpload: ['', []],
         });
 
         this.individualProductFrom = this.fb.group({
@@ -208,7 +173,7 @@ export class OfferCreateComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product' && this.uploadType === 'modal') {
             if (this.individuallySelectedProductsId.length <= 0) {
                 this._notification.error('No Product', 'Please add products for this offer');
                 return;
@@ -222,6 +187,19 @@ export class OfferCreateComponent implements OnInit {
         }
         if (this.individuallySelectedProductsAmount) {
             formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        }
+
+        if (this.uploadType && this.uploadType === 'csv') {
+            formData.append('uploadType', this.uploadType);
+        }
+
+        if (this.individuallySelectedCodes && value.selectionType === 'individual_product' && this.uploadType === 'csv') {
+            if (this.individuallySelectedCodes.length <= 0) {
+                this._notification.error('No Product', 'Please add products for this offer');
+                return;
+            } else {
+                formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+            }
         }
 
         if (value.vendorId) {
@@ -533,6 +511,10 @@ export class OfferCreateComponent implements OnInit {
         this.isIndividualVisible = false;
     }
 
+    handleCancelUpload(): void {
+        this.isUpload = false;
+    }
+
     doneAddingIndividualProduct() {
         this.isIndividualVisible = false;
     }
@@ -678,5 +660,68 @@ export class OfferCreateComponent implements OnInit {
 
         this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
         this._notification.warning('Removed!', 'Individual Product removed successfully');
+    }
+
+    generateExcel() {
+        let excelData = [];
+        const header = [
+            'Product Code (SKU)',
+            'Calculation Type',
+            'Discount Amount'
+        ];
+
+        let fileName = 'Sample CSV for Individual Product Offer';
+
+        this.exportService.downloadFile(excelData, header, fileName);
+    }
+
+    onCSVUpload(event: any) {
+        const target: DataTransfer = <DataTransfer>(event.target);
+        if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+            const fileResult: string = e.target.result;
+            const data = <any[]>this.excelService.importFromFile(fileResult);
+
+            const offerObj = new OfferBulk();
+
+            const header: string[] = Object.getOwnPropertyNames(offerObj);
+            console.log('header', header);
+
+            this.importedProducts = data.slice(1);
+
+            this.total = this.importedProducts.length;
+
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[1]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[2]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[3]);
+
+            this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
+                .subscribe(result => {
+                    this.wrongCodes = result.data;
+
+                    if (this.wrongCodes && this.wrongCodes.length > 0) {
+                        this.individuallySelectedCodes = [];
+                        this.individuallySelectedProductsCalculation = [];
+                        this.individuallySelectedProductsAmount = [];
+                        this.continue = false;
+                        this._notification.error('Failed!', 'Please Input Proper Data');
+                    } else {
+                        this.continue = true;
+                    }
+                })
+        };
+        reader.readAsBinaryString(target.files[0]);
+    }
+
+    showCSVModal(event) {
+        if (event === 'csv') {
+            this.isUpload = true;
+        }
+    }
+
+    doneUploadingCSV() {
+        this.isUpload = false;
     }
 }

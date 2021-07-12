@@ -75,12 +75,22 @@ module.exports = {
       body.banner_image = '/' + bannerImagePath;
 
       let offerData = {};
-      let individualProductsIds;
+      let individualProductsIds = [];
       let individualProductsCalculations;
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        if (body.uploadType && body.uploadType === 'csv') {
+          const codes = body.individuallySelectedCodes.split(',');
+          const products = await Product.find({code: codes});
+          products.forEach(product => {
+            individualProductsIds.push(product.id);
+          });
+          console.log('individualProductsIds: ', individualProductsIds);
+        } else {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+        }
+
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
@@ -957,6 +967,40 @@ module.exports = {
       });
     }
   },
+
+  /** Method called to check the validity of the codes input by the admin for adding to the individual product offer */
+  checkIndividualProductsCodesValidity: async (req, res) => {
+    try {
+      let invalidCodes = [];
+      let codes = (req.query.codes).split(',');
+
+      for (let index = 0; index < codes.length; index++) {
+        let exists = await Product.findOne({code: codes[index]});
+        if (!exists) {
+          invalidCodes.push(codes[index]);
+        }
+      }
+
+      if (invalidCodes && invalidCodes.length > 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'Invalid codes found',
+          data: invalidCodes
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: 'Every code is valid',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to check Individual Products Code Validity',
+        error
+      });
+    }
+  }
 
 };
 

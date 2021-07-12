@@ -48,7 +48,7 @@ module.exports = {
         };
       });
 
-      console.log('allRows', allRows);
+      /*console.log('allRows', allRows);*/
 
       let allBrandIds = [];
       allRows.forEach((row) => {
