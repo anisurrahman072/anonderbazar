@@ -235,6 +235,7 @@ export class OfferEditComponent implements OnInit {
 
         if (this.individuallySelectedProductsId && value.selectionType === 'individual_product' && this.uploadType === 'modal') {
             formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+            formData.append('upload_type', 'modal');
         }
         if (this.individuallySelectedProductsCalculation) {
             formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
@@ -243,12 +244,9 @@ export class OfferEditComponent implements OnInit {
             formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
         }
 
-        if (this.uploadType && this.uploadType === 'csv') {
-            formData.append('uploadType', this.uploadType);
-        }
-
         if (this.individuallySelectedCodes && value.selectionType === 'individual_product' && this.uploadType === 'csv') {
             formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+            formData.append('upload_type', 'csv');
         }
 
         if (value.vendorId) {
@@ -758,29 +756,36 @@ export class OfferEditComponent implements OnInit {
     /*this.offeredIndividualProducts*/
     /** Event Method for generating the empty sample csv file to add offer individual Product wise */
     generateExcel() {
-        this.getRelatedOfferIndividualProducts();
-        let excelData = [];
-        /*console.log('offered products excel: ', this.offeredIndividualProducts);*/
-        if (this.uploadType === 'csv') {
-            this.offeredIndividualProducts.forEach(product => {
-                if(product) {
-                    excelData.push({
-                        'Product Code (SKU)': product.code,
-                        'Calculation Type': product.calculation_type,
-                        'Discount Amount': product.discount_amount
-                    })
-                }
-            })
-        }
-        const header = [
-            'Product Code (SKU)',
-            'Calculation Type',
-            'Discount Amount'
-        ];
+        return this.offerService.generateOfferedExcel().subscribe((result: any) => {
+            // It is necessary to create a new blob object with mime-type explicitly set
+            // otherwise only Chrome works like it should
+            const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
 
-        let fileName = 'Sample CSV for Individual Product Offer';
+            // IE doesn't allow using a blob object directly as link href
+            // instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob);
+                return;
+            }
 
-        this.exportService.downloadFile(excelData, header, fileName);
+            // For other browsers:
+            // Create a link pointing to the ObjectURL containing the blob.
+            const data = window.URL.createObjectURL(newBlob);
+
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = "Offered Products " + Date.now() + ".xlsx";
+
+            // this is necessary as link.click() does not work on the latest firefox
+            link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+
+            setTimeout(() => {
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
+                link.remove();
+            }, 100);
+        });
     }
 
     onCSVUpload(event: any) {
@@ -795,15 +800,14 @@ export class OfferEditComponent implements OnInit {
             const offerObj = new OfferBulk();
 
             const header: string[] = Object.getOwnPropertyNames(offerObj);
-            /*console.log('header', header);*/
 
             this.importedProducts = data.slice(1);
 
             this.total = this.importedProducts.length;
 
-            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[1]);
-            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[2]);
-            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[3]);
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[0]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[1]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[2]);
 
             this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
                 .subscribe(result => {

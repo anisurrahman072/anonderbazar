@@ -48,7 +48,7 @@ export class ExportService {
             for (let index in tmpHeaderList) {
                 let head = tmpHeaderList[index];
 
-                if (head === 'Transactions') {
+                /*if (head === 'Transactions') {
                     let len = array[i][head].length;
                     if (len === 0) {
                         line += ', No transaction found'
@@ -67,7 +67,8 @@ export class ExportService {
                     }
                 } else {
                     line += ',' + array[i][head];
-                }
+                }*/
+                line += ',' + array[i][head];
             }
             str += line + '\r\n';
         }

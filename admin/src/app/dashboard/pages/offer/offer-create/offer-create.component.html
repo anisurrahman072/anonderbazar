@@ -677,11 +677,11 @@
                                 </button>
                             </div>
                             <div class="form-group">
-                                <label for="upload_bulk_import">Upload CSV</label>
+                                <label for="upload_bulk_import">Upload Excel File</label>
                                 <input type="file" id="upload_bulk_import"
                                        (change)="onCSVUpload($event)"/>
                             </div>
-                            <p *ngIf="total > 0">{{total}} products has been added</p>
+                            <p *ngIf="total > 0" style="color: forestgreen">{{total}} products has been added</p>
                         </ng-container>
                     </nz-card>
 

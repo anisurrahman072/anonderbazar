@@ -8,6 +8,9 @@
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
 const {uploadImages} = require('../../libs/helper');
+const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
+const xl = require('excel4node');
+const {escapeExcel} = require('../../libs/helper');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -81,7 +84,7 @@ module.exports = {
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        if (body.uploadType && body.uploadType === 'csv') {
+        if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
           const products = await Product.find({code: codes});
           products.forEach(product => {
@@ -438,6 +441,7 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       let body = {...req.body};
+      console.log('upload type');
       let upload_type = body.upload_type ? body.upload_type : 'modal';
 
       let offer = await Offer.findOne({id: body.id});
@@ -523,7 +527,7 @@ module.exports = {
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        if (body.uploadType && body.uploadType === 'csv') {
+        if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
           const products = await Product.find({code: codes});
           products.forEach(product => {
@@ -1018,7 +1022,234 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  /** Method called to create an empty excell sheet as a sample file to add products individually in the offer */
+  generateExcel: async (req, res) => {
+    try {
+
+      // Create a new instance of a Workbook class
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+
+      // Add Worksheets to the workbook
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Offered Product List', options);
+      const calculationTypeSheet = wb.addWorksheet('Calculation', options);
+
+      let calculationTypeList = [
+        {name: 'percentage'},
+        {name: 'absolute'}
+      ];
+
+      calculationTypeList.forEach((item, i) => {
+        calculationTypeSheet.cell(i + 1, 1).string(escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+
+      const columnNamesObject = columnsOfIndividualOfferProducts;
+
+      const letters = ['A', 'B', 'C'];
+
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({
+        success: false,
+        message: 'error in generating excel',
+        error
+      });
+    }
+  },
+
+  /** Method called to generate excel file with existing offered products in offer
+   *  edit to see the existing offered products and to modify them if the user want */
+  generateOfferedExcel: async (req, res) => {
+    try {
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Offered Product List', options);
+      const calculationTypeSheet = wb.addWorksheet('Calculation', options);
+
+      let calculationTypeList = [
+        {name: 'percentage'},
+        {name: 'absolute'}
+      ];
+
+      calculationTypeList.forEach((item, i) => {
+        calculationTypeSheet.cell(i + 1, 1).string(escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+      const myStyle = wb.createStyle({
+        alignment: {
+          wrapText: true
+        }
+      });
+
+      const columnNamesObject = columnsOfIndividualOfferProducts;
+
+      const letters = ['A', 'B', 'C'];
+
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      let rawSQL = `
+      SELECT
+            calculation_type,
+            discount_amount,
+            products.code AS product_code
+        FROM
+            regular_offer_products
+        LEFT JOIN products ON products.id = regular_offer_products.product_id
+      `;
+
+
+      const rawResult = await sails.sendNativeQuery(rawSQL, []);
+
+      const offerInfo = rawResult.rows;
+
+      let row = 2;
+
+      offerInfo.forEach(item => {
+
+        let column = 1;
+
+        if (item.product_code) {
+          ws.cell(row, column++).string(item.product_code);
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.calculation_type) {
+          ws.cell(row, column++).string(escapeExcel(item.calculation_type));
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.discount_amount) {
+          ws.cell(row, column++).number(item.discount_amount);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        row++;
+      });
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in Get All products with excel';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
 
 };
 

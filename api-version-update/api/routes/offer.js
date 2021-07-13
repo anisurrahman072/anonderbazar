@@ -14,4 +14,6 @@ exports.offerRoute = {
   'GET /api/v1/offer/getWebRegularOfferById': 'OfferController.webRegularOfferById',
   'GET /api/v1/offer/getAllOfferedProducts': 'OfferController.getAllOfferedProducts',
   'GET /api/v1/offer/checkIndividualProductsCodesValidity': 'OfferController.checkIndividualProductsCodesValidity',
+  'GET /api/v1/offer/generateExcel': 'OfferController.generateExcel',
+  'GET /api/v1/offer/generateOfferedExcel': 'OfferController.generateOfferedExcel',
 };

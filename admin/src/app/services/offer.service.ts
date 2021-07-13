@@ -91,6 +91,14 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/checkIndividualProductsCodesValidity?codes=${codes}`);
     }
 
+    generateExcel(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/generateExcel`, {responseType: 'blob'});
+    }
+
+    generateOfferedExcel(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/generateOfferedExcel`, {responseType: 'blob'});
+    }
+
     /** AnonderJhor starts from here */
     getAnonderJhor(): Observable<any> {
         return this.http.get(`${this.EndPoint1}/getAnonderJhor`);
