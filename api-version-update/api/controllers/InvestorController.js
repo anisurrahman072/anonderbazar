@@ -129,6 +129,19 @@ module.exports = {
         phone: data.phone,
         investor_code: code
       }).fetch();
+
+      if(newInvestor){
+        let smsText = `Your registration for investor at Anonderbazar has been received. Your ID is ${newInvestor.code}`;
+        let smsPhone = newInvestor.phone;
+        try{
+          SmsService.sendingOneSmsToOne([smsPhone], smsText);
+        }
+        catch (error){
+          console.log('error in sms:', error);
+          throw new Error('Error occurred while sending sms');
+        }
+      }
+
       return res.status(200).json({
         success: true,
         message: 'Successfully registered for investor',
