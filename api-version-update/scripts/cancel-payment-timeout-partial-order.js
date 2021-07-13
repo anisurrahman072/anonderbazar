@@ -18,6 +18,8 @@ module.exports = {
     sails.log('Running custom shell script... (`sails run cancel-payment-timeout-partial-order`)');
 
     try {
+
+      /** Currently   Partial & non-offline payment   Orders are cancelled by CRON-JOB */
       let partialOrders = await Order.find({
         order_type: PARTIAL_ORDER_TYPE,
         status: {'!=': ORDER_STATUSES.canceled},
