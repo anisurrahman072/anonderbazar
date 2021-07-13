@@ -39,7 +39,7 @@ export class PartialPaymentModalComponent implements OnInit {
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
     OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
-    private partialFirstPaymentAmount :any = GLOBAL_CONFIGS.partialFirstPaymentAmount;
+    private partialMinimumFirstPaymentAmount :any = GLOBAL_CONFIGS.partialMinimumFirstPaymentAmount;
 
     couponCashbackAmount: number = 0;
     currentUser$: Observable<User>;
@@ -47,6 +47,7 @@ export class PartialPaymentModalComponent implements OnInit {
     showBkashPayment: boolean = false;
     paymentAmount: any = null;
     amountToPay: number;
+    orderTotalPrice: number;
     paidAmount: number = 0;
 
     private currentUser: User;
@@ -111,6 +112,7 @@ export class PartialPaymentModalComponent implements OnInit {
 
                         .subscribe(data => {
                             this.isOfflinePayable = false;
+                            this.orderTotalPrice = data[0].total_price;
                             this.amountToPay = data[0].total_price - data[0].paid_amount;
                             this.paidAmount = data[0].paid_amount;
                             this.orderItems = data[1];
@@ -172,9 +174,18 @@ export class PartialPaymentModalComponent implements OnInit {
             return false;
         }
 
-        /** Partial First payment at least 1000 Tk. */
-        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount === 0 && this.amountToPay >  this.partialFirstPaymentAmount){
-
+        /** Partial First minimum payment at least 2000 Tk. */
+        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount == 0 && this.orderTotalPrice >= this.partialMinimumFirstPaymentAmount){
+            if(value.amount_to_pay < this.partialMinimumFirstPaymentAmount){
+                this._notify.error(`You have to pay at least ${this.partialMinimumFirstPaymentAmount} BDT for first partial payment!`);
+                return false;
+            }
+        }
+        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount == 0 && this.orderTotalPrice < this.partialMinimumFirstPaymentAmount){
+            if(value.amount_to_pay < this.orderTotalPrice){
+                this._notify.error(`You have to pay full amount as order total amount is less than ${this.partialMinimumFirstPaymentAmount} BDT!`);
+                return false;
+            }
         }
         /** Partial First payment at least 1000 Tk. END. */
 
