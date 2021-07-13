@@ -13,6 +13,7 @@ export class GLOBAL_CONFIGS {
     };
     public static lotteryAdminId = 130;
     public static bkashTestUsers = [130, 2814];
+    public static partialFirstPaymentAmount = 1000;
 }
 
 export const PAYMENT_METHODS = {

@@ -39,6 +39,7 @@ export class PartialPaymentModalComponent implements OnInit {
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
     OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
+    private partialFirstPaymentAmount :any = GLOBAL_CONFIGS.partialFirstPaymentAmount;
 
     couponCashbackAmount: number = 0;
     currentUser$: Observable<User>;
@@ -46,6 +47,7 @@ export class PartialPaymentModalComponent implements OnInit {
     showBkashPayment: boolean = false;
     paymentAmount: any = null;
     amountToPay: number;
+    paidAmount: number = 0;
 
     private currentUser: User;
     private currentOrderId: number;
@@ -110,6 +112,7 @@ export class PartialPaymentModalComponent implements OnInit {
                         .subscribe(data => {
                             this.isOfflinePayable = false;
                             this.amountToPay = data[0].total_price - data[0].paid_amount;
+                            this.paidAmount = data[0].paid_amount;
                             this.orderItems = data[1];
                             this.orderItems.forEach(item => {
                                 if (item.offline_payment) {
@@ -168,6 +171,13 @@ export class PartialPaymentModalComponent implements OnInit {
             this._notify.error('Payment amount is larger than due amount!');
             return false;
         }
+
+        /** Partial First payment at least 1000 Tk. */
+        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount === 0 && this.amountToPay >  this.partialFirstPaymentAmount){
+
+        }
+        /** Partial First payment at least 1000 Tk. END. */
+
         this.loaderService.showLoader();
         if (value.payment_method === this.BKASH_PAYMENT_TYPE) {
             this.bKashService.getAuthUserWallets()
