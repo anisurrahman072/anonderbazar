@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="column">
         <h1 style="margin-top: 30px;">Become an investor</h1>
-        <p style="font-size: 20px; margin-top: 20px;"><b>Why become an investor at anonderbazar?</b></p>
+        <p style="font-size: 20px; margin-top: 80px;"><b>Why become an investor at anonderbazar?</b></p>
         <div style="display: flex; margin-top: 10px;">
             <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
             <p style="font-size: 15px;">At anonderbazar, we believe in growing together. Anonderbazar is offering an engaging program which allows you to not only invest and earn a profit but to proceed with the plan you like just with a simple click. We offer you a hassle free and easy to go investment program.</p>
@@ -13,7 +13,7 @@
             <p style="font-size: 15px;">আনন্দেরবাজার নিয়ে এসেছে এক আকর্ষণীয় প্রোগাম যা আপনাকে দিবে একজন সফল বিনিয়োগকারী হয়ে ওঠার সুবর্ণ সুযোগ।  ‘ Become an Investor’ প্রোগামে আপনি পাচ্ছেন বিনিয়োগ ও লাভ আয়ের সুযোগ এবং সেই সাথে থাকছে কাঙ্খিত প্লান বেছে নেওয়ার সুবিধা  কারণ আনন্দেরবাজারে আমরা একসাথে এগিয়ে চলা তে বিশ্বাসী।</p>
         </div>
 
-        <p style="font-size: 20px; margin-top: 20px;"><b>What do you get by becoming an investor?</b></p>
+        <p style="font-size: 20px; margin-top: 45px;"><b>What do you get by becoming an investor?</b></p>
         <div style="display: flex; margin-top: 10px;">
             <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
             <p style="font-size: 15px;">Becoming an investor at anonderbazar gives you full freedom of how you want to carry your plan. You can invest a specific amount and your invested money will be used to purchase certain products on which you’ll receive your amount of profit which is 48% per annum. A promised amount of profit which is 3%-4% will be sent to your bank account every month without fail. You can receive this profit on monthly, half-yearly or yearly basis.</p>
@@ -25,7 +25,7 @@
             <p style="font-size: 15px;">আনন্দেরবাজার একজন বিনিয়োগকারী হিসেবে আপনাকে দিচ্ছে আপনার প্লান টি বেছে নেওয়ার পূর্ণ স্বাধীনতা।  আপনার বিনিয়োগ করা অর্থ নির্দিষ্ট পণ্য ক্রয় করতে ব্যবহার হবে এবং পরবর্তীতে আপনি পাবেন প্রতি বছর  ৪৮% লাভ অর্থাৎ প্রতি মাসে ৩%-৪% লাভ পাওয়ার সুযোগ যা পৌছে যাবে আপনার নির্ধারিত ব্যাংক একাউন্টে নির্ধারিত সময়ের মধ্যে।  লাভের সমপরিমাণ টাকা আপনি মাসিক, অর্ধ বার্ষিক অথবা বার্ষিক প্লানের ভিত্তিতে গ্রহণ করতে পারবেন।</p>
         </div>
 
-        <p style="font-size: 20px; margin-top: 20px;"><b>Don’t want to continue?</b></p>
+        <p style="font-size: 20px; margin-top: 45px;"><b>Don’t want to continue?</b></p>
         <div style="display: flex; margin-top: 10px;">
             <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
             <p style="font-size: 15px;">We understand you and your needs at anonderbazar. That is why be it for any reason, if you don’t want to continue, you can take back your invested money after 6 months of your investment</p>
@@ -37,7 +37,7 @@
             <p style="font-size: 15px;">একটি পরিবার হিসেবে আপনার চাওয়া পাওয়া আমাদের কাছে অত্যন্ত মূল্যবান। তাই যে কোনো কারণবশত আপনি আপনার বিনিয়োগকৃত অর্থ ফেরত নিতে চাইলে বিনিয়োগের ৬ মাস পরে আপনার জন্য রয়েছে সেই সুযোগ ও ব্যবস্থা</p>
         </div>
 
-        <p style="font-size: 20px; margin-top: 20px;"><b>How to become an investor?</b></p>
+        <p style="font-size: 20px; margin-top: 45px;"><b>How to become an investor?</b></p>
         <div style="display: flex; margin-top: 10px;">
             <p style="text-align: center; margin: 0px 10px; font-size: 15px;">-</p>
             <p style="font-size: 15px;">If you are interested to be an investor at anonderbazar, mail us your details at investor@anonderbazar.com</p>
@@ -50,44 +50,121 @@
         </div>
 
     </div>
-    <button class="btn btn-block text-center btn-registration btn-primary" (click)="isAddModalVisible(modalContent)" style="display: block; width: 20%; margin: 30px auto 50px;">
-        Register
+    <button class="btn btn-block text-center btn-registration btn-primary" (click)="isAddModalVisible(modalInvestorNumber)" style="display: block; width: 20%; margin: 30px auto 50px;">
+        Register Now
     </button>
 </div>
 
 
-<ng-template #modalContent>
-    <mat-card class="form-card">
-        <mat-toolbar>
-            <span>Become an Investor</span>
-        </mat-toolbar>
-        <form [formGroup]="investorForm"  class="example-container mt-2" (ngSubmit)="onInvestorFormSubmit($event, investorForm.value, modalContent)">
-            <mat-card-content>
-                <div class="example-container">
-                    <mat-form-field>
-                        <input matInput placeholder="First name" formControlName="first_name" />
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input matInput placeholder="Last name" formControlName="last_name" />
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input matInput placeholder="Email" formControlName="email" />
-                    </mat-form-field>
-                    <mat-form-field>
-                        <span matPrefix>+88 &nbsp;</span>
-                        <input type="tel" matInput placeholder="Phone Number" formControlName="phone" />
-                        <mat-error>
-                                <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('required')"><i
-                                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
-                            <span *ngIf="getInvestorFormControl('phone').dirty&&getInvestorFormControl('phone').hasError('phoneNumber')"><i
-                                    class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
-                        </mat-error>
-                    </mat-form-field>
+<ng-template #modalInvestorNumber>
+    <div *ngIf="isShowMobileNumberGiven">
+        <form [formGroup]="investorMobileForm">
+            <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                <div style="display: flex; align-items: baseline;">
+                    <label style="color: black; white-space: nowrap; padding: 0px 20px 0px 0px">*Mobile</label>
+                    <input type="text" class="form-control" formControlName="phone"
+                           placeholder="Input Mobile Number" style="border: 1px solid black; padding: 3px 10px !important;">
                 </div>
-            </mat-card-content>
+                <div class="validation-feedback">
+                <span *ngIf="getInvestorMobileFormControl('phone').dirty && getInvestorMobileFormControl('phone').hasError('required')" style="color: red;"><i
+                        class='fa fa-exclamation-circle mr-2'></i>Phone Number is required!</span>
+                    <span *ngIf="getInvestorMobileFormControl('phone').dirty && getInvestorMobileFormControl('phone').hasError('phoneNumber')" style="color: red;">
+                    <i class='fa fa-exclamation-circle mr-2'></i>Enter a right Phone Number!</span>
+                </div>
+            </div>
+            <button class="btn btn-block text-center btn-mobile-submit btn-primary"style="display: block; width: 20%; margin: 30px auto 20px;"
+                    [disabled]="investorMobileForm.invalid" (click)="showOTPVerification(investorMobileForm.value)">
+                Submit
+            </button>
+        </form>
+    </div>
+    <div *ngIf="!isShowMobileNumberGiven">
+        <form [formGroup]="investorOtpForm">
+            <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                <div style="display: flex; align-items: baseline;">
+                    <label style="color: black; white-space: nowrap; padding: 0px 20px 0px 0px">*6 digit OTP</label>
+                    <input type="text" class="form-control" formControlName="otp"
+                           placeholder="Input 6 digit OTP" style="border: 1px solid black; padding: 3px 10px !important;">
+                </div>
+                <div class="validation-feedback">
+                <span *ngIf="getInvestorOTPControl('otp').dirty && getInvestorOTPControl('otp').hasError('required')" style="color: red;"><i
+                        class='fa fa-exclamation-circle mr-2'></i>OTP is required!</span>
+                </div>
+            </div>
+            <div style="color: #1c7430; text-align: center; font-size: 30px;">{{ timer$ | async | timer}}</div>
+            <button class="btn btn-block text-center btn-mobile-submit btn-primary" style="display: block; width: 20%; margin: 30px auto 20px;"
+                    [disabled]="investorOtpForm.invalid" (click)="verifyOTP(investorOtpForm.value, modalContent)">
+                Verify
+            </button>
+        </form>
+    </div>
+
+</ng-template>
+
+
+<ng-template #modalContent>
+    <div class="form-card" *ngIf="isShowInvestorForm">
+        <form [formGroup]="investorForm"  class="example-container mt-2" (ngSubmit)="onInvestorFormSubmit($event, investorForm.value)">
+            <div class="example-container">
+                <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                    <div style="display: flex; align-items: baseline;">
+                        <label style="color: black; white-space: nowrap; width: 100px;">First Name</label>
+                        <input type="text" class="form-control" formControlName="first_name"
+                               placeholder="Enter First name" style="border: 1px solid black; padding: 3px 10px !important;">
+                    </div>
+                    <div class="validation-feedback">
+                        <span *ngIf="getInvestorsControl('first_name').dirty && getInvestorsControl('first_name').hasError('required')" style="color: red;"><i
+                            class='fa fa-exclamation-circle mr-2'></i>First name is required!</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                    <div style="display: flex; align-items: baseline;">
+                        <label style="color: black; white-space: nowrap; width: 100px;">Last Name</label>
+                        <input type="text" class="form-control" formControlName="last_name"
+                               placeholder="Enter Last name" style="border: 1px solid black; padding: 3px 10px !important;">
+                    </div>
+                    <div class="validation-feedback">
+                        <span *ngIf="getInvestorsControl('last_name').dirty && getInvestorsControl('last_name').hasError('required')" style="color: red;"><i
+                                class='fa fa-exclamation-circle mr-2'></i>Last name is required!</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                    <div style="display: flex; align-items: baseline;">
+                        <label style="color: black; white-space: nowrap; width: 100px;">Email</label>
+                        <input type="text" class="form-control" formControlName="email"
+                               placeholder="Enter Email" style="border: 1px solid black; padding: 3px 10px !important;">
+                    </div>
+                    <div class="validation-feedback">
+                        <span *ngIf="getInvestorsControl('email').dirty && getInvestorsControl('email').hasError('required')" style="color: red;"><i
+                                class='fa fa-exclamation-circle mr-2'></i>Email is required!</span>
+                        <span *ngIf="getInvestorsControl('email').dirty && getInvestorsControl('email').hasError('email')" style="color: red;"><i
+                                class='fa fa-exclamation-circle mr-2'></i>Provide a valid email!</span>
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-12  col-md-12 mobile-number-content">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="agree" name="agree" value="agree" formControlName="agree" [(ngModel)]="agreeTerms" style="margin-right: 20px;">
+                        <label for="agree" style="color: black; margin: 0px;"> I agree with the <a href="https://anonderbazar.com/cms/post-details/143" style="color: red;" target="_blank">terms and conditions</a> </label><br>
+                    </div>
+                    <div class="validation-feedback">
+                        <span *ngIf="getInvestorsControl('agree').dirty && getInvestorsControl('agree').hasError('required')" style="color: red;"><i
+                                class='fa fa-exclamation-circle mr-2'></i>Agree with terms and conditions</span>
+                    </div>
+                </div>
+            </div>
             <div class="button-row">
-                <button mat-button color="primary" type="submit" [disabled]="investorForm.invalid">Submit</button>
+                <button  class="btn btn-block text-center btn-mobile-submit btn-primary" style="display: block; width: 20%; margin: 0px auto 15px;"
+                         type="submit" [disabled]="investorForm.invalid || !agreeTerms">Submit</button>
             </div>
         </form>
-    </mat-card>
+    </div>
+    <div *ngIf="!isShowInvestorForm" style="margin: 20px;">
+        <img src="/assets/images/success.png" style="display: block; height: 50px; margin: auto;">
+        <p style="text-align: center; margin-top: 10px; font-size: 20px;">
+            Your Registration has received successfully. We will communicate you very soon.
+        </p>
+    </div>
 </ng-template>
