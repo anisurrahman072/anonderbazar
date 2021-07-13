@@ -28,7 +28,7 @@ module.exports = {
 
       if(newOtp){
         let smsText = `Your OTP for investor registration ${newOtp.otp}`;
-        let smsPhone = newOtp.otp;
+        let smsPhone = newOtp.phone;
         try {
           SmsService.sendingOneSmsToOne([smsPhone], smsText);
         }
@@ -130,8 +130,10 @@ module.exports = {
         investor_code: code
       }).fetch();
 
+      console.log('new investor: ', newInvestor);
+
       if(newInvestor){
-        let smsText = `Your registration for investor at Anonderbazar has been received. Your ID is ${newInvestor.code}`;
+        let smsText = `Your registration for investor at Anonderbazar has been received. Your ID is ${newInvestor.investor_code}`;
         let smsPhone = newInvestor.phone;
         try{
           SmsService.sendingOneSmsToOne([smsPhone], smsText);
