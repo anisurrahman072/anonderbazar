@@ -110,7 +110,6 @@ module.exports = {
   registerInvestor: async (req, res) => {
     try{
       let data = req.body;
-      console.log('uuuuuuuuuuuuuu');
 
       const investorQuery = Promise.promisify(Investor.getDatastore().sendNativeQuery);
       let query = ` select * from investors ORDER BY id DESC LIMIT 1 `;
