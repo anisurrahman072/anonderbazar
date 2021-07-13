@@ -29,7 +29,7 @@ export class InvestorRegistrationComponent implements OnInit {
   currentMobileNumber: any;
   currentOtpCreatedAt = null;
   timer$: Observable<any>;
-  isShowInvestorForm = false;
+  isShowInvestorForm = true;
   agreeTerms: any = null;
 
   constructor(private fb: FormBuilder,

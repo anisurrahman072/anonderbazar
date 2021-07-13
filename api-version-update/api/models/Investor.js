@@ -20,6 +20,11 @@ module.exports = {
       required: false,
       allowNull: true
     },
+    investor_code: {
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
+    },
     phone: {
       type: 'string',
       columnType: 'varchar',

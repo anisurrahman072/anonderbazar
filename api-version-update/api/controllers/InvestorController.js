@@ -8,7 +8,8 @@
 const {pagination} = require('../../libs/pagination');
 const {NOT_VERIFIED_INVESTOR_OTP_STATUS, VERIFIED_INVESTOR_OTP_STATUS, EXPIRED_INVESTOR_OTP_STATUS} = require('../../libs/constants');
 const moment = require('moment');
-
+const ___ = require('lodash');
+const Promise = require('bluebird');
 
 module.exports = {
   generateOtp: async (req, res) => {
@@ -109,11 +110,25 @@ module.exports = {
   registerInvestor: async (req, res) => {
     try{
       let data = req.body;
+      console.log('uuuuuuuuuuuuuu');
+
+      const investorQuery = Promise.promisify(Investor.getDatastore().sendNativeQuery);
+      let query = ` select * from investors ORDER BY id DESC LIMIT 1 `;
+      const rawResult = await investorQuery(query, []);
+
+      const lockingQuery = ` select * from investors WHERE id = ${rawResult.rows[0].id} FOR UPDATE `;
+      await investorQuery(lockingQuery, []);
+
+      let code = ++rawResult.rows[0].id + '';
+      code = ___.padStart(code, 5, '0');
+      code = 'ABI' + code;
+
       let newInvestor = await Investor.create({
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
-        phone: data.phone
+        phone: data.phone,
+        investor_code: code
       }).fetch();
       return res.status(200).json({
         success: true,
@@ -122,6 +137,7 @@ module.exports = {
       });
     }
     catch (error){
+      console.log(error);
       return res.status(400).json({
         success: false,
         message: 'Error occurred while registered for investor',
