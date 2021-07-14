@@ -7,6 +7,9 @@ import {AuthService} from "../../../../services/auth.service";
 import * as _moment from "moment";
 import {default as _rollupMoment} from "moment";
 import {ExportService} from "../../../../services/export.service";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import {PaymentService} from "../../../../services/payment.service";
 const moment = _rollupMoment || _moment;
 
 
@@ -36,15 +39,29 @@ export class CanceledOrderComponent implements OnInit {
 
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
+    remove_zero_payment:boolean = false;
+    isMakePaymentModalVisible: boolean = false;
+    validateForm: FormGroup;
+    ImageFrontFile: File[] = [];
+    currentOrderId: any;
+    currentOrderDueAmount: any;
+
+
     constructor(
         private orderService: OrderService,
         private _notification: NzNotificationService,
         private authService: AuthService,
-        private exportService: ExportService
+        private exportService: ExportService,
+        private fb: FormBuilder,
+        private paymentService: PaymentService
     ) {
     }
 
     ngOnInit() {
+        this.validateForm = this.fb.group({
+            dueAmount: ['', [Validators.required]]
+        });
+
         this.getPageData();
         this.currentUser = this.authService.getCurrentUser();
         if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
@@ -57,13 +74,16 @@ export class CanceledOrderComponent implements OnInit {
         if ($event) {
             this.page = $event;
         }
+        if(this.remove_zero_payment){
+            this.page = 1;
+        }
 
-        this.orderService.getCancelledOrder(this.page, this.limit, this.statusSearchValue)
+        this.orderService.getCancelledOrder(this.page, this.limit, this.statusSearchValue, this.remove_zero_payment)
             .subscribe(orders => {
                 this._isSpinning = false;
                 this.total = orders.total;
                 this.cancelledOrders = orders.data;
-            })
+            });
     }
 
     refundCancelOrder($event, id, status) {
@@ -89,10 +109,12 @@ export class CanceledOrderComponent implements OnInit {
 
     handleOk = e => {
         this.isCancelOrdersBulkVisible = false;
+        this.isMakePaymentModalVisible = false;
     };
 
     handleCancel = e => {
         this.isCancelOrdersBulkVisible = false;
+        this.isMakePaymentModalVisible = false;
     };
 
     onSubmitOrdersBulkDownload() {
@@ -215,6 +237,56 @@ export class CanceledOrderComponent implements OnInit {
             }, error => {
                 console.log("Error: ", error);
                 this._notification.error('Error occurred!', 'Something wrong happened!');
+            })
+    }
+
+    showMakePaymentModal(order){
+        this.currentOrderId = order.id;
+        this.currentOrderDueAmount = order.total_price - order.paid_amount;
+        this.isMakePaymentModalVisible = true;
+    }
+
+    getFormControl(name) {
+        return this.validateForm.controls[name];
+    }
+
+    onRemovedFront(_file: FileHolder) {
+        this.ImageFrontFile.splice(
+            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
+            1
+        );
+    }
+
+    onBeforeUploadFront = (metadata: UploadMetadata) => {
+        this.ImageFrontFile.push(metadata.file);
+        return metadata;
+    }
+
+    submitForm($event, value){
+        if(!value.dueAmount){
+            this._notification.error("Due Amount Missing", "Must provide due amount");
+            return false;
+        }
+        const formData: FormData = new FormData();
+        formData.append('dueAmount', value.dueAmount);
+        formData.append('orderId', this.currentOrderId);
+        if (this.ImageFrontFile.length > 0) {
+            formData.append('hasImage', 'true');
+            formData.append('image', this.ImageFrontFile[0], this.ImageFrontFile[0].name);
+        } else {
+            formData.append('hasImage', 'false');
+        }
+
+        this.paymentService.makeAdminPayment(formData)
+            .subscribe(data => {
+                this.isMakePaymentModalVisible = false;
+                console.log("Success: ", data);
+                this.getPageData();
+                this._notification.success("Success", "Successfully added payment for the order");
+            }, error => {
+                this.isMakePaymentModalVisible = false;
+                console.log("Error occurred: ", error);
+                this._notification.error("Error", "Error occurred while making admin payment");
             })
     }
 

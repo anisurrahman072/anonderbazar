@@ -1,6 +1,8 @@
 <section>
     <nz-card class="card-height" nzTitle="Canceled Order" [nzExtra]="extra">
         <ng-template #extra>
+            <label nz-checkbox [(ngModel)]="remove_zero_payment" (click)="getPageData()">Remove zero payment amount</label>
+
             <button nz-button [nzType]="'primary'" (click)='showCancelOrdersBalkModal()'>
                 <i class="anticon anticon-download"></i><span> Download Cancel Orders as Bulk </span>
             </button>&nbsp;
@@ -38,6 +40,9 @@
                 <th>
                     <span>Refund status</span>
                 </th>
+                <th>
+                    <span>Make Payment</span>
+                </th>
             </tr>
             <tr>
                 <th> </th>
@@ -56,6 +61,7 @@
                         </nz-option>
                     </nz-select>
                 </th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -63,8 +69,8 @@
                 <td>
                     {{data.id}}
                 </td>
-                <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                <td style="width: 220px;">{{data.full_name}}</td>
+                <td style="width: 200px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                <td style="width: 200px;">{{data.full_name}}</td>
                 <td style="width: 100px;">{{data.total_quantity}}</td>
                 <td style="width: 100px;">{{data.total_price}}</td>
                 <td style="width: 100px;">{{data.paid_amount}}</td>
@@ -79,11 +85,73 @@
                     </nz-select>
                 </td>
                 <td *ngIf="!isAllowedToUpdateRefundStatus">{{data.refund_status | refundStatus}}</td>
+
+                <!-- Make Payment -->
+                <td>
+                    <button (click)="showMakePaymentModal(data)" nz-button
+                            [nzSize]="'default'">
+                        <i class="fa fa-money"></i>
+                    </button>
+                </td>
             </tr>
             </tbody>
         </nz-table>
     </nz-card>
 </section>
+
+<!-- Make payment modal -->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isMakePaymentModalVisible"
+          [nzTitle]="'Pay due amount & make order processing'"
+          [nzContent]="modalMakePayment"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalMakePayment>
+        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <div class="row">
+                <div class="col-md-12 ">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="7">
+                            <label> Due Amount </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input type="number" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
+
+                            <div *ngIf="getFormControl('dueAmount').dirty && getFormControl('dueAmount').hasError('required')">
+                                <span class="validation-error"> Name is required! </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>&nbsp;
+
+                <div class="col-md-12">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="7">
+                            <label> Money Receipt </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload #Image [max]="1" buttonCaption="Select picture"
+                                          dropBoxMessage="Drop Picture here"
+                                          clearButtonCaption="remove" (removed)="onRemovedFront($event)"
+                                          [uploadedFiles]="ImageFrontFile" [beforeUpload]="onBeforeUploadFront">
+                            </image-upload>
+                        </div>
+                    </div>
+                </div>
+            </div>&nbsp;
+            <div nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid">
+                        Make Payment
+                    </button>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+</nz-modal>
+
 
 <nz-modal [nzFooter]="null"
           nzWidth="60%"

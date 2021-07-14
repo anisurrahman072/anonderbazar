@@ -74,10 +74,13 @@ export class OrderService {
         return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
 
-    getCancelledOrder(page: number = 1, limit: number = 20, status: number): Observable<any>{
+    getCancelledOrder(page: number = 1, limit: number = 20, status: number, removeZeroPayment: boolean = false): Observable<any>{
         let _url = `${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}`;
         if(status == 0 || status == 1){
             _url += `&status=${status}`;
+        }
+        if(removeZeroPayment){
+            _url += `&removeZeroPayment=true`;
         }
         return this.http.get(_url);
     }

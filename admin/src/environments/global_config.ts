@@ -157,7 +157,8 @@ export const PAYMENT_METHODS = {
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad',
-    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay',
+    ADMIN_PAYMENT_TYPE: 'AdminPayment'
 }
 
 export const OFFLINE_PAYMENT_METHODS = {

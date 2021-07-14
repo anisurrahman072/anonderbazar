@@ -761,9 +761,11 @@ module.exports = {
     _where.deletedAt = null;
     _where.order_type = PARTIAL_ORDER_TYPE;
     _where.status = CANCELED_ORDER;
-    _where.paid_amount = {'!=': 0};
     if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
       _where.refund_status = parseInt(params.status);
+    }
+    if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
+      _where.paid_amount = {'!=': 0};
     }
 
     try {
