@@ -39,7 +39,7 @@ module.exports = {
         });
       }
 
-      console.log('numberOfUser: ', rawResult.rows.length);
+      /*console.log('numberOfUser: ', rawResult.rows.length);*/
 
       let allRows = rawResult.rows.map((row) => {
         return {
