@@ -8,6 +8,8 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const {pagination} = require('../../libs/pagination');
+const {PARTIAL_ORDER_TYPE} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
 
 module.exports = {
   // destroy a row
@@ -190,6 +192,10 @@ module.exports = {
         '       LEFT JOIN areas as upazilaArea ON upazilaArea.id = payment_addresses.upazila_id ';
 
       let _where = ' WHERE p_order.deleted_at IS NULL AND suborder.deleted_at IS NULL AND suborder_item.deleted_at IS NULL ';
+      if(req.query.downloadCanceledOrderCsv && req.query.downloadCanceledOrderCsv === 'true'){
+        _where += ` AND p_order.order_type = ${PARTIAL_ORDER_TYPE} AND  p_order.status = ${ORDER_STATUSES.canceled}
+        AND  p_order.paid_amount != 0 `;
+      }
 
 
       if (req.query.created_at) {

@@ -1,5 +1,10 @@
 <section>
-    <nz-card class="card-height" nzTitle="Canceled Order">
+    <nz-card class="card-height" nzTitle="Canceled Order" [nzExtra]="extra">
+        <ng-template #extra>
+            <button nz-button [nzType]="'primary'" (click)='showCancelOrdersBalkModal()'>
+                <i class="anticon anticon-download"></i><span> Download Cancel Orders as Bulk </span>
+            </button>&nbsp;
+        </ng-template>
         <nz-table #nzTable
                   (nzPageIndexChange)="getPageData($event)"
                   [(nzPageIndex)]="page"
@@ -79,3 +84,37 @@
         </nz-table>
     </nz-card>
 </section>
+
+<nz-modal [nzFooter]="null"
+          nzWidth="60%"
+          [nzVisible]="isCancelOrdersBulkVisible"
+          [nzTitle]="'Download cancel orders as bulk'"
+          [nzContent]="modalCancelOrdersBulkContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalCancelOrdersBulkContent>
+        <div    nz-row>
+            <div    nz-col [nzSpan]="3">
+                <label> Enter Date </label>
+            </div>
+            <div nz-col [nzSpan]="15">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  00:00:00"
+                        [(ngModel)]="searchStartDateOrdersBulk"
+                        nzPlaceHolder="Start date">
+                </nz-date-picker>&nbsp;
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  23:59:59"
+                        [(ngModel)]="searchEndDateOrdersBulk"
+                        nzPlaceHolder="End date">
+                </nz-date-picker>
+            </div>
+            <div nz-col [nzSpan]="1">
+                <button nz-col nz-button [nzType]="'primary'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
+            </div>
+        </div>
+    </ng-template>
+</nz-modal>
