@@ -1,5 +1,6 @@
 const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
+const {INVESTOR_EMAIL_ADDRESS} = require('../../libs/constants');
 module.exports = {
   sendPasswordResetMailUpdated: function (obj, password) {
     sails.hooks.email.send(
@@ -100,6 +101,30 @@ module.exports = {
       }
     );
   },
+
+  investorMail: function (obj){
+    let receiverEmail = INVESTOR_EMAIL_ADDRESS;
+    if (!receiverEmail) {
+      return;
+    }
+    sails.hooks.email.send(
+      'investorMail',
+      {
+        recipientName: senderName,
+        senderName: senderName,
+        investorDetail: obj,
+        commonUrl: commonUrl,
+      },
+      {
+        to: receiverEmail,
+        subject: `Investor registration completed successfully`
+      },
+      (err) => {
+        console.log(err || 'It worked!');
+      }
+    );
+  },
+
   orderCompletedMail: function (obj) {
     sails.hooks.email.send(
       'orderCompleteEmail',

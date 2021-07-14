@@ -142,6 +142,14 @@ module.exports = {
           console.log('error in sms:', error);
           throw new Error('Error occurred while sending sms');
         }
+
+        try {
+          EmailService.investorMail(newInvestor);
+        }
+        catch (error){
+          console.log('error in email:', error);
+          throw new Error('Error occurred while sending email');
+        }
       }
 
       return res.status(200).json({
