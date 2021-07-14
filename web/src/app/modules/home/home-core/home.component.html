@@ -7,7 +7,7 @@
                     [homeOfferData]="regularOfferData"></app-section-offers>
 
 <!--to show the anonder jhor banner image-->
-<ng-container *ngIf="anonderJhorInfo && anonderJhorInfo.status === 1 && anonderJhorInfo.show_in_homepage === true">
+<ng-container *ngIf="anonderJhorInfo && anonderJhorInfo.status === 1 && anonderJhorInfo.show_in_homepage === true && anonderJhorInfo.homepage_banner_image">
     <div id="offer-section">
         <div class="container-fluid">
             <a routerLink="/offers/anonder-jhor">
