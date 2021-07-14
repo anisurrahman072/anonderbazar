@@ -768,12 +768,13 @@ module.exports = {
 
     try {
       let paginate = pagination(params);
+      let total = await Order.count(_where);
 
       let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
-      console.log('all canceled order:', canceledOrder);
+      console.log('all canceled order:', canceledOrder, total);
 
       return res.status(200).json({
-        success: true, message: 'successfully fetched cancelled order', data: canceledOrder
+        success: true, message: 'successfully fetched cancelled order', data: canceledOrder, total
       });
     } catch (error) {
       return res.status(200).json({
