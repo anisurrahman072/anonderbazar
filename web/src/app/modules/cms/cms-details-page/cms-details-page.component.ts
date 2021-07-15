@@ -3,7 +3,6 @@ import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
-import {error} from "util";
 import {NotificationsService} from "angular2-notifications";
 
 @Component({

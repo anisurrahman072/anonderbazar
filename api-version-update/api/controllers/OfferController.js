@@ -746,7 +746,6 @@ module.exports = {
 
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
-    console.log('req.query.sortData: ', req.query.sortData);
     try {
       await OfferService.offerDurationCheck();
 
@@ -923,6 +922,7 @@ module.exports = {
         }
       }
 
+      console.log('webRegularOfferedProductsvvv: ', webRegularOfferedProducts);
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web with related products data',

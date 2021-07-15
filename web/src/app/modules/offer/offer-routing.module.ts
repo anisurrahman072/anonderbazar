@@ -3,6 +3,7 @@ import {Routes, RouterModule} from "@angular/router";
 import {OffersPageComponent} from "./offers-page/offers-page.component";
 import {AnonderJhorComponent} from "./anonder-jhor/anonder-jhor.component";
 import {AnonderJhorDetailsComponent} from "./anonder-jhor-details/anonder-jhor-details.component";
+import {OfferedProductsBrandsComponent} from "./offered-products-brands/offered-products-brands.component";
 
 const routes: Routes = [
     {
@@ -24,6 +25,13 @@ const routes: Routes = [
         component: AnonderJhorDetailsComponent,
         data: {
             title: "offer detail"
+        }
+    },
+    {
+        path: "offered-products-brands/:id",
+        component: OfferedProductsBrandsComponent,
+        data: {
+            title: "Offered Brands"
         }
     },
 

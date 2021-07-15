@@ -1,0 +1,54 @@
+<div class="main-container right-sidebar" *ngIf="regularOffer && regularOfferedProducts">
+    <div class="container-fluid">
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home</a>
+            <a routerLink="/cms" routerLinkActive="active">Offer</a>
+            <a>{{regularOffer.title}}</a>
+        </nav>
+        <div class="row">
+            <div class="col-sm-6 col-md-12 main-content">
+                <div class="blog-single">
+                    <div class="post-item">
+                        <div class="banner-image" style="overflow: hidden;">
+                            <div class="post-thumb" *ngIf="regularOffer.image.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.banner_image}}"
+                                     alt="{{regularOffer.title}}">
+                            </div>
+                            <ng-template #image>
+                                <div class="post-thumb" *ngIf="regularOffer.image">
+                                    <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.image}}"
+                                         alt="{{regularOffer.title}}">
+                                </div>
+                            </ng-template>
+                        </div>
+
+                        <div class="post-info" style="margin-top:40px">
+                            <span class="post-title h1">{{regularOffer.title}}</span>
+                            <div style="margin-top:40px" class="blog-content"
+                                 [innerHTML]="regularOffer.description">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf='regularOfferedProducts && regularOfferedProducts.length > 0'>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (regularOfferedProducts | paginate: { itemsPerPage: 12, currentPage: page }) ; let i=index">
+                <app-product-item [dataProduct]="product"></app-product-item>
+            </div>
+        </div>
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 text-center"
+             style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
+             *ngIf="regularOfferedProducts && regularOfferedProducts.length <= 0">
+            <img class="img-fluid" src="../../../../assets/images/No_Product_Found.png"
+                 alt="No Product is available.">
+        </div>
+    </div>
+    <div *ngIf="regularOfferedProducts && regularOfferedProducts.length > 12"
+         style="margin-top: 20px; text-align: center">
+        <pagination-controls (pageChange)="onPageChange($event)" previousLabel="" nextLabel="">
+        </pagination-controls>
+    </div>
+</div>

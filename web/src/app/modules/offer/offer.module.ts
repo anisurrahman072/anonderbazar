@@ -6,6 +6,7 @@ import { AnonderJhorComponent } from './anonder-jhor/anonder-jhor.component';
 import { AnonderJhorDetailsComponent } from './anonder-jhor-details/anonder-jhor-details.component';
 import {NgxPaginationModule} from "ngx-pagination";
 import {SharedModule} from "../shared/shared.module";
+import { OfferedProductsBrandsComponent } from './offered-products-brands/offered-products-brands.component';
 
 @NgModule({
     imports: [
@@ -14,7 +15,7 @@ import {SharedModule} from "../shared/shared.module";
         NgxPaginationModule,
         SharedModule,
     ],
-    declarations: [OffersPageComponent, AnonderJhorComponent, AnonderJhorDetailsComponent]
+    declarations: [OffersPageComponent, AnonderJhorComponent, AnonderJhorDetailsComponent, OfferedProductsBrandsComponent]
 })
 export class OfferModule {
 }
