@@ -867,8 +867,6 @@ module.exports = {
         webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
           return data.product_id;
         });
-
-
       }
 
       /**if selection_type === 'individual_product'*/
