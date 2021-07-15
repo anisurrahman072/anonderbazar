@@ -772,7 +772,10 @@ module.exports = {
       let paginate = pagination(params);
       let total = await Order.count(_where);
 
-      let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
+      let canceledOrder = await Order.find(_where)
+        .sort([{createdAt: 'DESC'}])
+        .limit(paginate.limit)
+        .skip(paginate.skip);
       console.log('all canceled order:', canceledOrder, total);
 
       return res.status(200).json({

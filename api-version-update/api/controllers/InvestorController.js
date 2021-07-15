@@ -140,7 +140,7 @@ module.exports = {
         }
         catch (error){
           console.log('error in sms:', error);
-          throw new Error('Error occurred while sending sms');
+          // throw new Error('Error occurred while sending sms');
         }
 
         try {
@@ -148,7 +148,7 @@ module.exports = {
         }
         catch (error){
           console.log('error in email:', error);
-          throw new Error('Error occurred while sending email');
+          // throw new Error('Error occurred while sending email');
         }
       }
 
