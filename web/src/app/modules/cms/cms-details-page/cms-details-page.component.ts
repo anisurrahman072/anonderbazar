@@ -103,7 +103,8 @@ export class CmsDetailsPageComponent implements OnInit {
                             product.product_id.calculationType = this.calculationType;
                             product.product_id.discountAmount = this.discountAmount;
                             this.regularOfferedProducts.push(product.product_id);
-                        })
+                        });
+                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
                     } else {
                         /**stored products in this offer*/
                         this.regularOfferedProducts = result.data[1];
@@ -117,6 +118,7 @@ export class CmsDetailsPageComponent implements OnInit {
                             product.calculationType = this.calculationType;
                             product.discountAmount = this.discountAmount;
                         })
+                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
                     }
 
                     if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
