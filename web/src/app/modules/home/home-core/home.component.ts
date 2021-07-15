@@ -11,6 +11,7 @@ import {Subscription} from "rxjs/Subscription";
 import { Title } from '@angular/platform-browser';
 import {error} from "util";
 import {ToastrService} from "ngx-toastr";
+import {AppSettings} from "../../../config/app.config";
 
 @Component({
     selector: 'app-home-page',
@@ -23,6 +24,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     cmsDataForPageSection: any;
     cmsDataForPageSectionSubsection: any;
     regularOfferData;
+    anonderJhorInfo;
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
 
     /** offer related variables */
     offer$: Observable<Offer>;
@@ -36,7 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         private title: Title,
         private offerService: OfferService,
         private store: Store<fromStore.HomeState>,
-        private toastr: ToastrService
+        private toastr: ToastrService,
     ) {
     }
 
@@ -48,7 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.offer$ = this.store.select<any>(fromStore.getOffer);
         this.offerSubscription = this.offer$.subscribe(offerData => {
-             console.log('offer store data: ', offerData);
+             /*console.log('offer store data: ', offerData);*/
             this.offerData = offerData;
         })
 
@@ -65,7 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     //get all cms data that are need in the home page
     private fetchCmsData() {
-        forkJoin([this.cmsService.getByPageNSection(), this.cmsService.getByPageNSectionNSubSection()])
+        forkJoin([this.cmsService.getByPageNSection(), this.cmsService.getByPageNSectionNSubSection(), this.offerService.getAnonderJhorInfo()])
             .subscribe((results: any) => {
                 // console.log('Combined CMS API: ', results);
 
@@ -76,6 +79,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                 if (!___.isUndefined(results[1])) {
                     // console.log('getByPageNSectionNSubSection', results[1]);
                     this.cmsDataForPageSectionSubsection = results[1];
+                }
+                if (!___.isUndefined(results[2])) {
+                    this.anonderJhorInfo = results[2].data;
+                    console.log('anonder jhor ifno: ', this.anonderJhorInfo);
                 }
             }, (error) => {
                 console.log(error);

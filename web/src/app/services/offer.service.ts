@@ -44,6 +44,10 @@ export class OfferService {
         return this.http.get(`${this.EndPoint1}/getAnonderJhorAndOffers`);
     }
 
+    getAnonderJhorInfo(): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/getAnonderJhorInfo`);
+    }
+
     getWebAnonderJhorOfferById(id, sortData): Observable<any> {
         let _query = `${this.EndPoint1}/getWebAnonderJhorOfferById?id=${id}`;
         if(sortData){

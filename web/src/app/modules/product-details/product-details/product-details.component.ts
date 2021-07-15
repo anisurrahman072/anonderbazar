@@ -232,6 +232,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
             this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
+            console.log('product details: ddddd', this.data);
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');

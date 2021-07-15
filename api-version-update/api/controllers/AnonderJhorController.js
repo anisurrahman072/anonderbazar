@@ -72,24 +72,40 @@ module.exports = {
   },
 
   updateAnonderJhor: async (req, res) => {
+    console.log('the bodty of : ', req.body);
     try {
-
       let body = {...req.body};
-      if (body.hasImage === 'true') {
+
+      if (body.hasImage === 'true' || body.hasBannerImage === 'true') {
         const files = await uploadImages(req.file('image'));
+
         if (files.length === 0) {
           return res.badRequest('No image was uploaded');
         }
 
         const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-        body.banner_image = '/' + newPath;
 
+        if (body.hasImage === 'true' && body.hasBannerImage === 'true') {
+          body.banner_image = '/' + newPath;
+
+          if (typeof files[1] !== 'undefined') {
+            const homepageBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
+            body.homepage_banner_image = '/' + homepageBanner;
+          }
+        } else if (body.hasImage === 'true' && body.hasBannerImage === 'false') {
+          body.banner_image = '/' + newPath;
+        } else if (body.hasImage === 'false' && body.hasBannerImage === 'true') {
+          body.homepage_banner_image = '/' + newPath;
+        }
       }
+
 
       let jhorData = {
         start_date: body.startDate,
         end_date: body.endDate,
         banner_image: body.banner_image,
+        homepage_banner_image: body.homepage_banner_image,
+        show_in_homepage: body.showHome,
         status: 0
       };
 
@@ -510,6 +526,27 @@ module.exports = {
     }
   },
 
+  getAnonderJhorInfo: async (req, res) => {
+    try {
+      await OfferService.anonderJhorOfferDurationCheck();
+
+      let anonderJhor = await AnonderJhor.findOne({id: 1});
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully fetched anonder jhor information',
+        data: anonderJhor
+      });
+    } catch (error) {
+      console.log('error: ', error);
+      res.status(400).json({
+        success: false,
+        message: 'failed to fetched anonder jhor information',
+        error
+      });
+    }
+  },
+
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
       console.log('req.query.sortData: ', req.query.sortData);
@@ -519,14 +556,14 @@ module.exports = {
 
       let _sort = [];
       let sortData;
-      if(req.query.sortData){
+      if (req.query.sortData) {
         sortData = JSON.parse(req.query.sortData);
-        if(sortData.code === 'newest'){
+        if (sortData.code === 'newest') {
           let obj = {
             createdAt: sortData.order
           };
           _sort.push(obj);
-        } else if (sortData.code === 'price'){
+        } else if (sortData.code === 'price') {
           let obj = {
             price: sortData.order
           };
