@@ -1,7 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
-import {ProductService} from '../../../../services';
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import * as ___ from "lodash";
 

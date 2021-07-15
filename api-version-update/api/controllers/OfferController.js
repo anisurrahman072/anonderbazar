@@ -1024,7 +1024,7 @@ module.exports = {
     }
   },
 
-  /** Method called to create an empty excell sheet as a sample file to add products individually in the offer */
+  /** Method called to create an empty excel sheet as a sample file to add products individually in the offer */
   generateExcel: async (req, res) => {
     try {
 
@@ -1196,20 +1196,24 @@ module.exports = {
         }
       }
 
+      let offerId = req.query.id;
       let rawSQL = `
-      SELECT
-            calculation_type,
-            discount_amount,
-            products.code AS product_code
-        FROM
-            regular_offer_products
-        LEFT JOIN products ON products.id = regular_offer_products.product_id
+          SELECT
+              rop.calculation_type,
+              rop.discount_amount,
+              products.code AS product_code
+          FROM
+              regular_offer_products AS rop
+          LEFT JOIN products ON products.id = rop.product_id
+          WHERE
+              rop.regular_offer_id = ${offerId} AND rop.product_deactivation_time IS NULL AND rop.deleted_at IS NULL
       `;
 
 
       const rawResult = await sails.sendNativeQuery(rawSQL, []);
 
       const offerInfo = rawResult.rows;
+      console.log('offer infffffff: ', offerInfo);
 
       let row = 2;
 

@@ -9,7 +9,6 @@ import * as fromStore from "../../../state-management";
 import {Offer} from "../../../models";
 import {Subscription} from "rxjs/Subscription";
 import { Title } from '@angular/platform-browser';
-import {error} from "util";
 import {ToastrService} from "ngx-toastr";
 
 @Component({

@@ -756,7 +756,7 @@ export class OfferEditComponent implements OnInit {
     /*this.offeredIndividualProducts*/
     /** Event Method for generating the empty sample csv file to add offer individual Product wise */
     generateExcel() {
-        return this.offerService.generateOfferedExcel().subscribe((result: any) => {
+        return this.offerService.generateOfferedExcel(this.id).subscribe((result: any) => {
             // It is necessary to create a new blob object with mime-type explicitly set
             // otherwise only Chrome works like it should
             const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});

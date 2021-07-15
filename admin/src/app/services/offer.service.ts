@@ -95,8 +95,8 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/generateExcel`, {responseType: 'blob'});
     }
 
-    generateOfferedExcel(): Observable<any> {
-        return this.http.get(`${this.EndPoint}/generateOfferedExcel`, {responseType: 'blob'});
+    generateOfferedExcel(id): Observable<any> {
+        return this.http.get(`${this.EndPoint}/generateOfferedExcel?id=${id}`, {responseType: 'blob'});
     }
 
     /** AnonderJhor starts from here */
