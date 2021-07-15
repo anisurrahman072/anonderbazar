@@ -7,6 +7,7 @@ import {AuthService} from "../../../../services/auth.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {Subscription} from "rxjs";
 import {WarehouseService} from "../../../../services/warehouse.service";
+import * as ___ from 'lodash';
 
 class ProductBulk {
     category: string = "";
@@ -255,7 +256,7 @@ export class BulkUpdateComponent implements OnInit {
                 const product = this.importProducts[index];
                 if (this.importProducts[index].variant1 && this.importProducts[index].variant1_info) {
                     let variantInfo = this.importProducts[index].variant1_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
@@ -265,7 +266,7 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 if (this.importProducts[index].variant2 && this.importProducts[index].variant2_info) {
                     let variantInfo = this.importProducts[index].variant2_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
@@ -275,7 +276,7 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 if (this.importProducts[index].variant3 && this.importProducts[index].variant3_info) {
                     let variantInfo = this.importProducts[index].variant3_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
@@ -285,7 +286,7 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 if (this.importProducts[index].variant4 && this.importProducts[index].variant4_info) {
                     let variantInfo = this.importProducts[index].variant4_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
@@ -295,7 +296,7 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 if (this.importProducts[index].variant5 && this.importProducts[index].variant5_info) {
                     let variantInfo = this.importProducts[index].variant5_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
@@ -305,7 +306,7 @@ export class BulkUpdateComponent implements OnInit {
                 }
                 if (this.importProducts[index].variant6 && this.importProducts[index].variant6_info) {
                     let variantInfo = this.importProducts[index].variant6_info;
-                    if (variantInfo.split('|').length !== 2) {
+                    if (___.isNumber(variantInfo) || variantInfo.split('|').length !== 2 || parseInt(variantInfo.split('|')[0])) {
                         this._notification.create('error', 'Variant Information not correctly provided', "Format =>> Variant label | Additional Price");
                         this.fileInputVariable.nativeElement.value = "";
                         this.importProducts = [];
