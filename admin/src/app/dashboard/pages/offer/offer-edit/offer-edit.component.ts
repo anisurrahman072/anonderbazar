@@ -9,7 +9,15 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {ExportService} from "../../../../services/export.service";
+import {ExcelService} from "../../../../services/excel.service";
+
+class OfferBulk {
+    code: string = "";
+    calculation_type: string = "";
+    discount_amount: number = 0;
+
+}
 
 @Component({
     selector: 'app-offer-edit',
@@ -18,35 +26,15 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 })
 export class OfferEditComponent implements OnInit {
 
-    Editor = ClassicEditor;
-    config = {
-        toolbar: {
-            items: [
-                'heading', '|', 'bold', 'italic', 'link',
-                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
-                'imageUpload',
-                'blockQuote',
-                'insertTable',
-                'mediaEmbed',
-                'undo', 'redo'
-            ],
-            heading: {
-                options: [
-                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
-                ]
-            },
-            shouldNotGroupWhenFull: true,
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:full',
-                    'imageStyle:side'
-                ]
-            }
-        },
-    };
+    /** csv related variables */
+    isUpload: Boolean = false;
+    isLoading: boolean = false;
+    private importedProducts: OfferBulk[] = [];
+    total: number = 0;
+    wrongCodes = [];
+    private individuallySelectedCodes: any = [];
+    continue: Boolean = false;
+    uploadType;
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
@@ -125,7 +113,9 @@ export class OfferEditComponent implements OnInit {
         private fb: FormBuilder,
         private cmsService: CmsService,
         private offerService: OfferService,
-        private productService: ProductService
+        private productService: ProductService,
+        private exportService: ExportService,
+        private excelService: ExcelService,
     ) {
     }
 
@@ -146,6 +136,7 @@ export class OfferEditComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            uploadType: ['', []],
         });
 
         this.individualProductFrom = this.fb.group({
@@ -158,7 +149,7 @@ export class OfferEditComponent implements OnInit {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.offerService.getRegularOfferById(this.id)
                 .subscribe(result => {
-                    console.log(result.regularOffer);
+                    /*console.log(result.regularOffer);*/
                     this.ImageFileEdit = [];
                     this.BannerImageFileEdit = [];
                     this.smallOfferImageEdit = [];
@@ -174,6 +165,7 @@ export class OfferEditComponent implements OnInit {
                     this.subCategoryId = this.data.subCategory_Id ? this.data.subCategory_Id.id : '';
                     this.subSubCategoryId = this.data.subSubCategory_Id ? this.data.subSubCategory_Id.id : '';
                     this.calculationType = this.data.calculation_type;
+                    this.uploadType = this.data.upload_type ? this.data.upload_type : '';
 
                     let payload = {
                         title: this.data.title,
@@ -190,6 +182,7 @@ export class OfferEditComponent implements OnInit {
                         discountAmount: this.data.discount_amount,
                         calculationType: this.data.calculation_type,
                         showHome: this.data.show_in_homepage,
+                        uploadType: this.data.upload_type ? this.data.upload_type : ''
                     };
 
                     this.validateForm.patchValue(payload);
@@ -211,6 +204,7 @@ export class OfferEditComponent implements OnInit {
                     this._isSpinning = false;
                 });
         });
+        this.getRelatedOfferIndividualProducts();
     }
 
     //Event method for submitting the form
@@ -239,14 +233,20 @@ export class OfferEditComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product' && this.uploadType === 'modal') {
             formData.append('individuallySelectedProductsId', this.individuallySelectedProductsId);
+            formData.append('upload_type', 'modal');
         }
         if (this.individuallySelectedProductsCalculation) {
             formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
         }
         if (this.individuallySelectedProductsAmount) {
             formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        }
+
+        if (this.individuallySelectedCodes && value.selectionType === 'individual_product' && this.uploadType === 'csv') {
+            formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+            formData.append('upload_type', 'csv');
         }
 
         if (value.vendorId) {
@@ -459,7 +459,7 @@ export class OfferEditComponent implements OnInit {
                 }
             }
         }
-        console.log("selectd products; ", this.selectedAllProductIds);
+        /*console.log("selectd products; ", this.selectedAllProductIds);*/
     }
 
     // Method for refresh offer checkbox data in the offer modal
@@ -480,7 +480,7 @@ export class OfferEditComponent implements OnInit {
             .subscribe(result => {
                 this.selectedData = result.data;
             })
-        console.log(this.selectedAllProductIds);
+        /*console.log(this.selectedAllProductIds);*/
     }
 
     submitModalForm() {
@@ -511,14 +511,13 @@ export class OfferEditComponent implements OnInit {
             })
     }
 
-    getRelatedOfferIndividualProducts(event: any) {
+    getRelatedOfferIndividualProducts(event?: any) {
         if (event) {
             this.allProductPage = event;
         }
         this._isSpinning = true;
         this.offerService.getRelatedOfferIndividualProducts(this.id, this.allProductPage, this.allProductLimit)
             .subscribe(result => {
-                console.log('individual result: here: ', result.data);
                 this.offeredIndividualProducts = result.data;
                 this.totalOfferedIndividualProducts = result.total;
                 this._isSpinning = false;
@@ -552,6 +551,10 @@ export class OfferEditComponent implements OnInit {
 
     handleIndividualOfferedProductCancel(): void {
         this.isIndividualOfferedVisible = false;
+    }
+
+    handleCancelUpload(): void {
+        this.isUpload = false;
     }
 
     removeProductFromOffer(productId) {
@@ -624,7 +627,7 @@ export class OfferEditComponent implements OnInit {
             } else if (subCatId) {
                 this.offerService.getAllOptions(offerSelectionType, catId, subCatId)
                     .subscribe(result => {
-                        this.finalSelectionType(false, false, false, true,false,false, subCatId);
+                        this.finalSelectionType(false, false, false, true, false, false, subCatId);
                         this.subSubCategoryIDS = result.data;
                     })
             }
@@ -730,7 +733,7 @@ export class OfferEditComponent implements OnInit {
                 discount_amount: value.discount_amount
             }]);
 
-            console.log('individuallySelectedData: ', this.individuallySelectedData);
+            /*console.log('individuallySelectedData: ', this.individuallySelectedData)*/;
 
             this._notification.success('Added', 'Product added successfully');
         }
@@ -750,13 +753,88 @@ export class OfferEditComponent implements OnInit {
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 
+    /*this.offeredIndividualProducts*/
+    /** Event Method for generating the empty sample csv file to add offer individual Product wise */
+    generateExcel() {
+        return this.offerService.generateOfferedExcel(this.id).subscribe((result: any) => {
+            // It is necessary to create a new blob object with mime-type explicitly set
+            // otherwise only Chrome works like it should
+            const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            // IE doesn't allow using a blob object directly as link href
+            // instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob);
+                return;
+            }
+
+            // For other browsers:
+            // Create a link pointing to the ObjectURL containing the blob.
+            const data = window.URL.createObjectURL(newBlob);
+
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = "Offered Products " + Date.now() + ".xlsx";
+
+            // this is necessary as link.click() does not work on the latest firefox
+            link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+
+            setTimeout(() => {
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
+                link.remove();
+            }, 100);
+        });
+    }
+
+    onCSVUpload(event: any) {
+        const target: DataTransfer = <DataTransfer>(event.target);
+        if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+            const fileResult: string = e.target.result;
+            const data = <any[]>this.excelService.importFromFile(fileResult);
+
+            const offerObj = new OfferBulk();
+
+            const header: string[] = Object.getOwnPropertyNames(offerObj);
+
+            this.importedProducts = data.slice(1);
+
+            this.total = this.importedProducts.length;
+
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[0]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[1]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[2]);
+
+            this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
+                .subscribe(result => {
+                    this.wrongCodes = result.data;
+
+                    if (this.wrongCodes && this.wrongCodes.length > 0) {
+                        this.individuallySelectedCodes = [];
+                        this.individuallySelectedProductsCalculation = [];
+                        this.individuallySelectedProductsAmount = [];
+                        this.continue = false;
+                        this._notification.error('Failed!', 'Please Input Proper Data');
+                    } else {
+                        this.continue = true;
+                    }
+                })
+        };
+        reader.readAsBinaryString(target.files[0]);
+    }
+
+    showCSVModal(event) {
+        if (event === 'csv') {
+            this.isUpload = true;
+        }
+    }
+
+    doneUploadingCSV() {
+        this.isUpload = false;
+    }
 
 }
-
-
-/*
-let now = moment(new Date());
-let end = moment(order.createdAt);
-let duration = moment.duration(now.diff(end));
-let expiredHour = duration.asHours();
-order.expiredHour = Math.floor(expiredHour);*/

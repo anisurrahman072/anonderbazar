@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {FileHolder, UploadMetadata} from 'angular2-image-upload';
@@ -8,44 +8,32 @@ import {ProductService} from "../../../../services/product.service";
 import * as ___ from 'lodash';
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {colorSets} from "@swimlane/ngx-charts/release/utils";
+import {ExportService} from "../../../../services/export.service";
+import {ExcelService} from "../../../../services/excel.service";
+
+class OfferBulk {
+    code: string = "";
+    calculation_type: string = "";
+    discount_amount: number = 0;
+
+}
 
 @Component({
     selector: 'app-offer-create',
     templateUrl: './offer-create.component.html',
     styleUrls: ['./offer-create.component.css']
 })
+
 export class OfferCreateComponent implements OnInit {
-    Editor = ClassicEditor;
-    config = {
-        toolbar: {
-            items: [
-                'heading', '|', 'bold', 'italic', 'link',
-                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
-                'imageUpload',
-                'blockQuote',
-                'insertTable',
-                'mediaEmbed',
-                'undo', 'redo'
-            ],
-            heading: {
-                options: [
-                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
-                ]
-            },
-            shouldNotGroupWhenFull: true,
-            image: {
-                toolbar: [
-                    'imageTextAlternative',
-                    'imageStyle:full',
-                    'imageStyle:side'
-                ]
-            }
-        },
-    };
+    /** csv related variables */
+    isUpload: Boolean = false;
+    isLoading: boolean = false;
+    private importedProducts: OfferBulk[] = [];
+    total: number = 0;
+    wrongCodes = [];
+    private individuallySelectedCodes: any = [];
+    continue: Boolean = false;
+    uploadType;
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
@@ -55,37 +43,7 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    /*ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
+
     _isSpinning: any = false;
     submitting: boolean = false;
 
@@ -125,7 +83,6 @@ export class OfferCreateComponent implements OnInit {
     offerSelectionType;
     allOptions;
 
-
     allProductTotal = 0;
     selectedProductIds: any;
     selectedIndividualProductIds: any;
@@ -146,6 +103,8 @@ export class OfferCreateComponent implements OnInit {
         private fb: FormBuilder,
         private productService: ProductService,
         private offerService: OfferService,
+        private exportService: ExportService,
+        private excelService: ExcelService,
     ) {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
@@ -162,6 +121,7 @@ export class OfferCreateComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            uploadType: ['', []],
         });
 
         this.individualProductFrom = this.fb.group({
@@ -208,7 +168,7 @@ export class OfferCreateComponent implements OnInit {
             formData.append('selectedProductIds', this.selectedProductIds);
         }
 
-        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product') {
+        if (this.individuallySelectedProductsId && value.selectionType === 'individual_product' && this.uploadType === 'modal') {
             if (this.individuallySelectedProductsId.length <= 0) {
                 this._notification.error('No Product', 'Please add products for this offer');
                 return;
@@ -222,6 +182,16 @@ export class OfferCreateComponent implements OnInit {
         }
         if (this.individuallySelectedProductsAmount) {
             formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        }
+
+        if (this.individuallySelectedCodes && value.selectionType === 'individual_product' && this.uploadType === 'csv') {
+            if (this.individuallySelectedCodes.length <= 0) {
+                this._notification.error('No Product', 'Please add products for this offer');
+                return;
+            } else {
+                formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+                formData.append('upload_type', 'csv');
+            }
         }
 
         if (value.vendorId) {
@@ -533,6 +503,10 @@ export class OfferCreateComponent implements OnInit {
         this.isIndividualVisible = false;
     }
 
+    handleCancelUpload(): void {
+        this.isUpload = false;
+    }
+
     doneAddingIndividualProduct() {
         this.isIndividualVisible = false;
     }
@@ -678,5 +652,89 @@ export class OfferCreateComponent implements OnInit {
 
         this.individuallySelectedData = this.individuallySelectedData.filter(obj => productId != obj.id);
         this._notification.warning('Removed!', 'Individual Product removed successfully');
+    }
+
+    /** Event Method for generating the empty sample excel file to add offer: individual Product wise */
+    generateExcel() {
+        return this.offerService.generateExcel().subscribe((result: any) => {
+            // It is necessary to create a new blob object with mime-type explicitly set
+            // otherwise only Chrome works like it should
+            const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            // IE doesn't allow using a blob object directly as link href
+            // instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob);
+                return;
+            }
+
+            // For other browsers:
+            // Create a link pointing to the ObjectURL containing the blob.
+            const data = window.URL.createObjectURL(newBlob);
+
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = "Sample offer's excel " + Date.now() + ".xlsx";
+
+            // this is necessary as link.click() does not work on the latest firefox
+            link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+
+            setTimeout(() => {
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
+                link.remove();
+            }, 100);
+        });
+    }
+
+    onCSVUpload(event: any) {
+        const target: DataTransfer = <DataTransfer>(event.target);
+        if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+            const fileResult: string = e.target.result;
+            const data = <any[]>this.excelService.importFromFile(fileResult);
+
+            const offerObj = new OfferBulk();
+
+            const header: string[] = Object.getOwnPropertyNames(offerObj);
+            console.log('header', header);
+
+            this.importedProducts = data.slice(1);
+
+            this.total = this.importedProducts.length;
+
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[0]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[1]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[2]);
+
+            this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
+                .subscribe(result => {
+                    this.wrongCodes = result.data;
+
+                    if (this.wrongCodes && this.wrongCodes.length > 0) {
+                        this.individuallySelectedCodes = [];
+                        this.individuallySelectedProductsCalculation = [];
+                        this.individuallySelectedProductsAmount = [];
+                        this.continue = false;
+                        this._notification.error('Failed!', 'Please Input Proper Data');
+                    } else {
+                        this.continue = true;
+                    }
+                })
+        };
+        reader.readAsBinaryString(target.files[0]);
+    }
+
+    showCSVModal(event) {
+        if (event === 'csv') {
+            this.isUpload = true;
+        }
+    }
+
+    doneUploadingCSV() {
+        this.isUpload = false;
     }
 }
