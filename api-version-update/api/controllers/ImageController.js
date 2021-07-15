@@ -45,8 +45,6 @@ module.exports = {
 
         await deleteImageS3(OLD_IMAGE_PATH);
 
-
-
         let query = `
         UPDATE ${TABLE_NAME}
         SET ${COLUMN_NAME} = ${newImagePath}
@@ -78,35 +76,56 @@ module.exports = {
 
       const OLD_IMAGE_PATH = req.body.oldImagePath;
 
+      /** Delete Image from RDS */
       await deleteImageS3(OLD_IMAGE_PATH);
 
       if(req.body.id && req.body.tableName && req.body.column && req.body.format){
-        /** Update section */
+        /** Delete Image from Database */
         const TABLE_NAME = req.body.tableName;
         const COLUMN_NAME = req.body.column;
         const ROW_ID = req.body.id;
         const FORMAT = req.body.format;
         console.log('tt: ',OLD_IMAGE_PATH, TABLE_NAME, COLUMN_NAME,  ROW_ID, FORMAT);
 
-        if(FORMAT === 'JSON'){
-          let findQuery = `
-            SELECT ${COLUMN_NAME}
+        let findQuery = `
+            SELECT ${COLUMN_NAME} as image
             FROM ${TABLE_NAME}
             WHERE id = ${ROW_ID} AND deleted_at IS NULL
           `;
 
-          let rawResult = await sails.sendNativeQuery(findQuery, []);
-          let images = rawResult.rows;
+        let rawResult = await sails.sendNativeQuery(findQuery, []);
 
-          console.log('Annnntttyy: ', images);
+        let images = null;
+
+        if(FORMAT === 'JSON'){
+
+          images = JSON.parse(rawResult.rows[0].image);
+          if(images && images.split(',').length > 0){
+            images = images.split(',');
+            let index = images.findIndex(image => image === OLD_IMAGE_PATH);
+            if(index !== -1){
+              images.splice(index, 1);
+            }
+
+            images = JSON.stringify(images);
+
+            console.log('Annnntttyy: ', images);
+          }
         }
-        /*let query = `
-        UPDATE ${req.body.tableName}
-        SET ${req.body.column} = ''
-        WHERE id = ${req.body.id} AND deleted_at IS NULL
-      `;
-        await sails.sendNativeQuery(query, []);*/
+
+        let updateQuery = `
+            UPDATE ${req.body.tableName}
+            SET ${req.body.column} = ${images}
+            WHERE id = ${req.body.id} AND deleted_at IS NULL
+        `;
+        let updatedResult = await sails.sendNativeQuery(updateQuery, []);
+        console.log('updatedResult: ', updatedResult);
       }
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully deleted image'
+      });
 
     } catch (error) {
       console.log('Error occurred in deleting order!');
