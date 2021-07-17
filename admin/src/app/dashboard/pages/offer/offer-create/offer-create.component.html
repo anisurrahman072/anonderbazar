@@ -69,6 +69,13 @@
                     </div>
                 </div>
 
+                <div nz-row>
+                    <div nz-col [nzOffset]="7" [nzSpan]="12">
+                        <input formControlName="showCarousel" type="checkbox" [checked]="isShowCarousel" (change)="changeShowCarousel()">
+                        Show in Carousel
+                    </div>
+                </div>
+
                 <!--Banner Image in offer detail page-->
                 <div nz-row>
                     <div nz-col [nzSpan]="7">
@@ -187,27 +194,6 @@
 
                     </div>
                 </div>
-
-                <!--short Description-->
-                <!--<div nz-row>
-                    <div nz-col [nzSpan]="7">
-                        <label> Short description </label>
-                    </div>
-                    <div nz-col [nzSpan]="12">
-
-                        <ckeditor formControlName="description"
-                                  [config]="ckConfig" [readonly]="false "
-                                  debounce="500 ">
-                        </ckeditor>
-                        <ckeditor [editor]="Editor" formControlName="description"></ckeditor>
-                <ckeditor formControlName="description"
-                          [config]="ckConfig" [readonly]="false "
-                          debounce="500 ">
-                </ckeditor>
-                <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
-
-                    </div>
-                </div>-->
 
                 <div *ngIf="offerSelectionType !== 'individual_product'" nz-row style="margin-top: 20px">
                     <div nz-col [nzSpan]="7">

@@ -95,7 +95,8 @@ module.exports = {
           description: body.description,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel
         };
       } else {
         offerData = {
@@ -111,7 +112,8 @@ module.exports = {
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel
         };
       }
 
@@ -518,7 +520,8 @@ module.exports = {
           description: body.description,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel,
         };
       } else {
         offerData = {
@@ -530,7 +533,8 @@ module.exports = {
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel,
         };
       }
 

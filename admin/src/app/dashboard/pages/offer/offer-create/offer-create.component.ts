@@ -55,41 +55,11 @@ export class OfferCreateComponent implements OnInit {
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
-    /*ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };*/
     _isSpinning: any = false;
     submitting: boolean = false;
 
     isShowHomepage: boolean = false;
+    isShowCarousel: boolean = false;
 
     Calc_type;
     Calculation_type;
@@ -185,11 +155,13 @@ export class OfferCreateComponent implements OnInit {
 
         let formData = new FormData();
         let showInHome = this.isShowHomepage ? 'true' : 'false';
+        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
 
         formData.append('title', value.title);
         formData.append('description', value.description);
         formData.append('selection_type', value.selectionType);
         formData.append('showInHome', showInHome);
+        formData.append('showInCarousel', showInCarousel);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -356,6 +328,10 @@ export class OfferCreateComponent implements OnInit {
 
     changeShowHomepage() {
         this.isShowHomepage = !this.isShowHomepage;
+    }
+
+    changeShowCarousel(){
+        this.isShowCarousel = !this.isShowCarousel;
     }
 
     getAllProducts(event: any) {

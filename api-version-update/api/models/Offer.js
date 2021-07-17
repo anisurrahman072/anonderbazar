@@ -75,7 +75,18 @@ module.exports = {
       type: 'boolean',
       columnType: 'integer',
       defaultsTo: false
-    }
+    },
+    showInCarousel: {
+      type: 'boolean',
+      columnType: 'integer',
+      defaultsTo: false
+    },
+    carousel_position:  {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 111,
+    },
   },
   tableName: 'offers',
 };
