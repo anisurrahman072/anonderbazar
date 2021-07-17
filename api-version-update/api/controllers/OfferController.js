@@ -8,6 +8,9 @@
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
 const {uploadImages} = require('../../libs/helper');
+const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
+const xl = require('excel4node');
+const {escapeExcel} = require('../../libs/helper');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -58,6 +61,7 @@ module.exports = {
   offerInsert: async function (req, res) {
     try {
       let body = {...req.body};
+      let upload_type = body.upload_type ? body.upload_type : 'modal';
 
       const files = await uploadImages(req.file('image'));
 
@@ -75,12 +79,21 @@ module.exports = {
       body.banner_image = '/' + bannerImagePath;
 
       let offerData = {};
-      let individualProductsIds;
+      let individualProductsIds = [];
       let individualProductsCalculations;
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        if (body.upload_type && body.upload_type === 'csv') {
+          const codes = body.individuallySelectedCodes.split(',');
+          const products = await Product.find({code: codes});
+          products.forEach(product => {
+            individualProductsIds.push(product.id);
+          });
+        } else {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+        }
+
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
@@ -96,6 +109,7 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
+          upload_type: upload_type,
           showInCarousel: body.showInCarousel
         };
       } else {
@@ -156,28 +170,30 @@ module.exports = {
 
       /** for individually selected products*/
       if (individualProductsIds && individualProductsIds.length > 0) {
+
+        let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
           let discountAmount = parseInt(individualProductsAmounts[id], 10);
 
           if (product_id) {
-            let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id,
-              product_deactivation_time: null
-            });
-            if (existedProduct) {
+            if (offeredProductsIDS.includes(product_id)) {
               await RegularOfferProducts.update({product_id: product_id}).set({
                 regular_offer_id: data.id,
                 calculation_type: calculationType,
-                discount_amount: discountAmount
+                discount_amount: discountAmount,
+                product_deactivation_time: null,
+                deletedAt: null
               });
             } else {
               await RegularOfferProducts.create({
                 regular_offer_id: data.id,
                 product_id: product_id,
                 calculation_type: calculationType,
-                discount_amount: discountAmount
+                discount_amount: discountAmount,
               });
             }
           }
@@ -190,14 +206,19 @@ module.exports = {
       }
 
       if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+
+        let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
         for (let id = 0; id < regular_offer_product_ids.length; id++) {
           let product_id = parseInt(regular_offer_product_ids[id], 10);
-          let existedProduct = await RegularOfferProducts.findOne({
-            product_id: product_id,
-            product_deactivation_time: null
-          });
-          if (existedProduct) {
-            await RegularOfferProducts.update({product_id: product_id}).set({regular_offer_id: data.id});
+
+          if (offeredProductsIDS.includes(product_id)) {
+            await RegularOfferProducts.update({product_id: product_id}).set({
+              regular_offer_id: data.id,
+              product_deactivation_time: null,
+              deletedAt: null
+            });
           } else {
             await RegularOfferProducts.create({regular_offer_id: data.id, product_id: product_id});
           }
@@ -421,10 +442,9 @@ module.exports = {
 
   updateOffer: async (req, res) => {
     try {
-
       let body = {...req.body};
-
-      console.log('body', body);
+      console.log('upload type');
+      let upload_type = body.upload_type ? body.upload_type : 'modal';
 
       let offer = await Offer.findOne({id: body.id});
 
@@ -504,12 +524,21 @@ module.exports = {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
 
-      let individualProductsIds;
+      let individualProductsIds = [];
       let individualProductsCalculations;
       let individualProductsAmounts;
 
       if (body.selection_type === 'individual_product') {
-        individualProductsIds = body.individuallySelectedProductsId.split(',');
+        if (body.upload_type && body.upload_type === 'csv') {
+          const codes = body.individuallySelectedCodes.split(',');
+          const products = await Product.find({code: codes});
+          products.forEach(product => {
+            individualProductsIds.push(product.id);
+          });
+        } else {
+          individualProductsIds = body.individuallySelectedProductsId.split(',');
+        }
+
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
 
@@ -522,6 +551,7 @@ module.exports = {
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
+          upload_type: upload_type
         };
       } else {
         offerData = {
@@ -578,21 +608,23 @@ module.exports = {
 
       /** for individually selected products */
       if (individualProductsIds && individualProductsIds.length > 0) {
+
+        let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
           let discountAmount = parseInt(individualProductsAmounts[id], 10);
 
           if (product_id) {
-            let existedProduct = await RegularOfferProducts.findOne({
-              product_id: product_id,
-              product_deactivation_time: null
-            });
-            if (existedProduct) {
+            if (offeredProductsIDS.includes(product_id)) {
               await RegularOfferProducts.updateOne({product_id: product_id}).set({
                 regular_offer_id: data.id,
                 calculation_type: calculationType,
-                discount_amount: discountAmount
+                discount_amount: discountAmount,
+                product_deactivation_time: null,
+                deletedAt: null
               });
             } else {
               await RegularOfferProducts.create({
@@ -611,15 +643,15 @@ module.exports = {
         regular_offer_product_ids = body.selectedProductIds.split(',');
       }
 
-      /** TODO: need to improve the logic. Below code is not optimized in terms of db operation */
       if (regular_offer_product_ids && regular_offer_product_ids.length > 0) {
+
+        let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
         for (let id = 0; id < regular_offer_product_ids.length; id++) {
           let product_id = parseInt(regular_offer_product_ids[id], 10);
-          let existedProduct = await RegularOfferProducts.findOne({
-            product_id: product_id
-          });
 
-          if (existedProduct) {
+          if (offeredProductsIDS.includes(product_id)) {
             await RegularOfferProducts.updateOne({product_id: product_id}).set({
               regular_offer_id: data.id,
               product_deactivation_time: null,
@@ -926,7 +958,6 @@ module.exports = {
         }
       }
 
-      console.log('webRegularOfferedProductsvvv: ', webRegularOfferedProducts);
       res.status(200).json({
         success: true,
         message: 'All regular offers for the web with related products data',
@@ -957,6 +988,271 @@ module.exports = {
       console.log(error);
       res.status(400).json({
         message: 'Failed to fetch all existing offered products',
+        error
+      });
+    }
+  },
+
+  /** Method called to check the validity of the codes input by the admin for adding to the individual product offer */
+  checkIndividualProductsCodesValidity: async (req, res) => {
+    try {
+      let invalidCodes = [];
+      let codes = (req.query.codes).split(',');
+
+      for (let index = 0; index < codes.length; index++) {
+        let exists = await Product.findOne({code: codes[index]});
+        if (!exists) {
+          invalidCodes.push(codes[index]);
+        }
+      }
+
+      if (invalidCodes && invalidCodes.length > 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'Invalid codes found',
+          data: invalidCodes
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: 'Every code is valid',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to check Individual Products Code Validity',
+        error
+      });
+    }
+  },
+
+  /** Method called to create an empty excel sheet as a sample file to add products individually in the offer */
+  generateExcel: async (req, res) => {
+    try {
+
+      // Create a new instance of a Workbook class
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+
+      // Add Worksheets to the workbook
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Offered Product List', options);
+      const calculationTypeSheet = wb.addWorksheet('Calculation', options);
+
+      let calculationTypeList = [
+        {name: 'percentage'},
+        {name: 'absolute'}
+      ];
+
+      calculationTypeList.forEach((item, i) => {
+        calculationTypeSheet.cell(i + 1, 1).string(escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+
+      const columnNamesObject = columnsOfIndividualOfferProducts;
+
+      const letters = ['A', 'B', 'C'];
+
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({
+        success: false,
+        message: 'error in generating excel',
+        error
+      });
+    }
+  },
+
+  /** Method called to generate excel file with existing offered products in offer
+   *  edit to see the existing offered products and to modify them if the user want */
+  generateOfferedExcel: async (req, res) => {
+    try {
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Offered Product List', options);
+      const calculationTypeSheet = wb.addWorksheet('Calculation', options);
+
+      let calculationTypeList = [
+        {name: 'percentage'},
+        {name: 'absolute'}
+      ];
+
+      calculationTypeList.forEach((item, i) => {
+        calculationTypeSheet.cell(i + 1, 1).string(escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+      const myStyle = wb.createStyle({
+        alignment: {
+          wrapText: true
+        }
+      });
+
+      const columnNamesObject = columnsOfIndividualOfferProducts;
+
+      const letters = ['A', 'B', 'C'];
+
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      let offerId = req.query.id;
+      let rawSQL = `
+          SELECT
+              rop.calculation_type,
+              rop.discount_amount,
+              products.code AS product_code
+          FROM
+              regular_offer_products AS rop
+          LEFT JOIN products ON products.id = rop.product_id
+          WHERE
+              rop.regular_offer_id = ${offerId} AND rop.product_deactivation_time IS NULL AND rop.deleted_at IS NULL
+      `;
+
+
+      const rawResult = await sails.sendNativeQuery(rawSQL, []);
+
+      const offerInfo = rawResult.rows;
+      console.log('offer infffffff: ', offerInfo);
+
+      let row = 2;
+
+      offerInfo.forEach(item => {
+
+        let column = 1;
+
+        if (item.product_code) {
+          ws.cell(row, column++).string(item.product_code);
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.calculation_type) {
+          ws.cell(row, column++).string(escapeExcel(item.calculation_type));
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.discount_amount) {
+          ws.cell(row, column++).number(item.discount_amount);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        row++;
+      });
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in Get All products with excel';
+      res.status(400).json({
+        success: false,
+        message,
         error
       });
     }
