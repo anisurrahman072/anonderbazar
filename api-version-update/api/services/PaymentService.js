@@ -180,13 +180,22 @@ module.exports = {
     for (let cartItem of cartItems) {
       if (cartItem.product_quantity > 0) {
         let productUnitPrice = cartItem.product_id.price;
+        let variantAdditionalPrice = 0;
+
+        let itemVariants = cartItem.cart_item_variants;
+        if(itemVariants && itemVariants.length > 0){
+          for(let i = 0; i < itemVariants.length; i++){
+            let productVariantInfo = await ProductVariant.findOne({id: itemVariants[i].product_variant_id, deletedAt: null});
+            variantAdditionalPrice += productVariantInfo.quantity;
+          }
+        }
+        productUnitPrice += variantAdditionalPrice;
+
         let productFinalPrice = productUnitPrice * cartItem.product_quantity;
 
         let offerProducts = await OfferService.getAllOfferedProducts();
 
-        if (!(offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
-          productFinalPrice = productUnitPrice * cartItem.product_quantity;
-        } else {
+        if ((offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
           if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute') {
             let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
             productFinalPrice = productPrice * cartItem.product_quantity;
@@ -209,6 +218,19 @@ module.exports = {
       grandOrderTotal,
       totalQty
     };
+  },
+
+  /** This method will return variants additional price for a particular Cart Item */
+  calculateItemVariantPrice: async (itemVariants) => {
+    let variantAdditionalPrice = 0;
+    let length = itemVariants.length;
+    for(let index = 0; index < length; index++){
+      let productVariant = await ProductVariant.findOne({id: itemVariants[index].product_variant_id, deletedAt: null});
+      if(productVariant && productVariant.quantity){
+        variantAdditionalPrice += productVariant.quantity;
+      }
+    }
+    return variantAdditionalPrice;
   },
 
   getCart: async (userId) => {

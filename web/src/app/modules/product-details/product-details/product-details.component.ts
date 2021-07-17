@@ -343,10 +343,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
 
         this._progress.start("mainLoader");
-        let product_total_price: number =
-            (this.unitPrice +
-                this.variantCalculatedTotalPrice) *
-            this.product_quantity;
+        let product_total_price: number = (this.unitPrice + this.variantCalculatedTotalPrice) * this.product_quantity;
+        console.log("product_total_price: ", product_total_price);
 
         let variants = [];
         let dataPayload = {};
