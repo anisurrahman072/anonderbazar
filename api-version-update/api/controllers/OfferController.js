@@ -59,9 +59,10 @@ module.exports = {
   /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
   offerInsert: async function (req, res) {
+    /*console.log('req.body of insert: ', req.body);*/
     try {
       let body = {...req.body};
-      let upload_type = body.upload_type ? body.upload_type : 'modal';
+      let upload_type = body.upload_type ? body.upload_type : '';
 
       const files = await uploadImages(req.file('image'));
 
@@ -109,8 +110,8 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel,
           upload_type: upload_type,
-          showInCarousel: body.showInCarousel
         };
       } else {
         offerData = {
@@ -133,6 +134,10 @@ module.exports = {
 
       if (body.frontend_position) {
         offerData.frontend_position = body.frontend_position;
+      }
+
+      if (body.carousel_position) {
+        offerData.carousel_position = body.carousel_position;
       }
 
       if (body.subSubCategory_Id) {
@@ -443,8 +448,7 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       let body = {...req.body};
-      console.log('upload type');
-      let upload_type = body.upload_type ? body.upload_type : 'modal';
+      let upload_type = body.upload_type ? body.upload_type : '';
 
       let offer = await Offer.findOne({id: body.id});
 
@@ -452,7 +456,7 @@ module.exports = {
 
         const files = await uploadImages(req.file('image'));
 
-        console.log('files', files);
+        /*console.log('files', files);*/
 
         if (files.length === 0) {
           return res.badRequest('No file was uploaded');
@@ -570,6 +574,10 @@ module.exports = {
 
       if (body.frontend_position) {
         offerData.frontend_position = body.frontend_position;
+      }
+
+      if (body.carousel_position) {
+        offerData.carousel_position = body.carousel_position;
       }
 
       if (body.subSubCategory_Id) {
@@ -761,6 +769,7 @@ module.exports = {
 
       let webRegularOffers = await Offer.find({where: _where})
         .sort([
+          {carousel_position: 'ASC'},
           {frontend_position: 'ASC'},
           {id: 'DESC'}
         ]);

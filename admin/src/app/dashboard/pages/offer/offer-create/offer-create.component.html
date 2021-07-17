@@ -54,7 +54,7 @@
                     </div>
                 </div>
 
-                <!--Offer Image Beside Carousel: smallOfferImage: WORKING-->
+                <!-- Offer Image Beside Carousel: smallOfferImage -->
                 <div nz-row>
                     <div nz-col [nzSpan]="7">
                         <label>Offer Image Beside Carousel</label>
@@ -68,11 +68,23 @@
                         </div>
                     </div>
                 </div>
-
-                <div nz-row>
+                <!--want to show in carousel-->
+                <div nz-row style="margin: 15px 0 15px 0">
                     <div nz-col [nzOffset]="7" [nzSpan]="12">
                         <input formControlName="showCarousel" type="checkbox" [checked]="isShowCarousel" (change)="changeShowCarousel()">
                         Show in Carousel
+                    </div>
+                </div>
+
+                <!-- carousel frontend_position-->
+                <div nz-row style="margin-bottom: 10px">
+                    <div nz-col [nzSpan]="7">
+                        <label>Carousel Position </label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <input nz-input type="number" formControlName="carousel_position"
+                               [placeholder]="'Enter carousel order number'"
+                               [nzSize]="'large'">
                     </div>
                 </div>
 

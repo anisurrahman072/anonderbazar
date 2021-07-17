@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.offer$ = this.store.select<any>(fromStore.getOffer);
         this.offerSubscription = this.offer$.subscribe(offerData => {
-             console.log('offer store data: ', offerData);
+             /*console.log('offer store data: ', offerData);*/
             this.offerData = offerData;
         })
 

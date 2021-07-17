@@ -110,6 +110,7 @@ export class OfferCreateComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             frontend_position: ['', ''],
+            carousel_position: ['', ''],
             selectionType: ['', [Validators.required]],
             vendorId: ['', []],
             brandId: ['', []],
@@ -122,6 +123,7 @@ export class OfferCreateComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            showCarousel: ['', []],
             uploadType: ['', []],
         });
 
@@ -230,6 +232,11 @@ export class OfferCreateComponent implements OnInit {
         if (value.frontend_position) {
             formData.append('frontend_position', value.frontend_position);
         }
+
+        if (value.carousel_position) {
+            formData.append('carousel_position', value.carousel_position);
+        }
+
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
@@ -331,7 +338,7 @@ export class OfferCreateComponent implements OnInit {
         this.isShowHomepage = !this.isShowHomepage;
     }
 
-    changeShowCarousel(){
+    changeShowCarousel() {
         this.isShowCarousel = !this.isShowCarousel;
     }
 

@@ -89,7 +89,8 @@ module.exports = {
     },
     upload_type: {
       type: 'string',
-      columnType: 'varchar'
+      columnType: 'varchar',
+      allowNull: true
     },
   },
   tableName: 'offers',
