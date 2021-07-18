@@ -90,6 +90,7 @@ export class OfferedProductsComponent implements OnInit {
                 .subscribe(result => {
                     /**info related to this offer*/
                     this.regularOffer = result.data[0];
+                    this.regularOfferedProducts = [];
 
                     /** setting discount to every products exists in this offer */
                     if (this.regularOffer.selection_type === "individual_product") {
