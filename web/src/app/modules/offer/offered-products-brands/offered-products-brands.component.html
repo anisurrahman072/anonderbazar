@@ -34,11 +34,11 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"
                  *ngFor="let brand of offeredProductsBrands">
                 <div class="brand-details">
-                    <div class="brand-image">
+                    <div class="brand-image" style="text-align: center">
                         <a routerLink="/offers/offered-products-brands/{{regularOfferInfo.id}}/{{brand.id}}">
                             <img src="{{IMAGE_ENDPOINT + brand.image}}"
                                  alt="brand logo" style="max-height: 100%;">
