@@ -60,7 +60,7 @@
     </div>
     <div *ngIf="regularOfferedProducts && regularOfferedProducts.length > 12"
          style="margin-top: 20px; text-align: center">
-        <pagination-controls (pageChange)="onPageChange($event)" previousLabel="" nextLabel="">
-        </pagination-controls>
+        <!--<pagination-controls (pageChange)="onPageChange($event)" previousLabel="" nextLabel=""></pagination-controls>-->
+        <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""></pagination-controls>
     </div>
 </div>

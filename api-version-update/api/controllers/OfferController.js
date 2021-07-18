@@ -835,7 +835,7 @@ module.exports = {
       /**if selection_type === 'Brand wise'*/
       if (requestedOffer.selection_type === 'Brand wise') {
         let _where = {};
-        _where.brand_id = requestedOffer.brand_id;
+        _where.brand_id = brandId;
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
@@ -1303,7 +1303,7 @@ module.exports = {
               products
           LEFT JOIN brands ON products.brand_id = brands.id
           WHERE
-              products.warehouse_id = ${vendorId} AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+              products.warehouse_id = ${vendorId} AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
           GROUP BY
               brand_id
           ORDER BY
@@ -1328,7 +1328,7 @@ module.exports = {
               products
           LEFT JOIN brands ON products.brand_id = brands.id
           WHERE
-             products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL AND
+             products.status = 2 AND products.approval_status = 2 AND products.deleted_at IS NULL AND brands.deleted_at IS NULL AND
               products.brand_id = ${offerInfo.brand_id}
         `;
 
@@ -1365,7 +1365,7 @@ module.exports = {
               products
           LEFT JOIN brands ON products.brand_id = brands.id
           WHERE
-              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
           GROUP BY
               brand_id
           ORDER BY
@@ -1399,7 +1399,7 @@ module.exports = {
               products
           LEFT JOIN brands ON products.brand_id = brands.id
           WHERE
-              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
           GROUP BY
               brand_id
           ORDER BY
@@ -1434,7 +1434,7 @@ module.exports = {
               products
           LEFT JOIN brands ON products.brand_id = brands.id
           WHERE
-              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
           GROUP BY
               brand_id
           ORDER BY

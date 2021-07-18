@@ -50,9 +50,9 @@ export class OfferedProductsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.route.queryParams.subscribe(queryparams => {
-            if (queryparams['page']) {
-                this.page = +queryparams['page'];
+        this.route.queryParams.subscribe(queryParams => {
+            if (queryParams['page']) {
+                this.page = +queryParams['page'];
             }
         });
 
@@ -140,14 +140,14 @@ export class OfferedProductsComponent implements OnInit {
         }
     }
 
-    onPageChange(event) {
+    /*onPageChange(event) {
         window.scroll(0, 0);
         let query: any = {};
         query.page = event;
 
-        this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
+        this.router.navigate(['/offers/offered-products-brands', this.route.snapshot.params], {queryParams: query});
         this.page = event;
-    }
+    }*/
 
     showNewest() {
         this.changeStatusN = true;
