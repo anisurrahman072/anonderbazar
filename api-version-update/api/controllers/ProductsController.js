@@ -789,13 +789,15 @@ module.exports = {
       allVariants.forEach((variant) => {
         if (variant.warehouseVariants && variant.warehouseVariants.length > 0) {
           variant.warehouseVariants.forEach((warehouseVariant) => {
-            let str = `${variant.name}=>${warehouseVariant.name}`;
-            if (variant.type == 0) {
-              str += `(Price Variation: No)`;
-            } else {
-              str += `(Price Variation: Yes)`;
+            if(!warehouseVariant.deletedAt){
+              let str = `${variant.name}=>${warehouseVariant.name}`;
+              if (variant.type == 0) {
+                str += `(Price Variation: No)`;
+              } else {
+                str += `(Price Variation: Yes)`;
+              }
+              variantSheet.cell(++index, 1).string(variant.id + ',' + warehouseVariant.id + '|' + escapeExcel(str));
             }
-            variantSheet.cell(++index, 1).string(variant.id + ',' + warehouseVariant.id + '|' + escapeExcel(str));
           });
         }
       });
