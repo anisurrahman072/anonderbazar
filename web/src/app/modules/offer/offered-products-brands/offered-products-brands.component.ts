@@ -8,27 +8,25 @@ import {NotificationsService} from "angular2-notifications";
 @Component({
     selector: 'app-offered-products-brands',
     templateUrl: './offered-products-brands.component.html',
-    styles: []
+    styleUrls: ['./offered-products-brands.component.scss']
 })
 export class OfferedProductsBrandsComponent implements OnInit {
 
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    id: any;
-    regularOffer;
-    regularOfferedProducts: any = [];
+    private id: any;
     page: any;
     private queryParams: any;
+    offeredProductsBrands;
+    regularOfferInfo;
 
-    currentTitle: any;
+    private currentTitle: any;
 
     constructor(
         private route: ActivatedRoute,
-        private cmsService: CmsService,
-        private productservice: ProductService,
         private title: Title,
         private router: Router,
         private offerService: OfferService,
-        private _notify: NotificationsService
+        private _notify: NotificationsService,
     ) {
         router.events.forEach((event) => {
             if (event instanceof NavigationEnd) {
@@ -45,7 +43,24 @@ export class OfferedProductsBrandsComponent implements OnInit {
         });
 
         this.addPageTitle();
+        this.getOfferedProductsBrands();
     }
+
+    getOfferedProductsBrands() {
+        if(this.id) {
+            this.offerService.getOfferedProductsBrands(this.id)
+                .subscribe(result => {
+                    this.offeredProductsBrands = result.data[0];
+                    this.regularOfferInfo = result.data[1];
+                    console.log('this.offeredProductsBrands ', this.offeredProductsBrands);
+                    console.log('this.regularOfferInfo ', this.regularOfferInfo);
+                }, (err) => {
+                    console.log(err);
+                    this._notify.error('Sorry!', 'Something went wrong');
+                })
+        }
+    }
+
 
     private addPageTitle() {
         this.title.setTitle('Offered Brands - Anonderbazar');

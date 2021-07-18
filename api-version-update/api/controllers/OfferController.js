@@ -791,6 +791,8 @@ module.exports = {
 
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
+    const brandId = parseInt(req.query.brandId);
+
     try {
       await OfferService.offerDurationCheck();
 
@@ -814,7 +816,7 @@ module.exports = {
       }
 
       let _where = {};
-      _where.id = req.query.id;
+      _where.id = req.query.offerId;
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
       const requestedOffer = await Offer.findOne({where: _where});
@@ -826,6 +828,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
+        _where.brand_id = brandId;
         webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
@@ -845,6 +848,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
+        _where.brand_id = brandId;
 
         if (requestedOffer.subSubCategory_Id) {
           _where.subcategory_id = requestedOffer.subSubCategory_Id;
@@ -860,7 +864,7 @@ module.exports = {
       /**if selection_type === 'Product wise'*/
       if (requestedOffer.selection_type === 'Product wise') {
         let _where = {};
-        _where.regular_offer_id = req.query.id;
+        _where.regular_offer_id = req.query.offerId;
         _where.product_deactivation_time = null;
         _where.deletedAt = null;
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
@@ -908,17 +912,19 @@ module.exports = {
           }
         }
 
+        webRegularOfferedProducts = webRegularOfferedProducts.filter(data => {
+          return (data.product_id.brand_id === brandId);
+        });
+
         webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
           return data.product_id;
         });
-
-
       }
 
       /**if selection_type === 'individual_product'*/
       if (requestedOffer.selection_type === 'individual_product') {
         let _where = {};
-        _where.regular_offer_id = req.query.id;
+        _where.regular_offer_id = req.query.offerId;
         _where.product_deactivation_time = null;
         _where.deletedAt = null;
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
@@ -965,6 +971,10 @@ module.exports = {
             });
           }
         }
+
+        webRegularOfferedProducts = webRegularOfferedProducts.filter(data => {
+          return (data.product_id.brand_id === brandId);
+        });
       }
 
       res.status(200).json({
@@ -1266,6 +1276,190 @@ module.exports = {
       });
     }
   },
+
+  /** Method for fetching offered products brands => used in web*/
+  getOfferedProductsBrands: async (req, res) => {
+    try {
+      let offerInfo = await Offer.findOne({id: req.query.offerId});
+      let brands;
+
+      if (offerInfo === undefined) {
+        return res.status(400).json({
+          message: 'offer does not exists',
+          error
+        });
+      }
+
+      /**if selection_type === 'Vendor wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Vendor wise') {
+        let vendorId = offerInfo.vendor_id;
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.warehouse_id = ${vendorId} AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Brand wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Brand wise') {
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+             products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL AND
+              products.brand_id = ${offerInfo.brand_id}
+        `;
+
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Category wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Category wise') {
+
+        let _where = {};
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+
+        if (offerInfo.subSubCategory_Id) {
+          _where.subcategory_id = offerInfo.subSubCategory_Id;
+        } else if (offerInfo.subCategory_Id) {
+          _where.category_id = offerInfo.subCategory_Id;
+        } else if (offerInfo.category_id) {
+          _where.type_id = offerInfo.category_id;
+        }
+
+        const products = await Product.find({where: _where});
+        const productIds = products.map(products => products.id);
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Product wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Product wise') {
+        let _where = {};
+        _where.regular_offer_id = offerInfo.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        const regularOfferedProducts = await RegularOfferProducts.find({where: _where});
+
+        const productIds = regularOfferedProducts.map(data => {
+          return data.product_id;
+        });
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'individual_product'*/
+      if (offerInfo.selection_type === 'individual_product') {
+
+        let _where = {};
+        _where.regular_offer_id = offerInfo.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        const regularOfferedProducts = await RegularOfferProducts.find({where: _where});
+
+        const productIds = regularOfferedProducts.map(data => {
+          return data.product_id;
+        });
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully fetched all the brands in this offer',
+        data: [brands, offerInfo]
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to fetch all the brands in this offer',
+        error
+      });
+    }
+  }
 
 };
 

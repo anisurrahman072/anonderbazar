@@ -4,6 +4,7 @@ import {OffersPageComponent} from "./offers-page/offers-page.component";
 import {AnonderJhorComponent} from "./anonder-jhor/anonder-jhor.component";
 import {AnonderJhorDetailsComponent} from "./anonder-jhor-details/anonder-jhor-details.component";
 import {OfferedProductsBrandsComponent} from "./offered-products-brands/offered-products-brands.component";
+import {OfferedProductsComponent} from "./offered-products/offered-products.component";
 
 const routes: Routes = [
     {
@@ -32,6 +33,13 @@ const routes: Routes = [
         component: OfferedProductsBrandsComponent,
         data: {
             title: "Offered Brands"
+        }
+    },
+    {
+        path: "offered-products-brands/:offerId/:brandId",
+        component: OfferedProductsComponent,
+        data: {
+            title: "Offered Products"
         }
     },
 

@@ -1,31 +1,32 @@
-<div class="main-container right-sidebar" *ngIf="regularOffer && regularOfferedProducts">
+<div class="main-container right-sidebar" *ngIf="offeredProductsBrands && regularOfferInfo"
+     style="margin-bottom: 20px">
     <div class="container-fluid">
-        <nav class="woocommerce-breadcrumb breadcrumbs">
-            <a routerLink="/" routerLinkActive="active">Home</a>
-            <a routerLink="/cms" routerLinkActive="active">Offer</a>
-            <a>{{regularOffer.title}}</a>
+        <nav class="woocommerce-breadcrumb breadcrumbs" style="margin: 15px">
+            <a routerLink="/" routerLinkActive="active">Home /</a>
+            <a routerLink="/offers" routerLinkActive="active">Offer /</a>
+            <a>{{regularOfferInfo.title}}</a>
         </nav>
         <div class="row">
             <div class="col-sm-6 col-md-12 main-content">
                 <div class="blog-single">
                     <div class="post-item">
                         <div class="banner-image" style="overflow: hidden;">
-                            <div class="post-thumb" *ngIf="regularOffer.image.banner_image; else image">
-                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.banner_image}}"
-                                     alt="{{regularOffer.title}}">
+                            <div class="post-thumb" *ngIf="regularOfferInfo.image.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOfferInfo.image.banner_image}}"
+                                     alt="{{regularOfferInfo.title}}">
                             </div>
                             <ng-template #image>
-                                <div class="post-thumb" *ngIf="regularOffer.image">
-                                    <img width="100%" src="{{  IMAGE_ENDPOINT + regularOffer.image.image}}"
-                                         alt="{{regularOffer.title}}">
+                                <div class="post-thumb" *ngIf="regularOfferInfo.image">
+                                    <img width="100%" src="{{  IMAGE_ENDPOINT + regularOfferInfo.image.image}}"
+                                         alt="{{regularOfferInfo.title}}">
                                 </div>
                             </ng-template>
                         </div>
 
                         <div class="post-info" style="margin-top:40px">
-                            <span class="post-title h1">{{regularOffer.title}}</span>
+                            <span class="post-title h1">{{regularOfferInfo.title}}</span>
                             <div style="margin-top:40px" class="blog-content"
-                                 [innerHTML]="regularOffer.description">
+                                 [innerHTML]="regularOfferInfo.description">
                             </div>
                         </div>
                     </div>
@@ -33,22 +34,20 @@
             </div>
         </div>
 
-        <div class="row" *ngIf='regularOfferedProducts && regularOfferedProducts.length > 0'>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4 offer_container" *ngFor="let product of (regularOfferedProducts | paginate: { itemsPerPage: 12, currentPage: page }) ; let i=index">
-                <app-product-item [dataProduct]="product"></app-product-item>
+        <div class="row">
+            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"
+                 *ngFor="let brand of offeredProductsBrands">
+                <div class="brand-details">
+                    <div class="brand-image">
+                        <a routerLink="/offers/offered-products-brands/{{regularOfferInfo.id}}/{{brand.id}}">
+                            <img src="{{IMAGE_ENDPOINT + brand.image}}"
+                                 alt="brand logo" style="max-height: 100%;">
+                        </a>
+                    </div>
+                    <p style="font-size: 16px; margin-top: 10px; text-align: center;">{{brand.name}}</p>
+                    <h3 style="color: red; text-align: center">{{brand.number_of_products}} Product</h3>
+                </div>
             </div>
         </div>
-
-        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-4 text-center"
-             style="font-style: normal;font-weight: normal;font-size: 20px;line-height: 138.2%;"
-             *ngIf="regularOfferedProducts && regularOfferedProducts.length <= 0">
-            <img class="img-fluid" src="../../../../assets/images/No_Product_Found.png"
-                 alt="No Product is available.">
-        </div>
-    </div>
-    <div *ngIf="regularOfferedProducts && regularOfferedProducts.length > 12"
-         style="margin-top: 20px; text-align: center">
-        <pagination-controls (pageChange)="onPageChange($event)" previousLabel="" nextLabel="">
-        </pagination-controls>
     </div>
 </div>
