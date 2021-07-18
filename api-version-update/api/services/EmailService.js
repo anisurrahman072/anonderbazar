@@ -1,6 +1,9 @@
 const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
 const {INVESTOR_EMAIL_ADDRESS} = require('../../libs/constants');
+const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport');
+
 module.exports = {
   sendPasswordResetMailUpdated: function (obj, password) {
     sails.hooks.email.send(
@@ -102,29 +105,6 @@ module.exports = {
     );
   },
 
-  investorMail: function (obj){
-    let receiverEmail = INVESTOR_EMAIL_ADDRESS;
-    if (!receiverEmail) {
-      return;
-    }
-    sails.hooks.email.send(
-      'investorMail',
-      {
-        recipientName: senderName,
-        senderName: senderName,
-        investorDetail: obj,
-        commonUrl: commonUrl,
-      },
-      {
-        to: receiverEmail,
-        subject: `Investor registration completed successfully`
-      },
-      (err) => {
-        console.log(err || 'It worked!');
-      }
-    );
-  },
-
   orderCompletedMail: function (obj) {
     sails.hooks.email.send(
       'orderCompleteEmail',
@@ -181,4 +161,34 @@ module.exports = {
       }
     );
   },
+
+  investorMail: async (newInvestor) => {
+    let transporter = nodemailer.createTransport(smtpTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      auth: {
+        user: INVESTOR_EMAIL_ADDRESS,
+        pass: 'anisurbup072'
+      }
+    }));
+
+    let mailOptions = {
+      from: INVESTOR_EMAIL_ADDRESS,
+      to: INVESTOR_EMAIL_ADDRESS,
+      subject: 'Investor registration successful. Code: '+newInvestor.investor_code,
+      html: '<h3>Dear Anonderbazaar, </h3> <p>Investor registration successful for bellow user:</p><div></div>' +
+        '<p>Name: '+newInvestor.first_name+' '+newInvestor.last_name+'</p><div></div>' +
+        '<p>Code: '+newInvestor.investor_code+'</p><div></div>' +
+        '<p>Phone: '+newInvestor.phone+'</p><div></div>' +
+        '<p>Email: '+newInvestor.email+'</p>'
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  }
 };
