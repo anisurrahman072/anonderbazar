@@ -48,6 +48,7 @@ export class OfferCreateComponent implements OnInit {
     submitting: boolean = false;
 
     isShowHomepage: boolean = false;
+    isShowCarousel: boolean = false;
 
     Calc_type;
     Calculation_type;
@@ -109,6 +110,7 @@ export class OfferCreateComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             frontend_position: ['', ''],
+            carousel_position: ['', ''],
             selectionType: ['', [Validators.required]],
             vendorId: ['', []],
             brandId: ['', []],
@@ -121,6 +123,7 @@ export class OfferCreateComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            showCarousel: ['', []],
             uploadType: ['', []],
         });
 
@@ -145,11 +148,13 @@ export class OfferCreateComponent implements OnInit {
 
         let formData = new FormData();
         let showInHome = this.isShowHomepage ? 'true' : 'false';
+        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
 
         formData.append('title', value.title);
         formData.append('description', value.description);
         formData.append('selection_type', value.selectionType);
         formData.append('showInHome', showInHome);
+        formData.append('showInCarousel', showInCarousel);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -227,6 +232,11 @@ export class OfferCreateComponent implements OnInit {
         if (value.frontend_position) {
             formData.append('frontend_position', value.frontend_position);
         }
+
+        if (value.carousel_position) {
+            formData.append('carousel_position', value.carousel_position);
+        }
+
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
@@ -326,6 +336,10 @@ export class OfferCreateComponent implements OnInit {
 
     changeShowHomepage() {
         this.isShowHomepage = !this.isShowHomepage;
+    }
+
+    changeShowCarousel() {
+        this.isShowCarousel = !this.isShowCarousel;
     }
 
     getAllProducts(event: any) {

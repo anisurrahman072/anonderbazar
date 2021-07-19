@@ -99,6 +99,7 @@ export class OfferEditComponent implements OnInit {
     selectedIndividualProductIds: any;
 
     isShowHomepage: boolean;
+    isShowCarousel: boolean = false;
 
     individuallySelectedProductsId: any = [];
     individuallySelectedProductsCalculation: any = [];
@@ -124,6 +125,7 @@ export class OfferEditComponent implements OnInit {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
             frontend_position: ['', ''],
+            carousel_position: ['', ''],
             selectionType: ['', [Validators.required]],
             vendorId: ['', []],
             brandId: ['', []],
@@ -136,6 +138,7 @@ export class OfferEditComponent implements OnInit {
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
+            showCarousel: ['', []],
             uploadType: ['', []],
         });
 
@@ -156,6 +159,7 @@ export class OfferEditComponent implements OnInit {
                     this.data = result.regularOffer;
 
                     this.isShowHomepage = this.data.show_in_homepage;
+                    this.isShowCarousel = this.data.showInCarousel;
 
                     this.selectionType = this.data.selection_type;
                     this.offerSelectionType = this.selectionType;
@@ -170,6 +174,7 @@ export class OfferEditComponent implements OnInit {
                     let payload = {
                         title: this.data.title,
                         frontend_position: this.data.frontend_position,
+                        carousel_position: this.data.carousel_position,
                         selectionType: this.data.selection_type,
                         vendorId: this.data.vendor_id ? this.data.vendor_id.id : '',
                         brandId: this.data.brand_id ? this.data.brand_id.id : '',
@@ -218,6 +223,7 @@ export class OfferEditComponent implements OnInit {
 
         let formData = new FormData();
         let showInHome = this.isShowHomepage ? "true" : "false";
+        let showInCarousel = this.isShowCarousel ? 'true' : 'false';
 
         formData.append('id', this.id);
         formData.append('title', value.title);
@@ -226,6 +232,7 @@ export class OfferEditComponent implements OnInit {
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
         formData.append('showInHome', showInHome);
+        formData.append('showInCarousel', showInCarousel);
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
 
@@ -280,6 +287,10 @@ export class OfferEditComponent implements OnInit {
 
         if (value.frontend_position) {
             formData.append('frontend_position', value.frontend_position);
+        }
+
+        if (value.carousel_position) {
+            formData.append('carousel_position', value.carousel_position);
         }
 
         if (this.ImageFile) {
@@ -363,6 +374,10 @@ export class OfferEditComponent implements OnInit {
 
     changeShowHomepage() {
         this.isShowHomepage = !this.isShowHomepage;
+    }
+
+    changeShowCarousel() {
+        this.isShowCarousel = !this.isShowCarousel;
     }
 
     getAllProducts(event: any) {
@@ -733,7 +748,8 @@ export class OfferEditComponent implements OnInit {
                 discount_amount: value.discount_amount
             }]);
 
-            /*console.log('individuallySelectedData: ', this.individuallySelectedData)*/;
+            /*console.log('individuallySelectedData: ', this.individuallySelectedData)*/
+            ;
 
             this._notification.success('Added', 'Product added successfully');
         }

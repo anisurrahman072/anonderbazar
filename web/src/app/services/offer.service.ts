@@ -18,18 +18,21 @@ export class OfferService {
         return this.http.get(`${this.EndPoint}/getWebRegularOffers`);
     }
 
-    getWebRegularOfferById(id, sortData): Observable<any> {
-        let _query = `${this.EndPoint}/getWebRegularOfferById?id=${id}`;
-        if(sortData){
+    getWebRegularOfferById(offerId, brandId, sortData?): Observable<any> {
+        let _query = `${this.EndPoint}/getWebRegularOfferById?offerId=${offerId}&brandId=${brandId}`;
+        if (sortData) {
             sortData = JSON.stringify(sortData);
             _query += `&sortData=${sortData}`;
         }
-        console.log("_query: ", _query);
         return this.http.get(_query);
     }
 
     getAllOfferedProducts(): Observable<any> {
         return this.http.get(`${this.EndPoint}/getAllOfferedProducts`);
+    }
+
+    getOfferedProductsBrands(offerId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getOfferedProductsBrands?offerId=${offerId}`);
     }
 
     calculateOfferPrice(calculationType, originalPrice, discountAmount) {
@@ -50,7 +53,7 @@ export class OfferService {
 
     getWebAnonderJhorOfferById(id, sortData): Observable<any> {
         let _query = `${this.EndPoint1}/getWebAnonderJhorOfferById?id=${id}`;
-        if(sortData){
+        if (sortData) {
             sortData = JSON.stringify(sortData);
             _query += `&sortData=${sortData}`;
         }

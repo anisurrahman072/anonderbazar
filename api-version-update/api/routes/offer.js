@@ -16,4 +16,5 @@ exports.offerRoute = {
   'GET /api/v1/offer/checkIndividualProductsCodesValidity': 'OfferController.checkIndividualProductsCodesValidity',
   'GET /api/v1/offer/generateExcel': 'OfferController.generateExcel',
   'GET /api/v1/offer/generateOfferedExcel': 'OfferController.generateOfferedExcel',
+  'GET /api/v1/offer/getOfferedProductsBrands': 'OfferController.getOfferedProductsBrands',
 };

@@ -59,9 +59,10 @@ module.exports = {
   /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
   offerInsert: async function (req, res) {
+    /*console.log('req.body of insert: ', req.body);*/
     try {
       let body = {...req.body};
-      let upload_type = body.upload_type ? body.upload_type : 'modal';
+      let upload_type = body.upload_type ? body.upload_type : '';
 
       const files = await uploadImages(req.file('image'));
 
@@ -109,7 +110,8 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
-          upload_type: upload_type
+          showInCarousel: body.showInCarousel,
+          upload_type: upload_type,
         };
       } else {
         offerData = {
@@ -126,11 +128,16 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel
         };
       }
 
       if (body.frontend_position) {
         offerData.frontend_position = body.frontend_position;
+      }
+
+      if (body.carousel_position) {
+        offerData.carousel_position = body.carousel_position;
       }
 
       if (body.subSubCategory_Id) {
@@ -441,8 +448,7 @@ module.exports = {
   updateOffer: async (req, res) => {
     try {
       let body = {...req.body};
-      console.log('upload type');
-      let upload_type = body.upload_type ? body.upload_type : 'modal';
+      let upload_type = body.upload_type ? body.upload_type : '';
 
       let offer = await Offer.findOne({id: body.id});
 
@@ -450,7 +456,7 @@ module.exports = {
 
         const files = await uploadImages(req.file('image'));
 
-        console.log('files', files);
+        /*console.log('files', files);*/
 
         if (files.length === 0) {
           return res.badRequest('No file was uploaded');
@@ -548,6 +554,7 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel,
           upload_type: upload_type
         };
       } else {
@@ -560,12 +567,17 @@ module.exports = {
           discount_amount: body.discountAmount,
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
-          show_in_homepage: body.showInHome
+          show_in_homepage: body.showInHome,
+          showInCarousel: body.showInCarousel,
         };
       }
 
       if (body.frontend_position) {
         offerData.frontend_position = body.frontend_position;
+      }
+
+      if (body.carousel_position) {
+        offerData.carousel_position = body.carousel_position;
       }
 
       if (body.subSubCategory_Id) {
@@ -757,6 +769,7 @@ module.exports = {
 
       let webRegularOffers = await Offer.find({where: _where})
         .sort([
+          {carousel_position: 'ASC'},
           {frontend_position: 'ASC'},
           {id: 'DESC'}
         ]);
@@ -778,7 +791,8 @@ module.exports = {
 
   /**Method called from the web to get the regular offer data with its related offered products data*/
   webRegularOfferById: async (req, res) => {
-    console.log('req.query.sortData: ', req.query.sortData);
+    const brandId = parseInt(req.query.brandId);
+
     try {
       await OfferService.offerDurationCheck();
 
@@ -802,7 +816,7 @@ module.exports = {
       }
 
       let _where = {};
-      _where.id = req.query.id;
+      _where.id = req.query.offerId;
       _where.deletedAt = null;
       _where.offer_deactivation_time = null;
       const requestedOffer = await Offer.findOne({where: _where});
@@ -814,13 +828,14 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
+        _where.brand_id = brandId;
         webRegularOfferedProducts = await Product.find({where: _where}).sort(_sort);
       }
 
       /**if selection_type === 'Brand wise'*/
       if (requestedOffer.selection_type === 'Brand wise') {
         let _where = {};
-        _where.brand_id = requestedOffer.brand_id;
+        _where.brand_id = brandId;
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
@@ -833,6 +848,7 @@ module.exports = {
         _where.status = 2;
         _where.approval_status = 2;
         _where.deletedAt = null;
+        _where.brand_id = brandId;
 
         if (requestedOffer.subSubCategory_Id) {
           _where.subcategory_id = requestedOffer.subSubCategory_Id;
@@ -848,7 +864,7 @@ module.exports = {
       /**if selection_type === 'Product wise'*/
       if (requestedOffer.selection_type === 'Product wise') {
         let _where = {};
-        _where.regular_offer_id = req.query.id;
+        _where.regular_offer_id = req.query.offerId;
         _where.product_deactivation_time = null;
         _where.deletedAt = null;
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
@@ -896,17 +912,19 @@ module.exports = {
           }
         }
 
+        webRegularOfferedProducts = webRegularOfferedProducts.filter(data => {
+          return (data.product_id.brand_id === brandId);
+        });
+
         webRegularOfferedProducts = webRegularOfferedProducts.map(data => {
           return data.product_id;
         });
-
-
       }
 
       /**if selection_type === 'individual_product'*/
       if (requestedOffer.selection_type === 'individual_product') {
         let _where = {};
-        _where.regular_offer_id = req.query.id;
+        _where.regular_offer_id = req.query.offerId;
         _where.product_deactivation_time = null;
         _where.deletedAt = null;
         webRegularOfferedProducts = await RegularOfferProducts.find({where: _where})
@@ -953,6 +971,10 @@ module.exports = {
             });
           }
         }
+
+        webRegularOfferedProducts = webRegularOfferedProducts.filter(data => {
+          return (data.product_id.brand_id === brandId);
+        });
       }
 
       res.status(200).json({
@@ -1254,6 +1276,190 @@ module.exports = {
       });
     }
   },
+
+  /** Method for fetching offered products brands => used in web*/
+  getOfferedProductsBrands: async (req, res) => {
+    try {
+      let offerInfo = await Offer.findOne({id: req.query.offerId});
+      let brands;
+
+      if (offerInfo === undefined) {
+        return res.status(400).json({
+          message: 'offer does not exists',
+          error
+        });
+      }
+
+      /**if selection_type === 'Vendor wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Vendor wise') {
+        let vendorId = offerInfo.vendor_id;
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.warehouse_id = ${vendorId} AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Brand wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Brand wise') {
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+             products.status = 2 AND products.approval_status = 2 AND products.deleted_at IS NULL AND brands.deleted_at IS NULL AND
+              products.brand_id = ${offerInfo.brand_id}
+        `;
+
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Category wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Category wise') {
+
+        let _where = {};
+        _where.status = 2;
+        _where.approval_status = 2;
+        _where.deletedAt = null;
+
+        if (offerInfo.subSubCategory_Id) {
+          _where.subcategory_id = offerInfo.subSubCategory_Id;
+        } else if (offerInfo.subCategory_Id) {
+          _where.category_id = offerInfo.subCategory_Id;
+        } else if (offerInfo.category_id) {
+          _where.type_id = offerInfo.category_id;
+        }
+
+        const products = await Product.find({where: _where});
+        const productIds = products.map(products => products.id);
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'Product wise'*/
+      if (offerInfo && offerInfo.selection_type === 'Product wise') {
+        let _where = {};
+        _where.regular_offer_id = offerInfo.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        const regularOfferedProducts = await RegularOfferProducts.find({where: _where});
+
+        const productIds = regularOfferedProducts.map(data => {
+          return data.product_id;
+        });
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      /**if selection_type === 'individual_product'*/
+      if (offerInfo.selection_type === 'individual_product') {
+
+        let _where = {};
+        _where.regular_offer_id = offerInfo.id;
+        _where.product_deactivation_time = null;
+        _where.deletedAt = null;
+        const regularOfferedProducts = await RegularOfferProducts.find({where: _where});
+
+        const productIds = regularOfferedProducts.map(data => {
+          return data.product_id;
+        });
+
+        const rawSQL = `
+        SELECT
+              COUNT(products.id) AS number_of_products,
+              brands.id,
+              brands.name,
+              brands.image
+          FROM
+              products
+          LEFT JOIN brands ON products.brand_id = brands.id
+          WHERE
+              products.id IN (${productIds}) AND products.deleted_at IS NULL AND products.status = 2 AND products.approval_status = 2 AND brands.deleted_at IS NULL
+          GROUP BY
+              brand_id
+          ORDER BY
+              brands.frontend_position,
+              COUNT(products.id)
+          DESC
+        `;
+        const rawBrands = await sails.sendNativeQuery(rawSQL, []);
+        brands = rawBrands.rows;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'successfully fetched all the brands in this offer',
+        data: [brands, offerInfo]
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to fetch all the brands in this offer',
+        error
+      });
+    }
+  }
 
 };
 

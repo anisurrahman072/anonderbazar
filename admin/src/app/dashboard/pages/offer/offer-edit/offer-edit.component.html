@@ -63,6 +63,28 @@
                     </div>
                 </div>
             </div>
+
+            <!--want to show in carousel-->
+            <div nz-row style="margin: 15px 15px 0 0">
+                <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <input formControlName="showCarousel" type="checkbox" [checked]="isShowCarousel"
+                           (change)="changeShowCarousel()">
+                    Show in Carousel
+                </div>
+            </div>
+
+            <!-- carousel frontend_position-->
+            <div nz-row style="margin-bottom: 10px">
+                <div nz-col [nzSpan]="7">
+                    <label>Carousel Position </label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <input nz-input type="number" formControlName="carousel_position"
+                           [placeholder]="'Enter carousel order number'"
+                           [nzSize]="'large'">
+                </div>
+            </div>
+
             <!--banner image-->
             <div nz-row>
                 <div nz-col [nzSpan]="7">
@@ -726,9 +748,10 @@
         </div>
 
         <div style="margin-top: 20px" *ngIf="wrongCodes && wrongCodes.length > 0">
-            <h4 style="margin-bottom: 20px; color: red">Invalid product codes found, Please fix and upload them again</h4>
+            <h4 style="margin-bottom: 20px; color: red">Invalid product codes found, Please fix and upload them
+                again</h4>
             <ng-container *ngFor="let code of wrongCodes; let i=index">
-                <b style="margin-left: 30px">{{i+1}} : {{code}}</b><br>
+                <b style="margin-left: 30px">{{i + 1}} : {{code}}</b><br>
             </ng-container>
         </div>
 

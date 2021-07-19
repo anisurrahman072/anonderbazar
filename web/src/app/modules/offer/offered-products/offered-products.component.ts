@@ -6,13 +6,14 @@ import {Title} from "@angular/platform-browser";
 import {NotificationsService} from "angular2-notifications";
 
 @Component({
-    selector: 'app-page-cms_details',
-    templateUrl: './cms-details-page.component.html',
-    styleUrls: ['./cms-details-page.component.scss']
+    selector: 'app-offered-products',
+    templateUrl: './offered-products.component.html',
+    styleUrls: ['./offered-products.component.scss']
 })
-export class CmsDetailsPageComponent implements OnInit {
+export class OfferedProductsComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
-    id: any;
+    offerId: any;
+    brandId: any;
     regularOffer;
     regularOfferedProducts: any = [];
     page: any;
@@ -40,55 +41,56 @@ export class CmsDetailsPageComponent implements OnInit {
         private _notify: NotificationsService
     ) {
         router.events.forEach((event) => {
-            if(event instanceof NavigationEnd) {
-                if(!this.title.getTitle()){
+            if (event instanceof NavigationEnd) {
+                if (!this.title.getTitle()) {
                     this.title.setTitle(`${this.currentTitle}`);
                 }
             }
         });
     }
 
-    // init the component
     ngOnInit() {
-        this.route.queryParams.subscribe(queryparams => {
-            if (queryparams['page']) {
-                this.page = +queryparams['page'];
+        this.route.queryParams.subscribe(queryParams => {
+            if (queryParams['page']) {
+                this.page = +queryParams['page'];
             }
         });
 
         this.route.params.subscribe(params => {
-            this.id = +params['id'];
-            this.get_cms_by_id();
+            this.offerId = +params['offerId'];
+            this.brandId = +params['brandId'];
+            this.getOfferedProductsByIdAndBrand();
         });
     }
 
-    //Method for cms data by ids
-    private get_cms_by_id() {
-
+    /** Method for getting offered products by their offerid and brand id */
+    getOfferedProductsByIdAndBrand() {
         let sortData = null;
-        if(this.changeStatusN){
+        if (this.changeStatusN) {
             sortData = {
                 code: "newest",
                 order: "DESC"
             }
-            if(this.changeStatusN_ASC){
+            if (this.changeStatusN_ASC) {
                 sortData.order = "ASC";
             }
-        } else if(this.changeStatusPr){
+        } else if (this.changeStatusPr) {
             sortData = {
                 code: "price",
                 order: "DESC"
             }
-            if(this.changeStatusPr_ASC){
+            if (this.changeStatusPr_ASC) {
                 sortData.order = "ASC";
             }
         }
 
-        if (this.id) {
-            this.offerService.getWebRegularOfferById(this.id, sortData)
+        if (this.brandId && this.offerId) {
+
+            this.offerService.getWebRegularOfferById(this.offerId, this.brandId, sortData)
                 .subscribe(result => {
                     /**info related to this offer*/
                     this.regularOffer = result.data[0];
+                    this.regularOfferedProducts = [];
 
                     /** setting discount to every products exists in this offer */
                     if (this.regularOffer.selection_type === "individual_product") {
@@ -102,8 +104,7 @@ export class CmsDetailsPageComponent implements OnInit {
                             product.product_id.calculationType = this.calculationType;
                             product.product_id.discountAmount = this.discountAmount;
                             this.regularOfferedProducts.push(product.product_id);
-                        });
-                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
+                        })
                     } else {
                         /**stored products in this offer*/
                         this.regularOfferedProducts = result.data[1];
@@ -117,7 +118,6 @@ export class CmsDetailsPageComponent implements OnInit {
                             product.calculationType = this.calculationType;
                             product.discountAmount = this.discountAmount;
                         })
-                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
                     }
 
                     if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
@@ -129,7 +129,6 @@ export class CmsDetailsPageComponent implements OnInit {
                     this._notify.error('Expired', 'Offer does not exists anymore');
                 });
         }
-
     }
 
     private addPageTitle() {
@@ -142,14 +141,14 @@ export class CmsDetailsPageComponent implements OnInit {
         }
     }
 
-    onPageChange(event) {
+    /*onPageChange(event) {
         window.scroll(0, 0);
         let query: any = {};
         query.page = event;
 
-        this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
+        this.router.navigate(['/offers/offered-products-brands', this.route.snapshot.params], {queryParams: query});
         this.page = event;
-    }
+    }*/
 
     showNewest() {
         this.changeStatusN = true;
@@ -157,7 +156,7 @@ export class CmsDetailsPageComponent implements OnInit {
 
         this.changeStatusN_ASC = !this.changeStatusN_ASC;
         this.changeStatusPr_ASC = false;
-        this.get_cms_by_id();
+        this.getOfferedProductsByIdAndBrand();
     }
 
     showPrice() {
@@ -166,6 +165,7 @@ export class CmsDetailsPageComponent implements OnInit {
 
         this.changeStatusN_ASC = false;
         this.changeStatusPr_ASC = !this.changeStatusPr_ASC;
-        this.get_cms_by_id();
+        this.getOfferedProductsByIdAndBrand();
     }
+
 }
