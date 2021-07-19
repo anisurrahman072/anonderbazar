@@ -1,6 +1,6 @@
 const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
-const {INVESTOR_EMAIL_ADDRESS} = require('../../libs/constants');
+const {anonderbazarEmail, anonderbazarEmailPassword, investorEmail} = require('../../config/softbd');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 
@@ -167,14 +167,14 @@ module.exports = {
       service: 'gmail',
       host: 'smtp.gmail.com',
       auth: {
-        user: INVESTOR_EMAIL_ADDRESS,
-        pass: 'anisurbup072'
+        user: anonderbazarEmail,
+        pass: anonderbazarEmailPassword
       }
     }));
 
     let mailOptions = {
-      from: INVESTOR_EMAIL_ADDRESS,
-      to: INVESTOR_EMAIL_ADDRESS,
+      from: anonderbazarEmail,
+      to: investorEmail,
       subject: 'New Application received for Investor registration',
       html: '<h3>Dear Anonderbazaar, </h3> <p>A new application received for investor registration. Please find the investor details from the email below.</p><div></div>' +
         '<p>Name: '+newInvestor.first_name+' '+newInvestor.last_name+'</p><div></div>' +
