@@ -175,10 +175,10 @@ module.exports = {
     let mailOptions = {
       from: INVESTOR_EMAIL_ADDRESS,
       to: INVESTOR_EMAIL_ADDRESS,
-      subject: 'Investor registration successful. Code: '+newInvestor.investor_code,
-      html: '<h3>Dear Anonderbazaar, </h3> <p>Investor registration successful for bellow user:</p><div></div>' +
+      subject: 'New Application received for Investor registration',
+      html: '<h3>Dear Anonderbazaar, </h3> <p>A new application received for investor registration. Please find the investor details from the email below.</p><div></div>' +
         '<p>Name: '+newInvestor.first_name+' '+newInvestor.last_name+'</p><div></div>' +
-        '<p>Code: '+newInvestor.investor_code+'</p><div></div>' +
+        '<p>Investor ID: '+newInvestor.investor_code+'</p><div></div>' +
         '<p>Phone: '+newInvestor.phone+'</p><div></div>' +
         '<p>Email: '+newInvestor.email+'</p>'
     };
