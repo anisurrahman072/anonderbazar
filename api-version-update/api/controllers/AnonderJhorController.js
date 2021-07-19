@@ -106,6 +106,10 @@ module.exports = {
         banner_image: body.banner_image,
         homepage_banner_image: body.homepage_banner_image,
         show_in_homepage: body.showHome,
+        pay_by_sslcommerz: body.pay_by_sslcommerz === 'true' ? 1 : 0,
+        pay_by_bKash: body.pay_by_bKash === 'true' ? 1 : 0,
+        pay_by_offline: body.pay_by_offline === 'true' ? 1 : 0,
+        pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === 'true' ? 1 : 0,
         status: 0
       };
 

@@ -49,6 +49,15 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     private sub: Subscription;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
+    isActiveSslCommerz: boolean = false;
+    isActiveBkash: boolean = false;
+    isActiveOffline: boolean = false;
+    isActiveCashOnDelivery: boolean = false;
+
+    isShowSslCommerz = false;
+    isShowBkash = false;
+    isShowOffline = false;
+    isShowCOD = false;
 
     constructor(
         private fb: FormBuilder,
@@ -75,6 +84,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
+                    console.log("aniss: ", this.anonderJhorData);
+
+                    if(this.anonderJhorData.pay_by_sslcommerz) this.isShowSslCommerz = true;
+                    if(this.anonderJhorData.pay_by_bKash) this.isShowBkash = true;
+                    if(this.anonderJhorData.pay_by_offline) this.isShowOffline = true;
+                    if(this.anonderJhorData.pay_by_cashOnDelivery) this.isShowCOD = true;
+
                     this.status = this.anonderJhorData.status;
                     this._isSpinning = false;
                 } else {
@@ -167,6 +183,10 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 startDate: ['', [Validators.required]],
                 endDate: ['', [Validators.required]],
                 showHome: ['', []],
+                pay_by_sslcommerz: ['', []],
+                pay_by_bKash: ['', []],
+                pay_by_offline: ['', []],
+                pay_by_cashOnDelivery: ['', []]
             });
 
             this.AnonderJhorBannerImageFileEdit = [];
@@ -177,8 +197,18 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             let payload = {
                 startDate: this.anonderJhorData.start_date ? this.anonderJhorData.start_date : '',
                 endDate: this.anonderJhorData.end_date ? this.anonderJhorData.end_date : '',
-                showHome: this.showHome
+                showHome: this.showHome,
+                pay_by_sslcommerz: this.anonderJhorData.pay_by_sslcommerz,
+                pay_by_bKash: this.anonderJhorData.pay_by_bKash,
+                pay_by_offline: this.anonderJhorData.pay_by_offline,
+                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
             }
+            this.isActiveSslCommerz = !!this.anonderJhorData.pay_by_sslcommerz;
+            this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
+            this.isActiveOffline = this.anonderJhorData.pay_by_offline ? true : false;
+            this.isActiveCashOnDelivery = this.anonderJhorData.pay_by_cashOnDelivery ? true : false;
+
+            console.log("payload: ", payload);
 
             this.validateForm.patchValue(payload);
 
@@ -208,6 +238,10 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         formData.append('startDate', moment(value.startDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('endDate', moment(value.endDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('showHome', value.showHome);
+        formData.append('pay_by_sslcommerz', value.pay_by_sslcommerz);
+        formData.append('pay_by_bKash', value.pay_by_bKash);
+        formData.append('pay_by_offline', value.pay_by_offline);
+        formData.append('pay_by_cashOnDelivery', value.pay_by_cashOnDelivery);
 
         if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
@@ -404,4 +438,16 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
     }
 
+    changeSslCommerzActivation() {
+        this.isActiveSslCommerz = !this.isActiveSslCommerz;
+    }
+    changeBkashActivation() {
+        this.isActiveBkash = !this.isActiveBkash;
+    }
+    changeOfflineActivation() {
+        this.isActiveOffline = !this.isActiveOffline;
+    }
+    changeCashOnDeliveryActivation() {
+        this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
+    }
 }
