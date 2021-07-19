@@ -312,7 +312,16 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     updateFinalprice() {
         if (this.data) {
             this.unitPrice = this.data.offerPrice ? this.data.offerPrice : this.data.price;
-            this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+
+            if (this.offerData && this.offerData.finalCollectionOfProducts && this.data.id in this.offerData.finalCollectionOfProducts) {
+                this.calculationType = this.offerData.finalCollectionOfProducts[this.data.id].calculation_type;
+                this.discountAmount = this.offerData.finalCollectionOfProducts[this.data.id].discount_amount;
+                let productPriceWithVariantPrice = this.data.price + this.variantCalculatedTotalPrice;
+
+                this.finalprice = this.offerService.calculateOfferPrice(this.calculationType, productPriceWithVariantPrice, this.discountAmount);
+            } else {
+                this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+            }
         }
     }
 
