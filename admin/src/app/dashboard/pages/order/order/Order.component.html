@@ -152,18 +152,24 @@
                     <td style="width: 230px;">{{data.full_name}}</td>
                     <td style="width: 100px;">{{data.total_quantity}}</td>
                     <td style="width: 100px;">{{data.total_price}}</td>
+
                     <td style="width: 230px;"  *ngIf="isAllowedToUpdateOrderStatus">
-                        <span *ngIf="setStatus(i, data.status)"></span>
-                        <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
-                                   (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
-                            <nz-option *ngFor="let option of options" [nzLabel]="option.label"
-                                       [nzValue]="option.value">
-                                <ng-template #nzOptionTemplate>
-                                    <i class="anticon " [ngClass]="option.icon"></i>
-                                    {{option.label}}
-                                </ng-template>
-                            </nz-option>
-                        </nz-select>
+                        <div *ngIf="data.total_price <= data.paid_amount">
+                            <span *ngIf="setStatus(i, data.status)"></span>
+                            <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
+                                       (ngModelChange)="changeStatusConfirm($event,data.id,data.status)">
+                                <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                           [nzValue]="option.value">
+                                    <ng-template #nzOptionTemplate>
+                                        <i class="anticon " [ngClass]="option.icon"></i>
+                                        {{option.label}}
+                                    </ng-template>
+                                </nz-option>
+                            </nz-select>
+                        </div>
+                        <div  *ngIf="data.total_price > data.paid_amount">
+                            {{data.status | statustype}}
+                        </div>
                     </td>
 
                     <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>

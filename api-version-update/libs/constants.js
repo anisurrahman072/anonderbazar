@@ -4,6 +4,7 @@ exports.SSL_COMMERZ_PAYMENT_TYPE = 'SSLCommerce';
 exports.BKASH_PAYMENT_TYPE = 'bKash';
 exports.NAGAD_PAYMENT_TYPE = 'Nagad';
 exports.OFFLINE_PAYMENT_TYPE = 'OfflinePay';
+exports.ADMIN_PAYMENT_PAYMENT_TYPE = 'AdminPayment';
 
 exports.REGULAR_ORDER_TYPE = 1;
 exports.PARTIAL_ORDER_TYPE = 2;
@@ -48,3 +49,10 @@ exports.BRAND_WISE_OFFER_SELECTION_TYPE = 'Brand wise';
 exports.VENDOR_WISE_OFFER_SELECTION_TYPE = 'Vendor wise';
 exports.PRODUCT_WISE_OFFER_SELECTION_TYPE = 'Product wise';
 exports.INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE = 'individual_product';
+
+/** Investor OTP */
+exports.NOT_VERIFIED_INVESTOR_OTP_STATUS = 1;
+exports.VERIFIED_INVESTOR_OTP_STATUS = 2;
+exports.EXPIRED_INVESTOR_OTP_STATUS = 3;
+
+exports.PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT = 2000;

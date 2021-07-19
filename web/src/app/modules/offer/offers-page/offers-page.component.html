@@ -1,0 +1,27 @@
+<div class="main-container no-sidebar">
+    <div class="container-fluid">
+        <nav class="woocommerce-breadcrumb breadcrumbs">
+            <a routerLink="/" routerLinkActive="active">Home /</a>
+            <a routerLink="/cms" routerLinkActive="active" *ngIf="regularOfferData">Offer</a>
+        </nav>
+        <div class="row" *ngIf="regularOfferData && regularOfferData.length > 0">
+            <ng-template ngFor let-data [ngForOf]="regularOfferData">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4 offerpage-container" *ngIf="data">
+                    <div class="offer-details">
+                        <div class="offer-img">
+                            <a routerLink="/offers/offered-products-brands/{{data.id}}">
+                                <img src="{{IMAGE_LIST_ENDPOINT + data.image.image + IMAGE_EXT}}"
+                                     alt="offered product image">
+                            </a>
+                        </div>
+                        <div class="offer-contant">
+                            <h6>{{data.title}}</h6>
+                            <p [innerHTML]='data.description'></p>
+                            <a routerLink="/offers/offered-products-brands/{{data.id}}">View Offer details</a>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

@@ -78,6 +78,30 @@
                             </div>
                         </div>
                     </div>
+                    <!--homepage banner image-->
+                    <div nz-row *ngIf="AnonderJhorHomepageBannerImageFileEdit" style="margin-top: 15px">
+                        <div nz-col [nzSpan]="7">
+                            <label>Homepage Banner Image</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onJhorHomepageBannerRemoved($event)"
+                                          [uploadedFiles]='AnonderJhorHomepageBannerImageFileEdit'
+                                          [beforeUpload]="onBeforejhorHomepageBannerUpload">
+                            </image-upload>
+                            <div *ngIf="!anonderJhorHomepageBannerImageFile">
+                                Please upload a banner image here!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--show in homepage-->
+                    <div nz-row style="margin-top: 15px">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="showHome" type="checkbox" [checked]="showHome"
+                                   (change)="changeShowHomepage()">
+                            Show homepage banner in Homepage
+                        </div>
+                    </div>
 
                     <!--Offer Duration-->
                     <div nz-row style="margin: 20px 0;">
