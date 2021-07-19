@@ -61,10 +61,14 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <div style="display: flex">
-                            <p *ngIf="isShowSslCommerz" class="paymentGatewayStyle">Ssl Commerz</p>
-                            <p *ngIf="isShowBkash" class="paymentGatewayStyle">Bkash</p>
-                            <p *ngIf="isShowOffline" class="paymentGatewayStyle">Offline</p>
-                            <p *ngIf="isShowCOD" class="paymentGatewayStyle">Cash on delivery</p>
+                            <p *ngIf="isActiveSslCommerz" class="paymentGatewayStyle">Ssl Commerz</p>
+                            <p *ngIf="isActiveBkash" class="paymentGatewayStyle">Bkash</p>
+                            <p *ngIf="isActiveOffline" class="paymentGatewayStyle">Offline</p>
+                            <p *ngIf="isActiveCashOnDelivery" class="paymentGatewayStyle">Cash on delivery</p>
+                            <p *ngIf="!isActiveSslCommerz && !isActiveBkash && !isActiveOffline && !isActiveCashOnDelivery"
+                               class="paymentGatewayStyle" style="color: red;" >
+                                No Payment Gateway selected
+                            </p>
                         </div>
                     </div>
                 </div>

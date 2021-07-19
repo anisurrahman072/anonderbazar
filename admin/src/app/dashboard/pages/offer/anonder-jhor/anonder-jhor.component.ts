@@ -54,11 +54,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
 
-    isShowSslCommerz = false;
-    isShowBkash = false;
-    isShowOffline = false;
-    isShowCOD = false;
-
     constructor(
         private fb: FormBuilder,
         private offerService: OfferService,
@@ -84,12 +79,11 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
-                    console.log("aniss: ", this.anonderJhorData);
 
-                    if(this.anonderJhorData.pay_by_sslcommerz) this.isShowSslCommerz = true;
-                    if(this.anonderJhorData.pay_by_bKash) this.isShowBkash = true;
-                    if(this.anonderJhorData.pay_by_offline) this.isShowOffline = true;
-                    if(this.anonderJhorData.pay_by_cashOnDelivery) this.isShowCOD = true;
+                    this.isActiveSslCommerz = !!this.anonderJhorData.pay_by_sslcommerz;
+                    this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
+                    this.isActiveOffline = !!this.anonderJhorData.pay_by_offline;
+                    this.isActiveCashOnDelivery = !!this.anonderJhorData.pay_by_cashOnDelivery;
 
                     this.status = this.anonderJhorData.status;
                     this._isSpinning = false;
@@ -203,10 +197,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_offline: this.anonderJhorData.pay_by_offline,
                 pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
             }
-            this.isActiveSslCommerz = !!this.anonderJhorData.pay_by_sslcommerz;
-            this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
-            this.isActiveOffline = this.anonderJhorData.pay_by_offline ? true : false;
-            this.isActiveCashOnDelivery = this.anonderJhorData.pay_by_cashOnDelivery ? true : false;
 
             console.log("payload: ", payload);
 
@@ -234,14 +224,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         }
 
         let formData = new FormData();
-
         formData.append('startDate', moment(value.startDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('endDate', moment(value.endDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('showHome', value.showHome);
-        formData.append('pay_by_sslcommerz', value.pay_by_sslcommerz);
-        formData.append('pay_by_bKash', value.pay_by_bKash);
-        formData.append('pay_by_offline', value.pay_by_offline);
-        formData.append('pay_by_cashOnDelivery', value.pay_by_cashOnDelivery);
+        formData.append('pay_by_sslcommerz', this.isActiveSslCommerz ? "1" : "0");
+        formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
+        formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
+        formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
 
         if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
