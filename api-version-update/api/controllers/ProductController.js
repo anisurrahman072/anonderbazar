@@ -36,7 +36,7 @@ module.exports = {
 
         console.log('My product: ', product);
 
-        if(!product || product.approval_status != APPROVED_PRODUCT_APPROVAL_STATUS || product.deletedAt){
+        if (!product || product.approval_status != APPROVED_PRODUCT_APPROVAL_STATUS || product.deletedAt) {
           return res.status(400).json({
             success: false,
             code: 'productNotFound',
@@ -44,7 +44,7 @@ module.exports = {
           });
         }
 
-        if(!product.warehouse_id || product.warehouse_id.deletedAt || product.warehouse_id.status != ACTIVE_WAREHOUSE_STATUS){
+        if (!product.warehouse_id || product.warehouse_id.deletedAt || product.warehouse_id.status != ACTIVE_WAREHOUSE_STATUS) {
           return res.status(400).json({
             success: false,
             code: 'warehouseNotFound',
@@ -275,7 +275,6 @@ module.exports = {
       req.body.price = parseFloat(req.body.price);
 
       let body = req.body;
-      console.log('request body', body);
 
       const existingProduct = await Product.findOne({
         code: body.code
@@ -311,14 +310,16 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
+
+      const imageBulkArray = body.ImageBlukArray;
       const product = await sails.getDatastore()
         .transaction(async (db) => {
           const product = await Product.create(body).fetch().usingConnection(db);
 
-          if (body.ImageBlukArray) {
-            let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
+          if (imageBulkArray) {
+            let imagearraybulk = JSON.parse('[' + imageBulkArray + ']');
             for (let i = 0; i < imagearraybulk.length; i++) {
-              await ProductImage.update(imagearraybulk[i], {product_id: product.id});
+              await ProductImage.update(imagearraybulk[i], {product_id: product.id}).usingConnection(db);
             }
           }
 
@@ -440,7 +441,7 @@ module.exports = {
             image_path: '/' + newPath
           }).fetch();
 
-          return res.json(200, productImage);
+          return res.status(200).json(productImage);
 
         });
 
