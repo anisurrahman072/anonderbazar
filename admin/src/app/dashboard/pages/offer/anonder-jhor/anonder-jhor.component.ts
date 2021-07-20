@@ -23,6 +23,9 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     anonderJhorBannerImageFile: File;
     AnonderJhorBannerImageFileEdit: any;
     status: Boolean = false;
+    showHome: Boolean = false;
+    anonderJhorHomepageBannerImageFile: File;
+    AnonderJhorHomepageBannerImageFileEdit: any;
 
     /** Anonder Jhor Offers variables */
     anonderJhorOffersData: any = [];
@@ -51,7 +54,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         private fb: FormBuilder,
         private offerService: OfferService,
         private _notification: NzNotificationService,
-        private exportService: ExportService
     ) {
     }
 
@@ -164,18 +166,28 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             this.validateForm = this.fb.group({
                 startDate: ['', [Validators.required]],
                 endDate: ['', [Validators.required]],
+                showHome: ['', []],
             });
 
             this.AnonderJhorBannerImageFileEdit = [];
+            this.AnonderJhorHomepageBannerImageFileEdit = [];
+
+            this.showHome = this.anonderJhorData.show_in_homepage ? this.anonderJhorData.show_in_homepage : false
 
             let payload = {
                 startDate: this.anonderJhorData.start_date ? this.anonderJhorData.start_date : '',
-                endDate: this.anonderJhorData.end_date ? this.anonderJhorData.end_date : ''
+                endDate: this.anonderJhorData.end_date ? this.anonderJhorData.end_date : '',
+                showHome: this.showHome
             }
+
             this.validateForm.patchValue(payload);
 
             if (this.anonderJhorData && this.anonderJhorData.banner_image) {
                 this.AnonderJhorBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.banner_image);
+            }
+
+            if (this.anonderJhorData && this.anonderJhorData.homepage_banner_image) {
+                this.AnonderJhorHomepageBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.homepage_banner_image);
             }
 
             this._isSpinning = false;
@@ -195,12 +207,20 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
 
         formData.append('startDate', moment(value.startDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('endDate', moment(value.endDate).format('YYYY-MM-DD HH:mm:ss'));
+        formData.append('showHome', value.showHome);
 
         if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.anonderJhorBannerImageFile, this.anonderJhorBannerImageFile.name);
         } else {
             formData.append('hasImage', 'false');
+        }
+
+        if (this.anonderJhorHomepageBannerImageFile) {
+            formData.append('hasBannerImage', 'true');
+            formData.append('image', this.anonderJhorHomepageBannerImageFile, this.anonderJhorHomepageBannerImageFile.name);
+        } else {
+            formData.append('hasBannerImage', 'false');
         }
 
         this.offerService.updateAnonderJhor(formData).subscribe(result => {
@@ -215,6 +235,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             }
         }, () => {
             this._isSpinning = false;
+            this._notification.error('Failed!', 'Something is wrong');
         });
     };
 
@@ -222,9 +243,22 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.anonderJhorBannerImageFile = null;
     }
 
+    onJhorHomepageBannerRemoved(file: FileHolder) {
+        this.anonderJhorHomepageBannerImageFile = null;
+    }
+
     onBeforejhorBannerUpload = (metadata: UploadMetadata) => {
         this.anonderJhorBannerImageFile = metadata.file;
         return metadata;
+    }
+
+    onBeforejhorHomepageBannerUpload = (metadata: UploadMetadata) => {
+        this.anonderJhorHomepageBannerImageFile = metadata.file;
+        return metadata;
+    }
+
+    changeShowHomepage() {
+        this.showHome = !this.showHome;
     }
 
     /** Event method for resetting the form */

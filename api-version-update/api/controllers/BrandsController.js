@@ -39,7 +39,7 @@ module.exports = {
         });
       }
 
-      console.log('numberOfUser: ', rawResult.rows.length);
+      /*console.log('numberOfUser: ', rawResult.rows.length);*/
 
       let allRows = rawResult.rows.map((row) => {
         return {
@@ -48,7 +48,7 @@ module.exports = {
         };
       });
 
-      console.log('allRows', allRows);
+      /*console.log('allRows', allRows);*/
 
       let allBrandIds = [];
       allRows.forEach((row) => {

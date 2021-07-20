@@ -1,5 +1,9 @@
 const commonUrl = 'https://anonderbazar.com';
 const senderName = 'Anonder Bazar';
+const {anonderbazarEmail, anonderbazarEmailPassword, investorEmail} = require('../../config/softbd');
+const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport');
+
 module.exports = {
   sendPasswordResetMailUpdated: function (obj, password) {
     sails.hooks.email.send(
@@ -100,6 +104,7 @@ module.exports = {
       }
     );
   },
+
   orderCompletedMail: function (obj) {
     sails.hooks.email.send(
       'orderCompleteEmail',
@@ -156,4 +161,34 @@ module.exports = {
       }
     );
   },
+
+  investorMail: async (newInvestor) => {
+    let transporter = nodemailer.createTransport(smtpTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      auth: {
+        user: anonderbazarEmail,
+        pass: anonderbazarEmailPassword
+      }
+    }));
+
+    let mailOptions = {
+      from: anonderbazarEmail,
+      to: investorEmail,
+      subject: 'New Application received for Investor registration',
+      html: '<h3>Dear Anonderbazaar, </h3> <p>A new application received for investor registration. Please find the investor details from the email below.</p><div></div>' +
+        '<p>Name: '+newInvestor.first_name+' '+newInvestor.last_name+'</p><div></div>' +
+        '<p>Investor ID: '+newInvestor.investor_code+'</p><div></div>' +
+        '<p>Phone: '+newInvestor.phone+'</p><div></div>' +
+        '<p>Email: '+newInvestor.email+'</p>'
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  }
 };

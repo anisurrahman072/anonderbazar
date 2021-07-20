@@ -1,6 +1,7 @@
 exports.PaymentsRoute = {
   'GET /api/v1/payments': 'PaymentsController.getAll',
   'GET /api/v1/payment/changeApprovalStatus': 'PaymentsController.changeApprovalStatus',
+  'POST /api/v1/payments/makeAdminPayment': 'PaymentsController.makeAdminPayment',
   'POST /api/v1/partial-order/make-payment/:order_id' : 'OrderPartialPaymentController.makePayment',
   'POST /api/v1/partial-order/placeOrderWithoutPayment' : 'OrderPartialPaymentController.placeOrderWithoutPayment',
   'POST /api/v1/partial-order/refund-payments/:order_id' : 'OrderPartialPaymentController.refundPayments'

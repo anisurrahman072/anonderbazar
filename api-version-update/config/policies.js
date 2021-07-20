@@ -254,7 +254,8 @@ module.exports.policies = {
   PaymentsController: {
     '*': false,
     'getAll': ['isAuthorized'],
-    'changeApprovalStatus': ['isAuthorized', 'isAdmin']
+    'changeApprovalStatus': ['isAuthorized', 'isAdmin'],
+    'makeAdminPayment': ['isAuthorized', 'isAdmin']
   },
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],

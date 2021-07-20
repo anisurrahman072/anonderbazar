@@ -12,7 +12,7 @@ module.exports = {
       columnType: 'varchar',
       required: true
     },
-    frontend_position:  {
+    frontend_position: {
       type: 'number',
       columnType: 'integer',
       required: false,
@@ -67,7 +67,7 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
     },
-    offer_deactivation_time:  {
+    offer_deactivation_time: {
       type: 'ref',
       columnType: 'datetime',
     },
@@ -75,7 +75,23 @@ module.exports = {
       type: 'boolean',
       columnType: 'integer',
       defaultsTo: false
-    }
+    },
+    showInCarousel: {
+      type: 'boolean',
+      columnType: 'integer',
+      defaultsTo: false
+    },
+    carousel_position: {
+      type: 'number',
+      columnType: 'integer',
+      required: false,
+      defaultsTo: 111,
+    },
+    upload_type: {
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
+    },
   },
   tableName: 'offers',
 };

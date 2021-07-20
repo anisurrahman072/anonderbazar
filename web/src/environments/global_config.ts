@@ -13,6 +13,7 @@ export class GLOBAL_CONFIGS {
     };
     public static lotteryAdminId = 130;
     public static bkashTestUsers = [130, 2814];
+    public static partialMinimumFirstPaymentAmount = 2000;
 }
 
 export const PAYMENT_METHODS = {
@@ -21,7 +22,8 @@ export const PAYMENT_METHODS = {
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad',
-    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay',
+    ADMIN_PAYMENT_TYPE: 'AdminPayment'
 }
 export const PAYMENT_METHODS_LABELS = {
     'Cash': 'Cash On Delivery',

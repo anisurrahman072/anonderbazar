@@ -14,4 +14,12 @@ export class InvestorService {
     return this.http.post(`${this.EndPoint}/registerInvestor`, value);
   }
 
+  generateOtp(value: any): Observable<any>{
+    return this.http.post(`${this.EndPoint}/generateOtp`, value);
+  }
+
+  verifyOTP(value: any): Observable<any>{
+    return this.http.post(`${this.EndPoint}/verifyOTP`, value);
+  }
+
 }
