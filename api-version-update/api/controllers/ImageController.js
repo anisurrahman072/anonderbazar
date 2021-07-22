@@ -15,14 +15,13 @@ module.exports = {
   },
   //Method called for uploading a image data
   upload: async (req, res) => {
-    try{
-      if (req.method === 'GET'){
+    try {
+      if (req.method === 'GET') {
         return res.json({'status': 'GET not allowed'});
       }
       const files = await uploadImages(req.file('imageFile'));
       return res.status(200).json({files: files});
-    }
-    catch(error){
+    } catch (error) {
       console.log(error);
       return res.status(error.status).json({'Error': error});
     }
@@ -36,22 +35,7 @@ module.exports = {
       const uploaded = await uploadImages(req.file('image'));
       const newImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
 
-      if (req.body.oldImagePath) {
-        /** Update section */
-        const ROW_ID = req.body.id;
-        const TABLE_NAME = req.body.tableName;
-        const COLUMN_NAME = req.body.column;
-        const OLD_IMAGE_PATH = req.body.oldImagePath;
-
-        await deleteImageS3(OLD_IMAGE_PATH);
-
-        let query = `
-        UPDATE ${TABLE_NAME}
-        SET ${COLUMN_NAME} = ${newImagePath}
-        WHERE id = ${ROW_ID} AND deleted_at IS NULL
-      `;
-        await sails.sendNativeQuery(query, []);
-      }
+      console.log('newImagePath: ', newImagePath);
 
       return res.status(200).json({
         success: true,
@@ -68,9 +52,8 @@ module.exports = {
   },
 
   deleteImage: async (req, res) => {
-    console.log('ttttttttt');
     try {
-      if(!req.body.oldImagePath){
+      if (!req.body.oldImagePath) {
         return res.status(400).json({success: false, message: 'No image path was given to delete!'});
       }
 
@@ -79,43 +62,46 @@ module.exports = {
       /** Delete Image from RDS */
       await deleteImageS3(OLD_IMAGE_PATH);
 
-      if(req.body.id && req.body.tableName && req.body.column && req.body.format){
-        /** Delete Image from Database */
+      /** Delete Image from Database */
+      if (req.body.id && req.body.tableName && req.body.column) {
         const TABLE_NAME = req.body.tableName;
         const COLUMN_NAME = req.body.column;
         const ROW_ID = req.body.id;
         const FORMAT = req.body.format;
-        console.log('tt: ',OLD_IMAGE_PATH, TABLE_NAME, COLUMN_NAME,  ROW_ID, FORMAT);
 
         let findQuery = `
             SELECT ${COLUMN_NAME} as image
             FROM ${TABLE_NAME}
             WHERE id = ${ROW_ID} AND deleted_at IS NULL
-          `;
-
+         `;
         let rawResult = await sails.sendNativeQuery(findQuery, []);
+
+        console.log('Images from database: ', rawResult.rows[0].image);
 
         let images = null;
 
-        if(FORMAT === 'JSON'){
+        if (FORMAT && FORMAT === 'JSON') {
 
           images = JSON.parse(rawResult.rows[0].image);
-          if(images && images.split(',').length > 0){
-            images = images.split(',');
-            let index = images.findIndex(image => image === OLD_IMAGE_PATH);
-            if(index !== -1){
-              images.splice(index, 1);
+          if (images) {
+            let key;
+            for (let v in images) {
+              if (images[v] === OLD_IMAGE_PATH) {
+                key = v;
+              }
             }
 
-            images = JSON.stringify(images);
+            delete images[key];
 
-            console.log('Annnntttyy: ', images);
+            if (images) {
+              images = JSON.stringify(images);
+            }
           }
         }
 
         let updateQuery = `
             UPDATE ${req.body.tableName}
-            SET ${req.body.column} = ${images}
+            SET ${req.body.column} = '${images}'
             WHERE id = ${req.body.id} AND deleted_at IS NULL
         `;
         let updatedResult = await sails.sendNativeQuery(updateQuery, []);
@@ -128,10 +114,10 @@ module.exports = {
       });
 
     } catch (error) {
-      console.log('Error occurred in deleting order!');
+      console.log('Error occurred in deleting order!', error);
       res.status(400).json({
         success: false,
-        message: 'Error occurred while inserting new image in database!'
+        message: error
       });
     }
   }

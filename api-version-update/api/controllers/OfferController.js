@@ -452,11 +452,11 @@ module.exports = {
 
       let offer = await Offer.findOne({id: body.id});
 
-      if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
+      /*if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
 
-        /*console.log('files', files);*/
+        /!*console.log('files', files);*!/
 
         if (files.length === 0) {
           return res.badRequest('No file was uploaded');
@@ -509,24 +509,32 @@ module.exports = {
           body.small_image = '/' + newPath;
         }
 
+      }*/
+
+      let images;
+      if(body.images){
+        images = JSON.parse(body.images);
       }
+      console.log('Images are: ', images);
 
       let offerData = {image: {}};
-      if (body.image) {
-        offerData.image.image = body.image;
+      if (images && images.image ) {
+        offerData.image.image = images.image;
       } else {
         offerData.image.image = offer.image && offer.image.image ? offer.image.image : '';
       }
-      if (body.small_image) {
-        offerData.image.small_image = body.small_image;
+      if (images && images.small_image) {
+        offerData.image.small_image = images.small_image;
       } else {
         offerData.image.small_image = offer.image && offer.image.small_image ? offer.image.small_image : '';
       }
-      if (body.banner_image) {
-        offerData.image.banner_image = body.banner_image;
+      if (images && images.banner_image) {
+        offerData.image.banner_image = images.banner_image;
       } else {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
+
+      console.log('offerData.image: ',offerData.image);
 
       let individualProductsIds = [];
       let individualProductsCalculations;
