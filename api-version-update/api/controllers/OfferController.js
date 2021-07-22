@@ -64,20 +64,9 @@ module.exports = {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
-      const files = await uploadImages(req.file('image'));
-
-      if (files.length === 0) {
+      if(!body.images || (body.images && JSON.parse(body.images).length === 0) ){
         return res.badRequest('No image was uploaded');
       }
-
-      const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-      body.image = '/' + newPath;
-
-      let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-      body.small_image = '/' + smallImagePath;
-
-      let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
-      body.banner_image = '/' + bannerImagePath;
 
       let offerData = {};
       let individualProductsIds = [];
@@ -100,11 +89,7 @@ module.exports = {
 
         offerData = {
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
+          image: JSON.parse(body.images),
           selection_type: body.selection_type,
           description: body.description,
           start_date: body.offerStartDate,
@@ -116,11 +101,7 @@ module.exports = {
       } else {
         offerData = {
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
+          image: JSON.parse(body.images),
           selection_type: body.selection_type,
           description: body.description,
           calculation_type: body.calculationType,

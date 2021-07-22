@@ -10,6 +10,7 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import {ExportService} from "../../../../services/export.service";
 import {ExcelService} from "../../../../services/excel.service";
+import {DesignImagesService} from "../../../../services/design-images.service";
 
 class OfferBulk {
     code: string = "";
@@ -37,9 +38,11 @@ export class OfferCreateComponent implements OnInit {
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
-    ImageFile: File;
-    BannerImageFile: File;
-    smallOfferImage: File;
+
+    ImageFile: any;
+    BannerImageFile: any;
+    smallOfferImage: any;
+
     @ViewChild('Image')
     Image: any;
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
@@ -98,6 +101,10 @@ export class OfferCreateComponent implements OnInit {
 
     individuallySelectedData: any = [];
 
+    ImageFilePath = [];
+    BannerImageFilePath = [];
+    SmallOfferImageFilePath = [];
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
@@ -106,6 +113,7 @@ export class OfferCreateComponent implements OnInit {
         private offerService: OfferService,
         private exportService: ExportService,
         private excelService: ExcelService,
+        private designImagesService: DesignImagesService
     ) {
         this.validateForm = this.fb.group({
             title: ['', [Validators.required]],
@@ -237,7 +245,7 @@ export class OfferCreateComponent implements OnInit {
             formData.append('carousel_position', value.carousel_position);
         }
 
-        if (this.ImageFile) {
+        /*if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
@@ -245,7 +253,7 @@ export class OfferCreateComponent implements OnInit {
             this._isSpinning = false;
             this.submitting = false;
             return;
-            /*formData.append('hasImage', 'false');*/
+            /!*formData.append('hasImage', 'false');*!/
         }
 
         if (this.smallOfferImage) {
@@ -256,7 +264,7 @@ export class OfferCreateComponent implements OnInit {
             this._isSpinning = false;
             this.submitting = false;
             return;
-            /*formData.append('hasSmallImage', 'false');*/
+            /!*formData.append('hasSmallImage', 'false');*!/
         }
 
         if (this.BannerImageFile) {
@@ -267,7 +275,34 @@ export class OfferCreateComponent implements OnInit {
             this._isSpinning = false;
             this.submitting = false;
             return;
-            /*formData.append('hasBannerImage', 'false');*/
+            /!*formData.append('hasBannerImage', 'false');*!/
+        }*/
+        let images = {
+            image: '',
+            small_image: '',
+            banner_image: ''
+        };
+
+        if (this.ImageFilePath && this.ImageFilePath.length > 0) {
+            images.image = this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
+        } else {
+            delete images.image;
+        }
+
+        if (this.SmallOfferImageFilePath && this.SmallOfferImageFilePath.length > 0) {
+            images.small_image = this.SmallOfferImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
+        } else {
+            delete images.small_image;
+        }
+
+        if (this.BannerImageFilePath && this.BannerImageFilePath.length > 0) {
+            images.banner_image = this.BannerImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
+        } else {
+            delete images.banner_image;
+        }
+
+        if(images){
+            formData.append('images', JSON.stringify(images));
         }
 
         this.offerService.offerInsert(formData).subscribe(result => {
@@ -306,15 +341,50 @@ export class OfferCreateComponent implements OnInit {
 
 //Event method for removing picture
     onRemoved(file: FileHolder) {
-        this.ImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.ImageFile}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.ImageFile = null;
+                this.ImageFilePath = [];
+                this._notification.success("Success", "Successfully deleted main image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting main image");
+            })
     }
 
     onBannerRemoved(file: FileHolder) {
-        this.BannerImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.BannerImageFile}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.BannerImageFile = null;
+                this.BannerImageFilePath = [];
+                this._notification.success("Success", "Successfully deleted main image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting main image");
+            })
     }
 
     onRemoveSmallOfferImage(file: FileHolder) {
         this.smallOfferImage = null;
+
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.smallOfferImage}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.smallOfferImage = null;
+                this.SmallOfferImageFilePath = [];
+                this._notification.success("Success", "Successfully deleted main image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting main image");
+            })
     }
 
     onUploadStateChanged(state: boolean) {
@@ -322,15 +392,48 @@ export class OfferCreateComponent implements OnInit {
 
 //Event method for storing image in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.ImageFile = data.path;
+                this.ImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+                this.ImageFilePath = [];
+            })
+
         return metadata;
     }
     onBeforeBannerUpload = (metadata: UploadMetadata) => {
-        this.BannerImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.BannerImageFile = data.path;
+                this.BannerImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+                this.BannerImageFilePath = [];
+            })
+
         return metadata;
     }
     onBeforeUploadImage = (metadata: UploadMetadata) => {
-        this.smallOfferImage = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.smallOfferImage = data.path;
+                this.SmallOfferImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+                this.SmallOfferImageFilePath = [];
+            })
+
         return metadata;
     }
 
