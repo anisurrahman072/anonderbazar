@@ -391,14 +391,6 @@ module.exports = {
   updateAnonderJhorOffer: async (req, res) => {
     try {
       let body = {...req.body};
-      if (body.hasImage === 'true') {
-        const files = await uploadImages(req.file('image'));
-        if (files.length === 0) {
-          return res.badRequest('No image was uploaded');
-        }
-        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-        body.image = '/' + newPath;
-      }
 
       let offerData = {
         image: body.image,
