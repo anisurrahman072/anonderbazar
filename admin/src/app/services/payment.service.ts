@@ -94,4 +94,8 @@ export class PaymentService {
         return this.http.get(this.EndPoint + '/?order_id=' + id)
             ;
     }
+
+    makeAdminPayment(data): Observable<any> {
+        return this.http.post(this.EndPoint2 + '/makeAdminPayment', data);
+    }
 }

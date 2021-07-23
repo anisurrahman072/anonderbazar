@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 const {pagination} = require('../../libs/pagination');
+const {uploadImages} = require('../../libs/helper');
 const Promise = require('bluebird');
 const {
   APPROVED_PAYMENT_APPROVAL_STATUS,
@@ -16,7 +17,8 @@ const {
   CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS,
   REGULAR_ORDER_TYPE,
   PARTIAL_ORDER_TYPE,
-  REJECTED_PAYMENT_APPROVAL_STATUS
+  REJECTED_PAYMENT_APPROVAL_STATUS,
+  ADMIN_PAYMENT_PAYMENT_TYPE
 } = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {getGlobalConfig} = require('../../libs/helper');
@@ -249,6 +251,76 @@ module.exports = {
       return res.status(400).json({
         success: false,
         message: 'Error occurred while updating the approval status. ', error,
+      });
+    }
+  },
+
+  makeAdminPayment: async (req, res) => {
+    try {
+      if(!req.body || !req.body.dueAmount){
+        return res.status(400).json({message: 'Due amount not provided'});
+      }
+
+      let order = await Order.findOne({id: req.body.orderId, deletedAt: null});
+
+      if(!order){
+        return res.status(400).json({message: 'Order not found!'});
+      }
+
+      let finalPaidAmount = order.paid_amount + req.body.dueAmount;
+      if(finalPaidAmount < order.total_price){
+        return res.status(400).json({message: 'Final paid amount is less than due amount! You have to pay full amount.'});
+      }
+
+      let transactionDetails = null;
+      if(req.body.hasImage && req.body.hasImage === 'true'){
+        const uploaded = await uploadImages(req.file('image'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        console.log('uploaded image: ', uploaded);
+        transactionDetails = {
+          money_receipt: uploaded[0].fd.split(/[\\//]+/).reverse()[0]
+        };
+        transactionDetails = JSON.stringify(transactionDetails);
+      }
+
+      let payment = await Payment.create({
+        order_id: order.id,
+        user_id: order.user_id,
+        payment_type: ADMIN_PAYMENT_PAYMENT_TYPE,
+        approval_status: APPROVED_PAYMENT_APPROVAL_STATUS,
+        details: transactionDetails,
+        payment_amount: req.body.dueAmount,
+        status: 1
+      }).fetch();
+      console.log('payment is: ', payment);
+
+      let _set = {};
+
+      _set.paid_amount = finalPaidAmount;
+      if(finalPaidAmount >= order.total_price){
+        _set.status = ORDER_STATUSES.processing;
+        _set.payment_status = PAYMENT_STATUS_PAID;
+
+        await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
+      }
+
+      let updatedOrder = await Order.updateOne({id: order.id}, _set);
+
+      console.log('updatedOrder: ', updatedOrder);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully updated the order & created payment',
+        data: updatedOrder
+      });
+    }
+    catch (error){
+      console.log('Error occurred: ', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Error occurred while creating payment'
       });
     }
   }

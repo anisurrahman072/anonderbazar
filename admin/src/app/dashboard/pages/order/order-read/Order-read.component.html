@@ -227,12 +227,12 @@
                                     <p style="margin: 0;">Account Number For
                                         Bank: {{payment.details.accountNumberForBank}}</p>
                                 </div>
-                                <div *ngIf="payment.details.offline_payment_method !== OFFLINE_PAYMENT_METHODS.BANK_TRANSFER"
-                                     (click)="showAddModalVisible(true, payment.details.money_receipt)"
-                                     style="cursor: pointer;">
-                                    <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
-                                         alt="money-receipt" style="height: 100px;">
-                                </div>
+                            </div>
+                            <div *ngIf="(payment.details && payment.details.money_receipt)"
+                                 (click)="showAddModalVisible(true, payment.details.money_receipt)"
+                                 style="cursor: pointer;">
+                                <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                                     alt="money-receipt" style="height: 100px;">
                             </div>
                             <!-- Only true if the payment is an Offline Payment END -->
                         </div>

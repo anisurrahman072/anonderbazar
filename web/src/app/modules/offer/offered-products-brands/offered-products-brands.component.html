@@ -1,0 +1,53 @@
+<div class="main-container right-sidebar" *ngIf="offeredProductsBrands && regularOfferInfo"
+     style="margin-bottom: 20px">
+    <div class="container-fluid">
+        <nav class="woocommerce-breadcrumb breadcrumbs" style="margin: 15px">
+            <a routerLink="/" routerLinkActive="active">Home /</a>
+            <a routerLink="/offers" routerLinkActive="active">Offer /</a>
+            <a>{{regularOfferInfo.title}}</a>
+        </nav>
+        <div class="row">
+            <div class="col-sm-6 col-md-12 main-content">
+                <div class="blog-single">
+                    <div class="post-item">
+                        <div class="banner-image" style="overflow: hidden;">
+                            <div class="post-thumb" *ngIf="regularOfferInfo.image.banner_image; else image">
+                                <img width="100%" src="{{  IMAGE_ENDPOINT + regularOfferInfo.image.banner_image}}"
+                                     alt="{{regularOfferInfo.title}}">
+                            </div>
+                            <ng-template #image>
+                                <div class="post-thumb" *ngIf="regularOfferInfo.image">
+                                    <img width="100%" src="{{  IMAGE_ENDPOINT + regularOfferInfo.image.image}}"
+                                         alt="{{regularOfferInfo.title}}">
+                                </div>
+                            </ng-template>
+                        </div>
+
+                        <div class="post-info" style="margin-top:40px">
+                            <span class="post-title h1">{{regularOfferInfo.title}}</span>
+                            <div style="margin-top:40px" class="blog-content"
+                                 [innerHTML]="regularOfferInfo.description">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 brand-container"
+                 *ngFor="let brand of offeredProductsBrands">
+                <div class="brand-details">
+                    <div class="brand-image" style="text-align: center">
+                        <a routerLink="/offers/offered-products-brands/{{regularOfferInfo.id}}/{{brand.id}}">
+                            <img src="{{IMAGE_ENDPOINT + brand.image}}"
+                                 alt="brand logo" style="max-height: 100%;">
+                        </a>
+                    </div>
+                    <p style="font-size: 16px; margin-top: 10px; text-align: center;">{{brand.name}}</p>
+                    <h3 style="color: red; text-align: center">{{brand.number_of_products}} Product</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

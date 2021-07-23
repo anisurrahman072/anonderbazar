@@ -144,12 +144,12 @@
                                 <i class="fa fa-info-circle"></i>
                             </button>
                         </td>
-                        <td *ngIf="datum.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                        <td *ngIf="datum.paymentDetails && datum.paymentDetails.money_receipt">
                             <button nz-button [nzSize]="'default'" (click)="showOfflinePaymentDetailsModal(datum.paymentDetails)">
                                 <i class="fa fa-money"></i>
                             </button>
                         </td>
-                        <td *ngIf="datum.payment_type !== PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
+                        <td *ngIf="!(datum.paymentDetails && datum.paymentDetails.money_receipt)">
                             N/A
                         </td>
                         <td style="width: 200px;" *ngIf="isAllowedToUpdatePaymentStatus && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">

@@ -6,6 +6,9 @@ module.exports = {
   adminPaymentAddressId: 75,
   cashOnDeliveryNotAllowedForCategory: 428,
   dhakaZilaId: 2942,
+  anonderbazarEmail: 'anonderbazar001@gmail.com',
+  anonderbazarEmailPassword: 'happy4321',
+  investorEmail: 'investor@anonderbazar.com',
   s3Config: {
     key: 'AKIATYQRUSGN2DDD424I',
     secret: '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',

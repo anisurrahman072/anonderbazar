@@ -761,19 +761,25 @@ module.exports = {
     _where.deletedAt = null;
     _where.order_type = PARTIAL_ORDER_TYPE;
     _where.status = CANCELED_ORDER;
-    _where.paid_amount = {'!=': 0};
     if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
       _where.refund_status = parseInt(params.status);
+    }
+    if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
+      _where.paid_amount = {'!=': 0};
     }
 
     try {
       let paginate = pagination(params);
+      let total = await Order.count(_where);
 
-      let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
-      console.log('all canceled order:', canceledOrder);
+      let canceledOrder = await Order.find(_where)
+        .sort([{createdAt: 'DESC'}])
+        .limit(paginate.limit)
+        .skip(paginate.skip);
+      console.log('all canceled order:', canceledOrder, total);
 
       return res.status(200).json({
-        success: true, message: 'successfully fetched cancelled order', data: canceledOrder
+        success: true, message: 'successfully fetched cancelled order', data: canceledOrder, total
       });
     } catch (error) {
       return res.status(200).json({

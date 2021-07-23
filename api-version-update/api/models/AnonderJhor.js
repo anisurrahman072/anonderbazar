@@ -18,6 +18,16 @@ module.exports = {
       columnType: 'text',
       required: true
     },
+    homepage_banner_image: {
+      type: 'json',
+      columnType: 'text',
+      required: true
+    },
+    show_in_homepage: {
+      type: 'boolean',
+      columnType: 'integer',
+      defaultsTo: false
+    },
     start_date: {
       type: 'ref',
       columnType: 'datetime',

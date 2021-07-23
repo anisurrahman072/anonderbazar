@@ -2,7 +2,14 @@
     <div class="container-fluid">
         <div class="row" style="justify-content: center;">
             <div class="col-lg-3 col-md-6 col-12 mb-4" *ngFor = "let item of serviceFooterList">
-                <div class="services-details text-center">
+                <a routerLink="/investor/registration" *ngIf="item.title === 'Become an Investor'">
+                    <div class="services-details text-center">
+                        <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="business-opportunities" style="object-fit: contain;">
+                        <h6>{{item?.title}}</h6>
+                        <p>{{item?.description}}</p>
+                    </div>
+                </a>
+                <div class="services-details text-center" *ngIf="item.title !== 'Become an Investor'">
                     <img src="{{IMAGE_ENDPOINT + item?.image}}" alt="business-opportunities" style="object-fit: contain;">
                     <h6>{{item?.title}}</h6>
                     <p>{{item?.description}}</p>

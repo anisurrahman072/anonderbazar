@@ -9,7 +9,8 @@ const {
   NAGAD_PAYMENT_TYPE,
   BKASH_PAYMENT_TYPE,
   PARTIAL_ORDER_TYPE,
-  PAYMENT_TRAN_TYPE_PAY
+  PAYMENT_TRAN_TYPE_PAY,
+  PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT
 } = require('../../libs/constants');
 const {getPaymentService} = require('../../libs/paymentMethods');
 const {getPaymentServicePartial} = require('../../libs/paymentMethods');
@@ -125,6 +126,19 @@ module.exports = {
       if (!PaymentService.isAllowedForPartialPay(order, globalConfigs)) {
         throw new Error('Order is no longer for partial payment');
       }
+
+      /** Partial First minimum payment at least 2000 Tk. */
+      if(req.body.amount_to_pay && order.paid_amount === 0 && order.total_price >= PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT){
+        if(req.body.amount_to_pay < PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT){
+          throw new Error(`You have to pay at least ${PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT} BDT for first partial payment!`);
+        }
+      }
+      if(req.body.amount_to_pay && order.paid_amount === 0 && order.total_price < PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT){
+        if(req.body.amount_to_pay < order.total_price){
+          throw new Error(`You have to pay full amount as order total amount is less than ${PARTIAL_MINIMUM_FIRST_PAYMENT_AMOUNT} BDT!`);
+        }
+      }
+      /** Partial First minimum payment at least 2000 Tk. END. */
 
       let paymentGatewayService = getPaymentServicePartial(req.body.payment_method);
 

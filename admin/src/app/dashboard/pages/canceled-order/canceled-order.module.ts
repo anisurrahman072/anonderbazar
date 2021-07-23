@@ -4,10 +4,11 @@ import { CanceledOrderComponent } from './canceled-order/canceled-order.componen
 import {CanceledOrderRoutingModule} from "./canceled-order-routing.module";
 import {UiModule} from "../../shared/ui.module";
 import {RefundStatusPipe} from "../../../pipes/refund-status";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
     imports: [
-        CommonModule, CanceledOrderRoutingModule, UiModule
+        CommonModule, CanceledOrderRoutingModule, UiModule, ReactiveFormsModule
     ],
     declarations: [CanceledOrderComponent, RefundStatusPipe]
 })

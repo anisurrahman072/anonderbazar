@@ -28,6 +28,8 @@
     "node-abort-controller": "^1.2.0",
     "node-fetch": "^2.6.1",
     "node-rsa": "^1.1.1",
+    "nodemailer": "^6.6.3",
+    "nodemailer-smtp-transport": "^2.7.4",
     "os": "^0.1.1",
     "rc": "^1.2.8",
     "redis": "^3.0.2",

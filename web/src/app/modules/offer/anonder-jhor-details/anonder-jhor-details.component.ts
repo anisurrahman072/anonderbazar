@@ -67,6 +67,7 @@ export class AnonderJhorDetailsComponent implements OnInit {
                     console.log('getWebAnonderJhorOfferById result: ', result);
                     this.anonderJhorOffer = result.data[0];
                     this.anonderJhorOfferProducts = result.data[1];
+                    this.anonderJhorOfferProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
                     console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);
 
                     let presentTime = (new Date(Date.now())).getTime();

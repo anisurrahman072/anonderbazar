@@ -1,9 +1,7 @@
 .form-card{
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-  margin-top: 15px;
+  width: 100%;
+  margin: 15px auto;
 }
 
 .example-container {
@@ -19,5 +17,15 @@ input{
 @media screen and (max-width: 425px) {
   .form-card{
     width: 100%;
+  }
+  .btn-registration{
+    width: 100% !important;
+  }
+
+  .btn-mobile-submit{
+    width: 80% !important;
+  }
+  .mobile-number-content{
+    margin-top: 20px;
   }
 }
