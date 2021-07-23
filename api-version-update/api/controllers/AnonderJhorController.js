@@ -76,35 +76,11 @@ module.exports = {
     try {
       let body = {...req.body};
 
-      if (body.hasImage === 'true' || body.hasBannerImage === 'true') {
-        const files = await uploadImages(req.file('image'));
-
-        if (files.length === 0) {
-          return res.badRequest('No image was uploaded');
-        }
-
-        const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-
-        if (body.hasImage === 'true' && body.hasBannerImage === 'true') {
-          body.banner_image = '/' + newPath;
-
-          if (typeof files[1] !== 'undefined') {
-            const homepageBanner = files[1].fd.split(/[\\//]+/).reverse()[0];
-            body.homepage_banner_image = '/' + homepageBanner;
-          }
-        } else if (body.hasImage === 'true' && body.hasBannerImage === 'false') {
-          body.banner_image = '/' + newPath;
-        } else if (body.hasImage === 'false' && body.hasBannerImage === 'true') {
-          body.homepage_banner_image = '/' + newPath;
-        }
-      }
-
-
       let jhorData = {
         start_date: body.startDate,
         end_date: body.endDate,
-        banner_image: body.banner_image,
-        homepage_banner_image: body.homepage_banner_image,
+        banner_image: body.banner_image ? body.banner_image : '',
+        homepage_banner_image: body.homepage_banner_image ? body.homepage_banner_image : '',
         show_in_homepage: body.showHome,
         status: 0
       };
