@@ -310,6 +310,7 @@ module.exports.policies = {
     'add': false,
     'remove': false,
     'replace': false,
+    'getOrderInvoiceData': ['isAuthorized'],
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
     'updatePaymentStatus': ['isAuthorized', 'isAdmin'],

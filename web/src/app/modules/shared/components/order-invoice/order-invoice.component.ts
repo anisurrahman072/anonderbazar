@@ -88,22 +88,26 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
 
-            forkJoin([this.orderService.getById(this.id), this.globalCongigService.getGlobalConfig(), this.paymentService.getByOrderId(this.id)])
+            this.orderService.getOrderInvoiceData(this.id)
                 .subscribe(data => {
+                    let order = data.orders;
+                    let configData = data.configData;
+                    let payments = data.payments;
+
                     let now = _moment(new Date());
-                    let createdAt = _moment(data[0].createdAt);
+                    let createdAt = _moment(order.createdAt);
                     let duration = _moment.duration(now.diff(createdAt));
                     let expendedHour = Math.floor(duration.asHours());
 
-                    this.data = data[0];
+                    this.data = order;
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                     this.payment = this.data.payment[0];
                     if (this.data.payment[0] && this.data.payment[0].details) {
                         this.paymentDetails = JSON.parse(this.data.payment[0].details);
                     }
                     // this.suborders = order[0].suborders;
-                    for (let i = 0; i < data[0].suborders.length; i++) {
-                        this.suborderService.getById(data[0].suborders[i].id).subscribe(suborder => {
+                    for (let i = 0; i < order.suborders.length; i++) {
+                        this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                             this.suborderItems.push(...suborder.suborderItems);
                         });
@@ -119,13 +123,13 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     console.log('order', this.data);
                     console.log('payment', this.payment);
 
-                    this.globalPartialPaymentDuration = data[1].configData[0].partial_payment_duration;
+                    this.globalPartialPaymentDuration = configData.partial_payment_duration;
 
-                    this.isAllowedForPay = this.globalPartialPaymentDuration >= expendedHour && data[0].status != ORDER_STATUSES.CANCELED_ORDER
-                        && data[0].payment_status != PAYMENT_STATUS.PAID && data[0].payment_status != PAYMENT_STATUS.NOT_APPLICABLE
-                        && data[0].paid_amount < data[0].total_price && this.data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER;
+                    this.isAllowedForPay = this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
+                        && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE
+                        && order.paid_amount < order.total_price && this.data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER;
 
-                    this.allPaymentsLog = data[2];
+                    this.allPaymentsLog = payments;
                     this.allPaymentsLog.forEach(data => {
                         data.details = JSON.parse(data.details);
                         data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');

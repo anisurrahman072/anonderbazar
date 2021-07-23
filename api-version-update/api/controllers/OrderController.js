@@ -41,7 +41,7 @@ module.exports = {
 
       const authUser = getAuthUser(req);
 
-      if(authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id){
+      if (authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id) {
         return res.status(400).json({
           success: false,
           code: 'userIdMissMatched',
@@ -57,7 +57,64 @@ module.exports = {
         message: false, error
       });
     }
-  }, index: (req, res) => {
+  },
+
+  getOrderInvoiceData: async (req, res) => {
+    try {
+      let orderId = req.query.orderId;
+      /** Fetch order details */
+      const orders = await Order.findOne({id: orderId})
+        .populate('user_id')
+        .populate('billing_address')
+        .populate('shipping_address')
+        .populate('payment')
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('suborders', {deletedAt: null});
+
+      console.log('orders: ', orders);
+
+      const authUser = getAuthUser(req);
+
+      if (authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id) {
+        return res.status(400).json({
+          success: false,
+          code: 'userIdMissMatched',
+          message: 'Yo are only authorized to see your orders Invoice!'
+        });
+      }
+      /** Fetch order details. END */
+
+
+      /** Fetch global config data */
+      let configData = await GlobalConfigs.find({
+        deletedAt: null
+      });
+      /** Fetch global config data. END */
+
+
+      /** Fetch all payments log for the given order ID */
+      let payments = await Payment.find({
+        order_id: orderId, deletedAt: null
+      });
+      /** Fetch all payments log for the given order ID. END */
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all data',
+        orders,
+        configData,
+        payments
+      });
+    }
+    catch (error){
+      console.log('Error occurred while fetching order invoice data', error);
+      return res.status(400).json({
+        message: false, error
+      });
+    }
+  },
+
+  index: (req, res) => {
     try {
       return res.json({message: 'Not Authorized'});
     } catch (error) {
@@ -764,7 +821,7 @@ module.exports = {
     if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
       _where.refund_status = parseInt(params.status);
     }
-    if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
+    if (params.removeZeroPayment && params.removeZeroPayment === 'true') {
       _where.paid_amount = {'!=': 0};
     }
 

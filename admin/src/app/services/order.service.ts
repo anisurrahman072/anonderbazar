@@ -96,4 +96,8 @@ export class OrderService {
         }
         return this.http.get(_where);
     }
+
+    getOrderInvoiceData(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getOrderInvoiceData?orderId=${orderId}`);
+    }
 }

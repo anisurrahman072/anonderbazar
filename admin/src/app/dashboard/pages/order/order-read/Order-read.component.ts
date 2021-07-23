@@ -87,10 +87,12 @@ export class OrderReadComponent implements OnInit, OnDestroy {
             this.id = +params['id']; // (+) converts string 'id' to a number
             console.log(' this.id', this.id);
 
-            forkJoin([this.orderService.getById(this.id), this.paymentService.getByOrderId(this.id)])
+            this.orderService.getOrderInvoiceData(this.id)
                 .subscribe(data => {
+                    let order = data.orders;
+                    let payments = data.payments;
 
-                    this.data = data[0];
+                    this.data = order;
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
 
                     console.log('this.orderService.getById(this.id)', this.data);
@@ -98,31 +100,31 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     if (this.data.user_id && this.data.user_id) {
                         this.userPhone = this.data.user_id.phone;
                     }
-                    for (let i = 0; i < data[0].suborders.length; i++) {
-                        this.suborderService.getById(data[0].suborders[i].id).subscribe(suborder => {
+                    for (let i = 0; i < order.suborders.length; i++) {
+                        this.suborderService.getById(order.suborders[i].id).subscribe(suborder => {
                             this.suborders.push(suborder);
                         });
                     }
 
-                    if (data[0] && typeof data[0].payment !== 'undefined' && data[0].payment.length > 0) {
-                        this.payment = data[0].payment[0];
-                        this.paymentDetails = JSON.parse(data[0].payment[0].details);
+                    if (order && typeof order.payment !== 'undefined' && order.payment.length > 0) {
+                        this.payment = order.payment[0];
+                        this.paymentDetails = JSON.parse(order.payment[0].details);
                         if (this.payment.payment_type === 'SSLCommerce') {
                             this.payment.details = JSON.parse(this.payment.details);
                         }
                     }
-                    if (data[0] && typeof data[0].billing_address !== 'undefined' && data[0].billing_address.id !== 75) {
+                    if (order && typeof order.billing_address !== 'undefined' && order.billing_address.id !== 75) {
                         this.paymentAddressService.getById(this.data.billing_address.id).subscribe(paymentAddress => {
                             this.paymentAddress = paymentAddress;
                         });
                     }
-                    if (data[0] && typeof data[0].shipping_address !== 'undefined' && data[0].shipping_address.id !== 75) {
+                    if (order && typeof order.shipping_address !== 'undefined' && order.shipping_address.id !== 75) {
                         this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
                             this.shippingAddress = shippingAddress;
                         });
                     }
 
-                    this.allPaymentsLog = data[1].map(payment => {
+                    this.allPaymentsLog = payments.map(payment => {
                         payment.details = JSON.parse(payment.details);
                         return payment;
                     });
