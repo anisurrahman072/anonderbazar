@@ -348,10 +348,10 @@ export class OfferCreateComponent implements OnInit {
             .subscribe(data => {
                 this.ImageFile = null;
                 this.ImageFilePath = [];
-                this._notification.success("Success", "Successfully deleted main image");
+                this._notification.success("Success", "Successfully deleted image");
             }, error => {
                 console.log("Error occurred: ", error);
-                this._notification.success("Error", "Error occurred while deleting main image");
+                this._notification.success("Error", "Error occurred while deleting image");
             })
     }
 
@@ -363,10 +363,10 @@ export class OfferCreateComponent implements OnInit {
             .subscribe(data => {
                 this.BannerImageFile = null;
                 this.BannerImageFilePath = [];
-                this._notification.success("Success", "Successfully deleted main image");
+                this._notification.success("Success", "Successfully deleted banner image");
             }, error => {
                 console.log("Error occurred: ", error);
-                this._notification.success("Error", "Error occurred while deleting main image");
+                this._notification.success("Error", "Error occurred while deleting banner image");
             })
     }
 
@@ -380,10 +380,10 @@ export class OfferCreateComponent implements OnInit {
             .subscribe(data => {
                 this.smallOfferImage = null;
                 this.SmallOfferImageFilePath = [];
-                this._notification.success("Success", "Successfully deleted main image");
+                this._notification.success("Success", "Successfully deleted carousel beside offer image");
             }, error => {
                 console.log("Error occurred: ", error);
-                this._notification.success("Error", "Error occurred while deleting main image");
+                this._notification.success("Error", "Error occurred while deleting carousel beside offer image");
             })
     }
 

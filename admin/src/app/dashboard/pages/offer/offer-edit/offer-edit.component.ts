@@ -411,10 +411,10 @@ export class OfferEditComponent implements OnInit {
                 this.isImageInDB = false;
                 this.ImageFilePath = [];
                 this.hasImageFile = false;
-                this._notification.success("Success", "Successfully deleted main image");
+                this._notification.success("Success", "Successfully deleted image");
             }, error => {
                 console.log("Error occurred: ", error);
-                this._notification.success("Error", "Error occurred while deleting main image");
+                this._notification.success("Error", "Error occurred while deleting image");
             })
     }
 

@@ -6,6 +6,7 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import {DesignImagesService} from "../../../../services/design-images.service";
 
 @Component({
     selector: 'app-anonder-jhor-offer-create',
@@ -33,11 +34,15 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     allSubSubCategoryIds;
     anonderJhorData;
 
+    ImageFilePath = [];
+    hasImageFile: boolean = false;
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private offerService: OfferService,
+        private designImagesService: DesignImagesService,
     ) {
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
@@ -101,11 +106,8 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             formData.append('subSubCategoryId', value.subSubCategoryId);
         }
 
-        if (this.ImageFile) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
-        } else {
-            formData.append('hasImage', 'false');
+        if (this.hasImageFile) {
+            formData.append('image', this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]);
         }
 
         this.submitting = true;
@@ -144,6 +146,19 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     /** Event method for removing picture */
     onRemoved(file: FileHolder) {
         this.ImageFile = null;
+
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.ImageFilePath = [];
+                this.hasImageFile = false;
+                this._notification.success("Success", "Successfully deleted image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting image");
+            })
     }
 
     onUploadStateChanged(state: boolean) {
@@ -151,7 +166,17 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
 
     /** Event method for storing image in variable */
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasImageFile = true;
+                this.ImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 
