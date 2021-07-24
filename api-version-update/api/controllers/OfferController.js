@@ -112,6 +112,10 @@ module.exports = {
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
           upload_type: upload_type,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0,
         };
       } else {
         offerData = {
@@ -128,7 +132,11 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
-          showInCarousel: body.showInCarousel
+          showInCarousel: body.showInCarousel,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0,
         };
       }
 
@@ -555,7 +563,11 @@ module.exports = {
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
-          upload_type: upload_type
+          upload_type: upload_type,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0
         };
       } else {
         offerData = {
@@ -569,7 +581,13 @@ module.exports = {
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0
         };
+
+        console.log('asceeee: ', offerData);
       }
 
       if (body.frontend_position) {

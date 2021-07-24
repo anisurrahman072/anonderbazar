@@ -107,6 +107,11 @@ export class OfferEditComponent implements OnInit {
 
     individuallySelectedData: any = [];
 
+    isActiveSslCommerz: boolean = false;
+    isActiveBkash: boolean = false;
+    isActiveOffline: boolean = false;
+    isActiveCashOnDelivery: boolean = false;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -135,6 +140,10 @@ export class OfferEditComponent implements OnInit {
             description: ['', []],
             discountAmount: ['', []],
             calculationType: ['', []],
+            pay_by_sslcommerz: ['', []],
+            pay_by_bKash: ['', []],
+            pay_by_offline: ['', []],
+            pay_by_cashOnDelivery: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
@@ -187,8 +196,17 @@ export class OfferEditComponent implements OnInit {
                         discountAmount: this.data.discount_amount,
                         calculationType: this.data.calculation_type,
                         showHome: this.data.show_in_homepage,
-                        uploadType: this.data.upload_type ? this.data.upload_type : ''
+                        uploadType: this.data.upload_type ? this.data.upload_type : '',
+                        pay_by_sslcommerz: this.data.pay_by_sslcommerz,
+                        pay_by_bKash: this.data.pay_by_bKash,
+                        pay_by_offline: this.data.pay_by_offline,
+                        pay_by_cashOnDelivery: this.data.pay_by_cashOnDelivery
                     };
+
+                    this.isActiveSslCommerz = !!this.data.pay_by_sslcommerz;
+                    this.isActiveBkash = !!this.data.pay_by_bKash;
+                    this.isActiveOffline = !!this.data.pay_by_offline;
+                    this.isActiveCashOnDelivery = !!this.data.pay_by_cashOnDelivery;
 
                     this.validateForm.patchValue(payload);
 
@@ -231,6 +249,12 @@ export class OfferEditComponent implements OnInit {
         formData.append('description', value.description);
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
+
+        formData.append('pay_by_sslcommerz', this.isActiveSslCommerz ? "1" : "0");
+        formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
+        formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
+        formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+
         formData.append('showInHome', showInHome);
         formData.append('showInCarousel', showInCarousel);
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -851,6 +875,19 @@ export class OfferEditComponent implements OnInit {
 
     doneUploadingCSV() {
         this.isUpload = false;
+    }
+
+    changeSslCommerzActivation() {
+        this.isActiveSslCommerz = !this.isActiveSslCommerz;
+    }
+    changeBkashActivation() {
+        this.isActiveBkash = !this.isActiveBkash;
+    }
+    changeOfflineActivation() {
+        this.isActiveOffline = !this.isActiveOffline;
+    }
+    changeCashOnDeliveryActivation() {
+        this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
     }
 
 }

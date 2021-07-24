@@ -98,6 +98,11 @@ export class OfferCreateComponent implements OnInit {
 
     individuallySelectedData: any = [];
 
+    isActiveSslCommerz: boolean = false;
+    isActiveBkash: boolean = false;
+    isActiveOffline: boolean = false;
+    isActiveCashOnDelivery: boolean = false;
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
@@ -120,6 +125,10 @@ export class OfferCreateComponent implements OnInit {
             description: ['', []],
             discountAmount: ['', []],
             calculationType: ['', []],
+            pay_by_sslcommerz: ['', []],
+            pay_by_bKash: ['', []],
+            pay_by_offline: ['', []],
+            pay_by_cashOnDelivery: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
@@ -157,6 +166,12 @@ export class OfferCreateComponent implements OnInit {
         formData.append('showInCarousel', showInCarousel);
         formData.append('discountAmount', value.discountAmount);
         formData.append('calculationType', value.calculationType);
+
+        formData.append('pay_by_sslcommerz', this.isActiveSslCommerz ? "1" : "0");
+        formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
+        formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
+        formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
 
@@ -750,5 +765,18 @@ export class OfferCreateComponent implements OnInit {
 
     doneUploadingCSV() {
         this.isUpload = false;
+    }
+
+    changeSslCommerzActivation() {
+        this.isActiveSslCommerz = !this.isActiveSslCommerz;
+    }
+    changeBkashActivation() {
+        this.isActiveBkash = !this.isActiveBkash;
+    }
+    changeOfflineActivation() {
+        this.isActiveOffline = !this.isActiveOffline;
+    }
+    changeCashOnDeliveryActivation() {
+        this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
     }
 }
