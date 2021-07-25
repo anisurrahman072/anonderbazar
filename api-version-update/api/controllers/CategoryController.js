@@ -103,8 +103,12 @@ module.exports = {
         return res.json(err.status, {err: err});
       }
 
+      if (body.showInNav  && body.showInNav === 'true') {
+        body.show_in_nav = 1;
+      } else {
+        body.show_in_nav = 0;
+      }
 
-      console.log('body', body);
       const returnCategory = await Category.create(body).fetch();
 
       return res.status(200).json(returnCategory);
@@ -236,8 +240,6 @@ module.exports = {
     try {
       let body = req.body;
 
-      console.log(body);
-
       if ((body.hasImage && body.hasImage === 'true') || (body.hasBannerImage && body.hasBannerImage === 'true') ||
         (body.hasMobileImage && body.hasMobileImage === 'true')) {
         const uploaded = await uploadImages(req.file('image'));
@@ -295,6 +297,12 @@ module.exports = {
         }
       }
 
+      if (body.showInNav && body.showInNav === 'true') {
+        body.show_in_nav = 1;
+      } else {
+        body.show_in_nav = 0;
+      }
+
       const updateCategory = await Category.updateOne({id: req.param('id')}).set(body);
       return res.status(200).json(updateCategory);
     } catch (error) {
@@ -348,14 +356,17 @@ module.exports = {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+
+
   allCategories: async (req, res) => {
     try {
-      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2}).populate('offer_id');
+      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2, show_in_nav: 1}).populate('offer_id');
       return res.json(categories);
     } catch (error) {
       return res.status(error.status).json({message: '', error, success: false});
     }
   },
+
   //Method called for getting a category with subcategories data
   //Model models/Category.js
   withSubcategories: async (req, res) => {
