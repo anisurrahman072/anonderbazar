@@ -6,6 +6,14 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import {ExcelService} from "../../../../services/excel.service";
+
+class OfferBulk {
+    code: string = "";
+    calculation_type: string = "";
+    discount_amount: number = 0;
+
+}
 
 @Component({
     selector: 'app-anonder-jhor-offer-edit',
@@ -38,11 +46,22 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     anonderJhorData;
 
+    /** excel file variables */
+    isLoading: boolean = false;
+    private importedProducts: OfferBulk[] = [];
+    total: number = 0;
+    wrongCodes = [];
+    private individuallySelectedCodes: any = [];
+    continue: Boolean = true;
+    private individuallySelectedProductsCalculation: any = [];
+    private individuallySelectedProductsAmount: any = [];
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private offerService: OfferService,
+        private excelService: ExcelService,
     ) {
     }
 
@@ -67,8 +86,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                 this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
                 this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
-
-                console.log('getAnonderJhorOfferById', this.categoryId, this.subCategoryId, this.subSubCategoryId);
 
                 this.ImageFileEdit = [];
 
@@ -114,13 +131,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
+        formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
 
         let offerStartTime = new Date(value.offerStartDate).getTime();
         let offerEndTime = new Date(value.offerEndDate).getTime();
         let jhorStartTime = new Date(this.anonderJhorData.start_date).getTime();
         let jhorEndTime = new Date(this.anonderJhorData.end_date).getTime();
-
-        console.log('(value.offerEndDate; ', value.offerEndDate);
 
         if (offerEndTime > jhorEndTime) {
             this._notification.error('Wrong Date', 'End Date is out of the Anonder Jhor End Date');
@@ -145,6 +162,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
+        if (this.individuallySelectedCodes.length <= 0) {
+            this._notification.error('No Product', 'Please add products for this offer');
+            return;
+        } else {
+            formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+        }
+
         this.offerService.updateAnonderJhorOffer(formData).subscribe((result) => {
             this._notification.success('Updated', "Anonder Jhor offer Updated successfully");
             this._isSpinning = false;
@@ -153,6 +177,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             this.offerService.reloadOfferList();
 
         }, () => {
+            this._notification.error('Error Occurred!', "Error occurred while adding offer!");
             this._isSpinning = false;
         });
     };
@@ -266,6 +291,80 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             }, () => {
                 this._isSpinning = false;
             });
+    }
+
+    /** Event Method for generating the excel file with the offered products for this offer */
+    generateExcel() {
+        return this.offerService.generateJhorOfferedExcel(this.jhorOfferId).subscribe((result: any) => {
+            // It is necessary to create a new blob object with mime-type explicitly set
+            // otherwise only Chrome works like it should
+            const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            // IE doesn't allow using a blob object directly as link href
+            // instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob);
+                return;
+            }
+
+            // For other browsers:
+            // Create a link pointing to the ObjectURL containing the blob.
+            const data = window.URL.createObjectURL(newBlob);
+
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = "Offered Products " + Date.now() + ".xlsx";
+
+            // this is necessary as link.click() does not work on the latest firefox
+            link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+
+            setTimeout(() => {
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
+                link.remove();
+            }, 100);
+        });
+    }
+
+    /** handles the uploaded excel file and checks the validity of the uploaded product's codes */
+    onCSVUpload(event: any) {
+        const target: DataTransfer = <DataTransfer>(event.target);
+        if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+            const fileResult: string = e.target.result;
+            const data = <any[]>this.excelService.importFromFile(fileResult);
+
+            const offerObj = new OfferBulk();
+
+            const header: string[] = Object.getOwnPropertyNames(offerObj);
+
+            this.importedProducts = data.slice(1);
+
+            this.total = this.importedProducts.length;
+
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[0]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[1]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[2]);
+
+            this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
+                .subscribe(result => {
+                    this.wrongCodes = result.data;
+
+                    if (this.wrongCodes && this.wrongCodes.length > 0) {
+                        this.individuallySelectedCodes = [];
+                        this.individuallySelectedProductsCalculation = [];
+                        this.individuallySelectedProductsAmount = [];
+                        this.continue = false;
+                        this._notification.error('Failed!', 'Please Input Proper Data');
+                    } else {
+                        this.continue = true;
+                    }
+                })
+        };
+        reader.readAsBinaryString(target.files[0]);
     }
 
 }

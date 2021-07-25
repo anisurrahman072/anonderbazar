@@ -60,7 +60,6 @@ module.exports = {
   /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
   offerInsert: async function (req, res) {
-    /*console.log('req.body of insert: ', req.body);*/
     try {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
@@ -88,29 +87,21 @@ module.exports = {
       if (body.selection_type === 'individual_product') {
         if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
-          /*console.log('codes: ', codes);*/
-
 
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
-          /*console.log('products: ', products);*/
 
-          products.forEach(product => {
-            /*individualProductsIds.push(product.id);*/
-            individualProductsIds.push(x[product.code][0].id);
-          });
-
-
-          /*console.log('again products: ', individualProductsIds);*/
+          if(codes && codes.length > 0){
+            codes.forEach(code => {
+              individualProductsIds.push(x[code][0].id);
+            });
+          }
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }
 
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
-
-        /*console.log('individualProductsCalculations: ', individualProductsCalculations);
-        console.log('individualProductsAmounts: ', individualProductsAmounts);*/
 
         offerData = {
           title: body.title,
@@ -195,7 +186,7 @@ module.exports = {
 
       let data = await Offer.create(offerData).fetch();
 
-      /** for individually selected products*/
+      /** for individually selected products: from excel or individual input*/
       if (individualProductsIds && individualProductsIds.length > 0) {
 
         let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
@@ -227,6 +218,7 @@ module.exports = {
         }
       }
 
+      /** for individually selected products but having same discount amount*/
       let regular_offer_product_ids;
       if (body.selectedProductIds) {
         regular_offer_product_ids = body.selectedProductIds.split(',');
@@ -557,10 +549,15 @@ module.exports = {
       if (body.selection_type === 'individual_product') {
         if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
+
           const products = await Product.find({code: codes});
-          products.forEach(product => {
-            individualProductsIds.push(product.id);
-          });
+          let x = _.groupBy(products, 'code');
+
+          if(codes && codes.length > 0){
+            codes.forEach(code => {
+              individualProductsIds.push(x[code][0].id);
+            });
+          }
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }

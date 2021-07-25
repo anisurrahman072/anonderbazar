@@ -46,7 +46,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     private importedProducts: OfferBulk[] = [];
     total: number = 0;
     wrongCodes = [];
-    private individuallySelectedCodes: any = [];
+    individuallySelectedCodes: any = [];
     continue: Boolean = false;
     private individuallySelectedProductsCalculation: any = [];
     private individuallySelectedProductsAmount: any = [];
@@ -92,6 +92,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
         formData.append('discountAmount', value.discountAmount);
+        formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
 
         let offerStartTime = new Date(value.offerStartDate).getTime();
         let offerEndTime = new Date(value.offerEndDate).getTime();
@@ -130,15 +133,6 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         if (this.individuallySelectedCodes && this.individuallySelectedCodes.length <= 0) {
             this._notification.error('No Product', 'Please add products for this offer');
             return;
-        } else {
-            formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
-        }
-
-        if (this.individuallySelectedProductsCalculation) {
-            formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
-        }
-        if (this.individuallySelectedProductsAmount) {
-            formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
         }
 
         this.submitting = true;
@@ -152,6 +146,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         }, (error) => {
             this.submitting = false;
             this._notification.error('Error Occurred!', "Error occurred while adding offer!");
+            this._isSpinning = false;
         });
     };
 
@@ -309,7 +304,6 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             const offerObj = new OfferBulk();
 
             const header: string[] = Object.getOwnPropertyNames(offerObj);
-            console.log('header', header);
 
             this.importedProducts = data.slice(1);
 

@@ -793,8 +793,7 @@ export class OfferEditComponent implements OnInit {
         this._notification.warning('Removed!', 'Individual Product removed successfully');
     }
 
-    /*this.offeredIndividualProducts*/
-    /** Event Method for generating the empty sample csv file to add offer individual Product wise */
+    /** Event Method for generating the excel file with the offered products for this offer */
     generateExcel() {
         return this.offerService.generateOfferedExcel(this.id).subscribe((result: any) => {
             // It is necessary to create a new blob object with mime-type explicitly set

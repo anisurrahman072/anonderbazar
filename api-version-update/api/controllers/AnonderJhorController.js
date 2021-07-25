@@ -10,6 +10,10 @@ const {uploadImages} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
 const moment = require('moment');
 const {REGULAR_OFFER_TYPE, INDIVIDUAL_PRODUCT_WISE_OFFER_SELECTION_TYPE} = require('../../libs/constants');
+const _ = require('lodash');
+const xl = require('excel4node');
+const {escapeExcel} = require('../../libs/helper');
+const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
 
 module.exports = {
   getAnonderJhor: async (req, res) => {
@@ -46,6 +50,7 @@ module.exports = {
         });
       }
 
+      /** if (req.body):  means, true is sent as status of jhor */
       if (req.body) {
         let _where = {};
 
@@ -53,6 +58,12 @@ module.exports = {
         _where.force_stop = {'!=': 1};
 
         await AnonderJhorOffers.update({where: _where}).set({status: 1});
+        let offers = await AnonderJhorOffers.find({where: _where});
+
+        for (let index = 0; index < offers.length; index++) {
+          await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: offers[index].id})
+            .set({status: 1});
+        }
       }
 
       const jhorStatus = await AnonderJhor.updateOne({id: 1}).set({status: req.body});
@@ -292,6 +303,7 @@ module.exports = {
   },
 
   anonderJhorOfferInsert: async (req, res) => {
+    console.log('anonderjhor insert: body', req.body);
     try {
       let body = {...req.body};
       if (body.hasImage === 'true') {
@@ -328,6 +340,56 @@ module.exports = {
       }
 
       let data = await AnonderJhorOffers.create(offerData).fetch();
+
+      /** codes for saving the individual product to the table anonder_jhor_offered_products */
+      let individualProductsIds = [];
+      let individualProductsCalculations;
+      let individualProductsAmounts;
+
+      const codes = body.individuallySelectedCodes.split(',');
+
+      const products = await Product.find({code: codes});
+      let x = _.groupBy(products, 'code');
+
+      if (codes && codes.length > 0) {
+        codes.forEach(code => {
+          individualProductsIds.push(x[code][0].id);
+        });
+      }
+
+      individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+      individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+      if (individualProductsIds && individualProductsIds.length > 0) {
+        let offeredProducts = await AnonderJhorOfferedProducts.find({deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
+        for (let id = 0; id < individualProductsIds.length; id++) {
+          let product_id = parseInt(individualProductsIds[id], 10);
+          let calculationType = individualProductsCalculations[id];
+          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+
+          if (product_id) {
+            if (offeredProductsIDS.includes(product_id)) {
+              await AnonderJhorOfferedProducts.update({product_id: product_id}).set({
+                anonder_jhor_offer_id: data.id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount,
+                deletedAt: null,
+                status: data.status
+              });
+            } else {
+              await AnonderJhorOfferedProducts.create({
+                anonder_jhor_offer_id: data.id,
+                product_id: product_id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount,
+                status: data.status
+              });
+            }
+          }
+        }
+      }
 
       return res.status(200).json({
         success: true,
@@ -454,18 +516,6 @@ module.exports = {
 
       if (body.subSubCategoryId) {
         offerData.sub_sub_category_id = body.subSubCategoryId;
-        const subSubCat = await AnonderJhorOffers.findOne({
-          sub_sub_category_id: body.subSubCategoryId,
-          status: 1
-        });
-        if (subSubCat) {
-          return res.status(200).json({
-            code: 'INVALID_SUBSUBCAT',
-            message: 'Subsub category already in another anonder jhor offer'
-          });
-        }
-      } else {
-        offerData.sub_sub_category_id = null;
       }
 
       if (body.subCategoryId) {
@@ -475,6 +525,56 @@ module.exports = {
       }
 
       const data = await AnonderJhorOffers.updateOne({id: body.id}).set(offerData);
+
+      /** codes for saving the individual product to the table anonder_jhor_offered_products */
+      let individualProductsIds = [];
+      let individualProductsCalculations;
+      let individualProductsAmounts;
+
+      const codes = body.individuallySelectedCodes.split(',');
+
+      const products = await Product.find({code: codes});
+      let x = _.groupBy(products, 'code');
+
+      if (codes && codes.length > 0) {
+        codes.forEach(code => {
+          individualProductsIds.push(x[code][0].id);
+        });
+      }
+
+      individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
+      individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+      if (individualProductsIds && individualProductsIds.length > 0) {
+        let offeredProducts = await AnonderJhorOfferedProducts.find({deletedAt: null});
+        let offeredProductsIDS = offeredProducts.map(products => products.product_id);
+
+        for (let id = 0; id < individualProductsIds.length; id++) {
+          let product_id = parseInt(individualProductsIds[id], 10);
+          let calculationType = individualProductsCalculations[id];
+          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+
+          if (product_id) {
+            if (offeredProductsIDS.includes(product_id)) {
+              await AnonderJhorOfferedProducts.update({product_id: product_id}).set({
+                anonder_jhor_offer_id: data.id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount,
+                deletedAt: null,
+                status: data.status
+              });
+            } else {
+              await AnonderJhorOfferedProducts.create({
+                anonder_jhor_offer_id: data.id,
+                product_id: product_id,
+                calculation_type: calculationType,
+                discount_amount: discountAmount,
+                status: data.status
+              });
+            }
+          }
+        }
+      }
 
       return res.status(200).json({
         success: true,
@@ -741,7 +841,146 @@ module.exports = {
         error
       });
     }
-  }
+  },
+
+  /** Method called to generate excel file with existing offered products in offer
+   *  edit to see the existing offered products and to modify them if the user want */
+  generateJhorOfferedExcel: async (req, res) => {
+    try {
+      const wb = new xl.Workbook({
+        jszip: {
+          compression: 'DEFLATE',
+        },
+        defaultFont: {
+          size: 12,
+          name: 'Calibri',
+          color: '#100f0f',
+        },
+        dateFormat: 'd/m/yyyy hh:mm:ss a',
+        author: 'Anonder Bazar', // Name for use in features such as comments
+      });
+
+      const options = {
+        margins: {
+          left: 1.5,
+          right: 1.5,
+        }
+      };
+
+      const ws = wb.addWorksheet('Offered Product List', options);
+      const calculationTypeSheet = wb.addWorksheet('Calculation', options);
+
+      let calculationTypeList = [
+        {name: 'percentage'},
+        {name: 'absolute'}
+      ];
+
+      calculationTypeList.forEach((item, i) => {
+        calculationTypeSheet.cell(i + 1, 1).string(escapeExcel(item.name));
+      });
+
+      // Create a reusable style
+      const headerStyle = wb.createStyle({
+        font: {
+          color: '#070c02',
+          size: 14,
+        },
+      });
+      const myStyle = wb.createStyle({
+        alignment: {
+          wrapText: true
+        }
+      });
+
+      const columnNamesObject = columnsOfIndividualOfferProducts;
+
+      const letters = ['A', 'B', 'C'];
+
+      const columnNameKeys = Object.keys(columnNamesObject);
+
+      const cNLen = columnNameKeys.length;
+
+      for (let i = 0; i < cNLen; i++) {
+        ws.column((i + 1)).setWidth(columnNamesObject[columnNameKeys[i]].width);
+        ws.cell(1, (i + 1)).string(columnNameKeys[i]).style(headerStyle);
+        if (typeof columnNamesObject[columnNameKeys[i]].validation !== 'undefined') {
+          if (columnNamesObject[columnNameKeys[i]].validation === 'decimal') {
+            ws.addDataValidation({
+              type: 'decimal',
+              allowBlank: false,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+            });
+          } else if (columnNamesObject[columnNameKeys[i]].validation === 'list') {
+            ws.addDataValidation({
+              type: 'list',
+              allowBlank: false,
+              prompt: 'Choose from Dropdown',
+              error: 'Invalid Choice was Chosen',
+              showDropDown: true,
+              sqref: letters[i] + '2:' + letters[i] + '10000',
+              formulas: ['=' + columnNamesObject[columnNameKeys[i]].sheetName + '!$A:$A'],
+            });
+          }
+        }
+      }
+
+      let offerId = req.query.id;
+      let rawSQL = `
+          SELECT
+              ajop.calculation_type,
+              ajop.discount_amount,
+              products.code AS product_code
+          FROM
+              anonder_jhor_offered_products AS ajop
+          LEFT JOIN products ON products.id = ajop.product_id
+          WHERE
+              ajop.anonder_jhor_offer_id = ${offerId} AND ajop.deleted_at IS NULL
+      `;
+
+
+      const rawResult = await sails.sendNativeQuery(rawSQL, []);
+
+      const offerInfo = rawResult.rows;
+
+      let row = 2;
+
+      offerInfo.forEach(item => {
+
+        let column = 1;
+
+        if (item.product_code) {
+          ws.cell(row, column++).string(item.product_code);
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.calculation_type) {
+          ws.cell(row, column++).string(escapeExcel(item.calculation_type));
+        } else {
+          ws.cell(row, column++).string(null);
+        }
+
+        if (item.discount_amount) {
+          ws.cell(row, column++).number(item.discount_amount);
+        } else {
+          ws.cell(row, column++).number(0);
+        }
+
+        row++;
+      });
+
+      wb.write('Excel-' + Date.now() + '.xlsx', res);
+
+    } catch (error) {
+      console.log(error);
+      let message = 'Error in Get All products with excel';
+      res.status(400).json({
+        success: false,
+        message,
+        error
+      });
+    }
+  },
 
 };
 

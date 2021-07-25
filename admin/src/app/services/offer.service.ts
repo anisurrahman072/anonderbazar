@@ -161,6 +161,10 @@ export class OfferService {
         return this.http.get(`${this.EndPoint1}/generateOfferExcelById?offer_type=${offer_type}&offer_id=${offer_id}`);
     }
 
+    generateJhorOfferedExcel(id): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/generateJhorOfferedExcel?id=${id}`, {responseType: 'blob'});
+    }
+
 
     /** CSV generator for offers */
 
