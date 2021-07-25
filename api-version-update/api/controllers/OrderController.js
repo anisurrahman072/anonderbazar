@@ -757,29 +757,75 @@ module.exports = {
   getCancelledOrder: async (req, res) => {
     let params = req.allParams();
 
-    let _where = {};
-    _where.deletedAt = null;
-    _where.order_type = PARTIAL_ORDER_TYPE;
-    _where.status = CANCELED_ORDER;
-    if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
-      _where.refund_status = parseInt(params.status);
-    }
-    if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
-      _where.paid_amount = {'!=': 0};
-    }
-
     try {
       let paginate = pagination(params);
-      let total = await Order.count(_where);
 
-      let canceledOrder = await Order.find(_where)
-        .sort([{createdAt: 'DESC'}])
-        .limit(paginate.limit)
-        .skip(paginate.skip);
-      console.log('all canceled order:', canceledOrder, total);
+      const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            orders.*,
+            users.first_name,
+            users.last_name
+    `;
+      let fromSQL = ` FROM product_orders as orders
+        LEFT JOIN users ON users.id = orders.user_id
+      `;
+
+      let _where = `
+          WHERE
+              orders.deleted_at IS NULL AND
+              orders.order_type = ${PARTIAL_ORDER_TYPE} AND
+              orders.status = ${CANCELED_ORDER}
+       `;
+
+      if(!_.isNull(params.status) && !_.isUndefined(params.status)){
+        let refundStatus = parseInt(params.status);
+        _where += ` AND orders.refund_status =  ${refundStatus} `;
+      }
+
+      if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
+        _where += ` AND orders.paid_amount !=  0 `;
+      }
+
+      if (params.orderNumber) {
+        _where += ` AND orders.id = ${params.orderNumber} `;
+      }
+
+      if (params.created_at) {
+        let created_at = JSON.parse(params.created_at);
+        let from = moment(created_at.from).format('YYYY-MM-DD HH:mm:ss');
+        let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
+        _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
+      }
+
+      if (params.customerName) {
+        const customerName = params.customerName.toLowerCase();
+        _where += ` AND ( LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
+      }
+
+      _where += ` ORDER BY orders.created_at DESC `;
+
+      console.log('_where: ', _where);
+      const totalOrderRaw = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      let canceledOrder;
+      let totalOrder;
+
+      if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
+        totalOrder = totalOrderRaw.rows[0].totalCount;
+
+        paginate.limit = paginate.limit ? paginate.limit : totalOrder;
+        let limitSQL = ` LIMIT ${paginate.skip}, ${paginate.limit} `;
+
+        let rawDataResult = await orderNativeQuery(rawSelect + fromSQL + _where + limitSQL, []);
+
+        canceledOrder = rawDataResult.rows;
+      }
+
 
       return res.status(200).json({
-        success: true, message: 'successfully fetched cancelled order', data: canceledOrder, total
+        success: true, message: 'successfully fetched cancelled order', data: canceledOrder, totalOrder
       });
     } catch (error) {
       return res.status(200).json({
