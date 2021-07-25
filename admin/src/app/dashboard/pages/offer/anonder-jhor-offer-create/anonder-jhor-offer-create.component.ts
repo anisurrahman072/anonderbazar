@@ -6,6 +6,14 @@ import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
+import {ExcelService} from "../../../../services/excel.service";
+
+class OfferBulk {
+    code: string = "";
+    calculation_type: string = "";
+    discount_amount: number = 0;
+
+}
 
 @Component({
     selector: 'app-anonder-jhor-offer-create',
@@ -33,11 +41,22 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     allSubSubCategoryIds;
     anonderJhorData;
 
+    /** excel file variables */
+    isLoading: boolean = false;
+    private importedProducts: OfferBulk[] = [];
+    total: number = 0;
+    wrongCodes = [];
+    private individuallySelectedCodes: any = [];
+    continue: Boolean = false;
+    private individuallySelectedProductsCalculation: any = [];
+    private individuallySelectedProductsAmount: any = [];
+
     constructor(
         private router: Router,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
         private offerService: OfferService,
+        private excelService: ExcelService,
     ) {
         this.validateForm = this.fb.group({
             categoryId: ['', [Validators.required]],
@@ -108,19 +127,28 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             formData.append('hasImage', 'false');
         }
 
+        if (this.individuallySelectedCodes && this.individuallySelectedCodes.length <= 0) {
+            this._notification.error('No Product', 'Please add products for this offer');
+            return;
+        } else {
+            formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
+        }
+
+        if (this.individuallySelectedProductsCalculation) {
+            formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
+        }
+        if (this.individuallySelectedProductsAmount) {
+            formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        }
+
         this.submitting = true;
         this.offerService.anonderJhorOfferInsert(formData).subscribe(result => {
             this.submitting = false;
-            if (result.code === 'INVALID_SUBSUBCAT') {
-                this._notification.error('Sub-sub-Category exists', "Sub-sub-Category already exists in another offer ");
-                this._isSpinning = false;
-            } else {
-                this._notification.success('Offer Added', "Offer under anonder jhor created successfully");
-                this._isSpinning = false;
-                this.resetForm(null);
-                this.isVisible = false;
-                this.offerService.reloadOfferList();
-            }
+            this._notification.success('Offer Added', "Offer under anonder jhor created successfully");
+            this._isSpinning = false;
+            this.resetForm(null);
+            this.isVisible = false;
+            this.offerService.reloadOfferList();
         }, (error) => {
             this.submitting = false;
             this._notification.error('Error Occurred!', "Error occurred while adding offer!");
@@ -232,5 +260,80 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             }, () => {
                 this._isSpinning = false;
             });
+    }
+
+    /** Event Method for generating the empty sample excel file to add jhor offer products with individual offer price */
+    generateExcel() {
+        return this.offerService.generateExcel().subscribe((result: any) => {
+            // It is necessary to create a new blob object with mime-type explicitly set
+            // otherwise only Chrome works like it should
+            const newBlob = new Blob([result], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            // IE doesn't allow using a blob object directly as link href
+            // instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob);
+                return;
+            }
+
+            // For other browsers:
+            // Create a link pointing to the ObjectURL containing the blob.
+            const data = window.URL.createObjectURL(newBlob);
+
+            const link = document.createElement('a');
+            link.href = data;
+            link.download = "Sample Jhor excel " + Date.now() + ".xlsx";
+
+            // this is necessary as link.click() does not work on the latest firefox
+            link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: window}));
+
+            setTimeout(() => {
+                // For Firefox it is necessary to delay revoking the ObjectURL
+                window.URL.revokeObjectURL(data)
+                this.isLoading = false
+                link.remove();
+            }, 100);
+        });
+    }
+
+    /** handles the uploaded excel file and checks the validity of the uploaded products codes */
+    onCSVUpload(event: any) {
+        const target: DataTransfer = <DataTransfer>(event.target);
+        if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+            const fileResult: string = e.target.result;
+            const data = <any[]>this.excelService.importFromFile(fileResult);
+
+            const offerObj = new OfferBulk();
+
+            const header: string[] = Object.getOwnPropertyNames(offerObj);
+            console.log('header', header);
+
+            this.importedProducts = data.slice(1);
+
+            this.total = this.importedProducts.length;
+
+            this.individuallySelectedCodes = this.importedProducts.map(codes => codes[0]);
+            this.individuallySelectedProductsCalculation = this.importedProducts.map(calculation => calculation[1]);
+            this.individuallySelectedProductsAmount = this.importedProducts.map(discountAmount => discountAmount[2]);
+
+            this.offerService.checkIndividualProductsCodesValidity(this.individuallySelectedCodes)
+                .subscribe(result => {
+                    this.wrongCodes = result.data;
+
+                    if (this.wrongCodes && this.wrongCodes.length > 0) {
+                        this.individuallySelectedCodes = [];
+                        this.individuallySelectedProductsCalculation = [];
+                        this.individuallySelectedProductsAmount = [];
+                        this.continue = false;
+                        this._notification.error('Failed!', 'Please Input Proper Data');
+                    } else {
+                        this.continue = true;
+                    }
+                })
+        };
+        reader.readAsBinaryString(target.files[0]);
     }
 }

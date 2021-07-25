@@ -54,6 +54,7 @@
 
                 </div>
             </div>
+            <!--calculation type and discount amount-->
             <div nz-row style="margin-top: 20px">
                 <div nz-col [nzSpan]="7">
                     <label> Calculation Type </label>
@@ -69,7 +70,7 @@
                         Please Select Calculation Type
                     </div>
 
-                    <input nz-input formControlName="discountAmount" [placeholder]="'Insert Discount Amount'"
+                    <input nz-input formControlName="discountAmount" [placeholder]="'Discount UPTO'"
                            [nzSize]="'large'" style="margin: 10px 0" type="number">
                     <div *ngIf="getFormControl('discountAmount').dirty && getFormControl('discountAmount').hasError('required')"
                          style="color: red">
@@ -78,6 +79,57 @@
 
                 </div>
             </div>
+
+            <!--excel file upload-->
+            <div *ngIf="subCategoryId || subSubCategoryId" nz-row style="margin-top: 20px">
+                <div nz-col [nzSpan]="7">
+                    <label> Upload Excel File </label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <section>
+                        <div class="row" style="display: flex; justify-content: center;">
+                            <nz-card class="card-height" style="width: 97%;margin-bottom: 20px" [nzTitle]="title">
+                                <ng-template #title>
+                                    Upload Individual Offered Products
+                                </ng-template>
+                                <ng-container #body>
+                                    <div class="form-group">
+                                        <button [disabled]="isLoading" type="button" id="download_bulk_excel"
+                                                (click)="generateExcel()">
+                                            <span>Download Sample Excel</span>
+                                        </button>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="upload_bulk_import">Upload Excel File</label>
+                                        <input type="file" id="upload_bulk_import"
+                                               (change)="onCSVUpload($event)"/>
+                                    </div>
+                                    <p *ngIf="total > 0" style="color: forestgreen">{{total}} products has been
+                                        added</p>
+                                </ng-container>
+                            </nz-card>
+                        </div>
+                    </section>
+
+                    <!--if invalid product code is found-->
+                    <div style="margin-top: 20px" *ngIf="wrongCodes && wrongCodes.length > 0">
+                        <nz-card class="card-height" style="width: 100%;margin-bottom: 20px" [nzTitle]="title1">
+                            <ng-template #title1>
+                            <span style="margin-bottom: 20px; color: red">
+                                Invalid product codes found, Please fix and upload them again
+                            </span>
+                            </ng-template>
+                            <ng-container #body>
+                                <ng-container *ngFor="let code of wrongCodes; let i=index">
+                                    <b style="margin-left: 30px">{{i + 1}} : {{code}}</b><br>
+                                </ng-container>
+                            </ng-container>
+                        </nz-card>
+                    </div>
+                </div>
+            </div>
+
+            <!--offer duration-->
             <div nz-row style="margin: 20px 0;">
                 <div nz-col [nzSpan]="7">
                     <label>Offer Duration</label>
@@ -108,7 +160,7 @@
             <div nz-row>
                 <div nz-col [nzOffset]="7" [nzSpan]="12">
                     <button nz-button [nzType]="'primary'" [nzSize]="'large'"
-                            [disabled]="!validateForm.valid || submitting">Save
+                            [disabled]="!validateForm.valid || submitting || !continue">Save
                     </button>
                     <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
                 </div>

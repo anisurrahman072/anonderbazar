@@ -11,6 +11,7 @@ const {uploadImages} = require('../../libs/helper');
 const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
 const xl = require('excel4node');
 const {escapeExcel} = require('../../libs/helper');
+const _ = require('lodash');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -87,16 +88,29 @@ module.exports = {
       if (body.selection_type === 'individual_product') {
         if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
+          /*console.log('codes: ', codes);*/
+
+
           const products = await Product.find({code: codes});
+          let x = _.groupBy(products, 'code');
+          /*console.log('products: ', products);*/
+
           products.forEach(product => {
-            individualProductsIds.push(product.id);
+            /*individualProductsIds.push(product.id);*/
+            individualProductsIds.push(x[product.code][0].id);
           });
+
+
+          /*console.log('again products: ', individualProductsIds);*/
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }
 
         individualProductsCalculations = body.individuallySelectedProductsCalculation.split(',');
         individualProductsAmounts = body.individuallySelectedProductsAmount.split(',');
+
+        /*console.log('individualProductsCalculations: ', individualProductsCalculations);
+        console.log('individualProductsAmounts: ', individualProductsAmounts);*/
 
         offerData = {
           title: body.title,

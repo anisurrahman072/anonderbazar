@@ -27,6 +27,11 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     anonderJhorHomepageBannerImageFile: File;
     AnonderJhorHomepageBannerImageFileEdit: any;
 
+    isActiveSslCommerz: boolean = false;
+    isActiveBkash: boolean = false;
+    isActiveOffline: boolean = false;
+    isActiveCashOnDelivery: boolean = false;
+
     /** Anonder Jhor Offers variables */
     anonderJhorOffersData: any = [];
     anonderJhorOfferLimit: number = 10;
@@ -48,11 +53,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     loading: boolean = false;
     private sub: Subscription;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
-
-    isActiveSslCommerz: boolean = false;
-    isActiveBkash: boolean = false;
-    isActiveOffline: boolean = false;
-    isActiveCashOnDelivery: boolean = false;
 
     constructor(
         private fb: FormBuilder,

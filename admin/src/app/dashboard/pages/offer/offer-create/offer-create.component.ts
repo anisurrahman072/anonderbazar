@@ -717,6 +717,7 @@ export class OfferCreateComponent implements OnInit {
         });
     }
 
+    /** handles the uploaded excel file and checks the validity of the uploaded products codes */
     onCSVUpload(event: any) {
         const target: DataTransfer = <DataTransfer>(event.target);
         if (target.files.length !== 1) throw new Error('Cannot use multiple files');
