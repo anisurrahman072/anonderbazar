@@ -93,10 +93,6 @@ module.exports = {
 
           let x = _.groupBy(products, 'code');
 
-          /*products.forEach(product => {
-            individualProductsIds.push(product.id);
-          });*/
-
           if(codes && codes.length > 0){
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
