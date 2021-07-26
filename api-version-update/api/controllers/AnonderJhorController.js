@@ -266,11 +266,11 @@ module.exports = {
       if (req.body.event) {
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({force_stop: req.body.event, status: 0});
-        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id:  req.body.offerId}).set({status: 0});
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body.offerId}).set({status: 0});
       } else {
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({force_stop: req.body.event, status: 1});
-        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id:  req.body.offerId}).set({status: 1});
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body.offerId}).set({status: 1});
       }
 
       res.status(200).json({
@@ -379,7 +379,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {
@@ -564,7 +564,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {

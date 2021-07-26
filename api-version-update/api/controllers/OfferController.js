@@ -91,7 +91,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0){
+          if (codes && codes.length > 0) {
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -195,7 +195,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {
@@ -553,7 +553,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0){
+          if (codes && codes.length > 0) {
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -652,7 +652,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {
