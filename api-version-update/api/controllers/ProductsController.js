@@ -295,6 +295,29 @@ module.exports = {
         let filters = JSON.parse(req.query.filters);
 
         if (filters.searchTerm) {
+          let product = await Product.find({
+            code: filters.searchTerm, status: 2, approval_status: 2, deletedAt: null
+          }).populate('category_id')
+            .populate('subcategory_id')
+            .populate('type_id')
+            .populate('craftsman_id')
+            .populate('product_variants')
+            .populate('product_images')
+            .populate('brand_id')
+            .populate('warehouse_id');
+
+          if (product && product.length > 0) {
+            return res.status(200).json({
+              success: true,
+              message: 'get product in search',
+              total: 1,
+              data: product,
+              limit: _pagination.limit,
+              skip: _pagination.skip,
+              page: _pagination.page
+            });
+          }
+
           _where.or = [
             {name: {contains: filters.searchTerm}}
           ];
@@ -370,6 +393,7 @@ module.exports = {
         .populate('product_images')
         .populate('brand_id')
         .populate('warehouse_id');
+
       return res.status(200).json({
         success: true,
         message: 'get product in search',
