@@ -291,7 +291,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 }
             }
         }, (error) => {
-            this._notify.error('Problem!', "Problem in loading the product");
+            if(error.error && error.error.code && error.error.code === 'productNotFound'){
+                this._notify.info('Product not found!', error.error.message);
+                this.router.navigate(['/']);
+            } else if(error.error && error.error.code && error.error.code === 'warehouseNotFound'){
+                this._notify.info('Product not found!', error.error.message);
+                this.router.navigate(['/']);
+            } else {
+                this._notify.error('Problem!', "Problem in loading the product");
+            }
         });
     }
 
@@ -305,7 +313,16 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     updateFinalprice() {
         if (this.data) {
             this.unitPrice = this.data.offerPrice ? this.data.offerPrice : this.data.price;
-            this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+
+            if (this.offerData && this.offerData.finalCollectionOfProducts && this.data.id in this.offerData.finalCollectionOfProducts) {
+                this.calculationType = this.offerData.finalCollectionOfProducts[this.data.id].calculation_type;
+                this.discountAmount = this.offerData.finalCollectionOfProducts[this.data.id].discount_amount;
+                let productPriceWithVariantPrice = this.data.price + this.variantCalculatedTotalPrice;
+
+                this.finalprice = this.offerService.calculateOfferPrice(this.calculationType, productPriceWithVariantPrice, this.discountAmount);
+            } else {
+                this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+            }
         }
     }
 
@@ -336,10 +353,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
 
         this._progress.start("mainLoader");
-        let product_total_price: number =
-            (this.unitPrice +
-                this.variantCalculatedTotalPrice) *
-            this.product_quantity;
+        let product_total_price: number = (this.unitPrice + this.variantCalculatedTotalPrice) * this.product_quantity;
+        console.log("product_total_price: ", product_total_price);
 
         let variants = [];
         let dataPayload = {};

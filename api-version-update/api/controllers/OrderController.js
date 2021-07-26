@@ -513,7 +513,7 @@ module.exports = {
             FROM
               product_orders as orders
               LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id
-              LEFT JOIN users as users ON users.id = orders.user_id
+              LEFT JOIN users as users ON orders.user_id = users.id
               LEFT JOIN payments as payment ON  orders.id  =   payment.order_id
               LEFT JOIN payment_addresses ON orders.shipping_address = payment_addresses.id
               LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
@@ -563,10 +563,12 @@ module.exports = {
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
-      const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount FROM product_orders as orders WHERE orders.deleted_at IS NULL', []);
       _where += ' GROUP BY orders.id  ORDER BY orders.created_at DESC   ';
       let totalOrder = 0;
       let orders = [];
+
       if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
         totalOrder = totalOrderRaw.rows[0].totalCount;
         _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;

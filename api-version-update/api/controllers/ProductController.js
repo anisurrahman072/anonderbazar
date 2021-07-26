@@ -13,6 +13,7 @@ const {storeToCache} = require('../../libs/cache-manage');
 const {fetchFromCache} = require('../../libs/cache-manage');
 const _ = require('lodash');
 const {SUB_ORDER_STATUSES} = require('../../libs/subOrders');
+const {ACTIVE_WAREHOUSE_STATUS, APPROVED_PRODUCT_APPROVAL_STATUS} = require('../../libs/constants');
 
 module.exports = {
 
@@ -32,6 +33,24 @@ module.exports = {
           .populate('subcategory_id')
           .populate('product_images', {deletedAt: null})
           .populate('product_variants', {deletedAt: null});
+
+        console.log('My product: ', product);
+
+        if (!product || product.approval_status != APPROVED_PRODUCT_APPROVAL_STATUS || product.deletedAt) {
+          return res.status(400).json({
+            success: false,
+            code: 'productNotFound',
+            message: `${product.name} product has been rejected or deleted!`
+          });
+        }
+
+        if (!product.warehouse_id || product.warehouse_id.deletedAt || product.warehouse_id.status != ACTIVE_WAREHOUSE_STATUS) {
+          return res.status(400).json({
+            success: false,
+            code: 'warehouseNotFound',
+            message: `${product.name} warehouse has been rejected or deleted!`
+          });
+        }
 
         await storeToCache(key, product);
       }
@@ -256,7 +275,6 @@ module.exports = {
       req.body.price = parseFloat(req.body.price);
 
       let body = req.body;
-      console.log('request body', body);
 
       const existingProduct = await Product.findOne({
         code: body.code
@@ -292,14 +310,16 @@ module.exports = {
           return res.json(err.status, {err: err});
         }
       }
+
+      const imageBulkArray = body.ImageBlukArray;
       const product = await sails.getDatastore()
         .transaction(async (db) => {
           const product = await Product.create(body).fetch().usingConnection(db);
 
-          if (body.ImageBlukArray) {
-            let imagearraybulk = JSON.parse('[' + req.body.ImageBlukArray + ']');
+          if (imageBulkArray) {
+            let imagearraybulk = JSON.parse('[' + imageBulkArray + ']');
             for (let i = 0; i < imagearraybulk.length; i++) {
-              await ProductImage.update(imagearraybulk[i], {product_id: product.id});
+              await ProductImage.update(imagearraybulk[i], {product_id: product.id}).usingConnection(db);
             }
           }
 
@@ -421,7 +441,7 @@ module.exports = {
             image_path: '/' + newPath
           }).fetch();
 
-          return res.json(200, productImage);
+          return res.status(200).json(productImage);
 
         });
 

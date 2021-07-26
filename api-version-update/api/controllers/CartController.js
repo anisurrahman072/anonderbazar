@@ -182,8 +182,7 @@ module.exports = {
             deletedAt: null
           })
             .populate('variant_id')
-            .populate('warehouse_variant_id')
-            .populate('product_variant_id');
+            .populate('warehouse_variant_id');
 
           if (civ.length > 0) {
             cartItems[index].cartitemvariant = civ;
@@ -191,20 +190,18 @@ module.exports = {
             cartItems[index].cartitemvariant = {};
           }
 
-          /** Update product total price in Suborder Item table as per current state of offer for the product */
+          /** Update product_total_price in Suborder Item table as per current state of offer for the product */
+          /** Also add here the additional price for product variants when calculate the calcProductOfferPrice */
           let currentCartItemTotalPrice = await OfferService.calcProductOfferPrice({
             id: dd.id,
             price: dd.price,
-            quantity: cartItems[index].product_quantity
+            quantity: cartItems[index].product_quantity,
+            itemVariant: cartItems[index].cartitemvariant
           });
 
-          console.log('Cart item prev info: ', cartItems[index].product_unit_price, cartItems[index].product_quantity, cartItems[index].product_total_price);
-          console.log('Cart item prev info: ', currentCartItemTotalPrice/cartItems[index].product_quantity, cartItems[index].product_quantity, currentCartItemTotalPrice);
 
           if(currentCartItemTotalPrice != (cartItems[index].product_unit_price * cartItems[index].product_quantity)){
-            console.log('Cart Prev Information: ', cart.total_price);
             cart.total_price = cart.total_price + (currentCartItemTotalPrice - cartItems[index].product_total_price);
-            console.log('Cart Current Information: ', cart.total_price);
             cartItems[index].product_total_price = currentCartItemTotalPrice;
 
             await Cart.updateOne({
@@ -222,8 +219,7 @@ module.exports = {
               product_total_price: currentCartItemTotalPrice
             });
           }
-
-          /** Update product total price in Suborder Item table as per current state of offer for the product END */
+          /** Update product total price in Suborder Item table as per current state of offer for the product. END */
 
 
           /** Check weather the cart item is a valid item or not */
