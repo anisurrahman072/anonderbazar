@@ -22,7 +22,7 @@ module.exports = {
   },
   /** Calculate a product offer price END */
 
-  /**checking if the options have the offer time or not*/
+  /** checking if the options have the offer time or not: for regular offer */
   offerDurationCheck: async () => {
     let allOffers = await Offer.find({deletedAt: null});
     for (let index = 0; index < allOffers.length; index++) {
@@ -54,6 +54,7 @@ module.exports = {
       let offerEndTime = allAnonderJhorOffers[index].end_date;
       if (offerEndTime < presentTime || anonderJhorData.status === 0) {
         await AnonderJhorOffers.updateOne({id: allAnonderJhorOffers[index].id}).set({status: 0});
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: allAnonderJhorOffers[index].id}).set({status: 0});
       }
     }
   },
@@ -188,28 +189,18 @@ module.exports = {
     for (let jhorOffer = 0; jhorOffer < requetedJhorOffer.length; jhorOffer++) {
       const thisJhorOffer = requetedJhorOffer[jhorOffer];
 
-      let jhorOfferObj = {
-        calculation_type: thisJhorOffer.calculation_type,
-        discount_amount: thisJhorOffer.discount_amount
-      };
-
       let _where2 = {};
-      _where2.status = 2;
-      _where2.approval_status = 2;
+      _where2.anonder_jhor_offer_id = thisJhorOffer.id;
       _where2.deletedAt = null;
+      _where2.status = 1;
 
-      if (thisJhorOffer.sub_sub_category_id) {
-        _where2.subcategory_id = thisJhorOffer.sub_sub_category_id;
-      } else if (thisJhorOffer.sub_category_id) {
-        _where2.category_id = thisJhorOffer.sub_category_id;
-      } else if (thisJhorOffer.category_id) {
-        _where2.type_id = thisJhorOffer.category_id;
-      }
-
-      let products = await Product.find({where: _where2});
+      let products = await AnonderJhorOfferedProducts.find({where: _where2});
       if (products.length > 0) {
         products.forEach(product => {
-          finalCollectionOfProducts[product.id] = jhorOfferObj;
+          finalCollectionOfProducts[product.product_id] = {
+            calculation_type: product.calculation_type,
+            discount_amount: product.discount_amount * 1.0,
+          };
         });
       }
     }

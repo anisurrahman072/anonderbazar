@@ -283,7 +283,7 @@ module.exports = {
         }
       );
 
-      console.log('cartItemsTemp: ', cartItemsTemp);
+      /*console.log('cartItemsTemp: ', cartItemsTemp);*/
 
       let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
       let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -301,7 +301,7 @@ module.exports = {
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
         let thisCartItem = cartItemsTemp[k];
-        console.log('thisCartItem: ', thisCartItem);
+        /*console.log('thisCartItem: ', thisCartItem);*/
 
         /** global section */
         let itemId = thisCartItem.product_id.id;
@@ -314,7 +314,7 @@ module.exports = {
         let offer_id_number;
         let offer_type;
 
-        if(offeredProducts && offeredProducts[itemId]){
+        if (offeredProducts && offeredProducts[itemId]) {
           /** offer section */
           let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
           let _where = {};
@@ -324,7 +324,7 @@ module.exports = {
           _where.end_date = {'>=': presentTime};
 
           let regularOffers = await Offer.find({where: _where});
-          console.log('reglar offer csv: ', regularOffers);
+          /*console.log('reglar offer csv: ', regularOffers);*/
 
           /** checking if the product exists in Regular offer */
           if (regularOffers && regularOffers.length > 0) {
@@ -378,7 +378,7 @@ module.exports = {
                                   regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
                 const ids = await sails.sendNativeQuery(rawSQL, []);
                 const productIds = ids.rows;
-                console.log('pro wise ids: ', productIds);
+                /*console.log('pro wise ids: ', productIds);*/
 
                 productIds.forEach(proId => {
                   regularOfferProductsIds.push({
@@ -398,7 +398,7 @@ module.exports = {
                                   regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
                 const ids = await sails.sendNativeQuery(rawSQL, []);
                 const productIds = ids.rows;
-                console.log('individual_product wise ids: ', productIds);
+                /*console.log('individual_product wise ids: ', productIds);*/
 
                 productIds.forEach(proId => {
                   regularOfferIndividualProductsIds.push({
@@ -456,10 +456,10 @@ module.exports = {
             }
 
             if (regularOfferProductsIds && regularOfferProductsIds.length > 0) {
-              console.log('regularOfferProductsIds', regularOfferProductsIds);
+              /*console.log('regularOfferProductsIds', regularOfferProductsIds);*/
               regularOfferProductsIds.forEach(proId => {
                 if (itemId === proId.productId) {
-                  console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
+                  /*console.log('in prodct ise: item id, productid: ', itemId, proId.productId);*/
                   offer_id_number = proId.regularOfferId;
                   offer_type = regular_offer;
                 }
@@ -467,16 +467,15 @@ module.exports = {
             }
 
             if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
-              console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);
+              /*console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);*/
               regularOfferIndividualProductsIds.forEach(proId => {
                 if (itemId === proId.productId) {
-                  console.log('in individual ise: item id, productid: ', itemId, proId.productId);
+                  /*console.log('in individual ise: item id, productid: ', itemId, proId.productId);*/
                   offer_id_number = proId.regularOfferId;
                   offer_type = regular_offer;
                 }
               });
             }
-
           }
 
           /** jhor offer */
@@ -485,48 +484,33 @@ module.exports = {
           _where1.deletedAt = null;
           _where1.start_date = {'<=': presentTime};
           _where1.end_date = {'>=': presentTime};
+          let jhorOfferProductsIds = [];
 
           let jhorOffers = await AnonderJhorOffers.find({where: _where1});
-          console.log('jhor offers csv: ', jhorOffers);
+          /*console.log('jhor offers csv: ', jhorOffers);*/
+
+          /** storing the jhor offered products ids */
+          if (jhorOffers && jhorOffers.length > 0) {
+            for (let index = 0; index < jhorOffers.length; index++) {
+              let anonder_jhor_offer_id = jhorOffers[index].id;
+              let offeredProducts = await AnonderJhorOfferedProducts.find({anonder_jhor_offer_id: anonder_jhor_offer_id});
+              offeredProducts.forEach(productIds => {
+                jhorOfferProductsIds.push({
+                  productId: productIds.product_id,
+                  jhorOfferId: productIds.anonder_jhor_offer_id
+                });
+              });
+            }
+          }
 
           /** checking if the product exists in anonder jhor offer */
-          if (jhorOffers && jhorOffers.length > 0) {
-            let offerCatId = [];
-            let offerSubCatId = [];
-            let offerSubSubCatId = [];
-
-            jhorOffers.forEach(offer => {
-              offerCatId.push({jhorOfferId: offer.id, catId: offer.category_id});
-              offerSubCatId.push({jhorOfferId: offer.id, subCatId: offer.sub_category_id});
-              offerSubSubCatId.push({jhorOfferId: offer.id, subSubCatId: offer.sub_sub_category_id});
+          if (jhorOfferProductsIds && jhorOfferProductsIds.length > 0) {
+            jhorOfferProductsIds.forEach(prodId => {
+              if (itemId === prodId.productId) {
+                offer_id_number = prodId.jhorOfferId;
+                offer_type = anonder_jhor;
+              }
             });
-
-            if (offerCatId && offerCatId.length > 0) {
-              offerCatId.forEach(cat => {
-                if (itemCatId === cat.catId) {
-                  offer_id_number = cat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
-
-            if (offerSubCatId && offerSubCatId.length > 0) {
-              offerSubCatId.forEach(subCat => {
-                if (itemSubCatId === subCat.subCatId) {
-                  offer_id_number = subCat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
-
-            if (offerSubSubCatId && offerSubSubCatId.length > 0) {
-              offerSubSubCatId.forEach(subSubCat => {
-                if (itemSubSubCatId === subSubCat.subSubCatId) {
-                  offer_id_number = subSubCat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
           }
         }
 

@@ -209,14 +209,19 @@ module.exports = {
       let anonderJhorOffer;
 
       if (req.body.event) {
+        console.log('noe hre');
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({status: req.body.event});
+
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body.offerId}).set({status: req.body.event});
       } else {
         /** check time and change force status; */
         // if (presentTime > jhorOfferStartTime && presentTime < jhorOfferEndTime) {
         if (presentTime.isAfter(jhorOfferStartTime) && presentTime.isBefore(jhorOfferEndTime)) {
           anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
             .set({status: req.body.event, force_stop: 1});
+
+          await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body.offerId}).set({status: req.body.event});
         } else {
           anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
             .set({status: req.body.event});
@@ -261,9 +266,11 @@ module.exports = {
       if (req.body.event) {
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({force_stop: req.body.event, status: 0});
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id:  req.body.offerId}).set({status: 0});
       } else {
         anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body.offerId})
           .set({force_stop: req.body.event, status: 1});
+        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id:  req.body.offerId}).set({status: 1});
       }
 
       res.status(200).json({
@@ -284,6 +291,11 @@ module.exports = {
   deleteAnonderJhorOffer: async (req, res) => {
     try {
       const anonderJhorOffer = await AnonderJhorOffers.updateOne({id: req.body}).set({
+        status: 0,
+        deletedAt: new Date()
+      });
+
+      await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: req.body}).set({
         status: 0,
         deletedAt: new Date()
       });
@@ -536,7 +548,7 @@ module.exports = {
       const products = await Product.find({code: codes});
       let x = _.groupBy(products, 'code');
 
-      if (codes && codes.length > 0) {
+      if (codes && codes.length > 0 && products.length > 0) {
         codes.forEach(code => {
           individualProductsIds.push(x[code][0].id);
         });
@@ -653,7 +665,6 @@ module.exports = {
 
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
-      console.log('req.query.sortData: ', req.query.sortData);
       await OfferService.anonderJhorOfferDurationCheck();
 
       let webJhorOfferedProducts;
@@ -674,7 +685,6 @@ module.exports = {
           _sort.push(obj);
         }
       }
-      console.log('_sort: ', _sort);
 
       let _where = {};
       _where.id = req.query.id;
@@ -686,19 +696,13 @@ module.exports = {
         .populate('sub_sub_category_id');
 
       let _where1 = {};
-      _where1.status = 2;
-      _where1.approval_status = 2;
+      _where1.anonder_jhor_offer_id = req.query.id;
       _where1.deletedAt = null;
+      _where1.status = 1;
 
-      if (requestedJorOffer && requestedJorOffer.sub_sub_category_id) {
-        _where1.subcategory_id = requestedJorOffer.sub_sub_category_id.id;
-      } else if (requestedJorOffer && requestedJorOffer.sub_category_id) {
-        _where1.category_id = requestedJorOffer.sub_category_id.id;
-      } else if (requestedJorOffer && requestedJorOffer.category_id) {
-        _where1.type_id = requestedJorOffer.category_id.id;
-      }
-
-      webJhorOfferedProducts = await Product.find({where: _where1}).sort(_sort);
+      webJhorOfferedProducts = await AnonderJhorOfferedProducts.find({where: _where1})
+        .sort(_sort)
+        .populate('product_id');
 
       res.status(200).json({
         success: true,

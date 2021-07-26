@@ -133,6 +133,8 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         formData.append('discountAmount', value.discountAmount);
         formData.append('individuallySelectedProductsCalculation', this.individuallySelectedProductsCalculation);
         formData.append('individuallySelectedProductsAmount', this.individuallySelectedProductsAmount);
+        console.log("selected codes: ", this.individuallySelectedCodes);
+        formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
 
         let offerStartTime = new Date(value.offerStartDate).getTime();
         let offerEndTime = new Date(value.offerEndDate).getTime();
@@ -160,13 +162,6 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             formData.append('image', this.ImageFile, this.ImageFile.name);
         } else {
             formData.append('hasImage', 'false');
-        }
-
-        if (this.individuallySelectedCodes.length <= 0) {
-            this._notification.error('No Product', 'Please add products for this offer');
-            return;
-        } else {
-            formData.append('individuallySelectedCodes', this.individuallySelectedCodes);
         }
 
         this.offerService.updateAnonderJhorOffer(formData).subscribe((result) => {
