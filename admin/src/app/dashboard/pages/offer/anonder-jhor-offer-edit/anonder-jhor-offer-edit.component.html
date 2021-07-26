@@ -13,10 +13,9 @@
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onRemoved($event)"
                                   [uploadedFiles]='ImageFileEdit'
-                                  (uploadStateChanged)="onUploadStateChanged($event)"
                                   [beforeUpload]="onBeforeUpload">
                     </image-upload>
-                    <div *ngIf="!ImageFile">
+                    <div *ngIf="!hasImageFile">
                         Please upload an image here!
                     </div>
                 </div>

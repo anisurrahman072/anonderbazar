@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const {uploadImages} = require('../../libs/helper');
+const {uploadImages, deleteImageS3} = require('../../libs/helper');
 module.exports = {
   //Method called for sending a image data
   sendImage: function (req, res) {
@@ -15,18 +15,114 @@ module.exports = {
   },
   //Method called for uploading a image data
   upload: async (req, res) => {
-    try{
-      if (req.method === 'GET'){
+    try {
+      if (req.method === 'GET') {
         return res.json({'status': 'GET not allowed'});
       }
       const files = await uploadImages(req.file('imageFile'));
       return res.status(200).json({files: files});
-    }
-    catch(error){
+    } catch (error) {
       console.log(error);
       return res.status(error.status).json({'Error': error});
     }
+  },
+
+  insertImage: async (req, res) => {
+    try {
+      if (!req.file('image')) {
+        return res.status(400).json({success: false, message: 'No image uploaded!'});
+      }
+      const uploaded = await uploadImages(req.file('image'));
+      const newImagePath = '/' + uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+
+      console.log('newImagePath: ', newImagePath);
+
+      return res.status(200).json({
+        success: true,
+        path: newImagePath
+      });
+
+    } catch (error) {
+      console.log('Error occurred!');
+      res.status(400).json({
+        success: false,
+        message: 'Error occurred while inserting new image in database!'
+      });
+    }
+  },
+
+  deleteImage: async (req, res) => {
+    try {
+      if (!req.body.oldImagePath) {
+        return res.status(400).json({success: false, message: 'No image path was given to delete!'});
+      }
+
+      const OLD_IMAGE_PATH = req.body.oldImagePath;
+
+      /** Delete Image from RDS */
+      await deleteImageS3(OLD_IMAGE_PATH);
+
+      /** Delete Image from Database */
+      if (req.body.id && req.body.tableName && req.body.column) {
+        const TABLE_NAME = req.body.tableName;
+        const COLUMN_NAME = req.body.column;
+        const ROW_ID = req.body.id;
+        const FORMAT = req.body.format;
+
+        let findQuery = `
+            SELECT ${COLUMN_NAME} as image
+            FROM ${TABLE_NAME}
+            WHERE id = ${ROW_ID} AND deleted_at IS NULL
+         `;
+        let rawResult = await sails.sendNativeQuery(findQuery, []);
+
+        console.log('Images from database: ', rawResult.rows[0].image);
+
+        let images = null;
+
+        if (FORMAT && FORMAT === 'JSON') {
+
+          images = JSON.parse(rawResult.rows[0].image);
+          if (images) {
+            let key;
+            for (let v in images) {
+              if (images[v] === OLD_IMAGE_PATH) {
+                key = v;
+              }
+            }
+
+            delete images[key];
+
+            if (images) {
+              images = JSON.stringify(images);
+            }
+          }
+        }
+
+        let updateQuery = `
+            UPDATE ${req.body.tableName}
+            SET ${req.body.column} = '${images}'
+            WHERE id = ${req.body.id} AND deleted_at IS NULL
+        `;
+        let updatedResult = await sails.sendNativeQuery(updateQuery, []);
+        console.log('updatedResult: ', updatedResult);
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully deleted image'
+      });
+
+    } catch (error) {
+      console.log('Error occurred in deleting order!', error);
+      res.status(400).json({
+        success: false,
+        message: error
+      });
+    }
   }
+
+
 };
 
 
