@@ -34,6 +34,17 @@ export class ValidationService {
     }
   };
 
+  nidValidator(control: FormControl): { [s: string]: boolean } {
+    const nid = control.value.replace(/[a-z-]/g, '');
+    if(nid.length !== control.value.length){
+      return {error: true, nid: true};
+    }
+    if(nid.length !== 13 && nid.length !== 17){
+      return {error: true, nid: true};
+    }
+    return null;
+  };
+
   userNameTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkUsername(control.value).map(res => {
