@@ -12,7 +12,6 @@ import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {PaymentService} from "../../../../services/payment.service";
 const moment = _rollupMoment || _moment;
 
-
 @Component({
     selector: 'app-canceled-order',
     templateUrl: './canceled-order.component.html',
@@ -30,7 +29,7 @@ export class CanceledOrderComponent implements OnInit {
     statusSearchValue: any = null;
 
     currentUser: any;
-    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    PAYMENT_STATUS_CHANGE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
     isAllowedToUpdateRefundStatus: boolean = false;
 
     isCancelOrdersBulkVisible = false;
@@ -45,6 +44,15 @@ export class CanceledOrderComponent implements OnInit {
     ImageFrontFile: File[] = [];
     currentOrderId: any;
     currentOrderDueAmount: any;
+
+    orderNumberFilter: string = '';
+    searchStartDate: any;
+    searchEndDate: any;
+    dateSearchValue = {
+        from: null,
+        to: null,
+    }
+    customerNameFilter: string = '';
 
 
     constructor(
@@ -64,7 +72,7 @@ export class CanceledOrderComponent implements OnInit {
 
         this.getPageData();
         this.currentUser = this.authService.getCurrentUser();
-        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+        if(this.currentUser.id == this.PAYMENT_STATUS_CHANGE_ADMIN_USER){
             this.isAllowedToUpdateRefundStatus = true;
         }
     }
@@ -74,14 +82,39 @@ export class CanceledOrderComponent implements OnInit {
         if ($event) {
             this.page = $event;
         }
-        if(this.remove_zero_payment){
-            this.page = 1;
+
+        if (this.searchStartDate) {
+            if (this.searchStartDate.constructor.name === 'Moment') {
+                this.dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                this.dateSearchValue.from = this.searchStartDate;
+            }
+        } else {
+            this.dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
         }
 
-        this.orderService.getCancelledOrder(this.page, this.limit, this.statusSearchValue, this.remove_zero_payment)
+        if (this.searchEndDate) {
+            if (this.searchEndDate.constructor.name === 'Moment') {
+                this.dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else {
+                this.dateSearchValue.to = this.searchEndDate;
+            }
+        } else {
+            this.dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
+        }
+
+        console.log(this.page, this.limit);
+
+        this.orderService.getCancelledOrder(this.page, this.limit, {
+            status: this.statusSearchValue,
+            removeZeroPayment: this.remove_zero_payment,
+            orderIdSearchValue: this.orderNumberFilter,
+            date: JSON.stringify(this.dateSearchValue),
+            customerName: this.customerNameFilter
+        })
             .subscribe(orders => {
                 this._isSpinning = false;
-                this.total = orders.total;
+                this.total = orders.totalOrder;
                 this.cancelledOrders = orders.data;
             });
     }

@@ -548,7 +548,7 @@ export class SuborderComponent implements OnInit {
     //Event method for submitting the form
     submitFormCSV = ($event, value) => {
         // this.isProductVisible = false;
-        this.dowonloadCSV(this.selectedSubOrderIds);
+        this.downloadCSV(this.selectedSubOrderIds);
     }
 
     handleOkPR = e => {
@@ -755,7 +755,7 @@ export class SuborderComponent implements OnInit {
         }) !== -1
     }
 
-    private dowonloadCSV(selectedSubOrderIds) {
+    private downloadCSV(selectedSubOrderIds) {
 
         const getSubOrderStatuses = (allStatuses, subOrderId, status) => {
             if (!__.isEmpty(allStatuses) && !__.isNil(allStatuses[subOrderId]) && !__.isNil(allStatuses[subOrderId][status])) {
@@ -766,7 +766,7 @@ export class SuborderComponent implements OnInit {
         this._isSpinning = true;
         this.suborderItemService.allSubOrderItemsBySubOrderIds(selectedSubOrderIds)
             .subscribe((result: any) => {
-                console.log('dowonloadCSV', result);
+                console.log('downloadCSV', result);
 
                 let allStatuses = null;
                 if (result.subOrderStatuses && result.subOrderStatuses.length > 0) {

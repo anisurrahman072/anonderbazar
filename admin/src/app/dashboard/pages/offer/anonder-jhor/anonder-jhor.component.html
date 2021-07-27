@@ -73,7 +73,7 @@
                                           [uploadedFiles]='AnonderJhorBannerImageFileEdit'
                                           [beforeUpload]="onBeforejhorBannerUpload">
                             </image-upload>
-                            <div *ngIf="!anonderJhorBannerImageFile">
+                            <div *ngIf="!hasJhorBannerImageFile">
                                 Please upload a banner image here!
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                                           [uploadedFiles]='AnonderJhorHomepageBannerImageFileEdit'
                                           [beforeUpload]="onBeforejhorHomepageBannerUpload">
                             </image-upload>
-                            <div *ngIf="!anonderJhorHomepageBannerImageFile">
+                            <div *ngIf="!hasAnonderJhorHomepageBannerImageFile">
                                 Please upload a banner image here!
                             </div>
                         </div>

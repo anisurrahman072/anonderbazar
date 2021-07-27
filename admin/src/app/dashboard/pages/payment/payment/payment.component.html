@@ -3,7 +3,7 @@
         <ng-template #extra>
             <label nz-checkbox [(ngModel)]="partial_offline_payments" (click)="getPageData(partial_offline_payments, regular_offline_payments)">Partial Offline Payments</label>
             <label nz-checkbox [(ngModel)]="regular_offline_payments" (click)="getPageData(partial_offline_payments, regular_offline_payments)">Regular Offline Payments</label>
-            <button *ngIf="'payment-create'| accessControl"
+            <button *ngIf="('payment-create'| accessControl) && isAllowedToUpdatePaymentStatus"
                     routerLink="/dashboard/payment/create" nz-button
                      >
                 <i class="anticon anticon-download"></i><span> Add New </span>
@@ -207,12 +207,12 @@
                                     [nzSize]="'default'">
                                 <i nz-icon type="info-circle" theme="outline"></i>
                             </button>
-                            <button *ngIf="'payment-edit'|accessControl"
+                            <button *ngIf="('payment-edit'|accessControl) && isAllowedToUpdatePaymentStatus"
                                     [routerLink]="['/dashboard/payment/edit', datum.id]" nz-button
                                     [nzSize]="'default'">
                                 <i nz-icon type="edit" theme="outline"></i>
                             </button>
-                            <ng-container *ngIf="'payment-delete'|accessControl">
+                            <!--<ng-container *ngIf="'payment-delete'|accessControl">
                                 <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                [nzOkText]="'Delete'"
                                                [nzCancelText]="'Cancel'"
@@ -223,7 +223,7 @@
                                         </button>
                                     </a>
                                 </nz-popconfirm>
-                            </ng-container>
+                            </ng-container>-->
                         </td>
                     </tr>
                     </tbody>

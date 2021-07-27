@@ -14,6 +14,7 @@ const {
 } = require('../../libs/products-bulk');
 const {asyncForEach, escapeExcel} = require('../../libs/helper');
 const {pagination} = require('../../libs/pagination');
+const moment = require('moment');
 
 module.exports = {
   //Method called for getting all products
@@ -295,6 +296,29 @@ module.exports = {
         let filters = JSON.parse(req.query.filters);
 
         if (filters.searchTerm) {
+          let product = await Product.find({
+            code: filters.searchTerm, status: 2, approval_status: 2, deletedAt: null
+          }).populate('category_id')
+            .populate('subcategory_id')
+            .populate('type_id')
+            .populate('craftsman_id')
+            .populate('product_variants')
+            .populate('product_images')
+            .populate('brand_id')
+            .populate('warehouse_id');
+
+          if (product && product.length > 0) {
+            return res.status(200).json({
+              success: true,
+              message: 'get product in search',
+              total: 1,
+              data: product,
+              limit: _pagination.limit,
+              skip: _pagination.skip,
+              page: _pagination.page
+            });
+          }
+
           _where.or = [
             {name: {contains: filters.searchTerm}}
           ];
@@ -370,6 +394,7 @@ module.exports = {
         .populate('product_images')
         .populate('brand_id')
         .populate('warehouse_id');
+
       return res.status(200).json({
         success: true,
         message: 'get product in search',
@@ -788,13 +813,15 @@ module.exports = {
       allVariants.forEach((variant) => {
         if (variant.warehouseVariants && variant.warehouseVariants.length > 0) {
           variant.warehouseVariants.forEach((warehouseVariant) => {
-            let str = `${variant.name}=>${warehouseVariant.name}`;
-            if (variant.type == 0) {
-              str += `(Price Variation: No)`;
-            } else {
-              str += `(Price Variation: Yes)`;
+            if(!warehouseVariant.deletedAt){
+              let str = `${variant.name}=>${warehouseVariant.name}`;
+              if (variant.type == 0) {
+                str += `(Price Variation: No)`;
+              } else {
+                str += `(Price Variation: Yes)`;
+              }
+              variantSheet.cell(++index, 1).string(variant.id + ',' + warehouseVariant.id + '|' + escapeExcel(str));
             }
-            variantSheet.cell(++index, 1).string(variant.id + ',' + warehouseVariant.id + '|' + escapeExcel(str));
           });
         }
       });
@@ -834,9 +861,9 @@ module.exports = {
         delete columnNamesObject['Disable Cash on Delivery'];
       }
 
-      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC'];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI'];
       if (authUser.group_id.name === 'admin') {
-        letters.splice(letters.length, 0, 'AD', 'AE', 'AF', 'AG', 'AH', 'AI');
+        letters.splice(letters.length, 0, 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO');
       }
       const columnNameKeys = Object.keys(columnNamesObject);
 
@@ -923,7 +950,8 @@ module.exports = {
         LEFT JOIN warehouses_variants  as  warehouseVariant  ON warehouseVariant.id = productVariant.warehouses_variant_id
       `;
 
-      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL `;
+      let _where = ` WHERE products.deleted_at IS NULL AND warehouses.deleted_at IS NULL  AND  productVariant.deleted_at IS NULL AND variant.deleted_at IS NULL
+        AND warehouseVariant.deleted_at IS NULL `;
 
       if (req.query.type_id && req.query.type_id !== 'null') {
         _where += ` AND products.type_id = ${req.query.type_id} `;
@@ -948,9 +976,29 @@ module.exports = {
 
       const rawResult = await productNativeQuery(rawSelect + fromSQL + _where, []);
 
-      console.log('rawResult.rows: ', rawResult.rows);
-
       const products = rawResult.rows;
+
+      /** Find product images */
+      let productIds = _.map(products, 'id');
+      console.log('productIds: ', productIds);
+
+      const productImagesNativeQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawImageSelect = `
+            SELECT
+                products.id as id,
+                GROUP_CONCAT(images.image_path) as imagePaths
+            `;
+      let fromImageSQL = ` FROM products
+            LEFT JOIN product_images  as  images  ON images.product_id = products.id
+            `;
+      let _imagesWhere = ' WHERE products.deleted_at IS NULL AND images.deleted_at IS NULL  AND products.id IN ('+ productIds.join() +')  GROUP BY products.id ';
+      let productsWithImageResult = await productImagesNativeQuery(rawImageSelect + fromImageSQL + _imagesWhere, []);
+
+      let productsWithImages = productsWithImageResult.rows;
+
+      let idWiseProductsWithImages = _.groupBy(productsWithImages, 'id');
+      console.log('idWiseProductsWithImages:  ', idWiseProductsWithImages);
+      /** Find product images END */
 
       /* let products = await Product.find(
         {
@@ -1034,7 +1082,38 @@ module.exports = {
           ws.cell(row, column++).string(null);
         }
 
+        /** Add Product Images */
+        if(item.image){
+          ws.cell(row, column++).string(item.image).style(myStyle);
+        }
+        else {
+          ws.cell(row, column++).string(null);
+        }
 
+        let productWithImages = idWiseProductsWithImages[`${item.id}`];
+        if(productWithImages && productWithImages.length > 0 && productWithImages[0].imagePaths && productWithImages[0].imagePaths.split(',').length > 0){
+          let images = productWithImages[0].imagePaths.split(',');
+          let imageCount = images.length;
+
+          for(let imgIndex = 0; imgIndex < imageCount; imgIndex++){
+            ws.cell(row, column++).string(images[imgIndex]).style(myStyle);
+          }
+        }
+
+        // Currently we are giving 5 Image options for each product
+        let unusedImageColumn = 5;
+        if(productWithImages && productWithImages[0].imagePaths && productWithImages[0].imagePaths.split(',').length <= unusedImageColumn){
+          unusedImageColumn = unusedImageColumn - productWithImages[0].imagePaths.split(',').length;
+        }
+        if(unusedImageColumn > 0){
+          for(let imageIndex = 0; imageIndex < unusedImageColumn; imageIndex++){
+            column++;
+          }
+        }
+        /** Add Product Images END */
+
+
+        /** Add product variants */
         if (item.productVariantId && item.productVariantId.split(',').length > 0) {
           let productVariantId = item.productVariantId.split(',');
           let productVariantLabel = item.productVariantLabel.split(',');
@@ -1045,8 +1124,6 @@ module.exports = {
           let warehouseVariantId = item.warehouseVariantId.split(',');
           let warehouseVariantName = item.warehouseVariantName.split(',');
           let productVariantsLength = productVariantId.length;
-
-          console.log('tttttt', productVariantId, productVariantLabel, productVariantQty, variantId, variantName, variantType, warehouseVariantId, warehouseVariantName);
 
           for (let ind = 0; ind < productVariantsLength; ind++) {
             ws.cell(row, column++).string(productVariantId[ind]);
@@ -1059,11 +1136,20 @@ module.exports = {
             ws.cell(row, column++).string(variantId[ind] + ',' + warehouseVariantId[ind] + '|' + escapeExcel(str));
             let variantInfo = productVariantLabel[ind] + ' | ' + productVariantQty[ind];
             ws.cell(row, column++).string(variantInfo);
-            console.log('111111111: ', item.id, ind, str, variantInfo);
           }
         }
-        row++;
 
+        // Currently 6 variants can be added for each product. For each variants 3 columns needed.
+        // So 6*3 = 18 columns are used for product variants in Excel file.
+        let unusedVariantColumns = 18;
+        if(item.productVariantId && item.productVariantId.split(',').length * 3 < unusedVariantColumns){
+          unusedVariantColumns = unusedVariantColumns - item.productVariantId.split(',').length * 3;
+        }
+        for(let variantIndex = 0; variantIndex < unusedVariantColumns; variantIndex++){
+          column++;
+        }
+        /** Add product variants END*/
+        row++;
       });
 
       wb.write('Excel-' + Date.now() + '.xlsx', res);
@@ -1160,10 +1246,15 @@ module.exports = {
         }
 
         if (req.body[i].tag) {
-          const tagArr = req.body[i].tag.split(',').map((t) => {
-            return t.trim();
-          });
-          product.tag = JSON.stringify(tagArr);
+          if(_.isString(req.body[i].tag)){
+            product.tag = req.body[i].tag;
+          }
+          else {
+            const tagArr = req.body[i].tag.split(',').map((t) => {
+              return t.trim();
+            });
+            product.tag = tagArr;
+          }
         }
 
         if (req.body[i].brand_id && req.body[i].brand_id.indexOf('|') !== -1) {
@@ -1180,6 +1271,7 @@ module.exports = {
         product.free_shipping = req.body[i].free_shipping;
         product.partially_payable = req.body[i].partially_payable;
         product.disable_cash_on_delivery = req.body[i].disable_cash_on_delivery;
+        product.image = req.body[i].image ? req.body[i].image : null;
 
         if (req.body[i].promo_price > 0) {
           product.promo_price = parseFloat(req.body[i].promo_price);
@@ -1199,6 +1291,30 @@ module.exports = {
         if (req.body[i].allVariants && req.body[i].allVariants.length > 0) {
           product.allVariants = req.body[i].allVariants;
         }
+
+        let productImages = '';
+        if(req.body[i].image1){
+          productImages += req.body[i].image1;
+        }
+        if(req.body[i].image2){
+          productImages = productImages ? productImages+',' : '';
+          productImages += req.body[i].image2;
+        }
+        if(req.body[i].image3){
+          productImages = productImages ? productImages+',' : '';
+          productImages += req.body[i].image3;
+        }
+        if(req.body[i].image4){
+          productImages = productImages ? productImages+',' : '';
+          productImages += req.body[i].image4;
+        }
+        if(req.body[i].image5){
+          productImages = productImages ? productImages+',' : '';
+          productImages += req.body[i].image5;
+        }
+        product.productImages = productImages;
+        console.log('productImages: ', productImages);
+
       }
 
       for (let key in productsIndex) {
@@ -1210,6 +1326,7 @@ module.exports = {
           subcategory_id: product.subcategory_id,
           warehouse_id: product.warehouse_id,
           name: product.name,
+          image: product.image,
           product_details: product.product_details,
           brand_id: product.brand_id,
           price: product.price,
@@ -1250,6 +1367,7 @@ module.exports = {
                 });
                 console.log('updatedVariant: ', updatedVariant);
               } else {
+                console.log('error in variant: ', product.id, product.allVariants[variantIndex].id, productVariant);
                 res.status(400).json({
                   message: `Variant ID has been mis-matched for Product Code: ${product.code}`
                 });
@@ -1266,6 +1384,38 @@ module.exports = {
             }
           }
         }
+
+        /** Update Images based on conditions  */
+        let existingImages = await ProductImage.find({product_id: product.id, deletedAt: null});  // existing images means how many images are in database for this product
+        let existingImageIds = _.map(existingImages, 'id');
+        console.log('existingImageIds: ', existingImageIds);
+        if(product.productImages && product.productImages.split(',').length > 0){
+          let givenImagesCount = product.productImages.split(',').length;  // given images means how many images are in excel sheet for this product
+
+          if(givenImagesCount <= existingImages.length){
+            for(let imgIndex = 0; imgIndex < givenImagesCount; imgIndex++){
+              await ProductImage.update({id: existingImageIds[imgIndex]}, {image_path: product.productImages.split(',')[imgIndex]});
+            }
+            await ProductImage.update({id: existingImageIds.slice(givenImagesCount)}, {deletedAt: moment().format('YYYY-MM-DD HH:mm:ss')});
+
+          } else if(givenImagesCount > existingImages.length){
+            let imgIndex = 0;
+            for(imgIndex; imgIndex < existingImages.length; imgIndex++){
+              await ProductImage.update({id: existingImageIds[imgIndex]}, {image_path: product.productImages.split(',')[imgIndex]});
+            }
+            for(imgIndex; imgIndex < givenImagesCount; imgIndex++){
+              await ProductImage.create({product_id: product.id, image_path: product.productImages.split(',')[imgIndex]});
+            }
+
+          }
+        } else if(!product.productImages || product.productImages.split(',').length === 0){
+          if(existingImageIds.length > 0){
+            await ProductImage.update({product_id: product.id}, {deletedAt: moment().format('YYYY-MM-DD HH:mm:ss')});
+          }
+
+        }
+        /** Update Images based on conditions END  */
+
         count++;
       }
 
@@ -1274,6 +1424,7 @@ module.exports = {
         message: 'Number of Products successfully updated: ' + count,
       });
     } catch (error) {
+      console.log('Error in bulk update: ', error);
       res.status(400).json({
         success: false,
         error

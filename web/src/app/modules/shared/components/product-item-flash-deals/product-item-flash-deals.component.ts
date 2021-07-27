@@ -76,14 +76,14 @@ export class ProductItemFlashDealComponent implements OnInit {
 
     //Method for add to cart
     clickToImage(event, productId) {
-        console.log('clicktoimage', event, productId);
+        /*console.log('clicktoimage', event, productId);*/
         this.router.navigate(['/product-details/', productId]);
     }
 
     //Method for add to cart
     addToCartClickHandler(event: any, product: any) {
         event.stopPropagation();
-        console.log('addToCartClickHandler');
+        /*console.log('addToCartClickHandler');*/
         this.addToCart(product);
     }
 

@@ -33,32 +33,32 @@
                 </div>
             </div>
             <!--image section-->
-            <div nz-row *ngIf="ImageFileEdit">
+            <div nz-row *ngIf="ImageFilePath">
                 <div nz-col [nzSpan]="7">
                     <label>Offer Main Image</label>
                 </div>
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onRemoved($event)"
-                                  [uploadedFiles]='ImageFileEdit'
+                                  [uploadedFiles]='ImageFilePath'
                                   [beforeUpload]="onBeforeUpload">
                     </image-upload>
-                    <div *ngIf="!ImageFile">
+                    <div *ngIf="!hasImageFile">
                         Please upload an image here!
                     </div>
                 </div>
             </div>
 
             <!--Offer Image Beside Carousel: smallOfferImage-->
-            <div nz-row *ngIf="ImageFileEdit">
+            <div nz-row *ngIf="SmallOfferImageFilePath">
                 <div nz-col [nzSpan]="7">
                     <label>Offer Image Beside Carousel</label>
                 </div>
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onRemoveSmallOfferImage($event)"
-                                  [uploadedFiles]='smallOfferImageEdit'
+                                  [uploadedFiles]='SmallOfferImageFilePath'
                                   [beforeUpload]="onBeforeUploadImage">
                     </image-upload>
-                    <div *ngIf="!ImageFile">
+                    <div *ngIf="!hasSmallOfferImageFile">
                         Please upload an image here!
                     </div>
                 </div>
@@ -92,10 +92,10 @@
                 </div>
                 <div nz-col [nzSpan]="12">
                     <image-upload [max]="1" (removed)="onBannerRemoved($event)"
-                                  [uploadedFiles]='BannerImageFileEdit'
+                                  [uploadedFiles]='BannerImageFilePath'
                                   [beforeUpload]="onBeforeBannerUpload">
                     </image-upload>
-                    <div *ngIf="!ImageFile">
+                    <div *ngIf="!hasBannerImageFile">
                         Please upload a banner image here!
                     </div>
                 </div>

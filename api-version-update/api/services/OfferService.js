@@ -4,17 +4,24 @@ const moment = require('moment');
 module.exports = {
   /** Calculate a product price according to offer*/
   calcProductOfferPrice: async function (product) {
-    let productFinalPrice;
+    let productUnitPrice = product.price;
+
+    let variantAdditionalPrice = await PaymentService.calculateItemVariantPrice(product.itemVariant);
+    if(variantAdditionalPrice){
+      productUnitPrice += variantAdditionalPrice;
+    }
+    /*console.log('After calculate the variant price: ', productUnitPrice);*/
+
+
+    let productFinalPrice = productUnitPrice * product.quantity;
     let offerProducts = await this.getAllOfferedProducts();
 
-    if (!(offerProducts && !_.isUndefined(offerProducts[product.id]) && offerProducts[product.id])) {
-      productFinalPrice = product.price * product.quantity;
-    } else {
+    if (offerProducts && !_.isUndefined(offerProducts[product.id]) && offerProducts[product.id]) {
       if (offerProducts && offerProducts[product.id].calculation_type === 'absolute') {
-        let productPrice = product.price - offerProducts[product.id].discount_amount;
+        let productPrice = productUnitPrice - offerProducts[product.id].discount_amount;
         productFinalPrice = productPrice * product.quantity;
       } else {
-        let productPrice = product.price - (product.price * (offerProducts[product.id].discount_amount / 100.0));
+        let productPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerProducts[product.id].discount_amount / 100.0)));
         productFinalPrice = productPrice * product.quantity;
       }
     }

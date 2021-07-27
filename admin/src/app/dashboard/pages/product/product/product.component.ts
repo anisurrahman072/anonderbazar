@@ -759,12 +759,17 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     generateExcel($event: any, value: any) {
-        this.isProductVisible = false;
         if (!(this.storedExcelProducts.length > 0)){
             return false;
         }
 
         let allStoredProducts = ___.flatten(this.storedExcelProducts);
+        if(allStoredProducts.length <= 0) {
+            this._notification.warning('\uD83D\uDE00', 'Please select product first');
+            return false;
+        }
+        this.isProductVisible = false;
+
         let excelData = [];
 
         allStoredProducts.forEach(product => {

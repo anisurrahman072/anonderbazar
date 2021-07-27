@@ -214,24 +214,23 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                         console.log(err);
                         this.toastr.error('Unable to update cart data', 'Sorry!');
                     });*/
-                    // TODO: load cart with 200ms
                     setTimeout(() => {
                         this.store.dispatch(new fromStore.LoadCart());
-                            this.cart$.subscribe((cartData) => {
-                                console.log('cartDataee', cartData);
-                                if (cartData) {
-                                    this.cartData = cartData;
-                                    console.log("Cart info: ", cartData);
-                                    this.setShippingCharge();
-                                } else {
-                                    this.cartData = null;
-                                }
-                                this.updateGrandTotal();
-                                this.addPageTitle();
-                            }, (err) => {
-                                console.log(err);
-                                this.toastr.error('Unable to update cart data', 'Sorry!');
-                            });
+                        this.cart$.subscribe((cartData) => {
+                            console.log('cartData', cartData);
+                            if (cartData) {
+                                this.cartData = cartData;
+                                console.log("Cart info: ", cartData);
+                                this.setShippingCharge();
+                            } else {
+                                this.cartData = null;
+                            }
+                            this.updateGrandTotal();
+                            this.addPageTitle();
+                        }, (err) => {
+                            console.log(err);
+                            this.toastr.error('Unable to update cart data', 'Sorry!');
+                        });
                     }, 1000);
 
                     return this.areaService.getAllDivision();

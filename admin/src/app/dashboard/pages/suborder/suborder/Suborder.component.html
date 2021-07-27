@@ -175,8 +175,7 @@
           [nzContent]="modalProductContent"
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <ng-template #modalProductContent>
-        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm"
-              (ngSubmit)="submitFormCSV($event,validateProductForm.value)">
+        <form nz-form [nzLayout]="'inline'" [formGroup]="validateProductForm">
             <nz-spin [nzSpinning]="_isSpinningCsv">
                 <nz-table #nzTableCsv [nzBordered]="true" [nzData]="subOrdersForCsv"
                           nzShowQuickJumper
@@ -238,7 +237,8 @@
             <div>
                 <div>
                     <button nz-button class="login-form-button" [nzSize]="'large'"
-                            [disabled]="!validateProductForm.valid">
+                            [disabled]="!validateProductForm.valid"
+                            type="button" (click)="submitFormCSV($event,validateProductForm.value)">
                         Create CSV
                     </button>
                 </div>
