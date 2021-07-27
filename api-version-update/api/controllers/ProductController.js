@@ -34,7 +34,7 @@ module.exports = {
           .populate('product_images', {deletedAt: null})
           .populate('product_variants', {deletedAt: null});
 
-        console.log('My product: ', product);
+        /*console.log('My product: ', product);*/
 
         if (!product || product.approval_status != APPROVED_PRODUCT_APPROVAL_STATUS || product.deletedAt) {
           return res.status(400).json({

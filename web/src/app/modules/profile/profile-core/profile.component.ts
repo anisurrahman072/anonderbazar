@@ -134,7 +134,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         this.loaderService.showLoader();
         this.userService.getByIdForDashBoard(this.authService.getCurrentUserId()).subscribe(result => {
             this.dashboardData = result;
-            console.log(' this.user', result, this.user);
+            /*console.log(' this.user', result, this.user);*/
             this.user = result.data;
             this.loaderService.hideLoader();
             this.pendingCount = this.dashboardData.pendingOrder;
@@ -153,7 +153,7 @@ export class ProfileComponent implements OnInit, OnDestroy  {
         });
 
         this.currentUser$.subscribe((res)=> {
-            console.log(' this.currentUser$.subscribe', res);
+            /*console.log(' this.currentUser$.subscribe', res);*/
             this.user = res;
 
             if(res){

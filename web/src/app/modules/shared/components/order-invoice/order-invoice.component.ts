@@ -116,12 +116,12 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                         this.paymentAddress = paymentAddress;
                     });
                     this.paymentAddressService.getById(this.data.shipping_address.id).subscribe(shippingAddress => {
-                        console.log('this.shippingAddress', this.shippingAddress)
+                        /*console.log('this.shippingAddress', this.shippingAddress)*/
                         this.shippingAddress = shippingAddress;
                     });
 
-                    console.log('order', this.data);
-                    console.log('payment', this.payment);
+                    /*console.log('order', this.data);
+                    console.log('payment', this.payment);*/
 
                     this.globalPartialPaymentDuration = configData.partial_payment_duration;
 

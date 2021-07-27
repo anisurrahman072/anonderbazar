@@ -232,7 +232,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
             this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
-            console.log('product details: ddddd', this.data);
+            /*console.log('product details: ddddd', this.data);*/
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');
@@ -354,7 +354,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         this._progress.start("mainLoader");
         let product_total_price: number = (this.unitPrice + this.variantCalculatedTotalPrice) * this.product_quantity;
-        console.log("product_total_price: ", product_total_price);
+        /*console.log("product_total_price: ", product_total_price);*/
 
         let variants = [];
         let dataPayload = {};
@@ -390,7 +390,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 offerInfo
             };
         }
-        console.log('payload: ', dataPayload);
+        /*console.log('payload: ', dataPayload);*/
         this.cartItemService
             .insert(dataPayload)
             .subscribe(
@@ -560,7 +560,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.variantCalculatedPrice.map(vp => {
             this.variantCalculatedTotalPrice += vp.quantity
         });
-        console.log('this.variantCalculatedPrice', this.variantCalculatedPrice)
+        /*console.log('this.variantCalculatedPrice', this.variantCalculatedPrice)*/
         this.updateFinalprice();
     }
 

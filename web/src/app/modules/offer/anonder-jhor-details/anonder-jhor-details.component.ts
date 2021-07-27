@@ -64,11 +64,11 @@ export class AnonderJhorDetailsComponent implements OnInit {
         if (this.offerId) {
             this.offerService.getWebAnonderJhorOfferById(this.offerId, sortData)
                 .subscribe(result => {
-                    console.log('getWebAnonderJhorOfferById result: ', result);
+                    /*console.log('getWebAnonderJhorOfferById result: ', result);*/
                     this.anonderJhorOffer = result.data[0];
                     this.anonderJhorOfferProducts = result.data[1];
                     this.anonderJhorOfferProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
-                    console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);
+                    /*console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);*/
 
                     let presentTime = (new Date(Date.now())).getTime();
                     let startTime =  new Date(this.anonderJhorOffer.start_date).getTime();

@@ -51,7 +51,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.presentTime = new Date().getTime();
         this.offerService.getAnonderJhorAndOffers()
             .subscribe(result => {
-                console.log('jhor and offers result: ', result);
+                /*console.log('jhor and offers result: ', result);*/
                 if (result && result.data) {
                     if (result.data[0]) {
                         this.anonderJhor = result.data[0];
@@ -70,12 +70,12 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     }
                     if (result.data[1]) {
                         this.anonderJhorOffers = result.data[1];
-                        console.log('anonder jhor offers', this.anonderJhorOffers);
+                        /*console.log('anonder jhor offers', this.anonderJhorOffers);*/
 
                         this.anonderJhorOffers.forEach(offers => {
                             this.offerStartTime[offers.id] = new Date(offers.start_date).getTime();
                             this.offerEndTime[offers.id] = new Date(offers.end_date).getTime();
-                            console.log('this.offerStartTime[offers.id]', offers.id, this.offerStartTime[offers.id]);
+                            /*console.log('this.offerStartTime[offers.id]', offers.id, this.offerStartTime[offers.id]);*/
 
                             this.jhorOffersRemainingTime[offers.id] = this.offerEndTime[offers.id] - this.presentTime;
                             /*if (this.jhorOffersRemainingTime[offers.id] > 0) {
@@ -89,7 +89,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                                 offers.banner_name = offers.category_id.name;
                             }
                         })
-                        console.log('banner name added: ', this.anonderJhorOffers);
+                        /*console.log('banner name added: ', this.anonderJhorOffers);*/
                         this.offerEndsIn();
                     }
                 }

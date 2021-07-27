@@ -39,7 +39,7 @@ export class ValidationService {
     if(nid.length !== control.value.length){
       return {error: true, nid: true};
     }
-    if(nid.length !== 13 && nid.length !== 17){
+    if(nid.length !== 10 && nid.length !== 13 && nid.length !== 17){
       return {error: true, nid: true};
     }
     return null;

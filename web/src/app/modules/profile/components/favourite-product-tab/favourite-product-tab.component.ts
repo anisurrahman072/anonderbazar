@@ -35,7 +35,7 @@ export class FavouriteProductTabComponent implements OnInit {
             this.favouriteProductService.getByAuthUser()
                 .subscribe((favProducts) => {
                     this.favouriteProducts = favProducts;
-                    console.log(this.favouriteProducts);
+                    /*console.log(this.favouriteProducts);*/
                 }, (error) => {
                     console.log(error);
                 })
