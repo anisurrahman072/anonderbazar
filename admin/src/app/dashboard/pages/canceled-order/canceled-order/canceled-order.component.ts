@@ -29,7 +29,7 @@ export class CanceledOrderComponent implements OnInit {
     statusSearchValue: any = null;
 
     currentUser: any;
-    ORDER_STATUS_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.ORDER_STATUS_CHANGE_ADMIN_USER;
+    PAYMENT_STATUS_CHANGE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
     isAllowedToUpdateRefundStatus: boolean = false;
 
     isCancelOrdersBulkVisible = false;
@@ -72,7 +72,7 @@ export class CanceledOrderComponent implements OnInit {
 
         this.getPageData();
         this.currentUser = this.authService.getCurrentUser();
-        if(this.currentUser.id == this.ORDER_STATUS_UPDATE_ADMIN_USER){
+        if(this.currentUser.id == this.PAYMENT_STATUS_CHANGE_ADMIN_USER){
             this.isAllowedToUpdateRefundStatus = true;
         }
     }
