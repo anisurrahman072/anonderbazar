@@ -88,7 +88,7 @@ export class OfferService {
     }
 
     checkIndividualProductsCodesValidity(codes): Observable<any> {
-        return this.http.get(`${this.EndPoint}/checkIndividualProductsCodesValidity?codes=${codes}`);
+        return this.http.post(`${this.EndPoint}/checkIndividualProductsCodesValidity`, codes);
     }
 
     generateExcel(): Observable<any> {
