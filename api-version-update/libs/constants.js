@@ -1,3 +1,4 @@
+/** Payment constants */
 exports.CASH_PAYMENT_TYPE = 'Cash';
 exports.CASHBACK_PAYMENT_TYPE = 'CashBack';
 exports.SSL_COMMERZ_PAYMENT_TYPE = 'SSLCommerce';
@@ -5,22 +6,6 @@ exports.BKASH_PAYMENT_TYPE = 'bKash';
 exports.NAGAD_PAYMENT_TYPE = 'Nagad';
 exports.OFFLINE_PAYMENT_TYPE = 'OfflinePay';
 exports.ADMIN_PAYMENT_PAYMENT_TYPE = 'AdminPayment';
-
-exports.REGULAR_ORDER_TYPE = 1;
-exports.PARTIAL_ORDER_TYPE = 2;
-
-exports.ORDER_REFUNDED_STATUS = 1;
-exports.ORDER_NOT_REFUNDED_STATUS = 0;
-
-exports.PAYMENT_STATUS_UNPAID = 1;
-exports.PAYMENT_STATUS_PARTIALLY_PAID = 2;
-exports.PAYMENT_STATUS_PAID = 3;
-exports.PAYMENT_STATUS_NA = 4;
-
-exports.PAYMENT_TRAN_TYPE_PAY = 1;
-exports.PAYMENT_TRAN_TYPE_REFUND = 2;
-
-exports.CANCELED_ORDER = 12;
 
 exports.BANK_TRANSFER_OFFLINE_PAYMENT = 'bankTransfer';
 exports.CASH_IN_ADVANCE_OFFLINE_PAYMENT = 'cashInAdvance';
@@ -31,16 +16,45 @@ exports.PENDING_PAYMENT_APPROVAL_STATUS = 1;
 exports.APPROVED_PAYMENT_APPROVAL_STATUS = 2;
 exports.REJECTED_PAYMENT_APPROVAL_STATUS = 3;
 
+exports.PAYMENT_TRAN_TYPE_PAY = 1;
+exports.PAYMENT_TRAN_TYPE_REFUND = 2;
+
+/** Order constants */
+exports.REGULAR_ORDER_TYPE = 1;
+exports.PARTIAL_ORDER_TYPE = 2;
+
+exports.PAYMENT_STATUS_UNPAID = 1;
+exports.PAYMENT_STATUS_PARTIALLY_PAID = 2;
+exports.PAYMENT_STATUS_PAID = 3;
+exports.PAYMENT_STATUS_NA = 4;
+
 exports.PENDING_SOME_OFFLINE_PAYMENTS_APPROVAL_STATUS = 1;
 exports.CONFIRMED_ALL_OFFLINE_PAYMENTS_APPROVAL_STATUS = 2;
 exports.NOT_APPLICABLE_OFFLINE_PAYMENTS_APPROVAL_STATUS = 3;
 
+exports.ORDER_REFUNDED_STATUS = 1;
+exports.ORDER_NOT_REFUNDED_STATUS = 0;
+
+exports.CANCELED_ORDER = 12;
+
+/** Product constants */
+exports.PENDING_PRODUCT_APPROVAL_STATUS = 1;
+exports.APPROVED_PRODUCT_APPROVAL_STATUS = 2;
+exports.REJECTED_PRODUCT_APPROVAL_STATUS = 99;
+
+/** User Roll Management Constants */
 exports.ADMIN_USER_GROUP_NAME = 'admin';
 exports.CUSTOMER_USER_GROUP_NAME = 'customer';
 exports.SUPPLIER_USER_GROUP_NAME = 'supplier';
 exports.OWNER_USER_GROUP_NAME = 'owner';
 
-/** Offer Section constants */
+/** Warehouse constants */
+exports.PENDING_WAREHOUSE_STATUS = 0;
+exports.PROCESSING_WAREHOUSE_STATUS = 1;
+exports.ACTIVE_WAREHOUSE_STATUS = 2;
+exports.INACTIVE_WAREHOUSE_STATUS = 3;
+
+/** Offer constants */
 exports.REGULAR_OFFER_TYPE = 1;
 exports.ANONDER_JHOR_OFFER_TYPE = 2;
 

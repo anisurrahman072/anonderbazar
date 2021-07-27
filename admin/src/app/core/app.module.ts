@@ -62,6 +62,7 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import {CouponLotteryService} from "../services/coupon-lottery.service";
 import {QuestionsService} from "../services/questions.service";
+import {ImageService} from "../services/image.service";
 registerLocaleData(en);
 
 @NgModule({
@@ -127,6 +128,7 @@ registerLocaleData(en);
         CouponLotteryService,
         ChatService,
         QuestionsService,
+        ImageService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,

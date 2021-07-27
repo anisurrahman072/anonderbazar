@@ -655,7 +655,7 @@ export class CategoryPageComponent implements OnInit {
         // this.loaderService.showLoader();
         this.filterSearchSub = this.filterSearchObservable()
             .subscribe(result => {
-                console.log('generateSearchFilterResult-result', result);
+                /*console.log('generateSearchFilterResult-result', result);*/
                 this.allProductsByCategory = result.data.filter(product => {
                     return product.warehouse_id.status === WAREHOUSE_STATUS.ACTIVE
                 });
@@ -807,7 +807,7 @@ export class CategoryPageComponent implements OnInit {
         this.changeStatusPr = true;
         this.sortTitle = 'price';
         this.sortTerm = (this.sortTerm == '0') ? '1' : '0';
-        console.log('this.sortTerm==>', this.sortTerm);
+        /*console.log('this.sortTerm==>', this.sortTerm);*/
         this.generateSearchFilterResult();
     }
 

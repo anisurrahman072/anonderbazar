@@ -142,7 +142,7 @@ exports.uploadImages = (imageFile) => {
   return new Promise((resolve, reject) => {
     imageFile.upload(imageUploadConfig(), async (err, uploaded) => {
       if (err) {
-        console.log(err);
+        console.log('image upload error: ', err);
         reject(err);
       } else {
         resolve(uploaded);
@@ -150,6 +150,7 @@ exports.uploadImages = (imageFile) => {
     });
   });
 };
+
 exports.uploadImagesWithConfig = (imageFile, customConfig) => {
   let config = imageUploadConfig();
   config = {

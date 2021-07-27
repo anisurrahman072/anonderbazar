@@ -10,6 +10,7 @@ import {environment} from "../../environments/environment";
 export class DesignImagesService {
 
     private EndPoint = `${environment.API_ENDPOINT}/designimages`;
+    private EndPoint2 = `${environment.API_ENDPOINT}/image`;
 
     constructor(private http: HttpClient,
                 private authenticationService: AuthService) {
@@ -55,5 +56,13 @@ export class DesignImagesService {
     getSingleImageByCombination(productId, combination: any) {
 
         return this.http.get(`${this.EndPoint}/getSingleByProductId/${productId}?combination=${combination}`)
+    }
+
+    insertImage(data): Observable<any> {
+        return this.http.put(`${this.EndPoint2}/insert-image`, data);
+    }
+
+    deleteImage(data): Observable<any> {
+        return this.http.put(`${this.EndPoint2}/delete-image`, data);
     }
 }

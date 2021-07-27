@@ -241,7 +241,7 @@ export class ProductDescriptionComponent implements OnInit {
     private canRateProduct(userID, productID) {
         this.productService.canRateProduct(userID, productID)
             .subscribe(result => {
-                console.log('canRateProduct', result.canRateProduct);
+                /*console.log('canRateProduct', result.canRateProduct);*/
                 if (!___.isUndefined(result) && !___.isUndefined(result.canRateProduct) && ___.isArray(result.canRateProduct) && result.canRateProduct.length >= 1) {
                     this.reviewSection = true;
                 }

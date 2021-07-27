@@ -57,6 +57,11 @@ module.exports = {
       columnType: 'varchar',
       allowNull: true,
     },
+    show_in_nav: {
+      type: 'boolean',
+      columnType: 'integer',
+      defaultsTo: false
+    },
   },
   tableName: 'categories',
 

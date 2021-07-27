@@ -192,7 +192,7 @@ export class OrderTabComponent implements OnInit {
                 .subscribe(data => {
                     this.loadAllOrders(data);
                     this.loaderService.hideLoader();
-                    console.log('Successfully deleted the product');
+                    /*console.log('Successfully deleted the product');*/
                     this._notify.success('Successfully cancelled the order the order!');
                 }, error => {
                     this.loaderService.hideLoader();
