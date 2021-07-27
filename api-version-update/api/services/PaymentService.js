@@ -200,7 +200,7 @@ module.exports = {
             let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
             productFinalPrice = productPrice * cartItem.product_quantity;
           } else {
-            let productPrice = productUnitPrice - (productUnitPrice * (offerProducts[cartItem.product_id.id].discount_amount / 100.0));
+            let productPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerProducts[cartItem.product_id.id].discount_amount / 100.0)));
             productFinalPrice = productPrice * cartItem.product_quantity;
           }
         }

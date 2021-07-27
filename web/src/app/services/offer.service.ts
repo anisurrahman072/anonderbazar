@@ -39,7 +39,7 @@ export class OfferService {
         if (calculationType === 'absolute') {
             return originalPrice - discountAmount;
         } else {
-            return originalPrice - (originalPrice * (discountAmount / 100.0));
+            return Math.ceil( originalPrice - (originalPrice * (discountAmount / 100.0)));
         }
     }
 

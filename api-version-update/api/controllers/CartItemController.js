@@ -192,7 +192,7 @@ module.exports = {
         if(offerInfo.calculation_type === 'absolute') {
           productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
         }else {
-          productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0));
+          productUnitPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0)));
         }
       }
 

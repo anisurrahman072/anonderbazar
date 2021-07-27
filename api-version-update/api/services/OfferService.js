@@ -10,7 +10,7 @@ module.exports = {
     if(variantAdditionalPrice){
       productUnitPrice += variantAdditionalPrice;
     }
-    console.log('After calculate the variant price: ', productUnitPrice);
+    /*console.log('After calculate the variant price: ', productUnitPrice);*/
 
 
     let productFinalPrice = productUnitPrice * product.quantity;
@@ -21,7 +21,7 @@ module.exports = {
         let productPrice = productUnitPrice - offerProducts[product.id].discount_amount;
         productFinalPrice = productPrice * product.quantity;
       } else {
-        let productPrice = productUnitPrice - (productUnitPrice * (offerProducts[product.id].discount_amount / 100.0));
+        let productPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerProducts[product.id].discount_amount / 100.0)));
         productFinalPrice = productPrice * product.quantity;
       }
     }
