@@ -24,7 +24,7 @@ export class CategoryProductComponent implements OnInit {
     codeSearchValue: string = '';
     idSearchValue: string = '';
     sortValue = 'DESC';
-    sortKey = 'child_count';
+    sortKey = 'id';
 
     subcategorySearchOptions: any;
     categorySearchOptions: any[] = [];
@@ -93,7 +93,7 @@ export class CategoryProductComponent implements OnInit {
         this.limit = 5;
         this.page = 1;
         this.nameSearchValue = '';
-        this.sortKey = 'child_count';
+        this.sortKey = 'id';
         this.sortValue = 'DESC';
         this.categoryId = null;
         this.subcategoryId = null;
