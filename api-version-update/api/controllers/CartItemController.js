@@ -178,29 +178,30 @@ module.exports = {
 */
       let offeredProducts = await OfferService.getAllOfferedProducts();
 
-      let cartItems = await CartItem.find({
+      let previousCartItems = await CartItem.find({
         cart_id: req.body.cart_id,
-        product_id: req.body.product_id,
         deletedAt: null
       }).populate('product_id');
 
       let offerIdNumber;
       let offerType;
 
-      for(let i=0; i < cartItems.length; i++){
+      for(let i=0; i < previousCartItems.length; i++){
         let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
-          id: cartItems[i].product_id.id,
-          type_id: cartItems[i].product_id.type_id,
-          category_id: cartItems[i].product_id.category_id,
-          subcategory_id: cartItems[i].product_id.subcategory_id,
-          brand_id: cartItems[i].product_id.brand_id,
-          warehouse_id: cartItems[i].product_id.warehouse_id
+          id: previousCartItems[i].product_id.id,
+          type_id: previousCartItems[i].product_id.type_id,
+          category_id: previousCartItems[i].product_id.category_id,
+          subcategory_id: previousCartItems[i].product_id.subcategory_id,
+          brand_id: previousCartItems[i].product_id.brand_id,
+          warehouse_id: previousCartItems[i].product_id.warehouse_id
         }, offeredProducts);
+
+        console.log('firssssttt: ', i, offer_id_number, offer_type, previousCartItems[i]);
 
         if(i > 0){
           if(offerIdNumber !== offer_id_number || offerType !== offer_type){
             console.log('Asessse111');
-            return res.badRequest('Different offer products or an offer product with regular a product can\'t be added at a time in your cart!');
+            return res.badRequest('Different offer products or an offer product with regular product can\'t be added at a time in your cart!');
           }
         }
 
@@ -217,9 +218,13 @@ module.exports = {
         warehouse_id: product.warehouse_id
       }, offeredProducts);
 
-      if(cartItems && cartItems.length > 0 && (offerIdNumber !== offer_id_number || offerType !== offer_type)){
-        console.log('Asessse222');
-        return res.badRequest('Different offer products or an offer product with regular a product can\'t be added together in your cart!');
+      if(previousCartItems && previousCartItems.length > 0 && (offerIdNumber !== offer_id_number || offerType !== offer_type)) {
+        console.log('Asessse222', offerIdNumber, offerType, offer_id_number, offer_type);
+        return res.status(400).json({
+          success: false,
+          code: 'CartItemNotAllowed',
+          message: 'Different offer products or an offer product with regular product can\'t be added together in your cart!'
+        });
       }
 
       let offerInfo = req.body.offerInfo;
@@ -236,7 +241,11 @@ module.exports = {
       }
 
 
-
+      let cartItems = await CartItem.find({
+        cart_id: req.body.cart_id,
+        product_id: req.body.product_id,
+        deletedAt: null
+      });
 
       let selectedCartItem = null;
       let cartItemVariantsLength = 0;
@@ -251,7 +260,7 @@ module.exports = {
               if (!(selectedCartItem !== null && cartItemVariants.length === (i + 1) && cartItemVariantsLength < 1)) {
                 let cartItemVar = cartItemVariants[i];
                 cartItemVar.cart_item_id = cartItems[h].id;
-                cartItemVar.product_id = cartItems[h].product_id.id;
+                cartItemVar.product_id = cartItems[h].product_id;
                 let cartvariant = await CartItemVariant.find(cartItemVar);
 
                 if (cartvariant && cartvariant.length > 0 && cartvariant[0]) {

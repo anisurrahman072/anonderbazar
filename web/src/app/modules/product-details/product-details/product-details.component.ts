@@ -396,7 +396,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 },
                 error => {
                     this._progress.complete("mainLoader");
-                    this._notify.error("something went wrong");
+                    if(error.error && error.error.code === 'CartItemNotAllowed'){
+                        this._notify.info(error.error.message);
+                    } else {
+                        this._notify.error("Something went wrong");
+                    }
                 }
             );
 
