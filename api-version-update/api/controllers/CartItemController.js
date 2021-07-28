@@ -228,15 +228,21 @@ module.exports = {
       }
 
       let offerInfo = req.body.offerInfo;
-      console.log('changed offerInfo: ', offerInfo);
 
       let productUnitPrice = product.price;
+
+      /** Add additional price of product variants with product unit price */
+      if(req.body.cartItemVariants && req.body.cartItemVariants !== '[]'){
+        productUnitPrice += await PaymentService.calculateItemVariantPrice(req.body.cartItemVariants);
+      }
+      console.log('After adding all additional variant price, unit price is: ', productUnitPrice);
+      /** END */
 
       if (offerInfo) {
         if(offerInfo.calculation_type === 'absolute') {
           productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
         }else {
-          productUnitPrice = productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0));
+          productUnitPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0)));
         }
       }
 
@@ -247,8 +253,11 @@ module.exports = {
         deletedAt: null
       });
 
-      let selectedCartItem = null;
+
+      let selectedCartItem = null;  // selectedCartItem will carry the similar cart item from CART_ITEMS table for this customer.
       let cartItemVariantsLength = 0;
+
+      /** If customer given current item is in CART_ITEMS table then set value for selectedCartItem  */
       if (cartItems && cartItems.length > 0) {
 
         if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
@@ -274,6 +283,8 @@ module.exports = {
           selectedCartItem = cartItems[0];
         }
       }
+      /** END */
+
       let cartItem = null;
       await sails.getDatastore()
         .transaction(async (db) => {

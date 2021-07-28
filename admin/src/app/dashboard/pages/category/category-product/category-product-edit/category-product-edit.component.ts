@@ -30,6 +30,8 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
 
     isLoading: boolean;
 
+    showInNav;
+
     constructor(
         private router: Router,
         private cmsService: CmsService,
@@ -50,6 +52,7 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
             image: [null, []],
             mobile_image: [null, []],
             banner_image: [null, []],
+            showInNav: ['', []],
         });
 
         this.sub = this.route.params.subscribe((params: any) => {
@@ -60,6 +63,7 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
                     this.isLoading = false;
 
                     this.validateForm.patchValue(this.data);
+                    this.showInNav = this.data.show_in_nav;
 
                     this.oldImages = [];
                     if (this.data && this.data.image) {
@@ -130,6 +134,8 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         if (value.offer_id === 'true') {
             formData.append('offer_id', value.offer_id);
         }
+
+        formData.append('showInNav', this.showInNav);
 
         this.isLoading = true;
         this.categoryProductService.update(this.id, formData)
@@ -229,4 +235,8 @@ export class CategoryProductEditComponent implements OnInit, OnDestroy {
         this.BannerImageFile = metadata.file;
         return metadata;
     };
+
+    changeShowInNav() {
+        this.showInNav = !this.showInNav;
+    }
 }

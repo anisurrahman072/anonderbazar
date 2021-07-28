@@ -93,7 +93,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     onAgreedToBKashTerms(event: any) {
-        console.log('onAgreedToBKashTerms', event);
+        /*console.log('onAgreedToBKashTerms', event);*/
         this.agreedToBKashTermsConditions = event;
 
     }
@@ -125,7 +125,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.loaderService.showLoader();
                 this.bkashService.generateGrandToken()
                     .concatMap((res: any) => {
-                        console.log('generateGrandToken', res);
+                        /*console.log('generateGrandToken', res);*/
                         if (res.id_token) {
                             this.bKashGrandToken = res.id_token;
                             return this.bkashService.cancelAgreement(res.id_token, authUserWallet.agreement_id)
@@ -169,13 +169,13 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        console.log(this.bKashWalletNoToAdd);
+        /*console.log(this.bKashWalletNoToAdd);*/
         this.isSubmitting = true;
         this.loaderService.showLoader();
 
         this.bkashService.generateGrandToken()
             .concatMap((res: any) => {
-                console.log('generateGrandToken', res);
+                /*console.log('generateGrandToken', res);*/
                 if (res.id_token) {
                     this.bKashGrandToken = res.id_token;
                     return this.bkashService.createAgreementRequest(res.id_token, this.bKashWalletNoToAdd);
@@ -183,7 +183,7 @@ export class BKashAccountComponent implements OnInit, OnDestroy, AfterViewInit {
                 return Observable.throw(new Error('Problem in generating token.'));
             })
             .subscribe((res: any) => {
-                console.log('createBKashAgreement', res);
+                /*console.log('createBKashAgreement', res);*/
                 this.loaderService.hideLoader();
                 this.isSubmitting = false;
 

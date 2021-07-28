@@ -102,7 +102,6 @@ export class AnonderJhorDetailsComponent implements OnInit {
     }
 
     private addPageTitle() {
-        console.log('anonderJhorOffer: ', this.anonderJhorOffer);
         if (this.anonderJhorOfferProducts && this.anonderJhorOfferProducts.length > 0) {
             if (this.anonderJhorOffer && this.anonderJhorOffer.category_id) {
                 this.title.setTitle(this.anonderJhorOffer.category_id.name + ' - Anonder Jhor Offer');

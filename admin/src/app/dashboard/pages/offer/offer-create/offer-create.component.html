@@ -45,7 +45,7 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <image-upload [max]="1" (removed)="onRemoved($event)"
-                                      (uploadStateChanged)="onUploadStateChanged($event)"
+                                      [uploadedFiles]='ImageFilePath'
                                       [beforeUpload]="onBeforeUpload">
                         </image-upload>
                         <div *ngIf="!ImageFile">
@@ -61,7 +61,7 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <image-upload [max]="1" (removed)="onRemoveSmallOfferImage($event)"
-                                      (uploadStateChanged)="onUploadStateChanged($event)"
+                                      [uploadedFiles]='SmallOfferImageFilePath'
                                       [beforeUpload]="onBeforeUploadImage"></image-upload>
                         <div *ngIf="!ImageFile">
                             Please upload an image here!
@@ -95,7 +95,7 @@
                     </div>
                     <div nz-col [nzSpan]="12">
                         <image-upload [max]="1" (removed)="onBannerRemoved($event)"
-                                      (uploadStateChanged)="onUploadStateChanged($event)"
+                                      [uploadedFiles]='BannerImageFilePath'
                                       [beforeUpload]="onBeforeBannerUpload"></image-upload>
                         <div *ngIf="!ImageFile">
                             Please upload a banner image here!

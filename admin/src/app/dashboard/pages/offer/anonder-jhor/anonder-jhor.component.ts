@@ -9,6 +9,7 @@ import {Subscription} from "rxjs";
 import {ExportService} from "../../../../services/export.service";
 import * as _moment from "moment";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {DesignImagesService} from "../../../../services/design-images.service";
 
 @Component({
     selector: 'app-anonder-jhor',
@@ -16,6 +17,7 @@ import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
     styleUrls: ['./anonder-jhor.component.css']
 })
 export class AnonderJhorComponent implements OnInit, OnDestroy {
+    jhorId: number;
 
     /** Anonder Jhor variables */
     anonderJhorData: any;
@@ -54,10 +56,18 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     private sub: Subscription;
     private statusOptions = GLOBAL_CONFIGS.ORDER_STATUSES_KEY_VALUE;
 
+    /** Image variables */
+    hasJhorBannerImageFile: boolean = false;
+    hasAnonderJhorHomepageBannerImageFile: boolean = false;
+
+    isJhorBannerImageInDB: boolean = false;
+    isAnonderJhorHomepageBannerImageInDB: boolean = false;
+
     constructor(
         private fb: FormBuilder,
         private offerService: OfferService,
         private _notification: NzNotificationService,
+        private designImagesService: DesignImagesService,
     ) {
     }
 
@@ -86,6 +96,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.isActiveCashOnDelivery = !!this.anonderJhorData.pay_by_cashOnDelivery;
 
                     this.status = this.anonderJhorData.status;
+                    this.jhorId = this.anonderJhorData.id;
+                    if(this.anonderJhorData.banner_image){
+                        this.isJhorBannerImageInDB = true;
+                    }
+                    if(this.anonderJhorData.homepage_banner_image){
+                        this.isAnonderJhorHomepageBannerImageInDB = true;
+                    }
                     this._isSpinning = false;
                 } else {
                     this._isSpinning = false;
@@ -198,15 +215,15 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
             }
 
-            console.log("payload: ", payload);
-
             this.validateForm.patchValue(payload);
 
             if (this.anonderJhorData && this.anonderJhorData.banner_image) {
+                this.hasJhorBannerImageFile = true;
                 this.AnonderJhorBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.banner_image);
             }
 
             if (this.anonderJhorData && this.anonderJhorData.homepage_banner_image) {
+                this.hasAnonderJhorHomepageBannerImageFile = true;
                 this.AnonderJhorHomepageBannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.anonderJhorData.homepage_banner_image);
             }
 
@@ -232,7 +249,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
         formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
 
-        if (this.anonderJhorBannerImageFile) {
+        /*if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
             formData.append('image', this.anonderJhorBannerImageFile, this.anonderJhorBannerImageFile.name);
         } else {
@@ -244,6 +261,14 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             formData.append('image', this.anonderJhorHomepageBannerImageFile, this.anonderJhorHomepageBannerImageFile.name);
         } else {
             formData.append('hasBannerImage', 'false');
+        }*/
+
+        if (this.hasJhorBannerImageFile) {
+            formData.append('banner_image', this.AnonderJhorBannerImageFileEdit[0].split(this.IMAGE_ENDPOINT)[1]);
+        }
+
+        if (this.hasAnonderJhorHomepageBannerImageFile) {
+            formData.append('homepage_banner_image', this.AnonderJhorHomepageBannerImageFileEdit[0].split(this.IMAGE_ENDPOINT)[1]);
         }
 
         this.offerService.updateAnonderJhor(formData).subscribe(result => {
@@ -263,20 +288,74 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     };
 
     onJhorBannerRemoved(file: FileHolder) {
-        this.anonderJhorBannerImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.AnonderJhorBannerImageFileEdit[0].split(this.IMAGE_ENDPOINT)[1]}`);
+        if(this.isJhorBannerImageInDB){
+            formData.append('id', `${this.jhorId}`);
+            formData.append('tableName', `anonder_jhor`);
+            formData.append('column', `banner_image`);
+        }
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.isJhorBannerImageInDB = false;
+                this.AnonderJhorBannerImageFileEdit = [];
+                this.hasJhorBannerImageFile = false;
+                this._notification.success("Success", "Successfully deleted Anonder Jhor Banner image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting Anonder Jhor Banner image");
+            })
     }
 
     onJhorHomepageBannerRemoved(file: FileHolder) {
-        this.anonderJhorHomepageBannerImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.AnonderJhorHomepageBannerImageFileEdit[0].split(this.IMAGE_ENDPOINT)[1]}`);
+        if(this.isAnonderJhorHomepageBannerImageInDB){
+            formData.append('id', `${this.jhorId}`);
+            formData.append('tableName', `anonder_jhor`);
+            formData.append('column', `homepage_banner_image`);
+        }
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.isAnonderJhorHomepageBannerImageInDB = false;
+                this.AnonderJhorHomepageBannerImageFileEdit = [];
+                this.hasAnonderJhorHomepageBannerImageFile = false;
+                this._notification.success("Success", "Successfully deleted Anonder Jhor Homepage Banner image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting Anonder Jhor Homepage Banner image");
+            })
     }
 
     onBeforejhorBannerUpload = (metadata: UploadMetadata) => {
-        this.anonderJhorBannerImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasJhorBannerImageFile = true;
+                this.AnonderJhorBannerImageFileEdit.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 
     onBeforejhorHomepageBannerUpload = (metadata: UploadMetadata) => {
-        this.anonderJhorHomepageBannerImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasAnonderJhorHomepageBannerImageFile = true;
+                this.AnonderJhorHomepageBannerImageFileEdit.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 

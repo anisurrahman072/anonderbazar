@@ -9,6 +9,9 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {ImageService} from "../../../../services/image.service";
+import {DesignImagesService} from "../../../../services/design-images.service";
 import {ExportService} from "../../../../services/export.service";
 import {ExcelService} from "../../../../services/excel.service";
 
@@ -26,6 +29,36 @@ class OfferBulk {
 })
 export class OfferEditComponent implements OnInit {
 
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     /** csv related variables */
     isUpload: Boolean = false;
     isLoading: boolean = false;
@@ -38,9 +71,6 @@ export class OfferEditComponent implements OnInit {
 
     validateForm: FormGroup;
     individualProductFrom: FormGroup;
-    ImageFile: File;
-    BannerImageFile: File;
-    smallOfferImage: File;
 
     IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
 
@@ -48,9 +78,7 @@ export class OfferEditComponent implements OnInit {
     submitting: boolean = false;
     sub: any;
     id: any;
-    ImageFileEdit: any;
-    BannerImageFileEdit: any;
-    smallOfferImageEdit: any;
+
     data: any;
 
     selectionType;
@@ -112,6 +140,19 @@ export class OfferEditComponent implements OnInit {
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
 
+    /** Image variables */
+    hasImageFile: boolean = false;
+    hasBannerImageFile: boolean = false;
+    hasSmallOfferImageFile: boolean = false;
+
+    ImageFilePath = [];
+    BannerImageFilePath = [];
+    SmallOfferImageFilePath = [];
+
+    isImageInDB: boolean = false;
+    isBannerImageInDB: boolean = false;
+    isSmallOfferImageInDB: boolean = false;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -120,6 +161,7 @@ export class OfferEditComponent implements OnInit {
         private cmsService: CmsService,
         private offerService: OfferService,
         private productService: ProductService,
+        private designImagesService: DesignImagesService,
         private exportService: ExportService,
         private excelService: ExcelService,
     ) {
@@ -162,9 +204,6 @@ export class OfferEditComponent implements OnInit {
             this.offerService.getRegularOfferById(this.id)
                 .subscribe(result => {
                     /*console.log(result.regularOffer);*/
-                    this.ImageFileEdit = [];
-                    this.BannerImageFileEdit = [];
-                    this.smallOfferImageEdit = [];
                     this.data = result.regularOffer;
 
                     this.isShowHomepage = this.data.show_in_homepage;
@@ -211,15 +250,21 @@ export class OfferEditComponent implements OnInit {
                     this.validateForm.patchValue(payload);
 
                     if (this.data && this.data.image && this.data.image.image) {
-                        this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image.image);
+                        this.hasImageFile = true;
+                        this.ImageFilePath.push(this.IMAGE_ENDPOINT + this.data.image.image);
+                        this.isImageInDB = true;
                     }
 
                     if (this.data && this.data.image && this.data.image.banner_image) {
-                        this.BannerImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.image.banner_image);
+                        this.hasBannerImageFile = true;
+                        this.BannerImageFilePath.push(this.IMAGE_ENDPOINT + this.data.image.banner_image);
+                        this.isBannerImageInDB = true;
                     }
 
                     if (this.data && this.data.image && this.data.image.small_image) {
-                        this.smallOfferImageEdit.push(this.IMAGE_ENDPOINT + this.data.image.small_image);
+                        this.hasSmallOfferImageFile = true;
+                        this.SmallOfferImageFilePath.push(this.IMAGE_ENDPOINT + this.data.image.small_image);
+                        this.isSmallOfferImageInDB = true;
                     }
 
                     this._isSpinning = false;
@@ -317,25 +362,32 @@ export class OfferEditComponent implements OnInit {
             formData.append('carousel_position', value.carousel_position);
         }
 
-        if (this.ImageFile) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFile, this.ImageFile.name);
+        let images = {
+            image: '',
+            small_image: '',
+            banner_image: ''
+        };
+
+        if (this.hasImageFile) {
+            images.image = this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
         } else {
-            formData.append('hasImage', 'false');
+            delete images.image;
         }
 
-        if (this.BannerImageFile) {
-            formData.append('hasBannerImage', 'true');
-            formData.append('image', this.BannerImageFile, this.BannerImageFile.name);
+        if (this.hasSmallOfferImageFile) {
+            images.small_image = this.SmallOfferImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
         } else {
-            formData.append('hasBannerImage', 'false');
+            delete images.small_image;
         }
 
-        if (this.smallOfferImage) {
-            formData.append('hasSmallImage', 'true');
-            formData.append('image', this.smallOfferImage, this.smallOfferImage.name);
+        if (this.hasBannerImageFile) {
+            images.banner_image = this.BannerImageFilePath[0].split(this.IMAGE_ENDPOINT)[1];
         } else {
-            formData.append('hasSmallImage', 'false');
+            delete images.banner_image;
+        }
+
+        if(images){
+            formData.append('images', JSON.stringify(images));
         }
 
         this.offerService.updateOffer(formData).subscribe(result => {
@@ -369,30 +421,114 @@ export class OfferEditComponent implements OnInit {
 
     // Event method for removing picture
     onRemoved(file: FileHolder) {
-        this.ImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]}`);
+        if(this.isImageInDB){
+            formData.append('id', `${this.id}`);
+            formData.append('tableName', `offers`);
+            formData.append('column', `image`);
+            formData.append('format', `JSON`);
+        }
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.isImageInDB = false;
+                this.ImageFilePath = [];
+                this.hasImageFile = false;
+                this._notification.success("Success", "Successfully deleted image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting image");
+            })
     }
 
     onBannerRemoved(file: FileHolder) {
-        this.BannerImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.BannerImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]}`);
+        if(this.isBannerImageInDB){
+            formData.append('id', `${this.id}`);
+            formData.append('tableName', `offers`);
+            formData.append('column', `image`);
+            formData.append('format', `JSON`);
+        }
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.isBannerImageInDB = false;
+                this.BannerImageFilePath = [];
+                this.hasBannerImageFile = false;
+                this._notification.success("Success", "Successfully deleted banner image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting banner image");
+            })
     }
 
     onRemoveSmallOfferImage(file: FileHolder) {
-        this.smallOfferImage = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.SmallOfferImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]}`);
+        if(this.isSmallOfferImageInDB){
+            formData.append('id', `${this.id}`);
+            formData.append('tableName', `offers`);
+            formData.append('column', `image`);
+            formData.append('format', `JSON`);
+        }
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.isSmallOfferImageInDB = false;
+                this.SmallOfferImageFilePath = [];
+                this.hasSmallOfferImageFile = false;
+                this._notification.success("Success", "Successfully deleted carousel beside offer image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting banner image");
+            })
     }
 
     // Event method for storing imgae in variable
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasImageFile = true;
+                this.ImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 
     onBeforeBannerUpload = (metadata: UploadMetadata) => {
-        this.BannerImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasBannerImageFile = true;
+                this.BannerImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 
     onBeforeUploadImage = (metadata: UploadMetadata) => {
-        this.smallOfferImage = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.hasSmallOfferImageFile = true;
+                this.SmallOfferImageFilePath.push(this.IMAGE_ENDPOINT + data.path);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
+
         return metadata;
     }
 

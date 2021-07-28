@@ -64,20 +64,9 @@ module.exports = {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
-      const files = await uploadImages(req.file('image'));
-
-      if (files.length === 0) {
+      if(!body.images || (body.images && JSON.parse(body.images).length === 0) ){
         return res.badRequest('No image was uploaded');
       }
-
-      const newPath = files[0].fd.split(/[\\//]+/).reverse()[0];
-      body.image = '/' + newPath;
-
-      let smallImagePath = files[1].fd.split(/[\\//]+/).reverse()[0];
-      body.small_image = '/' + smallImagePath;
-
-      let bannerImagePath = files[2].fd.split(/[\\//]+/).reverse()[0];
-      body.banner_image = '/' + bannerImagePath;
 
       let offerData = {};
       let individualProductsIds = [];
@@ -91,7 +80,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if (codes && codes.length > 0) {
+          if(codes && codes.length > 0){
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -105,11 +94,7 @@ module.exports = {
 
         offerData = {
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
+          image: JSON.parse(body.images),
           selection_type: body.selection_type,
           description: body.description,
           start_date: body.offerStartDate,
@@ -125,11 +110,7 @@ module.exports = {
       } else {
         offerData = {
           title: body.title,
-          image: {
-            image: body.image,
-            small_image: body.small_image,
-            banner_image: body.banner_image,
-          },
+          image: JSON.parse(body.images),
           selection_type: body.selection_type,
           description: body.description,
           calculation_type: body.calculationType,
@@ -466,11 +447,11 @@ module.exports = {
 
       let offer = await Offer.findOne({id: body.id});
 
-      if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
+      /*if (body.hasImage === 'true' || body.hasBannerImage === 'true' || body.hasSmallImage === 'true') {
 
         const files = await uploadImages(req.file('image'));
 
-        /*console.log('files', files);*/
+        /!*console.log('files', files);*!/
 
         if (files.length === 0) {
           return res.badRequest('No file was uploaded');
@@ -523,24 +504,32 @@ module.exports = {
           body.small_image = '/' + newPath;
         }
 
+      }*/
+
+      let images;
+      if(body.images){
+        images = JSON.parse(body.images);
       }
+      console.log('Images are: ', images);
 
       let offerData = {image: {}};
-      if (body.image) {
-        offerData.image.image = body.image;
+      if (images && images.image ) {
+        offerData.image.image = images.image;
       } else {
         offerData.image.image = offer.image && offer.image.image ? offer.image.image : '';
       }
-      if (body.small_image) {
-        offerData.image.small_image = body.small_image;
+      if (images && images.small_image) {
+        offerData.image.small_image = images.small_image;
       } else {
         offerData.image.small_image = offer.image && offer.image.small_image ? offer.image.small_image : '';
       }
-      if (body.banner_image) {
-        offerData.image.banner_image = body.banner_image;
+      if (images && images.banner_image) {
+        offerData.image.banner_image = images.banner_image;
       } else {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
+
+      console.log('offerData.image: ',offerData.image);
 
       let individualProductsIds = [];
       let individualProductsCalculations;
@@ -597,8 +586,6 @@ module.exports = {
           pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
           pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0
         };
-
-        console.log('asceeee: ', offerData);
       }
 
       if (body.frontend_position) {

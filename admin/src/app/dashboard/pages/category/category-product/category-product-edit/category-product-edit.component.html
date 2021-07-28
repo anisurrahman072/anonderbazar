@@ -80,6 +80,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--Show in Nav-->
+                    <div nz-row style="margin-top: 15px">
+                        <div nz-col [nzOffset]="2" [nzSpan]="16">
+                            <input formControlName="showInNav" type="checkbox" [checked]="showInNav"
+                                   (change)="changeShowInNav()">
+                            Show in Nav
+                        </div>
+                    </div>
                     <!--parent_id-->
 
                     <div nz-row *ngIf='data != null && data.parent_id==0'>
