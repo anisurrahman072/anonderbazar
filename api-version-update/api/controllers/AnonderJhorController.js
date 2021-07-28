@@ -327,7 +327,7 @@ module.exports = {
       const products = await Product.find({code: codes});
       let x = _.groupBy(products, 'code');
 
-      if (codes && codes.length > 0) {
+      if (codes && codes.length > 0 && products.length > 0) {
         codes.forEach(code => {
           individualProductsIds.push(x[code][0].id);
         });

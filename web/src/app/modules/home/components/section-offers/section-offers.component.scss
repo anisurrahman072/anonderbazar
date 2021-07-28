@@ -80,11 +80,44 @@
   background-color: #eec15b;
 }
 
-@media screen and (max-width: 425px) {
+/** timer */
+#timer {
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  color: #999;
+  letter-spacing: -1px;
+}
+#timer span {
+  font-size: 60px;
+  color: #333;
+  margin: 0 3px 0 15px;
+}
+#timer span:first-child {
+  margin-left: 0;
+}
+
+.digit {
+  display: inline-block;
+  border: 1px solid whitesmoke;
+  background: linear-gradient(0deg, black, red);
+  padding: 4px 5px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.digit:nth-child(2n+1) {
+  margin-left: 5px;
+}
+
+.digit:nth-child(2n) {
+  margin-left: -5px;
+}
+
+/*@media screen and (max-width: 425px) {
   .offer-container{
     width: 50%;
   }
-}
+}*/
 
 @media screen and (max-width: 425px) {
   .section-title {

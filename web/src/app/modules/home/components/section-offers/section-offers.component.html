@@ -1,20 +1,37 @@
 <section id="offer-section" style="padding-top: 50px; padding-bottom: 20px;">
     <div class="container-fluid">
-        <div class="category-head cate-flash justify-content-between d-flex"  style="border-bottom: 2px solid #FF0000;">
+        <div class="category-head cate-flash justify-content-between d-flex" style="border-bottom: 2px solid #FF0000;">
             <h4 class="section-title">Offers</h4>
             <button style="align-self: flex-end;">
                 <a style="text-decoration: none;" [routerLink]="['/offers']">View All</a>
             </button>
         </div>
+
         <div class="row">
             <ng-container *ngFor="let offer of allOffers">
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4 offer-container" *ngIf="offer">
                     <div class="offer-details">
                         <div class="offer-img">
-                            <a routerLink="/offers/offered-products-brands/{{offer.id}}">
-                                <img src="{{IMAGE_LIST_ENDPOINT + offer.image.image + IMAGE_EXT}}"
-                                     alt="offered product image">
-                            </a>
+                            <div style="background-color: whitesmoke">
+                                <div class="col-md-12 text-center" style="height: 65px;"
+                                     *ngIf="offerRemainingTimeToEndInDigit && offerRemainingTimeToEndInDigit[offer.id]">
+                                    <p class="my-2" style="position:absolute;color: #FFFFFF; font-size: 22px"
+                                       *ngIf="offerStartTime[offer.id] && offerStartTime[offer.id] < presentTime && offerEndTime[offer.id] > presentTime">
+                                        <ng-template ngFor let-time
+                                                     [ngForOf]="offerRemainingTimeToEndInDigit[offer.id]">
+                                            <span class="digit">{{time}}</span>
+                                        </ng-template>
+                                    </p>
+                                    <p class="my-2" style="position:absolute;color: red; font-size: 15px; top: 35px">
+                                        <span style="margin-left: 15px">Days</span><span style="margin-left: 28px">Hrs</span>
+                                        <span style="margin-left: 26px">Mins</span><span style="margin-left: 30px">Secs</span>
+                                    </p>
+                                </div>
+                                <a routerLink="/offers/offered-products-brands/{{offer.id}}">
+                                    <img src="{{IMAGE_LIST_ENDPOINT + offer.image.image + IMAGE_EXT}}"
+                                         alt="offered product image">
+                                </a>
+                            </div>
                         </div>
                         <div class="offer-contant">
                             <h6>{{offer.title}}</h6>
