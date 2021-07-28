@@ -258,6 +258,37 @@ module.exports = {
     return cartItems;
   },
 
+  checkOfferProductsFromCartItems: async (cartItems) => {
+    let offerIdNumber;
+    let offerType;
+
+    if(cartItems && cartItems.length > 0){
+      let offeredProducts = await OfferService.getAllOfferedProducts();
+
+      let len = cartItems.length;
+      for(let i=0; i<len; i++){
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: cartItems[i].product_id.id,
+          type_id: cartItems[i].product_id.type_id,
+          category_id: cartItems[i].product_id.category_id,
+          subcategory_id: cartItems[i].product_id.subcategory_id,
+          brand_id: cartItems[i].product_id.brand_id,
+          warehouse_id: cartItems[i].product_id.warehouse_id
+        }, offeredProducts);
+
+
+        if(i > 0){
+          if(offerIdNumber !== offer_id_number || offerType !== offer_type){
+            throw new Error('Different offer products or an offer product with regular product can\'t be added together in your cart!');
+          }
+        }
+
+        offerIdNumber = offer_id_number;
+        offerType = offer_type;
+      }
+    }
+  },
+
   createAddress: async (authUser, address) => {
     return await PaymentAddress.create({
       user_id: authUser.id,

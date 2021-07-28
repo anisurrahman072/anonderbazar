@@ -445,6 +445,14 @@ module.exports = {
       let cart = await PaymentService.getCart(authUser.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
 
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. START. */
+
+      await PaymentService.checkOfferProductsFromCartItems(cartItems);
+
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. END. */
+
       const shippingAddress = await PaymentService.getShippingAddress(authUser, req);
       const billingAddress = await PaymentService.getBillingAddress(authUser, req, shippingAddress);
 

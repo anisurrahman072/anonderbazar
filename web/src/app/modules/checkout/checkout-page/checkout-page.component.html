@@ -466,16 +466,19 @@
                         <mat-radio-group formControlName="paymentType">
                             <div class="radio2">
                                 <mat-radio-button
-                                        *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
+                                        *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount
+                                                   && isAllowedCashBackInOfferedProductPurchase"
                                         value="CashBack" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>By Using Cashback
                                 </mat-radio-button>
                                 <mat-radio-button
-                                        *ngIf="!disableCashOnDelivery && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]"
+                                        *ngIf="!disableCashOnDelivery && !hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]
+                                                    && isAllowedCashInDeliveryInOfferedProductPurchase"
                                         value="Cash" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]
+                                                     && isAllowedSslCommerzInOfferedProductPurchase"
                                                   value="SSLCommerce"
                                                   [checked]="hideCashonDelivery"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
@@ -484,14 +487,16 @@
                                              alt="SSLcommerce"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment
+                                                        && isAllowedBkashInOfferedProductPurchase"
                                                   value="bKash" (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/bkash.gif" style="height: auto; width: 70%;"
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE] && isOfflinePayable"
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE] && isOfflinePayable
+                                                         && isAllowedOfflineInOfferedProductPurchase"
                                                   value="OfflinePay" (click)="showOfflineForm(true)">
                                     <div class="payment-icon-container">
                                         <p class="defaultParagraph">Offline payment</p>

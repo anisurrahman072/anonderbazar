@@ -93,6 +93,8 @@ module.exports = {
 
     const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
+    const anonderJhorInfo = await AnonderJhor.findOne({id: 1, deletedAt: null});
+
     if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
       finalCollectionOfProducts = {};
       return finalCollectionOfProducts;
@@ -103,6 +105,10 @@ module.exports = {
       let offerObj = {
         calculation_type: thisOffer.calculation_type,
         discount_amount: thisOffer.discount_amount * 1.0,
+        pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
+        pay_by_bKash: thisOffer.pay_by_bKash,
+        pay_by_offline: thisOffer.pay_by_offline,
+        pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
       };
 
       /**if selection_type === 'Vendor wise'*/
@@ -189,6 +195,10 @@ module.exports = {
             finalCollectionOfProducts[product.product_id] = {
               calculation_type: product.calculation_type,
               discount_amount: product.discount_amount * 1.0,
+              pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
+              pay_by_bKash: thisOffer.pay_by_bKash,
+              pay_by_offline: thisOffer.pay_by_offline,
+              pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
             };
           });
         }
@@ -209,6 +219,10 @@ module.exports = {
           finalCollectionOfProducts[product.product_id] = {
             calculation_type: product.calculation_type,
             discount_amount: product.discount_amount * 1.0,
+            pay_by_sslcommerz: anonderJhorInfo.pay_by_sslcommerz,
+            pay_by_bKash: anonderJhorInfo.pay_by_bKash,
+            pay_by_offline: anonderJhorInfo.pay_by_offline,
+            pay_by_cashOnDelivery: anonderJhorInfo.pay_by_cashOnDelivery
           };
         });
       }

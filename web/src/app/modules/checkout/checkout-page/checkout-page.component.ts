@@ -109,6 +109,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     BankDepositImageFile: File = null;
     mobileTransferImageFile: File = null;
 
+    offerData: any;
+
+    /** Offer payment gateway variables */
+    isAllowedSslCommerzInOfferedProductPurchase = true;
+    isAllowedBkashInOfferedProductPurchase = true;
+    isAllowedOfflineInOfferedProductPurchase = true;
+    isAllowedCashInDeliveryInOfferedProductPurchase = true;
+    isAllowedCashBackInOfferedProductPurchase = true;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -131,6 +140,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // init the component
     ngOnInit() {
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            if(offerData && offerData.finalCollectionOfProducts){
+                this.offerData = offerData.finalCollectionOfProducts;
+            }
+        })
 
         this.checkoutForm = this.fb.group({
             offlinePaymentMethods: ['', []],
@@ -217,10 +232,27 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     setTimeout(() => {
                         this.store.dispatch(new fromStore.LoadCart());
                         this.cart$.subscribe((cartData) => {
-                            console.log('cartData', cartData);
                             if (cartData) {
                                 this.cartData = cartData;
-                                console.log("Cart info: ", cartData);
+                                this.cartData.data.cart_items.forEach(item => {
+                                    let productId = item.product_id.id;
+
+                                    if(this.offerData[productId]){
+                                        this.isAllowedCashBackInOfferedProductPurchase = false;
+                                        if(!this.offerData[productId].pay_by_sslcommerz){
+                                            this.isAllowedSslCommerzInOfferedProductPurchase = false;
+                                        }
+                                        if(!this.offerData[productId].pay_by_bKash){
+                                            this.isAllowedBkashInOfferedProductPurchase = false;
+                                        }
+                                        if(!this.offerData[productId].pay_by_offline){
+                                            this.isAllowedOfflineInOfferedProductPurchase = false;
+                                        }
+                                        if(!this.offerData[productId].pay_by_cashOnDelivery){
+                                            this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
+                                        }
+                                    }
+                                });
                                 this.setShippingCharge();
                             } else {
                                 this.cartData = null;
@@ -607,9 +639,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.router.navigate(['/profile/orders/invoice/', order.id]);
                 this.loaderService.hideLoader();
             }, error => {
-                this.toastr.error("Error occurred while placing your order.", "Error!", {
-                    positionClass: 'toast-top-right'
-                });
+                if(error.error && error.error.additionalMessage){
+                    this.toastr.info(error.error.additionalMessage, "Order not placed!", {
+                        positionClass: 'toast-top-right'
+                    });
+                } else {
+                    this.toastr.error("Error occurred while placing your order.", "Error!", {
+                        positionClass: 'toast-top-right'
+                    });
+                }
                 this.loaderService.hideLoader();
             })
     }
@@ -750,13 +788,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             }, (error) => {
                 this.loaderService.hideLoader();
-                console.log('sslcommerz error', error);
-                if (error && error.error) {
-                    this.toastr.error(error.error.message, "Problem in placing your order!", {
-                        positionClass: 'toast-bottom-right'
+                if (error.error && error.error.additionalMessage) {
+                    this.toastr.info(error.error.additionalMessage, "Order not place!", {
+                        positionClass: 'toast-top-right'
                     });
-                } else if (error && error.additionalMessage) {
-                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
+                } else if (error && error.error) {
+                    this.toastr.error(error.error.message, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
