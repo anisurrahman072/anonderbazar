@@ -21,7 +21,7 @@ module.exports = {
     homepage_banner_image: {
       type: 'json',
       columnType: 'text',
-      required: true
+      required: false
     },
     show_in_homepage: {
       type: 'boolean',

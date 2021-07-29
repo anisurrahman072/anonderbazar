@@ -127,6 +127,7 @@ export class OfferedProductsComponent implements OnInit {
                     this.addPageTitle();
                 }, error => {
                     this._notify.error('Expired', 'Offer does not exists anymore');
+                    this.router.navigate(['/']);
                 });
         }
     }
