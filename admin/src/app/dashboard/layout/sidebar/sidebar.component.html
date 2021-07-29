@@ -180,6 +180,27 @@
         </a>
     </li>
 
+
+    <li nz-menu-item *ngIf="'role-management'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/role-management">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Role Management</span>
+        </span>
+        </a>
+    </li>
+
+    <li nz-menu-item *ngIf="'admin-users'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/admin-users">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Admin Users</span>
+        </span>
+        </a>
+    </li>
+
     <li nz-submenu *ngIf="'courier'|accessControl" style="display: none;">
         <span title>
             <i class="fa fa-truck"></i>
