@@ -31,7 +31,7 @@ const routes: Routes = [
                     }, {
                         path: 'details/:id',
                         canActivate: [AccessControl],
-                        data: {accessData: 'productcategory-read', breadcrumbs: 'details'},
+                        data: {accessData: 'productcategory-details', breadcrumbs: 'details'},
                         component: CategoryProductReadComponent,
                     }, {
                         path: 'create',
@@ -48,7 +48,7 @@ const routes: Routes = [
                         pathMatch: 'full'
                     }
                 ]
-                
+
             },
             {
                 path: 'type',
@@ -81,7 +81,7 @@ const routes: Routes = [
                         pathMatch: 'full'
                     }
                 ]
-                
+
             },
         ]
     },
