@@ -4,7 +4,6 @@ import {AppSettings} from "../../../config/app.config";
 import {timer} from "rxjs/observable/timer";
 import * as moment from "moment";
 import {Router} from "@angular/router";
-import {NotificationsService} from "angular2-notifications";
 import {ToastrService} from "ngx-toastr";
 
 

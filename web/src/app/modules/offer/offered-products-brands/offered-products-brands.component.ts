@@ -4,6 +4,8 @@ import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
 import {NotificationsService} from "angular2-notifications";
+import {timer} from "rxjs/observable/timer";
+import * as moment from "moment";
 
 @Component({
     selector: 'app-offered-products-brands',
@@ -20,6 +22,14 @@ export class OfferedProductsBrandsComponent implements OnInit {
     regularOfferInfo;
 
     private currentTitle: any;
+
+    /** Timer */
+    presentTime;
+    offerStartTime;
+    offerEndTime;
+    offerRemainingTimeToEnd;
+    offerRemainingTimeToEndInDigit;
+    subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -38,6 +48,7 @@ export class OfferedProductsBrandsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.presentTime = new Date().getTime();
         this.route.params.subscribe(params => {
             this.id = +params['id'];
         });
@@ -47,13 +58,18 @@ export class OfferedProductsBrandsComponent implements OnInit {
     }
 
     getOfferedProductsBrands() {
-        if(this.id) {
+        if (this.id) {
             this.offerService.getOfferedProductsBrands(this.id)
                 .subscribe(result => {
                     this.offeredProductsBrands = result.data[0];
                     this.regularOfferInfo = result.data[1];
-                    console.log('this.offeredProductsBrands ', this.offeredProductsBrands);
-                    console.log('this.regularOfferInfo ', this.regularOfferInfo);
+
+                    this.offerStartTime = new Date(this.regularOfferInfo.start_date).getTime();
+                    this.offerEndTime = new Date(this.regularOfferInfo.end_date).getTime();
+
+                    this.offerRemainingTimeToEnd = this.offerEndTime - this.presentTime;
+                    this.offerEndsIn();
+
                 }, (err) => {
                     console.log(err);
                     this._notify.error('Sorry!', 'Something went wrong');
@@ -74,6 +90,59 @@ export class OfferedProductsBrandsComponent implements OnInit {
 
         this.router.navigate(['/offers/offered-products-brands', this.route.snapshot.params], {queryParams: query});
         this.page = event;
+    }
+
+    offerEndsIn() {
+        this.subscription = timer(0, 1000)
+            .subscribe(data => {
+                if (this.offerRemainingTimeToEnd - 1000 <= 0) {
+                    this.offerRemainingTimeToEnd = 0;
+                    this.offerRemainingTimeToEndInDigit = `00000000`;
+                    this.offerRemainingTimeToEndInDigit = this.offerRemainingTimeToEndInDigit.split("");
+                } else {
+                    this.offerRemainingTimeToEnd -= 1000;
+                }
+
+                let seconds = moment.duration(this.offerRemainingTimeToEnd).seconds();
+                let minutes = moment.duration(this.offerRemainingTimeToEnd).minutes();
+                let hours = moment.duration(this.offerRemainingTimeToEnd).hours();
+                let days = moment.duration(this.offerRemainingTimeToEnd).days();
+
+                let sec;
+                if (seconds.toString().length <= 1) {
+                    sec = '0' + seconds.toString();
+                } else {
+                    sec = seconds.toString();
+                }
+
+                let min;
+                if (minutes.toString().length <= 1) {
+                    min = '0' + minutes.toString();
+                } else {
+                    min = minutes.toString();
+                }
+
+                let hrs;
+                if (hours.toString().length <= 1) {
+                    hrs = '0' + hours.toString();
+                } else {
+                    hrs = hours.toString();
+                }
+
+                let dys;
+                if (days.toString().length <= 1) {
+                    dys = '0' + days.toString();
+                } else {
+                    dys = days.toString();
+                }
+
+                this.offerRemainingTimeToEndInDigit = `${dys}${hrs}${min}${sec}`;
+                this.offerRemainingTimeToEndInDigit = this.offerRemainingTimeToEndInDigit.split("");
+            })
+    }
+
+    ngOnDestroy(): void {
+        this.subscription ? this.subscription.unsubscribe() : '';
     }
 
 }

@@ -80,7 +80,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0){
+          if(codes && codes.length > 0 && products.length > 0){
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -529,7 +529,7 @@ module.exports = {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
 
-      console.log('offerData.image: ',offerData.image);
+      /*console.log('offerData.image: ',offerData.image);*/
 
       let individualProductsIds = [];
       let individualProductsCalculations;
@@ -542,7 +542,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if (codes && codes.length > 0) {
+          if (codes && codes.length > 0 && products.length > 0) {
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });

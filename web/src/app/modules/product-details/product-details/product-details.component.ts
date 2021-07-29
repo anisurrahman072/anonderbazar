@@ -194,8 +194,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         this.sub = this.route.params.subscribe(params => {
             this.id = +params["id"];
-
+            console.log("befor calling  ", this.offerData.finalCollectionOfProducts);
             this.getProductData();
+            console.log("after calling  ", this.offerData.finalCollectionOfProducts);
             this.getAllVariant();
         });
 
@@ -219,6 +220,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     }
 
     getProductData() {
+        console.log("inside offer", this.offerData.finalCollectionOfProducts);
         this.loaderService.showLoader();
         this.productDescriptionData = null;
         this.productService.getByIdWithDetails(this.id).subscribe(result => {
