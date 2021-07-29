@@ -144,6 +144,12 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.offer$ = this.store.select<any>(fromStore.getOffer);
         this.offer$.subscribe(offerData => {
             this.offerData = offerData;
+
+            this.sub = this.route.params.subscribe(params => {
+                this.id = +params["id"];
+                this.getProductData();
+                this.getAllVariant();
+            });
         })
 
         this.currentUserId = this.authService.getCurrentUserId();
@@ -190,12 +196,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.cartTotalprice = result.data.total_price;
                 this.cartTotalquantity = result.data.total_quantity;
             }
-        });
-
-        this.sub = this.route.params.subscribe(params => {
-            this.id = +params["id"];
-            this.getProductData();
-            this.getAllVariant();
         });
 
         this.getRecentlyViewedProducts();
@@ -252,11 +252,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.data.discountAmount = this.discountAmount;
             }
 
-           /* this.discountPercentage = 0;
+            /* this.discountPercentage = 0;
 
-            if (this.data.promotion) {
-                this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
-            }*/
+             if (this.data.promotion) {
+                 this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
+             }*/
 
             if (result.data[0]) {
                 let allImages = [];
@@ -290,10 +290,10 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 }
             }
         }, (error) => {
-            if(error.error && error.error.code && error.error.code === 'productNotFound'){
+            if (error.error && error.error.code && error.error.code === 'productNotFound') {
                 this._notify.info('Product not found!', error.error.message);
                 this.router.navigate(['/']);
-            } else if(error.error && error.error.code && error.error.code === 'warehouseNotFound'){
+            } else if (error.error && error.error.code && error.error.code === 'warehouseNotFound') {
                 this._notify.info('Product not found!', error.error.message);
                 this.router.navigate(['/']);
             } else {
@@ -410,7 +410,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 },
                 error => {
                     this._progress.complete("mainLoader");
-                    if(error.error && error.error.code === 'CartItemNotAllowed'){
+                    if (error.error && error.error.code === 'CartItemNotAllowed') {
                         this._notify.info(error.error.message);
                     } else {
                         this._notify.error("Something went wrong");
