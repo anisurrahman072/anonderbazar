@@ -116,7 +116,16 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     isAllowedBkashInOfferedProductPurchase = true;
     isAllowedOfflineInOfferedProductPurchase = true;
     isAllowedCashInDeliveryInOfferedProductPurchase = true;
-    isAllowedCashBackInOfferedProductPurchase = true;
+
+    isAllowedOfferPaymentGateway = false;
+
+    private offerIdNumber = null;
+    private offerType = null;
+
+    isAllowedToProcessToPay = true;
+
+    wrongCartItemsModalRef: BsModalRef;
+
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -144,6 +153,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.offer$.subscribe(offerData => {
             if(offerData && offerData.finalCollectionOfProducts){
                 this.offerData = offerData.finalCollectionOfProducts;
+                console.log("this.offerData: ", this.offerData);
             }
         })
 
@@ -234,25 +244,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                         this.cart$.subscribe((cartData) => {
                             if (cartData) {
                                 this.cartData = cartData;
-                                this.cartData.data.cart_items.forEach(item => {
-                                    let productId = item.product_id.id;
-
-                                    if(this.offerData[productId]){
-                                        this.isAllowedCashBackInOfferedProductPurchase = false;
-                                        if(!this.offerData[productId].pay_by_sslcommerz){
-                                            this.isAllowedSslCommerzInOfferedProductPurchase = false;
-                                        }
-                                        if(!this.offerData[productId].pay_by_bKash){
-                                            this.isAllowedBkashInOfferedProductPurchase = false;
-                                        }
-                                        if(!this.offerData[productId].pay_by_offline){
-                                            this.isAllowedOfflineInOfferedProductPurchase = false;
-                                        }
-                                        if(!this.offerData[productId].pay_by_cashOnDelivery){
-                                            this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
-                                        }
-                                    }
-                                });
+                                this.setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(this.cartData.data.cart_items);
                                 this.setShippingCharge();
                             } else {
                                 this.cartData = null;
@@ -294,6 +286,57 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
 
+
+    }
+
+    setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(cartItems){
+        this.isAllowedSslCommerzInOfferedProductPurchase = true;
+        this.isAllowedBkashInOfferedProductPurchase = true;
+        this.isAllowedOfflineInOfferedProductPurchase = true;
+        this.isAllowedCashInDeliveryInOfferedProductPurchase = true;
+
+        this.isAllowedOfferPaymentGateway = false;
+        this.isAllowedToProcessToPay = true;
+
+        this.offerIdNumber = null;
+        this.offerType = null;
+
+        cartItems.forEach((item, i) => {
+            let productId = item.product_id.id;
+
+            if(this.offerData[productId]){
+                console.log("this.offerIdNumber: ", this.offerIdNumber, );
+                if(i > 0){
+                    if(this.offerIdNumber && this.offerData[productId].offer_id_number && this.offerIdNumber != this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    } else if(!this.offerIdNumber && this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    } else if(this.offerIdNumber && !this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    }
+                }
+                this.offerIdNumber = this.offerData[productId].offer_id_number;
+                this.offerType = this.offerData[productId].offer_type;
+                this.isAllowedOfferPaymentGateway = true;
+
+                if(!this.offerData[productId].pay_by_sslcommerz){
+                    this.isAllowedSslCommerzInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_bKash){
+                    this.isAllowedBkashInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_offline){
+                    this.isAllowedOfflineInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_cashOnDelivery){
+                    this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
+                }
+            } else {
+                if(this.offerIdNumber){
+                    this.isAllowedToProcessToPay = false;
+                }
+            }
+        });
 
     }
 
@@ -429,6 +472,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // this.setShippingCharge();
             // this.updateGrandTotal();
             this.toastr.info("Item removed from cart successfully", 'Note');
+
+            this.cartData.data.cart_items =  this.cartData.data.cart_items.filter(item => item.id != cartItemId);
+
+            this.setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(this.cartData.data.cart_items);
+
             this.loaderService.hideLoader();
         }, () => {
             this.loaderService.hideLoader();
@@ -1090,7 +1138,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     //Method for proceed to pay
-    processToPay() {
+    processToPay(modalContent) {
+        if(!this.isAllowedToProcessToPay){
+            this.wrongCartItemsModalRef = this.modalService.show(modalContent);
+            return false;
+        }
         // console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
 
         // console.log('this.isCopy==>', this.isCopy);

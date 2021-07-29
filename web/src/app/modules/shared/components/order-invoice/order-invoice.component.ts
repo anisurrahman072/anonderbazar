@@ -91,7 +91,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
             this.orderService.getOrderInvoiceData(this.id)
                 .subscribe(data => {
                     let order = data.orders;
-                    let configData = data.configData;
+                    let configData = data.configData[0];
                     let payments = data.payments;
 
                     let now = _moment(new Date());
@@ -136,7 +136,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                         return data;
                     });
                 }, error => {
-                    console.log("annnndd: ", error.error);
+                    console.log("error.error ", error.error);
                     if(error.error && error.error.code && error.error.code === "userIdMissMatched"){
                         this._notify.info("User Id not matched.", error.error.message);
                         this.router.navigate(['profile/orders']);

@@ -216,6 +216,18 @@ button:disabled a {
   cursor: not-allowed;
 }
 
+.form-card{
+  display: block;
+  width: 100%;
+  margin: 15px auto;
+}
+
+@media screen and (max-width: 425px) {
+  .form-card {
+    width: 100%;
+  }
+}
+
 @media (max-width: 767.98px) {
   .payment-method-radio-btn {
     flex-direction: column;

@@ -23,7 +23,9 @@ const {
   PAYMENT_STATUS_PAID,
   REJECTED_PAYMENT_APPROVAL_STATUS,
   APPROVED_PAYMENT_APPROVAL_STATUS,
-  CUSTOMER_USER_GROUP_NAME
+  CUSTOMER_USER_GROUP_NAME,
+  REGULAR_OFFER_TYPE,
+  ANONDER_JHOR_OFFER_TYPE
 } = require('../../libs/constants');
 
 module.exports = {
@@ -974,7 +976,9 @@ module.exports = {
       let rawSelect = `
       SELECT
       product.offline_payment,
-      product.id
+      product.id,
+      suborderItems.offer_id_number,
+      suborderItems.offer_type
        `;
       let fromSQL = ' FROM product_orders as orders ';
       fromSQL += ' LEFT JOIN product_suborders as suborders ON suborders.product_order_id = orders.id';
@@ -986,10 +990,49 @@ module.exports = {
       if (req.query.orderId) {
         _where += ` AND orders.id = ${req.query.orderId}  `;
       }
-
       const rawResult = await ProductQuery(rawSelect + fromSQL + _where, []);
 
-      return res.status(200).json(rawResult.rows);
+      /** If suborder item exists in any offer then send suborder item offer payment gateway info with suborder item info. START */
+      let anonderJhorInfo = await AnonderJhor.findOne({id: 1, deletedAt: null});
+      console.log('anonderJhorInfo: ', anonderJhorInfo);
+
+      let regularOfferIds = rawResult.rows.map(item => {
+        if(item.offer_type && item.offer_type === REGULAR_OFFER_TYPE){
+          return item.offer_id_number;
+        }
+      });
+      console.log('regularOfferIds: ', regularOfferIds);
+
+      let regularOfferDetails = await Offer.find({
+        id: regularOfferIds
+      });
+      console.log('regularOfferDetails: ', regularOfferDetails);
+
+      let regularOfferDetailsByOfferId = _.groupBy(regularOfferDetails, 'id');
+      console.log('regularOfferDetailsByOfferId: ', regularOfferDetailsByOfferId);
+
+      let subOrderItems = rawResult.rows.map(item => {
+        if(item.offer_type && item.offer_type === REGULAR_OFFER_TYPE){
+          let itemOfferInfo = regularOfferDetailsByOfferId[item.offer_id_number][0];
+          item.pay_by_sslcommerz = itemOfferInfo.pay_by_sslcommerz;
+          item.pay_by_bKash = itemOfferInfo.pay_by_bKash;
+          item.pay_by_offline = itemOfferInfo.pay_by_offline;
+          item.pay_by_cashOnDelivery = itemOfferInfo.pay_by_cashOnDelivery;
+          item.offered_product = true;
+          console.log('item info: ', item.offer_id_number, regularOfferDetailsByOfferId[item.offer_id_number]);
+        } else if(item.offer_type && item.offer_type === ANONDER_JHOR_OFFER_TYPE){
+          item.pay_by_sslcommerz = anonderJhorInfo.pay_by_sslcommerz;
+          item.pay_by_bKash = anonderJhorInfo.pay_by_bKash;
+          item.pay_by_offline = anonderJhorInfo.pay_by_offline;
+          item.pay_by_cashOnDelivery = anonderJhorInfo.pay_by_cashOnDelivery;
+          item.offered_product = true;
+        }
+        return item;
+      });
+      console.log('subOrderItems: ', subOrderItems);
+      /** If suborder item exists in any offer then send suborder item offer payment gateway info with suborder item info. END */
+
+      return res.status(200).json(subOrderItems);
     } catch (error) {
       return res.status(400).json({
         message: 'Failed to fetch the products!'

@@ -5,7 +5,7 @@ import {ModalDirective} from "ngx-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {Subscription} from "rxjs/Subscription";
-import {User} from "../../../../models";
+import {Offer, User} from "../../../../models";
 import * as fromStore from "../../../../state-management";
 import {Store} from "@ngrx/store";
 import {OrderService, ProductService} from "../../../../services";
@@ -75,6 +75,16 @@ export class PartialPaymentModalComponent implements OnInit {
     isSubmittedBankDepositForm: boolean = false;
     isSubmittedMobileTransferForm: boolean = false;
 
+    offer$: Observable<Offer>;
+    offerData: any;
+
+    /** Offer payment gateway variables */
+    isAllowedSslCommerzInOfferedProductPurchase = true;
+    isAllowedBkashInOfferedProductPurchase = true;
+    isAllowedOfflineInOfferedProductPurchase = true;
+
+    isAllowedOfferPaymentGateway = false;
+
     constructor(
         private partialPaymentModalService: PartialPaymentModalService,
         private fb: FormBuilder,
@@ -116,9 +126,25 @@ export class PartialPaymentModalComponent implements OnInit {
                             this.amountToPay = data[0].total_price - data[0].paid_amount;
                             this.paidAmount = data[0].paid_amount;
                             this.orderItems = data[1];
+                            console.log("this.orderItems: ", this.orderItems);
                             this.orderItems.forEach(item => {
                                 if (item.offline_payment) {
                                     this.isOfflinePayable = true;
+                                }
+
+                                if(item.offered_product && item.offered_product == true){
+                                    if(item.pay_by_sslcommerz || item.pay_by_bKash || item.pay_by_offline){
+                                        this.isAllowedOfferPaymentGateway = true;
+                                    }
+                                    if(!item.pay_by_sslcommerz){
+                                        this.isAllowedSslCommerzInOfferedProductPurchase = false;
+                                    }
+                                    if(!item.pay_by_bKash){
+                                        this.isAllowedBkashInOfferedProductPurchase = false;
+                                    }
+                                    if(!item.pay_by_offline){
+                                        this.isAllowedOfflineInOfferedProductPurchase = false;
+                                    }
                                 }
                             })
                             this.getPartialPaymentModalInfo();
