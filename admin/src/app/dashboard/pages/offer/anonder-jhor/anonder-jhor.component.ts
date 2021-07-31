@@ -6,7 +6,6 @@ import moment from "moment";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {Subscription} from "rxjs";
-import {ExportService} from "../../../../services/export.service";
 import * as _moment from "moment";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {DesignImagesService} from "../../../../services/design-images.service";
