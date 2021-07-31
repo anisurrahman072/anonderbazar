@@ -863,8 +863,8 @@ module.exports = {
 
       if (params.created_at) {
         let created_at = JSON.parse(params.created_at);
-        let from = moment(created_at.from).format('YYYY-MM-DD HH:mm:ss');
-        let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
+        let from = moment(created_at.from).format('YYYY-MM-DD 00:00:00');
+        let to = moment(created_at.to).format('YYYY-MM-DD 23:59:59');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
 

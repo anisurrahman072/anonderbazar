@@ -53,7 +53,7 @@
                     <th>
                         <nz-date-picker
                                 nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                nzFormat="yyyy-MM-dd 00:00:00"
                                 [(ngModel)]="searchStartDate"
                                 nzPlaceHolder="Start"
                                 (ngModelChange)="page = 1; getPageData();">
@@ -61,7 +61,7 @@
                         </nz-date-picker>
                         <nz-date-picker
                                 nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                nzFormat="yyyy-MM-dd 23:59:59"
                                 [(ngModel)]="searchEndDate"
                                 nzPlaceHolder="End"
                                 (ngModelChange)="page = 1; getPageData();">

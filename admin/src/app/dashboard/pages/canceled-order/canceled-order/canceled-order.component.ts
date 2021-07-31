@@ -85,22 +85,22 @@ export class CanceledOrderComponent implements OnInit {
 
         if (this.searchStartDate) {
             if (this.searchStartDate.constructor.name === 'Moment') {
-                this.dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                this.dateSearchValue.from = this.searchStartDate.startOf('day').format('YYYY-MM-DD 00:00:00');
             } else {
                 this.dateSearchValue.from = this.searchStartDate;
             }
         } else {
-            this.dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            this.dateSearchValue.from = moment().subtract(50, 'years').startOf('day').format('YYYY-MM-DD 00:00:00');
         }
 
         if (this.searchEndDate) {
             if (this.searchEndDate.constructor.name === 'Moment') {
-                this.dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+                this.dateSearchValue.to = this.searchEndDate.endOf('day').format('YYYY-MM-DD 23:59:59');
             } else {
                 this.dateSearchValue.to = this.searchEndDate;
             }
         } else {
-            this.dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            this.dateSearchValue.to = moment().endOf('day').format('YYYY-MM-DD 23:59:59');
         }
 
         console.log(this.page, this.limit);
