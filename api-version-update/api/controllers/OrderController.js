@@ -870,7 +870,7 @@ module.exports = {
 
       if (params.customerName) {
         const customerName = params.customerName.toLowerCase();
-        _where += ` AND ( LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
+        _where += ` AND ( (CONCAT(users.first_name," ",users.last_name)='${customerName}') OR LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
       }
 
       _where += ` ORDER BY orders.created_at DESC `;
