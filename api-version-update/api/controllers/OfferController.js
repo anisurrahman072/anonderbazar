@@ -1032,7 +1032,8 @@ module.exports = {
   checkIndividualProductsCodesValidity: async (req, res) => {
     try {
       let invalidCodes = [];
-      let codes = (req.query.codes).split(',');
+      let codes = req.body + '';
+      codes = codes.split(',');
 
       for (let index = 0; index < codes.length; index++) {
         let exists = await Product.findOne({code: codes[index]});
