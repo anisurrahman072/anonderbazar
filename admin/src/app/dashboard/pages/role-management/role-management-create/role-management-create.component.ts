@@ -94,7 +94,8 @@ export class RoleManagementCreateComponent implements OnInit {
         return this.validateForm.controls[name];
     }
 
-    addPermission(value) {
+    /** Method called to add checked box's permission keys to an array */
+    addToKeysArray(value) {
         if (this.permissionKeysArray.includes(value)) {
             let index = this.permissionKeysArray.indexOf(value);
             this.permissionKeysArray.splice(index, 1);
@@ -103,7 +104,8 @@ export class RoleManagementCreateComponent implements OnInit {
         }
     }
 
-    addToArray(value) {
+    /** Method called to add checked box's permission labels to an array to show the selected labels */
+    addToLabelArray(value) {
         if (this.permissionLabelsArray.includes(value)) {
             let index = this.permissionLabelsArray.indexOf(value);
             this.permissionLabelsArray.splice(index, 1);

@@ -34,4 +34,14 @@ export class RoleManagementService {
     groupInsert(data): Observable<any> {
         return this.http.post(`${this.EndPoint}/groupInsert`, data);
     }
+
+    /** Method called to get a group data by its id for editing purpose */
+    getGroupsById(id): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getGroupsById?id=${id}`).map(response => response);
+    }
+
+    /** Method called to update a Group */
+    groupUpdate(data, id): Observable<any> {
+        return this.http.post(`${this.EndPoint}/groupUpdate?id=${id}`, data);
+    }
 }

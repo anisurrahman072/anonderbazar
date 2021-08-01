@@ -10,7 +10,7 @@
     <div class="spinning">
         <nz-spin [nzSpinning]="_isSpinning">
             <div class="row">
-                <div class="col-lg-6 col-md-6">
+                <div class="col-lg-6 col-md-6" style="margin-bottom: 20px">
                     <form nz-form [formGroup]="validateForm" id="validateForm"
                           (ngSubmit)="submitForm($event,validateForm.value)">
 
@@ -74,7 +74,7 @@
                                 <h3 style="text-align: center">{{permission.perm_section}}</h3>
                             </div>
                             <ng-container *ngFor="let perm of perm_labels[permission.perm_section]; let i = index" [attr.data-index]="i">
-                                <label nz-checkbox (click)="addPermission(perm_keys[permission.perm_section][i]); addToArray(perm)">{{perm}}</label><br>
+                                <label nz-checkbox (click)="addToKeysArray(perm_keys[permission.perm_section][i]); addToLabelArray(perm)">{{perm}}</label><br>
                             </ng-container>
                         </div>
                     </ng-container>

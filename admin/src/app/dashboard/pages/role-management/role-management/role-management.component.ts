@@ -33,7 +33,6 @@ export class RoleManagementComponent implements OnInit {
         this.roleManagementService.getAllGroups(this.groupsLimit, this.groupsPage)
             .subscribe(result => {
                 this.loading = false;
-                console.log('groups: ', result);
                 this.groupsData = result.data;
                 this.totalGroups = result.total;
                 this._isSpinning = false

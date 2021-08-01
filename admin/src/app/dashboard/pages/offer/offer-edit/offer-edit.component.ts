@@ -10,7 +10,6 @@ import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {ImageService} from "../../../../services/image.service";
 import {DesignImagesService} from "../../../../services/design-images.service";
 import {ExportService} from "../../../../services/export.service";
 import {ExcelService} from "../../../../services/excel.service";

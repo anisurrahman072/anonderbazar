@@ -101,6 +101,8 @@ module.exports = {
     }
   },
 
+  /** Method called to create a new group */
+  /**Model models/Group.js*/
   groupInsert: async (req, res) => {
     try {
       let body = {};
@@ -110,6 +112,57 @@ module.exports = {
       body.accessList = JSON.parse(req.body.permissionKeysArray);
 
       let group = await Group.create(body).fetch();
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully Created a new group',
+        data: group
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to Created a new group',
+        error
+      });
+    }
+  },
+
+  /** Method called to create a new group */
+  /**Model models/Group.js*/
+  getGroupsById: async (req, res) => {
+    try {
+      let group = await Group.findOne({id: req.query.id});
+      res.status(200).json({
+        success: true,
+        message: 'Successfully fetched group data by id',
+        data: group
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to fetched group data by id',
+        error
+      });
+    }
+  },
+
+  /** Method called to update a group */
+  /**Model models/Group.js*/
+  groupUpdate: async (req, res) => {
+    console.log('req.here: ');
+    try {
+      let body = {};
+
+      id = req.query.id;
+      body.name = req.body.name;
+      body.description = req.body.description;
+      body.accessList = JSON.parse(req.body.permissionKeysArray);
+
+      let group = await Group.updateOne({id: id}).set(body);
 
       res.status(200).json({
         success: true,
