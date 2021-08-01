@@ -10,7 +10,7 @@ const routes: Routes = [
         path: '',
         children: [
             {
-                path: '',
+                path: '', // role-management
                 canActivate: [AccessControl],
                 data: {accessData: 'role-management'},
                 component: RoleManagementComponent

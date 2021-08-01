@@ -30,6 +30,7 @@ const {questionsRoute} = require('./questions');
 const {offerRoute} = require('./offer');
 const {anonderJhorRoute} = require('./anonderJhor');
 const {ImageRoute} = require('./image');
+const {roleManagementRoute} = require('./roleManagement');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -63,5 +64,6 @@ exports.allRouter = {
   ...questionsRoute,
   ...offerRoute,
   ...anonderJhorRoute,
-  ...ImageRoute
+  ...ImageRoute,
+  ...roleManagementRoute
 };

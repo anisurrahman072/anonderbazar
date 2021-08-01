@@ -335,7 +335,7 @@ module.exports.policies = {
   StatusChangeController: {
     'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
     'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
-    'currentTime' : true
+    'currentTime': true
   },
   SuborderController: {
     '*': false,
@@ -425,5 +425,10 @@ module.exports.policies = {
   },
   OfferController: {
     '*': true
+  },
+
+  RoleManagementController: {
+    '*': false,
+    'getAllGroups': ['isAuthorized', 'isAdmin'],
   }
 };
