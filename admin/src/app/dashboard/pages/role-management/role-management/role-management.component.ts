@@ -44,4 +44,18 @@ export class RoleManagementComponent implements OnInit {
             })
     }
 
+    /**Event method for deleting Groups*/
+    deleteGroup(index, id) {
+        this._isSpinning = true;
+        this.roleManagementService.deleteGroup(id).subscribe(result => {
+            this._notification.warning('Group Delete', "Deleted Successfully");
+            this._isSpinning = false;
+            this.getAllGroups();
+        }, (err) => {
+            this._isSpinning = false;
+            this._notification.error('Sorry!!', 'Failed to delete group');
+            console.log('group delete error: ', err);
+        });
+    };
+
 }

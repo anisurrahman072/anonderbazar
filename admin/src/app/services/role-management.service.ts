@@ -18,4 +18,10 @@ export class RoleManagementService {
             .get(`${this.EndPoint}/getAllGroups?limit=${groupsLimit}&page=${groupsPage}`)
             .map(response => response);
     }
+
+    /**method called to delete a group*/
+    deleteGroup(id): Observable<any> {
+        return this.http.delete(`${this.EndPoint}/deleteGroup?id=${id}`)
+            .map(response => response);
+    }
 }

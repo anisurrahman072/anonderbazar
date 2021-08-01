@@ -430,5 +430,6 @@ module.exports.policies = {
   RoleManagementController: {
     '*': false,
     'getAllGroups': ['isAuthorized', 'isAdmin'],
+    'deleteGroup': ['isAuthorized', 'isAdmin'],
   }
 };

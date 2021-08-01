@@ -50,5 +50,20 @@ module.exports = {
     }
   },
 
+  /**Method called to delete a group*/
+  /**model: Group.js*/
+  deleteGroup: async (req, res) => {
+    try {
+      const group = await Group.updateOne({id: req.query.id}).set({deletedAt: new Date()});
+      return res.json(200, group);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: 'Failed to delete a group',
+        error
+      });
+    }
+  },
+
 };
 
