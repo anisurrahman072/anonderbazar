@@ -54,6 +54,8 @@ export class CanceledOrderComponent implements OnInit {
     }
     customerNameFilter: string = '';
 
+    submittingMakePayment: boolean = false;
+
 
     constructor(
         private orderService: OrderService,
@@ -296,6 +298,7 @@ export class CanceledOrderComponent implements OnInit {
     }
 
     submitForm($event, value){
+        this.submittingMakePayment = true;
         if(!value.dueAmount){
             this._notification.error("Due Amount Missing", "Must provide due amount");
             return false;
@@ -312,11 +315,13 @@ export class CanceledOrderComponent implements OnInit {
 
         this.paymentService.makeAdminPayment(formData)
             .subscribe(data => {
+                this.submittingMakePayment = false;
                 this.isMakePaymentModalVisible = false;
                 console.log("Success: ", data);
                 this.getPageData();
                 this._notification.success("Success", "Successfully added payment for the order");
             }, error => {
+                this.submittingMakePayment = false;
                 this.isMakePaymentModalVisible = false;
                 console.log("Error occurred: ", error);
                 this._notification.error("Error", "Error occurred while making admin payment");

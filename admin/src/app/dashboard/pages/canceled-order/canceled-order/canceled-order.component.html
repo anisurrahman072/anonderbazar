@@ -167,7 +167,7 @@
             </div>&nbsp;
             <div nz-row>
                 <div nz-col [nzOffset]="7" [nzSpan]="12">
-                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid || submittingMakePayment">
                         Make Payment
                     </button>
                 </div>

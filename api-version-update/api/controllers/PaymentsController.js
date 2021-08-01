@@ -267,7 +267,7 @@ module.exports = {
         return res.status(400).json({message: 'Order not found!'});
       }
 
-      let finalPaidAmount = order.paid_amount + req.body.dueAmount;
+      let finalPaidAmount = order.paid_amount + parseFloat(req.body.dueAmount);
       if(finalPaidAmount < order.total_price){
         return res.status(400).json({message: 'Final paid amount is less than due amount! You have to pay full amount.'});
       }
