@@ -65,5 +65,67 @@ module.exports = {
     }
   },
 
+  /** Method called to get all the available permissions to create a group */
+  /**Model models/Group.js*/
+
+  getAllGroupsPermissions: async (req, res) => {
+    try {
+      let rawSQL = `
+      SELECT
+            GROUP_CONCAT(perm_key) AS perm_keys,
+            GROUP_CONCAT(perm_label) AS perm_labels,
+            perm_section
+        FROM
+            group_permissions
+        WHERE
+            deleted_at IS NULL
+        GROUP BY
+            perm_section
+      `;
+
+      let rawPermissions = await sails.sendNativeQuery(rawSQL, []);
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all available group permissions',
+        data: rawPermissions.rows
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to get all the available group permissions',
+        error
+      });
+    }
+  },
+
+  groupInsert: async (req, res) => {
+    try {
+      let body = {};
+
+      body.name = req.body.name;
+      body.description = req.body.description;
+      body.accessList = JSON.parse(req.body.permissionKeysArray);
+
+      let group = await Group.create(body).fetch();
+
+      res.status(200).json({
+        success: true,
+        message: 'Successfully Created a new group',
+        data: group
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to Created a new group',
+        error
+      });
+    }
+  },
+
 };
 

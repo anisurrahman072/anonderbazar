@@ -1,3 +1,85 @@
-<p>
-  role-management-create works!
-</p>
+<nz-card nzTitle="Add a new Group" [nzExtra]="extra">
+    <ng-template #extra>
+        <button *ngIf="'role-management' | accessControl" routerLink="/dashboard/role-management" nz-button
+                [nzType]="'primary'"
+                [nzSize]="'large'">
+            <i class="anticon anticon-file-text"></i><span> Group List </span>
+        </button>
+    </ng-template>
+
+    <div class="spinning">
+        <nz-spin [nzSpinning]="_isSpinning">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <form nz-form [formGroup]="validateForm" id="validateForm"
+                          (ngSubmit)="submitForm($event,validateForm.value)">
+
+                        <!--group name-->
+                        <div nz-row style="margin-bottom: 10px">
+                            <div nz-col [nzSpan]="7">
+                                <label> Group Name </label>
+                            </div>
+                            <div nz-col [nzSpan]="12">
+                                <input nz-input formControlName="name" [placeholder]="'Enter Group Name'"
+                                       [nzSize]="'large'">
+
+                                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')"
+                                     style="color: red">
+                                    Group Name is required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Group description-->
+                        <div nz-row style="margin-bottom: 10px">
+                            <div nz-col [nzSpan]="7">
+                                <label> Group Description </label>
+                            </div>
+                            <div nz-col [nzSpan]="12">
+                                <input nz-input formControlName="description" [placeholder]="'Write a description'"
+                                       [nzSize]="'large'">
+
+                                <div *ngIf="getFormControl('description').dirty&&getFormControl('description').hasError('required')"
+                                     style="color: red">
+                                    Group description is required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--showing added permissions-->
+                        <div *ngIf="permissionLabelsArray && permissionLabelsArray.length > 0">
+                            <h3 style="margin: 10px 0 10px 0; color: green">Added permissions</h3>
+                            <ng-container *ngFor="let permLabel of permissionLabelsArray">
+                                <nz-tag>{{permLabel}}</nz-tag>
+                            </ng-container>
+                        </div>
+
+                        <div nz-row>
+                            <div nz-col [nzOffset]="7" [nzSpan]="12" style="margin-top: 20px">
+                                <button nz-button [nzType]="'primary'" [nzSize]="'large'"
+                                        [disabled]="!validateForm.valid || submitting">Save
+                                </button>
+                                <button nz-button [nzSize]="'large'" (click)="resetForm($event)"
+                                        style="margin-left: 10px">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <ng-container *ngIf="allGroupsPermissions && perm_labels">
+                        <div *ngFor="let permission of allGroupsPermissions" style="margin-bottom: 25px">
+                            <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
+                                <h3 style="text-align: center">{{permission.perm_section}}</h3>
+                            </div>
+                            <ng-container *ngFor="let perm of perm_labels[permission.perm_section]; let i = index" [attr.data-index]="i">
+                                <label nz-checkbox (click)="addPermission(perm_keys[permission.perm_section][i]); addToArray(perm)">{{perm}}</label><br>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </nz-spin>
+    </div>
+</nz-card>

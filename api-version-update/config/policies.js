@@ -431,5 +431,7 @@ module.exports.policies = {
     '*': false,
     'getAllGroups': ['isAuthorized', 'isAdmin'],
     'deleteGroup': ['isAuthorized', 'isAdmin'],
+    'getAllGroupsPermissions': ['isAuthorized', 'isAdmin'],
+    'groupInsert': ['isAuthorized', 'isAdmin'],
   }
 };

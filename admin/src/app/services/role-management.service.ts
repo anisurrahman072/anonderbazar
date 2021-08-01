@@ -24,4 +24,14 @@ export class RoleManagementService {
         return this.http.delete(`${this.EndPoint}/deleteGroup?id=${id}`)
             .map(response => response);
     }
+
+    /** Method called to get all the available permissions to create a group */
+    getAllGroupsPermissions(): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllGroupsPermissions`);
+    }
+
+    /** Method called to create a new Group */
+    groupInsert(data): Observable<any> {
+        return this.http.post(`${this.EndPoint}/groupInsert`, data);
+    }
 }
