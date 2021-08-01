@@ -34,6 +34,7 @@ export class RoleManagementComponent implements OnInit {
             .subscribe(result => {
                 this.loading = false;
                 this.groupsData = result.data;
+                console.log('grouip data: ', this.groupsData);
                 this.totalGroups = result.total;
                 this._isSpinning = false
             }, error => {
@@ -45,6 +46,10 @@ export class RoleManagementComponent implements OnInit {
 
     /**Event method for deleting Groups*/
     deleteGroup(index, id) {
+        if (id == 1 || id === 2 || id === 4) {
+            this._notification.warning('Stop!', "No one can delete Admin, Customer or Owner group, rather you can change edit their permissions");
+            return;
+        }
         this._isSpinning = true;
         this.roleManagementService.deleteGroup(id).subscribe(result => {
             this._notification.warning('Group Delete', "Deleted Successfully");
