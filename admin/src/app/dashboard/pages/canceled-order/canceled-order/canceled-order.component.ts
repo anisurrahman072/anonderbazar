@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {OrderService} from "../../../../services/order.service";
 import {NzNotificationService} from "ng-zorro-antd";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
@@ -8,8 +8,10 @@ import * as _moment from "moment";
 import {default as _rollupMoment} from "moment";
 import {ExportService} from "../../../../services/export.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import {FileHolder, ImageUploadComponent, UploadMetadata} from "angular2-image-upload";
 import {PaymentService} from "../../../../services/payment.service";
+import {environment} from "../../../../../environments/environment";
+import {DesignImagesService} from "../../../../services/design-images.service";
 const moment = _rollupMoment || _moment;
 
 @Component({
@@ -41,7 +43,10 @@ export class CanceledOrderComponent implements OnInit {
     remove_zero_payment:boolean = false;
     isMakePaymentModalVisible: boolean = false;
     validateForm: FormGroup;
-    ImageFrontFile: File[] = [];
+
+    ImageFrontFile = [];
+    storeImageFileName: File[] = [];
+
     currentOrderId: any;
     currentOrderDueAmount: any;
 
@@ -55,7 +60,9 @@ export class CanceledOrderComponent implements OnInit {
     customerNameFilter: string = '';
 
     submittingMakePayment: boolean = false;
+    IMAGE_ENDPOINT = environment.IMAGE_ENDPOINT;
 
+    @ViewChild('ImageUploadComponent') ImageUploadComponent: ImageUploadComponent;
 
     constructor(
         private orderService: OrderService,
@@ -63,7 +70,8 @@ export class CanceledOrderComponent implements OnInit {
         private authService: AuthService,
         private exportService: ExportService,
         private fb: FormBuilder,
-        private paymentService: PaymentService
+        private paymentService: PaymentService,
+        private designImagesService: DesignImagesService
     ) {
     }
 
@@ -286,14 +294,51 @@ export class CanceledOrderComponent implements OnInit {
     }
 
     onRemovedFront(_file: FileHolder) {
-        this.ImageFrontFile.splice(
-            this.ImageFrontFile.findIndex(e => e.name === _file.file.name),
-            1
-        );
+        this.submittingMakePayment = true;
+
+        if(this.ImageFrontFile.length > 0){
+            let imagePath = this.ImageFrontFile[this.storeImageFileName.findIndex(e => e.name === _file.file.name)];
+
+
+            let formData = new FormData();
+            formData.append('oldImagePath', `${imagePath.split(this.IMAGE_ENDPOINT)[1]}`);
+
+            this.designImagesService.deleteImage(formData)
+                .subscribe(data => {
+                    this.ImageFrontFile.splice(this.storeImageFileName.findIndex(e => e.name === _file.file.name), 1);
+                    this.storeImageFileName.splice(this.storeImageFileName.findIndex(e => e.name === _file.file.name), 1);
+
+                    this._notification.success("Success", "Successfully deleted image");
+                    this.submittingMakePayment = false;
+
+                }, error => {
+                    console.log("Error occurred: ", error);
+                    this._notification.success("Error", "Error occurred while deleting image");
+                    this.submittingMakePayment = false;
+                })
+        }
+
     }
 
     onBeforeUploadFront = (metadata: UploadMetadata) => {
-        this.ImageFrontFile.push(metadata.file);
+        this.submittingMakePayment = true;
+
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.ImageFrontFile.push(this.IMAGE_ENDPOINT + data.path);
+                this.storeImageFileName.push(metadata.file);
+                this.submittingMakePayment = false;
+                this._notification.success("Success", "Successfully uploaded image");
+
+            }, error => {
+                console.log("Error occurred: ", error);
+                this.submittingMakePayment = false;
+                this._notification.error("Error", "Unstable Internet connection while uploading image");
+
+            })
         return metadata;
     }
 
@@ -307,10 +352,8 @@ export class CanceledOrderComponent implements OnInit {
         formData.append('dueAmount', value.dueAmount);
         formData.append('orderId', this.currentOrderId);
         if (this.ImageFrontFile.length > 0) {
-            formData.append('hasImage', 'true');
-            formData.append('image', this.ImageFrontFile[0], this.ImageFrontFile[0].name);
-        } else {
-            formData.append('hasImage', 'false');
+            this.ImageFrontFile = this.ImageFrontFile.map(image => image.split(this.IMAGE_ENDPOINT)[1]);
+            formData.append('image', JSON.stringify(this.ImageFrontFile));
         }
 
         this.paymentService.makeAdminPayment(formData)
@@ -320,6 +363,9 @@ export class CanceledOrderComponent implements OnInit {
                 console.log("Success: ", data);
                 this.getPageData();
                 this._notification.success("Success", "Successfully added payment for the order");
+                this.ImageFrontFile = [];
+                this.storeImageFileName = [];
+                this.ImageUploadComponent.deleteAll();
             }, error => {
                 this.submittingMakePayment = false;
                 this.isMakePaymentModalVisible = false;

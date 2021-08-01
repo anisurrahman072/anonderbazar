@@ -297,8 +297,18 @@
                 <div>
                     <h5>Offline Payment Method: {{currentOfflinePaymentDetails.offline_payment_method}}</h5>
                     <p style="margin-top: 20px;">Money Receipt</p>
-                    <img src="{{IMAGE_ENDPOINT + '/'+currentOfflinePaymentDetails.money_receipt}}" alt="money-receipt">
+                    <div *ngIf="currentOfflinePaymentDetails && currentOfflinePaymentDetails.money_receipt && !currentOfflinePaymentDetails.moneyReceipts">
+                        <img src="{{IMAGE_ENDPOINT + '/'+currentOfflinePaymentDetails.money_receipt}}" alt="money-receipt">
+                    </div>
+
+
+                    <div *ngIf="(currentOfflinePaymentDetails && currentOfflinePaymentDetails.money_receipt && currentOfflinePaymentDetails.moneyReceipts)" style="cursor: pointer;">
+                        <div *ngFor="let receipt of currentOfflinePaymentDetails.moneyReceipts" style="margin-bottom: 10px;">
+                            <img src="{{IMAGE_ENDPOINT +receipt}}" alt="money-receipt">
+                        </div>
+                    </div>
                 </div>
+
             </ng-template>
         </div>
     </ng-template>

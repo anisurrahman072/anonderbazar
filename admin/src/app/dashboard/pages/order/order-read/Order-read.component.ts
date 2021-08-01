@@ -126,6 +126,9 @@ export class OrderReadComponent implements OnInit, OnDestroy {
 
                     this.allPaymentsLog = payments.map(payment => {
                         payment.details = JSON.parse(payment.details);
+                        if(payment.details && payment.details.money_receipt && payment.details.money_receipt.split('[').length > 1){
+                            payment.details.moneyReceipts = JSON.parse(payment.details.money_receipt);
+                        }
                         return payment;
                     });
 
@@ -237,7 +240,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
     };
 
     showAddModalVisible(flag, currentMoneyReceipt) {
-        this.currentMoneReceipt = currentMoneyReceipt;
+        this.currentMoneReceipt = currentMoneyReceipt[0] === '/' ? currentMoneyReceipt : ('/'+currentMoneyReceipt);
         this.isAddModalVisible = flag;
     }
 

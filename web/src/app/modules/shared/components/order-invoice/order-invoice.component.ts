@@ -132,6 +132,9 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     this.allPaymentsLog = payments;
                     this.allPaymentsLog.forEach(data => {
                         data.details = JSON.parse(data.details);
+                        if(data.details && data.details.money_receipt && data.details.money_receipt.split('[').length > 1){
+                            data.details.moneyReceipts = JSON.parse(data.details.money_receipt);
+                        }
                         data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                         return data;
                     });
@@ -231,7 +234,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
     }
 
     isAddModalVisible(modalContent, moneyReceipt) {
-        this.currentMoneyReceiptToShow = moneyReceipt;
+        this.currentMoneyReceiptToShow = moneyReceipt[0] === '/' ? moneyReceipt : ('/'+moneyReceipt);
         this.moneyReceiptModalRef = this.modalService.show(modalContent);
     }
 }

@@ -156,9 +156,11 @@
                             <label> Money Receipt </label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <image-upload #Image [max]="1" buttonCaption="Select picture"
+                            <image-upload #ImageUploadComponent [max]="5"
+                                          buttonCaption="Select picture"
                                           dropBoxMessage="Drop Picture here"
-                                          clearButtonCaption="remove" (removed)="onRemovedFront($event)"
+                                          clearButtonCaption="remove"
+                                          (removed)="onRemovedFront($event)"
                                           [uploadedFiles]="ImageFrontFile" [beforeUpload]="onBeforeUploadFront">
                             </image-upload>
                         </div>
