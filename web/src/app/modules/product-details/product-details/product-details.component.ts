@@ -141,17 +141,24 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Event method for getting all the data for the page
     ngOnInit() {
+        /** Get all offered products from NGRX store. START */
+        this.loaderService.showLoader();
         this.offer$ = this.store.select<any>(fromStore.getOffer);
         this.offer$.subscribe(offerData => {
             this.offerData = offerData;
 
-            this.sub = this.route.params.subscribe(params => {
-                this.id = +params["id"];
-                this.getProductData();
-                this.getAllVariant();
-            });
+            if(this.offerData){
+                this.sub = this.route.params.subscribe(params => {
+                    this.id = +params["id"];
+                    this.getProductData();
+                    this.getAllVariant();
+                });
+            }
         })
+        /** Get all offered products from NGRX store. END */
 
+
+        /** Get Current user Info from NGRX store. START */
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
@@ -164,13 +171,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         }, (error) => {
             console.log('currentUser$', error);
         });
+        /** Get Current user Info from NGRX store. END */
+
 
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
+        this.addTofavouriteLoading$ = this.store.select<any>(fromStore.getFavouriteProductLoading);
 
-        this.addTofavouriteLoading$ = this.store.select<any>(
-            fromStore.getFavouriteProductLoading
-        );
 
         this.partService.getAllParts().subscribe(result => {
             this.allTheParts = result.data;
