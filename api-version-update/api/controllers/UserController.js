@@ -75,7 +75,7 @@ module.exports = {
         }
       }
 
-      return res.json(200, user);
+      return res.status(200).json(user);
 
     } catch (error) {
       if (error && error.naame === 'UsageError') {
@@ -224,6 +224,7 @@ module.exports = {
       });
     }
   },
+
   //Method called for updating a user data
   //Model models/User.js
   update: async (req, res) => {

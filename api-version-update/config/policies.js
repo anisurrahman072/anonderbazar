@@ -442,5 +442,7 @@ module.exports.policies = {
     'getAllAdminUsers': ['isAuthorized', 'isAdmin'],
     'createAdminUser': ['isAuthorized', 'isAdmin'],
     'getAllGroups': ['isAuthorized', 'isAdmin'],
+    'updateAdminUser': ['isAuthorized', 'isAdmin'],
+    'getById': ['isAuthorized', 'isAdmin'],
   }
 };

@@ -141,14 +141,12 @@ export class AdminUsersCreateComponent implements OnInit {
         this.adminUsersService.createAdminUser(formData).subscribe(result => {
             if (result.user) {
                 this._notification.create('success',
-                     result.user.name, 'New Admin user has been created successfully.');
-                setTimeout(() => {
-                    this.router.navigate([
-                        '/dashboard/admin-users/details',
-                        result.user.id
-                    ]);
-                }, 1000);
+                    result.user.name, 'New Admin user has been created successfully.');
+                this.router.navigate(['/dashboard/admin-users/details', result.user.id]);
             }
+        }, error => {
+            this._notification.error('Failed!', 'Failed to create an admin user');
+            console.log("admin user creation error: ", error);
         });
     };
 

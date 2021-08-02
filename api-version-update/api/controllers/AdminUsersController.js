@@ -99,5 +99,104 @@ module.exports = {
     }
   },
 
+  /** Method called for updating an admin user data */
+  /** Model models/User.js */
+  updateAdminUser: async (req, res) => {
+    try {
+      let user = await User.findOne({
+        id: req.param('id')
+      }).populate('group_id');
+
+      if (!user) {
+        return res.badRequest('User not found');
+      }
+
+      const authUser = req.token.userInfo;
+      // eslint-disable-next-line eqeqeq
+      if (user.group_id.name === 'owner') {
+        if (['admin', 'owner'].indexOf(authUser.group_id.name) === -1) {
+          return res.status(401).json({
+            success: false,
+            message: 'You are not allowed to access this resource'
+          });
+        }
+        if (['owner'].indexOf(authUser.group_id.name) !== -1) {
+          // eslint-disable-next-line eqeqeq
+          if (user.warehouse_id != authUser.warehouse_id.id) {
+            return res.status(401).json({
+              success: false,
+              message: 'You are not allowed to access this resource'
+            });
+          }
+        }
+      } else {
+        if (authUser.group_id.name === 'customer') {
+          // eslint-disable-next-line eqeqeq
+          if (!(user && user.id && user.id == authUser.id)) {
+            return res.status(401).json({
+              success: false,
+              message: 'You are not allowed to access this resource'
+            });
+          }
+        }
+      }
+
+      if (req.body.hasImage === 'true') {
+        const uploaded = await uploadImages(req.file('avatar'));
+        if (uploaded.length === 0) {
+          return res.badRequest('No file was uploaded');
+        }
+        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
+        req.body.avatar = '/' + newPath;
+      }
+
+      user = await User.updateOne({id: user.id}).set(req.body);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Admin user updated successfully',
+        user: user,
+        token: jwToken.issue({id: user.id})
+      });
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update user',
+        error
+      });
+    }
+  },
+
+  /** Method calle to find an admin user data */
+  /** Model models/User.js */
+  getById: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        id: req.query.id
+      })
+        .populate('group_id')
+        .populate('warehouse_id')
+        .populate('upazila_id')
+        .populate('zila_id')
+        .populate('division_id');
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched data for this admin user',
+        data: user
+      });
+
+    } catch (error) {
+      console.log('getById error: ', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to get admin user data',
+        error
+      });
+    }
+  },
+
 };
 
