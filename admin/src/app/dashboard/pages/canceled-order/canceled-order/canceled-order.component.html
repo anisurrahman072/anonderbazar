@@ -141,7 +141,7 @@
                             <label> Due Amount </label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <input nz-input type="number" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
+                            <input nz-input type="number" [readOnly]="true" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
 
                             <div *ngIf="getFormControl('dueAmount').dirty && getFormControl('dueAmount').hasError('required')">
                                 <span class="validation-error"> Name is required! </span>
