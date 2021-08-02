@@ -16,18 +16,25 @@ module.exports = {
     try {
       let _pagination = pagination(req.query);
 
-      let _where = {};
-      _where.deletedAt = null;
+      let rawSQL = `
+      SELECT
+          groups.*,
+          COUNT(users.username) AS num_of_user
+      FROM
+          groups
+      LEFT JOIN users ON groups.id = users.group_id
+      WHERE
+          groups.deleted_at IS NULL AND users.deleted_at IS NULL
+      GROUP BY
+          groups.id
+      ORDER BY
+          groups.name ASC
+      LIMIT ${_pagination.skip}, ${_pagination.limit}
+      `;
 
-      let allGroups = await Group.find({
-        where: _where,
-        limit: _pagination.limit,
-        skip: _pagination.skip
-      }).sort([
-        {name: 'ASC'},
-      ]);
+      const allGroups = await sails.sendNativeQuery(rawSQL, []);
 
-      let totalGroups = await Group.count().where(_where);
+      let totalGroups = await Group.count().where({deletedAt: null});
 
       res.status(200).json({
         success: true,
@@ -36,7 +43,7 @@ module.exports = {
         skip: _pagination.skip,
         page: _pagination.page,
         message: 'All existing groups with pagination',
-        data: allGroups
+        data: allGroups.rows
       });
 
     } catch (error) {

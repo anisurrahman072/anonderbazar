@@ -30,6 +30,9 @@
                         <th nz-th [nzWidth]="'150px'">
                             <span> Description </span>
                         </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> No of Users </span>
+                        </th>
                         <!--<th nz-th [nzWidth]="'200px'">
                             <span>Permissions</span>
                         </th>-->
@@ -45,6 +48,9 @@
                         </td>
                         <td>
                             <nz-tag>{{datum.description}}</nz-tag>
+                        </td>
+                        <td>
+                            <nz-tag>{{datum.num_of_user}}</nz-tag>
                         </td>
                         <!--<td>
                             <nz-tag>{{datum.accessList}}</nz-tag>

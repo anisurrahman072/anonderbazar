@@ -18,8 +18,11 @@ export class GroupGuard implements CanActivate {
     canActivate() {
         const token = localStorage.getItem('token');
         const jwtPayload = this.jwtHelper.decodeToken(token);
+        console.log('jwtPayload: ', jwtPayload);
+
         if (jwtPayload.group_id == 'admin') {
             return true;
+
         } else if (jwtPayload.group_id == 'owner') {
             if (jwtPayload.isWarehouseActivated) {
                 return true;
@@ -29,20 +32,20 @@ export class GroupGuard implements CanActivate {
             return false;
 
         } else if (jwtPayload.group_id == 'craftsman') {
-
             return true;
 
         } else if (jwtPayload.group_id == 'supplier') {
-
             return true;
 
         } else if (jwtPayload.group_id == 'sales') {
             return true;
 
+        } else if (jwtPayload.group_id && jwtPayload.group_id !== 'customer') {
+            return true;
+
         } else {
             this.router.navigate(['/auth/login']);
             return false;
-
         }
         // if (jwtPayload.group_id === 'customer') {
         //   this.router.navigate(['/userpanel']);

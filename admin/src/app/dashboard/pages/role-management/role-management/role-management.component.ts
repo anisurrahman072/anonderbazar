@@ -34,7 +34,7 @@ export class RoleManagementComponent implements OnInit {
             .subscribe(result => {
                 this.loading = false;
                 this.groupsData = result.data;
-                console.log('grouip data: ', this.groupsData);
+                /*console.log('grouip data: ', this.groupsData);*/
                 this.totalGroups = result.total;
                 this._isSpinning = false
             }, error => {
