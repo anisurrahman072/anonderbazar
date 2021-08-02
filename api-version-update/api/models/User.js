@@ -192,6 +192,11 @@ module.exports = {
     couponLotteryCashback: {
       collection: 'couponLotteryCashback',
       via: 'user_id'
+    },
+    is_admin_user: {
+      type: 'boolean',
+      defaultsTo: false,
+      allowNull: true
     }
   },
   tableName: 'users',

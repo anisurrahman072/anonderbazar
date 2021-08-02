@@ -469,6 +469,7 @@ module.exports = {
       });
     }
   },
+
   //Method called for getting all user data
   //Model models/User.js
   find: async (req, res) => {

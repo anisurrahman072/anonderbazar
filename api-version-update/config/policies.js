@@ -435,5 +435,10 @@ module.exports.policies = {
     'groupInsert': ['isAuthorized', 'isAdmin'],
     'getGroupsById': ['isAuthorized', 'isAdmin'],
     'groupUpdate': ['isAuthorized', 'isAdmin'],
+  },
+
+  AdminUsersController: {
+    '*': false,
+    'getAllAdminUsers': ['isAuthorized', 'isAdmin'],
   }
 };

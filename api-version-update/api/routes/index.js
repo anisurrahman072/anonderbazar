@@ -31,6 +31,7 @@ const {offerRoute} = require('./offer');
 const {anonderJhorRoute} = require('./anonderJhor');
 const {ImageRoute} = require('./image');
 const {roleManagementRoute} = require('./roleManagement');
+const {adminUsersRoute} = require('./adminUsers');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -65,5 +66,6 @@ exports.allRouter = {
   ...offerRoute,
   ...anonderJhorRoute,
   ...ImageRoute,
-  ...roleManagementRoute
+  ...roleManagementRoute,
+  ...adminUsersRoute,
 };

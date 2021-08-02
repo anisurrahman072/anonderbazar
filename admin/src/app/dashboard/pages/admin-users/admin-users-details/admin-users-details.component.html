@@ -1,3 +1,232 @@
-<p>
-  admin-users-details works!
-</p>
+<nz-card *ngIf="data" [nzTitle]="title" [nzExtra]="extra">
+  <ng-template #title>
+    <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
+    <ng-template #thenTemplate>
+      কারিগরের Description
+    </ng-template>
+    <ng-template #elseTemplate>
+      Buyer details
+    </ng-template>
+
+  </ng-template>
+  <ng-template #extra>
+    <button *ngIf="data && 'craftsman-edit'|accessControl" [routerLink]="['/dashboard/craftsman/edit', data.id]"
+            nz-button [nzSize]="'large'">
+      <i class="anticon anticon-edit"></i>
+      <span>Edit</span>
+    </button>
+    <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
+    <ng-template #thenTemplate>
+      <button routerLink="/dashboard/craftsman" nz-button [nzSize]="'large'">
+        <i class="anticon anticon-file-text"></i>
+        <span> List </span>
+      </button>
+    </ng-template>
+    <ng-template #elseTemplate>
+      <button routerLink="/dashboard/customer" nz-button [nzSize]="'large'">
+        <i class="anticon anticon-file-text"></i>
+        <span> List </span>
+      </button>
+    </ng-template>
+
+
+  </ng-template>
+  <ng-template [ngIf]="data">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="profile-img">
+          <div class="custom-image">
+            <img height="250px" width="250px" class="img  img-responsive" alt="example.jpg"
+                 style="margin: auto;" src="{{  IMAGE_ENDPOINT + data.avatar}}"/>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="profile-head">
+          <h2>
+            {{data.first_name}} {{data.last_name}}
+          </h2>
+          <h5>
+            {{data.email}}
+          </h5>
+          <h5>
+            {{data.phone}}
+          </h5>
+          <br>
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+              <span class="nav-link active h4" id="home-tab">Details</span>
+            </li>
+          </ul>
+          <div class="row about">
+            <div class="col-md-8 h4">
+              <div class="row">
+                <div class="col-md-4">
+                  <label>UserName</label>
+                </div>
+                <div class="col-md-8">
+                  <p>{{data.username}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Gender</label>
+                </div>
+                <div class="col-md-8">
+                  <p>{{data.gender}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Entrepreneur</label>
+                </div>
+                <div class="col-md-8">
+                  <p>{{data.warehouse_id?.name}}</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Address</label>
+                </div>
+                <div class="col-md-8">
+                  <p>
+                    {{data.zila_id?.name}},
+                    {{data.upazila_id?.name}},
+                    {{data.division_id?.name}}.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-md-6" style="border-right: 1px solid" *ngIf="craftsmanproducts && craftsmanproducts.length > 0">
+        <div class="title">
+          <ng-container *ngIf="data.group_id.id===6; then thenTemplate; else elseTemplate"></ng-container>
+          <ng-template #thenTemplate>
+            <ng-container
+                    *ngIf="craftsmanproducts.length!==0; then thenTemplate; else elseTemplate"></ng-container>
+            <ng-template #thenTemplate>
+              <h2>
+                কারিগরের Product List
+              </h2>
+            </ng-template>
+            <ng-template #elseTemplate>
+
+            </ng-template>
+
+
+          </ng-template>
+          <ng-template #elseTemplate>
+            <ng-container
+                    *ngIf="craftsmanproducts.length > 0; then thenTemplate; else elseTemplate"></ng-container>
+            <ng-template #thenTemplate>
+              <h2>
+                ক্রেতার Product List
+              </h2>
+            </ng-template>
+            <ng-template #elseTemplate>
+
+            </ng-template>
+          </ng-template>
+
+
+        </div>
+        <hr>
+        <br>
+        <div class="row col-md-offset-1">
+          <div class="col-md-3" *ngFor="let product of craftsmanproducts" style="margin-right: 50px">
+            <div routerLink="/dashboard/product/details/{{product.id}}" style="
+                        border: 1px solid gray;
+                        padding: 5px 5px 5px 5px;
+                        height: 300px;
+                        width: 150px;
+                        border-radius: 6px;
+                        margin: 0 10px 15px 0;
+                        box-shadow: 2px 3px #d0cdcd;">
+              <div style="margin-bottom: 15px;">
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <img class="img-responsive img-thumbnail"
+                         src="{{IMAGE_ENDPOINT + product.image}}" alt="{{product.name}}"
+                         style="height: 170px;width: 250px">
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="row">
+                    <div class="col-md-8 col-md-offset-2 text-center">
+                      <span class="h6">{{product.name}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 text-center">
+                      <span class="h6">৳ {{product.price}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-6" *ngIf="designs && designs.length > 0">
+        <div class="title">
+          <ng-container *ngIf="data.group_id.id===6; then thenTemplate1; else elseTemplate1"></ng-container>
+          <ng-template #thenTemplate1>
+            <ng-container *ngIf="designs.length!==0; then thenTemplate2; else elseTemplate2"></ng-container>
+            <ng-template #thenTemplate2>
+              <h2>
+                কারিগরের নকশার List
+              </h2>
+            </ng-template>
+            <ng-template #elseTemplate2>
+            </ng-template>
+          </ng-template>
+          <ng-template #elseTemplate1>
+          </ng-template>
+        </div>
+        <hr>
+        <br>
+        <div class="row col-md-offset-1">
+          <div class="col-md-3" *ngFor="let design of designs; let i = index" style="
+                                                    border: 1px solid gray;
+                                                    padding: 5px 5px 5px 5px;
+                                                    height: 300px;
+                                                    width: 150px;
+                                                    border-radius: 6px;
+                                                    margin: 0 10px 0 0;
+                                                    box-shadow: 2px 3px #d0cdcd;
+                                                    margin-right: 50px">
+            <div style="margin-bottom: 15px;">
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <img class="img-responsive img-thumbnail"
+                       src="{{IMAGE_ENDPOINT + design.design_id.image}}"
+                       alt="{{design.design_id.name}}"
+                       style="height: 170px;width: 250px">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="row">
+                  <div class="text-center">
+                    <p class="h6">{{design.design_id.name}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+</nz-card>
