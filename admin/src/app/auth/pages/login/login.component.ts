@@ -23,8 +23,8 @@ export class LoginComponent implements OnInit {
         message: ''
     };
 
-    constructor(private fb: FormBuilder, 
-				private router: Router,
+    constructor(private fb: FormBuilder,
+                private router: Router,
                 private authService: AuthService,
                 private uiService: UIService) {
 
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
 
         this.authService.login(value.userName, value.password)
             .subscribe(result => {
-                    if (result && result.token && result.user.group_id.name == "admin" && result.user.warehouse_id == undefined) {
+                    if (result && result.token && ((result.user.group_id.name == "admin" && result.user.warehouse_id == undefined) || result.user.is_admin_user === true)) {
                         this.uiService.loginInfoUpdate(true);
                         this.authService.loginSuccess(result);
                         this.router.navigate(['/dashboard']);

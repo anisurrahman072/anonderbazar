@@ -175,6 +175,7 @@ module.exports = {
       }
     }
   },
+
   //Method called for updating a user password data
   //Model models/User.js
   updatepassword: async (req, res) => {

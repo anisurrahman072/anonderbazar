@@ -440,5 +440,7 @@ module.exports.policies = {
   AdminUsersController: {
     '*': false,
     'getAllAdminUsers': ['isAuthorized', 'isAdmin'],
+    'createAdminUser': ['isAuthorized', 'isAdmin'],
+    'getAllGroups': ['isAuthorized', 'isAdmin'],
   }
 };
