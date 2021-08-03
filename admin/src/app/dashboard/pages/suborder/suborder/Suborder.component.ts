@@ -50,14 +50,14 @@ const csvHeaders = [
     'Pending',
     'Confirmed',
     'Processing',
-    'Prepared',
+    /*'Prepared',
     'Departure',
     'Pickup',
     'In the Air',
-    'Landed',
+    'Landed',*/
     'Arrived At Warehouse',
     'Shipped',
-    'Out For Delivery',
+    /*'Out For Delivery',*/
     'Delivered',
     'Canceled'
 ];
@@ -803,14 +803,14 @@ export class SuborderComponent implements OnInit {
                             'Pending': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.pending),
                             'Confirmed': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.confirmed),
                             'Processing': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.processing),
-                            'Prepared': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.prepared),
+                            /*'Prepared': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.prepared),
                             'Departure': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.departure),
                             'Pickup': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.pickup),
                             'In the Air': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.in_the_air),
-                            'Landed': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.landed),
+                            'Landed': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.landed),*/
                             'Arrived At Warehouse': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.arrived_at_warehouse),
                             'Shipped': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.shipped),
-                            'Out For Delivery': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.out_for_delivery),
+                            /*'Out For Delivery': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.out_for_delivery),*/
                             'Delivered': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.delivered),
                             'Canceled': getSubOrderStatuses(allStatuses, item.suborder_id, this.statusOptionsMapping.canceled),
                         };
