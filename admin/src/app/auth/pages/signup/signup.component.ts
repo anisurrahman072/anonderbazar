@@ -140,6 +140,7 @@ export class SignupComponent implements OnInit {
             zila_id: value.zila_id,
             division_id: value.division_id,
             hasImage: !!this.ImagePath,
+            user_type: 'owner',
         }));
         /*        wareHouseFormData.append('user[password]', value.password);
                 wareHouseFormData.append('user.confirmPassword', value.password);

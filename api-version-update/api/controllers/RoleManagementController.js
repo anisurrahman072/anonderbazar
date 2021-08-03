@@ -190,7 +190,6 @@ module.exports = {
   /** Method called to check whether group name exists or not */
   /**Model models/Group.js*/
   checkGroupName: async (req, res) => {
-    console.log('call here');
     try {
       if (!req.body.groupName) {
         return res.status(422).json({

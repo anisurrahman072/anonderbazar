@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
 
         this.authService.login(value.userName, value.password)
             .subscribe(result => {
-                    if (result && result.token && ((result.user.group_id.name == "admin" && result.user.warehouse_id == undefined) || result.user.is_admin_user === true)) {
+                    if (result && result.token && ((result.user.group_id.name == "admin" && result.user.warehouse_id == undefined) || result.user.user_type === 'admin')) {
                         this.uiService.loginInfoUpdate(true);
                         this.authService.loginSuccess(result);
                         this.router.navigate(['/dashboard']);

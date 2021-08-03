@@ -132,7 +132,7 @@ export class AdminUsersEditComponent implements OnInit {
         formData.set('zila_id', value.zila_id);
         formData.set('division_id', value.division_id);
         formData.set('active', '1');
-        formData.append('is_admin_user', '1');
+        formData.append('user_type', 'admin');
         formData.append('is_verified', '1');
 
         if (this.ImageFile) {

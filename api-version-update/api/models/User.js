@@ -193,9 +193,9 @@ module.exports = {
       collection: 'couponLotteryCashback',
       via: 'user_id'
     },
-    is_admin_user: {
-      type: 'boolean',
-      defaultsTo: false,
+    user_type: {
+      type: 'string',
+      columnType: 'varchar',
       allowNull: true
     }
   },
