@@ -45,6 +45,7 @@ export class AdminUsersCreateComponent implements OnInit {
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: File;
+    _isSpinning: any = false;
 
     group;
     gender;
@@ -64,6 +65,7 @@ export class AdminUsersCreateComponent implements OnInit {
     }
 
     ngOnInit() {
+        this._isSpinning = true;
         this.validateForm = this.fb.group({
             username: [
                 '',
@@ -101,11 +103,13 @@ export class AdminUsersCreateComponent implements OnInit {
         this.adminUsersService.getAllGroups()
             .subscribe(result => {
                 this.allGroups = result.data;
+                this._isSpinning = false;
             })
     }
 
     /** Event method for submitting the admin user registration form */
     submitForm = ($event, value) => {
+        this._isSpinning = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -143,10 +147,12 @@ export class AdminUsersCreateComponent implements OnInit {
                 this._notification.create('success',
                     result.user.name, 'New Admin user has been created successfully.');
                 this.router.navigate(['/dashboard/admin-users/details', result.user.id]);
+                this._isSpinning = false;
             }
         }, error => {
             this._notification.error('Failed!', 'Failed to create an admin user');
             console.log("admin user creation error: ", error);
+            this._isSpinning = false;
         });
     };
 

@@ -27,6 +27,8 @@ export class RoleManagementEditComponent implements OnInit {
 
     isCheckedArray: any = {};
 
+    isDisabled = null;
+
     constructor(
         private router: Router,
         private route: ActivatedRoute,
@@ -53,6 +55,10 @@ export class RoleManagementEditComponent implements OnInit {
                     let payload = {
                         name: this.groupData.name,
                         description: this.groupData.description
+                    }
+                    let grpName = this.groupData.name;
+                    if(grpName === 'admin' || grpName === 'owner' || grpName === 'customer') {
+                        this.isDisabled = 'disabled';
                     }
 
                     this.validateForm.patchValue(payload);

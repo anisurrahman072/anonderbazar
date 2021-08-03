@@ -44,4 +44,9 @@ export class RoleManagementService {
     groupUpdate(data, id): Observable<any> {
         return this.http.post(`${this.EndPoint}/groupUpdate?id=${id}`, data);
     }
+
+    /** Method called to check whether group name exists or not */
+    checkGroupName(groupName: string): Observable<any> {
+        return this.http.post(`${this.EndPoint}/checkGroupName`, {groupName})
+    }
 }

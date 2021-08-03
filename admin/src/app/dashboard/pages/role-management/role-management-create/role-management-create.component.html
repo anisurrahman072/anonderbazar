@@ -27,6 +27,12 @@
                                      style="color: red">
                                     Group Name is required!
                                 </div>
+                                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('taken')">
+                                    "{{getFormControl('name').value}}" is already taken!
+                                </div>
+                                <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
+                                    <span style="color: #ffa300">Verifying ...</span>
+                                </div>
                             </div>
                         </div>
 
@@ -70,12 +76,16 @@
                 <div class="col-lg-6 col-md-6">
                     <ng-container *ngIf="allGroupsPermissions && perm_labels">
                         <div *ngFor="let permission of allGroupsPermissions" style="margin-bottom: 25px">
-                            <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
-                                <h3 style="text-align: center">{{permission.perm_section}}</h3>
+                            <div *ngIf="permission.perm_section !== 'Admin Users' && permission.perm_section !== 'Role Management'">
+                                <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
+                                    <h3 style="text-align: center">{{permission.perm_section}}</h3>
+                                </div>
+                                <ng-container *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"
+                                              [attr.data-index]="i">
+                                    <label nz-checkbox
+                                           (click)="addToKeysArray(perm_keys[permission.perm_section][i]); addToLabelArray(perm)">{{perm}}</label><br>
+                                </ng-container>
                             </div>
-                            <ng-container *ngFor="let perm of perm_labels[permission.perm_section]; let i = index" [attr.data-index]="i">
-                                <label nz-checkbox (click)="addToKeysArray(perm_keys[permission.perm_section][i]); addToLabelArray(perm)">{{perm}}</label><br>
-                            </ng-container>
                         </div>
                     </ng-container>
                 </div>

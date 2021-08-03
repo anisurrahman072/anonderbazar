@@ -3,6 +3,7 @@ import {RoleManagementService} from "../../../../services/role-management.servic
 import {Router} from "@angular/router";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ValidationService} from "../../../../services/validation.service";
 
 @Component({
     selector: 'app-role-management-create',
@@ -24,9 +25,14 @@ export class RoleManagementCreateComponent implements OnInit {
         private router: Router,
         private _notification: NzNotificationService,
         private fb: FormBuilder,
+        private validationService: ValidationService,
     ) {
         this.validateForm = this.fb.group({
-            name: ['', [Validators.required]],
+            name: [
+                '',
+                [Validators.required],
+                [this.validationService.groupNameExistsValidator.bind(this)]
+            ],
             description: ['', [Validators.required]],
         })
     }

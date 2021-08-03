@@ -187,5 +187,44 @@ module.exports = {
     }
   },
 
+  /** Method called to check whether group name exists or not */
+  /**Model models/Group.js*/
+  checkGroupName: async (req, res) => {
+    console.log('call here');
+    try {
+      if (!req.body.groupName) {
+        return res.status(422).json({
+          success: false,
+          isunique: false,
+        });
+      }
+
+      const where = {
+        name: req.body.groupName,
+        deletedAt: null
+      };
+
+      const group = await Group.find(where);
+
+      if (group && group.length > 0) {
+        return res.status(422).json({
+          success: false,
+          isunique: false,
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        isunique: true,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        success: false,
+        isunique: false,
+        error
+      });
+    }
+  }
+
 };
 

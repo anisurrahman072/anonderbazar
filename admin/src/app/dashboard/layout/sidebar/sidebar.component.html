@@ -264,7 +264,7 @@
         </ul>
     </li>
 
-    <li nz-menu-item>
+    <li nz-menu-item *ngIf="'cms'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/usercms/post">
         <span>
@@ -299,7 +299,7 @@
            routerLink="/dashboard/role-management">
         <span>
             <i class="fa fa-ravelry"></i>
-            <span class="nav-text">Role Management</span>
+            <span class="nav-text">User's Groups</span>
         </span>
         </a>
     </li>

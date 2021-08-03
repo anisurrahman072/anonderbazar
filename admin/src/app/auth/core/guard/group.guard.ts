@@ -18,7 +18,6 @@ export class GroupGuard implements CanActivate {
     canActivate() {
         const token = localStorage.getItem('token');
         const jwtPayload = this.jwtHelper.decodeToken(token);
-        console.log('jwtPayload: ', jwtPayload);
 
         if (jwtPayload.group_id == 'admin') {
             return true;

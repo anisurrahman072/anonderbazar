@@ -21,7 +21,7 @@
                             </div>
                             <div nz-col [nzSpan]="12">
                                 <input nz-input formControlName="name" [placeholder]="'Enter Group Name'"
-                                       [nzSize]="'large'">
+                                       [nzSize]="'large'" [attr.disabled]="isDisabled">
 
                                 <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')"
                                      style="color: red">

@@ -111,7 +111,6 @@ export class AuthService {
     }
 
     loginSuccess(result) {
-
         localStorage.setItem('currentUser', JSON.stringify({username: result.username, token: result.token}));
         localStorage.setItem('token', result.token);
         localStorage.setItem('accessControlList', result.accessControlList);
@@ -122,6 +121,7 @@ export class AuthService {
         const accessControlList = localStorage.getItem('accessControlList');
         if (accessControlList) {
             const jwtPayload = this.jwtHelper.decodeToken(accessControlList);
+            console.log("access list ", jwtPayload.list);
             return jwtPayload.list;
         } else {
             return [];

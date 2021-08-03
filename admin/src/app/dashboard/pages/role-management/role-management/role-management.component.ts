@@ -47,7 +47,7 @@ export class RoleManagementComponent implements OnInit {
     /**Event method for deleting Groups*/
     deleteGroup(index, id) {
         if (id == 1 || id === 2 || id === 4) {
-            this._notification.warning('Stop!', "No one can delete Admin, Customer or Owner group, rather you can change edit their permissions");
+            this._notification.warning('Stop!', "No one can delete Admin, Customer or Owner group, rather you can change / edit their permissions");
             return;
         }
         this._isSpinning = true;

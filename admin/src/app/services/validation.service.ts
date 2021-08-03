@@ -5,6 +5,7 @@ import {UserService} from "./user.service";
 import "rxjs/add/observable/timer";
 import "rxjs/add/operator/switchMap";
 import "rxjs-compat/add/operator/map";
+import {RoleManagementService} from "./role-management.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ import "rxjs-compat/add/operator/map";
 export class ValidationService {
 
 
-  constructor(private userService: UserService) {
+  constructor(
+      private userService: UserService,
+      private roleManagementService: RoleManagementService,
+  ) {
 
   }
 
@@ -55,6 +59,7 @@ export class ValidationService {
       });
     });
   };
+
   emailTakenValidator = (control: FormControl): any => {
     return Observable.timer(200).switchMap(() => {
       return this.userService.checkEmail(control.value).map(res => {
@@ -72,6 +77,17 @@ export class ValidationService {
           return null;
         }
         return {error: true, taken: true};
+      });
+    });
+  };
+
+  groupNameExistsValidator = (control: FormControl): any => {
+    return Observable.timer(200).switchMap(() => {
+      return this.roleManagementService.checkGroupName(control.value).map(res => {
+        if(res && res.success) {
+          return null;
+        }
+        return {error: true, taken: true}
       });
     });
   };
