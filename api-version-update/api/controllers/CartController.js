@@ -264,7 +264,7 @@ module.exports = {
 
       });*/
 
-      console.log('Final data: ', data);
+      /*console.log('Final data: ', data);*/
 
       return res.json({
         success: true,

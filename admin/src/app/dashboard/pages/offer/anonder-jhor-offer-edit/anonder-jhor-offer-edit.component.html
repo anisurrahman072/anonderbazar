@@ -4,6 +4,18 @@
           (nzOnCancel)="handleCancel($event)" (nzOnOk)="handleOk($event)">
     <nz-spin [nzSpinning]="_isSpinning">
         <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <!--offer name-->
+            <div nz-row style="margin-bottom: 20px">
+                <div nz-col [nzSpan]="7">
+                    <label>Offer Name</label>
+                </div>
+                <div nz-col [nzSpan]="12">
+                    <input nz-input formControlName="offer_name" placeholder="Enter Offer Name">
+                    <div *ngIf="getFormControl('offer_name').dirty && getFormControl('offer_name').hasError('required')">
+                        <span class="validation-error" style="color: red"> Offer name is required! </span>
+                    </div>
+                </div>
+            </div>
 
             <!--offer main image-->
             <div nz-row>
@@ -21,8 +33,8 @@
                 </div>
             </div>
 
-            <!--Category-->
-            <div nz-row>
+            <!-- Selection of Category, sub-cat, sub-sub-cat -->
+            <!--<div nz-row>
                 <div nz-col [nzSpan]="7">
                     <label>Select Category</label>
                 </div>
@@ -36,7 +48,7 @@
                                    [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
-                    <!--Select Sub-Category-->
+                    &lt;!&ndash;Select Sub-Category&ndash;&gt;
                     <nz-select *ngIf="categoryId !== null && categoryId !== undefined "
                                formControlName="subCategoryId" nzAllowClear nzShowSearch
                                [nzPlaceHolder]=" 'Select Sub-Category'"
@@ -46,7 +58,7 @@
                                    [nzValue]="option.id">
                         </nz-option>
                     </nz-select>
-                    <!--Select Sub-Sub-Category-->
+                    &lt;!&ndash;Select Sub-Sub-Category&ndash;&gt;
                     <nz-select *ngIf="allSubSubCategoryIds && allSubSubCategoryIds.length > 0 && subCategoryId !== null && subCategoryId !== undefined "
                                formControlName="subSubCategoryId" nzAllowClear nzShowSearch
                                [nzPlaceHolder]=" 'Select Sub-Sub-Category'"
@@ -58,7 +70,7 @@
                     </nz-select>
 
                 </div>
-            </div>
+            </div>-->
 
             <!--calculation type and discount amount-->
             <div nz-row style="margin-top: 20px">
@@ -87,7 +99,7 @@
             </div>
 
             <!--excel file upload-->
-            <div *ngIf="subCategoryId || subSubCategoryId" nz-row style="margin-top: 20px">
+            <div nz-row style="margin-top: 20px">
                 <div nz-col [nzSpan]="7">
                     <label> Upload Excel File </label>
                 </div>

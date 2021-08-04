@@ -224,7 +224,11 @@
                         <th nz-th [nzWidth]="'100px'">
                             <span> ID </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+
+                        <th nz-th [nzWidth]="'200px'">
+                            <span> Offer Name </span>
+                        </th>
+                        <!--<th nz-th [nzWidth]="'150px'">
                             <span> Category </span>
                         </th>
                         <th nz-th [nzWidth]="'150px'">
@@ -232,7 +236,7 @@
                         </th>
                         <th nz-th [nzWidth]="'150px'">
                             <span> Sub-Sub-Category </span>
-                        </th>
+                        </th>-->
                         <th nz-th [nzWidth]="'200px'">
                             <span> Start Time </span>
                         </th>
@@ -260,22 +264,24 @@
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                            <nz-tag>{{datum.offer_name}}</nz-tag>
                         </td>
 
+                        <!--<td>
+                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                        </td>
                         <td>
                             <nz-tag *ngIf="datum.sub_category_id && datum.sub_category_id.name; else noSub">{{datum.sub_category_id.name}}</nz-tag>
                             <ng-template #noSub>
                                 <p>Null</p>
                             </ng-template>
                         </td>
-
                         <td>
                             <nz-tag *ngIf="datum.sub_sub_category_id && datum.sub_sub_category_id.name; else noSubSub">{{datum.sub_sub_category_id.name}}</nz-tag>
                             <ng-template #noSubSub>
                                 <p>Null</p>
                             </ng-template>
-                        </td>
+                        </td>-->
 
                         <td>
                             <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>
