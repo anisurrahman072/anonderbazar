@@ -228,12 +228,26 @@
                                         Bank: {{payment.details.accountNumberForBank}}</p>
                                 </div>
                             </div>
-                            <div *ngIf="(payment.details && payment.details.money_receipt)"
+
+                            <!-- If single money receipt found. START -->
+                            <div *ngIf="(payment.details && payment.details.money_receipt && !payment.details.moneyReceipts)"
                                  (click)="showAddModalVisible(true, payment.details.money_receipt)"
                                  style="cursor: pointer;">
                                 <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
                                      alt="money-receipt" style="height: 100px;">
                             </div>
+                            <!-- If single money receipt found. END -->
+
+                            <!-- If multiple money receipt found. START -->
+                            <div *ngIf="(payment.details && payment.details.money_receipt && payment.details.moneyReceipts)" style="cursor: pointer; display: flex;">
+                                <div *ngFor="let receipt of payment.details.moneyReceipts"
+                                     (click)="showAddModalVisible(true, receipt)" style="margin-right: 5px; ">
+                                    <img src="{{IMAGE_ENDPOINT + receipt}}"
+                                         alt="money-receipt" style="height: 100px;">
+                                </div>
+                            </div>
+                            <!-- If multiple money receipt found. END -->
+
                             <!-- Only true if the payment is an Offline Payment END -->
                         </div>
                     </div>
@@ -254,6 +268,6 @@
           (nzOnOk)="handleModalOk($event)">
     <ng-template #modalContent>
         <h4>Money Receipt</h4>
-        <img src="{{IMAGE_ENDPOINT + '/'+currentMoneReceipt}}">
+        <img src="{{IMAGE_ENDPOINT + currentMoneReceipt}}">
     </ng-template>
 </nz-modal>

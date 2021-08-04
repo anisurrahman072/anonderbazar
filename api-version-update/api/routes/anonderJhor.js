@@ -16,5 +16,6 @@ exports.anonderJhorRoute = {
   'GET /api/v1/anonderJhor/getWebAnonderJhorOfferById': 'AnonderJhorController.getWebAnonderJhorOfferById',
   'GET /api/v1/anonderJhor/generateOfferExcelById': 'AnonderJhorController.generateOfferExcelById',
   'GET /api/v1/anonderJhor/getAnonderJhorInfo': 'AnonderJhorController.getAnonderJhorInfo',
+  'GET /api/v1/anonderJhor/generateJhorOfferedExcel': 'AnonderJhorController.generateJhorOfferedExcel',
 
 };

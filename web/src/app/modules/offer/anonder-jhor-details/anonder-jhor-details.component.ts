@@ -13,7 +13,8 @@ import {ToastrService} from "ngx-toastr";
 export class AnonderJhorDetailsComponent implements OnInit {
     offerId: any;
     anonderJhorOffer;
-    anonderJhorOfferProducts;
+    anonderJhorOfferProducts: any = [];
+    JhorOfferProducts: any = [];
     page: any;
     calculationType;
     discountAmount;
@@ -43,20 +44,20 @@ export class AnonderJhorDetailsComponent implements OnInit {
 
     getAnonderJhorOfferById() {
         let sortData = null;
-        if(this.changeStatusN){
+        if (this.changeStatusN) {
             sortData = {
                 code: "newest",
                 order: "DESC"
             }
-            if(this.changeStatusN_ASC){
+            if (this.changeStatusN_ASC) {
                 sortData.order = "ASC";
             }
-        } else if(this.changeStatusPr){
+        } else if (this.changeStatusPr) {
             sortData = {
                 code: "price",
                 order: "DESC"
             }
-            if(this.changeStatusPr_ASC){
+            if (this.changeStatusPr_ASC) {
                 sortData.order = "ASC";
             }
         }
@@ -64,31 +65,30 @@ export class AnonderJhorDetailsComponent implements OnInit {
         if (this.offerId) {
             this.offerService.getWebAnonderJhorOfferById(this.offerId, sortData)
                 .subscribe(result => {
-                    /*console.log('getWebAnonderJhorOfferById result: ', result);*/
                     this.anonderJhorOffer = result.data[0];
-                    this.anonderJhorOfferProducts = result.data[1];
-                    this.anonderJhorOfferProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
-                    /*console.log("anonderJhorOfferProducts.category_id.name: ", this.anonderJhorOfferProducts);*/
+                    this.JhorOfferProducts = result.data[1];
 
                     let presentTime = (new Date(Date.now())).getTime();
-                    let startTime =  new Date(this.anonderJhorOffer.start_date).getTime();
+                    let startTime = new Date(this.anonderJhorOffer.start_date).getTime();
                     let endTime = new Date(this.anonderJhorOffer.end_date).getTime();
 
                     /** setting discount to every products exists in this offer*/
-                    if (this.anonderJhorOffer &&  startTime <= presentTime && endTime >= presentTime) {
-                        this.anonderJhorOfferProducts.forEach(product => {
-                            this.calculationType = this.anonderJhorOffer.calculation_type;
-                            this.discountAmount = this.anonderJhorOffer.discount_amount;
-                            this.originalPrice = product.price;
+                    if (this.anonderJhorOffer && startTime <= presentTime && endTime >= presentTime) {
+                        this.JhorOfferProducts.forEach(product => {
+                            this.calculationType = product.calculation_type;
+                            this.discountAmount = product.discount_amount
+                            this.originalPrice = product.product_id.price;
 
-                            product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+                            product.product_id.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
 
-                            product.calculationType = this.calculationType;
-                            product.discountAmount = this.discountAmount;
+                            product.product_id.calculationType = this.calculationType;
+                            product.product_id.discountAmount = this.discountAmount;
+                            this.anonderJhorOfferProducts.push(product.product_id);
                         })
-                    } else if (!this.anonderJhorOfferProducts || this.anonderJhorOfferProducts.length < 0) {
+                        this.anonderJhorOfferProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
+                    } else if (!this.JhorOfferProducts || this.JhorOfferProducts.length < 0) {
                         this.toastr.error('There is no products in this offer', 'No Products');
-                    } else{
+                    } else {
                         this.toastr.error('Please wait for the offer to start or reload the page', 'Wait please');
                     }
 

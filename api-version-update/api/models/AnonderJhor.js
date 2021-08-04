@@ -21,7 +21,7 @@ module.exports = {
     homepage_banner_image: {
       type: 'json',
       columnType: 'text',
-      required: true
+      required: false
     },
     show_in_homepage: {
       type: 'boolean',
@@ -37,6 +37,26 @@ module.exports = {
       type: 'ref',
       columnType: 'datetime',
       required: true
+    },
+    pay_by_sslcommerz: {
+      type: 'number',
+      columnType: 'tinyint',
+      defaultsTo: 0
+    },
+    pay_by_bKash: {
+      type: 'number',
+      columnType: 'tinyint',
+      defaultsTo: 0
+    },
+    pay_by_offline: {
+      type: 'number',
+      columnType: 'tinyint',
+      defaultsTo: 0
+    },
+    pay_by_cashOnDelivery: {
+      type: 'number',
+      columnType: 'tinyint',
+      defaultsTo: 0
     }
   },
 

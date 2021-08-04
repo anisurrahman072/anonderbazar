@@ -10,7 +10,7 @@
             <div class="col-sm-6 col-md-12 main-content">
                 <div class="blog-single">
                     <div class="post-item">
-                        <div class="banner-image" style="overflow: hidden;">
+                        <div class="banner-image" style="overflow: hidden; margin-bottom: 25px">
                             <div class="post-thumb" *ngIf="regularOfferInfo.image.banner_image; else image">
                                 <img width="100%" src="{{  IMAGE_ENDPOINT + regularOfferInfo.image.banner_image}}"
                                      alt="{{regularOfferInfo.title}}">
@@ -23,14 +23,30 @@
                             </ng-template>
                         </div>
 
-                        <div class="post-info" style="margin-top:40px">
-                            <span class="post-title h1">{{regularOfferInfo.title}}</span>
-                            <div style="margin-top:40px" class="blog-content"
-                                 [innerHTML]="regularOfferInfo.description">
-                            </div>
+                        <h2>{{regularOfferInfo.title}}</h2>
+                        <div style="margin-top:40px" class="blog-content"
+                             [innerHTML]="regularOfferInfo.description">
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12" style="margin-bottom: 10px; text-align: center"
+                 *ngIf="offerRemainingTimeToEndInDigit && offerRemainingTimeToEndInDigit">
+                <h5 style="color: red; font-weight: 800; margin-bottom: 10px">Remaining Time</h5>
+                <h2 *ngIf="offerStartTime && offerStartTime < presentTime && offerEndTime > presentTime"
+                    style="color: white; font-size: 25px" >
+                    <ng-template ngFor let-time
+                                 [ngForOf]="offerRemainingTimeToEndInDigit">
+                        <span class="digit">{{time}}</span>
+                    </ng-template>
+                </h2>
+                <h6 class="my-2" style=" font-size: 15px; top: 20px">
+                    <span style="margin-left: 15px">Days</span><span style="margin-left: 28px">Hrs</span>
+                    <span style="margin-left: 26px">Mins</span><span style="margin-left: 30px">Secs</span>
+                </h6>
             </div>
         </div>
 

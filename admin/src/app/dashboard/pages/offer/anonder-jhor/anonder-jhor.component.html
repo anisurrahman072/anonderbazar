@@ -55,12 +55,29 @@
                     </div>
                 </div>
 
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Active Payment Gateways</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <div style="display: flex">
+                            <p *ngIf="isActiveSslCommerz" class="paymentGatewayStyle">Ssl Commerz</p>
+                            <p *ngIf="isActiveBkash" class="paymentGatewayStyle">Bkash</p>
+                            <p *ngIf="isActiveOffline" class="paymentGatewayStyle">Offline</p>
+                            <p *ngIf="isActiveCashOnDelivery" class="paymentGatewayStyle">Cash on delivery</p>
+                            <p *ngIf="!isActiveSslCommerz && !isActiveBkash && !isActiveOffline && !isActiveCashOnDelivery"
+                               class="paymentGatewayStyle" style="color: red;" >
+                                No Payment Gateway selected
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </ng-container>
             <!--anonder jhor read ends -->
 
             <!--edit section-->
             <ng-container *ngIf="isAnonderJhorEdit">
-
                 <form nz-form [formGroup]="validateForm" id="validateForm"
                       (ngSubmit)="submitForm($event,validateForm.value)">
                     <!--banner image-->
@@ -99,7 +116,7 @@
                         <div nz-col [nzOffset]="7" [nzSpan]="12">
                             <input formControlName="showHome" type="checkbox" [checked]="showHome"
                                    (change)="changeShowHomepage()">
-                            Show homepage banner in Homepage
+                            Show banner in Homepage
                         </div>
                     </div>
 
@@ -131,6 +148,38 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Select Payment Gateway -->
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_sslcommerz" type="checkbox" [checked]="isActiveSslCommerz"
+                                   (change)="changeSslCommerzActivation()">
+                            Pay by SslCommerz
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_bKash" type="checkbox" [checked]="isActiveBkash"
+                                   (change)="changeBkashActivation()">
+                            Pay by bKash
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_offline" type="checkbox" [checked]="isActiveOffline"
+                                   (change)="changeOfflineActivation()">
+                            Pay by Offline
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_cashOnDelivery" type="checkbox" [checked]="isActiveCashOnDelivery"
+                                   (change)="changeCashOnDeliveryActivation()">
+                            Pay by Cash On Delivery
+                        </div>
+                    </div>
+                    <!-- Select Payment Gateway. END -->
+
 
                     <div nz-row>
                         <div nz-col [nzOffset]="7" [nzSpan]="12">
@@ -175,7 +224,11 @@
                         <th nz-th [nzWidth]="'100px'">
                             <span> ID </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+
+                        <th nz-th [nzWidth]="'200px'">
+                            <span> Offer Name </span>
+                        </th>
+                        <!--<th nz-th [nzWidth]="'150px'">
                             <span> Category </span>
                         </th>
                         <th nz-th [nzWidth]="'150px'">
@@ -183,7 +236,7 @@
                         </th>
                         <th nz-th [nzWidth]="'150px'">
                             <span> Sub-Sub-Category </span>
-                        </th>
+                        </th>-->
                         <th nz-th [nzWidth]="'200px'">
                             <span> Start Time </span>
                         </th>
@@ -211,22 +264,24 @@
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                            <nz-tag>{{datum.offer_name}}</nz-tag>
                         </td>
 
+                        <!--<td>
+                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                        </td>
                         <td>
                             <nz-tag *ngIf="datum.sub_category_id && datum.sub_category_id.name; else noSub">{{datum.sub_category_id.name}}</nz-tag>
                             <ng-template #noSub>
                                 <p>Null</p>
                             </ng-template>
                         </td>
-
                         <td>
                             <nz-tag *ngIf="datum.sub_sub_category_id && datum.sub_sub_category_id.name; else noSubSub">{{datum.sub_sub_category_id.name}}</nz-tag>
                             <ng-template #noSubSub>
                                 <p>Null</p>
                             </ng-template>
-                        </td>
+                        </td>-->
 
                         <td>
                             <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>

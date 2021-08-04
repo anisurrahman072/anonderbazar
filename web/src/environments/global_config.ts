@@ -32,7 +32,7 @@ export const PAYMENT_METHODS_LABELS = {
     'bKash': 'bKash Payment Gateway',
     'Nagad': 'Nagad Payment Gateway'
 }
-export const ORDER_STATUSES = {
+/*export const ORDER_STATUSES = {
     PENDING_ORDER: 1,
     PROCESSING_ORDER: 2,
     PREPARED_ORDER: 3,
@@ -43,6 +43,21 @@ export const ORDER_STATUSES = {
     ARRIVED_AT_WAREHOUSE_ORDER: 8,
     SHIPPED_ORDER: 9,
     OUT_FOR_DELIVERY_ORDER: 10,
+    DELIVERED_ORDER: 11,
+    CANCELED_ORDER: 12,
+    CONFIRMED_ORDER: 13
+}*/
+
+export const ORDER_STATUSES = {
+    PENDING_ORDER: 1,
+    PROCESSING_ORDER: 2,
+    RETURNED: 3,
+    LOST: 4,
+    REFUND_PROCESSING: 5,
+    REFUNDED: 6,
+    PROCESSED: 7,
+    ARRIVED_AT_WAREHOUSE_ORDER: 8,
+    SHIPPED_ORDER: 9,
     DELIVERED_ORDER: 11,
     CANCELED_ORDER: 12,
     CONFIRMED_ORDER: 13

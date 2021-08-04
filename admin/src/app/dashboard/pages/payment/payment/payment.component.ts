@@ -313,6 +313,10 @@ export class PaymentComponent implements OnInit {
     showOfflinePaymentDetailsModal(paymentDetail){
         this.isOfflinePaymentDetailVisible = true;
         this.currentOfflinePaymentDetails = paymentDetail;
+
+        if(this.currentOfflinePaymentDetails && this.currentOfflinePaymentDetails.money_receipt && this.currentOfflinePaymentDetails.money_receipt.split('[').length > 1){
+            this.currentOfflinePaymentDetails.moneyReceipts = JSON.parse(this.currentOfflinePaymentDetails.money_receipt);
+        }
     }
 
     handleOk = e => {

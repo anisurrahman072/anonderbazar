@@ -4,8 +4,7 @@ const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 const OfferService = require('../services/OfferService');
-const regular_offer = 1;
-const anonder_jhor = 2;
+
 
 module.exports = {
   generateRandomString: function () {
@@ -259,6 +258,37 @@ module.exports = {
     return cartItems;
   },
 
+  checkOfferProductsFromCartItems: async (cartItems) => {
+    let offerIdNumber;
+    let offerType;
+
+    if(cartItems && cartItems.length > 0){
+      let offeredProducts = await OfferService.getAllOfferedProducts();
+
+      let len = cartItems.length;
+      for(let i=0; i<len; i++){
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: cartItems[i].product_id.id,
+          type_id: cartItems[i].product_id.type_id,
+          category_id: cartItems[i].product_id.category_id,
+          subcategory_id: cartItems[i].product_id.subcategory_id,
+          brand_id: cartItems[i].product_id.brand_id,
+          warehouse_id: cartItems[i].product_id.warehouse_id
+        }, offeredProducts);
+
+
+        if(i > 0){
+          if(offerIdNumber !== offer_id_number || offerType !== offer_type){
+            throw new Error('Different offer products or an offer product with regular product can\'t be added together in your cart!');
+          }
+        }
+
+        offerIdNumber = offer_id_number;
+        offerType = offer_type;
+      }
+    }
+  },
+
   createAddress: async (authUser, address) => {
     return await PaymentAddress.create({
       user_id: authUser.id,
@@ -305,7 +335,7 @@ module.exports = {
         }
       );
 
-      console.log('cartItemsTemp: ', cartItemsTemp);
+      /*console.log('cartItemsTemp: ', cartItemsTemp);*/
 
       let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
       let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -323,235 +353,16 @@ module.exports = {
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
         let thisCartItem = cartItemsTemp[k];
-        console.log('thisCartItem: ', thisCartItem);
+        /*console.log('thisCartItem: ', thisCartItem);*/
 
-        /** global section */
-        let itemId = thisCartItem.product_id.id;
-        let itemCatId = thisCartItem.product_id.type_id;
-        let itemSubCatId = thisCartItem.product_id.category_id;
-        let itemSubSubCatId = thisCartItem.product_id.subcategory_id;
-        let itemBrandId = thisCartItem.product_id.brand_id;
-        let itemWarehouseId = thisCartItem.product_id.warehouse_id;
-
-        let offer_id_number;
-        let offer_type;
-
-        if(offeredProducts && offeredProducts[itemId]){
-          /** offer section */
-          let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-          let _where = {};
-          _where.offer_deactivation_time = null;
-          _where.deletedAt = null;
-          _where.start_date = {'<=': presentTime};
-          _where.end_date = {'>=': presentTime};
-
-          let regularOffers = await Offer.find({where: _where});
-          console.log('reglar offer csv: ', regularOffers);
-
-          /** checking if the product exists in Regular offer */
-          if (regularOffers && regularOffers.length > 0) {
-            let regularOfferVendorId = [];
-            let regularOfferBrandId = [];
-            let regularOfferCatId = [];
-            let regularOfferSubCatId = [];
-            let regularOfferSubSubCatId = [];
-            let regularOfferProductsIds = [];
-            let regularOfferIndividualProductsIds = [];
-
-
-            /** storing offer information in the arrays */
-            for (let offer = 0; offer < regularOffers.length; offer++) {
-              if (regularOffers[offer].selection_type === 'Vendor wise') {
-                regularOfferVendorId.push({
-                  regularOfferId: regularOffers[offer].id,
-                  vendorId: regularOffers[offer].vendor_id
-                });
-              }
-
-              if (regularOffers[offer].selection_type === 'Brand wise') {
-                regularOfferBrandId.push({
-                  regularOfferId: regularOffers[offer].id,
-                  brandId: regularOffers[offer].brand_id
-                });
-              }
-
-              if (regularOffers[offer].selection_type === 'Category wise') {
-                regularOfferCatId.push({
-                  regularOfferId: regularOffers[offer].id,
-                  catId: regularOffers[offer].category_id
-                });
-                regularOfferSubCatId.push({
-                  regularOfferId: regularOffers[offer].id,
-                  subCatId: regularOffers[offer].subCategory_Id
-                });
-                regularOfferSubSubCatId.push({
-                  regularOfferId: regularOffers[offer].id,
-                  subSubCatId: regularOffers[offer].subSubCategory_Id
-                });
-              }
-
-              if (regularOffers[offer].selection_type === 'Product wise') {
-                console.log('regular offer info in product wise: ', regularOffers[offer]);
-                let rawSQL = `SELECT
-                                  product_id
-                              FROM
-                                  regular_offer_products
-                              WHERE
-                                  regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
-                const ids = await sails.sendNativeQuery(rawSQL, []);
-                const productIds = ids.rows;
-                console.log('pro wise ids: ', productIds);
-
-                productIds.forEach(proId => {
-                  regularOfferProductsIds.push({
-                    regularOfferId: regularOffers[offer].id,
-                    productId: proId.product_id
-                  });
-                });
-              }
-
-              if (regularOffers[offer].selection_type === 'individual_product') {
-                console.log('regular offer info in inidi wise: ', regularOffers[offer]);
-                let rawSQL = `SELECT
-                                  product_id
-                              FROM
-                                  regular_offer_products
-                              WHERE
-                                  regular_offer_id = ${regularOffers[offer].id} AND product_deactivation_time IS NULL AND deleted_at IS NULL `;
-                const ids = await sails.sendNativeQuery(rawSQL, []);
-                const productIds = ids.rows;
-                console.log('individual_product wise ids: ', productIds);
-
-                productIds.forEach(proId => {
-                  regularOfferIndividualProductsIds.push({
-                    regularOfferId: regularOffers[offer].id,
-                    productId: proId.product_id
-                  });
-                });
-              }
-            }
-
-            /** checking if the product item exists in the regular offer */
-            if (regularOfferVendorId && regularOfferVendorId.length > 0) {
-              regularOfferVendorId.forEach(ven => {
-                if (itemWarehouseId === ven.vendorId) {
-                  offer_id_number = ven.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferBrandId && regularOfferBrandId.length > 0) {
-              regularOfferBrandId.forEach(bran => {
-                if (itemBrandId === bran.brandId) {
-                  offer_id_number = bran.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferCatId && regularOfferCatId.length > 0) {
-              regularOfferCatId.forEach(cat => {
-                if (itemCatId === cat.catId) {
-                  offer_id_number = cat.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferSubCatId && regularOfferSubCatId.length > 0) {
-              regularOfferSubCatId.forEach(subCat => {
-                if (itemSubCatId === subCat.subCatId) {
-                  offer_id_number = subCat.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferSubSubCatId && regularOfferSubSubCatId.length > 0) {
-              regularOfferSubSubCatId.forEach(subSubCat => {
-                if (itemSubSubCatId === subSubCat.subSubCatId) {
-                  offer_id_number = subSubCat.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferProductsIds && regularOfferProductsIds.length > 0) {
-              console.log('regularOfferProductsIds', regularOfferProductsIds);
-              regularOfferProductsIds.forEach(proId => {
-                if (itemId === proId.productId) {
-                  console.log('in prodct ise: item id, productid: ', itemId, proId.productId);
-                  offer_id_number = proId.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-            if (regularOfferIndividualProductsIds && regularOfferIndividualProductsIds.length > 0) {
-              console.log('regularOfferIndividualProductsIds: ', regularOfferIndividualProductsIds);
-              regularOfferIndividualProductsIds.forEach(proId => {
-                if (itemId === proId.productId) {
-                  console.log('in individual ise: item id, productid: ', itemId, proId.productId);
-                  offer_id_number = proId.regularOfferId;
-                  offer_type = regular_offer;
-                }
-              });
-            }
-
-          }
-
-          /** jhor offer */
-          let _where1 = {};
-          _where1.status = 1;
-          _where1.deletedAt = null;
-          _where1.start_date = {'<=': presentTime};
-          _where1.end_date = {'>=': presentTime};
-
-          let jhorOffers = await AnonderJhorOffers.find({where: _where1});
-          console.log('jhor offers csv: ', jhorOffers);
-
-          /** checking if the product exists in anonder jhor offer */
-          if (jhorOffers && jhorOffers.length > 0) {
-            let offerCatId = [];
-            let offerSubCatId = [];
-            let offerSubSubCatId = [];
-
-            jhorOffers.forEach(offer => {
-              offerCatId.push({jhorOfferId: offer.id, catId: offer.category_id});
-              offerSubCatId.push({jhorOfferId: offer.id, subCatId: offer.sub_category_id});
-              offerSubSubCatId.push({jhorOfferId: offer.id, subSubCatId: offer.sub_sub_category_id});
-            });
-
-            if (offerCatId && offerCatId.length > 0) {
-              offerCatId.forEach(cat => {
-                if (itemCatId === cat.catId) {
-                  offer_id_number = cat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
-
-            if (offerSubCatId && offerSubCatId.length > 0) {
-              offerSubCatId.forEach(subCat => {
-                if (itemSubCatId === subCat.subCatId) {
-                  offer_id_number = subCat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
-
-            if (offerSubSubCatId && offerSubSubCatId.length > 0) {
-              offerSubSubCatId.forEach(subSubCat => {
-                if (itemSubSubCatId === subSubCat.subSubCatId) {
-                  offer_id_number = subSubCat.jhorOfferId;
-                  offer_type = anonder_jhor;
-                }
-              });
-            }
-          }
-        }
-
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: thisCartItem.product_id.id,
+          type_id: thisCartItem.product_id.type_id,
+          category_id: thisCartItem.product_id.category_id,
+          subcategory_id: thisCartItem.product_id.subcategory_id,
+          brand_id: thisCartItem.product_id.brand_id,
+          warehouse_id: thisCartItem.product_id.warehouse_id
+        }, offeredProducts);
 
         let newSuborderItemPayload = {
           product_suborder_id: suborder.id,

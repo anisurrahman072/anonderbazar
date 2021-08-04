@@ -9,9 +9,9 @@ module.exports = {
 
   authUserAddresses: async (req, res) => {
 
-    console.log('authUserAddresses');
+    /*console.log('authUserAddresses');*/
     const authUser = req.token.userInfo;
-    console.log('authUser', authUser);
+    /*console.log('authUser', authUser);*/
 
     try {
       const foundPaymentAddress = await PaymentAddress.find({
