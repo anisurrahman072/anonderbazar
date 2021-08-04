@@ -317,7 +317,7 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isAdmin'],
     'populate': ['isAuthorized', 'isAdmin'],
     'getAllOrder': ['isAuthorized', 'isAdmin'],
-    'allOrders': ['isAuthorized', 'isAdmin'],
+    'allOrders': ['isAuthorized', 'isAdmin', 'checkPermission(\'order-list\', \'order-listyyyy\')'],
     'getCancelledOrder': ['isAuthorized', 'isAdmin'],
     'refundCancelOrder': ['isAuthorized', 'isAdmin']
   },
