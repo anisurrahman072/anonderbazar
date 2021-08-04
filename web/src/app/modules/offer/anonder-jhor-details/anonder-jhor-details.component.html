@@ -2,12 +2,12 @@
     <div class="container-fluid">
         <nav class="woocommerce-breadcrumb breadcrumbs" style="margin-bottom: 20px">
             <a routerLink="/" routerLinkActive="active">Home </a>
-            <a routerLink="/cms" routerLinkActive="active">Offer </a>
-            <a *ngIf="anonderJhorOffer.sub_sub_category_id; else noSubSub">
-                {{anonderJhorOffer.sub_sub_category_id.name}}
+            <a routerLink="/offers/anonder-jhor" routerLinkActive="active">Anonder Jhor </a>
+            <a *ngIf="anonderJhorOffer.offer_name; else noSubSub">
+                {{anonderJhorOffer.offer_name}}
             </a>
             <ng-template #noSubSub>
-                {{anonderJhorOffer.category_id.name}}
+                Anonder Jhor Offered Products
             </ng-template>
         </nav>
 

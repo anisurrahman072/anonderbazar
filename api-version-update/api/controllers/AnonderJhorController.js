@@ -83,7 +83,7 @@ module.exports = {
   },
 
   updateAnonderJhor: async (req, res) => {
-    console.log('the bodty of : ', req.body);
+    /*console.log('the bodty of : ', req.body);*/
     try {
       let body = {...req.body};
 
@@ -291,7 +291,7 @@ module.exports = {
   },
 
   anonderJhorOfferInsert: async (req, res) => {
-    console.log('anonderjhor insert: body', req.body);
+    /*console.log('anonderjhor insert: body', req.body);*/
     try {
       let body = {...req.body};
 
@@ -301,19 +301,20 @@ module.exports = {
         discount_amount: body.discountAmount,
         start_date: body.offerStartDate,
         end_date: body.offerEndDate,
-        category_id: body.categoryId,
+        /*category_id: body.categoryId,*/
         anonder_jhor_id: 1,
         status: 1,
-        force_stop: 0
+        force_stop: 0,
+        offer_name: body.offer_name
       };
 
-      if (body.subCategoryId) {
+      /*if (body.subCategoryId) {
         offerData.sub_category_id = body.subCategoryId;
       }
 
       if (body.subSubCategoryId) {
         offerData.sub_sub_category_id = body.subSubCategoryId;
-      }
+      }*/
 
       let data = await AnonderJhorOffers.create(offerData).fetch();
 
