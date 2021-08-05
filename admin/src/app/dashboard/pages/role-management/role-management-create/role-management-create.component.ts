@@ -20,6 +20,8 @@ export class RoleManagementCreateComponent implements OnInit {
     permissionKeysArray: any = [];
     permissionLabelsArray: any = [];
 
+    isDismissed: Boolean = false;
+
     constructor(
         private roleManagementService: RoleManagementService,
         private router: Router,

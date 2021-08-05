@@ -28,6 +28,7 @@ export class RoleManagementEditComponent implements OnInit {
     isCheckedArray: any = {};
 
     isDisabled = null;
+    isDismissed: Boolean = false;
 
     constructor(
         private router: Router,

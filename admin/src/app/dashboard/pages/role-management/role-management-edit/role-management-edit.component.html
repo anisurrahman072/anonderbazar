@@ -9,6 +9,19 @@
 
     <div class="spinning">
         <nz-spin [nzSpinning]="_isSpinning">
+            <!--top dismiss button-->
+            <div *ngIf="!isDismissed" style="text-align: center">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="color: red">Please Keep in Mind </h2>
+                    <p style="font-size: 15px;font-weight: 600;">If you add any of the permissions from the sub-menus,<br>
+                        you must add every permission from its respective main menu.</p>
+                </div>
+                <button nz-button [nzType]="'dashed'" [nzSize]="'large'" (click)="isDismissed = true"
+                        style="margin-bottom:30px; color: #e13b44;">
+                    Dismiss
+                </button>
+            </div>
+
             <div class="row">
                 <div class="col-lg-6 col-md-6" style="margin-bottom: 20px">
                     <form nz-form [formGroup]="validateForm" id="validateForm"
@@ -69,16 +82,35 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <ng-container *ngIf="allGroupsPermissions && perm_labels">
-                        <div *ngFor="let permission of allGroupsPermissions" style="margin-bottom: 25px">
-                            <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
-                                <h3 style="text-align: center">{{permission.perm_section}}</h3>
+                        <div *ngFor="let permission of allGroupsPermissions">
+                            <div *ngIf="permission.perm_section !== 'Admin Users' && permission.perm_section !== 'Role Management'"
+                                 style="margin-bottom: 25px">
+                                <div *ngIf="permission.perm_section.includes('=>'); else elseTemplate"
+                                     style="margin-left: 25px">
+                                    <div style="background-color: #33c7d2; width: 100%; height: 25px; margin-bottom: 10px">
+                                        <h4 style="text-align: center">{{permission.perm_section}}</h4>
+                                    </div>
+                                    <ng-container
+                                            *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"
+                                            [attr.data-index]="i">
+                                        <label nz-checkbox [nzChecked]="isCheckedArray[permission.perm_section][i]"
+                                               (click)="addToKeysArray(perm_keys[permission.perm_section][i]);addToLabelArray(perm)">{{perm}}
+                                        </label><br>
+                                    </ng-container>
+                                </div>
+                                <ng-template #elseTemplate>
+                                    <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
+                                        <h3 style="text-align: center">{{permission.perm_section}}</h3>
+                                    </div>
+                                    <ng-container
+                                            *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"
+                                            [attr.data-index]="i">
+                                        <label nz-checkbox [nzChecked]="isCheckedArray[permission.perm_section][i]"
+                                               (click)="addToKeysArray(perm_keys[permission.perm_section][i]);addToLabelArray(perm)">{{perm}}
+                                        </label><br>
+                                    </ng-container>
+                                </ng-template>
                             </div>
-                            <ng-container *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"
-                                          [attr.data-index]="i">
-                                <label nz-checkbox [nzChecked]="isCheckedArray[permission.perm_section][i]"
-                                       (click)="addToKeysArray(perm_keys[permission.perm_section][i]);addToLabelArray(perm)">{{perm}}
-                                </label><br>
-                            </ng-container>
                         </div>
                     </ng-container>
                 </div>
