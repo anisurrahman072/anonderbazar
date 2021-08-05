@@ -27,7 +27,7 @@ const {
   REGULAR_OFFER_TYPE,
   ANONDER_JHOR_OFFER_TYPE
 } = require('../../libs/constants');
-const globalSmsFlag = require('../../config/smsFlag.js');
+const {globalSmsFlag} = require('../../config/smsFlag.js');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -681,6 +681,7 @@ module.exports = {
     }
   }, //Method called for updating order
   update: async (req, res) => {
+    console.log('The body is: ', req.body);
     try {
       let updatedOrder = await Order.updateOne({
         deletedAt: null, id: req.param('id')
@@ -704,8 +705,12 @@ module.exports = {
         });
       }
 
-      if(globalSmsFlag.ORDER_STATUS_CHANGE_SEND_SMS){
-
+      if(globalSmsFlag.ORDER_STATUS_CHANGE_SEND_SMS && req.body.status && req.param('id')){
+        const customer = await User.findOne({id: updatedOrder.user_id});
+        await PaymentService.sendSmsForOrderStatusChange({
+          orderId:req.param('id'),
+          status: req.body.status
+        },  customer);
       }
 
       return res.status(200).json({
