@@ -201,7 +201,11 @@ module.exports = {
         if(i > 0){
           if(offerIdNumber !== offer_id_number || offerType !== offer_type){
             console.log('Asessse111');
-            return res.badRequest('Different offer products or an offer product with regular product can\'t be added at a time in your cart!');
+            return res.status(400).json({
+              success: false,
+              code: 'CartItemNotAllowed',
+              message: 'Different offer products or an offer product with regular product can\'t be added together in your cart!'
+            });
           }
         }
 

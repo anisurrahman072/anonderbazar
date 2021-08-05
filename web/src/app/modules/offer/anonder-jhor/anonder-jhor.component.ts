@@ -80,13 +80,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                             /*if (this.jhorOffersRemainingTime[offers.id] > 0) {
                                 this.offerEndsIn();
                             }*/
-                            if (offers.sub_sub_category_id) {
+                            /*if (offers.sub_sub_category_id) {
                                 offers.banner_name = offers.sub_sub_category_id.name;
                             } else if (offers.sub_category_id) {
                                 offers.banner_name = offers.sub_category_id.name;
                             } else if (offers.category_id) {
                                 offers.banner_name = offers.category_id.name;
-                            }
+                            }*/
                         })
                         /*console.log('banner name added: ', this.anonderJhorOffers);*/
                         this.offerEndsIn();

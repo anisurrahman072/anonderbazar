@@ -73,6 +73,7 @@ export class OfferedProductsBrandsComponent implements OnInit {
                 }, (err) => {
                     console.log(err);
                     this._notify.error('Sorry!', 'Something went wrong');
+                    this.router.navigate(['/']);
                 })
         }
     }

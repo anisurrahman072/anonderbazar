@@ -12,6 +12,11 @@ module.exports = {
       model: 'anonderJhor',
       required: true
     },
+    offer_name: {
+      type: 'string',
+      columnType: 'varchar',
+      required: true
+    },
     category_id: {
       model: 'category'
     },

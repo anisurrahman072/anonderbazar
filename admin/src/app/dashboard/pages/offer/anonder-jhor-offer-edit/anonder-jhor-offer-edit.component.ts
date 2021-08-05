@@ -33,9 +33,9 @@ export class AnonderJhorOfferEditComponent implements OnInit {
     ImageFileEdit: any = [];
     data: any;
 
-    categoryId;
+    /*categoryId;
     subCategoryId;
-    subSubCategoryId;
+    subSubCategoryId;*/
     calculationType;
 
     Calc_type;
@@ -74,12 +74,13 @@ export class AnonderJhorOfferEditComponent implements OnInit {
 
     ngOnInit() {
         this.getAnonderJhor();
-        this.getAllCategories();
+        /*this.getAllCategories();*/
 
         this.validateForm = this.fb.group({
-            categoryId: ['', [Validators.required]],
+            /*categoryId: ['', [Validators.required]],
             subCategoryId: ['', [Validators.required]],
-            subSubCategoryId: ['', []],
+            subSubCategoryId: ['', []],*/
+            offer_name: ['', Validators.required],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             calculationType: ['', [Validators.required]],
@@ -91,16 +92,17 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                 this.data = result.anonderJhorOffer;
                 this.id = this.data.id;
 
-                this.categoryId = this.data.category_id ? this.data.category_id.id : '';
+                /*this.categoryId = this.data.category_id ? this.data.category_id.id : '';
                 this.subCategoryId = this.data.sub_category_id ? this.data.sub_category_id.id : '';
-                this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';
+                this.subSubCategoryId = this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '';*/
 
                 this.ImageFileEdit = [];
 
                 let payload = {
-                    categoryId: this.data.category_id.id,
+                    /*categoryId: this.data.category_id.id,
                     subCategoryId: this.data.sub_category_id ? this.data.sub_category_id.id : '',
-                    subSubCategoryId: this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '',
+                    subSubCategoryId: this.data.sub_sub_category_id ? this.data.sub_sub_category_id.id : '',*/
+                    offer_name: this.data.offer_name,
                     offerStartDate: this.data.start_date,
                     offerEndDate: this.data.end_date,
                     discountAmount: this.data.discount_amount,
@@ -135,8 +137,9 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         let formData = new FormData();
 
         formData.append('id', this.jhorOfferId);
-        formData.append('categoryId', value.categoryId);
-        formData.append('subCategoryId', this.subCategoryId);
+        formData.append('offer_name', value.offer_name);
+        /*formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);*/
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
@@ -163,9 +166,9 @@ export class AnonderJhorOfferEditComponent implements OnInit {
             return;
         }
 
-        if (value.subSubCategoryId) {
+        /*if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', value.subSubCategoryId);
-        }
+        }*/
 
         if (this.hasImageFile) {
             formData.append('image', this.ImageFileEdit[0].split(this.IMAGE_ENDPOINT)[1]);
@@ -246,14 +249,14 @@ export class AnonderJhorOfferEditComponent implements OnInit {
         return metadata;
     }
 
-    getAllCategories() {
+    /*getAllCategories() {
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
             });
-    }
+    }*/
 
-    getAllSubCategories(event) {
+    /*getAllSubCategories(event) {
 
         if (event) {
             this.offerService.getAllSubCategories(event)
@@ -265,9 +268,9 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                     this.allSubCategoryIds = result.data;
                 });
         }
-    }
+    }*/
 
-    getAllSubSubCategories(event) {
+    /*getAllSubSubCategories(event) {
 
         if (event) {
             this.offerService.getAllSubSubCategories(event)
@@ -279,15 +282,15 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                     this.allSubSubCategoryIds = result.data;
                 })
         }
-    }
+    }*/
 
-    getSubSubCategoryId(event) {
+    /*getSubSubCategoryId(event) {
         if (event) {
             this.finalSelectionType(false, false, true, event);
         }
-    }
+    }*/
 
-    finalSelectionType(catId, subCatId, subSubCatId, event) {
+    /*finalSelectionType(catId, subCatId, subSubCatId, event) {
         if (event) {
             if (catId) {
                 this.categoryId = event;
@@ -300,7 +303,7 @@ export class AnonderJhorOfferEditComponent implements OnInit {
                 this.subSubCategoryId = event;
             }
         }
-    }
+    }*/
 
     /** Event method for setting up form in validation */
     getFormControl(name) {

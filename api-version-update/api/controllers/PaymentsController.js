@@ -267,20 +267,15 @@ module.exports = {
         return res.status(400).json({message: 'Order not found!'});
       }
 
-      let finalPaidAmount = order.paid_amount + req.body.dueAmount;
+      let finalPaidAmount = order.paid_amount + parseFloat(req.body.dueAmount);
       if(finalPaidAmount < order.total_price){
         return res.status(400).json({message: 'Final paid amount is less than due amount! You have to pay full amount.'});
       }
 
       let transactionDetails = null;
-      if(req.body.hasImage && req.body.hasImage === 'true'){
-        const uploaded = await uploadImages(req.file('image'));
-        if (uploaded.length === 0) {
-          return res.badRequest('No file was uploaded');
-        }
-        console.log('uploaded image: ', uploaded);
+      if(req.body.image){
         transactionDetails = {
-          money_receipt: uploaded[0].fd.split(/[\\//]+/).reverse()[0]
+          money_receipt: req.body.image
         };
         transactionDetails = JSON.stringify(transactionDetails);
       }

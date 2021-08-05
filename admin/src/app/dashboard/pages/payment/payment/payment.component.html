@@ -144,12 +144,12 @@
                                 <i class="fa fa-info-circle"></i>
                             </button>
                         </td>
-                        <td *ngIf="datum.paymentDetails && datum.paymentDetails.money_receipt">
+                        <td *ngIf="datum.paymentDetails && (datum.paymentDetails.money_receipt || datum.paymentDetails.offline_payment_method === 'bankTransfer')">
                             <button nz-button [nzSize]="'default'" (click)="showOfflinePaymentDetailsModal(datum.paymentDetails)">
                                 <i class="fa fa-money"></i>
                             </button>
                         </td>
-                        <td *ngIf="!(datum.paymentDetails && datum.paymentDetails.money_receipt)">
+                        <td *ngIf="!(datum.paymentDetails && (datum.paymentDetails.money_receipt || datum.paymentDetails.offline_payment_method === 'bankTransfer'))">
                             N/A
                         </td>
                         <td style="width: 200px;" *ngIf="isAllowedToUpdatePaymentStatus && datum.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE">
@@ -297,8 +297,18 @@
                 <div>
                     <h5>Offline Payment Method: {{currentOfflinePaymentDetails.offline_payment_method}}</h5>
                     <p style="margin-top: 20px;">Money Receipt</p>
-                    <img src="{{IMAGE_ENDPOINT + '/'+currentOfflinePaymentDetails.money_receipt}}" alt="money-receipt">
+                    <div *ngIf="currentOfflinePaymentDetails && currentOfflinePaymentDetails.money_receipt && !currentOfflinePaymentDetails.moneyReceipts">
+                        <img src="{{IMAGE_ENDPOINT + '/'+currentOfflinePaymentDetails.money_receipt}}" alt="money-receipt">
+                    </div>
+
+
+                    <div *ngIf="(currentOfflinePaymentDetails && currentOfflinePaymentDetails.money_receipt && currentOfflinePaymentDetails.moneyReceipts)" style="cursor: pointer;">
+                        <div *ngFor="let receipt of currentOfflinePaymentDetails.moneyReceipts" style="margin-bottom: 10px;">
+                            <img src="{{IMAGE_ENDPOINT +receipt}}" alt="money-receipt">
+                        </div>
+                    </div>
                 </div>
+
             </ng-template>
         </div>
     </ng-template>

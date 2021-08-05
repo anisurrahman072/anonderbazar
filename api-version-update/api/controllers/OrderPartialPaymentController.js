@@ -70,6 +70,14 @@ module.exports = {
       const shippingAddress = await PaymentService.getShippingAddress(authUser, req);
       const billingAddress = await PaymentService.getBillingAddress(authUser, req, shippingAddress);
 
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. START. */
+
+      await PaymentService.checkOfferProductsFromCartItems(cartItems);
+
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. END. */
+
       if (_.isNull(shippingAddress) || _.isEmpty(shippingAddress)) {
         throw new Error('No shipping address has been provided.');
       }

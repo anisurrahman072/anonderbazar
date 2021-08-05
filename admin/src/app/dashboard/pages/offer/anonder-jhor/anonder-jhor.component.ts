@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
@@ -85,7 +85,6 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.offerService.getAnonderJhor()
             .subscribe(result => {
                 this._isSpinning = true
-                console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
 
@@ -118,7 +117,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.offerService.getAllAnonderJhorOffersData(this.anonderJhorOfferLimit, this.anonderJhorOfferPage)
             .subscribe(result => {
                 this.loading = false;
-                console.log('getAnonderJhorOffersData data: ', result);
+                /*console.log('getAnonderJhorOffersData data: ', result);*/
                 this.anonderJhorOffersData = result.data;
                 this.anonderJhorOfferTotal = result.total;
                 this._isSpinning = false;
@@ -417,6 +416,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     return;
                 } else {
                     this.offerInfo = result.data[1];
+                    /*console.log('offer info: ', this.offerInfo);*/
                     let excelData = [];
                     this.orderedOfferedProducts.forEach(offerItem => {
                         excelData.push({
@@ -488,7 +488,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                         'Order Status Changed By'
                     ];
                     let offer_id = this.offerInfo.id;
-                    let offerName = 'Anonder Jhor';
+                    let offerName = this.offerInfo.offer_name;
                     let offer_calculation_type = this.offerInfo.calculation_type;
                     let offer_discount_amount = this.offerInfo.discount_amount;
                     let offer_start_date = moment(this.offerInfo.start_date).format('DD-MM-YYYY HH:mm:ss');

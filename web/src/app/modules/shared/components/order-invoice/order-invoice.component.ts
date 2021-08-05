@@ -91,7 +91,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
             this.orderService.getOrderInvoiceData(this.id)
                 .subscribe(data => {
                     let order = data.orders;
-                    let configData = data.configData;
+                    let configData = data.configData[0];
                     let payments = data.payments;
 
                     let now = _moment(new Date());
@@ -132,11 +132,14 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
                     this.allPaymentsLog = payments;
                     this.allPaymentsLog.forEach(data => {
                         data.details = JSON.parse(data.details);
+                        if(data.details && data.details.money_receipt && data.details.money_receipt.split('[').length > 1){
+                            data.details.moneyReceipts = JSON.parse(data.details.money_receipt);
+                        }
                         data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
                         return data;
                     });
                 }, error => {
-                    console.log("annnndd: ", error.error);
+                    console.log("error.error ", error.error);
                     if(error.error && error.error.code && error.error.code === "userIdMissMatched"){
                         this._notify.info("User Id not matched.", error.error.message);
                         this.router.navigate(['profile/orders']);
@@ -231,7 +234,7 @@ export class OrderInvoiceComponent implements OnInit, AfterViewInit {
     }
 
     isAddModalVisible(modalContent, moneyReceipt) {
-        this.currentMoneyReceiptToShow = moneyReceipt;
+        this.currentMoneyReceiptToShow = moneyReceipt[0] === '/' ? moneyReceipt : ('/'+moneyReceipt);
         this.moneyReceiptModalRef = this.modalService.show(modalContent);
     }
 }

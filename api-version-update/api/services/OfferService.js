@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const regular_offer = 1;
 const anonder_jhor = 2;
+const {REGULAR_OFFER_TYPE, ANONDER_JHOR_OFFER_TYPE} = require('../../libs/constants');
 
 module.exports = {
   /** Calculate a product price according to offer*/
@@ -93,6 +94,8 @@ module.exports = {
 
     const requetedJhorOffer = await AnonderJhorOffers.find({where: _where1});
 
+    const anonderJhorInfo = await AnonderJhor.findOne({id: 1, deletedAt: null});
+
     if (requestedOffer.length === 0 && requetedJhorOffer.length === 0) {
       finalCollectionOfProducts = {};
       return finalCollectionOfProducts;
@@ -103,6 +106,12 @@ module.exports = {
       let offerObj = {
         calculation_type: thisOffer.calculation_type,
         discount_amount: thisOffer.discount_amount * 1.0,
+        offer_type: REGULAR_OFFER_TYPE,
+        offer_id_number: thisOffer.id,
+        pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
+        pay_by_bKash: thisOffer.pay_by_bKash,
+        pay_by_offline: thisOffer.pay_by_offline,
+        pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
       };
 
       /**if selection_type === 'Vendor wise'*/
@@ -189,6 +198,12 @@ module.exports = {
             finalCollectionOfProducts[product.product_id] = {
               calculation_type: product.calculation_type,
               discount_amount: product.discount_amount * 1.0,
+              offer_type: REGULAR_OFFER_TYPE,
+              offer_id_number: thisOffer.id,
+              pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
+              pay_by_bKash: thisOffer.pay_by_bKash,
+              pay_by_offline: thisOffer.pay_by_offline,
+              pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
             };
           });
         }
@@ -209,6 +224,12 @@ module.exports = {
           finalCollectionOfProducts[product.product_id] = {
             calculation_type: product.calculation_type,
             discount_amount: product.discount_amount * 1.0,
+            offer_type: ANONDER_JHOR_OFFER_TYPE,
+            offer_id_number: thisJhorOffer.id,
+            pay_by_sslcommerz: anonderJhorInfo.pay_by_sslcommerz,
+            pay_by_bKash: anonderJhorInfo.pay_by_bKash,
+            pay_by_offline: anonderJhorInfo.pay_by_offline,
+            pay_by_cashOnDelivery: anonderJhorInfo.pay_by_cashOnDelivery
           };
         });
       }

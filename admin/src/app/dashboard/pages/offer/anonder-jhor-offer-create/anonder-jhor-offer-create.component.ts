@@ -37,9 +37,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     subSubCategoryId;
 
     /** variables used for storing subCat and subSubCat options */
-    allCategoryIds;
+    /*allCategoryIds;
     allSubCategoryIds;
-    allSubSubCategoryIds;
+    allSubSubCategoryIds;*/
     anonderJhorData;
 
     ImageFilePath = [];
@@ -64,9 +64,10 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         private excelService: ExcelService,
     ) {
         this.validateForm = this.fb.group({
-            categoryId: ['', [Validators.required]],
+            /*categoryId: ['', [Validators.required]],
             subCategoryId: ['', [Validators.required]],
-            subSubCategoryId: ['', []],
+            subSubCategoryId: ['', []],*/
+            offer_name: ['', Validators.required],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             calculationType: ['', [Validators.required]],
@@ -75,7 +76,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getAllCategories()
+        /*this.getAllCategories()*/
         this.getAnonderJhor();
     }
 
@@ -91,8 +92,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
 
         let formData = new FormData();
 
-        formData.append('categoryId', value.categoryId);
-        formData.append('subCategoryId', this.subCategoryId);
+        /*formData.append('categoryId', value.categoryId);
+        formData.append('subCategoryId', this.subCategoryId);*/
+        formData.append('offer_name', value.offer_name);
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('calculationType', value.calculationType);
@@ -124,9 +126,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             return;
         }
 
-        if (value.subSubCategoryId) {
+        /*if (value.subSubCategoryId) {
             formData.append('subSubCategoryId', value.subSubCategoryId);
-        }
+        }*/
 
         if (this.hasImageFile) {
             formData.append('image', this.ImageFilePath[0].split(this.IMAGE_ENDPOINT)[1]);
@@ -203,7 +205,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
         return metadata;
     }
 
-    getAllCategories() {
+    /*getAllCategories() {
         this.offerService.getAllCategories()
             .subscribe(result => {
                 this.allCategoryIds = result.data;
@@ -212,9 +214,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
             }, error => {
                 this._notification.error('Error Occurred!', "Error occurred while getting all categories!");
             });
-    }
+    }*/
 
-    getAllSubCategories(event) {
+    /*getAllSubCategories(event) {
         if (event) {
             this.offerService.getAllSubCategories(event)
                 .subscribe(result => {
@@ -228,9 +230,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                     this._notification.error('Error Occurred!', "Error occurred while getting all sub categories!");
                 });
         }
-    }
+    }*/
 
-    getAllSubSubCategories(event) {
+    /*getAllSubSubCategories(event) {
         if (event) {
             this.offerService.getAllSubSubCategories(event)
                 .subscribe(result => {
@@ -242,9 +244,9 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                     this._notification.error('Error Occurred!', "Error occurred while getting all sub sub categories!");
                 });
         }
-    }
+    }*/
 
-    finalSelectionType(catId, subCatId, event) {
+    /*finalSelectionType(catId, subCatId, event) {
         if (event) {
             if (catId) {
                 this.categoryId = event;
@@ -255,7 +257,7 @@ export class AnonderJhorOfferCreateComponent implements OnInit {
                 this.subSubCategoryId = null;
             }
         }
-    }
+    }*/
 
     handleOk = (e) => {
         this.isVisible = false;

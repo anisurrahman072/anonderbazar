@@ -57,7 +57,7 @@ export class PrRequisitionComponent implements OnInit {
     categorySearchOptions: any[] = [];
 
     dateSearchValue: any;
-    statusOptions = ['Pending', 'Processing', 'Prepared', 'Departure', 'Pickup', 'In the Air', 'landed', 'Arrived At Warehouse', 'Shipped', 'Out For Delivery', 'Delivered', 'Canceled'];
+    statusOptions = ['Pending', 'Processing', 'Returned', 'Lost', 'Refund Processing', 'Refunded', 'Processed', 'Arrived At Warehouse', 'Shipped', 'Delivered', 'Canceled'];
     private currentWarehouseSubscriprtion: Subscription;
     private currentWarehouseId: any;
     isProductVisible = false;
@@ -89,14 +89,13 @@ export class PrRequisitionComponent implements OnInit {
         this.options = [
             {value: 1, label: 'Pending', icon: 'anticon-spin anticon-loading'},
             {value: 2, label: 'Processing', icon: 'anticon-spin anticon-loading'},
-            {value: 3, label: 'Prepared', icon: 'anticon-spin anticon-loading'},
-            {value: 4, label: 'Departure', icon: 'anticon-spin anticon-loading'},
-            {value: 5, label: 'Pickup', icon: 'anticon-spin anticon-loading'},
-            {value: 6, label: 'In the Air', icon: 'anticon-spin anticon-loading'},
-            {value: 7, label: 'Landed', icon: 'anticon-spin anticon-loading'},
+            {value: 3, label: 'Returned', icon: 'anticon-spin anticon-loading'},
+            {value: 4, label: 'Lost', icon: 'anticon-spin anticon-loading'},
+            {value: 5, label: 'Refund Processing', icon: 'anticon-spin anticon-loading'},
+            {value: 6, label: 'Refunded', icon: 'anticon-spin anticon-loading'},
+            {value: 7, label: 'Processed', icon: 'anticon-spin anticon-loading'},
             {value: 8, label: 'Arrived At Warehouse', icon: 'anticon-spin anticon-loading'},
             {value: 9, label: 'Shipped', icon: 'anticon-spin anticon-hourglass'},
-            {value: 10, label: 'Out For Delivery', icon: 'anticon-check-circle'},
             {value: 11, label: 'Delivered', icon: 'anticon-check-circle'},
             {value: 12, label: 'Canceled', icon: 'anticon-close-circle'}
         ];

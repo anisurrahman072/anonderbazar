@@ -69,6 +69,11 @@ table.shop_table td:last-child {
   border-color: #444444;
 }
 
+.warning-icon{
+  margin: 0px 0px;
+  font-size: 15px;
+}
+
 //.button,
 //input[type="submit"],
 //button {
@@ -214,6 +219,18 @@ button:disabled {
 
 button:disabled a {
   cursor: not-allowed;
+}
+
+.form-card{
+  display: block;
+  width: 100%;
+  margin: 15px auto;
+}
+
+@media screen and (max-width: 425px) {
+  .form-card {
+    width: 100%;
+  }
 }
 
 @media (max-width: 767.98px) {
