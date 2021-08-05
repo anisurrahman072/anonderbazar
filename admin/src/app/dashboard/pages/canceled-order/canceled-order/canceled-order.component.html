@@ -97,7 +97,7 @@
                     <td>{{data.total_quantity}}</td>
                     <td>{{data.total_price}}</td>
                     <td>{{data.paid_amount}}</td>
-                    <td *ngIf="isAllowedToUpdateRefundStatus">
+                    <td *ngIf="'change-order-refund-status' | accessControl">
                         <nz-select [(ngModel)]="data.refund_status"
                                    nzAllowClear (ngModelChange)="refundCancelOrder($event, data.id, data.refund_status);"
                                    [nzPlaceHolder]="'Select Status'"
@@ -107,7 +107,7 @@
                             </nz-option>
                         </nz-select>
                     </td>
-                    <td *ngIf="!isAllowedToUpdateRefundStatus">{{data.refund_status | refundStatus}}</td>
+                    <td *ngIf="!('change-order-refund-status' | accessControl)">{{data.refund_status | refundStatus}}</td>
 
                     <!-- Make Payment -->
                     <td>
