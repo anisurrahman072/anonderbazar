@@ -153,7 +153,7 @@
                     <td style="width: 100px;">{{data.total_quantity}}</td>
                     <td style="width: 100px;">{{data.total_price}}</td>
 
-                    <td style="width: 230px;"  *ngIf="isAllowedToUpdateOrderStatus">
+                    <td style="width: 230px;"  *ngIf="'order-status-change'|accessControl">
                         <div *ngIf="data.total_price <= data.paid_amount || data.payment_type === PAYMENT_METHODS.CASH_PAYMENT_TYPE">
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
@@ -171,13 +171,14 @@
                             {{data.status | statustype}}
                         </div>
                     </td>
+                    <td *ngIf="!('order-status-change'|accessControl)">{{data.status | statustype}}</td>
 
-                    <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE">Regular order</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.PARTIAL_ORDER_TYPE">Partial order</td>
+
                     <td>{{data.payment_type}}</td>
 
-                    <td style="width: 230px;"  *ngIf="isAllowedToUpdatePaymentStatus">
+                    <td style="width: 230px;"  *ngIf="'order-payment-status-change'|accessControl">
                         <nz-select style="width: 180px;"
                                    *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE; else showOnlyPaymentStatus;"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
@@ -195,7 +196,7 @@
                                 Paid</p>
                         </ng-template>
                     </td>
-                    <td *ngIf="!isAllowedToUpdatePaymentStatus">
+                    <td *ngIf="!('order-payment-status-change'|accessControl)">
                         <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">Paid</p>
