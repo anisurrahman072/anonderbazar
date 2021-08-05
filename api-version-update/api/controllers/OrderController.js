@@ -27,6 +27,7 @@ const {
   REGULAR_OFFER_TYPE,
   ANONDER_JHOR_OFFER_TYPE
 } = require('../../libs/constants');
+const globalSmsFlag = require('../../config/smsFlag.js');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -701,6 +702,10 @@ module.exports = {
         }).set({
           amount: prevCashbackDetail.amount + returnCashbackAmount
         });
+      }
+
+      if(globalSmsFlag.ORDER_STATUS_CHANGE_SEND_SMS){
+
       }
 
       return res.status(200).json({
