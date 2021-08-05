@@ -22,9 +22,11 @@ module.exports.policies = {
     'findOne': true,
     'destroy': ['isAuthorized', 'isAdminUser']
   },
+
   AuthController: {
     '*': true,
   },
+
   BrandController: {
     '*': false,
     'find': true,
@@ -35,9 +37,11 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUserOrOwner', 'checkPermission(\'brand-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUserOrOwner', 'checkPermission(\'brand-delete\')'],
   },
+
   BrandsController: {
     '*': true,
   },
+
   CartController: {
     '*': false,
     'find': ['isAuthorized', 'isCustomer'],
@@ -46,6 +50,7 @@ module.exports.policies = {
     'authUserCart': ['isAuthorized', 'isCustomer'],
     'findwithcartItems': ['isAuthorized', 'isCustomer'],
   },
+
   CartItemController: {
     '*': false,
     'destroy': ['isAuthorized', 'isCustomer'],
@@ -53,10 +58,12 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isCustomer'],
     'update': ['isAuthorized', 'isCustomer'],
   },
+
   CartItemVariantController: {
     '*': false,
     'destroy': ['isAuthorized', 'isCustomer'],
   },
+
   CategoryController: {
     '*': false,
     'findOne': true,
@@ -81,42 +88,48 @@ module.exports.policies = {
     'withProductSubcategory': true,
     'withSubcategoriesV2': true,
   },
+
   CraftmanPricesController: {
     'getAll': true
   },
+
   CouponLotteryDrawController: {
     '*': false,
     'byLotteryId': ['isAuthorized', 'isAdminUser', 'checkPermission(\'coupon-lottery-winner-list\', \'coupon-lottery\', \'coupon-lottery-list\', \'coupon-lottery-prizes\')'],
     'getAllWinner': true,
     'makeDraw': ['isAuthorized', 'isCustomer']
   },
+
   CMSController: {
     '*': false,
     'find': true,
     'findOne': true,
     'byIds': true,
     'getAll': true,
-    'destroy': ['isAuthorized', 'isAdminUser'],
-    'uploadCarouselImage': ['isAuthorized', 'isAdminUser'],
-    'deleteCarouselImage': ['isAuthorized', 'isAdminUser'],
-    'offerInsert': ['isAuthorized', 'isAdminUser'],
-    'offerProductUpdate': ['isAuthorized', 'isAdminUser'],
-    'updateOffer': ['isAuthorized', 'isAdminUser'],
-    'customPostInsert': ['isAuthorized', 'isAdminUser'],
-    'customPostUpdate': ['isAuthorized', 'isAdminUser'],
-    'customInsert': ['isAuthorized', 'isAdminUser'],
-    'customUpdate': ['isAuthorized', 'isAdminUser'],
-    'customDelete': ['isAuthorized', 'isAdminUser'],
+    'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'uploadCarouselImage': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'deleteCarouselImage': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'offerInsert': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'offerProductUpdate': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'updateOffer': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'customPostInsert': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'customPostUpdate': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'customInsert': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'customUpdate': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
+    'customDelete': ['isAuthorized', 'isAdminUser', 'checkPermission(\'cms\')'],
   },
+
   Cms2Controller: {
     'byPageNSection': true,
     'byPageNSectionNSubsection': true,
   },
+
   DesignCategoriesController: {
     '*': false,
     'getAll': true,
     'withDesignSubcategory': true
   },
+
   DesignCategoryController: {
     '*': false,
     'find': true,
@@ -126,6 +139,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'designcategory-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'designcategory-delete\')'],
   },
+
   DesignController: {
     '*': false,
     'find': true,
@@ -135,6 +149,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'design-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUser'],
   },
+
   EventController: {
     '*': false,
     'find': true,
@@ -143,6 +158,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'event-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'event-delete\')'],
   },
+
   EventPriceController: {
     '*': false,
     'find': true,
@@ -151,11 +167,13 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'event-price-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'event-price-delete\')'],
   },
+
   EventPricesController: {
     '*': false,
     'index': true,
     'getPriceByIds': true
   },
+
   EventRegistrationController: {
     '*': false,
     'find': true,
@@ -164,6 +182,7 @@ module.exports.policies = {
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized'],
   },
+
   FavouriteProductController: {
     '*': false,
     'find': true,
@@ -175,6 +194,7 @@ module.exports.policies = {
     'byAuthUser': ['isAuthorized', 'isCustomer'],
     'byUser': ['isAuthorized'],
   },
+
   GlobalConfigsController: {
     '*': false,
     'find': true,
@@ -183,7 +203,7 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUser'],
     'update': ['isAuthorized', 'isAdminUser'],
     'destroy': ['isAuthorized', 'isAdminUser'],
-    'updateGlobalConfig': ['isAuthorized', 'isAdminUser'],
+    'updateGlobalConfig': ['isAuthorized', 'isAdminUser', 'checkPermission(\'update-global-partial-payment-duration\')', 'checkPermission(\'update-global-shipping-charge\')'],
     'getShippingCharge': true,
   },
 
@@ -196,9 +216,11 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser'],
     'destroy': ['isAuthorized', 'isAdminUser'],
   },
+
   ImageController: {
     '*': true
   },
+
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
@@ -208,6 +230,7 @@ module.exports.policies = {
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized'],
   },
+
   ProductController: {
     '*': true,
     'add': false,
@@ -217,9 +240,11 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUserOrOwner', 'checkPermission(\'product-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUserOrOwner', 'checkPermission(\'product-delete\')'],
   },
+
   QuestionsController: {
     '*': true
   },
+
   ProductsController: {
     'index': true,
     'findOne': true,
@@ -233,10 +258,12 @@ module.exports.policies = {
     'getProductsByName': ['isAuthorized', 'isAdminUserOrOwner'],
     'getByCategorySubCategory': ['isAuthorized', 'isAdminUserOrOwner']
   },
+
   ProductCategoriesController: {
     'getAll': true,
     'withProductSubcategory': true
   },
+
   ProductVariantController: {
     '*': false,
     'byvariant': true,
@@ -245,6 +272,7 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isAdminUserOrOwner'],
     'create': ['isAuthorized', 'isAdminUserOrOwner']
   },
+
   PaymentController: {
     '*': false,
     'find': true,
@@ -253,16 +281,19 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'payment-edit\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'payment-delete\')'],
   },
+
   PaymentsController: {
     '*': false,
     'getAll': ['isAuthorized'],
-    'changeApprovalStatus': ['isAuthorized', 'isAdminUser'],
+    'changeApprovalStatus': ['isAuthorized', 'isAdminUser', 'checkPermission(\'change-payment-approval-status\')'],
     'makeAdminPayment': ['isAuthorized', 'isAdminUser']
   },
+
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],
     'refundPayments': ['isAuthorized', 'isAdminUser']
   },
+
   PRStatusController: {
     '*': false,
     'find': true,
@@ -273,6 +304,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUser'],
     'massInsert': ['isAuthorized', 'isAdminUser'],
   },
+
   ProductDesignController: {
     '*': false,
     'find': true,
@@ -281,6 +313,7 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUser'],
     'update': ['isAuthorized', 'isAdminUser'],
   },
+
   ProductImageController: {
     '*': false,
     'find': true,
@@ -289,6 +322,7 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUserOrOwner'],
     'destroy': ['isAuthorized', 'isAdminUserOrOwner'],
   },
+
   ProductRatingController: {
     '*': false,
     'find': true,
@@ -297,11 +331,13 @@ module.exports.policies = {
     'update': ['isAuthorized'],
     'destroy': ['isAuthorized', 'isAdminUserOrOwner'],
   },
+
   InvestorController: {
     '*': true,
     'updateInvestorStatus': ['isAuthorized', 'isAdminUser', 'checkPermission(\'investor\')'],
     'getAllInvestor': ['isAuthorized', 'isAdminUser', 'checkPermission(\'investor\')']
   },
+
   OrderController: {
     '*': ['isAuthorized'],
     'deleteOrder': true,
@@ -315,14 +351,15 @@ module.exports.policies = {
     'getOrderInvoiceData': ['isAuthorized'],
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdminUser'],
-    'updatePaymentStatus': ['isAuthorized', 'isAdminUser'],
+    'updatePaymentStatus': ['isAuthorized', 'isAdminUser', 'checkPermission(\'order-payment-status-change\')'],
     'destroy': ['isAuthorized', 'isAdminUser'],
     'populate': ['isAuthorized', 'isAdminUser'],
-    'getAllOrder': ['isAuthorized', 'isAdminUser'],
+    'getAllOrder': ['isAuthorized', 'isAdminUser', 'checkPermission(\'order-list\', \'order-read\')'],
     'allOrders': ['isAuthorized', 'isAdminUser', 'checkPermission(\'order-list\')'],
-    'getCancelledOrder': ['isAuthorized', 'isAdminUser'],
-    'refundCancelOrder': ['isAuthorized', 'isAdminUser']
+    'getCancelledOrder': ['isAuthorized', 'isAdminUser', 'checkPermission(\'canceled-order\')'],
+    'refundCancelOrder': ['isAuthorized', 'isAdminUser', 'checkPermission(\'change-order-refund-status\')']
   },
+
   MissingOrderController: {
     '*': ['isAuthorized', 'isAdminUserOrOwner', 'checkPermission(\'missing-orders\')']
   },
@@ -334,11 +371,13 @@ module.exports.policies = {
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
   },
+
   StatusChangeController: {
     'updatecustom': ['isAuthorized', 'isAdminUserOrOwner'],
     'updatecustomcourier': ['isAuthorized', 'isAdminUserOrOwner'],
     'currentTime': true
   },
+
   SuborderController: {
     '*': false,
     'find': true,
@@ -351,10 +390,12 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdminUserOrOwner'],
     'updatebyorderid': ['isAuthorized', 'isAdminUserOrOwner'],
   },
+
   SubordersController: {
     'getAll': ['isAuthorized', 'isAdminUserOrOwner'],
     'getsuborderwithpr': ['isAuthorized', 'isAdminUserOrOwner'],
   },
+
   SubOrderItemController: {
     '*': false,
     'find': true,
@@ -367,6 +408,7 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUserOrOwner'],
     'update': ['isAuthorized', 'isAdminUserOrOwner'],
   },
+
   UserController: {
     '*': false,
     'updatepassword': true,
@@ -376,14 +418,15 @@ module.exports.policies = {
     'destroy': ['isAuthorized', 'isAdminUser'],
     'findOne': ['isAuthorized'],
     'find': ['isAuthorized', 'isAdminUser'],
-    'getAllCustomers': ['isAuthorized', 'isAdminUser'],
-    'getAllShopUsers': ['isAuthorized', 'isAdminUser'],
+    'getAllCustomers': ['isAuthorized', 'isAdminUser', 'checkPermission(\'customer\')'],
+    'getAllShopUsers': ['isAuthorized', 'isAdminUser', 'checkPermission(\'shop-user\')'],
     'create': ['isAuthorized'],
     'update': ['isAuthorized'],
     'getAuthCustomerData': ['isAuthorized'],
     'authUser': ['isAuthorized', 'isCustomer'],
     'getUserWithDashboardData': ['isAuthorized']
   },
+
   WarehouseController: {
     '*': false,
     'updateUserStatus': true,
@@ -391,9 +434,10 @@ module.exports.policies = {
     'findOne': true,
     'getAll': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse\')', 'checkPermission(\'warehouse-read\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-delete\')'],
-    'createCustom': ['isAuthorized', 'isAdminUser'],
-    'updateCustom': ['isAuthorized', 'isAdminUser'],
+    'createCustom': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-create\')'],
+    'updateCustom': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-edit\')'],
   },
+
   VariantController: {
     '*': false,
     'find': true,
@@ -402,6 +446,7 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUser', 'checkPermission(\'variant-create\')'],
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'variant-edit\')'],
   },
+
   WarehouseVariantController: {
     '*': false,
     'find': true,
@@ -410,10 +455,12 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehousevariant-create\')'],
     'update': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehousevariant-edit\')'],
   },
+
   WarehouseVariantsController: {
     '*': false,
     'getAll': true
   },
+
   BkashPaymentController: {
     'authUserWallets': ['isAuthorized', 'isCustomer'],
     'grandToken': ['isAuthorized', 'isCustomer'],
@@ -422,9 +469,11 @@ module.exports.policies = {
     'agreementCallback': true,
     'paymentCallback': true,
   },
+
   SslCommerzController: {
     '*': true
   },
+
   OfferController: {
     '*': true
   },

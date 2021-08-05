@@ -235,7 +235,7 @@
                                 nz-button [nzSize]="'default'">
                             <i class="anticon anticon-info-circle"></i>
                         </button>
-                        <button *ngIf="('product-edit'|accessControl)  && isAllowedToUpdateProduct "
+                        <button *ngIf="('product-edit'|accessControl)"
                                 [routerLink]="['/dashboard/product/edit', data.id]"
                                 [queryParams]="{status: status}"
                                 nz-button [nzSize]="'default'">
