@@ -10,7 +10,7 @@ module.exports = {
     let productUnitPrice = product.price;
 
     let variantAdditionalPrice = await PaymentService.calculateItemVariantPrice(product.itemVariant);
-    if(variantAdditionalPrice){
+    if (variantAdditionalPrice) {
       productUnitPrice += variantAdditionalPrice;
     }
     /*console.log('After calculate the variant price: ', productUnitPrice);*/
@@ -34,7 +34,10 @@ module.exports = {
 
   /** checking if the options have the offer time or not: for regular offer */
   offerDurationCheck: async () => {
-    let allOffers = await Offer.find({deletedAt: null});
+    let rawAllOffersSql = `SELECT * FROM offers WHERE deleted_at IS NULL`;
+    let rawAllOffers = await sails.sendNativeQuery(rawAllOffersSql, []);
+    let allOffers = rawAllOffers.rows;
+
     for (let index = 0; index < allOffers.length; index++) {
       const endDate = (allOffers[index].end_date).getTime();
       const presentTime = (new Date(Date.now())).getTime();
@@ -48,23 +51,37 @@ module.exports = {
     }
   },
 
-  /**checking if the options have the offer time or not*/
+  /**checking if the options have the offer time or not: for anonder jhor offers*/
   anonderJhorOfferDurationCheck: async () => {
-    let anonderJhorData = await AnonderJhor.findOne({id: 1});
+    let rawAnonderJhorDataSql = `
+    SELECT * FROM anonder_jhor
+    WHERE id = 1 AND deleted_at IS NULL
+    `;
 
-    const anonderJhorEndDate = anonderJhorData.end_date.getTime();
-    const presentTime = (new Date(Date.now())).getTime();
+    let rawAnonderJhorData = await sails.sendNativeQuery(rawAnonderJhorDataSql, []);
+    let anonderJhorData = rawAnonderJhorData.rows;
 
-    if (anonderJhorEndDate < presentTime) {
-      anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});
-    }
+    if (anonderJhorData && anonderJhorData.length > 0) {
+      const anonderJhorEndDate = anonderJhorData[0].end_date.getTime();
+      const presentTime = (new Date(Date.now())).getTime();
 
-    let allAnonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null});
-    for (let index = 0; index < allAnonderJhorOffers.length; index++) {
-      let offerEndTime = allAnonderJhorOffers[index].end_date;
-      if (offerEndTime < presentTime || anonderJhorData.status === 0) {
-        await AnonderJhorOffers.updateOne({id: allAnonderJhorOffers[index].id}).set({status: 0});
-        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: allAnonderJhorOffers[index].id}).set({status: 0});
+      if (anonderJhorEndDate < presentTime) {
+        anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});
+      }
+
+      let allAnonderJhorOffersSQL = `SELECT * FROM anonder_jhor_offers WHERE deleted_at IS NULL`;
+      let rawAllAnonderJhorOffers = await sails.sendNativeQuery(allAnonderJhorOffersSQL, []);
+      let allAnonderJhorOffers = rawAllAnonderJhorOffers.rows;
+
+      if (allAnonderJhorOffers && allAnonderJhorOffers.length > 0) {
+        for (let index = 0; index < allAnonderJhorOffers.length; index++) {
+          let offerEndTime = allAnonderJhorOffers[index].end_date.getTime();
+
+          if (offerEndTime < presentTime || anonderJhorData[0].status === 0) {
+            await AnonderJhorOffers.updateOne({id: allAnonderJhorOffers[index].id}).set({status: 0});
+            await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: allAnonderJhorOffers[index].id}).set({status: 0});
+          }
+        }
       }
     }
   },
@@ -239,7 +256,7 @@ module.exports = {
   },
 
   /** This method will return offer info of a product (If product exists in any of offer) */
-  getProductOfferInfo: async function(product, offeredProducts){
+  getProductOfferInfo: async function (product, offeredProducts) {
     /** global section */
 
     let itemId = product.id;
@@ -307,7 +324,7 @@ module.exports = {
           }
 
           if (regularOffers[offer].selection_type === 'Product wise') {
-            console.log('regular offer info in product wise: ', regularOffers[offer]);
+            /*console.log('regular offer info in product wise: ', regularOffers[offer]);*/
             let rawSQL = `SELECT
                                   product_id
                               FROM

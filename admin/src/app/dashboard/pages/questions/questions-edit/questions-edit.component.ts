@@ -65,7 +65,7 @@ export class QuestionsEditComponent implements OnInit {
             answer: value.answer,
             answeredBy: this.asnweredBy
         }
-        console.log('datassssssssssssss: ', this.answerData);
+        console.log('datassssssssssssss:ansert ', this.answerData);
         this.questionsService.update(this.id, this.answerData)
             .subscribe(result => {
                 this._notification.create('success', 'Update success by ', this.asnweredBy);
