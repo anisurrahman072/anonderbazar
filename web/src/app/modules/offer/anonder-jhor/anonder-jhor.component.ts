@@ -4,7 +4,6 @@ import {AppSettings} from "../../../config/app.config";
 import {timer} from "rxjs/observable/timer";
 import * as moment from "moment";
 import {Router} from "@angular/router";
-import {NotificationsService} from "angular2-notifications";
 import {ToastrService} from "ngx-toastr";
 
 
@@ -81,13 +80,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                             /*if (this.jhorOffersRemainingTime[offers.id] > 0) {
                                 this.offerEndsIn();
                             }*/
-                            if (offers.sub_sub_category_id) {
+                            /*if (offers.sub_sub_category_id) {
                                 offers.banner_name = offers.sub_sub_category_id.name;
                             } else if (offers.sub_category_id) {
                                 offers.banner_name = offers.sub_category_id.name;
                             } else if (offers.category_id) {
                                 offers.banner_name = offers.category_id.name;
-                            }
+                            }*/
                         })
                         /*console.log('banner name added: ', this.anonderJhorOffers);*/
                         this.offerEndsIn();

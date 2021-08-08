@@ -53,7 +53,7 @@
                     <th>
                         <nz-date-picker
                                 nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                nzFormat="yyyy-MM-dd 00:00:00"
                                 [(ngModel)]="searchStartDate"
                                 nzPlaceHolder="Start"
                                 (ngModelChange)="page = 1; getPageData();">
@@ -61,7 +61,7 @@
                         </nz-date-picker>
                         <nz-date-picker
                                 nzShowTime
-                                nzFormat="yyyy-MM-dd HH:mm:ss"
+                                nzFormat="yyyy-MM-dd 23:59:59"
                                 [(ngModel)]="searchEndDate"
                                 nzPlaceHolder="End"
                                 (ngModelChange)="page = 1; getPageData();">
@@ -141,7 +141,7 @@
                             <label> Due Amount </label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <input nz-input type="number" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
+                            <input nz-input type="number" [readOnly]="true" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
 
                             <div *ngIf="getFormControl('dueAmount').dirty && getFormControl('dueAmount').hasError('required')">
                                 <span class="validation-error"> Name is required! </span>
@@ -156,9 +156,11 @@
                             <label> Money Receipt </label>
                         </div>
                         <div nz-col [nzSpan]="12">
-                            <image-upload #Image [max]="1" buttonCaption="Select picture"
+                            <image-upload #ImageUploadComponent [max]="5"
+                                          buttonCaption="Select picture"
                                           dropBoxMessage="Drop Picture here"
-                                          clearButtonCaption="remove" (removed)="onRemovedFront($event)"
+                                          clearButtonCaption="remove"
+                                          (removed)="onRemovedFront($event)"
                                           [uploadedFiles]="ImageFrontFile" [beforeUpload]="onBeforeUploadFront">
                             </image-upload>
                         </div>
@@ -167,7 +169,7 @@
             </div>&nbsp;
             <div nz-row>
                 <div nz-col [nzOffset]="7" [nzSpan]="12">
-                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid || submittingMakePayment">
                         Make Payment
                     </button>
                 </div>

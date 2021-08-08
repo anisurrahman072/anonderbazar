@@ -88,7 +88,7 @@ export class OfferService {
     }
 
     checkIndividualProductsCodesValidity(codes): Observable<any> {
-        return this.http.get(`${this.EndPoint}/checkIndividualProductsCodesValidity?codes=${codes}`);
+        return this.http.post(`${this.EndPoint}/checkIndividualProductsCodesValidity`, codes);
     }
 
     generateExcel(): Observable<any> {
@@ -159,6 +159,10 @@ export class OfferService {
 
     generateOfferExcelById(offer_type, offer_id): Observable<any> {
         return this.http.get(`${this.EndPoint1}/generateOfferExcelById?offer_type=${offer_type}&offer_id=${offer_id}`);
+    }
+
+    generateJhorOfferedExcel(id): Observable<any> {
+        return this.http.get(`${this.EndPoint1}/generateJhorOfferedExcel?id=${id}`, {responseType: 'blob'});
     }
 
 

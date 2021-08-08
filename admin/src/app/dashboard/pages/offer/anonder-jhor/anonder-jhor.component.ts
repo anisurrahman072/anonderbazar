@@ -1,12 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {environment} from "../../../../../environments/environment";
 import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
 import {Subscription} from "rxjs";
-import {ExportService} from "../../../../services/export.service";
 import * as _moment from "moment";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {DesignImagesService} from "../../../../services/design-images.service";
@@ -28,6 +27,11 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     showHome: Boolean = false;
     anonderJhorHomepageBannerImageFile: File;
     AnonderJhorHomepageBannerImageFileEdit: any;
+
+    isActiveSslCommerz: boolean = false;
+    isActiveBkash: boolean = false;
+    isActiveOffline: boolean = false;
+    isActiveCashOnDelivery: boolean = false;
 
     /** Anonder Jhor Offers variables */
     anonderJhorOffersData: any = [];
@@ -81,9 +85,14 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.offerService.getAnonderJhor()
             .subscribe(result => {
                 this._isSpinning = true
-                console.log('anonder jhor data: ', result.data);
                 if (result.data) {
                     this.anonderJhorData = result.data;
+
+                    this.isActiveSslCommerz = !!this.anonderJhorData.pay_by_sslcommerz;
+                    this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
+                    this.isActiveOffline = !!this.anonderJhorData.pay_by_offline;
+                    this.isActiveCashOnDelivery = !!this.anonderJhorData.pay_by_cashOnDelivery;
+
                     this.status = this.anonderJhorData.status;
                     this.jhorId = this.anonderJhorData.id;
                     if(this.anonderJhorData.banner_image){
@@ -108,7 +117,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.offerService.getAllAnonderJhorOffersData(this.anonderJhorOfferLimit, this.anonderJhorOfferPage)
             .subscribe(result => {
                 this.loading = false;
-                console.log('getAnonderJhorOffersData data: ', result);
+                /*console.log('getAnonderJhorOffersData data: ', result);*/
                 this.anonderJhorOffersData = result.data;
                 this.anonderJhorOfferTotal = result.total;
                 this._isSpinning = false;
@@ -183,6 +192,10 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 startDate: ['', [Validators.required]],
                 endDate: ['', [Validators.required]],
                 showHome: ['', []],
+                pay_by_sslcommerz: ['', []],
+                pay_by_bKash: ['', []],
+                pay_by_offline: ['', []],
+                pay_by_cashOnDelivery: ['', []]
             });
 
             this.AnonderJhorBannerImageFileEdit = [];
@@ -193,7 +206,11 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
             let payload = {
                 startDate: this.anonderJhorData.start_date ? this.anonderJhorData.start_date : '',
                 endDate: this.anonderJhorData.end_date ? this.anonderJhorData.end_date : '',
-                showHome: this.showHome
+                showHome: this.showHome,
+                pay_by_sslcommerz: this.anonderJhorData.pay_by_sslcommerz,
+                pay_by_bKash: this.anonderJhorData.pay_by_bKash,
+                pay_by_offline: this.anonderJhorData.pay_by_offline,
+                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
             }
 
             this.validateForm.patchValue(payload);
@@ -222,10 +239,13 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         }
 
         let formData = new FormData();
-
         formData.append('startDate', moment(value.startDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('endDate', moment(value.endDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('showHome', value.showHome);
+        formData.append('pay_by_sslcommerz', this.isActiveSslCommerz ? "1" : "0");
+        formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
+        formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
+        formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
 
         /*if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
@@ -396,6 +416,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     return;
                 } else {
                     this.offerInfo = result.data[1];
+                    /*console.log('offer info: ', this.offerInfo);*/
                     let excelData = [];
                     this.orderedOfferedProducts.forEach(offerItem => {
                         excelData.push({
@@ -467,7 +488,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                         'Order Status Changed By'
                     ];
                     let offer_id = this.offerInfo.id;
-                    let offerName = 'Anonder Jhor';
+                    let offerName = this.offerInfo.offer_name;
                     let offer_calculation_type = this.offerInfo.calculation_type;
                     let offer_discount_amount = this.offerInfo.discount_amount;
                     let offer_start_date = moment(this.offerInfo.start_date).format('DD-MM-YYYY HH:mm:ss');
@@ -484,4 +505,16 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         this.sub ? this.sub.unsubscribe() : '';
     }
 
+    changeSslCommerzActivation() {
+        this.isActiveSslCommerz = !this.isActiveSslCommerz;
+    }
+    changeBkashActivation() {
+        this.isActiveBkash = !this.isActiveBkash;
+    }
+    changeOfflineActivation() {
+        this.isActiveOffline = !this.isActiveOffline;
+    }
+    changeCashOnDeliveryActivation() {
+        this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
+    }
 }

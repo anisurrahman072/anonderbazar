@@ -239,6 +239,43 @@
                     </div>
                 </div>
 
+
+                <!-- Payment type selection for offer products -->
+                <div>
+                    <!-- Select Payment Gateway -->
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_sslcommerz" type="checkbox" [checked]="isActiveSslCommerz"
+                                   (change)="changeSslCommerzActivation()">
+                            Pay by SslCommerz
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_bKash" type="checkbox" [checked]="isActiveBkash"
+                                   (change)="changeBkashActivation()">
+                            Pay by bKash
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_offline" type="checkbox" [checked]="isActiveOffline"
+                                   (change)="changeOfflineActivation()">
+                            Pay by Offline
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_cashOnDelivery" type="checkbox" [checked]="isActiveCashOnDelivery"
+                                   (change)="changeCashOnDeliveryActivation()">
+                            Pay by Cash On Delivery
+                        </div>
+                    </div>
+                    <!-- Select Payment Gateway. END -->
+                </div>
+                <!-- Payment type selection for offer products. END -->
+
+
                 <!--Offer Duration-->
                 <div nz-row style="margin: 20px 0;">
                     <div nz-col [nzSpan]="7">
@@ -692,7 +729,7 @@
                             <div class="form-group">
                                 <button [disabled]="isLoading" type="button" id="download_bulk_excel"
                                         (click)="generateExcel()">
-                                    <span>Download Sample CSV</span>
+                                    <span>Download Sample Excel</span>
                                 </button>
                             </div>
                             <div class="form-group">

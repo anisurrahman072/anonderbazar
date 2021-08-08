@@ -3,12 +3,10 @@
              [carouselOffers]="regularOfferData"
 ></home-banner>
 
-<app-section-offers *ngIf="regularOfferData && regularOfferData.length > 0"
-                    [homeOfferData]="regularOfferData"></app-section-offers>
-
 <!--to show the anonder jhor banner image-->
-<ng-container *ngIf="anonderJhorInfo && anonderJhorInfo.status === 1 && anonderJhorInfo.show_in_homepage === true && anonderJhorInfo.homepage_banner_image">
-    <div id="offer-section">
+<ng-container
+        *ngIf="anonderJhorInfo && anonderJhorInfo.status === 1 && anonderJhorInfo.show_in_homepage === true && anonderJhorInfo.homepage_banner_image">
+    <div id="offer-section" style="margin-top: 20px">
         <div class="container-fluid">
             <a routerLink="/offers/anonder-jhor">
                 <img src="{{IMAGE_ENDPOINT + anonderJhorInfo.homepage_banner_image}}"
@@ -18,6 +16,9 @@
         </div>
     </div>
 </ng-container>
+
+<app-section-offers *ngIf="regularOfferData && regularOfferData.length > 0"
+                    [homeOfferData]="regularOfferData"></app-section-offers>
 
 <app-flash-deals *ngIf="featureProducts && offerData" [dataProductList]="featureProducts"
                  [offerData]="offerData"></app-flash-deals>

@@ -60,7 +60,6 @@ module.exports = {
   /**Method called for creating Regular offer data*/
   /**Model models/Offer.js*/
   offerInsert: async function (req, res) {
-    /*console.log('req.body of insert: ', req.body);*/
     try {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
@@ -79,15 +78,13 @@ module.exports = {
           const codes = body.individuallySelectedCodes.split(',');
 
           const products = await Product.find({code: codes});
-
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0){
+          if(codes && codes.length > 0 && products.length > 0){
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
           }
-
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }
@@ -105,6 +102,10 @@ module.exports = {
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
           upload_type: upload_type,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0,
         };
       } else {
         offerData = {
@@ -117,7 +118,11 @@ module.exports = {
           start_date: body.offerStartDate,
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
-          showInCarousel: body.showInCarousel
+          showInCarousel: body.showInCarousel,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0,
         };
       }
 
@@ -162,7 +167,7 @@ module.exports = {
 
       let data = await Offer.create(offerData).fetch();
 
-      /** for individually selected products*/
+      /** for individually selected products: from excel or individual input*/
       if (individualProductsIds && individualProductsIds.length > 0) {
 
         let offeredProducts = await RegularOfferProducts.find({product_deactivation_time: null, deletedAt: null});
@@ -171,7 +176,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {
@@ -194,6 +199,7 @@ module.exports = {
         }
       }
 
+      /** for individually selected products but having same discount amount*/
       let regular_offer_product_ids;
       if (body.selectedProductIds) {
         regular_offer_product_ids = body.selectedProductIds.split(',');
@@ -523,7 +529,7 @@ module.exports = {
         offerData.image.banner_image = offer.image && offer.image.banner_image ? offer.image.banner_image : '';
       }
 
-      console.log('offerData.image: ',offerData.image);
+      /*console.log('offerData.image: ',offerData.image);*/
 
       let individualProductsIds = [];
       let individualProductsCalculations;
@@ -532,10 +538,15 @@ module.exports = {
       if (body.selection_type === 'individual_product') {
         if (body.upload_type && body.upload_type === 'csv') {
           const codes = body.individuallySelectedCodes.split(',');
+
           const products = await Product.find({code: codes});
-          products.forEach(product => {
-            individualProductsIds.push(product.id);
-          });
+          let x = _.groupBy(products, 'code');
+
+          if (codes && codes.length > 0 && products.length > 0) {
+            codes.forEach(code => {
+              individualProductsIds.push(x[code][0].id);
+            });
+          }
         } else {
           individualProductsIds = body.individuallySelectedProductsId.split(',');
         }
@@ -552,7 +563,11 @@ module.exports = {
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
-          upload_type: upload_type
+          upload_type: upload_type,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0
         };
       } else {
         offerData = {
@@ -566,6 +581,10 @@ module.exports = {
           end_date: body.offerEndDate,
           show_in_homepage: body.showInHome,
           showInCarousel: body.showInCarousel,
+          pay_by_sslcommerz: body.pay_by_sslcommerz === '1' ? 1 : 0,
+          pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
+          pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
+          pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0
         };
       }
 
@@ -620,7 +639,7 @@ module.exports = {
         for (let id = 0; id < individualProductsIds.length; id++) {
           let product_id = parseInt(individualProductsIds[id], 10);
           let calculationType = individualProductsCalculations[id];
-          let discountAmount = parseInt(individualProductsAmounts[id], 10);
+          let discountAmount = parseFloat(individualProductsAmounts[id]);
 
           if (product_id) {
             if (offeredProductsIDS.includes(product_id)) {
@@ -1013,7 +1032,8 @@ module.exports = {
   checkIndividualProductsCodesValidity: async (req, res) => {
     try {
       let invalidCodes = [];
-      let codes = (req.query.codes).split(',');
+      let codes = req.body + '';
+      codes = codes.split(',');
 
       for (let index = 0; index < codes.length; index++) {
         let exists = await Product.findOne({code: codes[index]});
