@@ -57,7 +57,7 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.validateForm = this.fb.group({
             order_id: ['', [Validators.required]],
-            suborder_id: ['', [Validators.required]],
+            suborder_id: [''],
             payment_type: ['', [Validators.required]],
             payment_amount: ['', [Validators.required]],
             approval_status: ['', [Validators.required]],
