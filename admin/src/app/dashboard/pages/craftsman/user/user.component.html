@@ -4,11 +4,11 @@
             <button nz-button *ngIf="'craftsman-download'|accessControl" [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
-            <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
+            <!--<button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
-            </button>
+            </button>-->
             <button (click)="resetAllFilter()" nz-button>Clear filter</button>
         </ng-template>
 
