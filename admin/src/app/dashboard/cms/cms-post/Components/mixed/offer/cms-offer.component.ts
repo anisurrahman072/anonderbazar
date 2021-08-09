@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NzNotificationService} from 'ng-zorro-antd';
 import {environment} from "../../../../../../../environments/environment";
 import {CategoryProductService} from '../../../../../../services/category-product.service';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-offer',
@@ -11,6 +12,36 @@ import {CategoryProductService} from '../../../../../../services/category-produc
     styleUrls: ['./cms-offer.component.css']
 })
 export class CmsOfferComponent implements OnInit {
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     @ViewChild('Image')
     options = [
         {value: 'android', label: 'android'},

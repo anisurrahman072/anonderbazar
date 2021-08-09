@@ -3,6 +3,7 @@
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
+const he = require('he');
 
 module.exports = {
 
@@ -59,4 +60,27 @@ module.exports = {
   },
   tableName: 'payment_addresses',
 
+  beforeCreate: function (valuesToSet, proceed) {
+    valuesToSet.first_name = he.encode(valuesToSet.first_name);
+    valuesToSet.last_name = he.encode(valuesToSet.last_name);
+    valuesToSet.address = he.encode(valuesToSet.address);
+    // valuesToSet.aa = he.encode( 'foo © bar ≠ baz 𝌆 qux ~@#$%^&*()_+<>');
+    // console.log('create valuesToSet.first_name', valuesToSet.first_name);
+    // console.log('create valuesToSet==>', valuesToSet);
+    // console.log('data ==>', valuesToSet.aa);
+    return proceed();
+  },
+
+  beforeUpdate: function (valuesToSet, proceed) {
+    // console.log("gggg", valuesToSet);
+    if (valuesToSet && valuesToSet.first_name) {
+      valuesToSet.first_name = he.encode(valuesToSet.first_name);
+      valuesToSet.last_name = he.encode(valuesToSet.last_name);
+      valuesToSet.address = he.encode(valuesToSet.address);
+    }
+    // console.log("zzzz", valuesToSet);
+    // console.log('valuesToSet.first_name', valuesToSet.first_name);
+    // console.log('update valuesToSet==>', valuesToSet);
+    return proceed();
+  }
 };

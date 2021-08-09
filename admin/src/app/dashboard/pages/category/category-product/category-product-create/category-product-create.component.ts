@@ -28,6 +28,7 @@ export class CategoryProductCreateComponent implements OnInit {
     subCategorySearchOptions = [];
 
     isLoading: boolean = true;
+    showInNav;
 
     constructor(
         private router: Router,
@@ -51,17 +52,18 @@ export class CategoryProductCreateComponent implements OnInit {
             image: [null, []],
             mobile_image: [null, []],
             banner_image: [null, []],
+            showInNav: ['', []],
         });
         this.categoryProductService.getAllCategory()
             .pipe(
                 concatMap((result: any) => {
-                    console.log('getAllCategory', result);
+                    // console.log('getAllCategory', result);
                     this.categorySearchOptions = result;
                     return this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'OFFER'});
                 })
             )
             .subscribe((result: any) => {
-                console.log('getAllSearch', result);
+                // console.log('getAllSearch', result);
                 this.offers = result.data;
                 this.isLoading = false;
             }, (err) => {
@@ -82,6 +84,8 @@ export class CategoryProductCreateComponent implements OnInit {
         if (value.offer_id) {
             formData.append('offer_id', value.offer_id);
         }
+
+        formData.append('showInNav', this.showInNav);
 
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
@@ -177,5 +181,9 @@ export class CategoryProductCreateComponent implements OnInit {
         this.categoryProductService.getSubcategoryByCategoryId(categoryId.id).subscribe((result: any) => {
             this.subCategorySearchOptions = result;
         });
+    }
+
+    changeShowInNav() {
+        this.showInNav = !this.showInNav;
     }
 }

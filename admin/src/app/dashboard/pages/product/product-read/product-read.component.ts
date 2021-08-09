@@ -6,6 +6,7 @@ import {ProductService} from '../../../../services/product.service';
 import {DesignImagesService} from "../../../../services/design-images.service";
 import {environment} from "../../../../../environments/environment";
 import {AuthService} from '../../../../services/auth.service';
+import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-product-read',
@@ -21,6 +22,9 @@ export class ProductReadComponent implements OnInit, OnDestroy {
     status: any;
     currentUser: any;
 
+    PRODUCT_UPDATE_ADMIN_USER = GLOBAL_CONFIGS.PRODUCT_UPDATE_ADMIN_USER;
+    isAllowedToUpdateProduct:boolean = false;
+
     constructor(private route: ActivatedRoute,
                 private designImagesService: DesignImagesService,
                 private authService: AuthService,
@@ -31,6 +35,9 @@ export class ProductReadComponent implements OnInit, OnDestroy {
     // For initiating the section element with data
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.PRODUCT_UPDATE_ADMIN_USER){
+            this.isAllowedToUpdateProduct = true;
+        }
 
         this.route.queryParams.filter(params => params.status).subscribe(params => {
             this.status = params.status;

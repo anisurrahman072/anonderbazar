@@ -70,12 +70,6 @@ export class CmsService {
             .map(response => response);
     }
 
-    offerInsert(data): Observable<any> {
-        return this.http
-            .post(this.EndPoint + '/offerInsert', data)
-            .map(response => response);
-    }
-
     offerProductUpdate(data): Observable<any> {
         return this.http
             .post(this.EndPoint + '/offerProductUpdate', data)

@@ -2,7 +2,7 @@ const { asyncForEach } = require('./helper');
 const fs = require('fs');
 
 exports.Helper = {
-  deleteImages: async (imageList, path) => {
+/*  deleteImages: async (imageList, path) => {
     await asyncForEach(imageList, (item) => {
       console.log(item);
       const dir = __dirname.split('/libs');
@@ -16,7 +16,7 @@ exports.Helper = {
         // handle the error
       }
     });
-  },
+  },*/
   pagination: async (reqBody) => {
     let limit;
     let skip;

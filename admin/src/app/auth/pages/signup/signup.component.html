@@ -131,6 +131,9 @@
                                     <div *ngIf="getFormControl('national_id').dirty&&getFormControl('national_id').hasError('required')">
                                         NID Card No. is required!
                                     </div>
+                                    <div *ngIf="getFormControl('national_id').dirty&&getFormControl('national_id').hasError('nid')">
+                                        NID number must be 10/13/17 digits long
+                                    </div>
                                 </div>
                             </div>
                             <!--National id-->
@@ -322,7 +325,7 @@
 
                                     <image-upload [max]="1" buttonCaption="Select picture"
                                                   dropBoxMessage="Drop Picture here"
-                                                  clearButtonCaption="Clear" (removed)="logoFile=null"
+                                                  clearButtonCaption="Clear" (removed)="onRemovedLogoFile($event)"
                                                   [beforeUpload]="onBeforeLogoUpload"></image-upload>
 
                                 </div>

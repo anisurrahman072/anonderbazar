@@ -26,7 +26,10 @@ const {warehouseRoute} = require('./warehouse');
 const {cmsRoutes} = require('./cms');
 const {investorRoute} = require('./investor');
 const {missingOrderRoute} = require('./missingOrder');
-const { questionsRoute } = require('./questions');
+const {questionsRoute} = require('./questions');
+const {offerRoute} = require('./offer');
+const {anonderJhorRoute} = require('./anonderJhor');
+const {ImageRoute} = require('./image');
 
 exports.allRouter = {
   ...categoryRoutes,
@@ -58,4 +61,7 @@ exports.allRouter = {
   ...investorRoute,
   ...missingOrderRoute,
   ...questionsRoute,
+  ...offerRoute,
+  ...anonderJhorRoute,
+  ...ImageRoute
 };

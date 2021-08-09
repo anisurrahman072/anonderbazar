@@ -5,10 +5,10 @@ import {ModalDirective} from "ngx-bootstrap";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
 import {Subscription} from "rxjs/Subscription";
-import {User} from "../../../../models";
+import {Offer, User} from "../../../../models";
 import * as fromStore from "../../../../state-management";
 import {Store} from "@ngrx/store";
-import {OrderService} from "../../../../services";
+import {OrderService, ProductService} from "../../../../services";
 import * as _ from "lodash";
 import {NotificationsService} from "angular2-notifications";
 import {forkJoin} from "rxjs/observable/forkJoin";
@@ -19,6 +19,7 @@ import {BsModalService} from "ngx-bootstrap/modal";
 import {AppSettings} from "../../../../config/app.config";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
+import {FileHolder, UploadMetadata} from "angular2-image-upload";
 
 @Component({
     selector: 'app-partial-payment-modal',
@@ -36,7 +37,9 @@ export class PartialPaymentModalComponent implements OnInit {
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
+    OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
+    private partialMinimumFirstPaymentAmount :any = GLOBAL_CONFIGS.partialMinimumFirstPaymentAmount;
 
     couponCashbackAmount: number = 0;
     currentUser$: Observable<User>;
@@ -44,12 +47,43 @@ export class PartialPaymentModalComponent implements OnInit {
     showBkashPayment: boolean = false;
     paymentAmount: any = null;
     amountToPay: number;
+    orderTotalPrice: number;
+    paidAmount: number = 0;
 
     private currentUser: User;
     private currentOrderId: number;
 
     authUserWallets: any;
     bKashWalletModalRef: BsModalRef;
+
+    isOfflinePayable: boolean = false;
+    isShowOfflineForm: boolean = false;
+    orderItems: any[] = [];
+
+    isShowCashInAdvanceForm: boolean = false;
+    isShowBankTransferForm: boolean = false;
+    isBankDeposit: boolean = false;
+    isMobileTransfer: boolean = false;
+
+    ImageFile: File = null;
+    BankDepositImageFile: File = null;
+    mobileTransferImageFile: File = null;
+
+    isSubmittedOfflinePaymentForm: boolean = false;
+    isSubmittedCashInAdvanceImage: boolean = false;
+    isSubmittedBankTransferForm: boolean = false;
+    isSubmittedBankDepositForm: boolean = false;
+    isSubmittedMobileTransferForm: boolean = false;
+
+    offer$: Observable<Offer>;
+    offerData: any;
+
+    /** Offer payment gateway variables */
+    isAllowedSslCommerzInOfferedProductPurchase = true;
+    isAllowedBkashInOfferedProductPurchase = true;
+    isAllowedOfflineInOfferedProductPurchase = true;
+
+    isAllowedOfferPaymentGateway = false;
 
     constructor(
         private partialPaymentModalService: PartialPaymentModalService,
@@ -62,11 +96,18 @@ export class PartialPaymentModalComponent implements OnInit {
         private modalService: BsModalService,
         private toastr: ToastrService,
         private router: Router,
+        private productService: ProductService
     ) {
     }
 
     ngOnInit() {
         this.partialPaymentForm = this.fb.group({
+            offlinePaymentMethods: ['', []],
+            transactionIdForBank: ['', []],
+            bankName: ['', []],
+            branchName: ['', []],
+            accountNumberForBank: ['', []],
+
             payment_method: ['SSLCommerce', [Validators.required]],
             amount_to_pay: ['', [Validators.required]]
         });
@@ -76,9 +117,36 @@ export class PartialPaymentModalComponent implements OnInit {
                 this.currentOrderId = data;
 
                 if (!_.isUndefined(this.currentOrderId) && !_.isNull(this.currentOrderId)) {
-                    this.orderService.getById(this.currentOrderId)
+
+                    forkJoin([this.orderService.getById(this.currentOrderId), this.orderService.getAllProductsByOrderId(this.currentOrderId)])
+
                         .subscribe(data => {
-                            this.amountToPay = data.total_price - data.paid_amount;
+                            this.isOfflinePayable = false;
+                            this.orderTotalPrice = data[0].total_price;
+                            this.amountToPay = data[0].total_price - data[0].paid_amount;
+                            this.paidAmount = data[0].paid_amount;
+                            this.orderItems = data[1];
+                            console.log("this.orderItems: ", this.orderItems);
+                            this.orderItems.forEach(item => {
+                                if (item.offline_payment) {
+                                    this.isOfflinePayable = true;
+                                }
+
+                                if(item.offered_product && item.offered_product == true){
+                                    if(item.pay_by_sslcommerz || item.pay_by_bKash || item.pay_by_offline){
+                                        this.isAllowedOfferPaymentGateway = true;
+                                    }
+                                    if(!item.pay_by_sslcommerz){
+                                        this.isAllowedSslCommerzInOfferedProductPurchase = false;
+                                    }
+                                    if(!item.pay_by_bKash){
+                                        this.isAllowedBkashInOfferedProductPurchase = false;
+                                    }
+                                    if(!item.pay_by_offline){
+                                        this.isAllowedOfflineInOfferedProductPurchase = false;
+                                    }
+                                }
+                            })
                             this.getPartialPaymentModalInfo();
                         });
                 }
@@ -131,6 +199,22 @@ export class PartialPaymentModalComponent implements OnInit {
             this._notify.error('Payment amount is larger than due amount!');
             return false;
         }
+
+        /** Partial First minimum payment at least 2000 Tk. */
+        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount == 0 && this.orderTotalPrice >= this.partialMinimumFirstPaymentAmount){
+            if(value.amount_to_pay < this.partialMinimumFirstPaymentAmount){
+                this._notify.error(`You have to pay at least ${this.partialMinimumFirstPaymentAmount} BDT for first partial payment!`);
+                return false;
+            }
+        }
+        if(!_.isUndefined(value.amount_to_pay) && !_.isNull(value.amount_to_pay) && this.paidAmount == 0 && this.orderTotalPrice < this.partialMinimumFirstPaymentAmount){
+            if(value.amount_to_pay < this.orderTotalPrice){
+                this._notify.error(`You have to pay full amount as order total amount is less than ${this.partialMinimumFirstPaymentAmount} BDT!`);
+                return false;
+            }
+        }
+        /** Partial First payment at least 1000 Tk. END. */
+
         this.loaderService.showLoader();
         if (value.payment_method === this.BKASH_PAYMENT_TYPE) {
             this.bKashService.getAuthUserWallets()
@@ -165,6 +249,79 @@ export class PartialPaymentModalComponent implements OnInit {
         } else if (value.payment_method === this.CASHBACK_PAYMENT_TYPE) {
 
             this.orderService.makePartialPayment(this.currentOrderId, value)
+                .subscribe(data => {
+                    console.log("Successfully paid", data);
+                    this.onHidden();
+                    this.loaderService.hideLoader();
+                    this._notify.success('You have successfully paid.');
+                    this.router.navigate(['/profile/orders/invoice/', this.currentOrderId]);
+                }, error => {
+                    console.log("Error occurred", error);
+                    this.onHidden();
+                    this.loaderService.hideLoader();
+                })
+        }
+        else if (value.payment_method === this.OFFLINE_PAYMENT_TYPE) {
+            this.isSubmittedOfflinePaymentForm = true;
+            const formData: FormData = new FormData();
+            formData.append('amount_to_pay', value.amount_to_pay);
+            formData.append('payment_method', this.OFFLINE_PAYMENT_TYPE);
+
+            /** Add validation for offline-payment */
+            if (value.offlinePaymentMethods == 'bankTransfer') {
+                this.isSubmittedBankTransferForm = true;
+                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
+                    this.loaderService.hideLoader();
+                    return false;
+                }
+                formData.append('offlinePaymentMethod', 'bankTransfer');
+                let bankTransferInfo = {
+                    transactionId: value.transactionIdForBank,
+                    bankName: value.bankName,
+                    branchName: value.branchName,
+                    accountNumberForBank: value.accountNumberForBank
+                }
+                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
+            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
+                this.isSubmittedCashInAdvanceImage = true;
+                formData.append('offlinePaymentMethod', 'cashInAdvance');
+                if (this.ImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.ImageFile, this.ImageFile.name);
+                } else {
+                    this.ImageFile = null;
+                    this.loaderService.hideLoader();
+                    return false;
+                }
+            } else if (value.offlinePaymentMethods === 'bankDeposit') {
+                this.isSubmittedBankDepositForm = true;
+                formData.append('offlinePaymentMethod', 'bankDeposit');
+                if (this.BankDepositImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
+                } else {
+                    this.BankDepositImageFile = null;
+                    this.loaderService.hideLoader();
+                    return false;
+                }
+            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
+                this.isSubmittedMobileTransferForm = true;
+                formData.append('offlinePaymentMethod', 'mobileTransfer');
+                if (this.mobileTransferImageFile) {
+                    formData.append('hasImage', 'true');
+                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
+                } else {
+                    this.mobileTransferImageFile = null;
+                    this.loaderService.hideLoader();
+                    return false;
+                }
+            } else {
+                this.loaderService.hideLoader();
+                return false;
+            }
+            /** END Validation */
+
+            this.orderService.makePartialPayment(this.currentOrderId, formData)
                 .subscribe(data => {
                     console.log("Successfully paid", data);
                     this.onHidden();
@@ -221,4 +378,67 @@ export class PartialPaymentModalComponent implements OnInit {
                 }
             })
     }
+
+    showOfflineForm(flag) {
+        this.isShowOfflineForm = flag;
+    }
+
+    showOfflinePaymentMethods(isCashInAdvance, isBank, isbanlkDeposit, isMobileTransfer) {
+        this.isShowCashInAdvanceForm = isCashInAdvance;
+        this.isShowBankTransferForm = isBank;
+        this.isBankDeposit = isbanlkDeposit;
+        this.isMobileTransfer = isMobileTransfer
+    }
+
+    getPartialPaymentFormControl(type) {
+        return this.partialPaymentForm.controls[type];
+    }
+
+    onRemoved(file: FileHolder) {
+        this.ImageFile = null;
+    }
+
+    onRemovedBankDepositSlip(file: FileHolder) {
+        this.BankDepositImageFile = null;
+    }
+
+    onRemovedMobileTransferSS(file: FileHolder) {
+        this.mobileTransferImageFile = null;
+    }
+
+    onBeforeUpload = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.ImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.ImageFile = null;
+            return false;
+        }
+    };
+
+    onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.BankDepositImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.BankDepositImageFile = null;
+            return false;
+        }
+    };
+
+    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
+        let fileExtension = metadata.file.type;
+        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+            this.mobileTransferImageFile = metadata.file;
+            return metadata;
+        }
+        else {
+            this.mobileTransferImageFile = null;
+            return false;
+        }
+    };
 }

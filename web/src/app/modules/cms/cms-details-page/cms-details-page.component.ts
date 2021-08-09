@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {CmsService, ProductService} from '../../../services';
+import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
+import {CmsService, OfferService, ProductService} from '../../../services';
 import {AppSettings} from '../../../config/app.config';
 import {Title} from "@angular/platform-browser";
+import {NotificationsService} from "angular2-notifications";
 
 @Component({
     selector: 'app-page-cms_details',
@@ -12,27 +13,46 @@ import {Title} from "@angular/platform-browser";
 export class CmsDetailsPageComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     id: any;
-    cms_post_by_id: any;
-    cms_detail: any;
-    products: any = [];
-    offers: any = [];
-    p: any;
+    regularOffer;
+    regularOfferedProducts: any = [];
+    page: any;
     private queryParams: any;
+
+    /**offer related variables*/
+    calculationType;
+    discountAmount;
+    originalPrice;
+    currentTitle: any;
+
+    changeStatusN = false;
+    changeStatusPr = false;
+
+    changeStatusN_ASC = false;
+    changeStatusPr_ASC = false;
 
     constructor(
         private route: ActivatedRoute,
         private cmsService: CmsService,
         private productservice: ProductService,
         private title: Title,
-        private router: Router
+        private router: Router,
+        private offerService: OfferService,
+        private _notify: NotificationsService
     ) {
+        router.events.forEach((event) => {
+            if(event instanceof NavigationEnd) {
+                if(!this.title.getTitle()){
+                    this.title.setTitle(`${this.currentTitle}`);
+                }
+            }
+        });
     }
 
     // init the component
     ngOnInit() {
         this.route.queryParams.subscribe(queryparams => {
             if (queryparams['page']) {
-                this.p = +queryparams['page'];
+                this.page = +queryparams['page'];
             }
         });
 
@@ -45,52 +65,80 @@ export class CmsDetailsPageComponent implements OnInit {
     //Method for cms data by ids
     private get_cms_by_id() {
 
+        let sortData = null;
+        if(this.changeStatusN){
+            sortData = {
+                code: "newest",
+                order: "DESC"
+            }
+            if(this.changeStatusN_ASC){
+                sortData.order = "ASC";
+            }
+        } else if(this.changeStatusPr){
+            sortData = {
+                code: "price",
+                order: "DESC"
+            }
+            if(this.changeStatusPr_ASC){
+                sortData.order = "ASC";
+            }
+        }
+
         if (this.id) {
-            this.cmsService.getById(this.id).subscribe(result => {
-                this.cms_post_by_id = result;
+            this.offerService.getWebRegularOfferById(this.id, sortData)
+                .subscribe(result => {
+                    /**info related to this offer*/
+                    this.regularOffer = result.data[0];
 
-                if (!(this.cms_post_by_id && this.cms_post_by_id.data_value && Array.isArray(this.cms_post_by_id.data_value) && this.cms_post_by_id.data_value.length > 0)) {
-                    return false;
-                }
+                    /** setting discount to every products exists in this offer */
+                    if (this.regularOffer.selection_type === "individual_product") {
+                        result.data[1].forEach(product => {
+                            this.calculationType = product.calculation_type;
+                            this.discountAmount = product.discount_amount;
+                            this.originalPrice = product.product_id.price;
 
-                this.cms_detail = this.cms_post_by_id.data_value[0];
-                console.log('this.cms_detail', this.cms_detail);
-                console.log('title', this.cms_detail.title);
-                this.addPageTitle();
+                            product.product_id.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
 
-                if (this.cms_detail.offers.length > 0) {
-                    this.cms_detail.alloffers = [];
-
-                    this.cmsService.getByIds(this.cms_detail.offers)
-                        .subscribe(result => {
-                            this.cms_detail.alloffers = result;
-                        }, (err) => {
-                            console.log(err);
+                            product.product_id.calculationType = this.calculationType;
+                            product.product_id.discountAmount = this.discountAmount;
+                            this.regularOfferedProducts.push(product.product_id);
                         });
+                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
+                    } else {
+                        /**stored products in this offer*/
+                        this.regularOfferedProducts = result.data[1];
+                        this.regularOfferedProducts.forEach(product => {
+                            this.calculationType = this.regularOffer.calculation_type;
+                            this.discountAmount = this.regularOffer.discount_amount;
+                            this.originalPrice = product.price;
 
-                }
-                if (this.cms_detail.products.length > 0) {
-                    this.cms_detail.allproducts = [];
+                            product.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
 
-                    this.productservice.getByIds(this.cms_detail.products)
-                        .subscribe(result => {
-                            this.cms_detail.allproducts = result.filter(product => {
-                                return product.warehouse_id.status == 2;
-                            });
-                        }, (err) => {
-                            console.log(err);
-                        });
-                }
-            });
+                            product.calculationType = this.calculationType;
+                            product.discountAmount = this.discountAmount;
+                        })
+                        this.regularOfferedProducts.sort((a, b) => (a.frontend_position > b.frontend_position) ? 1 : -1);
+                    }
+
+                    if (!(this.regularOfferedProducts && Array.isArray(this.regularOfferedProducts) && this.regularOfferedProducts.length > 0)) {
+                        return false;
+                    }
+
+                    this.addPageTitle();
+                }, error => {
+                    this._notify.error('Expired', 'Offer does not exists anymore');
+                });
         }
 
     }
 
     private addPageTitle() {
-        if (this.cms_detail) {
-            this.title.setTitle(this.cms_detail.title + ' - Anonderbazar');
+        if (this.regularOffer) {
+            this.title.setTitle(this.regularOffer.title + ' - Anonderbazar');
+            this.currentTitle = this.title.getTitle();
         } else {
             this.title.setTitle('Offer Detail - Anonderbazar');
+            this.currentTitle = this.title.getTitle();
         }
     }
 
@@ -100,6 +148,24 @@ export class CmsDetailsPageComponent implements OnInit {
         query.page = event;
 
         this.router.navigate(['/cms/cms-details', this.route.snapshot.params], {queryParams: query});
-        this.p = event;
+        this.page = event;
+    }
+
+    showNewest() {
+        this.changeStatusN = true;
+        this.changeStatusPr = false;
+
+        this.changeStatusN_ASC = !this.changeStatusN_ASC;
+        this.changeStatusPr_ASC = false;
+        this.get_cms_by_id();
+    }
+
+    showPrice() {
+        this.changeStatusN = false;
+        this.changeStatusPr = true;
+
+        this.changeStatusN_ASC = false;
+        this.changeStatusPr_ASC = !this.changeStatusPr_ASC;
+        this.get_cms_by_id();
     }
 }

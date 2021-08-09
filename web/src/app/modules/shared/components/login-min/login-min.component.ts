@@ -252,7 +252,7 @@ export class LoginMinComponent implements OnInit, OnDestroy {
                 password: resetpassword
             };
             this.authService.forgetPassword(dataToSubmit).subscribe(result => {
-                console.log(result);
+                /*console.log(result);*/
                 this.forgetPaswordSubmitting = false;
                 this._notify.success('Success', 'Your password has been updated. Please check your email or sms.');
                 this.validateForgotForm.reset();

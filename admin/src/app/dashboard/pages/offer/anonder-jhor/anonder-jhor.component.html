@@ -1,0 +1,367 @@
+<section>
+    <!--anonder jhor card-->
+    <nz-card class="card-height" nzTitle="Anonder Jhor" [nzExtra]="extra">
+        <ng-template #extra>
+            <button (click)="isAnonderJhorEdit = !isAnonderJhorEdit; editAnonderJhor()" nz-button
+                    [nzType]="'primary'" [nzSize]="'large'">
+                <div *ngIf="!isAnonderJhorEdit; else edit">
+                    <i class="anticon anticon-download"></i><span> Edit</span>
+                </div>
+                <ng-template #edit>
+                    <i class="anticon anticon-close"></i><span>Go Back</span>
+                </ng-template>
+            </button>
+        </ng-template>
+        <nz-spin [nzSpinning]="_isSpinning">
+            <!--anonder jhor read-->
+            <ng-container *ngIf="isAnonderJhorEdit === false && anonderJhorData">
+
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Banner Image</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <img class="product-image" src="{{IMAGE_ENDPOINT + anonderJhorData.banner_image }}"
+                             alt="Product Image" style="width: 70%">
+                    </div>
+                </div>
+
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Start Date</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <p>{{anonderJhorData.start_date | date : 'medium'}}</p>
+                    </div>
+                </div>
+
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>End Date</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <p>{{anonderJhorData.end_date | date : 'medium'}}</p>
+                    </div>
+                </div>
+
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Status</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <nz-switch [ngModel]="status"
+                                   (ngModelChange)="jhorActiveStatusChange($event)">
+                        </nz-switch>
+                    </div>
+                </div>
+
+                <div nz-row>
+                    <div nz-col [nzSpan]="7">
+                        <label>Active Payment Gateways</label>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                        <div style="display: flex">
+                            <p *ngIf="isActiveSslCommerz" class="paymentGatewayStyle">Ssl Commerz</p>
+                            <p *ngIf="isActiveBkash" class="paymentGatewayStyle">Bkash</p>
+                            <p *ngIf="isActiveOffline" class="paymentGatewayStyle">Offline</p>
+                            <p *ngIf="isActiveCashOnDelivery" class="paymentGatewayStyle">Cash on delivery</p>
+                            <p *ngIf="!isActiveSslCommerz && !isActiveBkash && !isActiveOffline && !isActiveCashOnDelivery"
+                               class="paymentGatewayStyle" style="color: red;" >
+                                No Payment Gateway selected
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </ng-container>
+            <!--anonder jhor read ends -->
+
+            <!--edit section-->
+            <ng-container *ngIf="isAnonderJhorEdit">
+                <form nz-form [formGroup]="validateForm" id="validateForm"
+                      (ngSubmit)="submitForm($event,validateForm.value)">
+                    <!--banner image-->
+                    <div nz-row *ngIf="AnonderJhorBannerImageFileEdit">
+                        <div nz-col [nzSpan]="7">
+                            <label>Banner Image</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onJhorBannerRemoved($event)"
+                                          [uploadedFiles]='AnonderJhorBannerImageFileEdit'
+                                          [beforeUpload]="onBeforejhorBannerUpload">
+                            </image-upload>
+                            <div *ngIf="!hasJhorBannerImageFile">
+                                Please upload a banner image here!
+                            </div>
+                        </div>
+                    </div>
+                    <!--homepage banner image-->
+                    <div nz-row *ngIf="AnonderJhorHomepageBannerImageFileEdit" style="margin-top: 15px">
+                        <div nz-col [nzSpan]="7">
+                            <label>Homepage Banner Image</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload [max]="1" (removed)="onJhorHomepageBannerRemoved($event)"
+                                          [uploadedFiles]='AnonderJhorHomepageBannerImageFileEdit'
+                                          [beforeUpload]="onBeforejhorHomepageBannerUpload">
+                            </image-upload>
+                            <div *ngIf="!hasAnonderJhorHomepageBannerImageFile">
+                                Please upload a banner image here!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--show in homepage-->
+                    <div nz-row style="margin-top: 15px">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="showHome" type="checkbox" [checked]="showHome"
+                                   (change)="changeShowHomepage()">
+                            Show banner in Homepage
+                        </div>
+                    </div>
+
+                    <!--Offer Duration-->
+                    <div nz-row style="margin: 20px 0;">
+                        <div nz-col [nzSpan]="7">
+                            <label>Offer Duration</label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <nz-date-picker
+                                    nzShowTime
+                                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                                    formControlName="startDate"
+                                    nzPlaceHolder="Start Date">
+                            </nz-date-picker>
+                            <div *ngIf="getFormControl('startDate').dirty&&getFormControl('startDate').hasError('required')"
+                                 style="color: red">
+                                Please set start-date & time
+                            </div>
+                            <nz-date-picker
+                                    nzShowTime
+                                    nzFormat="yyyy-MM-dd HH:mm:ss"
+                                    formControlName="endDate"
+                                    nzPlaceHolder="End Date">
+                            </nz-date-picker>
+                            <div *ngIf="getFormControl('endDate').dirty&&getFormControl('endDate').hasError('required')"
+                                 style="color: red">
+                                Please set end-date & time
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Select Payment Gateway -->
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_sslcommerz" type="checkbox" [checked]="isActiveSslCommerz"
+                                   (change)="changeSslCommerzActivation()">
+                            Pay by SslCommerz
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_bKash" type="checkbox" [checked]="isActiveBkash"
+                                   (change)="changeBkashActivation()">
+                            Pay by bKash
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_offline" type="checkbox" [checked]="isActiveOffline"
+                                   (change)="changeOfflineActivation()">
+                            Pay by Offline
+                        </div>
+                    </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_cashOnDelivery" type="checkbox" [checked]="isActiveCashOnDelivery"
+                                   (change)="changeCashOnDeliveryActivation()">
+                            Pay by Cash On Delivery
+                        </div>
+                    </div>
+                    <!-- Select Payment Gateway. END -->
+
+
+                    <div nz-row>
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">
+                                Save
+                            </button>
+                            <button nz-button [nzSize]="'large'" (click)="resetForm($event)"> Reset</button>
+                        </div>
+                    </div>
+                </form>
+
+            </ng-container>
+            <!--edit section ends-->
+        </nz-spin>
+    </nz-card>
+    <!--anonder jhor card ends-->
+
+    <!--anonder Jhor offer card-->
+    <nz-card class="card-height" nzTitle="Anonder Jhor Offer list" [nzExtra]="jhor">
+        <ng-template #jhor>
+            <button nz-button [nzType]="'primary'" [nzSize]="'large'" (click)="addNew()">
+                <i class="anticon anticon-download"></i><span>Add New</span>
+                <!--show the add new modal-->
+            </button>
+        </ng-template>
+        <ng-container>
+            <nz-spin [nzSpinning]="_isSpinning">
+                <nz-table #nzTable
+                          nzShowQuickJumper
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="anonderJhorOffersData"
+                          [nzLoading]="loading"
+                          [nzTotal]="anonderJhorOfferTotal"
+                          [(nzPageIndex)]="anonderJhorOfferPage"
+                          [(nzPageSize)]="anonderJhorOfferLimit"
+                          (nzPageIndexChange)="getAllAnonderJhorOffersData()"
+                          [nzScroll]="{ x:'1000px',y: '350px'  }"
+                >
+                    <thead>
+                    <tr>
+                        <th nz-th [nzWidth]="'100px'">
+                            <span> ID </span>
+                        </th>
+
+                        <th nz-th [nzWidth]="'200px'">
+                            <span> Offer Name </span>
+                        </th>
+                        <!--<th nz-th [nzWidth]="'150px'">
+                            <span> Category </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> Sub-Category </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> Sub-Sub-Category </span>
+                        </th>-->
+                        <th nz-th [nzWidth]="'200px'">
+                            <span> Start Time </span>
+                        </th>
+                        <th nz-th [nzWidth]="'200px'">
+                            <span> End Time </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> Discount Amount </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            <span> Status </span>
+                        </th>
+                        <th nz-th [nzWidth]="'200px'">
+                            <span>Force stopped</span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'">
+                            Action
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let datum of nzTable.data;let i=index">
+                        <td>
+                            <nz-tag>{{datum.id}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.offer_name}}</nz-tag>
+                        </td>
+
+                        <!--<td>
+                            <nz-tag>{{datum.category_id.name}}</nz-tag>
+                        </td>
+                        <td>
+                            <nz-tag *ngIf="datum.sub_category_id && datum.sub_category_id.name; else noSub">{{datum.sub_category_id.name}}</nz-tag>
+                            <ng-template #noSub>
+                                <p>Null</p>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <nz-tag *ngIf="datum.sub_sub_category_id && datum.sub_sub_category_id.name; else noSubSub">{{datum.sub_sub_category_id.name}}</nz-tag>
+                            <ng-template #noSubSub>
+                                <p>Null</p>
+                            </ng-template>
+                        </td>-->
+
+                        <td>
+                            <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>
+                        </td>
+
+                        <td>
+                            <nz-tag>{{datum.end_date | date : 'medium'}}</nz-tag>
+                        </td>
+
+                        <td *ngIf="datum.calculation_type === 'percentage'">
+                            <nz-tag>{{datum.discount_amount}} %</nz-tag>
+                        </td>
+                        <td *ngIf="datum.calculation_type === 'absolute'">
+                            <nz-tag>{{datum.discount_amount}} tk</nz-tag>
+                        </td>
+
+                        <td>
+                            <div *ngIf="datum.status; else inactive">
+                                <nz-switch [ngModel]="true"
+                                           (ngModelChange)="offerActiveStatusChange($event, datum.id)">
+                                </nz-switch>
+                            </div>
+                            <ng-template #inactive>
+                                <nz-switch [ngModel]="false"
+                                           (ngModelChange)="offerActiveStatusChange($event, datum.id)">
+                                </nz-switch>
+                            </ng-template>
+                        </td>
+
+                        <td>
+                            <div *ngIf="datum.force_stop; else running">
+                                <nz-switch [ngModel]="true" nzCheckedChildren="forcefully stopped" nzUnCheckedChildren=""
+                                           (ngModelChange)="offerForceStop($event, datum.id)">
+                                </nz-switch>
+                            </div>
+                            <ng-template #running>
+                                <nz-switch [ngModel]="false" nzCheckedChildren="forcefully stopped" nzUnCheckedChildren=""
+                                           (ngModelChange)="offerForceStop($event, datum.id)">
+                                </nz-switch>
+                            </ng-template>
+                        </td>
+
+                        <td>
+                            <nz-button-group>
+
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'"
+                                        (click)="editJhorOffer(i, datum.id)">
+                                    <i class="anticon anticon-edit"></i>
+                                </button>
+                                <ng-container>
+                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
+                                                   [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
+                                                   (nzOnConfirm)="deleteAnonderJhorOffer(i,datum.id)">
+                                        <a nz-popconfirm>
+                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <i class="anticon anticon-delete "></i>
+                                            </button>
+
+                                        </a>
+                                    </nz-popconfirm>
+                                </ng-container>
+                                <button nz-button [nzType]="'primary'" [nzSize]="'default'"
+                                        (click)="generateOfferExcelById(datum.id)" title="Download order CSV file">
+                                    <i class="anticon anticon-download"></i>
+                                </button>
+                            </nz-button-group>
+                        </td>
+                    </tr>
+                    </tbody>
+                </nz-table>
+            </nz-spin>
+        </ng-container>
+    </nz-card>
+    <!--anonder Jhor offer card ends-->
+
+    <div *ngIf="isAddNew">
+        <app-anonder-jhor-offer-create [isVisible]="isVisible"></app-anonder-jhor-offer-create>
+    </div>
+    <div *ngIf="isEdit">
+        <app-anonder-jhor-offer-edit [isEditVisible]="isEditVisible"
+                                     [jhorOfferId]="jhorOfferId"></app-anonder-jhor-offer-edit>
+    </div>
+</section>

@@ -194,6 +194,9 @@ module.exports.policies = {
     'update': ['isAuthorized', 'isAdmin'],
     'destroy': ['isAuthorized', 'isAdmin'],
   },
+  ImageController: {
+    '*': true
+  },
   PaymentAddressController: {
     '*': false,
     'find': ['isAuthorized'],
@@ -250,7 +253,9 @@ module.exports.policies = {
   },
   PaymentsController: {
     '*': false,
-    'getAll': ['isAuthorized']
+    'getAll': ['isAuthorized'],
+    'changeApprovalStatus': ['isAuthorized', 'isAdmin'],
+    'makeAdminPayment': ['isAuthorized', 'isAdmin']
   },
   OrderPartialPaymentController: {
     '*': ['isAuthorized', 'isCustomer'],
@@ -305,6 +310,7 @@ module.exports.policies = {
     'add': false,
     'remove': false,
     'replace': false,
+    'getOrderInvoiceData': ['isAuthorized'],
     'findOne': ['isAuthorized'],
     'update': ['isAuthorized', 'isAdmin'],
     'updatePaymentStatus': ['isAuthorized', 'isAdmin'],
@@ -329,6 +335,7 @@ module.exports.policies = {
   StatusChangeController: {
     'updatecustom': ['isAuthorized', 'isOwnerOrAdmin'],
     'updatecustomcourier': ['isAuthorized', 'isOwnerOrAdmin'],
+    'currentTime' : true
   },
   SuborderController: {
     '*': false,
@@ -414,6 +421,9 @@ module.exports.policies = {
     'paymentCallback': true,
   },
   SslCommerzController: {
+    '*': true
+  },
+  OfferController: {
     '*': true
   }
 };

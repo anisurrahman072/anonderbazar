@@ -62,6 +62,7 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import {CouponLotteryService} from "../services/coupon-lottery.service";
 import {QuestionsService} from "../services/questions.service";
+import {ImageService} from "../services/image.service";
 registerLocaleData(en);
 
 @NgModule({
@@ -75,7 +76,7 @@ registerLocaleData(en);
         PrebootModule.withConfig({appRoot: 'app-root'}),
         BrowserTransferStateModule,
         NgZorroAntdModule,
-        UiModule,
+        UiModule
     ],
     providers: [
         { provide: NZ_I18N, useValue: en_US },
@@ -127,6 +128,7 @@ registerLocaleData(en);
         CouponLotteryService,
         ChatService,
         QuestionsService,
+        ImageService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,

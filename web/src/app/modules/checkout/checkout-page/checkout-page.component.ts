@@ -6,19 +6,19 @@ import {Observable} from "rxjs/Observable";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs/Subscription";
 import * as fromStore from "../../../state-management";
-import {Cart, User} from "../../../models";
+import {Cart, Offer, User} from "../../../models";
 import {AreaService, AuthService, CartItemService, CartService, OrderService} from "../../../services";
 import {AppSettings} from '../../../config/app.config';
 import {PaymentAddressService} from '../../../services/payment-address.service';
 import {LoaderService} from "../../../services/ui/loader.service";
 import {FormValidatorService} from "../../../services/validator/form-validator.service";
-import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_STATUS} from "../../../../environments/global_config";
-import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
+import {GLOBAL_CONFIGS, ORDER_TYPE, PAYMENT_METHODS, PAYMENT_STATUS} from "../../../../environments/global_config";
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {BkashService} from "../../../services/bkash.service";
 import {Title} from "@angular/platform-browser";
-import {PAYMENT_METHODS} from '../../../../environments/global_config';
 import {QueryMessageModalComponent} from "../../shared/components/query-message-modal/query-message-modal.component";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import * as he from 'he';
 
 @Component({
     selector: 'app-checkout-page',
@@ -35,6 +35,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     paymentGatewayErrorModalRef: BsModalRef;
     currentUser$: Observable<User>;
     cart$: Observable<Cart>;
+    offer$: Observable<Offer>;
 
     divisionSearchOptions: any = [];
     shippingZilaSearchOptions: any = [];
@@ -111,6 +112,24 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     BankDepositImageFile: File = null;
     mobileTransferImageFile: File = null;
 
+    offerData: any;
+
+    /** Offer payment gateway variables */
+    isAllowedSslCommerzInOfferedProductPurchase = true;
+    isAllowedBkashInOfferedProductPurchase = true;
+    isAllowedOfflineInOfferedProductPurchase = true;
+    isAllowedCashInDeliveryInOfferedProductPurchase = true;
+
+    isAllowedOfferPaymentGateway = false;
+
+    private offerIdNumber = null;
+    private offerType = null;
+
+    isAllowedToProcessToPay = true;
+
+    wrongCartItemsModalRef: BsModalRef;
+
+
     constructor(
         private cdr: ChangeDetectorRef,
         private route: ActivatedRoute,
@@ -133,6 +152,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // init the component
     ngOnInit() {
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            if(offerData && offerData.finalCollectionOfProducts){
+                this.offerData = offerData.finalCollectionOfProducts;
+                console.log("this.offerData: ", this.offerData);
+            }
+        })
 
         this.checkoutForm = this.fb.group({
             offlinePaymentMethods: ['', []],
@@ -144,7 +170,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Billing
             billing_id: ['', []],
             firstName: ['', [Validators.required]],
-            lastName: ['', [Validators.required]],
+            // lastName: ['', [Validators.required]],
+            lastName: ['', []],
             address: ['', [Validators.required]],
             phone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             postCode: ['', [Validators.required]],
@@ -156,7 +183,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // Shipping
             shipping_id: ['', []],
             shippingFirstName: ['', [Validators.required]],
-            shippingLastName: ['', [Validators.required]],
+            // shippingLastName: ['', [Validators.required]],
+            shippingLastName: ['', []],
             shippingAddress: ['', [Validators.required]],
             shippingPhone: ['', [Validators.required, FormValidatorService.phoneNumberValidator]],
             shippingPostCode: ['', [Validators.required]],
@@ -189,18 +217,22 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.cart$ = this.store.select<any>(fromStore.getCart);
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            console.log("offeraData: ", offerData);
+        })
 
         this.loaderService.showLoader();
         this.grantTotal = 0;
-        this.store.dispatch(new fromStore.LoadCart());
         this.mainSubscription = this.cartService.getCourierCharges()
             .concatMap((globalConfig: any) => {
                 if (Array.isArray(globalConfig) && globalConfig.length > 0) {
                     this.courierCharges = globalConfig[0];
-                    this.cart$.subscribe((cartData) => {
+                    /*this.cart$.subscribe((cartData) => {
                         console.log('cartData', cartData);
                         if (cartData) {
                             this.cartData = cartData;
+                            console.log("Cart info: ", cartData);
                             this.setShippingCharge();
                         } else {
                             this.cartData = null;
@@ -210,21 +242,46 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     }, (err) => {
                         console.log(err);
                         this.toastr.error('Unable to update cart data', 'Sorry!');
-                    });
+                    });*/
+                    setTimeout(() => {
+                        this.store.dispatch(new fromStore.LoadCart());
+                        this.cart$.subscribe((cartData) => {
+                            if (cartData) {
+                                this.cartData = cartData;
+                                this.setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(this.cartData.data.cart_items);
+                                this.setShippingCharge();
+                            } else {
+                                this.cartData = null;
+                            }
+                            this.updateGrandTotal();
+                            this.addPageTitle();
+                        }, (err) => {
+                            console.log(err);
+                            this.toastr.error('Unable to update cart data', 'Sorry!');
+                        });
+                    }, 1000);
+
                     return this.areaService.getAllDivision();
                 }
                 return Observable.throw(new Error('Problem in getting global config.'));
             })
             .concatMap((divisionList: any) => {
                 if (Array.isArray(divisionList) && divisionList.length > 0) {
+                    // this.divisionSearchOptions = divisionList.sort((a, b) => a.name.localeCompare(b.name));
                     this.divisionSearchOptions = divisionList;
                     return this.PaymentAddressService.getAuthUserPaymentAddresses();
                 }
                 return Observable.throw(new Error('Problem in getting division list.'));
             })
             .subscribe((previousAddresses: any) => {
-                console.log('previous addresses', previousAddresses);
-                this.prevoius_address = previousAddresses;
+                // console.log('previous addresses', previousAddresses);
+                this.prevoius_address = previousAddresses.map((decode) => {
+                    let address = {...decode};
+                    address.first_name = he.decode(address.first_name)
+                    address.last_name = he.decode(address.last_name)
+                    address.address = he.decode(address.address)
+                    return address;
+                })
                 this.loaderService.hideLoader();
 
             }, (err) => {
@@ -233,6 +290,57 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastr.error('Unable to load cart and other data', 'Sorry!');
             });
 
+
+    }
+
+    setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(cartItems){
+        this.isAllowedSslCommerzInOfferedProductPurchase = true;
+        this.isAllowedBkashInOfferedProductPurchase = true;
+        this.isAllowedOfflineInOfferedProductPurchase = true;
+        this.isAllowedCashInDeliveryInOfferedProductPurchase = true;
+
+        this.isAllowedOfferPaymentGateway = false;
+        this.isAllowedToProcessToPay = true;
+
+        this.offerIdNumber = null;
+        this.offerType = null;
+
+        cartItems.forEach((item, i) => {
+            let productId = item.product_id.id;
+
+            if(this.offerData[productId]){
+                console.log("this.offerIdNumber: ", this.offerIdNumber, );
+                if(i > 0){
+                    if(this.offerIdNumber && this.offerData[productId].offer_id_number && this.offerIdNumber != this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    } else if(!this.offerIdNumber && this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    } else if(this.offerIdNumber && !this.offerData[productId].offer_id_number){
+                        this.isAllowedToProcessToPay = false;
+                    }
+                }
+                this.offerIdNumber = this.offerData[productId].offer_id_number;
+                this.offerType = this.offerData[productId].offer_type;
+                this.isAllowedOfferPaymentGateway = true;
+
+                if(!this.offerData[productId].pay_by_sslcommerz){
+                    this.isAllowedSslCommerzInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_bKash){
+                    this.isAllowedBkashInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_offline){
+                    this.isAllowedOfflineInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_cashOnDelivery){
+                    this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
+                }
+            } else {
+                if(this.offerIdNumber){
+                    this.isAllowedToProcessToPay = false;
+                }
+            }
+        });
 
     }
 
@@ -257,7 +365,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private openPaymentGatewayModal(message) {
         this.paymentGatewayErrorModalRef = this.modalService.show(QueryMessageModalComponent, {});
-        this.paymentGatewayErrorModalRef.content.title = 'Error from Payment Gateway';
+        this.paymentGatewayErrorModalRef.content.title = 'Payment has been failed';
         this.paymentGatewayErrorModalRef.content.message = message;
     }
 
@@ -368,6 +476,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             // this.setShippingCharge();
             // this.updateGrandTotal();
             this.toastr.info("Item removed from cart successfully", 'Note');
+
+            this.cartData.data.cart_items =  this.cartData.data.cart_items.filter(item => item.id != cartItemId);
+
+            this.setOffersPaymentsGatewayAndChekCartHasWrongOfferItems(this.cartData.data.cart_items);
+
             this.loaderService.hideLoader();
         }, () => {
             this.loaderService.hideLoader();
@@ -459,9 +572,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
             return false;
         }
 
-        if((this.isShowCashInAdvanceForm && !this.ImageFile) ||
+        if ((this.isShowCashInAdvanceForm && !this.ImageFile) ||
             (this.isBankDeposit && !this.BankDepositImageFile) ||
-            (this.isMobileTransfer && !this.mobileTransferImageFile)){
+            (this.isMobileTransfer && !this.mobileTransferImageFile)) {
             this.toastr.error("Please upload the image first!", "Not provided the money receipt!", {
                 positionClass: 'toast-bottom-right'
             });
@@ -578,9 +691,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.router.navigate(['/profile/orders/invoice/', order.id]);
                 this.loaderService.hideLoader();
             }, error => {
-                this.toastr.error("Error occurred while placing your order.", "Error!", {
-                    positionClass: 'toast-top-right'
-                });
+                if(error.error && error.error.additionalMessage){
+                    this.toastr.info(error.error.additionalMessage, "Order not placed!", {
+                        positionClass: 'toast-top-right'
+                    });
+                } else {
+                    this.toastr.error("Error occurred while placing your order.", "Error!", {
+                        positionClass: 'toast-top-right'
+                    });
+                }
                 this.loaderService.hideLoader();
             })
     }
@@ -721,13 +840,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             }, (error) => {
                 this.loaderService.hideLoader();
-                console.log('sslcommerz error', error);
-                if (error && error.error) {
-                    this.toastr.error(error.error.message, "Problem in placing your order!", {
-                        positionClass: 'toast-bottom-right'
+                if (error.error && error.error.additionalMessage) {
+                    this.toastr.info(error.error.additionalMessage, "Order not place!", {
+                        positionClass: 'toast-top-right'
                     });
-                } else if (error && error.additionalMessage) {
-                    this.toastr.error(error.additionalMessage, "Problem in placing your order!", {
+                } else if (error && error.error) {
+                    this.toastr.error(error.error.message, "Problem in placing your order!", {
                         positionClass: 'toast-bottom-right'
                     });
                 } else {
@@ -858,12 +976,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         if (type == 'shipping') {
             this.updateGrandTotal();
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.shippingZilaSearchOptions = result;
+                this.shippingZilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.shippingUpazilaSearchOptions = [];
             });
         } else {
             this.areaService.getAllZilaByDivisionId(divisionId).subscribe(result => {
-                this.zilaSearchOptions = result;
+                this.zilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
                 this.upazilaSearchOptions = [];
             });
         }
@@ -874,12 +992,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         var zilaId = $event.target.value;
         if (type == 'shipping') {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.shippingUpazilaSearchOptions = result;
+                this.shippingUpazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
             this.updateGrandTotal(true, zilaId);
         } else {
             this.areaService.getAllUpazilaByZilaId(zilaId).subscribe(result => {
-                this.upazilaSearchOptions = result;
+                this.upazilaSearchOptions = result.sort((a, b) => a.name.localeCompare(b.name));
             });
         }
     }
@@ -905,6 +1023,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 zila_id: formValue.shipping_zila_id,
                 division_id: formValue.shipping_division_id,
             });
+            // console.log('formValue==>', formValue);
 
             let zila = this.shippingZilaSearchOptions.find(x => x.id == formValue.shipping_zila_id);
             let upZila = this.shippingUpazilaSearchOptions.find(x => x.id == formValue.shipping_upazila_id);
@@ -1023,11 +1142,35 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     //Method for proceed to pay
-    processToPay() {
-        console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm)
+    processToPay(modalContent) {
+        if(!this.isAllowedToProcessToPay){
+            this.wrongCartItemsModalRef = this.modalService.show(modalContent);
+            return false;
+        }
+        // console.log('--------------------processToPay----------------------', this.isCopy, this.cartData, this.checkoutForm);
+
+        // console.log('this.isCopy==>', this.isCopy);
+        // console.log('this.cartData==>', this.cartData);
+        // console.log('this.checkoutForm==>', this.checkoutForm);
+
         if (!this.noShippingCharge && this.isCopy) {
+            // console.log('call copyAll');
             this.copyAll();
         }
+
+        // if (this.checkoutForm.invalid) {
+        //     this.showFormError = true;
+        //     this.toastr.error("Edit or Re-input your address information correctly and update your address information.", "Please!", {
+        //         positionClass: 'toast-top-right'
+        //     });
+        //     window.scroll(0, 0);
+        //     return false;
+        // }
+
+        // if (!this.noShippingCharge && this.isCopy) {
+        //     this.copyAll();
+        // }
+
         if (this.cartData && (typeof this.cartData.data === 'undefined' || this.cartData.data.cart_items.length <= 0)) {
             this.toastr.error("You have no items in your cart!", "Empty cart!", {
                 positionClass: 'toast-bottom-right'
@@ -1100,11 +1243,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUpload = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.ImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.ImageFile = null;
             return false;
         }
@@ -1112,11 +1254,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.BankDepositImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.BankDepositImageFile = null;
             return false;
         }
@@ -1124,11 +1265,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
         let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
+        if (fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")) {
             this.mobileTransferImageFile = metadata.file;
             return metadata;
-        }
-        else {
+        } else {
             this.mobileTransferImageFile = null;
             return false;
         }

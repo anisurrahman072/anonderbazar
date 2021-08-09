@@ -8,6 +8,8 @@ import {SuborderService} from "../../../../services/suborder.service";
 import {OrderService} from "../../../../services/order.service";
 import * as _moment from 'moment';
 import {default as _rollupMoment} from 'moment';
+import {GLOBAL_CONFIGS, PAYMENT_METHODS} from "../../../../../environments/global_config";
+import {AuthService} from "../../../../services/auth.service";
 
 const moment = _rollupMoment || _moment;
 
@@ -26,14 +28,9 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     orderSearchOptions: any;
     suborderSearchOptions: any;
     customer: any;
-    statusOptions = [
-        {label: 'Pending', value: 1},
-        {label: 'Processing', value: 2},
-        {label: 'Completed', value: 4},
-        {label: 'Rejected', value: 0},
-    ];
+    statusOptions = GLOBAL_CONFIGS.PAYMENT_APPROVAL_STATUS_TYPES;
     paymentTypeOptions = [
-        {label: 'Cash', value: 'cash'},
+        {label: 'Cash', value: 'Cash'},
         {label: 'Card Payment', value: 'card_payment'},
         {label: 'SSL Commerz', value: 'SSLCommerce'},
         {label: 'BKash', value: 'BKash'},
@@ -41,13 +38,19 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     ];
     order_id: any;
     suborder_id: any;
+    paymentApprovalStatus: any;
+    paymentType: any;
+    PAYMENT_STATUS_CHANGE_ADMIN_USER = GLOBAL_CONFIGS.PAYMENT_STATUS_CHANGE_ADMIN_USER;
+    isAllowedToUpdatePaymentStatus:boolean = false;
+    PAYMENT_METHODS = PAYMENT_METHODS;
 
     constructor(private router: Router, private route: ActivatedRoute,
                 private _notification: NzNotificationService,
                 private fb: FormBuilder,
                 private orderService: OrderService,
                 private suborderService: SuborderService,
-                private paymentService: PaymentService) {
+                private paymentService: PaymentService,
+                private authService: AuthService) {
 
     }
     // init the component
@@ -57,31 +60,38 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
             suborder_id: ['', [Validators.required]],
             payment_type: ['', [Validators.required]],
             payment_amount: ['', [Validators.required]],
-            status: ['', [Validators.required]],
+            approval_status: ['', [Validators.required]],
             receiver_id: ['', []],
             user_id: ['', []],
-            payment_date: ['', [Validators.required]],
+            created_at: ['', [Validators.required]],
         });
 
-/*        this.orderService.getAll().subscribe(result => {
-            this.orderSearchOptions = result;
-        });*/
+        this.currentUser = this.authService.getCurrentUser();
+        if(this.currentUser.id == this.PAYMENT_STATUS_CHANGE_ADMIN_USER){
+            this.isAllowedToUpdatePaymentStatus = true;
+        }
+
+        /*        this.orderService.getAll().subscribe(result => {
+                    this.orderSearchOptions = result;
+                });*/
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.paymentService.getByIdNoPop(this.id)
                 .subscribe(result => {
                     this.data = result;
                     console.log('payment', this.data);
+                    this.paymentApprovalStatus = this.data.approval_status;
+                    this.paymentType = this.data.payment_type;
 
                     this.validateForm.patchValue({
-                        order_id: this.data.suborder_id,
+                        order_id: this.data.order_id,
                         suborder_id: this.data.suborder_id,
                         payment_type: this.data.payment_type,
                         payment_amount: this.data.payment_amount,
-                        status: this.data.status,
+                        approval_status: this.data.approval_status,
                         receiver_id: this.data.receiver_id ? this.data.receiver_id.id : '',
                         user_id: this.data.user_id.id,
-                        payment_date: this.data.payment_date,
+                        created_at: this.data.createdAt,
                     });
 
                     this.order_id = this.data.order_id;
@@ -100,10 +110,10 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
         }
 
         value.user_id = this.customer.id;
-        value.receiver_id = this.currentUser.id;
+        value.receiver_id = this.currentUser;
 
         let paymentInsertPayload = value;
-        paymentInsertPayload.payment_date = moment(paymentInsertPayload.payment_date ).format('YYYY-MM-DD HH:mm:ss');
+        paymentInsertPayload.created_at = moment(paymentInsertPayload.created_at ).format('YYYY-MM-DD HH:mm:ss');
 
 
         this.paymentService.update(this.id, paymentInsertPayload)

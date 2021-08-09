@@ -7,6 +7,7 @@
 const moment = require('moment');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const {ORDER_STATUSES} = require('../../libs/orders');
 const {getPaymentService} = require('../../libs/paymentMethods');
 const {getGlobalConfig} = require('../../libs/helper');
 const {getAuthUser} = require('../../libs/helper');
@@ -14,7 +15,18 @@ const {pagination} = require('../../libs/pagination');
 const {asyncForEach} = require('../../libs/helper');
 const {cashOnDeliveryNotAllowedForCategory} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
-const {CANCELED_ORDER, PARTIAL_ORDER_TYPE, CASHBACK_PAYMENT_TYPE, PAYMENT_STATUS_NA, PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {
+  CANCELED_ORDER,
+  PARTIAL_ORDER_TYPE,
+  CASHBACK_PAYMENT_TYPE,
+  PAYMENT_STATUS_NA,
+  PAYMENT_STATUS_PAID,
+  REJECTED_PAYMENT_APPROVAL_STATUS,
+  APPROVED_PAYMENT_APPROVAL_STATUS,
+  CUSTOMER_USER_GROUP_NAME,
+  REGULAR_OFFER_TYPE,
+  ANONDER_JHOR_OFFER_TYPE
+} = require('../../libs/constants');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -27,18 +39,83 @@ module.exports = {
         .populate('couponProductCodes', {deletedAt: null})
         .populate('suborders', {deletedAt: null});
 
-      console.log('orders', orders.couponProductCodes);
+      console.log('orders rouzex', orders);
+
+      const authUser = getAuthUser(req);
+
+      if (authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id) {
+        return res.status(400).json({
+          success: false,
+          code: 'userIdMissMatched',
+          message: 'Yo are only authorized to see your orders Invoice!'
+        });
+      }
 
       return res.status(200).json(orders);
 
     } catch (error) {
-      console.log(error);
+      console.log('Error', error);
       return res.status(400).json({
-        message: false,
-        error
+        message: false, error
       });
     }
   },
+
+  getOrderInvoiceData: async (req, res) => {
+    try {
+      let orderId = req.query.orderId;
+      /** Fetch order details */
+      const orders = await Order.findOne({id: orderId})
+        .populate('user_id')
+        .populate('billing_address')
+        .populate('shipping_address')
+        .populate('payment')
+        .populate('couponProductCodes', {deletedAt: null})
+        .populate('suborders', {deletedAt: null});
+
+      console.log('orders: ', orders);
+
+      const authUser = getAuthUser(req);
+
+      if (authUser.group_id.name == CUSTOMER_USER_GROUP_NAME && orders.user_id.id != authUser.id) {
+        return res.status(400).json({
+          success: false,
+          code: 'userIdMissMatched',
+          message: 'Yo are only authorized to see your orders Invoice!'
+        });
+      }
+      /** Fetch order details. END */
+
+
+      /** Fetch global config data */
+      let configData = await GlobalConfigs.find({
+        deletedAt: null
+      });
+      /** Fetch global config data. END */
+
+
+      /** Fetch all payments log for the given order ID */
+      let payments = await Payment.find({
+        order_id: orderId, deletedAt: null
+      });
+      /** Fetch all payments log for the given order ID. END */
+
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully fetched all data',
+        orders,
+        configData,
+        payments
+      });
+    }
+    catch (error){
+      console.log('Error occurred while fetching order invoice data', error);
+      return res.status(400).json({
+        message: false, error
+      });
+    }
+  },
+
   index: (req, res) => {
     try {
       return res.json({message: 'Not Authorized'});
@@ -46,8 +123,7 @@ module.exports = {
       console.log(error);
       return res.json({error: error});
     }
-  },
-  // destroy a row
+  }, // destroy a row
   destroy: async (req, res) => {
     try {
       const order = await Order.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
@@ -69,8 +145,7 @@ module.exports = {
       let globalConfigs = await getGlobalConfig();
 
       let cart = await Cart.findOne({
-        user_id: authUser.id,
-        deletedAt: null
+        user_id: authUser.id, deletedAt: null
       });
 
       if (!cart) {
@@ -78,8 +153,7 @@ module.exports = {
       }
 
       let cartItems = await CartItem.find({
-        cart_id: cart.id,
-        deletedAt: null
+        cart_id: cart.id, deletedAt: null
       })
         .populate('cart_item_variants')
         .populate('product_id');
@@ -107,9 +181,7 @@ module.exports = {
       }
 
       const {
-        order,
-        orderForMail,
-        subordersTemp
+        order, orderForMail, subordersTemp
       } = await sails.getDatastore()
         .transaction(async (db) => {
 
@@ -141,9 +213,8 @@ module.exports = {
           }
 
           let {
-            grandOrderTotal,
-            totalQty
-          } = PaymentService.calcCartTotal(cart, cartItems);
+            grandOrderTotal, totalQty
+          } = await PaymentService.calcCartTotal(cart, cartItems);
 
           grandOrderTotal += courierCharge;
 
@@ -186,9 +257,7 @@ module.exports = {
 
           let uniqueTempWarehouses = _.uniqBy(cartItems, 'product_id.warehouse_id');
 
-          let uniqueWarehouseIds = uniqueTempWarehouses.map(
-            o => o.product_id.warehouse_id
-          );
+          let uniqueWarehouseIds = uniqueTempWarehouses.map(o => o.product_id.warehouse_id);
 
           /** get unique warehouse Id for suborder..................END.........................*/
 
@@ -201,9 +270,7 @@ module.exports = {
           for (i = 0; i < uniqueWarehouseIds.length; i++) {
             let thisWarehouseID = uniqueWarehouseIds[i];
 
-            let cartItemsTemp = cartItems.filter(
-              asset => asset.product_id.warehouse_id === thisWarehouseID
-            );
+            let cartItemsTemp = cartItems.filter(asset => asset.product_id.warehouse_id === thisWarehouseID);
 
             let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
             let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -236,14 +303,7 @@ module.exports = {
               };
 
               let newEndDate = new Date();
-              newEndDate.setDate(new Date(
-                new Date(order.createdAt).getTime() +
-                ((thisCartItem.product_id.produce_time *
-                  thisCartItem.product_quantity) /
-                  60 /
-                  8) *
-                86400000
-              ).getDate() + 1);
+              newEndDate.setDate(new Date(new Date(order.createdAt).getTime() + ((thisCartItem.product_id.produce_time * thisCartItem.product_quantity) / 60 / 8) * 86400000).getDate() + 1);
 
               let suborderItem = await SuborderItem.create(newSuborderItemPayload).fetch().usingConnection(db);
 
@@ -273,9 +333,7 @@ module.exports = {
                     warehouse_variant_id: thisCartItemVariant.warehouse_variant_id,
                   });
 
-                  let suborderItemVariant = await SuborderItemVariant.create(
-                    newSuborderItemVariantPayload
-                  ).fetch().usingConnection(db);
+                  let suborderItemVariant = await SuborderItemVariant.create(newSuborderItemVariantPayload).fetch().usingConnection(db);
                   suborderItemVariantsTemp.push(suborderItemVariant);
                 }
               }
@@ -331,10 +389,7 @@ module.exports = {
 
           for (let i = 0; i < cartItems.length; i++) {
             await CartItem.update({id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
-            await CartItemVariant.update(
-              {cart_item_id: cartItems[i].id},
-              {deletedAt: new Date()}
-            ).usingConnection(db);
+            await CartItemVariant.update({cart_item_id: cartItems[i].id}, {deletedAt: new Date()}).usingConnection(db);
           }
 
           for (let i = 0; i < allOrderedProductsInventory.length; i++) {
@@ -343,9 +398,7 @@ module.exports = {
             await Product.update({id: thisInventoryProd.product_id}, {quantity: quantityToUpdate}).usingConnection(db);
           }
           return {
-            order,
-            orderForMail,
-            subordersTemp
+            order, orderForMail, subordersTemp
           };
         });
 
@@ -376,17 +429,16 @@ module.exports = {
     } catch (finalError) {
       console.log('finalError', finalError);
       return res.status(400).json({
-        message: 'There was a problem in processing the order.',
-        additionalMessage: finalError.message
+        message: 'There was a problem in processing the order.', additionalMessage: finalError.message
       });
 
     }
 
-  },
-  //Method called for creating a custom order data from frontend with sslcommerz
+  }, //Method called for creating a custom order data from frontend with sslcommerz
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js,models/PaymentAddress.js
   //,models/Cart.js,models/CartItem.js,models/Payment.js, models/SuborderItemVariant.js
   placeOrder: async function (req, res) {
+    /*console.log('rozuiex n placeorder: ');*/
 
     try {
       const authUser = getAuthUser(req);
@@ -394,6 +446,14 @@ module.exports = {
 
       let cart = await PaymentService.getCart(authUser.id);
       let cartItems = await PaymentService.getCartItems(cart.id);
+
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. START. */
+
+      await PaymentService.checkOfferProductsFromCartItems(cartItems);
+
+      /** Cart items can only be exists in a single offer.
+       * Even a regular product can't be ordered with a offer product. END. */
 
       const shippingAddress = await PaymentService.getShippingAddress(authUser, req);
       const billingAddress = await PaymentService.getBillingAddress(authUser, req, shippingAddress);
@@ -411,23 +471,11 @@ module.exports = {
 
       let paymentGatewayService = getPaymentService(req.param('paymentType'), req.body.order_type);
 
-      let response = await paymentGatewayService.placeOrder(
-        authUser,
-        req.body,
-        req.allParams(),
-        {
-          paymentType: req.param('paymentType')
-        },
-        {
-          billingAddress,
-          shippingAddress
-        },
-        globalConfigs,
-        cart,
-        cartItems,
-        req.file
-      );
-
+      let response = await paymentGatewayService.placeOrder(authUser, req.body, req.allParams(), {
+        paymentType: req.param('paymentType')
+      }, {
+        billingAddress, shippingAddress
+      }, globalConfigs, cart, cartItems, req.file);
       return res.status(200).json(response);
 
     } catch (finalError) {
@@ -435,8 +483,7 @@ module.exports = {
       logger.orderLogAuth(req, finalError);
 
       return res.status(400).json({
-        message: 'There was a problem in processing the order.',
-        additionalMessage: finalError.message
+        message: 'There was a problem in processing the order.', additionalMessage: finalError.message
       });
     }
   },
@@ -476,7 +523,7 @@ module.exports = {
             FROM
               product_orders as orders
               LEFT JOIN users as changedBy ON orders.changed_by = changedBy.id
-              LEFT JOIN users as users ON users.id = orders.user_id
+              LEFT JOIN users as users ON orders.user_id = users.id
               LEFT JOIN payments as payment ON  orders.id  =   payment.order_id
               LEFT JOIN payment_addresses ON orders.shipping_address = payment_addresses.id
               LEFT JOIN areas as divArea ON divArea.id = payment_addresses.division_id
@@ -491,10 +538,10 @@ module.exports = {
       }
 
       if (req.query.payment_status) {
-        if(req.query.payment_status == PAYMENT_STATUS_PAID) {
+        // eslint-disable-next-line eqeqeq
+        if (req.query.payment_status == PAYMENT_STATUS_PAID) {
           _where += ` AND (orders.payment_status =  ${req.query.payment_status} OR orders.payment_status = ${PAYMENT_STATUS_NA}) `;
-        }
-        else{
+        } else {
           _where += ` AND orders.payment_status = ${req.query.payment_status} `;
         }
       }
@@ -526,10 +573,12 @@ module.exports = {
         let to = moment(created_at.to).format('YYYY-MM-DD HH:mm:ss');
         _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
       }
-      const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      const totalOrderRaw = await orderQuery('SELECT COUNT(*) as totalCount FROM product_orders as orders WHERE orders.deleted_at IS NULL', []);
       _where += ' GROUP BY orders.id  ORDER BY orders.created_at DESC   ';
       let totalOrder = 0;
       let orders = [];
+
       if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
         totalOrder = totalOrderRaw.rows[0].totalCount;
         _pagination.limit = _pagination.limit ? _pagination.limit : totalOrder;
@@ -555,13 +604,10 @@ module.exports = {
       console.log('error', error);
       let message = 'Error in getting all orders with pagination';
       return res.status(400).json({
-        success: false,
-        message,
-        error
+        success: false, message, error
       });
     }
-  },
-  //Method called for getting all order data
+  }, //Method called for getting all order data
   //Model models/Order.js,models/SubOrder.js,models/SuborderItem.js, models/SuborderItemVariant.js
   getAllOrder: async (req, res) => {
     try {
@@ -615,8 +661,7 @@ module.exports = {
                   .populate('variant_id')
                   .populate('product_suborder_item_id')
                   .populate('warehouse_variant_id')
-                  .populate('product_variant_id')
-                );
+                  .populate('product_variant_id'));
               });
               item.suborderItemVariants = varientitems;
             });
@@ -630,31 +675,25 @@ module.exports = {
       console.log(error);
       let message = 'Error in getting all orders with pagination';
       res.status(400).json({
-        success: false,
-        message,
-        error
+        success: false, message, error
       });
     }
-  },
-  //Method called for updating order
+  }, //Method called for updating order
   update: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
+        deletedAt: null, id: req.param('id')
       }).set(req.body);
 
       let paymentDetail = await Payment.find({
-        order_id: updatedOrder.id,
-        deletedAt: null
+        order_id: updatedOrder.id, deletedAt: null
       });
 
-      if (paymentDetail[0].payment_type === 'CashBack' && req.body.status === 12) {
+      if (paymentDetail.length > 0 && paymentDetail[0].payment_type === 'CashBack' && req.body.status === ORDER_STATUSES.canceled) {
         let returnCashbackAmount = updatedOrder.total_price;
 
         let prevCashbackDetail = await CouponLotteryCashback.findOne({
-          deletedAt: null,
-          user_id: paymentDetail[0].user_id
+          deletedAt: null, user_id: paymentDetail[0].user_id
         });
 
         await CouponLotteryCashback.updateOne({
@@ -665,47 +704,73 @@ module.exports = {
       }
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully updated status of order',
-        data: updatedOrder
+        success: true, message: 'Successfully updated status of order', data: updatedOrder
       });
     } catch (error) {
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while updating Order'
+        success: false, message: 'Error occurred while updating Order'
       });
     }
   },
 
   updatePaymentStatus: async (req, res) => {
     try {
+      let order = await Order.findOne({
+        id: req.param('id'),
+        deletedAt: null
+      });
+
+      if (order.order_type == PARTIAL_ORDER_TYPE) {
+        return res.status(200).json({
+          success: false, message: 'Use Order => Financial Transaction grid to update Partial Orders payment status.'
+        });
+      }
+
+      let _set = {
+        paid_amount: 0,
+        payment_status: req.body.payment_status,
+        changed_by: req.body.changed_by,
+        status: ORDER_STATUSES.canceled
+      };
+
+      let payment_set = {
+        approval_status: REJECTED_PAYMENT_APPROVAL_STATUS
+      };
+
+      if (req.body.payment_status == PAYMENT_STATUS_PAID) {
+        _set.paid_amount = order.total_price;
+        _set.status = ORDER_STATUSES.processing;
+
+        payment_set.approval_status = APPROVED_PAYMENT_APPROVAL_STATUS;
+      }
+
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
-      }).set(req.body);
+        id: req.param('id'),
+        deletedAt: null
+      }).set(_set);
+
+      await Payment.update({
+        order_id: req.param('id'),
+        deletedAt: null
+      }).set(payment_set);
 
       let userDetail = await User.find({
-        id: updatedOrder.user_id,
-        deletedAt: null
+        id: updatedOrder.user_id, deletedAt: null
       });
 
       let shippingAddresses = await ShippingAddress.find({
-        user_id: userDetail.id,
-        deletedAt: null
+        user_id: userDetail.id, deletedAt: null
       });
 
-      await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
+      console.log('The set are: ', payment_set, _set);
+      // await PaymentService.sendSms(userDetail[0], updatedOrder, [], shippingAddresses[0]);
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully updated payment status of order',
-        data: updatedOrder
+        success: true, message: 'Successfully updated payment status of order', data: updatedOrder
       });
-    }
-    catch (error) {
+    } catch (error) {
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while updating payment status'
+        success: false, message: 'Error occurred while updating payment status'
       });
     }
   },
@@ -713,15 +778,13 @@ module.exports = {
   deleteOrder: async (req, res) => {
     try {
       let updatedOrder = await Order.updateOne({
-        deletedAt: null,
-        id: req.param('id')
+        deletedAt: null, id: req.param('id')
       }).set({
         status: CANCELED_ORDER
       });
 
       let subOrders = await Suborder.update({
-        product_order_id: req.param('id'),
-        deletedAt: null
+        product_order_id: req.param('id'), deletedAt: null
       }).set({
         status: CANCELED_ORDER
       }).fetch();
@@ -731,21 +794,18 @@ module.exports = {
       let len = subOrders.length;
       for (let i = 0; i < len; i++) {
         let subOrderItem = await SuborderItem.find({
-          product_suborder_id: subOrders[i].id,
-          deletedAt: null
+          product_suborder_id: subOrders[i].id, deletedAt: null
         });
 
         let subItemLen = subOrderItem.length;
         for (let index = 0; index < subItemLen; index++) {
           let product = await Product.findOne({
-            id: subOrderItem[index].product_id,
-            deletedAt: null
+            id: subOrderItem[index].product_id, deletedAt: null
           });
 
           let newQuantity = product.quantity + subOrderItem[index].product_quantity;
           await Product.updateOne({
-            id: product.id,
-            deletedAt: null
+            id: product.id, deletedAt: null
           }).set({
             quantity: newQuantity
           });
@@ -753,15 +813,12 @@ module.exports = {
       }
 
       return res.status(200).json({
-        success: true,
-        message: 'successfully deleted the order.',
-        order: updatedOrder
+        success: true, message: 'successfully deleted the order.', order: updatedOrder
       });
     } catch (error) {
       console.log(error);
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while deleting the order. ', error
+        success: false, message: 'Error occurred while deleting the order. ', error
       });
     }
   },
@@ -769,30 +826,79 @@ module.exports = {
   getCancelledOrder: async (req, res) => {
     let params = req.allParams();
 
-    let _where = {};
-    _where.deletedAt = null;
-    _where.order_type = PARTIAL_ORDER_TYPE;
-    _where.status = CANCELED_ORDER;
-    _where.paid_amount = {'!=': 0};
-    if (!_.isNull(params.status) && !_.isUndefined(params.status)) {
-      _where.refund_status = parseInt(params.status);
-    }
-
     try {
       let paginate = pagination(params);
 
-      let canceledOrder = await Order.find(_where).limit(paginate.limit).skip(paginate.skip);
-      console.log('all canceled order:', canceledOrder);
+      const orderNativeQuery = Promise.promisify(Order.getDatastore().sendNativeQuery);
+
+      let rawSelect = `
+        SELECT
+            orders.*,
+            users.first_name,
+            users.last_name
+    `;
+      let fromSQL = ` FROM product_orders as orders
+        LEFT JOIN users ON users.id = orders.user_id
+      `;
+
+      let _where = `
+          WHERE
+              orders.deleted_at IS NULL AND
+              orders.order_type = ${PARTIAL_ORDER_TYPE} AND
+              orders.status = ${CANCELED_ORDER}
+       `;
+
+      if(!_.isNull(params.status) && !_.isUndefined(params.status)){
+        let refundStatus = parseInt(params.status);
+        _where += ` AND orders.refund_status =  ${refundStatus} `;
+      }
+
+      if(params.removeZeroPayment && params.removeZeroPayment === 'true'){
+        _where += ` AND orders.paid_amount !=  0 `;
+      }
+
+      if (params.orderNumber) {
+        _where += ` AND orders.id = ${params.orderNumber} `;
+      }
+
+      if (params.created_at) {
+        let created_at = JSON.parse(params.created_at);
+        let from = moment(created_at.from).format('YYYY-MM-DD 00:00:00');
+        let to = moment(created_at.to).format('YYYY-MM-DD 23:59:59');
+        _where += ` AND orders.created_at >= '${from}' AND orders.created_at <= '${to}' `;
+      }
+
+      if (params.customerName) {
+        const customerName = params.customerName.toLowerCase();
+        _where += ` AND ( (CONCAT(users.first_name," ",users.last_name)='${customerName}') OR LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
+      }
+
+      _where += ` ORDER BY orders.created_at DESC `;
+
+      console.log('_where: ', _where);
+      const totalOrderRaw = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
+
+      let canceledOrder;
+      let totalOrder;
+
+      if (totalOrderRaw && totalOrderRaw.rows && totalOrderRaw.rows.length > 0) {
+        totalOrder = totalOrderRaw.rows[0].totalCount;
+
+        paginate.limit = paginate.limit ? paginate.limit : totalOrder;
+        let limitSQL = ` LIMIT ${paginate.skip}, ${paginate.limit} `;
+
+        let rawDataResult = await orderNativeQuery(rawSelect + fromSQL + _where + limitSQL, []);
+
+        canceledOrder = rawDataResult.rows;
+      }
+
 
       return res.status(200).json({
-        success: true,
-        message: 'successfully fetched cancelled order',
-        data: canceledOrder
+        success: true, message: 'successfully fetched cancelled order', data: canceledOrder, totalOrder
       });
     } catch (error) {
       return res.status(200).json({
-        success: false,
-        message: 'Error occurred while fetching cancelled order', error
+        success: false, message: 'Error occurred while fetching cancelled order', error
       });
     }
   },
@@ -803,8 +909,7 @@ module.exports = {
       const orderId = req.param('id');
 
       let order = await Order.findOne({
-        id: orderId,
-        deletedAt: null
+        id: orderId, deletedAt: null
       });
 
       console.log('The order is', order);
@@ -818,9 +923,7 @@ module.exports = {
       }
 
       let cashBackTransactions = await Payment.find({
-        order_id: orderId,
-        payment_type: CASHBACK_PAYMENT_TYPE,
-        deletedAt: null
+        order_id: orderId, payment_type: CASHBACK_PAYMENT_TYPE, deletedAt: null
       });
 
       let cashBackAmountToRefund = 0;
@@ -830,8 +933,7 @@ module.exports = {
 
 
       let couponLotteryCashback = await CouponLotteryCashback.findOne({
-        user_id: order.user_id,
-        deletedAt: null
+        user_id: order.user_id, deletedAt: null
       });
 
       let newCashbackAmount = couponLotteryCashback.amount + cashBackAmountToRefund;
@@ -840,16 +942,14 @@ module.exports = {
         .transaction(async (db) => {
           if (cashBackAmountToRefund > 0) {
             await CouponLotteryCashback.update({
-              user_id: order.user_id,
-              deletedAt: null
+              user_id: order.user_id, deletedAt: null
             }).set({
               amount: newCashbackAmount
             }).usingConnection(db);
           }
 
           await Order.updateOne({
-            id: orderId,
-            deletedAt: null
+            id: orderId, deletedAt: null
           }).set({
             refund_status: 1
           }).usingConnection(db);
@@ -859,15 +959,83 @@ module.exports = {
       await PaymentService.sendSmsForRefund(orderId, authUser);
 
       return res.status(200).json({
-        success: true,
-        message: 'Successfully refunded.',
+        success: true, message: 'Successfully refunded.',
 
       });
     } catch (error) {
       console.log('Error occurred while refunding the order');
       return res.status(400).json({
-        success: false,
-        message: 'Error occurred while refunding the order. ',error,
+        success: false, message: 'Error occurred while refunding the order. ', error,
+      });
+    }
+  },
+
+  getAllProductsByOrderId: async (req, res) => {
+    try {
+      const ProductQuery = Promise.promisify(Product.getDatastore().sendNativeQuery);
+      let rawSelect = `
+      SELECT
+      product.offline_payment,
+      product.id,
+      suborderItems.offer_id_number,
+      suborderItems.offer_type
+       `;
+      let fromSQL = ' FROM product_orders as orders ';
+      fromSQL += ' LEFT JOIN product_suborders as suborders ON suborders.product_order_id = orders.id';
+      fromSQL += ' LEFT JOIN product_suborder_items as suborderItems ON suborderItems.product_suborder_id = suborders.id';
+      fromSQL += ' LEFT JOIN products as product ON product.id = suborderItems.product_id';
+
+      let _where = ' WHERE orders.deleted_at IS NULL AND suborders.deleted_at IS NULL AND suborderItems.deleted_at IS NULL ';
+
+      if (req.query.orderId) {
+        _where += ` AND orders.id = ${req.query.orderId}  `;
+      }
+      const rawResult = await ProductQuery(rawSelect + fromSQL + _where, []);
+
+      /** If suborder item exists in any offer then send suborder item offer payment gateway info with suborder item info. START */
+      let anonderJhorInfo = await AnonderJhor.findOne({id: 1, deletedAt: null});
+      console.log('anonderJhorInfo: ', anonderJhorInfo);
+
+      let regularOfferIds = rawResult.rows.map(item => {
+        if(item.offer_type && item.offer_type === REGULAR_OFFER_TYPE){
+          return item.offer_id_number;
+        }
+      });
+      console.log('regularOfferIds: ', regularOfferIds);
+
+      let regularOfferDetails = await Offer.find({
+        id: regularOfferIds
+      });
+      console.log('regularOfferDetails: ', regularOfferDetails);
+
+      let regularOfferDetailsByOfferId = _.groupBy(regularOfferDetails, 'id');
+      console.log('regularOfferDetailsByOfferId: ', regularOfferDetailsByOfferId);
+
+      let subOrderItems = rawResult.rows.map(item => {
+        if(item.offer_type && item.offer_type === REGULAR_OFFER_TYPE){
+          let itemOfferInfo = regularOfferDetailsByOfferId[item.offer_id_number][0];
+          item.pay_by_sslcommerz = itemOfferInfo.pay_by_sslcommerz;
+          item.pay_by_bKash = itemOfferInfo.pay_by_bKash;
+          item.pay_by_offline = itemOfferInfo.pay_by_offline;
+          item.pay_by_cashOnDelivery = itemOfferInfo.pay_by_cashOnDelivery;
+          item.offered_product = true;
+          console.log('item info: ', item.offer_id_number, regularOfferDetailsByOfferId[item.offer_id_number]);
+        } else if(item.offer_type && item.offer_type === ANONDER_JHOR_OFFER_TYPE){
+          item.pay_by_sslcommerz = anonderJhorInfo.pay_by_sslcommerz;
+          item.pay_by_bKash = anonderJhorInfo.pay_by_bKash;
+          item.pay_by_offline = anonderJhorInfo.pay_by_offline;
+          item.pay_by_cashOnDelivery = anonderJhorInfo.pay_by_cashOnDelivery;
+          item.offered_product = true;
+        }
+        return item;
+      });
+      console.log('subOrderItems: ', subOrderItems);
+      /** If suborder item exists in any offer then send suborder item offer payment gateway info with suborder item info. END */
+
+      return res.status(200).json(subOrderItems);
+    } catch (error) {
+      return res.status(400).json({
+        message: 'Failed to fetch the products!'
       });
     }
   }

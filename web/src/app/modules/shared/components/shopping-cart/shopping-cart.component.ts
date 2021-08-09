@@ -54,17 +54,18 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     //Event method for getting all the data for the page
     ngOnInit(): void {
         this.getShoppingModalInfo();
-        this.cart$ = this.store.select<any>(fromStore.getCart);
-        this.cart$.subscribe((cart) => {
-            if (cart && typeof cart.data !== 'undefined') {
-                this.cartData = cart.data;
-            } else {
-                this.cartData = null;
-            }
-        }, (err) => {
-            this.toastr.error('Unable to load cart data', 'Sorry!');
-        });
-
+        setTimeout(() => {
+            this.cart$ = this.store.select<any>(fromStore.getCart);
+            this.cart$.subscribe((cart) => {
+                if (cart && typeof cart.data !== 'undefined') {
+                    this.cartData = cart.data;
+                } else {
+                    this.cartData = null;
+                }
+            }, (err) => {
+                this.toastr.error('Unable to load cart data', 'Sorry!');
+            });
+        }, 1000);
     }
 
     ngOnDestroy(): void {
@@ -94,7 +95,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
             this.progress.start('mainLoader');
             this.cartItemService.delete(id).subscribe(result => {
                 this.store.dispatch(new fromStore.LoadCart());
-                this._notify.success('remove from cart succeeded');
+                this._notify.success('Remove from cart succeeded');
                 this.progress.complete('mainLoader');
             });
         }

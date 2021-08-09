@@ -9,6 +9,14 @@ export class FormValidatorService {
     constructor(private authService: AuthService,) {
     }
 
+    // static alphabetValidator(control) {
+    //     if (RegExp('^[a-zA-Z]+$').test(control.value)) {
+    //         return null;
+    //     } else {
+    //         return {'onlyName': true};
+    //     }
+    // }
+
     static phoneNumberValidator(control) {
         if (RegExp('(^(01){1}[3-9]{1}\\d{8})$').test(control.value)) {
             return null;

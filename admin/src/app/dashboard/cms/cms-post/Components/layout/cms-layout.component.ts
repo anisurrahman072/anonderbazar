@@ -8,6 +8,7 @@ import {Component, OnInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {CmsService} from '../../../../../services/cms.service';
 import {environment} from "../../../../../../environments/environment";
 import { CmsFeatureFooterService } from "../../../../../services/cms-feature-footer.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-layout',
@@ -15,6 +16,36 @@ import { CmsFeatureFooterService } from "../../../../../services/cms-feature-foo
     styleUrls: ['./cms-layout.component.css']
 })
 export class CmsLayoutComponent implements OnInit {
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     selectedSection: any;
     selectedSubSection: any;
     subsectionOptions: any;

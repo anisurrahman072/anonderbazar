@@ -223,6 +223,7 @@ module.exports = {
     bcrypt.compare(password, userPassword, (err, match) => {
       // eslint-disable-next-line callback-return
       if (err) {
+        // eslint-disable-next-line callback-return
         cb(err);
       }
       if (match) {

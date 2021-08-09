@@ -53,17 +53,23 @@
                                     <span *ngIf="(getSignUpFormControl('shippingFirstName').dirty || showFormError) && getSignUpFormControl('shippingFirstName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>First name is required!
                                     </span>
+                                    <span *ngIf="(getSignUpFormControl('shippingFirstName').dirty) && getSignUpFormControl('shippingFirstName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
+                                    </span>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Last Name</label>
                                 <input type="text" class="form-control" formControlName="shippingLastName"
                                        placeholder="Input Last Name">
-                                <div class="validation-feedback">
-                                    <span *ngIf="(getSignUpFormControl('shippingLastName').dirty || showFormError) && getSignUpFormControl('shippingLastName').hasError('required')">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!
-                                    </span>
-                                </div>
+<!--                                <div class="validation-feedback">-->
+<!--                                    <span *ngIf="(getSignUpFormControl('shippingLastName').dirty || showFormError) && getSignUpFormControl('shippingLastName').hasError('required')">-->
+<!--                                      <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!-->
+<!--                                    </span>-->
+<!--                                    <span *ngIf="(getSignUpFormControl('shippingLastName').dirty) && getSignUpFormControl('shippingLastName').hasError('onlyName')">-->
+<!--                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!-->
+<!--                                    </span>-->
+<!--                                </div>-->
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Phone Number</label>
@@ -191,17 +197,23 @@
                                     <span *ngIf="(getSignUpFormControl('firstName').dirty || showFormError) && getSignUpFormControl('firstName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>First name is required!
                                     </span>
+                                    <span *ngIf="(getSignUpFormControl('firstName').dirty) && getSignUpFormControl('firstName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
+                                    </span>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Last Name</label>
                                 <input type="text" class="form-control" formControlName="lastName"
                                        placeholder="Input Last Name">
-                                <div class="validation-feedback">
+                                <!--<div class="validation-feedback">
                                     <span *ngIf="(getSignUpFormControl('lastName').dirty || showFormError) && getSignUpFormControl('lastName').hasError('required')">
                                       <i class='fa fa-exclamation-circle mr-2'></i>Last name is required!
                                     </span>
-                                </div>
+                                    <span *ngIf="(getSignUpFormControl('lastName').dirty) && getSignUpFormControl('lastName').hasError('onlyName')">
+                                      <i class='fa fa-exclamation-circle mr-2'></i>Only character is allowed!
+                                    </span>
+                                </div>-->
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Phone Number</label>
@@ -431,7 +443,7 @@
                         </div>
 
                         <div [ngClass]="{'send-btn1': true, 'text-center': noShippingCharge}">
-                            <button (click)="processToPay()" class="Summarybtn"
+                            <button (click)="processToPay(illegalCartItemsWarningModal)" class="Summarybtn"
                                     style="margin-top: 10px">
                                 <a>Process to Pay</a>
                             </button>
@@ -452,7 +464,7 @@
                     <div class="payment-method-details1 mt-5">
                         <p class="font-weight-bold">Payment Method</p>
                         <mat-radio-group formControlName="paymentType">
-                            <div class="radio2">
+                            <div class="radio2" *ngIf="!isAllowedOfferPaymentGateway">
                                 <mat-radio-button
                                         *ngIf="enabledPaymentMethods[CASHBACK_PAYMENT_TYPE] && couponCashbackAmount > 0 && grantTotal <= couponCashbackAmount"
                                         value="CashBack" (click)="showOfflineForm(false)">
@@ -463,6 +475,114 @@
                                         value="Cash" (click)="showOfflineForm(false)">
                                     <i class="fa fa-money"></i>Cash On Delivery
                                 </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE] && isOfflinePayable"
+                                                  value="OfflinePay" (click)="showOfflineForm(true)">
+                                    <div class="payment-icon-container">
+                                        <img src="../../../../assets/images/payByBank.png"
+                                             style="height: auto; width: 80%;"
+                                             alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
+
+                                <!-- Show Offline payment form. START -->
+                                <div *ngIf="isShowOfflineForm" class="mb-5">
+                                    <mat-radio-group class="payment-method-radio-btn" formControlName="offlinePaymentMethods" style="display: flex">
+                                        <mat-radio-button value="cashInAdvance"
+                                                          (click)="showOfflinePaymentMethods(true, false, false, false)">
+                                            <p class="defaultParagraph">Cash In Advance</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="bankTransfer"
+                                                          (click)="showOfflinePaymentMethods(false, true, false, false)">
+                                            <p class="defaultParagraph">Bank transfer</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="bankDeposit"
+                                                          (click)="showOfflinePaymentMethods(false, false, true, false)">
+                                            <p class="defaultParagraph">Bank deposit</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="mobileTransfer"
+                                                          (click)="showOfflinePaymentMethods(false, false, false, true)">
+                                            <p class="defaultParagraph">Direct Mobile Transfer</p>
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                    <div class="validation-feedback">
+                                    <span *ngIf="!(getSignUpFormControl('offlinePaymentMethods').dirty)">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>You have to select a offline payment method must!
+                                    </span>
+                                    </div>
+                                    <div *ngIf="isShowCashInAdvanceForm">
+                                        <image-upload [max]="1" (removed)="onRemoved($event)"
+                                                      [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!ImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload cash memo image first!
+                                    </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isShowBankTransferForm">
+                                        <label>Transaction number</label>
+                                        <input type="text" class="form-control" formControlName="transactionIdForBank"
+                                               placeholder="Enter bank transaction number">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('transactionIdForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank transaction number is required!
+                                    </span>
+                                        </div>
+                                        <label>Bank name</label>
+                                        <input type="text" class="form-control" formControlName="bankName"
+                                               placeholder="Enter Bank Name">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('bankName').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank name is required!
+                                    </span>
+                                        </div>
+                                        <label>Branch name</label>
+                                        <input type="text" class="form-control" formControlName="branchName"
+                                               placeholder="Enter Branch name">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('branchName').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank branch name is required!
+                                    </span>
+                                        </div>
+                                        <label>Account Number</label>
+                                        <input type="number" class="form-control" formControlName="accountNumberForBank"
+                                               placeholder="Enter Account Number">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('accountNumberForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Account number is required!
+                                    </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isBankDeposit">
+                                        <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)"
+                                                      [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop picture of bank deposit slip"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!BankDepositImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload bank deposit slip image first!
+                                    </span>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="isMobileTransfer">
+                                        <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)"
+                                                      [beforeUpload]="onBeforeUploadMobileTransferSS" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop screenshot of payment page"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!mobileTransferImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload screenshot of payment first!
+                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Show Offline payment form. END -->
+
                                 <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]"
                                                   value="SSLCommerce"
                                                   [checked]="hideCashonDelivery"  (click)="showOfflineForm(false)">
@@ -479,13 +599,149 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE] && isOfflinePayable"
-                                                  value="OfflinePay" (click)="showOfflineForm(true)">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
                                     <div class="payment-icon-container">
-                                        <p class="defaultParagraph">Offline payment</p>
+                                        <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
+                                             alt="nagad"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment" value="Nagad">
+                            </div>
+
+                            <div class="radio2" *ngIf="isAllowedOfferPaymentGateway">
+                                <mat-radio-button
+                                        *ngIf="!hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]
+                                        && isAllowedCashInDeliveryInOfferedProductPurchase"
+                                        value="Cash" (click)="showOfflineForm(false)">
+                                    <i class="fa fa-money"></i>Cash On Delivery
+                                </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods[OFFLINE_PAYMENT_TYPE]
+                                                        && isAllowedOfflineInOfferedProductPurchase"
+                                                  value="OfflinePay" (click)="showOfflineForm(true)">
+                                    <div class="payment-icon-container">
+                                        <img src="../../../../assets/images/payByBank.png"
+                                             style="height: auto; width: 80%;"
+                                             alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
+
+                                <!-- Show Offline payment form. START -->
+                                <div *ngIf="isShowOfflineForm" class="mb-5">
+                                    <mat-radio-group class="payment-method-radio-btn" formControlName="offlinePaymentMethods" style="display: flex">
+                                        <mat-radio-button value="cashInAdvance"
+                                                          (click)="showOfflinePaymentMethods(true, false, false, false)">
+                                            <p class="defaultParagraph">Cash In Advance</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="bankTransfer"
+                                                          (click)="showOfflinePaymentMethods(false, true, false, false)">
+                                            <p class="defaultParagraph">Bank transfer</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="bankDeposit"
+                                                          (click)="showOfflinePaymentMethods(false, false, true, false)">
+                                            <p class="defaultParagraph">Bank deposit</p>
+                                        </mat-radio-button>
+                                        <mat-radio-button value="mobileTransfer"
+                                                          (click)="showOfflinePaymentMethods(false, false, false, true)">
+                                            <p class="defaultParagraph">Direct Mobile Transfer</p>
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                    <div class="validation-feedback">
+                                    <span *ngIf="!(getSignUpFormControl('offlinePaymentMethods').dirty)">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>You have to select a offline payment method must!
+                                    </span>
+                                    </div>
+                                    <div *ngIf="isShowCashInAdvanceForm">
+                                        <image-upload [max]="1" (removed)="onRemoved($event)"
+                                                      [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!ImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload cash memo image first!
+                                    </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isShowBankTransferForm">
+                                        <label>Transaction number</label>
+                                        <input type="text" class="form-control" formControlName="transactionIdForBank"
+                                               placeholder="Enter bank transaction number">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('transactionIdForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank transaction number is required!
+                                    </span>
+                                        </div>
+                                        <label>Bank name</label>
+                                        <input type="text" class="form-control" formControlName="bankName"
+                                               placeholder="Enter Bank Name">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('bankName').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank name is required!
+                                    </span>
+                                        </div>
+                                        <label>Branch name</label>
+                                        <input type="text" class="form-control" formControlName="branchName"
+                                               placeholder="Enter Branch name">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('branchName').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Bank branch name is required!
+                                    </span>
+                                        </div>
+                                        <label>Account Number</label>
+                                        <input type="number" class="form-control" formControlName="accountNumberForBank"
+                                               placeholder="Enter Account Number">
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!getSignUpFormControl('accountNumberForBank').value">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Account number is required!
+                                    </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isBankDeposit">
+                                        <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)"
+                                                      [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop picture of bank deposit slip"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!BankDepositImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload bank deposit slip image first!
+                                    </span>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="isMobileTransfer">
+                                        <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)"
+                                                      [beforeUpload]="onBeforeUploadMobileTransferSS" buttonCaption="Select image"
+                                                      dropBoxMessage="Drop screenshot of payment page"
+                                                      clearButtonCaption="clear">
+                                        </image-upload>
+                                        <div class="validation-feedback">
+                                    <span *ngIf="!mobileTransferImageFile">
+                                      <i class='fa fa-exclamation-circle mr-2 warning-icon'></i>Upload screenshot of payment first!
+                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Show Offline payment form. END -->
+
+                                <mat-radio-button *ngIf="enabledPaymentMethods[SSL_COMMERZ_PAYMENT_TYPE]
+                                                        && isAllowedSslCommerzInOfferedProductPurchase"
+                                                  value="SSLCommerce"
+                                                  [checked]="hideCashonDelivery"  (click)="showOfflineForm(false)">
+                                    <div class="payment-icon-container">
+                                        <img src="../../../../assets/images/final_sslcommerz.webp"
+                                             style="height: auto; width: 80%;"
+                                             alt="SSLcommerce"/>
+                                    </div>
+                                </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods[BKASH_PAYMENT_TYPE] && showBkashPayment
+                                                          && isAllowedBkashInOfferedProductPurchase"
+                                                  value="bKash" (click)="showOfflineForm(false)">
+                                    <div class="payment-icon-container">
+                                        <img src="../../../../assets/images/bkash.gif" style="height: auto; width: 70%;"
+                                             alt="bKash"/>
+                                    </div>
+                                </mat-radio-button>
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>
@@ -493,105 +749,6 @@
                                 </mat-radio-button>
                             </div>
                         </mat-radio-group>
-                    </div>
-                    <div *ngIf="isShowOfflineForm">
-                        <mat-radio-group class="payment-method-radio-btn" formControlName="offlinePaymentMethods" style="display: flex">
-                            <mat-radio-button value="cashInAdvance"
-                                              (click)="showOfflinePaymentMethods(true, false, false, false)">
-                                <p class="defaultParagraph">Cash In Advance</p>
-                            </mat-radio-button>
-                            <mat-radio-button value="bankTransfer"
-                                              (click)="showOfflinePaymentMethods(false, true, false, false)">
-                                <p class="defaultParagraph">Bank transfer</p>
-                            </mat-radio-button>
-                            <mat-radio-button value="bankDeposit"
-                                              (click)="showOfflinePaymentMethods(false, false, true, false)">
-                                <p class="defaultParagraph">Bank deposit</p>
-                            </mat-radio-button>
-                            <mat-radio-button value="mobileTransfer"
-                                              (click)="showOfflinePaymentMethods(false, false, false, true)">
-                                <p class="defaultParagraph">Direct Mobile Transfer</p>
-                            </mat-radio-button>
-                        </mat-radio-group>
-                        <div class="validation-feedback">
-                                    <span *ngIf="!(getSignUpFormControl('offlinePaymentMethods').dirty)">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>You have to select a offline payment method must!
-                                    </span>
-                        </div>
-                        <div *ngIf="isShowCashInAdvanceForm">
-                            <image-upload [max]="1" (removed)="onRemoved($event)"
-                                          id="imageUploadSection"
-                                          [beforeUpload]="onBeforeUpload" buttonCaption="Select image"
-                                          dropBoxMessage="Drop picture of cash memo provided by Anonder Bazar authority!"
-                                          clearButtonCaption="clear">
-                            </image-upload>
-                            <div class="validation-feedback">
-                                    <span *ngIf="!ImageFile">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload cash memo image first!
-                                    </span>
-                            </div>
-                        </div>
-                        <div *ngIf="isShowBankTransferForm">
-                            <label>Transaction number</label>
-                            <input type="text" class="form-control" formControlName="transactionIdForBank"
-                                   placeholder="Enter bank transaction number">
-                            <div class="validation-feedback">
-                                    <span *ngIf="!getSignUpFormControl('transactionIdForBank').value">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank transaction number is required!
-                                    </span>
-                            </div>
-                            <label>Bank name</label>
-                            <input type="text" class="form-control" formControlName="bankName"
-                                   placeholder="Enter Bank Name">
-                            <div class="validation-feedback">
-                                    <span *ngIf="!getSignUpFormControl('bankName').value">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank name is required!
-                                    </span>
-                            </div>
-                            <label>Branch name</label>
-                            <input type="text" class="form-control" formControlName="branchName"
-                                   placeholder="Enter Branch name">
-                            <div class="validation-feedback">
-                                    <span *ngIf="!getSignUpFormControl('branchName').value">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Bank branch name is required!
-                                    </span>
-                            </div>
-                            <label>Account Number</label>
-                            <input type="number" class="form-control" formControlName="accountNumberForBank"
-                                   placeholder="Enter Account Number">
-                            <div class="validation-feedback">
-                                    <span *ngIf="!getSignUpFormControl('accountNumberForBank').value">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Account number is required!
-                                    </span>
-                            </div>
-                        </div>
-                        <div *ngIf="isBankDeposit">
-                            <image-upload [max]="1" (removed)="onRemovedBankDepositSlip($event)"
-                                          id="bankDepositImageUploadSection"
-                                          [beforeUpload]="onBeforeUploadBankaDepositSlip" buttonCaption="Select image"
-                                          dropBoxMessage="Drop picture of bank deposit slip"
-                                          clearButtonCaption="clear">
-                            </image-upload>
-                            <div class="validation-feedback">
-                                    <span *ngIf="!BankDepositImageFile">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload bank deposit slip image first!
-                                    </span>
-                            </div>
-                        </div>
-
-                        <div *ngIf="isMobileTransfer">
-                            <image-upload [max]="1" (removed)="onRemovedMobileTransferSS($event)"
-                                          id="mobileTransferImageUploadSection"
-                                          [beforeUpload]="onBeforeUploadMobileTransferSS" buttonCaption="Select image"
-                                          dropBoxMessage="Drop screenshot of payment page"
-                                          clearButtonCaption="clear">
-                            </image-upload>
-                            <div class="validation-feedback">
-                                    <span *ngIf="!mobileTransferImageFile">
-                                      <i class='fa fa-exclamation-circle mr-2'></i>Upload screenshot of payment first!
-                                    </span>
-                            </div>
-                        </div>
                     </div>
 
 
@@ -678,6 +835,13 @@
         </div>
     </div>
 </section>
+
+<ng-template #illegalCartItemsWarningModal>
+    <div class="form-card">
+        <img src="/assets/images/warning.png" style="display: block; height: 50px; margin: auto;">
+        <p style="text-align: center; margin-top: 10px; font-size: 20px;">You can't purchase different offer products 'or' an offer product with a regular product in a single cart.</p>
+    </div>
+</ng-template>
 
 <ng-template #bKashWalletModalTemplate>
     <div class="modal-header">

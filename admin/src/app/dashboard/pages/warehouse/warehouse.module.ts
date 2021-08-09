@@ -9,6 +9,7 @@ import {WarehouseComponent} from './warehouse/warehouse.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FileUploadModule} from 'ng2-file-upload';
 import {UiModule} from "../../shared/ui.module";
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import {UiModule} from "../../shared/ui.module";
         FileUploadModule,
         ReactiveFormsModule,
         WarehouseRoutingModule,
-        UiModule
+        UiModule,
+        CKEditorModule
     ],
     declarations: [
         WarehouseComponent,

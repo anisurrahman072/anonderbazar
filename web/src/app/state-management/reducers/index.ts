@@ -3,20 +3,24 @@ import * as fromCart from './cart.reducer';
 import * as fromFavouriteProduct from './favourite-product.reducer';
 import * as fromCompare from './compare.reducer';
 import * as fromCurrentUser from './current-user.reducer';
+import * as fromOffer from './offer.reducer'
 
 
 export interface HomeState {
     cart: fromCart.CartState,
     favouriteProduct: fromFavouriteProduct.FavouriteProductState,
     compare: fromCompare.CompareState,
-    currentUser: fromCurrentUser.CurrentUserState
+    currentUser: fromCurrentUser.CurrentUserState,
+    offer: fromOffer.OfferState,
 }
 
 export const reducers: ActionReducerMap<HomeState> = {
     currentUser: fromCurrentUser.reducer,
     cart: fromCart.reducer,
     favouriteProduct: fromFavouriteProduct.reducer,
-    compare: fromCompare.reducer
+    compare: fromCompare.reducer,
+    offer: fromOffer.reducer
+
 };
 
 export const getHomeState = createFeatureSelector<HomeState>('home');
@@ -34,6 +38,13 @@ export const getCurrentUserState = createSelector(getHomeState, (state: HomeStat
 export const getCurrentUser = createSelector(getCurrentUserState, fromCurrentUser.getCurrentUser);
 export const getCurrentUserLoaded = createSelector(getCurrentUserState, fromCurrentUser.getCurrentUserLoaded);
 export const getCurrentUserLoading = createSelector(getCurrentUserState, fromCurrentUser.getCurrentUserLoading);
+
+// offer state
+export const getOfferState = createSelector(getHomeState, (state: HomeState) => state.offer);
+
+export const getOffer = createSelector(getOfferState, fromOffer.getOffer);
+export const getOfferLoaded = createSelector(getOfferState, fromOffer.getOfferLoaded);
+export const getOfferLoading = createSelector(getOfferState, fromOffer.getOfferLoading);
 
 
 //cart state

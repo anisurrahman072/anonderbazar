@@ -1,80 +1,214 @@
 <section>
-    <nz-card class="card-height" nzTitle="Canceled Order">
-        <nz-table #nzTable
-                  (nzPageIndexChange)="getPageData($event)"
-                  [(nzPageIndex)]="page"
-                  [(nzPageSize)]="limit"
-                  [nzData]="cancelledOrders"
-                  [nzFrontPagination]="false"
-                  [nzLoading]="_isSpinning"
-                  [nzTotal]="total"
-                  [nzShowSizeChanger]="true"
-        >
-            <thead>
-            <tr>
-                <th>
-                    <span> Order </span>
-                </th>
-                <th>
-                    <span> Date </span>
-                </th>
-                <th>
-                    <span>Customer</span>
-                </th>
-                <th>
-                    <span>Quantity</span>
-                </th>
-                <th>
-                    <span>Total amount</span>
-                </th>
-                <th>
-                    <span>Paid amount</span>
-                </th>
-                <th>
-                    <span>Refund status</span>
-                </th>
-            </tr>
-            <tr>
-                <th> </th>
-                <th ></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>
-                    <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
-                               nzAllowClear (ngModelChange)="page = 1; getPageData();"
-                               [nzPlaceHolder]="'Select Status'"
-                               [nzNotFoundContent]="'Not found'">
-                        <nz-option *ngFor="let option of options" [nzLabel]="option.label"
-                                   [nzValue]="option.value">
-                        </nz-option>
-                    </nz-select>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let data of nzTable.data">
-                <td>
-                    {{data.id}}
-                </td>
-                <td style="width: 220px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                <td style="width: 220px;">{{data.full_name}}</td>
-                <td style="width: 100px;">{{data.total_quantity}}</td>
-                <td style="width: 100px;">{{data.total_price}}</td>
-                <td style="width: 100px;">{{data.paid_amount}}</td>
-                <td style="width: 200px;">
-                    <nz-select style="width: 170px;" [(ngModel)]="data.refund_status"
-                               nzAllowClear (ngModelChange)="refundCancelOrder($event, data.id, data.refund_status);"
-                               [nzPlaceHolder]="'Select Status'"
-                               [nzNotFoundContent]="'Not found'">
-                        <nz-option *ngFor="let option of options" [nzLabel]="option.label"
-                                   [nzValue]="option.value">
-                        </nz-option>
-                    </nz-select>
-                </td>
-            </tr>
-            </tbody>
-        </nz-table>
+    <nz-card class="card-height" nzTitle="Canceled Order" [nzExtra]="extra">
+        <ng-template #extra>
+            <label nz-checkbox [(ngModel)]="remove_zero_payment" (click)="page = 1; getPageData()">Remove zero payment amount</label>
+
+            <button nz-button [nzType]="'primary'" (click)='showCancelOrdersBalkModal()'>
+                <i class="anticon anticon-download"></i><span> Download Cancel Orders as Bulk </span>
+            </button>&nbsp;
+        </ng-template>
+        <div style="overflow-x: scroll;">
+            <nz-table #nzTable
+                      (nzPageIndexChange)="getPageData($event)"
+                      [(nzPageIndex)]="page"
+                      [(nzPageSize)]="limit"
+                      [nzData]="cancelledOrders"
+                      [nzFrontPagination]="false"
+                      [nzLoading]="_isSpinning"
+                      [nzTotal]="total"
+                      [nzShowSizeChanger]="true"
+            >
+                <thead>
+                <tr>
+                    <th nz-th [nzWidth]="'100px'">
+                        <span> Order </span>
+                    </th>
+                    <th nz-th [nzWidth]="'230px'">
+                        <span> Date </span>
+                    </th>
+                    <th nz-th [nzWidth]="'230px'">
+                        <span>Customer</span>
+                    </th>
+                    <th nz-th [nzWidth]="'100px'">
+                        <span>Quantity</span>
+                    </th>
+                    <th nz-th [nzWidth]="'100px'">
+                        <span>Total amount</span>
+                    </th>
+                    <th nz-th [nzWidth]="'100px'">
+                        <span>Paid amount</span>
+                    </th>
+                    <th nz-th [nzWidth]="'150px'">
+                        <span>Refund status</span>
+                    </th>
+                    <th nz-th [nzWidth]="'100px'">
+                        <span>Make Payment</span>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
+                               (input)=" page = 1; getPageData(); ">
+                    </th>
+                    <th>
+                        <nz-date-picker
+                                nzShowTime
+                                nzFormat="yyyy-MM-dd 00:00:00"
+                                [(ngModel)]="searchStartDate"
+                                nzPlaceHolder="Start"
+                                (ngModelChange)="page = 1; getPageData();">
+
+                        </nz-date-picker>
+                        <nz-date-picker
+                                nzShowTime
+                                nzFormat="yyyy-MM-dd 23:59:59"
+                                [(ngModel)]="searchEndDate"
+                                nzPlaceHolder="End"
+                                (ngModelChange)="page = 1; getPageData();">
+                        </nz-date-picker>
+                    </th>
+                    <th>
+                        <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
+                               placeholder="Customer Name" (input)=" page = 1; getPageData(); ">
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>
+                        <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
+                                   nzAllowClear (ngModelChange)="page = 1; getPageData();"
+                                   [nzPlaceHolder]="'Select Status'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of nzTable.data">
+                    <td>
+                        {{data.id}}
+                    </td>
+                    <td>{{data.created_at|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td>{{data.first_name}} {{data.last_name}}</td>
+                    <td>{{data.total_quantity}}</td>
+                    <td>{{data.total_price}}</td>
+                    <td>{{data.paid_amount}}</td>
+                    <td *ngIf="isAllowedToUpdateRefundStatus">
+                        <nz-select [(ngModel)]="data.refund_status"
+                                   nzAllowClear (ngModelChange)="refundCancelOrder($event, data.id, data.refund_status);"
+                                   [nzPlaceHolder]="'Select Status'"
+                                   [nzNotFoundContent]="'Not found'">
+                            <nz-option *ngFor="let option of options" [nzLabel]="option.label"
+                                       [nzValue]="option.value">
+                            </nz-option>
+                        </nz-select>
+                    </td>
+                    <td *ngIf="!isAllowedToUpdateRefundStatus">{{data.refund_status | refundStatus}}</td>
+
+                    <!-- Make Payment -->
+                    <td>
+                        <button (click)="showMakePaymentModal(data)" nz-button
+                                [nzSize]="'default'">
+                            <i class="fa fa-money"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </nz-table>
+        </div>
     </nz-card>
 </section>
+
+<!-- Make payment modal -->
+<nz-modal [nzFooter]="null"
+          nzWidth="70%"
+          [nzVisible]="isMakePaymentModalVisible"
+          [nzTitle]="'Pay due amount & make order processing'"
+          [nzContent]="modalMakePayment"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalMakePayment>
+        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+            <div class="row">
+                <div class="col-md-12 ">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="7">
+                            <label> Due Amount </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <input nz-input type="number" [readOnly]="true" [(ngModel)]="currentOrderDueAmount" formControlName="dueAmount" [placeholder]="'Enter Due Amount'">
+
+                            <div *ngIf="getFormControl('dueAmount').dirty && getFormControl('dueAmount').hasError('required')">
+                                <span class="validation-error"> Name is required! </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>&nbsp;
+
+                <div class="col-md-12">
+                    <div nz-row class="form-row">
+                        <div nz-col [nzSpan]="7">
+                            <label> Money Receipt </label>
+                        </div>
+                        <div nz-col [nzSpan]="12">
+                            <image-upload #ImageUploadComponent [max]="5"
+                                          buttonCaption="Select picture"
+                                          dropBoxMessage="Drop Picture here"
+                                          clearButtonCaption="remove"
+                                          (removed)="onRemovedFront($event)"
+                                          [uploadedFiles]="ImageFrontFile" [beforeUpload]="onBeforeUploadFront">
+                            </image-upload>
+                        </div>
+                    </div>
+                </div>
+            </div>&nbsp;
+            <div nz-row>
+                <div nz-col [nzOffset]="7" [nzSpan]="12">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="validateForm.invalid || submittingMakePayment">
+                        Make Payment
+                    </button>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+</nz-modal>
+
+
+<nz-modal [nzFooter]="null"
+          nzWidth="60%"
+          [nzVisible]="isCancelOrdersBulkVisible"
+          [nzTitle]="'Download cancel orders as bulk'"
+          [nzContent]="modalCancelOrdersBulkContent"
+          (nzOnCancel)="handleCancel($event)"
+          (nzOnOk)="handleOk($event)"
+>
+    <ng-template #modalCancelOrdersBulkContent>
+        <div    nz-row>
+            <div    nz-col [nzSpan]="3">
+                <label> Enter Date </label>
+            </div>
+            <div nz-col [nzSpan]="15">
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  00:00:00"
+                        [(ngModel)]="searchStartDateOrdersBulk"
+                        nzPlaceHolder="Start date">
+                </nz-date-picker>&nbsp;
+                <nz-date-picker
+                        nzShowTime
+                        nzFormat="yyyy-MM-dd  23:59:59"
+                        [(ngModel)]="searchEndDateOrdersBulk"
+                        nzPlaceHolder="End date">
+                </nz-date-picker>
+            </div>
+            <div nz-col [nzSpan]="1">
+                <button nz-col nz-button [nzType]="'primary'" [disabled]="!searchStartDateOrdersBulk || !searchEndDateOrdersBulk" (click)="onSubmitOrdersBulkDownload()">Download Bulk</button>
+            </div>
+        </div>
+    </ng-template>
+</nz-modal>

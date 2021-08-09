@@ -21,8 +21,8 @@ module.exports = {
 
     const cart = cartItem.cart_id;
 
-    console.log('req.token.userInfo', req.token.userInfo);
-    console.log('cartItem', cartItem);
+    /*console.log('req.token.userInfo', req.token.userInfo);*/
+    console.log('cartItem: in destroy', cartItem);
 
     if (!isResourceOwner(req.token.userInfo, cart)) {
       return res.forbidden();
@@ -144,9 +144,6 @@ module.exports = {
   //Method called for creating cart item data
   //Model models/CartItem.js
   create: async (req, res) => {
-
-    console.log(req.body);
-
     if (!req.body.cart_id || !req.body.product_id) {
       return res.badRequest('Invalid data Provided');
     }
@@ -179,11 +176,80 @@ module.exports = {
         return res.badRequest('Product stock is not sufficient enough.');
       }
 */
+      let offeredProducts = await OfferService.getAllOfferedProducts();
+
+      let previousCartItems = await CartItem.find({
+        cart_id: req.body.cart_id,
+        deletedAt: null
+      }).populate('product_id');
+
+      let offerIdNumber;
+      let offerType;
+
+      for(let i=0; i < previousCartItems.length; i++){
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: previousCartItems[i].product_id.id,
+          type_id: previousCartItems[i].product_id.type_id,
+          category_id: previousCartItems[i].product_id.category_id,
+          subcategory_id: previousCartItems[i].product_id.subcategory_id,
+          brand_id: previousCartItems[i].product_id.brand_id,
+          warehouse_id: previousCartItems[i].product_id.warehouse_id
+        }, offeredProducts);
+
+        console.log('firssssttt: ', i, offer_id_number, offer_type, previousCartItems[i]);
+
+        if(i > 0){
+          if(offerIdNumber !== offer_id_number || offerType !== offer_type){
+            console.log('Asessse111');
+            return res.status(400).json({
+              success: false,
+              code: 'CartItemNotAllowed',
+              message: 'Different offer products or an offer product with regular product can\'t be added together in your cart!'
+            });
+          }
+        }
+
+        offerIdNumber = offer_id_number;
+        offerType = offer_type;
+      }
+
+      let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+        id: product.id,
+        type_id: product.type_id,
+        category_id: product.category_id,
+        subcategory_id: product.subcategory_id,
+        brand_id: product.brand_id,
+        warehouse_id: product.warehouse_id
+      }, offeredProducts);
+
+      if(previousCartItems && previousCartItems.length > 0 && (offerIdNumber !== offer_id_number || offerType !== offer_type)) {
+        console.log('Asessse222', offerIdNumber, offerType, offer_id_number, offer_type);
+        return res.status(400).json({
+          success: false,
+          code: 'CartItemNotAllowed',
+          message: 'Different offer products or an offer product with regular product can\'t be added together in your cart!'
+        });
+      }
+
+      let offerInfo = req.body.offerInfo;
 
       let productUnitPrice = product.price;
-      if (product.promotion) {
-        productUnitPrice = product.promo_price;
+
+      /** Add additional price of product variants with product unit price */
+      if(req.body.cartItemVariants && req.body.cartItemVariants !== '[]'){
+        productUnitPrice += await PaymentService.calculateItemVariantPrice(req.body.cartItemVariants);
       }
+      console.log('After adding all additional variant price, unit price is: ', productUnitPrice);
+      /** END */
+
+      if (offerInfo) {
+        if(offerInfo.calculation_type === 'absolute') {
+          productUnitPrice =  productUnitPrice - offerInfo.discount_amount;
+        }else {
+          productUnitPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerInfo.discount_amount / 100.0)));
+        }
+      }
+
 
       let cartItems = await CartItem.find({
         cart_id: req.body.cart_id,
@@ -192,8 +258,10 @@ module.exports = {
       });
 
 
-      let selectedCartItem = null;
+      let selectedCartItem = null;  // selectedCartItem will carry the similar cart item from CART_ITEMS table for this customer.
       let cartItemVariantsLength = 0;
+
+      /** If customer given current item is in CART_ITEMS table then set value for selectedCartItem  */
       if (cartItems && cartItems.length > 0) {
 
         if (req.body.cartItemVariants && req.body.cartItemVariants !== '[]') {
@@ -219,6 +287,8 @@ module.exports = {
           selectedCartItem = cartItems[0];
         }
       }
+      /** END */
+
       let cartItem = null;
       await sails.getDatastore()
         .transaction(async (db) => {
@@ -255,6 +325,8 @@ module.exports = {
               }
             }
           }
+
+          /** fetching all the product existing in the cartItem table of a perticula user */
           let allCartItems = await CartItem.find({cart_id: cart.id, deletedAt: null}).usingConnection(db);
           let totalPrice = 0;
           let totalQty = 0;
@@ -271,7 +343,8 @@ module.exports = {
             'total_price': totalPrice,
             'total_quantity': totalQty,
           };
-          console.log('cartItem', cartItem);
+          console.log('cartItem: in create: for update operation', cartItem);
+          console.log('cartItem: in create: for update operation: cartPayLoad', cartPayload);
           await Cart.update({id: cartItem.cart_id}).set(cartPayload)
             .usingConnection(db);
         });

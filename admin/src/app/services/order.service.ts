@@ -74,10 +74,19 @@ export class OrderService {
         return this.http.post(`${this.EndPoint2}/generateMissingOrders`, data);
     }
 
-    getCancelledOrder(page: number = 1, limit: number = 20, status: number): Observable<any>{
-        let _url = `${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}`;
-        if(status == 0 || status == 1){
-            _url += `&status=${status}`;
+    getCancelledOrder(page: number = 1, limit: number = 20, searchValue): Observable<any>{
+        let _url = `${this.EndPoint}/getCancelledOrder?page=${page}&limit=${limit}&created_at= ${searchValue.date}`;
+        if(searchValue.status == 0 || searchValue.status == 1){
+            _url += `&status=${searchValue.status}`;
+        }
+        if(searchValue.removeZeroPayment){
+            _url += `&removeZeroPayment=true`;
+        }
+        if(searchValue.orderIdSearchValue){
+            _url += `&orderNumber=${searchValue.orderIdSearchValue}`
+        }
+        if(searchValue.customerName){
+            _url += `&customerName=${searchValue.customerName}`;
         }
         return this.http.get(_url);
     }
@@ -86,7 +95,15 @@ export class OrderService {
         return this.http.put(`${this.EndPoint}/refundCancelOrder/${orderId}`, {status});
     }
 
-    getOrdersByDate(data): Observable<any>{
-        return this.http.get(`${this.EndPoint}/getOrdersByDate?created_at= ${data.date}`);
+    getOrdersByDate(data, downloadCanceledOrderCsv = false): Observable<any>{
+        let _where = `${this.EndPoint}/getOrdersByDate?created_at= ${data.date}`;
+        if(downloadCanceledOrderCsv){
+            _where += `&downloadCanceledOrderCsv=true`
+        }
+        return this.http.get(_where);
+    }
+
+    getOrderInvoiceData(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getOrderInvoiceData?orderId=${orderId}`);
     }
 }

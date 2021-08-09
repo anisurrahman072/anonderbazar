@@ -5,7 +5,8 @@
           [nzTitle]="'Edit Carousel'"
           [nzContent]="editmodalContent"
           (nzOnCancel)="handleModalCancel($event)"
-          (nzOnOk)="handleModalOk($event)">
+          (nzOnOk)="handleModalOk($event)"
+          [nzWidth]="1200" >
     <ng-template #editmodalContent>
         <div class="spinning">
             <nz-spin [nzSpinning]="_isSpinning">
@@ -58,14 +59,11 @@
                         </div>
                         <div nz-col [nzSpan]="12">
 
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false "
-                                      debounce="500 ">
-
-                            </ckeditor>
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                             <div *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <br>
@@ -93,6 +91,7 @@
 <section>
     <nz-card class="card-height" >
         <nz-table #nzTable
+                  nzShowQuickJumper
                   [nzData]="cmsPostData"
                   [nzLoading]="_isSpinning"
                   nzShowQuickJumper

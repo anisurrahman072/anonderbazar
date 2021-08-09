@@ -1,4 +1,5 @@
-<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Header'" [nzContent]="editmodalContent" (nzOnCancel)="handleModalCancel($event)"
+<nz-modal [nzFooter]="null" [nzVisible]="isEditModalVisible" [nzTitle]="'Edit Header'"
+          [nzWidth]="1200" [nzContent]="editmodalContent" (nzOnCancel)="handleModalCancel($event)"
     (nzOnOk)="handleModalOk($event)">
     <ng-template #editmodalContent>
         <div class="spinning">
@@ -82,9 +83,10 @@
                         </div>
 
                         <div nz-col [nzSpan]="12"      >
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
+                            <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false " debounce="500 ">
 
-                            </ckeditor>
+                            </ckeditor>-->
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
 
                             <div    *ngIf="getEditFormControl('description').dirty&&getEditFormControl('description').hasError('required')">
                                 Please input description !
@@ -92,9 +94,6 @@
                         </div>
                     </div>
                     <!--description-->
-
-
-
 
 
                     <div    nz-row>

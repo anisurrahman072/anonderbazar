@@ -19,6 +19,10 @@ export class PaymentService {
             ;
     }
 
+    changeApprovalStatus(paymentId, orderId, status): Observable<any> {
+        return this.http.get(this.EndPoint + `/changeApprovalStatus?paymentId=${paymentId}&status=${status}&orderId=${orderId}`);
+    }
+
     getAllPayment(page: number,
                   limit: number,
                   nameSearchValue: string,
@@ -31,6 +35,8 @@ export class PaymentService {
                   dateSearchValue: string,
                   statusSearchValue: string,
                   receiver_id: number,
+                  approvalStatusSearchValue:  number,
+                  orderType: number,
                   sortKey: string,
                   sortValue:string): Observable<any> {
 
@@ -45,6 +51,8 @@ export class PaymentService {
             }&paymentAmountSearchValue=${paymentAmountSearchValue
             }&dateSearchValue=${dateSearchValue
             }&statusSearchValue=${statusSearchValue
+            }&approvalStatusSearchValue=${approvalStatusSearchValue
+            }&orderType=${orderType
             }&receiver_id=${receiver_id
             }&sortKey=${sortKey
             }&sortValue=${sortValue}`
@@ -85,5 +93,9 @@ export class PaymentService {
     getByOrderId(id): Observable<any> {
         return this.http.get(this.EndPoint + '/?order_id=' + id)
             ;
+    }
+
+    makeAdminPayment(data): Observable<any> {
+        return this.http.post(this.EndPoint2 + '/makeAdminPayment', data);
     }
 }

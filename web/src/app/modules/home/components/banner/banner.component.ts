@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CmsService} from '../../../../services';
 import {AppSettings} from "../../../../config/app.config";
 import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
 import {NgxCarousel} from 'ngx-carousel';
@@ -23,9 +22,8 @@ export class BannerComponent implements OnInit {
     IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     IMAGE_EXT = ''; //GLOBAL_CONFIGS.bannerImageExtension;
     IMAGE_LIST_ENDPOINT = AppSettings.IMAGE_LIST_ENDPOINT;
-    IMAGE_EXT_CAROUSEL = GLOBAL_CONFIGS.productImageExtension;
 
-    constructor(private cmsService: CmsService) {
+    constructor() {
     }
 
     //Event method for getting all the data for the page
@@ -74,8 +72,7 @@ export class BannerComponent implements OnInit {
 
         if(!(___.isUndefined(this.carouselOffers) && ___.isEmpty(this.carouselOffers))){
             this.carouselOffers = this.carouselOffers.filter(offer => {
-                /*return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)) && offer.data_value[0].showInCarousel === "true");*/
-                return ((!___.isEmpty(offer.data_value[0].products) || !___.isEmpty(offer.data_value[0].offers)));
+                return ((!___.isUndefined(offer.image)) && (!___.isUndefined(offer.image.small_image)) && offer.showInCarousel === true);
             }).slice(0,3);
         }
 

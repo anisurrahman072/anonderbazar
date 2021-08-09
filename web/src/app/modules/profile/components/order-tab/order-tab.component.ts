@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {MatPaginator} from "@angular/material";
@@ -8,7 +8,7 @@ import {AppSettings} from "../../../../config/app.config";
 import {PartialPaymentModalService} from "../../../../services/ui/partial-payment-modal.service";
 import * as moment from 'moment';
 import {forkJoin} from "rxjs/observable/forkJoin";
-import {ORDER_STATUSES, PAYMENT_STATUS} from "../../../../../environments/global_config";
+import {ORDER_STATUSES, PAYMENT_STATUS, ORDER_TYPE} from "../../../../../environments/global_config";
 import {timer} from 'rxjs/observable/timer';
 import {Router} from "@angular/router";
 import {NotificationsService} from "angular2-notifications";
@@ -37,6 +37,8 @@ export class OrderTabComponent implements OnInit {
     PAYMENT_STATUS: any = PAYMENT_STATUS;
     isShownConfirm: boolean = false;
 
+    orderStatus;
+
     /*
     * constructor for OrderTabComponent
     */
@@ -49,6 +51,7 @@ export class OrderTabComponent implements OnInit {
                 private router: Router,
                 private _notify: NotificationsService,
                 public loaderService: LoaderService,
+                private el: ElementRef
     ) {
     }
 
@@ -85,7 +88,7 @@ export class OrderTabComponent implements OnInit {
             })
     }
 
-    loadAllOrders(allOrder){
+    loadAllOrders(allOrder) {
         this.orderList = [];
         let orders = allOrder.map(order => {
             let now = moment(new Date());
@@ -98,7 +101,7 @@ export class OrderTabComponent implements OnInit {
 
             if (this.globalPartialPaymentDuration >= expendedHour && order.status != ORDER_STATUSES.CANCELED_ORDER
                 && order.payment_status != PAYMENT_STATUS.PAID && order.payment_status != PAYMENT_STATUS.NOT_APPLICABLE
-                && order.paid_amount < order.total_price) {
+                && order.paid_amount < order.total_price && order.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER) {
                 order.isAllowedForPay = true;
             } else {
                 order.isAllowedForPay = false;
@@ -123,10 +126,53 @@ export class OrderTabComponent implements OnInit {
 
     //Event called for getting order data
     getFilteredOrderList() {
+        // let document = this.el.nativeElement;
         if (this.statusFilter == 'all') {
-            return this.orderList;
+            this.orderStatus = this.orderList;
+            // if (this.orderStatus.length <= 0) {
+            //     if (!(document.querySelector(".table-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".table-hide").classList.add("hidden-class");
+            //         document.querySelector(".div-hide").classList.add("hidden-class");
+            //     }
+            //     if (document.querySelector(".hide-no-product").classList.contains("hidden-class")) {
+            //         document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     }
+            // }
+            //
+            // if (this.orderStatus.length > 0) {
+            //     if (document.querySelector(".table-hide").classList.contains("hidden-class")) {
+            //         document.querySelector(".table-hide").classList.remove("hidden-class");
+            //         document.querySelector(".div-hide").classList.remove("hidden-class");
+            //     }
+            //     if(!(document.querySelector(".hide-no-product").classList.add("hidden-class"))) {
+            //         document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     }
+            // }
+            return this.orderStatus;
         } else {
-            return this.orderList.filter(x => x.status == +this.statusFilter);
+            this.orderStatus = this.orderList.filter(x => x.status == +this.statusFilter);
+            // if (this.orderStatus.length <= 0) {
+            //     if (!(document.querySelector(".table-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".table-hide").classList.add("hidden-class");
+            //     }
+            //     if (!(document.querySelector(".div-hide").classList.contains("hidden-class"))) {
+            //         document.querySelector(".div-hide").classList.add("hidden-class");
+            //     }
+            //     if (document.querySelector(".hide-no-product").classList.contains("hidden-class")) {
+            //         document.querySelector(".hide-no-product").classList.remove("hidden-class");
+            //     }
+            // }
+            //
+            // if (this.orderStatus.length > 0) {
+            //     if (document.querySelector(".table-hide").classList.contains("hidden-class")) {
+            //         document.querySelector(".table-hide").classList.remove("hidden-class");
+            //         document.querySelector(".div-hide").classList.remove("hidden-class");
+            //     }
+            //     if (!(document.querySelector(".hide-no-product").classList.contains("hidden-class"))) {
+            //         document.querySelector(".hide-no-product").classList.add("hidden-class");
+            //     }
+            // }
+            return this.orderStatus;
         }
     }
 
@@ -135,9 +181,9 @@ export class OrderTabComponent implements OnInit {
         this.partialPaymentModalService.showPartialModal(true, order.id);
     }
 
-    cancelOrder(oderId){
+    cancelOrder(oderId) {
         let confirm = window.confirm('Are you confirm to delete the order?');
-        if(confirm){
+        if (confirm) {
             this.loaderService.showLoader();
             this.orderService.deleteOrder(oderId)
                 .concatMap(data => {
@@ -146,7 +192,7 @@ export class OrderTabComponent implements OnInit {
                 .subscribe(data => {
                     this.loadAllOrders(data);
                     this.loaderService.hideLoader();
-                    console.log('Successfully deleted the product');
+                    /*console.log('Successfully deleted the product');*/
                     this._notify.success('Successfully cancelled the order the order!');
                 }, error => {
                     this.loaderService.hideLoader();

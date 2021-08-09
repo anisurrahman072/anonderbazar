@@ -20,6 +20,9 @@ import {UiModule} from "../../shared/ui.module";
         SuborderRoutingModule,
         UiModule
     ],
+    exports: [
+        SuborderTypePipe
+    ],
     declarations: [
         SuborderComponent,
         SuborderReadComponent,

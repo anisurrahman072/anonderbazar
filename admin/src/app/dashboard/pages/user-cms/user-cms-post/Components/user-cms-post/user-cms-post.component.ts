@@ -7,6 +7,7 @@ import {FileHolder, UploadMetadata} from 'angular2-image-upload';
 import {AuthService} from '../../../../../../services/auth.service';
 import {environment} from "../../../../../../../environments/environment";
 import {AddNewCmsService} from "../../../../../../services/add-new-cms.service";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'app-cms-post',
@@ -14,6 +15,36 @@ import {AddNewCmsService} from "../../../../../../services/add-new-cms.service";
     styleUrls: ['./user-cms-post.component.css']
 })
 export class UserCmsPostComponent implements OnInit {
+    Editor = ClassicEditor;
+    config = {
+        toolbar: {
+            items: [
+                'heading', '|', 'bold', 'italic', 'link',
+                'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo', 'redo'
+            ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            },
+            shouldNotGroupWhenFull: true,
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:full',
+                    'imageStyle:side'
+                ]
+            }
+        },
+    };
+
     currentUser: any;
 
     cmsPostData: any;
@@ -24,37 +55,7 @@ export class UserCmsPostComponent implements OnInit {
 
     validateForm: FormGroup;
     ImageFile: File;
-    ckConfig = {
-        uiColor: '#662d91',
-        toolbarGroups: [
-            {
-                name: 'basicstyles',
-                group: [
-                    'Bold',
-                    'Italic',
-                    'Underline',
-                    'Strike',
-                    'Subscript',
-                    'Superscript',
-                    '-',
-                    'JustifyLeft',
-                    'JustifyCenter',
-                    'JustifyRight',
-                    'JustifyBlock',
-                    '-',
-                    'BidiLtr',
-                    'BidiRtl',
-                    'Language'
-                ]
-            },
-            {
-                name: 'paragraph',
-                groups: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-            },
-            {name: 'styles', groups: ['Styles', 'Format', 'Font', 'FontSize']}
-        ],
-        removeButtons: 'Source,Save,Templates,Find,Replace,Scayt,SelectAll'
-    };
+
     @ViewChild('Image')
     Image: any;
     imageIndex: any;

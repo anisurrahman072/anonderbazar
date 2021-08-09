@@ -142,7 +142,7 @@ export class HeaderComponent implements OnInit {
         this.progress.start('mainLoader');
         this.cartItemService.delete(id).subscribe(result => {
             this.store.dispatch(new fromStore.LoadCart());
-            this._notify.error('remove from cart succeeded');
+            this._notify.error('Remove from cart succeeded');
             this.progress.complete('mainLoader');
         });
     }
@@ -170,9 +170,11 @@ export class HeaderComponent implements OnInit {
 
     //Event for search enter press
     onPressEnter(event) {
-        if (event.target !== undefined && event.target.value !== undefined) {
+        if (event && event.target && event.target.value !== undefined) {
+            console.log('in if');
             this.router.navigate(['/products'], {queryParams: {search: event.target.value}});
         }else {
+            console.log('in else');
             this.router.navigate(['/products'], {queryParams: {search: event}});
         }
     }

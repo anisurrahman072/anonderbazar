@@ -74,3 +74,14 @@
 ::ng-deep popover-container .popover {
   background-color: blue !important;
 }
+
+.hidden-class {
+  display: none;
+}
+
+.make-payment-btn {
+  padding: 3px !important;
+  background-color: #9fcdff !important;
+  border-radius: 5px;
+  border: 1px solid darkblue;
+}

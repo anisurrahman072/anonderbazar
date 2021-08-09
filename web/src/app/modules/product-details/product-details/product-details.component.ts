@@ -6,7 +6,7 @@ import {Store} from "@ngrx/store";
 import {Observable} from "rxjs/Observable";
 import {NgProgress} from "@ngx-progressbar/core";
 import {NotificationsService} from "angular2-notifications";
-import {FavouriteProduct, Product} from "../../../models";
+import {FavouriteProduct, Offer, Product} from "../../../models";
 import {AppSettings} from "../../../config/app.config";
 import {
     AuthService,
@@ -14,7 +14,7 @@ import {
     CartItemVariantService,
     CartService,
     CraftsmanService,
-    FavouriteProductService,
+    FavouriteProductService, OfferService,
     ProductService,
     ProductVariantService
 } from "../../../services";
@@ -58,7 +58,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     mainImg: string;
     cartTotalprice: any;
     cartTotalquantity: any;
-    discountPercentage: any;
+    /*discountPercentage: any;*/
     currentUser: Observable<any>;
     product_quantity: any = 1;
     tempRating: any;
@@ -98,6 +98,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
     addToWhishlistSuccessProduct: any;
     currentUser$: Observable<any>;
 
+    /**offer related variables*/
+    offer$: Observable<Offer>;
+    offerData: Offer;
+    calculationType;
+    discountAmount;
+    originalPrice;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -122,7 +129,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         private partService: PartService,
         public loaderService: LoaderService,
         private favouriteProductService: FavouriteProductService,
-        private _elementRef: ElementRef
+        private _elementRef: ElementRef,
+        private offerService: OfferService,
     ) {
         this.chatForm = this.fb.group({
             message: ["", Validators.required],
@@ -133,6 +141,24 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     //Event method for getting all the data for the page
     ngOnInit() {
+        /** Get all offered products from NGRX store. START */
+        this.loaderService.showLoader();
+        this.offer$ = this.store.select<any>(fromStore.getOffer);
+        this.offer$.subscribe(offerData => {
+            this.offerData = offerData;
+
+            if(this.offerData){
+                this.sub = this.route.params.subscribe(params => {
+                    this.id = +params["id"];
+                    this.getProductData();
+                    this.getAllVariant();
+                });
+            }
+        })
+        /** Get all offered products from NGRX store. END */
+
+
+        /** Get Current user Info from NGRX store. START */
         this.currentUserId = this.authService.getCurrentUserId();
         if (this.currentUserId) {
             this.isVisibleFab = true;
@@ -145,13 +171,13 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         }, (error) => {
             console.log('currentUser$', error);
         });
+        /** Get Current user Info from NGRX store. END */
+
 
         this.compare$ = this.store.select<any>(fromStore.getCompare);
         this.favourites$ = this.store.select<any>(fromStore.getFavouriteProduct);
+        this.addTofavouriteLoading$ = this.store.select<any>(fromStore.getFavouriteProductLoading);
 
-        this.addTofavouriteLoading$ = this.store.select<any>(
-            fromStore.getFavouriteProductLoading
-        );
 
         this.partService.getAllParts().subscribe(result => {
             this.allTheParts = result.data;
@@ -177,13 +203,6 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 this.cartTotalprice = result.data.total_price;
                 this.cartTotalquantity = result.data.total_quantity;
             }
-        });
-
-        this.sub = this.route.params.subscribe(params => {
-            this.id = +params["id"];
-
-            this.getProductData();
-            this.getAllVariant();
         });
 
         this.getRecentlyViewedProducts();
@@ -219,6 +238,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
             this.productDescriptionData = [result.data[0], result.data[1], result.data[2]];
             this.data = result.data[0];
+            /*console.log('product details: ddddd', this.data);*/
 
             if (!(result.data[0] && result.data[0].approval_status == '2')) {
                 this.toastr.info('This Page is not available.', 'Not Found!');
@@ -228,11 +248,22 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
             this.addPageTitleNMetaTag();
 
-            this.discountPercentage = 0;
+            if (this.offerData && this.offerData.finalCollectionOfProducts && this.data.id in this.offerData.finalCollectionOfProducts) {
+                this.calculationType = this.offerData.finalCollectionOfProducts[this.data.id].calculation_type;
+                this.discountAmount = this.offerData.finalCollectionOfProducts[this.data.id].discount_amount;
+                this.originalPrice = this.data.price;
 
-            if (this.data.promotion) {
-                this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
+                this.data.offerPrice = this.offerService.calculateOfferPrice(this.calculationType, this.originalPrice, this.discountAmount);
+
+                this.data.calculationType = this.calculationType;
+                this.data.discountAmount = this.discountAmount;
             }
+
+            /* this.discountPercentage = 0;
+
+             if (this.data.promotion) {
+                 this.discountPercentage = ((this.data.price - this.data.promo_price) / this.data.price) * 100.0
+             }*/
 
             if (result.data[0]) {
                 let allImages = [];
@@ -266,7 +297,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 }
             }
         }, (error) => {
-            this._notify.error('Problem!', "Problem in loading the product");
+            if (error.error && error.error.code && error.error.code === 'productNotFound') {
+                this._notify.info('Product not found!', error.error.message);
+                this.router.navigate(['/']);
+            } else if (error.error && error.error.code && error.error.code === 'warehouseNotFound') {
+                this._notify.info('Product not found!', error.error.message);
+                this.router.navigate(['/']);
+            } else {
+                this._notify.error('Problem!', "Problem in loading the product");
+            }
         });
     }
 
@@ -279,8 +318,17 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
     updateFinalprice() {
         if (this.data) {
-            this.unitPrice = this.data.promotion ? this.data.promo_price : this.data.price;
-            this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+            this.unitPrice = this.data.offerPrice ? this.data.offerPrice : this.data.price;
+
+            if (this.offerData && this.offerData.finalCollectionOfProducts && this.data.id in this.offerData.finalCollectionOfProducts) {
+                this.calculationType = this.offerData.finalCollectionOfProducts[this.data.id].calculation_type;
+                this.discountAmount = this.offerData.finalCollectionOfProducts[this.data.id].discount_amount;
+                let productPriceWithVariantPrice = this.data.price + this.variantCalculatedTotalPrice;
+
+                this.finalprice = this.offerService.calculateOfferPrice(this.calculationType, productPriceWithVariantPrice, this.discountAmount);
+            } else {
+                this.finalprice = (this.unitPrice + this.variantCalculatedTotalPrice);
+            }
         }
     }
 
@@ -311,10 +359,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
 
         this._progress.start("mainLoader");
-        let product_total_price: number =
-            (this.unitPrice +
-                this.variantCalculatedTotalPrice) *
-            this.product_quantity;
+        let product_total_price: number = (this.unitPrice + this.variantCalculatedTotalPrice) * this.product_quantity;
+        /*console.log("product_total_price: ", product_total_price);*/
 
         let variants = [];
         let dataPayload = {};
@@ -328,6 +374,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
 
         let qty = this.product_quantity;
 
+        const offerInfo = this.offerData.finalCollectionOfProducts[this.data.id];
+
         if (variants.length == 0) {
             dataPayload = {
                 cart_id: this.cartId,
@@ -335,6 +383,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
+                offerInfo
             };
         } else {
             dataPayload = {
@@ -343,9 +392,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 product_quantity: qty,
                 product_unit_price: this.unitPrice + this.variantCalculatedTotalPrice,
                 product_total_price: product_total_price,
-                cartItemVariants: variants
+                cartItemVariants: variants,
+                offerInfo
             };
         }
+        /*console.log('payload: ', dataPayload);*/
         this.cartItemService
             .insert(dataPayload)
             .subscribe(
@@ -366,7 +417,11 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
                 },
                 error => {
                     this._progress.complete("mainLoader");
-                    this._notify.error("something went wrong");
+                    if (error.error && error.error.code === 'CartItemNotAllowed') {
+                        this._notify.info(error.error.message);
+                    } else {
+                        this._notify.error("Something went wrong");
+                    }
                 }
             );
 
@@ -515,7 +570,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewChecked, OnDest
         this.variantCalculatedPrice.map(vp => {
             this.variantCalculatedTotalPrice += vp.quantity
         });
-        console.log('this.variantCalculatedPrice', this.variantCalculatedPrice)
+        /*console.log('this.variantCalculatedPrice', this.variantCalculatedPrice)*/
         this.updateFinalprice();
     }
 

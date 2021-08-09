@@ -9,7 +9,6 @@ import {catchError} from "rxjs/operators";
 export class OrderService {
 
     private EndPoint = `${AppSettings.API_ENDPOINT}/order`;
-    private EndPoint2 = `${AppSettings.API_ENDPOINT}/order`;
     private EndPoint3 = `${AppSettings.API_ENDPOINT}/partial-order`;
 
     constructor(private http: HttpClient) {
@@ -69,5 +68,13 @@ export class OrderService {
 
     confirmOrderByOffline(value): Observable<any>{
         return this.http.post(`${this.EndPoint}/confirmOrderInOffline`, value);
+    }
+
+    getAllProductsByOrderId(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getAllProductsByOrderId?orderId=${orderId}`);
+    }
+
+    getOrderInvoiceData(orderId): Observable<any> {
+        return this.http.get(`${this.EndPoint}/getOrderInvoiceData?orderId=${orderId}`);
     }
 }

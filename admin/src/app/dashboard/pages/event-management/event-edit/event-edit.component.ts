@@ -14,7 +14,7 @@ import { EventService } from '../../../../services/event.service';
 import * as moment from 'moment';
 import { EventPriceService } from '../../../../services/event-price.service';
 import {environment} from "../../../../../environments/environment";
-
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-event-edit',
@@ -22,6 +22,36 @@ import {environment} from "../../../../../environments/environment";
   styleUrls: ['./event-edit.component.css']
 })
 export class EventEditComponent implements OnInit {
+  Editor = ClassicEditor;
+  config = {
+    toolbar: {
+      items: [
+        'heading', '|', 'bold', 'italic', 'link',
+        'bulletedList', 'numberedList', '|', 'indent', 'outdent', '|',
+        'imageUpload',
+        'blockQuote',
+        'insertTable',
+        'mediaEmbed',
+        'undo', 'redo'
+      ],
+      heading: {
+        options: [
+          { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+          { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+          { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+        ]
+      },
+      shouldNotGroupWhenFull: true,
+      image: {
+        toolbar: [
+          'imageTextAlternative',
+          'imageStyle:full',
+          'imageStyle:side'
+        ]
+      }
+    },
+  };
+
   _isSpinning: boolean = false;
   validateForm: FormGroup;
   ImageFile: File;
@@ -41,7 +71,6 @@ export class EventEditComponent implements OnInit {
   listOfPrice = [];
   addedPrices = [];
   event_starttime: Date = new Date();uri_id: any;
-;
   event_endtime: Date = new Date();
   ckConfig = {
     uiColor: "#662d91",
@@ -144,8 +173,8 @@ export class EventEditComponent implements OnInit {
    // init the component
   ngOnInit() {
     this.status_id = this.route.snapshot.paramMap.get('status');
-    
-    
+
+
     this.sub = this.route.params.subscribe(params => {
       this.id = +params['id']; // (+) converts string 'id' to a number
       this.eventService.getById(this.id).subscribe(result => {

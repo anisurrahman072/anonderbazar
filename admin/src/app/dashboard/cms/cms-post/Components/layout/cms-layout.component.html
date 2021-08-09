@@ -35,7 +35,8 @@
 </nz-tabset>
 <nz-modal [nzFooter]="null" [nzVisible]="isAddModalVisible" [nzTitle]="'Create Post'" [nzContent]="modalContent"
           (nzOnCancel)="handleModalCancel($event)" (nzOnOk)="handleModalOk($event)"
-          class="create-modal">
+          class="create-modal"
+          [nzWidth]="1200" >
     <ng-template #modalContent>
 
         <div class=" spinning">
@@ -102,10 +103,12 @@
                         </div>
                         <div nz-col [nzSpan]="17">
 
-                            <ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
+                            <!--<ckeditor formControlName="description" [config]="ckConfig" [readonly]="false"
                                       debounce="500">
 
-                            </ckeditor>
+                            </ckeditor>-->
+                            <ckeditor [editor]="Editor" formControlName="description" [config]="config"></ckeditor>
+
                             <div *ngIf="getFormControl( 'description').dirty&&getFormControl('description').hasError( 'required')">
                                 Please input description !
                             </div>

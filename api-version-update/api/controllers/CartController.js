@@ -112,7 +112,7 @@ module.exports = {
 
       return res.json({
         success: true,
-        message: 'cart found',
+        message: 'cart Item found',
         data
       });
     } catch (err) {
@@ -163,46 +163,79 @@ module.exports = {
         cart_id: cart.id,
         deletedAt: null
       });
+      let len = cartItems.length;
 
-      await asyncForEach(cartItems, async _cartItem => {
-        let dd = await Product.findOne({id: _cartItem.product_id})
+      console.log('length: ', len);
+      for(let index = 0; index < len; index++){
+        let dd = await Product.findOne({id: cartItems[index].product_id})
           .populate('product_images', {deletedAt: null})
           .populate('warehouse_id')
           .populate('type_id');
+        console.log('Cart item: ', dd.id, index);
 
         if (dd) {
-          _cartItem.product_id = dd.toJSON();
+          cartItems[index].product_id = dd.toJSON();
 
           let civ = await CartItemVariant.find({
-            product_id: _cartItem.product_id.id,
-            cart_item_id: _cartItem.id,
+            product_id: cartItems[index].product_id.id,
+            cart_item_id: cartItems[index].id,
             deletedAt: null
           })
             .populate('variant_id')
-            .populate('warehouse_variant_id')
-            .populate('product_variant_id');
+            .populate('warehouse_variant_id');
 
           if (civ.length > 0) {
-            _cartItem.cartitemvariant = civ;
+            cartItems[index].cartitemvariant = civ;
           } else {
-            _cartItem.cartitemvariant = {};
+            cartItems[index].cartitemvariant = {};
           }
+
+          /** Update product_total_price in Suborder Item table as per current state of offer for the product */
+          /** Also add here the additional price for product variants when calculate the calcProductOfferPrice */
+          let currentCartItemTotalPrice = await OfferService.calcProductOfferPrice({
+            id: dd.id,
+            price: dd.price,
+            quantity: cartItems[index].product_quantity,
+            itemVariant: cartItems[index].cartitemvariant
+          });
+
+
+          if(currentCartItemTotalPrice != (cartItems[index].product_unit_price * cartItems[index].product_quantity)){
+            cart.total_price = cart.total_price + (currentCartItemTotalPrice - cartItems[index].product_total_price);
+            cartItems[index].product_total_price = currentCartItemTotalPrice;
+
+            await Cart.updateOne({
+              id: cart.id,
+              deletedAt: null
+            }).set({
+              total_price: cart.total_price
+            });
+
+            await CartItem.update({
+              id: cartItems[index].id,
+              deletedAt: null
+            }).set({
+              product_unit_price: currentCartItemTotalPrice / cartItems[index].product_quantity,
+              product_total_price: currentCartItemTotalPrice
+            });
+          }
+          /** Update product total price in Suborder Item table as per current state of offer for the product. END */
 
 
           /** Check weather the cart item is a valid item or not */
-          if (_cartItem.product_id.approval_status == 2 && !_cartItem.product_id.deletedAt &&
-            !_cartItem.product_id.warehouse_id.deletedAt && _cartItem.product_id.warehouse_id.status == 2) {
-            data.cart_items.push(_cartItem);
+          if (cartItems[index].product_id.approval_status == 2 && !cartItems[index].product_id.deletedAt &&
+            !cartItems[index].product_id.warehouse_id.deletedAt && cartItems[index].product_id.warehouse_id.status == 2) {
+            data.cart_items.push(cartItems[index]);
           }
           else {
-            let remainingQty = cart.total_quantity - _cartItem.product_quantity;
+            let remainingQty = cart.total_quantity - cartItems[index].product_quantity;
             data.total_quantity = remainingQty;
 
-            let remainingTotalPrice = cart.total_price - _cartItem.product_total_price;
+            let remainingTotalPrice = cart.total_price - cartItems[index].product_total_price;
             data.total_price = remainingTotalPrice;
 
             await Cart.update({
-              id: _cartItem.cart_id,
+              id: cartItems[index].cart_id,
               deletedAt: null
             }).set({
               total_quantity: remainingQty,
@@ -210,14 +243,14 @@ module.exports = {
             });
 
             await CartItem.update({
-              id: _cartItem.id,
+              id: cartItems[index].id,
               deletedAt: null
             }).set({
               deletedAt: new Date()
             }).fetch();
 
             await CartItemVariant.update({
-              cart_item_id: _cartItem.id,
+              cart_item_id: cartItems[index].id,
               deletedAt: null
             }).set({
               deletedAt: new Date()
@@ -225,9 +258,13 @@ module.exports = {
           }
           /** END */
         }
-      });
+      }
 
-      console.log('Final data: ', data);
+      /* await asyncForEach(cartItems, async _cartItem => {
+
+      });*/
+
+      /*console.log('Final data: ', data);*/
 
       return res.json({
         success: true,

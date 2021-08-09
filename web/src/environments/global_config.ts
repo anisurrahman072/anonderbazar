@@ -14,6 +14,7 @@ export class GLOBAL_CONFIGS {
     public static lotteryAdminId = 130;
     public static bkashTestUsers = [130, 2814];
     public static nagadTestUsers = [130, 2814];
+    public static partialMinimumFirstPaymentAmount = 2000;
 }
 
 export const PAYMENT_METHODS = {
@@ -22,7 +23,8 @@ export const PAYMENT_METHODS = {
     SSL_COMMERZ_PAYMENT_TYPE: 'SSLCommerce',
     BKASH_PAYMENT_TYPE: 'bKash',
     NAGAD_PAYMENT_TYPE: 'Nagad',
-    OFFLINE_PAYMENT_TYPE: 'OfflinePay'
+    OFFLINE_PAYMENT_TYPE: 'OfflinePay',
+    ADMIN_PAYMENT_TYPE: 'AdminPayment'
 }
 export const PAYMENT_METHODS_LABELS = {
     'Cash': 'Cash On Delivery',
@@ -31,7 +33,7 @@ export const PAYMENT_METHODS_LABELS = {
     'bKash': 'bKash Payment Gateway',
     'Nagad': 'Nagad Payment Gateway'
 }
-export const ORDER_STATUSES = {
+/*export const ORDER_STATUSES = {
     PENDING_ORDER: 1,
     PROCESSING_ORDER: 2,
     PREPARED_ORDER: 3,
@@ -42,6 +44,21 @@ export const ORDER_STATUSES = {
     ARRIVED_AT_WAREHOUSE_ORDER: 8,
     SHIPPED_ORDER: 9,
     OUT_FOR_DELIVERY_ORDER: 10,
+    DELIVERED_ORDER: 11,
+    CANCELED_ORDER: 12,
+    CONFIRMED_ORDER: 13
+}*/
+
+export const ORDER_STATUSES = {
+    PENDING_ORDER: 1,
+    PROCESSING_ORDER: 2,
+    RETURNED: 3,
+    LOST: 4,
+    REFUND_PROCESSING: 5,
+    REFUNDED: 6,
+    PROCESSED: 7,
+    ARRIVED_AT_WAREHOUSE_ORDER: 8,
+    SHIPPED_ORDER: 9,
     DELIVERED_ORDER: 11,
     CANCELED_ORDER: 12,
     CONFIRMED_ORDER: 13
@@ -57,4 +74,24 @@ export const PAYMENT_STATUS = {
 export const ORDER_TYPE = {
     REGULAR_ORDER: 1,
     PARTIAL_PAYMENT_ORDER: 2
+}
+
+export const WAREHOUSE_STATUS = {
+    PENDING: 0,
+    PROCESSING: 1,
+    ACTIVE: 2,
+    INACTIVE: 3
+}
+
+export const PAYMENT_APPROVAL_STATUS = {
+    PENDING: 1,
+    APPROVED: 2,
+    REJECTED: 3
+}
+
+export const OFFLINE_PAYMENT_METHODS = {
+    CASH_IN_ADVANCE: 'cashInAdvance',
+    BANK_TRANSFER: 'bankTransfer',
+    BANK_DEPOSIT: 'bankDeposit',
+    MOBILE_TRANSFER: 'mobileTransfer'
 }

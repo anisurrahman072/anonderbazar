@@ -5,7 +5,7 @@
  */
 const {sslcommerzInstance, preparePaymentRequest} = require('../../libs/sslcommerz');
 const logger = require('../../libs/softbd-logger').Logger;
-const {PAYMENT_STATUS_PAID} = require('../../libs/constants');
+const {PAYMENT_STATUS_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
 module.exports = {
 
@@ -18,7 +18,7 @@ module.exports = {
     let {
       grandOrderTotal,
       totalQty
-    } = PaymentService.calcCartTotal(cart, cartItems);
+    } = await PaymentService.calcCartTotal(cart, cartItems);
 
     logger.orderLog(authUser.id, 'GrandOrderTotal', grandOrderTotal);
 
@@ -108,7 +108,8 @@ module.exports = {
       payment_type: paymentType,
       details: JSON.stringify(paymentResponse),
       transection_key: sslCommerztranId,
-      status: 1
+      status: 1,
+      approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
     });
 
     const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);

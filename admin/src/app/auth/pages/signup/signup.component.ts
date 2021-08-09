@@ -15,6 +15,7 @@ import "rxjs/add/operator/switchMap";
 import {UniqueEmailValidator} from "../../../services/validator/UniqueEmailValidator";
 import {UniquePhoneValidator} from "../../../services/validator/UniquePhoneValidator";
 import {UniqueUsernameValidator} from "../../../services/validator/UniqueUsernameValidator";
+import {DesignImagesService} from "../../../services/design-images.service";
 
 @Component({
     selector: 'app-signup',
@@ -50,8 +51,8 @@ export class SignupComponent implements OnInit {
     divisionSelect: any;
     oldImages = [];
     validateForm: FormGroup;
-    ImageFile: File;
-    logoFile: File;
+    ImagePath = '';
+    logoPath = '';
 
     //Event method for submitting the form
 
@@ -66,6 +67,7 @@ export class SignupComponent implements OnInit {
                 private uniquEmailValidator: UniqueEmailValidator,
                 private uniqueUsernameValidator: UniqueUsernameValidator,
                 private uniquePhoneValidator: UniquePhoneValidator,
+                private designImagesService: DesignImagesService
     ) {
 
     }
@@ -81,7 +83,7 @@ export class SignupComponent implements OnInit {
             first_name: ['', [Validators.required]],
             last_name: ['', [Validators.required]],
             phone: ['', [this.validationService.phoneValidator], [this.uniquePhoneValidator]],
-            national_id: ['', [Validators.required]],
+            national_id: ['', [Validators.required, this.validationService.nidValidator]],
             gender: ['', [Validators.required]],
             address: ['', [Validators.required]],
             upazila_id: ['', [Validators.required]],
@@ -115,11 +117,11 @@ export class SignupComponent implements OnInit {
         wareHouseFormData.append('postal_code', value.postal_code);
         wareHouseFormData.append('country', 'Bangladesh');
 
-        if (this.logoFile) {
-            wareHouseFormData.append('logo', this.logoFile, this.logoFile.name);
-            wareHouseFormData.append('hasLogo', 'true');
-        } else {
-            wareHouseFormData.append('hasLogo', 'false');
+        if (this.logoPath) {
+            wareHouseFormData.append('logo', this.logoPath);
+        }
+        if (this.ImagePath) {
+            wareHouseFormData.append('user_avatar', this.ImagePath);
         }
 
         wareHouseFormData.append('userdata', JSON.stringify({
@@ -137,12 +139,8 @@ export class SignupComponent implements OnInit {
             upazila_id: value.upazila_id,
             zila_id: value.zila_id,
             division_id: value.division_id,
-            hasImage: !!this.ImageFile,
+            hasImage: !!this.ImagePath,
         }));
-
-        if (this.ImageFile) {
-            wareHouseFormData.append('user_avatar', this.ImageFile, this.ImageFile.name);
-        }
         /*        wareHouseFormData.append('user[password]', value.password);
                 wareHouseFormData.append('user.confirmPassword', value.password);
                 wareHouseFormData.append('user.email', value.email);
@@ -165,7 +163,7 @@ export class SignupComponent implements OnInit {
 
         this._spinning = true;
         this.warehouseService.signup(wareHouseFormData)
-            .subscribe((result => {
+            .subscribe(result => {
                     console.log(result);
                     this._spinning = false;
                     if (result) {
@@ -175,14 +173,13 @@ export class SignupComponent implements OnInit {
                     } else {
                         this._notification.create('error', 'Failure message', 'Your registration was not successful');
                     }
-                }),
-                (err => {
+                }, err => {
+                    console.log("Error occurred: ", err);
                     this._spinning = false;
                     this._notification.create('error', 'Failure message', 'Your registration was not successful');
                     this.loginServerError.show = true;
                     this.loginServerError.message = 'Your registration was not successful';
-                })
-            );
+                });
     };
 
     //Event method for password confirmation validation
@@ -196,19 +193,60 @@ export class SignupComponent implements OnInit {
 
     //Event method for removing the image added in form
     onRemoved(file: FileHolder) {
-        this.ImageFile = null;
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.ImagePath}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.ImagePath = null;
+                this._notification.success("Success", "Successfully deleted image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting image");
+            })
+    }
+
+    onRemovedLogoFile(file: FileHolder){
+        let formData = new FormData();
+        formData.append('oldImagePath', `${this.logoPath}`);
+
+        this.designImagesService.deleteImage(formData)
+            .subscribe(data => {
+                this.logoPath = null;
+                this._notification.success("Success", "Successfully deleted image");
+            }, error => {
+                console.log("Error occurred: ", error);
+                this._notification.success("Error", "Error occurred while deleting image");
+            })
     }
 
     //storing the image before upload
     onBeforeUpload = (metadata: UploadMetadata) => {
-        this.ImageFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.ImagePath = data.path;
+                console.log("this.ImagePath: ", this.ImagePath);
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
 
         return metadata;
     }
     //storing the logo before upload
 
     onBeforeLogoUpload = (metadata: UploadMetadata) => {
-        this.logoFile = metadata.file;
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
+
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.logoPath = data.path;
+            }, error => {
+                console.log("Error occurred: ", error);
+            })
 
         return metadata;
     }

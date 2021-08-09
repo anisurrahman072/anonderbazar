@@ -215,25 +215,17 @@ module.exports = {
         user
       } = await sails.getDatastore()
         .transaction(async (db) => {
-          if (postBody.hasLogo === 'true') {
-            const uploaded = await uploadImages(req.file('logo'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No logo image was uploaded');
-            }
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            postBody.logo = '/' + newPath;
+
+          if (postBody.logo) {
+            postBody.logo = postBody.logo;
           }
 
           postBody.status = 0;
-          const warehouse = await Warehouse.create(postBody).fetch().usingConnection(db);
+          let payloadData = Object.assign({},postBody);
+          const warehouse = await Warehouse.create(payloadData).fetch().usingConnection(db);
 
-          if (userData.hasImage === 'true') {
-            const uploaded = await uploadImages(req.file('user_avatar'));
-            if (uploaded.length === 0) {
-              return res.badRequest('No user avatar was uploaded');
-            }
-            const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-            userData.avatar = '/' + newPath;
+          if (postBody.user_avatar) {
+            userData.avatar = postBody.user_avatar;
           }
 
           userData.warehouse_id = warehouse.id;
@@ -248,12 +240,13 @@ module.exports = {
           };
         });
 
+      console.log('Final output: ', warehouse, user);
       return res.status(201).json({
         warehouse,
         user
       });
     } catch (error) {
-      console.log(error);
+      console.log('error occurred', error);
       return res.json(400, {message: 'Something went wrong!', error});
     }
 
@@ -504,9 +497,9 @@ module.exports = {
         return res.json(403, {err: 'forbidden....'});
       }
 
-      const x = new Date(Date.now());
+      const presentTime = new Date(Date.now());
 
-      let activation_time = x.getTime();
+      let activation_time = presentTime.getTime();
 
       if (activation_time > user.verification_code_expire_time) {
         return res.status(200).json({

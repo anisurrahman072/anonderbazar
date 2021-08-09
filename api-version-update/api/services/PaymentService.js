@@ -3,6 +3,8 @@ const {adminPaymentAddressId, dhakaZilaId} = require('../../config/softbd');
 const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
+const OfferService = require('../services/OfferService');
+
 
 module.exports = {
   generateRandomString: function (length = 16) {
@@ -44,13 +46,11 @@ module.exports = {
   getShippingAddress: async function (authUser, req, cartItems = []) {
     let shippingAddress = null;
     let shipping_address = req.param('shipping_address');
-    console.log('helllloooo2222222', req.param('shipping_address'), req.param('is_copy'));
 
     if (shipping_address) {
       if (!_.isObject(shipping_address)) {
         shipping_address = JSON.parse(shipping_address);
       }
-      console.log('shippppppppppppppppp', shipping_address);
 
       shippingAddress = {...shipping_address, postal_code: shipping_address.postCode};
       if (!shippingAddress.id || shippingAddress.id === '') {
@@ -173,24 +173,63 @@ module.exports = {
     return paymentTemp;
   },
 
-  calcCartTotal: function (cart, cartItems) {
+  calcCartTotal: async function (cart, cartItems) {
     let grandOrderTotal = 0;
     let totalQty = 0;
-    cartItems.forEach(async (cartItem) => {
+    for (let cartItem of cartItems) {
       if (cartItem.product_quantity > 0) {
-        let productPrice = cartItem.product_total_price;
-        if (!cartItem.product_id.promotion) {
+        let productUnitPrice = cartItem.product_id.price;
+        let variantAdditionalPrice = 0;
+
+        let itemVariants = cartItem.cart_item_variants;
+        if(itemVariants && itemVariants.length > 0){
+          for(let i = 0; i < itemVariants.length; i++){
+            let productVariantInfo = await ProductVariant.findOne({id: itemVariants[i].product_variant_id, deletedAt: null});
+            variantAdditionalPrice += productVariantInfo.quantity;
+          }
+        }
+        productUnitPrice += variantAdditionalPrice;
+
+        let productFinalPrice = productUnitPrice * cartItem.product_quantity;
+
+        let offerProducts = await OfferService.getAllOfferedProducts();
+
+        if ((offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
+          if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute') {
+            let productPrice = productUnitPrice - offerProducts[cartItem.product_id.id].discount_amount;
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          } else {
+            let productPrice = Math.ceil(productUnitPrice - (productUnitPrice * (offerProducts[cartItem.product_id.id].discount_amount / 100.0)));
+            productFinalPrice = productPrice * cartItem.product_quantity;
+          }
+        }
+
+        /*if (!cartItem.product_id.promotion) {
           let productUnitPrice = cartItem.product_id.price;
           productPrice = productUnitPrice * cartItem.product_quantity;
-        }
-        grandOrderTotal += productPrice;
+        }*/
+
+        grandOrderTotal += productFinalPrice;
         totalQty += cartItem.product_quantity;
       }
-    });
+    }
     return {
       grandOrderTotal,
       totalQty
     };
+  },
+
+  /** This method will return variants additional price for a particular Cart Item */
+  calculateItemVariantPrice: async (itemVariants) => {
+    let variantAdditionalPrice = 0;
+    let length = itemVariants.length;
+    for(let index = 0; index < length; index++){
+      let productVariant = await ProductVariant.findOne({id: itemVariants[index].product_variant_id, deletedAt: null});
+      if(productVariant && productVariant.quantity){
+        variantAdditionalPrice += productVariant.quantity;
+      }
+    }
+    return variantAdditionalPrice;
   },
 
   getCart: async (userId) => {
@@ -219,6 +258,37 @@ module.exports = {
     return cartItems;
   },
 
+  checkOfferProductsFromCartItems: async (cartItems) => {
+    let offerIdNumber;
+    let offerType;
+
+    if(cartItems && cartItems.length > 0){
+      let offeredProducts = await OfferService.getAllOfferedProducts();
+
+      let len = cartItems.length;
+      for(let i=0; i<len; i++){
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: cartItems[i].product_id.id,
+          type_id: cartItems[i].product_id.type_id,
+          category_id: cartItems[i].product_id.category_id,
+          subcategory_id: cartItems[i].product_id.subcategory_id,
+          brand_id: cartItems[i].product_id.brand_id,
+          warehouse_id: cartItems[i].product_id.warehouse_id
+        }, offeredProducts);
+
+
+        if(i > 0){
+          if(offerIdNumber !== offer_id_number || offerType !== offer_type){
+            throw new Error('Different offer products or an offer product with regular product can\'t be added together in your cart!');
+          }
+        }
+
+        offerIdNumber = offer_id_number;
+        offerType = offer_type;
+      }
+    }
+  },
+
   createAddress: async (authUser, address) => {
     return await PaymentAddress.create({
       user_id: authUser.id,
@@ -237,7 +307,7 @@ module.exports = {
 
   createOrder: async (db, orderDatPayload, cartItems) => {
 
-    console.log('orderDatPayload', orderDatPayload);
+    console.log('orderDatPayload rouzex', orderDatPayload);
 
     let order = await Order.create(orderDatPayload).fetch().usingConnection(db);
 
@@ -260,8 +330,12 @@ module.exports = {
       let thisWarehouseID = uniqueWarehouseIds[i];
 
       let cartItemsTemp = cartItems.filter(
-        asset => asset.product_id.warehouse_id === thisWarehouseID
+        asset => {
+          return asset.product_id.warehouse_id === thisWarehouseID;
+        }
       );
+
+      /*console.log('cartItemsTemp: ', cartItemsTemp);*/
 
       let suborderTotalPrice = _.sumBy(cartItemsTemp, 'product_total_price');
       let suborderTotalQuantity = _.sumBy(cartItemsTemp, 'product_quantity');
@@ -274,9 +348,21 @@ module.exports = {
         status: 1
       }).fetch().usingConnection(db);
 
+      let offeredProducts = await OfferService.getAllOfferedProducts();
+
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
         let thisCartItem = cartItemsTemp[k];
+        /*console.log('thisCartItem: ', thisCartItem);*/
+
+        let {offer_id_number, offer_type} = await OfferService.getProductOfferInfo({
+          id: thisCartItem.product_id.id,
+          type_id: thisCartItem.product_id.type_id,
+          category_id: thisCartItem.product_id.category_id,
+          subcategory_id: thisCartItem.product_id.subcategory_id,
+          brand_id: thisCartItem.product_id.brand_id,
+          warehouse_id: thisCartItem.product_id.warehouse_id
+        }, offeredProducts);
 
         let newSuborderItemPayload = {
           product_suborder_id: suborder.id,
@@ -284,7 +370,9 @@ module.exports = {
           warehouse_id: thisCartItem.product_id.warehouse_id,
           product_quantity: thisCartItem.product_quantity,
           product_total_price: thisCartItem.product_total_price,
-          status: 1
+          status: 1,
+          offer_type: offer_type,
+          offer_id_number: offer_id_number
         };
 
         const orderedProductInventory = {

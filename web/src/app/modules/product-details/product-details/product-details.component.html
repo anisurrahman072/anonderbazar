@@ -55,8 +55,18 @@
                     <div class="col-md-12 col-12">
                         <div class="productdetail-img">
                             <div class="productdetail-inner-img">
-                                <span *ngIf="data.promotion"
-                                      class="product-discount-badge">-{{discountPercentage.toFixed(2)}}%</span>
+                                <!--<span *ngIf="data.offerPrice" class="product-discount-badge">-{{data.offerPrice.toFixed(2)}}%</span>-->
+                                <ng-container *ngIf="data.offerPrice">
+                                    <span *ngIf="data.calculationType === 'absolute'; else percentage"
+                                          class="product-discount-badge">
+                                        -{{data.discountAmount}} tk
+                                    </span>
+                                    <ng-template #percentage>
+                                        <span class="product-discount-badge">
+                                            -{{data.discountAmount.toFixed(2)}}%
+                                        </span>
+                                    </ng-template>
+                                </ng-container>
                                 <img style="object-fit: contain; height: auto; width: auto" src="{{primaryPicture}}"
                                      alt="Product Image"/>
                             </div>
@@ -79,11 +89,18 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 mb-4">
                         <div class="productdetail">
-                            <p class="pro-de-1">{{data.brand_id?.name}}</p>
+                            <div>
+                                <a routerLink="/brands/{{data.brand_id.id}}/brand-products" >
+                                    <img src="{{IMAGE_ENDPOINT + data.brand_id.image}}"
+                                         alt="brand logo" style="height: 80px" title="See other products from {{data.brand_id.name}} brand">
+                                </a>
+                            </div>
                             <h6 class="pro-de-2">{{data.name}}</h6>
-                            <h6 class="pro-de-3" style="color: red">৳
-                                <del *ngIf="data.promotion">{{ data.price }}</del>
-                                {{ finalprice }}</h6>
+                            <h6 class="pro-de-3" style="color: red">
+                                ৳
+                                <del *ngIf="data.offerPrice">{{ data.price }}</del>
+                                {{ finalprice }}
+                            </h6>
                             <div class="sku">
                                 <ul class="d-flex">
                                     <li class="first pl-0">Code: {{data.code}}</li>

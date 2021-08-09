@@ -98,7 +98,7 @@ export class ProductDescriptionComponent implements OnInit {
         this.review = this.ratingForm.controls.review.value;
         this.rating = this.ratingForm.controls.rating.value;
 
-        /*method called to save data to the database*/
+        /**method called to save data to the database*/
         this.ratingChange(this.rating, this.review);
 
         this.ratingForm.reset();
@@ -241,7 +241,7 @@ export class ProductDescriptionComponent implements OnInit {
     private canRateProduct(userID, productID) {
         this.productService.canRateProduct(userID, productID)
             .subscribe(result => {
-                console.log('canRateProduct', result.canRateProduct);
+                /*console.log('canRateProduct', result.canRateProduct);*/
                 if (!___.isUndefined(result) && !___.isUndefined(result.canRateProduct) && ___.isArray(result.canRateProduct) && result.canRateProduct.length >= 1) {
                     this.reviewSection = true;
                 }
