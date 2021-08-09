@@ -206,7 +206,7 @@ module.exports = {
       const group = await Group.find(where);
 
       if (group && group.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false,
         });

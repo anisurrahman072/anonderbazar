@@ -69,7 +69,7 @@ export class AdminUsersEditComponent implements OnInit {
             username: ['', [Validators.required]],
             email: ['', [this.validationService.emailValidator]],
             first_name: ['', [Validators.required]],
-            last_name: ['', [Validators.required]],
+            last_name: ['', []],
             phone: ['', [Validators.required]],
             gender: ['', [Validators.required]],
             group_id: ['', [Validators.required]],

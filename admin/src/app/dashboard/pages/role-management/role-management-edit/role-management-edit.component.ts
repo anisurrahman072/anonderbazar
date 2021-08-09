@@ -58,7 +58,7 @@ export class RoleManagementEditComponent implements OnInit {
                         description: this.groupData.description
                     }
                     let grpName = this.groupData.name;
-                    if(grpName === 'admin' || grpName === 'owner' || grpName === 'customer') {
+                    if (grpName === 'admin' || grpName === 'owner' || grpName === 'customer') {
                         this.isDisabled = 'disabled';
                     }
 
@@ -69,30 +69,31 @@ export class RoleManagementEditComponent implements OnInit {
                     this._notification.error('Failed!', 'Something went wrong');
                     console.log('group edit error: ', error);
                 })
+
+            /** Getting all the available permissions in this project and creating an array which will contain only already_added permissions for this group */
+            this.roleManagementService.getAllGroupsPermissions().subscribe(result => {
+                this.allGroupsPermissions = result.data;
+                this.allGroupsPermissions.forEach(section => {
+                    this.perm_labels[section.perm_section] = section.perm_labels.split(',');
+                    this.perm_keys[section.perm_section] = section.perm_keys.split(',');
+
+                    let checkArray = [];
+                    for (let i = 0; i < this.perm_keys[section.perm_section].length; i++) {
+                        if (this.permissionKeysArray && this.permissionKeysArray.length > 0 && this.permissionKeysArray.includes(this.perm_keys[section.perm_section][i])) {
+                            checkArray.splice(i, 0, true);
+                            this.permissionLabelsArray.push(this.perm_labels[section.perm_section][i]);
+                        } else {
+                            checkArray.splice(i, 0, false);
+                        }
+                    }
+                    this.isCheckedArray[section.perm_section] = checkArray;
+                })
+            })
         })
 
         this.validateForm = this.fb.group({
             name: ['', [Validators.required]],
             description: ['', [Validators.required]],
-        })
-
-        this.roleManagementService.getAllGroupsPermissions().subscribe(result => {
-            this.allGroupsPermissions = result.data;
-            this.allGroupsPermissions.forEach(section => {
-                this.perm_labels[section.perm_section] = section.perm_labels.split(',');
-                this.perm_keys[section.perm_section] = section.perm_keys.split(',');
-
-                let checkArray = [];
-                for (let i = 0; i < this.perm_keys[section.perm_section].length; i++) {
-                    if (this.permissionKeysArray && this.permissionKeysArray.length > 0 && this.permissionKeysArray.includes(this.perm_keys[section.perm_section][i])) {
-                        checkArray.splice(i, 0, true);
-                        this.permissionLabelsArray.push(this.perm_labels[section.perm_section][i]);
-                    } else {
-                        checkArray.splice(i, 0, false);
-                    }
-                }
-                this.isCheckedArray[section.perm_section] = checkArray;
-            })
         })
     }
 

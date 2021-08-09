@@ -42,7 +42,7 @@
                                     Group Name is required!
                                 </div>
                                 <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('taken')">
-                                    "{{getFormControl('name').value}}" is already taken!
+                                    <span style="color: red">"{{getFormControl('name').value}}" is already taken!</span>
                                 </div>
                                 <div *ngIf="getFormControl('name').dirty&&getFormControl('name').pending">
                                     <span style="color: #ffa300">Verifying ...</span>
@@ -89,12 +89,13 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <ng-container *ngIf="allGroupsPermissions && perm_labels">
-                        <div *ngFor="let permission of allGroupsPermissions" style="margin-bottom: 25px">
-                            <div *ngIf="permission.perm_section !== 'Admin Users' && permission.perm_section !== 'Role Management'">
+                        <div *ngFor="let permission of allGroupsPermissions">
+                            <div *ngIf="permission.perm_section !== 'Admin Users' && permission.perm_section !== 'Users Groups'"
+                                 style="margin-bottom: 25px">
                                 <div *ngIf="permission.perm_section.includes('=>'); else elseTemplate"
                                      style="margin-left: 25px">
                                     <div style="background-color: #33c7d2; width: 100%; height: 25px; margin-bottom: 10px">
-                                        <h4 style="margin-left: 15px;">{{permission.perm_section}}</h4>
+                                        <h4 style="text-align: center">{{permission.perm_section}}</h4>
                                     </div>
                                     <ng-container
                                             *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"
@@ -105,7 +106,7 @@
                                 </div>
                                 <ng-template #elseTemplate>
                                     <div style="background-color: cornflowerblue; width: 100%; height: 36px; margin-bottom: 10px">
-                                        <h3 style="margin-left: 15px;">{{permission.perm_section}}</h3>
+                                        <h3 style="text-align: center">{{permission.perm_section}}</h3>
                                     </div>
                                     <ng-container
                                             *ngFor="let perm of perm_labels[permission.perm_section]; let i = index"

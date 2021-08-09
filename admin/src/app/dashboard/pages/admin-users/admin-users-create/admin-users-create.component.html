@@ -31,7 +31,7 @@
                     <div nz-row style="margin-bottom: 15px">
                         <!--name start-->
                         <div nz-col [nzSpan]="10">
-                            <label> UserName </label>
+                            <label> UserName <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="username" placeholder="Enter UserName" [nzSize]="'large'">
@@ -39,7 +39,7 @@
                                 <span style="color: red">Input your username</span>
                             </div>
                             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').hasError('taken')">
-                                "{{getFormControl('username').value}}" is already taken!
+                                <span style="color: red">"{{getFormControl('username').value}}" is already taken!</span>
                             </div>
                             <div *ngIf="getFormControl('username').dirty&&getFormControl('username').pending">
                                 <span style="color: #ffa300">Verifying ...</span>
@@ -50,11 +50,11 @@
                     <!--password -->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Password </label>
+                            <label> Password <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input [(ngModel)]="pass" formControlName="password" placeholder="Enter Password"
-                                   [nzSize]="'large'">
+                                   [nzSize]="'large'" type="password">
                             <div *ngIf="getFormControl('password').dirty&&getFormControl('password').hasError('required')">
                                 <span style="color: red">Input your password</span>
                             </div>
@@ -67,14 +67,14 @@
                         </div>
                     </div>
 
-                    <!--confirmPassword -->
+                    <!--confirm Password -->
                     <div nz-row *ngIf="pass" style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label>Confirm Password</label>
+                            <label>Confirm Password <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="confirmPassword" placeholder="Confirm Password"
-                                   [nzSize]="'large'">
+                                   [nzSize]="'large'" type="password">
                             <div *ngIf="getFormControl('confirmPassword').dirty&&getFormControl('confirmPassword').hasError('required')">
                                 <span style="color: red">Input your password again</span>
                             </div>
@@ -88,7 +88,7 @@
                     <!--select admin users group-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Group </label>
+                            <label> Group <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <nz-select formControlName="group_id" nzAllowClear nzPlaceHolder="Select Group"
@@ -107,7 +107,7 @@
                     <!--email-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Email </label>
+                            <label> Email <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="email" placeholder="Enter Your Email" [nzSize]="'large'">
@@ -116,10 +116,10 @@
                             </div>
 
                             <div *ngIf="getFormControl('email').dirty&&getFormControl('email').hasError('taken')">
-                                "{{getFormControl('email').value}}" is already taken!
+                                <span style="color: red">"{{getFormControl('email').value}}" is already taken!</span>
                             </div>
                             <div *ngIf="getFormControl('email').dirty&&getFormControl('email').pending">
-                                Verifying ...
+                                <span style="color: red">Verifying ...</span>
                             </div>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                     <!--first_name-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label>First name</label>
+                            <label>First name <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="first_name" placeholder="Enter Your First Name"
@@ -141,7 +141,7 @@
                     <!--last_name-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label>Last name</label>
+                            <label>Last name <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="last_name" placeholder="Enter Your Last Name"
@@ -155,7 +155,7 @@
                     <!--phone-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Phone Number </label>
+                            <label> Phone Number <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <input nz-input formControlName="phone" placeholder="Enter Your Phone Number"
@@ -165,17 +165,17 @@
                             </div>
 
                             <div *ngIf="getFormControl('phone').dirty&&getFormControl('phone').hasError('taken')">
-                                "{{getFormControl('phone').value}}" পূর্বে নেয়া হয়েছে !
+                                <span style="color: red">"{{getFormControl('phone').value}}" is already taken!</span>
                             </div>
                             <div *ngIf="getFormControl('phone').dirty&&getFormControl('phone').pending">
-                                Verifying ...
+                                <span style="color: red">Verifying ...</span>
                             </div>
                         </div>
                     </div>
 
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Gender </label>
+                            <label> Gender <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <nz-select formControlName="gender" nzAllowClear nzPlaceHolder="Select Gender"
@@ -194,7 +194,7 @@
                     <!--division-->
                     <div nz-row style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> division </label>
+                            <label> division <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <nz-select formControlName="division_id" nzAllowClear nzPlaceHolder="Select Division"
@@ -217,7 +217,7 @@
                          style="margin-bottom: 15px">
 
                         <div nz-col [nzSpan]="10">
-                            <label> District </label>
+                            <label> District <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
 
@@ -239,7 +239,7 @@
                     <div nz-row *ngIf="validateForm.controls.division_id.value && validateForm.controls.zila_id.value"
                          style="margin-bottom: 15px">
                         <div nz-col [nzSpan]="10">
-                            <label> Upazila </label>
+                            <label> Upazila <span style="color: red">*</span></label>
                         </div>
                         <div nz-col [nzSpan]="16">
                             <nz-select formControlName="upazila_id" nzAllowClear nzPlaceHolder="Select Upazila"

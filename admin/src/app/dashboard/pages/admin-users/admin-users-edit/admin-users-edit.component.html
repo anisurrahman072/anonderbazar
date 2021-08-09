@@ -30,7 +30,7 @@
         <div nz-row style="margin-bottom: 15px">
           <!--name start-->
           <div nz-col [nzSpan]="10">
-            <label> UserName </label>
+            <label> UserName <span style="color: red">*</span> </label>
           </div>
           <div nz-col [nzSpan]="16">
             <input nz-input formControlName="username" placeholder="Enter UserName" [nzSize]="'large'">
@@ -49,7 +49,7 @@
         <!--select admin users group-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> Group </label>
+            <label> Group <span style="color: red">*</span> </label>
           </div>
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="group_id" nzAllowClear nzPlaceHolder="Select Group"
@@ -68,7 +68,7 @@
         <!--email-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> Email </label>
+            <label> Email <span style="color: red">*</span> </label>
           </div>
           <div nz-col [nzSpan]="16">
             <input nz-input formControlName="email" placeholder="Enter Your Email" [nzSize]="'large'">
@@ -88,7 +88,7 @@
         <!--first_name-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label>First name</label>
+            <label>First name <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
             <input nz-input formControlName="first_name" placeholder="Enter Your First Name"
@@ -116,7 +116,7 @@
         <!--phone-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> Phone Number </label>
+            <label> Phone Number <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
             <input nz-input formControlName="phone" placeholder="Enter Your Phone Number"
@@ -136,7 +136,7 @@
 
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> Gender </label>
+            <label> Gender <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="gender" nzAllowClear nzPlaceHolder="Select Gender"
@@ -155,7 +155,7 @@
         <!--division-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> division </label>
+            <label> division <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="division_id" nzAllowClear nzPlaceHolder="Select Division"
@@ -178,7 +178,7 @@
              style="margin-bottom: 15px">
 
           <div nz-col [nzSpan]="10">
-            <label> District </label>
+            <label> District <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
 
@@ -191,7 +191,7 @@
               </nz-option>
             </nz-select>
             <div *ngIf="getFormControl('zila_id').dirty&&getFormControl('zila_id').hasError('required')">
-              <span style="color: red">Select zila</span>
+              <span style="color: red">Select zila </span>
             </div>
           </div>
         </div>
@@ -200,7 +200,7 @@
         <div nz-row *ngIf="validateForm.controls.division_id.value && validateForm.controls.zila_id.value"
              style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">
-            <label> Upazila </label>
+            <label> Upazila <span style="color: red">*</span></label>
           </div>
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="upazila_id" nzAllowClear nzPlaceHolder="Select Upazila"

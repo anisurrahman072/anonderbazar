@@ -80,7 +80,7 @@ export class AdminUsersCreateComponent implements OnInit {
                 [this.validationService.emailTakenValidator.bind(this)]
             ],
             first_name: ['', [Validators.required]],
-            last_name: ['', [Validators.required]],
+            last_name: ['', []],
             phone: [
                 '',
                 [this.validationService.phoneValidator],

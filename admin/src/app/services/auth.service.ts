@@ -121,7 +121,7 @@ export class AuthService {
         const accessControlList = localStorage.getItem('accessControlList');
         if (accessControlList) {
             const jwtPayload = this.jwtHelper.decodeToken(accessControlList);
-            console.log("access list ", jwtPayload.list);
+            /*console.log("access list ", jwtPayload.list);*/
             return jwtPayload.list;
         } else {
             return [];

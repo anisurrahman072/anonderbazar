@@ -316,7 +316,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false,
         });
@@ -355,7 +355,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false
         });
@@ -394,7 +394,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false,
         });
