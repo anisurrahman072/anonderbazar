@@ -1,7 +1,8 @@
 <section>
     <nz-card class="card-height" nzTitle="Attribute List" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
-            <button *ngIf="'variant-create' | accessControl" routerLink="/dashboard/variant/create" nz-button>
+            <button *ngIf="'variant-create' | accessControl" routerLink="/dashboard/variant/create"
+                    nz-button [nzType]="'primary'">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>&nbsp;

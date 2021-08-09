@@ -1,7 +1,8 @@
 <section>
     <nz-card class="card-height" nzTitle="Brand list" [nzExtra]="extra">
         <ng-template #extra>
-            <button *ngIf="'brand-create'|accessControl" routerLink="/dashboard/brand/create" nz-button >
+            <button *ngIf="'brand-create'|accessControl" routerLink="/dashboard/brand/create"
+                    nz-button [nzType]="'primary'" style="margin-right: 15px">
                 <i class="anticon anticon-download"></i><span> Add New </span>
             </button>
             <button (click)="resetAllFilter()" nz-button>Clear filter</button>
@@ -52,7 +53,7 @@
             <tr *ngFor="let data of nzTable.data;let i =  index ">
                 <td>
                     <ng-container *ngIf="data.image; else noImage">
-                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
+                    <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
                                [nzIcon]="'user'"></nz-avatar>
                     </ng-container>
                     <ng-template #noImage>

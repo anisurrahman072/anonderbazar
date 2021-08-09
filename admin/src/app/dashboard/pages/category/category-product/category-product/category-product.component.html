@@ -2,7 +2,7 @@
     <nz-card class="card-height" nzTitle="Product category list" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
             <button *ngIf="'productcategory-create'|accessControl" routerLink="/dashboard/category/product/create"
-                    nz-button [nzSize]="'large'">
+                    nz-button [nzType]="'primary'">
                 <i class="anticon anticon-download"><span> Add New </span></i>
             </button>
         </ng-template>

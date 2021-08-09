@@ -21,17 +21,17 @@ const routes: Routes = [
             {
                 path: 'product',
                 canActivate: [AccessControl],
-                data: {accessData: 'productcategory-read', breadcrumbs: 'category'},
+                data: {accessData: 'productcategory', breadcrumbs: 'category'},
                 children: [
                     {
                         path: '',
                         canActivate: [AccessControl],
-                        data: {accessData: 'productcategory-read', breadcrumbs: 'list'},
+                        data: {accessData: 'productcategory', breadcrumbs: 'list'},
                         component: CategoryProductComponent,
                     }, {
                         path: 'details/:id',
                         canActivate: [AccessControl],
-                        data: {accessData: 'productcategory-details', breadcrumbs: 'details'},
+                        data: {accessData: 'productcategory-read', breadcrumbs: 'details'},
                         component: CategoryProductReadComponent,
                     }, {
                         path: 'create',
