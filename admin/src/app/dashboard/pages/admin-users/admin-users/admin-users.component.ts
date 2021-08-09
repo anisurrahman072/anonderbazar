@@ -90,6 +90,9 @@ export class AdminUsersComponent implements OnInit {
             return;
         }
         this.userService.delete(id).subscribe(result => {
+            if(result) {
+                this._notification.warning('Deleted!', 'Admin User deleted successfully')
+            }
         });
         this.getPageData();
     }

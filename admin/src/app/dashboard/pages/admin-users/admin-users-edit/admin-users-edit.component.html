@@ -1,13 +1,14 @@
 <nz-card [nzTitle]="title" [nzExtra]="extra">
   <ng-template #title>
-    Add New Admin User
+    Edit Admin User
   </ng-template>
   <ng-template #extra>
     <button routerLink="/dashboard/admin-users" nz-button [nzSize]="'large'">
       <i class="anticon anticon-file-text"></i><span> List </span>
     </button>
   </ng-template>
-  <div>
+  <div class="spinning">
+    <nz-spin [nzSpinning]="_isSpinning">
     <form nz-form [formGroup]="validateForm" id="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
       <div class="col-md-3">
         <div class="row">
@@ -226,5 +227,6 @@
         </div>
       </div>
     </form>
+    </nz-spin>
   </div>
 </nz-card>

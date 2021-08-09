@@ -31,10 +31,10 @@
                         <!--group name-->
                         <div nz-row style="margin-bottom: 10px">
                             <div nz-col [nzSpan]="7">
-                                <label> Group Name </label>
+                                <label> Group Name <span style="color: red">*</span></label>
                             </div>
                             <div nz-col [nzSpan]="12">
-                                <input nz-input formControlName="name" [placeholder]="'Enter Group Name'"
+                                <input nz-input formControlName="name" [placeholder]="'Enter a unique Group Name'"
                                        [nzSize]="'large'">
 
                                 <div *ngIf="getFormControl('name').dirty&&getFormControl('name').hasError('required')"
@@ -53,7 +53,7 @@
                         <!--Group description-->
                         <div nz-row style="margin-bottom: 10px">
                             <div nz-col [nzSpan]="7">
-                                <label> Group Description </label>
+                                <label> Group Description <span style="color: red">*</span> </label>
                             </div>
                             <div nz-col [nzSpan]="12">
                                 <input nz-input formControlName="description" [placeholder]="'Write a description'"

@@ -45,6 +45,7 @@ export class AdminUsersEditComponent implements OnInit {
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: File;
+    _isSpinning: any = false;
 
     allGroups: any;
     group;
@@ -65,6 +66,7 @@ export class AdminUsersEditComponent implements OnInit {
     }
 
     ngOnInit() {
+        this._isSpinning = true;
         this.validateForm = this.fb.group({
             username: ['', [Validators.required]],
             email: ['', [this.validationService.emailValidator]],
@@ -86,6 +88,7 @@ export class AdminUsersEditComponent implements OnInit {
         this.adminUsersService.getAllGroups()
             .subscribe(result => {
                 this.allGroups = result.data;
+                this._isSpinning = false;
             })
 
         this.sub = this.route.params.subscribe(params => {
@@ -116,6 +119,7 @@ export class AdminUsersEditComponent implements OnInit {
 
     /** Event method for submitting the adminn user update form */
     submitForm = ($event, value) => {
+        this._isSpinning = true;
         $event.preventDefault();
         for (const key in this.validateForm.controls) {
             this.validateForm.controls[key].markAsDirty();
@@ -145,10 +149,12 @@ export class AdminUsersEditComponent implements OnInit {
             result => {
                 this._notification.create('success', 'Admin user updated successfully', this.data.name);
                 this.router.navigate(['/dashboard/admin-users/details', this.id]);
+                this._isSpinning = false;
             },
             error => {
                 this._notification.error('Failed!', 'Failed to update admin user');
                 console.log("admin user update error: ", error);
+                this._isSpinning = false;
             }
         );
     };
