@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {NzNotificationService} from "ng-zorro-antd";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RoleManagementService} from "../../../../services/role-management.service";
+import {forkJoin} from "rxjs";
 
 @Component({
     selector: 'app-role-management-edit',
@@ -43,9 +44,61 @@ export class RoleManagementEditComponent implements OnInit {
         this.sub = this.route.params.subscribe(params => {
             this._isSpinning = true;
             this.id = +params['id'];
-            this.roleManagementService.getGroupsById(this.id)
+
+            forkJoin([this.roleManagementService.getGroupsById(this.id), this.roleManagementService.getAllGroupsPermissions()])
+                .subscribe(result => {
+                    /** First API call */
+                    this.groupData = result[0].data;
+                    console.log("this.groupData: ", this.groupData);
+                    if (!this.groupData) {
+                        this._isSpinning = false;
+                        this._notification.error('Failed!', 'Something went wrong');
+                        return;
+                    }
+                    this.permissionKeysArray = this.groupData.accessList;
+
+                    let payload = {
+                        name: this.groupData.name,
+                        description: this.groupData.description
+                    }
+                    let grpName = this.groupData.name;
+                    if (grpName === 'admin' || grpName === 'owner' || grpName === 'customer') {
+                        this.isDisabled = 'disabled';
+                    }
+
+                    this.validateForm.patchValue(payload);
+                    this._isSpinning = false;
+
+                    /** Second API call */
+                    /** Getting all the available permissions in this project and creating an array which will contain only already_added permissions for this group */
+                    this.allGroupsPermissions = result[1].data;
+                    console.log("this.allGroupsPermissions: ", this.allGroupsPermissions);
+                    this.allGroupsPermissions.forEach(section => {
+                        this.perm_labels[section.perm_section] = section.perm_labels.split(',');
+                        this.perm_keys[section.perm_section] = section.perm_keys.split(',');
+
+                        let checkArray = [];
+                        for (let i = 0; i < this.perm_keys[section.perm_section].length; i++) {
+                            if (this.permissionKeysArray && this.permissionKeysArray.length > 0 && this.permissionKeysArray.includes(this.perm_keys[section.perm_section][i])) {
+                                checkArray.splice(i, 0, true);
+                                this.permissionLabelsArray.push(this.perm_labels[section.perm_section][i]);
+                            } else {
+                                checkArray.splice(i, 0, false);
+                            }
+                        }
+                        this.isCheckedArray[section.perm_section] = checkArray;
+                    })
+
+                }, error => {
+                    this._isSpinning = false;
+                    this._notification.error('Failed!', 'Something went wrong');
+                    console.log('group edit error: ', error);
+                })
+
+            /*this.roleManagementService.getGroupsById(this.id)
                 .subscribe(result => {
                     this.groupData = result.data;
+                    console.log("this.groupData: ", this.groupData);
                     if (!this.groupData) {
                         this._isSpinning = false;
                         this._notification.error('Failed!', 'Something went wrong');
@@ -70,9 +123,11 @@ export class RoleManagementEditComponent implements OnInit {
                     console.log('group edit error: ', error);
                 })
 
-            /** Getting all the available permissions in this project and creating an array which will contain only already_added permissions for this group */
-            this.roleManagementService.getAllGroupsPermissions().subscribe(result => {
+            /!** Getting all the available permissions in this project and creating an array which will contain only already_added permissions for this group *!/
+            this.roleManagementService.getAllGroupsPermissions()
+                .subscribe(result => {
                 this.allGroupsPermissions = result.data;
+                console.log("this.allGroupsPermissions: ", this.allGroupsPermissions);
                 this.allGroupsPermissions.forEach(section => {
                     this.perm_labels[section.perm_section] = section.perm_labels.split(',');
                     this.perm_keys[section.perm_section] = section.perm_keys.split(',');
@@ -87,8 +142,9 @@ export class RoleManagementEditComponent implements OnInit {
                         }
                     }
                     this.isCheckedArray[section.perm_section] = checkArray;
+                    console.log("Assss: ", );
                 })
-            })
+            })*/
         })
 
         this.validateForm = this.fb.group({

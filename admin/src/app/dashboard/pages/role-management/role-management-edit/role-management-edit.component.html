@@ -81,7 +81,7 @@
                     </form>
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <ng-container *ngIf="allGroupsPermissions && perm_labels">
+                    <ng-container *ngIf="allGroupsPermissions && allGroupsPermissions.length > 0 && perm_labels">
                         <div *ngFor="let permission of allGroupsPermissions">
                             <div *ngIf="permission.perm_section !== 'Admin Users' && permission.perm_section !== 'Users Groups'"
                                  style="margin-bottom: 25px">
