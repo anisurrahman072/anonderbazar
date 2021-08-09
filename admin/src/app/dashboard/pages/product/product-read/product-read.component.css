@@ -18,10 +18,14 @@
 
 img{
     margin:0;
-    width: 375px;
-    height: 250px;
     margin-top: 10px;
 }
+
+.img-extra{
+    width: 375px;
+    height: 250px;
+}
+
 .page-thumb {
     position: relative;
 }
