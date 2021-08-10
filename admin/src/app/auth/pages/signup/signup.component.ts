@@ -229,7 +229,7 @@ export class SignupComponent implements OnInit {
         this.designImagesService.insertImage(formData)
             .subscribe(data => {
                 this.ImagePath = data.path;
-                console.log("this.ImagePath: ", this.ImagePath);
+                /*console.log("this.ImagePath: ", this.ImagePath);*/
             }, error => {
                 console.log("Error occurred: ", error);
             })

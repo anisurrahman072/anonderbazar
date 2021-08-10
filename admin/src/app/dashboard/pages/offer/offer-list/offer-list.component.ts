@@ -71,7 +71,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             .allRegularOffer(this.homeOfferLimit, this.homeOfferPage)
             .subscribe(result => {
                 this.loading = false;
-                console.log('getRegularOfferData', result);
+                /*console.log('getRegularOfferData', result);*/
                 this.regularOfferData = result.data;
                 this.regularOfferTotal = result.total;
                 this._isSpinning = false;

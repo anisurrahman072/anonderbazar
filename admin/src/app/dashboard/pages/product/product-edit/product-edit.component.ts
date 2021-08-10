@@ -213,7 +213,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
             this.productService.getById(this.id).subscribe(result => {
-                console.log('product', result);
+                /*console.log('product', result);*/
                 if (result.warehouse_id) {
                     this.warehouse_name = result.warehouse_id.name;
                 } else {
@@ -283,7 +283,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
                     this.ImageBannerFilesShow = [...this.ImageBannerFilesShow];
                 }
 
-                console.log('this.ImageBannerFilesShow', this.ImageBannerFilesShow);
+                /*console.log('this.ImageBannerFilesShow', this.ImageBannerFilesShow);*/
 
                 if (this.data.tag != "undefined") {
                     this.tagOptions = JSON.parse(this.data.tag);
@@ -414,7 +414,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         });
 
         this.productService.uploadCouponBanners(formData).subscribe(result => {
-            console.log('submit banners', result);
+            /*console.log('submit banners', result);*/
             this._notification.create(
                 'success',
                 'Banner Image updated successfully',
@@ -456,7 +456,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
     // Event method for removing picture
     onRemovedBanners(_file: FileHolder) {
-        console.log('_file', _file);
+        /*console.log('_file', _file);*/
         this.ImageBannerFiles.splice(
             this.ImageBannerFiles.findIndex(e => e.name === _file.file.name),
             1
@@ -487,7 +487,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
     // Event method for storing imgae in variable
     onBeforeBannerUpload = (metadata: UploadMetadata) => {
-        console.log('metadata.file', metadata.file.constructor.name);
+        /*console.log('metadata.file', metadata.file.constructor.name);*/
         this.ImageBannerFiles.push(metadata.file);
         return metadata;
     };
@@ -514,7 +514,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     onTypeChange($event) {
 
         const query = encodeURI($event);
-        console.log('onTypeChange', $event);
+        /*console.log('onTypeChange', $event);*/
         this.categorySearchOptions = [];
         if (query !== 'null') {
             this.categoryProductService
@@ -530,7 +530,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     // Method called on category change
     categoryChange($event) {
         const query = encodeURI($event);
-        console.log('categoryChange', $event);
+        /*console.log('categoryChange', $event);*/
         this.subcategorySearchOptions = {};
         this.subcategory_id = null;
         if (query !== 'null') {

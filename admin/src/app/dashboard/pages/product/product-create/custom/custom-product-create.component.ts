@@ -222,7 +222,7 @@ export class CustomProductCreateComponent implements OnInit, OnDestroy {
         this.isSubmit = false;
         this.productService.insert(formData).subscribe(result => {
             this.isSubmit = true;
-            console.log('result', result);
+            /*console.log('result', result);*/
             if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',

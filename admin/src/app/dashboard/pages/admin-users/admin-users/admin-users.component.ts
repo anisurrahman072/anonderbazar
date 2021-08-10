@@ -116,7 +116,7 @@ export class AdminUsersComponent implements OnInit {
         )
             .subscribe(
                 result => {
-                    console.log('users lists: ', result.data);
+                    /*console.log('users lists: ', result.data);*/
                     this.total = result.total;
                     this._isSpinning = false;
 

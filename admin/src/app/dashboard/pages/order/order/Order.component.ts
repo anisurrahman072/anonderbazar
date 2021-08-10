@@ -618,7 +618,7 @@ export class OrderComponent implements OnInit, OnDestroy {
             date: JSON.stringify(dateSearchValue)
         })
             .subscribe(result => {
-                console.log("result is: ", result);
+                /*console.log("result is: ", result);*/
                 if (!(Array.isArray(result) && result.length > 0)) {
                     this._notification.info('Not found!', 'No product found in this time');
                     return false;

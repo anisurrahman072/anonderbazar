@@ -227,7 +227,7 @@ export class SuborderComponent implements OnInit {
             .subscribe(result => {
                     this.loading = false;
                     this.data = result.data;
-                    console.log(result);
+                    /*console.log(result);*/
 
                     this.total = result.total;
                     this._isSpinning = false;
@@ -324,7 +324,7 @@ export class SuborderComponent implements OnInit {
         )
             .subscribe(result => {
 
-                    console.log('getAllSuborderWithPR', result)
+                    /*console.log('getAllSuborderWithPR', result)*/
 
                     this.dataPR = result.data;
                     this.totalPr = result.total;
@@ -399,7 +399,7 @@ export class SuborderComponent implements OnInit {
             this.dataPR[i].checked = isChecked;
             this.onPrSelectionChange(isChecked, this.dataPR[i]);
         }
-        console.log('selectAllPr', this.selectedSubOrderIdsPr);
+        /*console.log('selectAllPr', this.selectedSubOrderIdsPr);*/
     }
 
     onPrSelectionChange($event, value) {
@@ -412,7 +412,7 @@ export class SuborderComponent implements OnInit {
                 return storedOder.id == value.id;
             });
 
-            console.log('onPrSelectionChange', value.id, foundIndex);
+            /*console.log('onPrSelectionChange', value.id, foundIndex);*/
             if (foundIndex !== -1) {
                 this.selectedSubOrderIdsPr.splice(foundIndex, 1);
             }
@@ -629,14 +629,14 @@ export class SuborderComponent implements OnInit {
                         return [p.SL, p.Vendor, p.Title, p.SKU, p.Size, p.Count, p.Rate, (p.Amount).toFixed(2)];
                     });
 
-                    console.log('pdfDataFormattedMine', pdfDataAll, pdfDataFormattedMine)
+                    /*console.log('pdfDataFormattedMine', pdfDataAll, pdfDataFormattedMine)*/
 
                     this.requisitionService.insertMass({
                         suborder_ids: allSelectedSubOrderIds,
                         allPayloads
                     }).subscribe((res) => {
 
-                        console.log('Mass PR Status', res);
+                        /*console.log('Mass PR Status', res);*/
 
                         let docDefinition = {
                             pageSize: 'TABLOID',

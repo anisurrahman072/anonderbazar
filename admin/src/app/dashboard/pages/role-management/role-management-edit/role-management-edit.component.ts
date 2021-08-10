@@ -49,7 +49,7 @@ export class RoleManagementEditComponent implements OnInit {
                 .subscribe(result => {
                     /** First API call */
                     this.groupData = result[0].data;
-                    console.log("this.groupData: ", this.groupData);
+                    /*console.log("this.groupData: ", this.groupData);*/
                     if (!this.groupData) {
                         this._isSpinning = false;
                         this._notification.error('Failed!', 'Something went wrong');
@@ -72,7 +72,7 @@ export class RoleManagementEditComponent implements OnInit {
                     /** Second API call */
                     /** Getting all the available permissions in this project and creating an array which will contain only already_added permissions for this group */
                     this.allGroupsPermissions = result[1].data;
-                    console.log("this.allGroupsPermissions: ", this.allGroupsPermissions);
+                    /*console.log("this.allGroupsPermissions: ", this.allGroupsPermissions);*/
                     this.allGroupsPermissions.forEach(section => {
                         this.perm_labels[section.perm_section] = section.perm_labels.split(',');
                         this.perm_keys[section.perm_section] = section.perm_keys.split(',');

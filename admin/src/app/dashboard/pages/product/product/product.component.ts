@@ -175,7 +175,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
-                console.log('currentSelectedWarehouseInfo', warehouseId);
+                /*console.log('currentSelectedWarehouseInfo', warehouseId);*/
                 this.page = 1;
                 this.getProductData();
             }
@@ -198,7 +198,7 @@ export class ProductComponent implements OnInit, OnDestroy {
                 return JSON.stringify(prev) === JSON.stringify(next);
             }))
             .subscribe((model: SearchSubject) => {
-                console.log('model', model);
+                /*console.log('model', model);*/
                 this[model.field] = model.query;
                 this.page = 1;
                 this.getProductData();
@@ -222,7 +222,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     // Method called in brand option change
     getProductData(event?: any, type?: string, forExcel?: boolean) {
         if (event && type) {
-            console.log('getProductData', event, type);
+            /*console.log('getProductData', event, type);*/
             if (type === 'page') {
                 this.page = event;
             } else if (type === 'size') {
@@ -443,7 +443,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
 
     rejectConfirm(index, id) {
-        console.log('rejectConfirm', id)
+        /*console.log('rejectConfirm', id)*/
         this.productService.rejectByAdmin(id).subscribe(result => {
 
             this.getProductData();
@@ -685,7 +685,7 @@ export class ProductComponent implements OnInit, OnDestroy {
     approvalStatusChange($event) {
         this.page = 1;
         const query = encodeURI($event);
-        console.log('approvalStatusChange-query', query)
+        /*console.log('approvalStatusChange-query', query)*/
         this.approvalStatus = query
         this.getProductData();
     }
