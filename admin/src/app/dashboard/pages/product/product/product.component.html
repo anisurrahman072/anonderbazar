@@ -49,10 +49,11 @@
                   (nzPageIndexChange)="getProductData($event, 'page', false)"
                   (nzPageSizeChange)="getProductData($event, 'size', false)"
                   [nzScroll]="{ x:'1200px',y: '800px'  }"
+                  [nzBordered]="true"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
-                <th style="text-align: center" nz-th [nzWidth]="'100px'">
+                <th style="text-align: center" nz-th [nzWidth]="'150px'">
                     <span> Image </span>
                 </th>
                 <th nzShowSort nzSortKey="updated_at" style="text-align: center" nz-th [nzWidth]="'150px'">
@@ -73,16 +74,16 @@
                 <th style="text-align: center" nz-th [nzWidth]="'150px'">
                     <span> Approved ? </span>
                 </th>
-                <th style="text-align: center" nz-th [nzWidth]="'150px'">
+                <th style="text-align: center; padding: 0" nz-th [nzWidth]="'200px'">
                     <span> Type </span>
                 </th>
-                <th style="text-align: center" nz-th [nzWidth]="'150px'">
+                <th style="text-align: center; padding: 0" nz-th [nzWidth]="'200px'">
                     <span> Category </span>
                 </th>
-                <th style="text-align: center" nz-th [nzWidth]="'150px'">
+                <th style="text-align: center; padding: 0" nz-th [nzWidth]="'200px'">
                     <span> S-category </span>
                 </th>
-                <th style="text-align: center" nz-th [nzWidth]="'150px'">
+                <th style="text-align: center; padding: 0" nz-th [nzWidth]="'200px'">
                     <span> Brand </span>
                 </th>
 
@@ -122,7 +123,7 @@
                     </nz-select>
                 </th>
                 <th>
-                    <nz-select style="width: 120px;" nzAllowClear [(ngModel)]="typeId"
+                    <nz-select style="width: 160px; padding: 10px" nzAllowClear [(ngModel)]="typeId"
                                (ngModelChange)="typeIdChange($event)"
                                nzPlaceHolder="Select Product Type"
                                [nzNotFoundContent]="'Not found'"
@@ -134,7 +135,7 @@
                 </th>
 
                 <th>
-                    <nz-select style="width: 120px;" nzAllowClear [(ngModel)]="categoryId"
+                    <nz-select style="width: 160px; padding: 10px" nzAllowClear [(ngModel)]="categoryId"
                                (ngModelChange)="categoryIdChange($event)"
                                nzPlaceHolder="Select Product category"
                                [nzNotFoundContent]="'Not found'"
@@ -146,7 +147,7 @@
 
                 </th>
                 <th>
-                    <nz-select style="width: 140px;" nzAllowClear [(ngModel)]="subcategoryId"
+                    <nz-select style="width: 160px; padding: 10px" nzAllowClear [(ngModel)]="subcategoryId"
                                (ngModelChange)="subcategoryIdChange($event)"
                                nzPlaceHolder="Select Product Subcategory"
                                [nzNotFoundContent]="'Not found'" nzShowSearch>
@@ -156,7 +157,7 @@
                     </nz-select>
                 </th>
                 <th>
-                    <nz-select style="width: 140px;" nzAllowClear [(ngModel)]="brandId"
+                    <nz-select style="width: 160px; padding: 10px" nzAllowClear [(ngModel)]="brandId"
                                (ngModelChange)="brandIdChange($event)"
                                nzPlaceHolder="Select Brand"
                                [nzNotFoundContent]="'Not found'"

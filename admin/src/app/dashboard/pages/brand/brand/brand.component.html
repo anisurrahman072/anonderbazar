@@ -18,25 +18,28 @@
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
                   (nzPageIndexChange)="getAllData($event)"
+                  [nzBordered]="true"
         >
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
-                <th>
+                <th style="text-align: center">
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span> Name </span>
                 </th>
-                <th nzShowSort nzSortKey="code">
+                <th nzShowSort nzSortKey="code" style="text-align: center">
                     <span> Code </span>
                 </th>
-                <th nzShowSort nzSortKey="slug">
+                <th nzShowSort nzSortKey="slug" style="text-align: center">
                     <span>Slug</span>
                 </th>
-                <th nzShowSort nzSortKey="frontend_position">
+                <th nzShowSort nzSortKey="frontend_position" style="text-align: center">
                     <span>Frontend Position</span>
                 </th>
-                <th>&nbsp;</th>
+                <th style="text-align: center">
+                    <span>Actions</span>
+                </th>
             </tr>
             <tr>
                 <th></th>
@@ -51,7 +54,7 @@
             </thead>
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
-                <td>
+                <td style="text-align: center">
                     <ng-container *ngIf="data.image; else noImage">
                     <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
                                [nzIcon]="'user'"></nz-avatar>
@@ -60,22 +63,22 @@
                         <nz-tag>No Image</nz-tag>
                     </ng-template>
                 </td>
-                <td>{{data.name}}</td>
-                <td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow">
+                <td style="text-align: center">{{data.name}}</td>
+                <td *ngIf="data.code && data.code!=='undefined'; else notShow; else notShow" style="text-align: center">
                     <nz-tag>{{data.code}}</nz-tag>
                 </td>
                 <ng-template #notShow>
-                    <td>
+                    <td style="text-align: center">
                         <nz-tag>N/A</nz-tag>
                     </td>
                 </ng-template>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.slug}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.frontend_position}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-button-group>
                         <button *ngIf="'brand-read'|accessControl"
                                 [routerLink]="['/dashboard/brand/details/', data.id]"

@@ -19,17 +19,19 @@
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
                   (nzPageIndexChange)="getPageData($event)"
+                  [nzBordered]="true"
         >
 
             <thead (nzSortChange)="sort($event)" [nzSingleSort]="true">
             <tr>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span> Name </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Price Variation Status</span>
                 </th>
-                <th>
+                <th style="text-align: center">
+                    <span>Actions</span>
                 </th>
             </tr>
             <tr>
@@ -45,8 +47,8 @@
             </thead>
             <tbody>
             <tr *ngFor="let data of nzTable.data">
-                <td>{{data.name}}</td>
-                <td>
+                <td style="text-align: center">{{data.name}}</td>
+                <td style="text-align: center">
                     <nz-tag [nzColor]="'orange'">
                         <label *ngIf=" data?.type === 0 ; else elseBlock"> No </label>
                         <ng-template #elseBlock>
@@ -54,7 +56,7 @@
                         </ng-template>
                     </nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
 
                     <button *ngIf="'variant-read'|accessControl"
                             [routerLink]="['/dashboard/variant/details/', data.id]"

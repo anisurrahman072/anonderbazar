@@ -17,28 +17,31 @@
                   [(nzPageIndex)]="page"
                   [(nzPageSize)]="limit"
                   (nzPageIndexChange)="getPageData()"
+                  [nzBordered]="true"
         >
 
             <thead (nzSortChange)="sort($event)" nzSingleSort>
             <tr>
-                <th>
+                <th style="text-align: center">
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="id"><span>ID</span></th>
-                <th nzShowSort nzSortKey="child_count"><span>Child Count</span></th>
-                <th>
+                <th nzShowSort nzSortKey="id" style="text-align: center"><span>ID</span></th>
+                <th nzShowSort nzSortKey="child_count" style="text-align: center"><span>Child Count</span></th>
+                <th style="text-align: center">
                     <span> Parent Category </span>
                 </th>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span> Name </span>
                 </th>
-                <th nzShowSort nzSortKey="code">
+                <th nzShowSort nzSortKey="code" style="text-align: center">
                     <span> Code </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span>Slug</span>
                 </th>
-                <th>&nbsp;</th>
+                <th style="text-align: center">
+                    <span>Actions</span>
+                </th>
             </tr>
             <tr>
                 <th></th>
@@ -61,7 +64,7 @@
 
             <tbody>
             <tr *ngFor="let data of nzTable.data;let i =  index ">
-                <td>
+                <td style="text-align: center">
                     <ng-container *ngIf="data.image; else noAvatar">
                         <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT + data.image" [nzSize]="'large'"
                                    [nzIcon]="'user'">
@@ -71,23 +74,23 @@
                        <nz-tag>No Image</nz-tag>
                     </ng-template>
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.id}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.total_sub_categories}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.parent_name}}
                 </td>
-                <td>{{data.name}}</td>
-                <td>
+                <td style="text-align: center">{{data.name}}</td>
+                <td style="text-align: center">
                     <ng-container *ngIf="data.code && data.code != 0 && data.code!=='undefined'"><nz-tag>{{data.code}}</nz-tag></ng-container>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.slug}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-button-group>
                         <button *ngIf="'productcategory-read'|accessControl"
                                 [routerLink]="['/dashboard/category/product/details/', data.id]"

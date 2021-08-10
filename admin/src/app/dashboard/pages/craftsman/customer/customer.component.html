@@ -21,31 +21,34 @@
                   [nzLoading]="_isSpinning"
                   [nzTotal]="total"
                   [nzShowSizeChanger] = "true"
+                  [nzBordered]="true"
+                  [nzScroll]="{x: '1600px', y: '800px'}"
         >
             <thead [nzSingleSort]="true" (nzSortChange)="sort($event)">
             <tr>
-                <th>
+                <th nz-th [nzWidth]="'200px'" style="text-align: center">
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="username">
+                <th nzShowSort nzSortKey="username" nz-th [nzWidth]="'250px'" style="text-align: center">
                     <span> UserName </span>
                 </th>
-                <th>
+                <th nz-th [nzWidth]="'250px'" style="text-align: center">
                     <span> Email </span>
                 </th>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" nz-th [nzWidth]="'200px'" style="text-align: center">
                     <span>Name</span>
                 </th>
-                <th nzShowSort nzSortKey="phone">
+                <th nzShowSort nzSortKey="phone" nz-th [nzWidth]="'200px'" style="text-align: center">
                     <span> Phone Number </span>
                 </th>
-                <th>
+                <th nz-th [nzWidth]="'200px'" style="text-align: center">
                     <span> Location </span>
                 </th>
-                <th>
+                <th nz-th [nzWidth]="'200px'" style="text-align: center">
                     <span> Status </span>
                 </th>
-                <th>
+                <th nz-th [nzWidth]="'200px'" style="text-align: center">
+                    <span>Actions</span>
                 </th>
             </tr>
             <tr>
@@ -77,7 +80,7 @@
             </thead>
             <tbody>
             <tr *ngFor="let data of nzTable.data">
-                <td>
+                <td style="text-align: center">
                     <ng-container *ngIf="data.customer_avatar; else noAvatar">
                         <nz-avatar [nzIcon]="'user'" [nzShape]="'square'" [nzSize]="'large'"
                                    [nzSrc]="IMAGE_ENDPOINT + data.customer_avatar"></nz-avatar>
@@ -87,23 +90,23 @@
                                    [nzSrc]="'./assets/images/default-avatar.jpg'"></nz-avatar>
                     </ng-template>
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.username}}
                 </td>
-                <td>
-                    <nz-tag>{{data.email}}</nz-tag>
+                <td style="text-align: center">
+                    {{data.email}}
                 </td>
-                <td>
-                    <nz-tag>{{data.customer_name}}</nz-tag>
+                <td style="text-align: center">
+                    {{data.customer_name}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.phone}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.upazila_name}}, {{data.zilla_name}}, {{data.division_name}}
                 </td>
-                <td style="width: 200px;">
-                    <nz-select style="width: 180px;" [(ngModel)]="data.customer_active" [nzPlaceHolder]="'choose option'"
+                <td style=" text-align: center">
+                    <nz-select style="width: 150px;" [(ngModel)]="data.customer_active" [nzPlaceHolder]="'choose option'"
                                (ngModelChange)="changeStatusConfirm($event,data.id)">
                         <nz-option *ngFor="let option of options" [nzLabel]="option.label"
                                    [nzValue]="option.value">
@@ -114,7 +117,7 @@
                         </nz-option>
                     </nz-select>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <button *ngIf="'customer-read'|accessControl"
                             [nzSize]="'default'"
                             [routerLink]="['/dashboard/craftsman/details/', data.id]" nz-button>

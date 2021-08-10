@@ -23,6 +23,7 @@
                           [(nzPageIndex)]="page"
                           [(nzPageSize)]="limit"
                           (nzPageIndexChange)="getPageData()"
+                          [nzBordered]="true"
                 >
                     <thead (nzSortChange)="sort($event)" nzSingleSort>
                     <tr>

@@ -17,6 +17,7 @@
                       [nzLoading]="_isSpinning"
                       [nzTotal]="total"
                       [nzShowSizeChanger]="true"
+                      [nzBordered]="true"
             >
                 <thead>
                 <tr>
@@ -47,7 +48,7 @@
                 </tr>
                 <tr>
                     <th>
-                        <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
+                        <input nz-input [(ngModel)]="orderNumberFilter" placeholder="Order"
                                (input)=" page = 1; getPageData(); ">
                     </th>
                     <th>
@@ -68,7 +69,7 @@
                         </nz-date-picker>
                     </th>
                     <th>
-                        <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
+                        <input nz-input [(ngModel)]="customerNameFilter"
                                placeholder="Customer Name" (input)=" page = 1; getPageData(); ">
                     </th>
                     <th></th>

@@ -20,41 +20,42 @@
                           [(nzPageIndex)]="groupsPage"
                           [(nzPageSize)]="groupsLimit"
                           (nzPageIndexChange)="getAllGroups()"
+                          [nzBordered]="true"
                 >
                     <thead>
                     <tr>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Name </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Description </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> No of Users </span>
                         </th>
                         <!--<th nz-th [nzWidth]="'200px'">
                             <span>Permissions</span>
                         </th>-->
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             Actions
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.name}}</nz-tag>
                         </td>
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.description}}</nz-tag>
                         </td>
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.num_of_user}}</nz-tag>
                         </td>
                         <!--<td>
                             <nz-tag>{{datum.accessList}}</nz-tag>
                         </td>-->
-                        <td>
+                        <td style="text-align: center">
                             <nz-button-group>
 
                                 <button *ngIf="'role-management-edit' | accessControl" routerLink="/dashboard/role-management/edit/{{datum.id}}" nz-button

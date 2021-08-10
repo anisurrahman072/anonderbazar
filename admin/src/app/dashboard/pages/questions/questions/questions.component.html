@@ -12,19 +12,20 @@
                   [nzHideOnSinglePage]="true"
                   [nzScroll]="{x: '200px'}"
                   (nzPageIndexChange)="getAllQuestionedProducts()"
+                  [nzBordered]="true"
         >
             <thead>
 
             <tr>
-                <th style="min-width: 220px"><span>Product Code</span></th>
-                <th style="min-width: 227px"><span>Name</span></th>
-                <th style="min-width: 115px"><span>User</span></th>
-                <th style="min-width: 115px"><span>Username</span></th>
-                <th style="min-width: 200px"><span>Question</span></th>
-                <th style="min-width: 200px"><span>Answer</span></th>
-                <th style="min-width: 111px"><span>Shop Owner</span></th>
-                <th style="min-width: 115px"><span>Answered BY</span></th>
-                <th style="min-width: 94px"><span>Actions</span></th>
+                <th nz-th [nzWidth]="'220px'"><span>Product Code</span></th>
+                <th nz-th [nzWidth]="'230px'"><span>Name</span></th>
+                <th nz-th [nzWidth]="'150px'"><span>User</span></th>
+                <th nz-th [nzWidth]="'150px'"><span>Username</span></th>
+                <th nz-th [nzWidth]="'350px'"><span>Question</span></th>
+                <th nz-th [nzWidth]="'350px'"><span>Answer</span></th>
+                <th nz-th [nzWidth]="'150px'"><span>Shop Owner</span></th>
+                <th nz-th [nzWidth]="'150px'"><span>Answered BY</span></th>
+                <th nz-th [nzWidth]="'150px'"><span>Actions</span></th>
             </tr>
 
             <tr>
