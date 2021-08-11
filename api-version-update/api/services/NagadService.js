@@ -9,6 +9,7 @@ const {
 } = require('../services/PaymentService');
 const {PAYMENT_STATUS_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
 const {ORDER_STATUSES} = require('../../libs/orders');
+const logger = require('../../libs/softbd-logger').Logger;
 
 const crypto = require('crypto');
 const moment = require('moment');
