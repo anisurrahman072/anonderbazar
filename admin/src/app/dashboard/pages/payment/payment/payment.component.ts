@@ -123,7 +123,7 @@ export class PaymentComponent implements OnInit {
 
     //Event method for getting all the data for the page
     getPageData(showPartialOfflinePayments = false, showRegularOfflinePayments = false) {
-        console.log('this.dateSearchValue', this.dateSearchValue);
+        /*console.log('this.dateSearchValue', this.dateSearchValue);*/
         let dateSearchVal = '';
         if(this.dateSearchValue){
             dateSearchVal = moment(this.dateSearchValue).format('YYYY-MM-DD');
@@ -219,9 +219,9 @@ export class PaymentComponent implements OnInit {
                         return {...payment, orderDetails, paymentDetails: JSON.parse(payment.paymentDetails)}
 
                     });
-                    console.log("AnnnnnFnl: ", this.data );
+                    /*console.log("AnnnnnFnl: ", this.data );*/
                     this.total = result.total;
-                    console.log(result);
+                    /*console.log(result);*/
                     this._isSpinning = false;
 
                 },
@@ -332,7 +332,7 @@ export class PaymentComponent implements OnInit {
     changeApprovalStatus($event, paymentId, orderId, paymentApprovalStatus){
         this.paymentService.changeApprovalStatus(paymentId, orderId, paymentApprovalStatus)
             .subscribe(data => {
-                console.log("The updated data is: ", data);
+                /*console.log("The updated data is: ", data);*/
                 this._notification.success("Success", "Successfully updated the payment");
                 this.getPageData();
             }, error => {

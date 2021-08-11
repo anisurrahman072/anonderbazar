@@ -151,6 +151,16 @@ const routes: Routes = [
                     '../pages/questions/questions.module#QuestionsModule'
             },
             {
+                path: 'role-management' /* /role-management  */,
+                loadChildren:
+                    '../pages/role-management/role-management.module#RoleManagementModule'
+            },
+            {
+                path: 'admin-users' /* /admin-users  */,
+                loadChildren:
+                    '../pages/admin-users/admin-users.module#AdminUsersModule'
+            },
+            {
                 path: '' /* /dashboard  */,
                 component: DashboardHomeComponent
             }

@@ -4,6 +4,7 @@ const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 const OfferService = require('../services/OfferService');
+const {ORDER_STATUSES, ORDER_STATUSES_INDEX} = require('../../libs/orders');
 const crypto = require('crypto');
 
 
@@ -622,6 +623,49 @@ module.exports = {
 
       if (smsPhone) {
         let smsText = `আপনার ট্রানজেকশন টাকা গুলো রিফান্ড করা হয়েছে। অর্ডার নাম্বার: ${orderId}`;
+        console.log('smsTxt', smsText);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
+  sendSmsForOrderStatusChange: async (order, authUser) => {
+    try {
+      let smsPhone = authUser.phone;
+      let statusName = ORDER_STATUSES_INDEX[order.status];
+      let smsText = '';
+
+      if(order.status === ORDER_STATUSES.pending){
+        smsText = `Dear customer, your order ${order.orderId} has been placed.Our customer service will contact you shortly. Please confirm your order.`;
+      } else if(order.status === ORDER_STATUSES.processing){
+        smsText = `Dear customer, your order ${order.orderId} has been selected for processing. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.returned){
+        smsText = `Dear customer, your order ${order.orderId} has been returned. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.lost){
+        smsText = `Dear customer, your order ${order.orderId} has been lost by courier. Sorry for the inconvenience.We are working to resolve this issue. Thanks for staying with us.`;
+      } else if(order.status === ORDER_STATUSES.refund_processing){
+        smsText = `Dear customer, your order ${order.orderId} has been selected for REFUND. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.refunded){
+        smsText = `Dear customer, your order ${order.orderId} has been settled. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.processed){
+        smsText = `Dear customer, your order ${order.orderId} has been processed. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.arrived_at_warehouse){
+        smsText = `Dear customer, your order ${order.orderId} has been arrived at warehouse. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.shipped){
+        smsText = `Dear customer, your order ${order.orderId} has been Shipped. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.delivered){
+        smsText = `Dear customer, your order ${order.orderId} has been Delivered. Thanks for staying with us. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.canceled){
+        smsText = `Dear customer, your order ${order.orderId} has been cancelled due to stock out. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.confirmed){
+        smsText = `Dear customer, your order ${order.orderId} has been confirmed. For more, please visit:https://www.anonderbazar.com`;
+      } else {
+        smsText = `Dear Customer, Your order ${order.orderId} has been selected for ${statusName}`;
+      }
+
+      if (smsPhone) {
         console.log('smsTxt', smsText);
         SmsService.sendingOneSmsToOne([smsPhone], smsText);
       }

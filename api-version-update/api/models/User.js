@@ -192,6 +192,11 @@ module.exports = {
     couponLotteryCashback: {
       collection: 'couponLotteryCashback',
       via: 'user_id'
+    },
+    user_type: {
+      type: 'string',
+      columnType: 'varchar',
+      allowNull: true
     }
   },
   tableName: 'users',

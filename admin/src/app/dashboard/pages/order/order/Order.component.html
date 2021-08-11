@@ -28,50 +28,50 @@
             >
                 <thead>
                 <tr>
-                    <th nzWidth="100px">
+                    <th nz-th [nzWidth]="'100px'">
                         <span> Order </span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span> Date </span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span> Customer </span>
                     </th>
-                    <th nzWidth="100px">
+                    <th nz-th [nzWidth]="'100px'">
                         <span> Quantity </span>
                     </th>
-                    <th nzWidth="100px">
+                    <th nz-th [nzWidth]="'100px'">
                         <span>Total</span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span>Status</span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span>Order type </span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span>Payment type </span>
                     </th>
-                    <th nzWidth="230px">
+                    <th nz-th [nzWidth]="'230px'">
                         <span>Payment status </span>
                     </th>
-                    <th nzWidth="100px">
+                    <th nz-th [nzWidth]="'100px'">
                         <span>Status Changer</span>
                     </th>
-                    <th nzWidth="400px">
+                    <th nz-th [nzWidth]="'400px'">
                         <span>Transactions</span>
                     </th>
-                    <th nzWidth="300px">
+                    <th nz-th [nzWidth]="'300px'">
                         <span>shipping_address</span>
                     </th>
-                    <th nzWidth="200px"><span>Actions</span></th>
+                    <th nz-th [nzWidth]="'200px'"><span>Actions</span></th>
                 </tr>
                 <tr>
-                    <th nzWidth="100px">
-                        <input nz-input style="width: 76px;" [(ngModel)]="orderNumberFilter" placeholder="Order"
+                    <th>
+                        <input nz-input [(ngModel)]="orderNumberFilter" placeholder="Order"
                                (input)=" orderPage = 1; getData(); ">
                     </th>
-                    <th nzWidth="230px">
+                    <th>
                         <nz-date-picker
                                 nzShowTime
                                 nzFormat="yyyy-MM-dd HH:mm:ss"
@@ -88,13 +88,13 @@
                                 (ngModelChange)="orderPage = 1; getData();">
                         </nz-date-picker>
                     </th>
-                    <th nzWidth="230px">
-                        <input nz-input style="width: 196px;" [(ngModel)]="customerNameFilter"
+                    <th>
+                        <input nz-input [(ngModel)]="customerNameFilter"
                                placeholder="Customer Name" (input)=" orderPage = 1; getData(); ">
                     </th>
-                    <th nzWidth="100px"></th>
-                    <th nzWidth="100px"></th>
-                    <th nzWidth="230px">
+                    <th></th>
+                    <th></th>
+                    <th>
                         <nz-select style="width: 170px;" [(ngModel)]="statusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Status'"
@@ -108,7 +108,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="230px">
+                    <th>
                         <nz-select style="width: 170px;" [(ngModel)]="orderTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Order type'"
@@ -118,7 +118,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="230px">
+                    <th>
                         <nz-select style="width: 170px;" [(ngModel)]="paymentTypeSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment type'"
@@ -128,7 +128,7 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="230px">
+                    <th>
                         <nz-select style="width: 170px;" [(ngModel)]="paymentStatusSearchValue"
                                    nzAllowClear (ngModelChange)="orderPage = 1; getData();"
                                    [nzPlaceHolder]="'Select Payment Status'"
@@ -138,22 +138,22 @@
                             </nz-option>
                         </nz-select>
                     </th>
-                    <th nzWidth="100px"></th>
-                    <th nzWidth="300px"></th>
-                    <th nzWidth="200px">
+                    <th></th>
+                    <th></th>
+                    <th>
                         <button nz-button (click)="resetAllFilter()">Clear filter</button>
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr #dataFor *ngFor="let data of nzTable.data;let i=index">
-                    <td style="width: 100px;">{{data.id}}</td>
-                    <td style="width: 230px;">{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
-                    <td style="width: 230px;">{{data.full_name}}</td>
-                    <td style="width: 100px;">{{data.total_quantity}}</td>
-                    <td style="width: 100px;">{{data.total_price}}</td>
+                    <td>{{data.id}}</td>
+                    <td>{{data.createdAt|date: 'd/M/yyyy, h:mm a'}}</td>
+                    <td>{{data.full_name}}</td>
+                    <td>{{data.total_quantity}}</td>
+                    <td>{{data.total_price}}</td>
 
-                    <td style="width: 230px;"  *ngIf="isAllowedToUpdateOrderStatus">
+                    <td *ngIf="'order-status-change'|accessControl">
                         <div *ngIf="data.total_price <= data.paid_amount || data.payment_type === PAYMENT_METHODS.CASH_PAYMENT_TYPE">
                             <span *ngIf="setStatus(i, data.status)"></span>
                             <nz-select style="width: 180px;" [(ngModel)]="data.status" [nzPlaceHolder]="'choose option'"
@@ -171,13 +171,14 @@
                             {{data.status | statustype}}
                         </div>
                     </td>
+                    <td *ngIf="!('order-status-change'|accessControl)">{{data.status | statustype}}</td>
 
-                    <td *ngIf="!isAllowedToUpdateOrderStatus">{{data.status | statustype}}</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE">Regular order</td>
                     <td *ngIf="data.orderType == ORDER_TYPE.PARTIAL_ORDER_TYPE">Partial order</td>
+
                     <td>{{data.payment_type}}</td>
 
-                    <td style="width: 230px;"  *ngIf="isAllowedToUpdatePaymentStatus">
+                    <td *ngIf="'order-payment-status-change'|accessControl">
                         <nz-select style="width: 180px;"
                                    *ngIf="data.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE && data.orderType == ORDER_TYPE.REGULAR_ORDER_TYPE; else showOnlyPaymentStatus;"
                                    [(ngModel)]="data.paymentStatus" [nzPlaceHolder]="'choose option'"
@@ -195,14 +196,14 @@
                                 Paid</p>
                         </ng-template>
                     </td>
-                    <td *ngIf="!isAllowedToUpdatePaymentStatus">
+                    <td *ngIf="!('order-payment-status-change'|accessControl)">
                         <p *ngIf="data.paymentStatus == paymentStatus.UNPAID_PAYMENT_STATUS">Unpaid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PARTIALLY_PAID_PAYMENT_STATUS">Partially paid</p>
                         <p *ngIf="data.paymentStatus == paymentStatus.PAID_PAYMENT_STATUS || data.paymentStatus == paymentStatus.NOT_APPLICABLE_PAYMENT_STATUS">Paid</p>
                     </td>
 
-                    <td style="width: 100px;">{{data.changedByName}}</td>
-                    <td style="width: 400px;">
+                    <td>{{data.changedByName}}</td>
+                    <td>
                         <div *ngFor="let transaction of data.transactions">
                             <p style="margin: 0px;">Amount: {{transaction.amount}}</p>
                             <p style="margin: 0px;">Payment Type: {{transaction.paymentType}}</p>
@@ -210,14 +211,14 @@
                             <p style="margin-bottom: 15px;">Transaction Time: {{transaction.transactionTime}}</p>
                         </div>
                     </td>
-                    <td style="width: 300px;">
+                    <td>
                         <p>Postal Code: {{data.postal_code}}</p>
                         <p><span style="font-weight: 700">Address: </span> {{data.address}}</p>
                         <p>
                             <span style="font-weight: 700">Area: </span> {{data.upazila_name}}, {{data.zila_name}}, {{data.division_name}}
                         </p>
                     </td>
-                    <td style="width: 200px;">
+                    <td>
                         <nz-button-group>
                             <button *ngIf="'order-read'|accessControl"
                                     (click)="goToOrderRead(data.id)"

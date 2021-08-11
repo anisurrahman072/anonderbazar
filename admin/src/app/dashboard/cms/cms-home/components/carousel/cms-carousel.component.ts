@@ -81,7 +81,7 @@ export class CmsCarouselComponent implements OnInit {
                     element.description = JSON.parse(element.description);
                 });
                 this._isSpinning = false;
-                console.log('this.cmsCarouselData', this.cmsCarouselData);
+                /*console.log('this.cmsCarouselData', this.cmsCarouselData);*/
             } else {
                 this.id = undefined;
                 this.cmsCarouselData = [];
@@ -283,7 +283,7 @@ export class CmsCarouselComponent implements OnInit {
     };
 
     onBeforeUploadMobile = (metadata: UploadMetadata) => {
-        console.log('onBeforeUploadMobile');
+        /*console.log('onBeforeUploadMobile');*/
         this.ImageForMobileFile = metadata.file;
 
         this._isSpinning = true;
@@ -293,7 +293,7 @@ export class CmsCarouselComponent implements OnInit {
 
         this.cmsService.uploadCarouselMobileImage(this.id.toString(), formData)
             .subscribe((result: any) => {
-                console.log('result', result);
+                /*console.log('result', result);*/
                 this.cmsCarouselData[this.currentCarouselId] = result.data;
                 this._notification.success('success', 'Carousel Update Succeeded');
                 this._isSpinning = false;

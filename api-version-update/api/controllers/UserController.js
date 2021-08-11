@@ -75,7 +75,7 @@ module.exports = {
         }
       }
 
-      return res.json(200, user);
+      return res.status(200).json(user);
 
     } catch (error) {
       if (error && error.naame === 'UsageError') {
@@ -175,6 +175,7 @@ module.exports = {
       }
     }
   },
+
   //Method called for updating a user password data
   //Model models/User.js
   updatepassword: async (req, res) => {
@@ -223,6 +224,7 @@ module.exports = {
       });
     }
   },
+
   //Method called for updating a user data
   //Model models/User.js
   update: async (req, res) => {
@@ -314,7 +316,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false,
         });
@@ -353,7 +355,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false
         });
@@ -392,7 +394,7 @@ module.exports = {
       const user = await User.find(where);
 
       if (user && user.length > 0) {
-        return res.status(422).json({
+        return res.status(200).json({
           success: false,
           isunique: false,
         });
@@ -469,6 +471,7 @@ module.exports = {
       });
     }
   },
+
   //Method called for getting all user data
   //Model models/User.js
   find: async (req, res) => {

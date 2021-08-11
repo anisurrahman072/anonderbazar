@@ -20,7 +20,7 @@ const routes: Routes = [
             }, {
                 path: 'details/:id',
                 canActivate: [AccessControl],
-                data: {accessData: 'designcategory-read'},
+                data: {accessData: 'designcategory-details'},
                 component: DesignCategoryReadComponent,
             }, {
                 path: 'create',
@@ -38,7 +38,7 @@ const routes: Routes = [
                 pathMatch: 'full'
             }
         ]
-        
+
     },
 ];
 

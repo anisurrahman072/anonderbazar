@@ -27,7 +27,7 @@ export class QuestionsComponent implements OnInit {
 
     ngOnInit() {
         this.currentUser = this.authService.getCurrentUser();
-        console.log('this.currentUser', this.currentUser);
+        /*console.log('this.currentUser', this.currentUser);*/
         if (this.currentUser.warehouse && this.currentUser.warehouse.id) {
             this.warehouseId = this.currentUser.warehouse.id;
         } else {
@@ -46,7 +46,7 @@ export class QuestionsComponent implements OnInit {
             this.limit,
             this.warehouseId
         ).subscribe(result => {
-            console.log('getAllQuestionedProducts', result);
+            /*console.log('getAllQuestionedProducts', result);*/
             this.data = result.data;
             this.loading = false;
             this._isSpinning = false;

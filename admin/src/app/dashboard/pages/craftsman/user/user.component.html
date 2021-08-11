@@ -4,11 +4,11 @@
             <button nz-button *ngIf="'craftsman-download'|accessControl" [nzType]="'primary'" (click)='showProductModal()'>
                 <i class="anticon anticon-download"></i><span> Download </span>
             </button>&nbsp;
-            <button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
+            <!--<button *ngIf="'craftsman-create'|accessControl" [nzSize]="'large'" nz-button
                     routerLink="/dashboard/craftsman/create">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
-            </button>
+            </button>-->
             <button (click)="resetAllFilter()" nz-button>Clear filter</button>
         </ng-template>
 
@@ -22,28 +22,30 @@
                   [nzLoading]="_isSpinning"
                   [nzTotal]="total"
                   [nzShowSizeChanger]="true"
+                  [nzBordered]="true"
         >
             <thead [nzSingleSort]="true" (nzSortChange)="sort($event) ">
             <tr>
-                <th>
+                <th style="text-align: center">
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="username">
+                <th nzShowSort nzSortKey="username" style="text-align: center">
                     <span> UserName </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Email </span>
                 </th>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span>Name</span>
                 </th>
-                <th nzShowSort nzSortKey="phone">
+                <th nzShowSort nzSortKey="phone" style="text-align: center">
                     <span> Phone Number </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Location </span>
                 </th>
-                <th>
+                <th style="text-align: center">
+                    <span>Actions</span>
                 </th>
             </tr>
             <tr>
