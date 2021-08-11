@@ -4,6 +4,7 @@ const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 const OfferService = require('../services/OfferService');
+const crypto = require('crypto');
 
 
 module.exports = {
@@ -506,6 +507,72 @@ module.exports = {
     return allCouponCodes;
   },
 
+  /** Nagad helper methods. START */
+  encryptSensitiveData: function ({
+    sensitive_data,
+    public_key,
+  }) {
+
+    const buffer = Buffer.from(sensitive_data, 'utf8');
+
+    const encrypted = crypto.publicEncrypt(
+      {
+        key: public_key,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      buffer
+    );
+
+    return encrypted.toString('base64');
+  },
+
+  generateDigitalSignature: function ({
+    sensitive_data,
+    private_key,
+  }) {
+    const sign = crypto.createSign('RSA-SHA256');
+    sign.update(sensitive_data);
+    sign.end();
+
+    const signature = sign.sign(private_key);
+
+    return signature.toString('base64');
+  },
+
+  decryptSensitiveData: function ({
+    sensitive_data,
+    private_key,
+  }) {
+    // decode base 64
+    const buffer = Buffer.from(sensitive_data, 'base64');
+
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: private_key,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      buffer
+    );
+    return decrypted.toString();
+  },
+
+  isVerifiedDigitalSignature: function ({
+    sensitive_data,
+    signature,
+    public_key,
+  }) {
+    // decode base 64
+    const buffer = Buffer.from(signature, 'base64');
+
+    const verify = crypto.createVerify('RSA-SHA256');
+    verify.update(sensitive_data);
+    verify.end();
+
+    return verify.verify(public_key, buffer);
+  },
+  /** Nagad helper methods. END */
+
+  /** Send SMS methods. START */
   sendSms: async (authUser, order, allCouponCodes, shippingAddress) => {
     try {
       let smsPhone = authUser.phone;
@@ -570,5 +637,6 @@ module.exports = {
       console.log('Email Sending Error', err);
     }
   },
+  /** Send SMS methods. END */
 
 };

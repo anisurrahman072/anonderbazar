@@ -825,6 +825,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (result && result.GatewayPageURL) {
                     this.store.dispatch(new fromStore.LoadCart());
                     window.location.href = result.GatewayPageURL;
+                } else if (result && result.status === 'Success' && result.callBackUrl) {
+                    this.store.dispatch(new fromStore.LoadCart());
+                    window.location.href = result.callBackUrl;
                 } else if (result && result.order_id) {
                     this.successOrderId = result.order_id;
                     this.store.dispatch(new fromStore.LoadCurrentUser());

@@ -1,6 +1,18 @@
 const {sslApiUrl} = require('../../config/softbd');
 const {toHexString} = require('../../libs/nagad');
 
+const {nagad} = require('../../config/softbd');
+const {fetchWithTimeout} = require('../../libs/helper');
+const {
+  encryptSensitiveData,
+  generateDigitalSignature,
+  decryptSensitiveData,
+  isVerifiedDigitalSignature
+} = require('../services/PaymentService');
+
+const crypto = require('crypto');
+const moment = require('moment');
+
 module.exports = {
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
     const {
@@ -29,78 +41,113 @@ module.exports = {
     }
 
     /** Driver code for Nagad Integration */
+    const order_id = PaymentService.generateRandomString().toUpperCase();
+    const date_time = moment().format('YYYYMMDDHHmmss');
+    const merchant_id = nagad.merchant_id;
 
-    let currentDate = new Date().toISOString().replace(/-/g, '');
-    currentDate = currentDate.replace(/[T]+/g, '');
-    currentDate = currentDate.substring(0, 8);
+    const publicKey = nagad.isSandboxMode ? nagad['sandbox'].pgPublicKey : nagad['production'].pgPublicKey;
+    const privateKey = nagad.isSandboxMode ? nagad['sandbox'].merchantPrivateKey : nagad['production'].merchantPrivateKey;
 
-    let time = new Date().toLocaleTimeString('en-US', {hour12: false});
-    time = time.replace(/:/g, '');
-    time = time.replace(/[a-zA-Z]+/g, '');
-    time = time.replace(/ /g, '');
-
-    const merchantId = '683002007104225';
-    const dateTime = currentDate + time;
-    const amount = '5';
-    const orderId = PaymentService.generateRandomString();
-    const challenge = toHexString(PaymentService.generateRandomString(40));
-
-    const PostURL = `http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0/api/dfs/check-out/initialize/${merchantId}/${orderId}`;
-
-    const callbackURL = sslApiUrl + '/nagad-payment/callback-checkout/' + authUser.id;
+    const api_public_key = `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
+    const api_private_key = `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----`;
 
 
-    let SensitiveData = {
-      merchantId,
-      dateTime,
-      orderId,
-      challenge
-    };
-    console.log('The result is: ', SensitiveData);
-
-    const PostData = {
-      accountNumber: '01958083901',
-      dateTime: dateTime,
-      sensitiveData: EncryptDataWithPublicKey(JSON.stringify(SensitiveData)),
-      signature: SignatureGenerate(JSON.stringify(SensitiveData))
+    const checkout_init_sensitive_data = {
+      merchantId: merchant_id,
+      datetime: date_time,
+      orderId: order_id,
+      challenge: crypto.randomBytes(20).toString('hex')
     };
 
+    const checkout_init_body = {
+      dateTime: date_time,
+      sensitiveData: encryptSensitiveData({
+        sensitive_data: JSON.stringify(checkout_init_sensitive_data),
+        public_key: api_public_key,
+      }),
+      signature: generateDigitalSignature({
+        sensitive_data: JSON.stringify(checkout_init_sensitive_data),
+        private_key: api_private_key,
+      }),
+    };
 
-    let result_Data = await HttpPostMethod(PostURL, PostData, ip);
+    let url = nagad.isSandboxMode ? nagad['sandbox'].initialize_url : nagad['production'].initialize_url;
+    url += `${merchant_id}/${order_id}`;
+    const headers = {
+      'X-KM-IP-V4': '192.168.10.8',
+      'X-KM-Client-Type': 'PC_WEB',
+      'X-KM-Api-Version': 'v-0.2.0',
+      'Content-Type': 'application/json',
+    };
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(checkout_init_body)
+    };
 
-    /*if(result_Data && result_Data['sensitiveData'] && result_Data['signature']){
-      if(result_Data['sensitiveData'] !== '' && result_Data['signature'] !== ''){
-        let PlainResponse = JSON.parse(DecryptDataWithPrivateKey(result_Data['sensitiveData']));
+    let initializeResponse = await fetchWithTimeout(url, options);
+    initializeResponse = await initializeResponse.json();
+    console.log('initializeResponse: ', initializeResponse);
 
-        if (PlainResponse['paymentReferenceId'] && PlainResponse['challenge']) {
-          const paymentReferenceId = PlainResponse['paymentReferenceId'];
-          const randomServer = PlainResponse['challenge'];
+    const decrypted_checkout_init_res = JSON.parse(
+      decryptSensitiveData({
+        sensitive_data: initializeResponse.sensitiveData,
+        private_key: api_private_key,
+      })
+    );
 
-          let SensitiveDataOrder = {
-            merchantId: MerchantID,
-            orderId: OrderId,
-            currencyCode: '050',
-            amount: amount,
-            challenge: randomServer
-          };
+    const isCheckoutInitVerified = isVerifiedDigitalSignature({
+      sensitive_data: JSON.stringify(decrypted_checkout_init_res),
+      signature: initializeResponse.signature,
+      public_key: api_public_key,
+    });
 
-          let PostDataOrder = {
-            sensitiveData: EncryptDataWithPublicKey(JSON.stringify(SensitiveDataOrder)),
-            signature: SignatureGenerate(JSON.stringify(SensitiveDataOrder)),
-            merchantCallbackURL: callbackURL
-          };
+    let completeResponse;
 
-          let OrderSubmitUrl = `http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0/api/dfs/check-out/complete/${paymentReferenceId}`;
-          let Result_Data_Order = HttpPostMethod(OrderSubmitUrl, PostDataOrder);
+    if(isCheckoutInitVerified){
+      const checkout_complete_sensitive_data = {
+        merchantId: merchant_id,
+        orderId: order_id,
+        amount: grandOrderTotal,
+        currencyCode: '050',
+        challenge: decrypted_checkout_init_res.challenge,
+      };
 
-          if(Result_Data_Order && Result_Data_Order['status'] === 'Success'){
-            let url = JSON.stringify(Result_Data_Order['callBackUrl']);
-          }
-          else {
-            console.log('Error occurred', Result_Data_Order);
-          }
-        }
+      const callbackURL = sslApiUrl + '/nagad-payment/callback-checkout/' + authUser.id + '/' + billingAddress.id + '/' + shippingAddress.id;
+
+      const checkout_complete_body = {
+        sensitiveData: encryptSensitiveData({
+          sensitive_data: JSON.stringify(checkout_complete_sensitive_data),
+          public_key: api_public_key,
+        }),
+        signature: generateDigitalSignature({
+          sensitive_data: JSON.stringify(checkout_complete_sensitive_data),
+          private_key: api_private_key,
+        }),
+        merchantCallbackURL: callbackURL
+      };
+
+      let complete_payment_options = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(checkout_complete_body)
+      };
+
+      let complete_payment_url = nagad.isSandboxMode ? nagad['sandbox'].complete_payment_url : nagad['production'].complete_payment_url;
+      complete_payment_url += `${decrypted_checkout_init_res.paymentReferenceId}`;
+
+      completeResponse = await fetchWithTimeout(complete_payment_url, complete_payment_options);
+      completeResponse = await completeResponse.json();
+      console.log('initializeResponse: ', completeResponse);
+      console.log('Anissss: ', 1);
+
+      if(!completeResponse || completeResponse.status !== 'Success' || !completeResponse.callBackUrl){
+        throw new Error('Error occurred while completing payment process');
       }
-    }*/
+    } else {
+      throw new Error('Something went wrong when Nagad API initialization!');
+    }
+
+    return completeResponse;
   }
 };
