@@ -147,8 +147,8 @@ module.exports = {
               paymentResponse: verificationResponse
             },
             {
-              billingAddressId: req.query.billing_address,
-              shippingAddressId: req.query.shipping_address
+              billingAddressId: params.billingAddress_id,
+              shippingAddressId: params.shippingAddress_id
             },
             {
               courierCharge,
@@ -167,18 +167,20 @@ module.exports = {
           };
         });
 
+      logger.orderLog(customer.id, 'paymentSuccess - Order Created', order);
 
+      let orderForMail = await PaymentService.findAllOrderedProducts(order.id, suborders);
+      orderForMail.payments = payments;
 
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSms(customer, order, allCouponCodes, shippingAddress);
+      }
 
-
-
-
-
-
+      await PaymentService.sendEmail(orderForMail);
 
       res.writeHead(301,
         {
-          Location: sslWebUrl + '/checkout'
+          Location: sslWebUrl + '/checkout?order=' + order.id
         }
       );
       res.end();

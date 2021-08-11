@@ -1,6 +1,4 @@
 const {sslApiUrl} = require('../../config/softbd');
-const {toHexString} = require('../../libs/nagad');
-
 const {nagad} = require('../../config/softbd');
 const {fetchWithTimeout} = require('../../libs/helper');
 const {
@@ -9,6 +7,8 @@ const {
   decryptSensitiveData,
   isVerifiedDigitalSignature
 } = require('../services/PaymentService');
+const {PAYMENT_STATUS_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
 
 const crypto = require('crypto');
 const moment = require('moment');
@@ -149,5 +149,63 @@ module.exports = {
     }
 
     return completeResponse;
-  }
+  },
+
+  createOrder: async (db, customer, transDetails, addressIds, orderDetails) => {
+    const {paymentType, paidAmount,  paymentResponse} = transDetails;
+    const {billingAddressId, shippingAddressId} = addressIds;
+
+    const {
+      courierCharge,
+      grandOrderTotal,
+      totalQty,
+      cart,
+      cartItems
+    } = orderDetails;
+
+    let {
+      suborders,
+      order,
+      allOrderedProductsInventory,
+      allGeneratedCouponCodes
+    } = await PaymentService.createOrder(db, {
+      user_id: customer.id,
+      cart_id: cart.id,
+      total_price: grandOrderTotal,
+      paid_amount: paidAmount,
+      payment_status: PAYMENT_STATUS_PAID,
+      total_quantity: totalQty,
+      billing_address: billingAddressId,
+      shipping_address: shippingAddressId,
+      courier_charge: courierCharge,
+      courier_status: 1,
+      status: ORDER_STATUSES.processing
+    }, cartItems);
+
+    /** .............Payment Section ........... */
+    const payments = await PaymentService.createPayment(db, suborders, {
+      user_id: customer.id,
+      order_id: order.id,
+      payment_type: paymentType,
+      details: JSON.stringify(paymentResponse),
+      transection_key: paymentResponse.issuerPaymentRefNo,
+      status: 1,
+      approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
+    });
+
+    const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
+
+    await PaymentService.updateCart(cart.id, db, cartItems);
+
+    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+    logger.orderLog(customer.id, 'Nagad order successfully created:', order);
+
+    return {
+      order,
+      suborders,
+      payments,
+      allCouponCodes,
+    };
+  },
 };
