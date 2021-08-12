@@ -14,6 +14,7 @@ const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {getAllUsers} = require('../../libs/users');
 const {customer_group_id, shop_group_id} = require('../../libs/groups');
+const {comparePasswords} = require('../../libs/helper');
 
 module.exports = {
 
@@ -277,9 +278,40 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
+      let valid;
+      if (req.body.oldPassword !== '' && req.body.newPassword !== '') {
+        valid = await comparePasswords(req.body.oldPassword, user.password);
+        console.log('valid value: ', valid);
+
+        if (!valid) {
+          return res.status(200).json({
+            code: 'NOT_VALID_PASSWORD',
+          });
+        }
+      }
+
       user = await User.updateOne({id: user.id}).set(req.body);
 
-      return res.json(200, {
+      if (valid) {
+        if (user.phone) {
+          try {
+            let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+            SmsService.sendingOneSmsToOne([user.phone], smsText);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+
+        if (user.email) {
+          try {
+            EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+
+      return res.status(200).json({
         user: user,
         token: jwToken.issue({id: user.id})
       });
