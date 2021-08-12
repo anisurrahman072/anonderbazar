@@ -52,6 +52,7 @@ export class AdminUsersEditComponent implements OnInit {
     gender;
     division;
     counter = 0;
+    pass;
 
     constructor(
         private router: Router,
@@ -79,7 +80,8 @@ export class AdminUsersEditComponent implements OnInit {
             upazila_id: ['', [Validators.required]],
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
-            avatar: ['', []]
+            avatar: ['', []],
+            password: ['', []]
         });
 
         this.areaService.getAllDivision().subscribe(result => {
@@ -99,6 +101,7 @@ export class AdminUsersEditComponent implements OnInit {
                 if (result) {
                     // @ts-ignore
                     this.data = result.data;
+                    console.log('pathc value: ', this.data);
                     this.validateForm.patchValue(this.data);
                     this.validateForm.controls.division_id.patchValue(this.data.division_id.id);
 
@@ -130,6 +133,7 @@ export class AdminUsersEditComponent implements OnInit {
         }
         const formData: FormData = new FormData();
         formData.set('username', value.username);
+        formData.append('password', value.password);
         formData.set('email', value.email);
         formData.set('first_name', value.first_name);
         formData.set('last_name', value.last_name);

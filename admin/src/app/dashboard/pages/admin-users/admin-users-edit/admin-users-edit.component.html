@@ -47,6 +47,17 @@
           </div>
         </div>
 
+        <!--password -->
+        <div nz-row style="margin-bottom: 15px">
+          <div nz-col [nzSpan]="10">
+            <label> Update Password? </label>
+          </div>
+          <div nz-col [nzSpan]="16">
+            <input nz-input [(ngModel)]="pass" formControlName="password" placeholder="Enter a new Password"
+                   [nzSize]="'large'" type="password">
+          </div>
+        </div>
+
         <!--select admin users group-->
         <div nz-row style="margin-bottom: 15px">
           <div nz-col [nzSpan]="10">

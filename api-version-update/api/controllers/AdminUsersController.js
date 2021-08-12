@@ -7,6 +7,7 @@
 
 const {getAllUsers} = require('../../libs/users');
 const {uploadImages} = require('../../libs/helper');
+let bcrypt = require('bcryptjs');
 
 module.exports = {
   /** Method called for getting all admin users data */
@@ -150,6 +151,20 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
+      if (req.body.password && req.body.password !== 'undefined') {
+        bcrypt.genSalt(10, (err, salt) => {
+          if (err) {
+            return next(err);
+          }
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) {
+              return next(err);
+            }
+            req.body.password = hash;
+          });
+        });
+      }
+
       user = await User.updateOne({id: user.id}).set(req.body);
 
       return res.status(200).json({
@@ -183,7 +198,7 @@ module.exports = {
         .populate('zila_id')
         .populate('division_id');
 
-      console.log('user result: ', user);
+      /*console.log('user result: ', user);*/
 
       return res.status(200).json({
         success: true,
