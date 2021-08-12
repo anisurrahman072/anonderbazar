@@ -169,9 +169,10 @@ module.exports = {
     }
   },
 
-  /** Method calle to find an admin user data */
+  /** Method called to find an admin user data */
   /** Model models/User.js */
   getById: async (req, res) => {
+    console.log('call here');
     try {
       const user = await User.findOne({
         id: req.query.id
@@ -181,6 +182,8 @@ module.exports = {
         .populate('upazila_id')
         .populate('zila_id')
         .populate('division_id');
+
+      console.log('user result: ', user);
 
       return res.status(200).json({
         success: true,

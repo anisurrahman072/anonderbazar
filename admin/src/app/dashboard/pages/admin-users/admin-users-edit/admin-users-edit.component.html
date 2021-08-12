@@ -161,7 +161,7 @@
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="division_id" nzAllowClear nzPlaceHolder="Select Division"
                        (ngModelChange)="divisionChange($event)" [(ngModel)]="division"
-                       [nzNotFoundContent]="'Not found'" nzShowSearch>
+                       [nzNotFoundContent]="'Not found'">
               <nz-option *ngFor="let option of divisionSearchOptions" [nzLabel]="option.name"
                          [nzValue]="option.id">
               </nz-option>
@@ -185,8 +185,7 @@
 
             <nz-select formControlName="zila_id" nzAllowClear nzPlaceHolder="Select District"
                        (ngModelChange)="zilaChange($event)"
-                       [nzNotFoundContent]="'Not found'"
-                       nzShowSearch>
+                       [nzNotFoundContent]="'Not found'">
               <nz-option *ngFor="let option of zilaSearchOptions" [nzLabel]="option.name"
                          [nzValue]="option.id">
               </nz-option>
@@ -206,7 +205,7 @@
           <div nz-col [nzSpan]="16">
             <nz-select formControlName="upazila_id" nzAllowClear nzPlaceHolder="Select Upazila"
 
-                       [nzNotFoundContent]="'Not found'" nzShowSearch>
+                       [nzNotFoundContent]="'Not found'">
               <nz-option *ngFor="let option of upazilaSearchOptions" [nzLabel]="option.name"
                          [nzValue]="option.id">
               </nz-option>

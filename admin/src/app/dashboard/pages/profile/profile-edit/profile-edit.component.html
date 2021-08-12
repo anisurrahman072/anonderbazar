@@ -24,7 +24,9 @@
                                         <image-upload [max]="1" buttonCaption="Select picture"
                                                       dropBoxMessage="Drop Picture here"
                                                       clearButtonCaption="remove it?" (removed)="onRemoved($event)"
-                                                      [beforeUpload]="onBeforeUpload"></image-upload>
+                                                      [beforeUpload]="onBeforeUpload"
+                                                      [uploadedFiles]="ImageFile">
+                                        </image-upload>
                                     </div>
                                 </div>
                             </div>
