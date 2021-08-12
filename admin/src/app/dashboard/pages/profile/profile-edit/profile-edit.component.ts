@@ -41,7 +41,7 @@ export class ProfileEditComponent implements OnInit {
     divisionSelect: any;
     oldImages = [];
     validateForm: FormGroup;
-    ImageFile: File;
+    ImageFile: any;
 
     //Event method for submitting the form
     submitForm = ($event, value) => {

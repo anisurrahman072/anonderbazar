@@ -51,6 +51,8 @@ export class AdminUsersEditComponent implements OnInit {
     group;
     gender;
     division;
+    counter = 0;
+    pass;
 
     constructor(
         private router: Router,
@@ -78,7 +80,8 @@ export class AdminUsersEditComponent implements OnInit {
             upazila_id: ['', [Validators.required]],
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
-            avatar: ['', []]
+            avatar: ['', []],
+            password: ['', []]
         });
 
         this.areaService.getAllDivision().subscribe(result => {
@@ -98,15 +101,19 @@ export class AdminUsersEditComponent implements OnInit {
                 if (result) {
                     // @ts-ignore
                     this.data = result.data;
-                    console.log('res da: ', this.data);
+                    console.log('pathc value: ', this.data);
                     this.validateForm.patchValue(this.data);
-                    this.validateForm.controls.division_id.patchValue(
-                        this.data.division_id.id
-                    );
+                    this.validateForm.controls.division_id.patchValue(this.data.division_id.id);
+
+                    this.areaService.getAllZilaByDivisionId(this.data.division_id.id).subscribe(result => {
+                        this.zilaSearchOptions = result;
+                    });
+                    this.areaService.getAllUpazilaByZilaId(this.data.zila_id.id).subscribe(result => {
+                        this.upazilaSearchOptions = result;
+                    });
+
                     this.validateForm.controls.zila_id.patchValue(this.data.zila_id.id);
-                    this.validateForm.controls.upazila_id.patchValue(
-                        this.data.upazila_id.id
-                    );
+                    this.validateForm.controls.upazila_id.patchValue(this.data.upazila_id.id);
                     this.validateForm.controls.group_id.patchValue(this.data.group_id.id);
                     if (this.data && this.data.avatar) {
                         this.ImageFileEdit.push(this.IMAGE_ENDPOINT + this.data.avatar);
@@ -126,6 +133,7 @@ export class AdminUsersEditComponent implements OnInit {
         }
         const formData: FormData = new FormData();
         formData.set('username', value.username);
+        formData.append('password', value.password);
         formData.set('email', value.email);
         formData.set('first_name', value.first_name);
         formData.set('last_name', value.last_name);
@@ -188,16 +196,21 @@ export class AdminUsersEditComponent implements OnInit {
 
     /** Method for division change */
     divisionChange($event) {
-        this.validateForm.controls.zila_id.patchValue(null);
-        this.validateForm.controls.upazila_id.patchValue(null);
+        ++this.counter;
 
-        const query = encodeURI($event);
-        if (query == 'null') {
+        if ($event == 'null' || $event == 'undefined' || $event === undefined) {
             return;
         }
-        this.areaService.getAllZilaByDivisionId(query).subscribe(result => {
-            this.zilaSearchOptions = result;
-        });
+
+        if (typeof $event === "number" && this.counter > 3) {
+            this.validateForm.controls.zila_id.patchValue(null);
+            this.validateForm.controls.upazila_id.patchValue(null);
+            this.areaService.getAllZilaByDivisionId($event).subscribe(result => {
+                this.zilaSearchOptions = result;
+            });
+        } else {
+            return;
+        }
     }
 
     /** Method for zila change */

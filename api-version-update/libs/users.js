@@ -24,7 +24,7 @@ exports.getAllUsers = async (req, groupId) => {
   let _where;
 
   if (groupId === 'adminUser') {
-    _where = ` WHERE customer.deleted_at IS NULL AND (customer.group_id = 1 OR customer.group_id = 4 OR customer.user_type  = 'admin') `;
+    _where = ` WHERE customer.deleted_at IS NULL AND (customer.group_id = 1 OR customer.user_type  = 'admin') `;
   } else {
     _where = ` WHERE customer.deleted_at IS NULL AND customer.group_id = '${groupId}' `;
   }

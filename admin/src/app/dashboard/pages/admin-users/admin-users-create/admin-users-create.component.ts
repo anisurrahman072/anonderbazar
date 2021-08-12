@@ -102,7 +102,11 @@ export class AdminUsersCreateComponent implements OnInit {
 
         this.adminUsersService.getAllGroups()
             .subscribe(result => {
-                this.allGroups = result.data;
+                console.log('resutL ', result.data);
+                this.allGroups = result.data.filter(group => {
+                    return (group.name !== 'customer' && group.name !== 'owner');
+                });
+                console.log("groups: ", this.allGroups);
                 this._isSpinning = false;
             })
     }

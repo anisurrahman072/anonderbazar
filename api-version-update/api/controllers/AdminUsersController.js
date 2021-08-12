@@ -7,6 +7,7 @@
 
 const {getAllUsers} = require('../../libs/users');
 const {uploadImages} = require('../../libs/helper');
+let bcrypt = require('bcryptjs');
 
 module.exports = {
   /** Method called for getting all admin users data */
@@ -150,7 +151,38 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
+      if (req.body.password && req.body.password !== 'undefined') {
+        bcrypt.genSalt(10, (err, salt) => {
+          if (err) {
+            return next(err);
+          }
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) {
+              return next(err);
+            }
+            req.body.password = hash;
+          });
+        });
+      }
+
       user = await User.updateOne({id: user.id}).set(req.body);
+
+      if (user.phone) {
+        try {
+          let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      if (user.email) {
+        try {
+          EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+        } catch (err) {
+          console.log(err);
+        }
+      }
 
       return res.status(200).json({
         success: true,
@@ -169,9 +201,10 @@ module.exports = {
     }
   },
 
-  /** Method calle to find an admin user data */
+  /** Method called to find an admin user data */
   /** Model models/User.js */
   getById: async (req, res) => {
+    console.log('call here');
     try {
       const user = await User.findOne({
         id: req.query.id
@@ -181,6 +214,8 @@ module.exports = {
         .populate('upazila_id')
         .populate('zila_id')
         .populate('division_id');
+
+      /*console.log('user result: ', user);*/
 
       return res.status(200).json({
         success: true,
