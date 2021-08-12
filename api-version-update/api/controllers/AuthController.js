@@ -83,7 +83,7 @@ module.exports = {
       let valid = await bcrypt.compare(password, user.password);
 
       if (!valid) {
-        return res.json(401, {model: 'password', message: 'Password is invalid'});
+        return res.status(401).json({model: 'password', message: 'Password is invalid'});
       }
 
       if (user.group_id.name === 'customer') {

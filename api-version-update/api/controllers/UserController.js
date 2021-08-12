@@ -281,12 +281,15 @@ module.exports = {
       let valid;
       if (req.body.oldPassword !== '' && req.body.newPassword !== '') {
         valid = await comparePasswords(req.body.oldPassword, user.password);
-        console.log('valid value: ', valid);
 
         if (!valid) {
           return res.status(200).json({
             code: 'NOT_VALID_PASSWORD',
           });
+        }
+
+        if (valid) {
+          req.body.password = await bcrypt.hash(req.body.newPassword, 10);
         }
       }
 
@@ -295,16 +298,15 @@ module.exports = {
       if (valid) {
         if (user.phone) {
           try {
-            let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+            let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.newPassword;
             SmsService.sendingOneSmsToOne([user.phone], smsText);
           } catch (err) {
             console.log(err);
           }
         }
-
         if (user.email) {
           try {
-            EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+            EmailService.sendPasswordResetMailUpdated(user, req.body.newPassword);
           } catch (err) {
             console.log(err);
           }
