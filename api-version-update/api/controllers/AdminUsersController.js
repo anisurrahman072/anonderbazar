@@ -167,6 +167,23 @@ module.exports = {
 
       user = await User.updateOne({id: user.id}).set(req.body);
 
+      if (user.phone) {
+        try {
+          let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
+          SmsService.sendingOneSmsToOne([user.phone], smsText);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      if (user.email) {
+        try {
+          EmailService.sendPasswordResetMailUpdated(user, req.body.password);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       return res.status(200).json({
         success: true,
         message: 'Admin user updated successfully',
