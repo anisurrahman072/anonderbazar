@@ -15,4 +15,5 @@ exports.paymentGatewayRoutes = {
   'POST /api/v1/ssl-commerz/failure-partial': 'SslCommerzController.paymentFailurePartial',
   'POST /api/v1/ssl-commerz/error-partial': 'SslCommerzController.paymentErrorPartial',
   'GET /api/v1/nagad-payment/callback-checkout/:user_id/:billingAddress_id/:shippingAddress_id': 'NagadPaymentController.callbackCheckout',
+  'GET /api/v1/nagad-payment/callback-checkout-partial/:user_id/:product_order_id/:billingAddress_id/:shippingAddress_id': 'NagadPaymentController.callbackCheckoutForPartial',
 };

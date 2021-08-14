@@ -599,7 +599,8 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="Nagad">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment"
+                                                  value="Nagad"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>
@@ -741,7 +742,9 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="Nagad">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment
+                                                        && isAllowedNagadInOfferedProductPurchase"
+                                                  value="Nagad"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>

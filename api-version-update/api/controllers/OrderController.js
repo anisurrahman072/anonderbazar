@@ -1028,6 +1028,7 @@ module.exports = {
           item.pay_by_bKash = itemOfferInfo.pay_by_bKash;
           item.pay_by_offline = itemOfferInfo.pay_by_offline;
           item.pay_by_cashOnDelivery = itemOfferInfo.pay_by_cashOnDelivery;
+          item.pay_by_nagad = itemOfferInfo.pay_by_nagad;
           item.offered_product = true;
           console.log('item info: ', item.offer_id_number, regularOfferDetailsByOfferId[item.offer_id_number]);
         } else if(item.offer_type && item.offer_type === ANONDER_JHOR_OFFER_TYPE){
@@ -1035,6 +1036,7 @@ module.exports = {
           item.pay_by_bKash = anonderJhorInfo.pay_by_bKash;
           item.pay_by_offline = anonderJhorInfo.pay_by_offline;
           item.pay_by_cashOnDelivery = anonderJhorInfo.pay_by_cashOnDelivery;
+          item.pay_by_nagad = anonderJhorInfo.pay_by_nagad;
           item.offered_product = true;
         }
         return item;

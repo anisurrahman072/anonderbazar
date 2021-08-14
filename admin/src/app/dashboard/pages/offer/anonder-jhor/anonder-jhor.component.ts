@@ -32,6 +32,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     isActiveBkash: boolean = false;
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
+    isActiveNagad: boolean = false;
 
     /** Anonder Jhor Offers variables */
     anonderJhorOffersData: any = [];
@@ -92,6 +93,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
                     this.isActiveOffline = !!this.anonderJhorData.pay_by_offline;
                     this.isActiveCashOnDelivery = !!this.anonderJhorData.pay_by_cashOnDelivery;
+                    this.isActiveNagad = !!this.anonderJhorData.pay_by_nagad;
 
                     this.status = this.anonderJhorData.status;
                     this.jhorId = this.anonderJhorData.id;
@@ -195,7 +197,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_sslcommerz: ['', []],
                 pay_by_bKash: ['', []],
                 pay_by_offline: ['', []],
-                pay_by_cashOnDelivery: ['', []]
+                pay_by_cashOnDelivery: ['', []],
+                pay_by_nagad: ['', []]
             });
 
             this.AnonderJhorBannerImageFileEdit = [];
@@ -210,7 +213,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_sslcommerz: this.anonderJhorData.pay_by_sslcommerz,
                 pay_by_bKash: this.anonderJhorData.pay_by_bKash,
                 pay_by_offline: this.anonderJhorData.pay_by_offline,
-                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
+                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery,
+                pay_by_nagad: this.anonderJhorData.pay_by_nagad
             }
 
             this.validateForm.patchValue(payload);
@@ -246,6 +250,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
         formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
         formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+        formData.append('pay_by_nagad', this.isActiveNagad ? "1" : "0");
 
         /*if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
@@ -516,5 +521,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     }
     changeCashOnDeliveryActivation() {
         this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
+    }
+    changeNagadActivation() {
+        this.isActiveNagad = !this.isActiveNagad;
     }
 }

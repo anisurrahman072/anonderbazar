@@ -119,6 +119,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     isAllowedBkashInOfferedProductPurchase = true;
     isAllowedOfflineInOfferedProductPurchase = true;
     isAllowedCashInDeliveryInOfferedProductPurchase = true;
+    isAllowedNagadInOfferedProductPurchase = true;
 
     isAllowedOfferPaymentGateway = false;
 
@@ -298,6 +299,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isAllowedBkashInOfferedProductPurchase = true;
         this.isAllowedOfflineInOfferedProductPurchase = true;
         this.isAllowedCashInDeliveryInOfferedProductPurchase = true;
+        this.isAllowedNagadInOfferedProductPurchase = true;
 
         this.isAllowedOfferPaymentGateway = false;
         this.isAllowedToProcessToPay = true;
@@ -334,6 +336,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 if(!this.offerData[productId].pay_by_cashOnDelivery){
                     this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_nagad){
+                    this.isAllowedNagadInOfferedProductPurchase = false;
                 }
             } else {
                 if(this.offerIdNumber){

@@ -8,11 +8,14 @@
 const {sslWebUrl} = require('../../config/softbd');
 const logger = require('../../libs/softbd-logger').Logger;
 const {getGlobalConfig} = require('../../libs/helper');
-const {nagad} = require('../../config/softbd');
-const {fetchWithTimeout} = require('../../libs/helper');
 const {
-  NAGAD_PAYMENT_TYPE
+  NAGAD_PAYMENT_TYPE,
+  PAYMENT_STATUS_PARTIALLY_PAID,
+  PAYMENT_STATUS_PAID,
+  APPROVED_PAYMENT_APPROVAL_STATUS
 } = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
+const {verifyPayment} = require('../../libs/nagadHelper');
 
 module.exports = {
   callbackCheckout: async (req, res) => {
@@ -70,26 +73,7 @@ module.exports = {
     }
 
     try {
-      let payment_verification_url = nagad.isSandboxMode ? nagad['sandbox'].payment_verification_url : nagad['production'].payment_verification_url;
-      payment_verification_url += `${params.payment_ref_id}`;
-
-      let headers = {
-        'X-KM-IP-V4': '45.118.63.56',
-        'X-KM-Client-Type': 'PC_WEB',
-        'X-KM-Api-Version': 'v-0.2.0',
-        'Content-Type': 'application/json',
-      };
-
-      const options = {
-        method: 'GET',
-        headers: headers
-      };
-
-      let verificationResponse = await fetchWithTimeout(payment_verification_url, options);
-      verificationResponse = await verificationResponse.json();
-
-      console.log('Verification result: ', verificationResponse);
-
+      let verificationResponse = await verifyPayment(params.payment_ref_id);
       if(!(verificationResponse && verificationResponse.amount && verificationResponse.issuerPaymentRefNo && verificationResponse.status === 'Success')){
         res.writeHead(301,
           {
@@ -193,7 +177,149 @@ module.exports = {
       );
       res.end();
     }
-  }
+  },
 
+  callbackCheckoutForPartial: async (req, res) => {
+    let params = req.allParams();
+
+    if (!params) {
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Response from Nagad is not found!.')
+        }
+      );
+      res.end();
+      return;
+    }
+
+    let customer = await PaymentService.getTheCustomer(params.user_id);
+    if (!customer) {
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Provided customer was not found.')
+        }
+      );
+      res.end();
+      return;
+    }
+
+    logger.orderLog(customer.id, '################ Nagad Response', '');
+    logger.orderLog(customer.id, 'Nagad Response Body', params);
+
+    if (params.status === 'Aborted') {
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Payment has been canceled by Customer')
+        }
+      );
+      res.end();
+      return;
+    } else if (params.status !== 'Success') {
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Payment not completed!')
+        }
+      );
+      res.end();
+      return;
+    }
+
+    if (!(params.issuer_payment_ref && params.payment_ref_id && params.user_id && params.product_order_id && params.billingAddress_id && params.shippingAddress_id)) {
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Payment information not found!')
+        }
+      );
+      res.end();
+      return;
+    }
+
+    try {
+      let globalConfigs = await getGlobalConfig();
+
+      logger.orderLog(customer.id, 'IPN Payment Success Partial (req body)', params);
+
+      const order = await Order.findOne({id: params.product_order_id, deletedAt: null})
+        .populate('shipping_address');
+
+      if (!order) {
+        throw new Error('Order doesn\'t exist.');
+      }
+
+      let verificationResponse = await verifyPayment(params.payment_ref_id);
+      if(!(verificationResponse && verificationResponse.amount && verificationResponse.issuerPaymentRefNo && verificationResponse.status === 'Success')){
+        res.writeHead(301,
+          {
+            Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Illegal payment found!')
+          }
+        );
+        res.end();
+        return;
+      }
+
+      const paidAmount = parseFloat(verificationResponse.amount);
+      const transactionId = verificationResponse.issuerPaymentRefNo;
+
+      await sails.getDatastore()
+        .transaction(async (db) => {
+
+          await Payment.create({
+            transection_key: transactionId,
+            payment_amount: paidAmount,
+            user_id: customer.id,
+            order_id: order.id,
+            payment_type: NAGAD_PAYMENT_TYPE,
+            details: JSON.stringify(verificationResponse),
+            status: 1,
+            approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
+          }).fetch().usingConnection(db);
+
+          const totalPrice = parseFloat(order.total_price);
+          const totalPaidAmount = parseFloat(order.paid_amount) + paidAmount;
+
+          let paymentStatus = PAYMENT_STATUS_PARTIALLY_PAID;
+          let orderStatus = ORDER_STATUSES.pending;
+          if (totalPrice <= totalPaidAmount) {
+            paymentStatus = PAYMENT_STATUS_PAID;
+            orderStatus = ORDER_STATUSES.processing;
+
+            await Suborder.update({product_order_id: order.id}, {status: ORDER_STATUSES.processing});
+          }
+
+          await Order.updateOne({id: order.id}).set({
+            paid_amount: totalPaidAmount,
+            payment_status: paymentStatus,
+            status: orderStatus
+          }).usingConnection(db);
+        });
+
+      logger.orderLog(customer.id, 'Nagad Payment Success Partial - Order Updated');
+
+      const shippingAddress = order.shipping_address;
+
+      if (customer.phone || (shippingAddress && shippingAddress.phone)) {
+        await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
+          paidAmount: paidAmount,
+          transaction_id: transactionId
+        });
+      }
+
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/profile/orders/invoice/' + order.id
+        }
+      );
+      res.end();
+    } catch (error){
+      logger.orderLogAuth(req, error);
+      console.log('finalError', error);
+      res.writeHead(301,
+        {
+          Location: sslWebUrl + '/profile/orders'
+        }
+      );
+      res.end();
+    }
+  }
 };
 
