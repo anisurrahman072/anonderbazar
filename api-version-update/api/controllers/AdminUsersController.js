@@ -151,7 +151,9 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
+      let newPassword;
       if (req.body.password && req.body.password !== 'undefined') {
+        newPassword = req.body.password;
         bcrypt.genSalt(10, (err, salt) => {
           if (err) {
             return next(err);
@@ -167,20 +169,22 @@ module.exports = {
 
       user = await User.updateOne({id: user.id}).set(req.body);
 
-      if (user.phone) {
-        try {
-          let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.password;
-          SmsService.sendingOneSmsToOne([user.phone], smsText);
-        } catch (err) {
-          console.log(err);
+      if (req.body.password && req.body.password !== 'undefined') {
+        if (user.phone) {
+          try {
+            let smsText = 'In anonderbazar.com your username: ' + user.username + ', password: ' + newPassword;
+            SmsService.sendingOneSmsToOne([user.phone], smsText);
+          } catch (err) {
+            console.log(err);
+          }
         }
-      }
 
-      if (user.email) {
-        try {
-          EmailService.sendPasswordResetMailUpdated(user, req.body.password);
-        } catch (err) {
-          console.log(err);
+        if (user.email) {
+          try {
+            EmailService.sendPasswordResetMailUpdated(user, newPassword);
+          } catch (err) {
+            console.log(err);
+          }
         }
       }
 
