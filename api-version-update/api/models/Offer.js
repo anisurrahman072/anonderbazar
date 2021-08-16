@@ -111,6 +111,11 @@ module.exports = {
       type: 'number',
       columnType: 'tinyint',
       defaultsTo: 0
+    },
+    pay_by_nagad: {
+      type: 'number',
+      columnType: 'tinyint',
+      defaultsTo: 0
     }
   },
   tableName: 'offers',

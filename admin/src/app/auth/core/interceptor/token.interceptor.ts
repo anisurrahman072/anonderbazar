@@ -17,7 +17,8 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+        console.log('tokern interceptor');
+        console.log('req in token: ', request);
         let authReq = request;
         // Clone the request to add the new header.
         if (!this.authService.isTokenExpired()) {
@@ -31,6 +32,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
         //send the newly created request
         return next.handle(authReq).catch((error, caught) => {
+            console.log('rq in retu');
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
                     // TODO: logout and Redirect to Login Page

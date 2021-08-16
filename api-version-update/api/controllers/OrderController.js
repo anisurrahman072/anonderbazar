@@ -27,6 +27,7 @@ const {
   REGULAR_OFFER_TYPE,
   ANONDER_JHOR_OFFER_TYPE
 } = require('../../libs/constants');
+const {globalSmsFlag} = require('../../config/smsFlag.js');
 
 module.exports = {
   findOne: async (req, res) => {
@@ -680,6 +681,7 @@ module.exports = {
     }
   }, //Method called for updating order
   update: async (req, res) => {
+    console.log('The body is: ', req.body);
     try {
       let updatedOrder = await Order.updateOne({
         deletedAt: null, id: req.param('id')
@@ -701,6 +703,14 @@ module.exports = {
         }).set({
           amount: prevCashbackDetail.amount + returnCashbackAmount
         });
+      }
+
+      if(globalSmsFlag.ORDER_STATUS_CHANGE_SEND_SMS && req.body.status && req.param('id')){
+        const customer = await User.findOne({id: updatedOrder.user_id});
+        await PaymentService.sendSmsForOrderStatusChange({
+          orderId:req.param('id'),
+          status: req.body.status
+        },  customer);
       }
 
       return res.status(200).json({
@@ -870,12 +880,12 @@ module.exports = {
 
       if (params.customerName) {
         const customerName = params.customerName.toLowerCase();
-        _where += ` AND ( (CONCAT(users.first_name," ",users.last_name)='${customerName}') OR LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
+        _where += ` AND ( (CONCAT(users.first_name," ",users.last_name)='${customerName}') OR (CONCAT(users.first_name,"",users.last_name)='${customerName}') OR LOWER(users.first_name) LIKE '%${customerName}%' OR LOWER(users.last_name) LIKE '%${customerName}%') `;
       }
 
       _where += ` ORDER BY orders.created_at DESC `;
 
-      console.log('_where: ', _where);
+      /*console.log('_where: ', _where);*/
       const totalOrderRaw = await orderNativeQuery('SELECT COUNT(*) as totalCount ' + fromSQL + _where, []);
 
       let canceledOrder;
@@ -1018,6 +1028,7 @@ module.exports = {
           item.pay_by_bKash = itemOfferInfo.pay_by_bKash;
           item.pay_by_offline = itemOfferInfo.pay_by_offline;
           item.pay_by_cashOnDelivery = itemOfferInfo.pay_by_cashOnDelivery;
+          item.pay_by_nagad = itemOfferInfo.pay_by_nagad;
           item.offered_product = true;
           console.log('item info: ', item.offer_id_number, regularOfferDetailsByOfferId[item.offer_id_number]);
         } else if(item.offer_type && item.offer_type === ANONDER_JHOR_OFFER_TYPE){
@@ -1025,6 +1036,7 @@ module.exports = {
           item.pay_by_bKash = anonderJhorInfo.pay_by_bKash;
           item.pay_by_offline = anonderJhorInfo.pay_by_offline;
           item.pay_by_cashOnDelivery = anonderJhorInfo.pay_by_cashOnDelivery;
+          item.pay_by_nagad = anonderJhorInfo.pay_by_nagad;
           item.offered_product = true;
         }
         return item;

@@ -111,7 +111,8 @@ module.exports = {
         pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
         pay_by_bKash: thisOffer.pay_by_bKash,
         pay_by_offline: thisOffer.pay_by_offline,
-        pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
+        pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery,
+        pay_by_nagad: thisOffer.pay_by_nagad
       };
 
       /**if selection_type === 'Vendor wise'*/
@@ -203,7 +204,8 @@ module.exports = {
               pay_by_sslcommerz: thisOffer.pay_by_sslcommerz,
               pay_by_bKash: thisOffer.pay_by_bKash,
               pay_by_offline: thisOffer.pay_by_offline,
-              pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery
+              pay_by_cashOnDelivery: thisOffer.pay_by_cashOnDelivery,
+              pay_by_nagad: thisOffer.pay_by_nagad
             };
           });
         }
@@ -229,7 +231,8 @@ module.exports = {
             pay_by_sslcommerz: anonderJhorInfo.pay_by_sslcommerz,
             pay_by_bKash: anonderJhorInfo.pay_by_bKash,
             pay_by_offline: anonderJhorInfo.pay_by_offline,
-            pay_by_cashOnDelivery: anonderJhorInfo.pay_by_cashOnDelivery
+            pay_by_cashOnDelivery: anonderJhorInfo.pay_by_cashOnDelivery,
+            pay_by_nagad: anonderJhorInfo.pay_by_nagad
           };
         });
       }

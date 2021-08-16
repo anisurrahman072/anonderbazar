@@ -32,6 +32,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     isActiveBkash: boolean = false;
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
+    isActiveNagad: boolean = false;
 
     /** Anonder Jhor Offers variables */
     anonderJhorOffersData: any = [];
@@ -92,6 +93,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                     this.isActiveBkash = !!this.anonderJhorData.pay_by_bKash;
                     this.isActiveOffline = !!this.anonderJhorData.pay_by_offline;
                     this.isActiveCashOnDelivery = !!this.anonderJhorData.pay_by_cashOnDelivery;
+                    this.isActiveNagad = !!this.anonderJhorData.pay_by_nagad;
 
                     this.status = this.anonderJhorData.status;
                     this.jhorId = this.anonderJhorData.id;
@@ -195,7 +197,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_sslcommerz: ['', []],
                 pay_by_bKash: ['', []],
                 pay_by_offline: ['', []],
-                pay_by_cashOnDelivery: ['', []]
+                pay_by_cashOnDelivery: ['', []],
+                pay_by_nagad: ['', []]
             });
 
             this.AnonderJhorBannerImageFileEdit = [];
@@ -210,7 +213,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                 pay_by_sslcommerz: this.anonderJhorData.pay_by_sslcommerz,
                 pay_by_bKash: this.anonderJhorData.pay_by_bKash,
                 pay_by_offline: this.anonderJhorData.pay_by_offline,
-                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery
+                pay_by_cashOnDelivery: this.anonderJhorData.pay_by_cashOnDelivery,
+                pay_by_nagad: this.anonderJhorData.pay_by_nagad
             }
 
             this.validateForm.patchValue(payload);
@@ -246,6 +250,7 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
         formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
         formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
         formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+        formData.append('pay_by_nagad', this.isActiveNagad ? "1" : "0");
 
         /*if (this.anonderJhorBannerImageFile) {
             formData.append('hasImage', 'true');
@@ -424,14 +429,14 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                             'Order Time': _moment(offerItem.orderCreatedAt).format('h:m a'),
                             'Order id': offerItem.order_id,
                             'SubOrder Id': offerItem.suborder_id,
-                            'Customer Name': offerItem.customer_name,
+                            'Customer Name': offerItem.customer_name ? offerItem.customer_name.split(',').join('-').trim() : 'N/a',
                             'Customer Phone': (offerItem.customer_phone) ? offerItem.customer_phone : 'N/a',
-                            'Customer Division': offerItem.division_name,
-                            'Customer District': offerItem.zila_name,
-                            'Customer Upazila': offerItem.upazila_name,
-                            'Customer House/Road/Block/Village': offerItem.address.split(',').join('/'),
-                            'Category': offerItem.categoryName,
-                            'product name': offerItem.product_name,
+                            'Customer Division': offerItem.division_name ? offerItem.division_name.split(',').join('/').trim() : 'N/a',
+                            'Customer District': offerItem.zila_name ? offerItem.zila_name.split(',').join('/').trim() : 'N/a',
+                            'Customer Upazila': offerItem.upazila_name ? offerItem.upazila_name.split(',').join('/').trim() : 'N/a',
+                            'Customer House/Road/Block/Village': offerItem.address ? offerItem.address.split(',').join('/').trim() : 'N/a',
+                            'Category': offerItem.categoryName ? offerItem.categoryName.split(',').join('-').trim() : 'N/a',
+                            'product name': offerItem.product_name ? offerItem.product_name.split(',').join('-').trim() : 'N/a',
                             'Product SKU': offerItem.product_code,
                             'MRP': offerItem.originalPrice,
                             'Vendor Price': offerItem.vendorPrice,
@@ -444,9 +449,9 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
                             'Payment Amount': offerItem.paymentAmount,
                             'Transaction Time': _moment(offerItem.transactionTime).format('DD-MM-YYYY h:m a'),
                             'Remaining Amount': offerItem.dueAmount ? offerItem.dueAmount : 0,
-                            'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name : 'N/a',
+                            'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name.split(',').join('-').trim() : 'N/a',
                             'Vendor Phone': (offerItem.vendor_phone) ? offerItem.vendor_phone : 'N/a',
-                            'Vendor Address': offerItem.vendor_address.split(',').join('/'),
+                            'Vendor Address': offerItem.vendor_address ? offerItem.vendor_address.split(',').join('/').trim() : 'N/a',
                             'Suborder Status': typeof this.statusOptions[offerItem.sub_order_status] !== 'undefined' ? this.statusOptions[offerItem.sub_order_status] : 'Unrecognized Status',
                             'Suborder Changed By': ((offerItem.suborder_changed_by_name) ? offerItem.suborder_changed_by_name : ''),
                             'Order Status': typeof this.statusOptions[offerItem.order_status] !== 'undefined' ? this.statusOptions[offerItem.order_status] : 'Unrecognized Status',
@@ -516,5 +521,8 @@ export class AnonderJhorComponent implements OnInit, OnDestroy {
     }
     changeCashOnDeliveryActivation() {
         this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
+    }
+    changeNagadActivation() {
+        this.isActiveNagad = !this.isActiveNagad;
     }
 }

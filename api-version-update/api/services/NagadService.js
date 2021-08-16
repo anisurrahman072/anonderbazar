@@ -1,6 +1,12 @@
+const {PAYMENT_STATUS_PAID, APPROVED_PAYMENT_APPROVAL_STATUS} = require('../../libs/constants');
+const {ORDER_STATUSES} = require('../../libs/orders');
+const logger = require('../../libs/softbd-logger').Logger;
+const {completePayment} = require('../../libs/nagadHelper');
+
 module.exports = {
   placeOrder: async (authUser, requestBody, urlParams, orderDetails, addresses, globalConfigs, cart, cartItems) => {
     const {
+      billingAddress,
       shippingAddress
     } = addresses;
 
@@ -11,104 +17,116 @@ module.exports = {
 
     let courierCharge = PaymentService.calcCourierCharge(cartItems, shippingAddress.zila_id, globalConfigs);
 
-    let finalBillingAddressId = null;
-    let finalShippingAddressId = null;
+    /** adding shipping charge with grandtotal */
+    grandOrderTotal += courierCharge;
 
-    if (billingAddress && billingAddress.id) {
-      finalBillingAddressId = billingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalBillingAddressId = adminPaymentAddress.id;
+    let finalPostalCode = shippingAddress.postal_code;
+    let finalAddress = shippingAddress.address;
+
+    if (!finalPostalCode) {
+      throw new Error('No Post Code has been provided.');
     }
-
-    if (shippingAddress && shippingAddress.id) {
-      finalShippingAddressId = shippingAddress.id;
-    } else if (adminPaymentAddress && adminPaymentAddress.id) {
-      finalShippingAddressId = adminPaymentAddress.id;
+    if (!finalAddress) {
+      throw new Error('No address has been provided.');
     }
-
-    const paymentTransactionLog = await PaymentTransactionLog.create({
-      user_id: authUser.id,
-      payment_type: 'nagad',
-      payment_amount: grandOrderTotal,
-      payment_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status: '1',
-      details: JSON.stringify({
-        billingAddressId: finalBillingAddressId,
-        shippingAddressId: finalShippingAddressId
-      })
-    }).fetch();
 
     /** Driver code for Nagad Integration */
+    let completeResponse = await completePayment(grandOrderTotal, {
+      userId: authUser.id,
+      billingAddressId: billingAddress.id,
+      shippingAddressId: shippingAddress.id,
+      isPartialOrder: false
+    });
 
-    let currentDate = new Date().toISOString().replace(/-/g, '');
-    currentDate = currentDate.replace(/[T]+/g, '');
-    currentDate = currentDate.substring(0, 8);
+    return completeResponse;
+  },
 
-    let time = new Date().toLocaleTimeString('en-US', {hour12: false});
-    time = time.replace(/:/g, '');
-    time = time.replace(/[a-zA-Z]+/g, '');
-    time = time.replace(/ /g, '');
+  createOrder: async (db, customer, transDetails, addressIds, orderDetails) => {
+    const {paymentType, paidAmount, paymentResponse} = transDetails;
+    const {billingAddressId, shippingAddressId} = addressIds;
 
-    const merchantId = '683002007104225';
-    const dateTime = currentDate + time;
-    const amount = '5';
-    const orderId = PaymentService.generateRandomString();
-    const challenge = toHexString(PaymentService.generateRandomString(40));
+    const {
+      courierCharge,
+      grandOrderTotal,
+      totalQty,
+      cart,
+      cartItems
+    } = orderDetails;
 
-    const PostURL = `http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0/api/dfs/check-out/initialize/${merchantId}/${orderId}`;
+    let {
+      suborders,
+      order,
+      allOrderedProductsInventory,
+      allGeneratedCouponCodes
+    } = await PaymentService.createOrder(db, {
+      user_id: customer.id,
+      cart_id: cart.id,
+      total_price: grandOrderTotal,
+      paid_amount: paidAmount,
+      payment_status: PAYMENT_STATUS_PAID,
+      total_quantity: totalQty,
+      billing_address: billingAddressId,
+      shipping_address: shippingAddressId,
+      courier_charge: courierCharge,
+      courier_status: 1,
+      status: ORDER_STATUSES.processing
+    }, cartItems);
 
-    const callbackURL = sslApiUrl + '/nagad-payment/callback-checkout/' + authUser.id;
+    /** .............Payment Section ........... */
+    const payments = await PaymentService.createPayment(db, suborders, {
+      user_id: customer.id,
+      order_id: order.id,
+      payment_type: paymentType,
+      details: JSON.stringify(paymentResponse),
+      transection_key: paymentResponse.issuerPaymentRefNo,
+      status: 1,
+      approval_status: APPROVED_PAYMENT_APPROVAL_STATUS
+    });
 
+    const allCouponCodes = await PaymentService.generateCouponCodes(db, allGeneratedCouponCodes);
 
-    let SensitiveData = {
-      merchantId,
-      dateTime,
-      orderId,
-      challenge
+    await PaymentService.updateCart(cart.id, db, cartItems);
+
+    await PaymentService.updateProductInventory(allOrderedProductsInventory, db);
+
+    logger.orderLog(customer.id, 'Nagad order successfully created:', order);
+
+    return {
+      order,
+      suborders,
+      payments,
+      allCouponCodes,
     };
+  },
 
-    const PostData = {
-      accountNumber: '01958083901',
-      dateTime: dateTime,
-      sensitiveData: EncryptDataWithPublicKey(JSON.stringify(SensitiveData)),
-      signature: SignatureGenerate(JSON.stringify(SensitiveData))
-    };
+  makePartialPayment: async (customer, order, request, globalConfigs) => {
+    const billingAddress = order.billing_address;
+    const shippingAddress = order.shipping_address;
+    const totalQuantity = parseFloat(order.total_quantity);
+    const amountToPay = parseFloat(request.body.amount_to_pay);
+    if (amountToPay <= 0) {
+      throw new Error('Invalid Payment Amount.');
+    }
 
-    let result_Data = await HttpPostMethod(PostURL, PostData, ip);
+    let finalPostalCode = shippingAddress.postal_code;
+    let finalAddress = shippingAddress.address;
 
-    /*if(result_Data && result_Data['sensitiveData'] && result_Data['signature']){
-      if(result_Data['sensitiveData'] !== '' && result_Data['signature'] !== ''){
-        let PlainResponse = JSON.parse(DecryptDataWithPrivateKey(result_Data['sensitiveData']));
+    if (!finalPostalCode) {
+      throw new Error('No Post Code has been provided.');
+    }
+    if (!finalAddress) {
+      throw new Error('No address has been provided.');
+    }
 
-        if (PlainResponse['paymentReferenceId'] && PlainResponse['challenge']) {
-          const paymentReferenceId = PlainResponse['paymentReferenceId'];
-          const randomServer = PlainResponse['challenge'];
+    /** Driver code for Nagad Integration */
+    let completeResponse = await completePayment(amountToPay, {
+      userId: customer.id,
+      orderId: order.id,
+      billingAddressId: billingAddress.id,
+      shippingAddressId: shippingAddress.id,
+      isPartialOrder: true
+    });
 
-          let SensitiveDataOrder = {
-            merchantId: MerchantID,
-            orderId: OrderId,
-            currencyCode: '050',
-            amount: amount,
-            challenge: randomServer
-          };
-
-          let PostDataOrder = {
-            sensitiveData: EncryptDataWithPublicKey(JSON.stringify(SensitiveDataOrder)),
-            signature: SignatureGenerate(JSON.stringify(SensitiveDataOrder)),
-            merchantCallbackURL: callbackURL
-          };
-
-          let OrderSubmitUrl = `http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0/api/dfs/check-out/complete/${paymentReferenceId}`;
-          let Result_Data_Order = HttpPostMethod(OrderSubmitUrl, PostDataOrder);
-
-          if(Result_Data_Order && Result_Data_Order['status'] === 'Success'){
-            let url = JSON.stringify(Result_Data_Order['callBackUrl']);
-          }
-          else {
-            console.log('Error occurred', Result_Data_Order);
-          }
-        }
-      }
-    }*/
+    return completeResponse;
   }
 };

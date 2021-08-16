@@ -85,7 +85,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
         this.currentDate = Date();
         this.sub = this.route.params.subscribe(params => {
             this.id = +params['id']; // (+) converts string 'id' to a number
-            console.log(' this.id', this.id);
+            /*console.log(' this.id', this.id);*/
 
             this.orderService.getOrderInvoiceData(this.id)
                 .subscribe(data => {
@@ -95,7 +95,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                     this.data = order;
                     this.data.createdAt = _moment(this.data.createdAt).format('MM-DD-YYYY');
 
-                    console.log('this.orderService.getById(this.id)', this.data);
+                    /*console.log('this.orderService.getById(this.id)', this.data);*/
 
                     if (this.data.user_id && this.data.user_id) {
                         this.userPhone = this.data.user_id.phone;
@@ -132,7 +132,7 @@ export class OrderReadComponent implements OnInit, OnDestroy {
                         return payment;
                     });
 
-                    console.log('this.data', this.allPaymentsLog);
+                    /*console.log('this.data', this.allPaymentsLog);*/
                     this._isSpinning = false;
                 }, (err) => {
                     console.log('err', err);

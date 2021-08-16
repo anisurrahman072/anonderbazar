@@ -408,7 +408,7 @@ module.exports = {
 
       if (customer.phone || (shippingAddress && shippingAddress.phone)) {
         await PaymentService.sendSmsForPartialPayment(customer, shippingAddress, order.id, {
-          paidAmount: req.body.amount,
+          paidAmount: paidAmount,
           transaction_id: req.body.tran_id
         });
       }

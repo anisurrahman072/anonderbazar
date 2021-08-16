@@ -269,6 +269,13 @@
                         Pay by Cash On Delivery
                     </div>
                 </div>
+                <div nz-row style="margin: 15px 15px 0 0">
+                    <div nz-col [nzOffset]="7" [nzSpan]="12">
+                        <input formControlName="pay_by_nagad" type="checkbox" [checked]="isActiveNagad"
+                               (change)="changeNagadActivation()">
+                        Pay by Nagad
+                    </div>
+                </div>
                 <!-- Select Payment Gateway. END -->
             </div>
             <!-- Payment type selection for offer products. END -->

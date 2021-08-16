@@ -6,7 +6,6 @@ exports.paymentGatewayRoutes = {
   'GET /api/v1/bkash-payment/agreement-callback/:id': 'BkashPaymentController.agreementCallback',
   'GET /api/v1/bkash-payment/agreement-callback-checkout/:userId': 'BkashPaymentController.agreementCallbackCheckout',
   'GET /api/v1/bkash-payment/payment-callback/:userId/:paymentTransId': 'BkashPaymentController.paymentCallback',
-  'GET /api/v1/nagad-payment/callback-checkout/:userId': 'NagadPaymentController.callbackCheckout',
   'POST /api/v1/ssl-commerz/success': 'SslCommerzController.paymentSuccess',
   'POST /api/v1/ssl-commerz/success-ipn': 'SslCommerzController.ipnPaymentSuccess',
   'POST /api/v1/ssl-commerz/failure': 'SslCommerzController.paymentFailure',
@@ -15,4 +14,6 @@ exports.paymentGatewayRoutes = {
   'POST /api/v1/ssl-commerz/success-partial': 'SslCommerzController.paymentSuccessPartial',
   'POST /api/v1/ssl-commerz/failure-partial': 'SslCommerzController.paymentFailurePartial',
   'POST /api/v1/ssl-commerz/error-partial': 'SslCommerzController.paymentErrorPartial',
+  'GET /api/v1/nagad-payment/callback-checkout/:user_id/:billingAddress_id/:shippingAddress_id': 'NagadPaymentController.callbackCheckout',
+  'GET /api/v1/nagad-payment/callback-checkout-partial/:user_id/:product_order_id/:billingAddress_id/:shippingAddress_id': 'NagadPaymentController.callbackCheckoutForPartial',
 };

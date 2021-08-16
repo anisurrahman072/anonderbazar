@@ -437,9 +437,9 @@ export class OrderComponent implements OnInit, OnDestroy {
             csvData.push({
                 'Order Id': suborderItem.order_id,
                 'SubOrder Id': suborderItem.suborder_id,
-                'Vandor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                'Vandor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name.split(',').join('-').trim() : 'N/a',
                 'Vandor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
-                'Customer Name': suborderItem.customer_name,
+                'Customer Name': suborderItem.customer_name ? suborderItem.customer_name.split(',').join('-').trim() : 'N/a',
                 'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
                 'Product Description': '(' + suborderItem.product_code + ') | ' + suborderItem.product_id + ' | ' + varients,
                 'Price': suborderItem.price,
@@ -454,10 +454,10 @@ export class OrderComponent implements OnInit, OnDestroy {
                 'Coupon Product Code': allCouponCodes,
                 'postal Code': suborderItem.postal_code,
                 'Transactions': suborderItem.transactions,
-                'Upazila Name': suborderItem.upazila_name,
-                'Zila Name': suborderItem.zila_name,
-                'Division Name': suborderItem.division_name,
-                'Address': suborderItem.address,
+                'Upazila Name': suborderItem.upazila_name ? suborderItem.upazila_name.split(',').join('/').trim() : 'N/a',
+                'Zila Name': suborderItem.zila_name ? suborderItem.zila_name.split(',').join('/').trim() : 'N/a',
+                'Division Name': suborderItem.division_name ? suborderItem.division_name.split(',').join('/').trim() : 'N/a',
+                'Address': suborderItem.address ? suborderItem.address.split(',').join('/').trim() : 'N/a'
             });
 
         });
@@ -618,7 +618,7 @@ export class OrderComponent implements OnInit, OnDestroy {
             date: JSON.stringify(dateSearchValue)
         })
             .subscribe(result => {
-                console.log("result is: ", result);
+                /*console.log("result is: ", result);*/
                 if (!(Array.isArray(result) && result.length > 0)) {
                     this._notification.info('Not found!', 'No product found in this time');
                     return false;
@@ -631,14 +631,14 @@ export class OrderComponent implements OnInit, OnDestroy {
                         'Order Time': _moment(suborderItem.orderCreatedAt).format('h:m a'),
                         'Order Id': suborderItem.order_id,
                         'SubOrder Id': suborderItem.suborder_id,
-                        'Customer Name': suborderItem.customer_name,
+                        'Customer Name': suborderItem.customer_name ? suborderItem.customer_name.split(',').join('-').trim() : 'N/a',
                         'Customer Phone': (suborderItem.customer_phone) ? suborderItem.customer_phone : 'N/a',
-                        'Customer Division': suborderItem.division_name,
-                        'Customer District': suborderItem.zila_name,
-                        'Customer Upazila': suborderItem.upazila_name,
-                        'Customer House/Road/Block/Village': suborderItem.address.split(',').join('/'),
-                        'Category': suborderItem.categoryName,
-                        'Product Name': suborderItem.product_name,
+                        'Customer Division': suborderItem.division_name ? suborderItem.division_name.split(',').join('/').trim() : 'N/a',
+                        'Customer District': suborderItem.zila_name ? suborderItem.zila_name.split(',').join('/').trim() : 'N/a',
+                        'Customer Upazila': suborderItem.upazila_name ? suborderItem.upazila_name.split(',').join('/').trim() : 'N/a',
+                        'Customer House/Road/Block/Village': suborderItem.address ? suborderItem.address.split(',').join('/').trim() : 'N/a',
+                        'Category': suborderItem.categoryName ? suborderItem.categoryName.split(',').join('-').trim() : 'N/a',
+                        'Product Name': suborderItem.product_name ? suborderItem.product_name.split(',').join('-').trim() : 'N/a',
                         'Product SKU': suborderItem.product_code,
                         'MRP': suborderItem.originalPrice,
                         'Vendor Price': suborderItem.vendorPrice,
@@ -652,9 +652,9 @@ export class OrderComponent implements OnInit, OnDestroy {
                         'Payment Amount': suborderItem.paymentAmount,
                         'Transaction Time': _moment(suborderItem.transactionTime).format('DD-MM-YYYY h:m a'),
                         'Remaining Amount': suborderItem.dueAmount,
-                        'Vendor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name : 'N/a',
+                        'Vendor Name': (suborderItem.vendor_name) ? suborderItem.vendor_name.split(',').join('-').trim() : 'N/a',
                         'Vendor Phone': (suborderItem.vendor_phone) ? suborderItem.vendor_phone : 'N/a',
-                        'Vendor Address': suborderItem.vendor_address.split(',').join('/'),
+                        'Vendor Address': suborderItem.vendor_address ? suborderItem.vendor_address.split(',').join('/').trim() : 'N/a',
                         'Suborder Status': typeof this.statusOptions[suborderItem.sub_order_status] !== 'undefined' ? this.statusOptions[suborderItem.sub_order_status] : 'Unrecognized Status',
                         'Suborder Changed By': ((suborderItem.suborder_changed_by_name) ? suborderItem.suborder_changed_by_name : ''),
                         'Order Status': typeof this.statusOptions[suborderItem.order_status] !== 'undefined' ? this.statusOptions[suborderItem.order_status] : 'Unrecognized Status',

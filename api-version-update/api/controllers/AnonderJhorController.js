@@ -97,6 +97,7 @@ module.exports = {
         pay_by_bKash: body.pay_by_bKash === '1' ? 1 : 0,
         pay_by_offline: body.pay_by_offline === '1' ? 1 : 0,
         pay_by_cashOnDelivery: body.pay_by_cashOnDelivery === '1' ? 1 : 0,
+        pay_by_nagad: body.pay_by_nagad === '1' ? 1 : 0,
         status: 0
       };
 

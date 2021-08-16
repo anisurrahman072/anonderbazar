@@ -83,7 +83,7 @@ module.exports = {
       let valid = await bcrypt.compare(password, user.password);
 
       if (!valid) {
-        return res.json(401, {model: 'password', message: 'Password is invalid'});
+        return res.status(401).json({model: 'password', message: 'Password is invalid'});
       }
 
       if (user.group_id.name === 'customer') {
@@ -109,6 +109,9 @@ module.exports = {
       } else if (user.group_id.name === 'craftsman') {
         accessList = {};
         accessList.list = (await Group.findOne({name: 'craftsman'})).accessList;
+      } else if (user.group_id.name) {
+        accessList = {};
+        accessList.list = (await Group.findOne({name: user.group_id.name})).accessList;
       } else {
         accessList = {};
         accessList.list = [];
@@ -221,7 +224,7 @@ module.exports = {
           }
 
           postBody.status = 0;
-          let payloadData = Object.assign({},postBody);
+          let payloadData = Object.assign({}, postBody);
           const warehouse = await Warehouse.create(payloadData).fetch().usingConnection(db);
 
           if (postBody.user_avatar) {
@@ -588,7 +591,7 @@ module.exports = {
       return res.json(422, {err: 'password didn\'t match'});
     }
 
-    if(newPassword === oldPassword) {
+    if (newPassword === oldPassword) {
       return res.status(200).json({
         code: 'SAME_PASSWORD',
         message: 'New and old passwords are same'
@@ -650,7 +653,30 @@ module.exports = {
         error
       });
     }
+  },
 
+  checkEmailPhone: async (req, res) => {
+    try {
+      let user = await User.findOne({
+        email: req.query.email,
+        phone: req.query.phone,
+        deletedAt: null,
+        user_type: 'admin'
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: 'email and phone is ok',
+        user
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        message: 'failed to check email and phone',
+        error
+      });
+    }
   },
 
 };

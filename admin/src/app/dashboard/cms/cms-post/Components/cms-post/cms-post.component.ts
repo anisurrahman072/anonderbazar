@@ -171,7 +171,7 @@ export class CmsPostComponent implements OnInit {
     }
     // Event method for submitting the edit form
     submitEditForm = ($event, value) => {
-        console.log('submitEditForm', value)
+        /*console.log('submitEditForm', value);*/
         $event.preventDefault();
 
         this._isSpinning = true;
@@ -198,7 +198,7 @@ export class CmsPostComponent implements OnInit {
         }
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            console.log('customPostUpdate', result)
+            /*console.log('customPostUpdate', result);*/
             this.getData();
             this._notification.success('success', 'Post Update Succeeded');
             this._isSpinning = false;
@@ -209,7 +209,7 @@ export class CmsPostComponent implements OnInit {
 
     //Event method for resetting the form
     resetForm($event: MouseEvent) {
-        console.log('resetForm')
+        /*console.log('resetForm')*/
         this.ImageFile = null;
         $event ? $event.preventDefault() : null;
         this.editValidateForm.reset();
