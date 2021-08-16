@@ -83,7 +83,7 @@ module.exports = {
       let valid = await bcrypt.compare(password, user.password);
 
       if (!valid) {
-        return res.json(401, {model: 'password', message: 'Password is invalid'});
+        return res.status(401).json({model: 'password', message: 'Password is invalid'});
       }
 
       if (user.group_id.name === 'customer') {
@@ -653,7 +653,30 @@ module.exports = {
         error
       });
     }
+  },
 
+  checkEmailPhone: async (req, res) => {
+    try {
+      let user = await User.findOne({
+        email: req.query.email,
+        phone: req.query.phone,
+        deletedAt: null,
+        user_type: 'admin'
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: 'email and phone is ok',
+        user
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        message: 'failed to check email and phone',
+        error
+      });
+    }
   },
 
 };

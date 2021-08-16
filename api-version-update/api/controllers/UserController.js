@@ -14,6 +14,7 @@ const {uploadImages} = require('../../libs/helper');
 const {ORDER_STATUSES} = require('../../libs/orders');
 const {getAllUsers} = require('../../libs/users');
 const {customer_group_id, shop_group_id} = require('../../libs/groups');
+const {comparePasswords} = require('../../libs/helper');
 
 module.exports = {
 
@@ -51,8 +52,8 @@ module.exports = {
     }
 
   },
-  findOne: async (req, res) => {
 
+  findOne: async (req, res) => {
     try {
       const user = await User.findOne({
         id: req.param('id')
@@ -77,14 +78,14 @@ module.exports = {
 
       return res.status(200).json(user);
 
-    } catch (error) {
-      if (error && error.naame === 'UsageError') {
+    } catch (err) {
+      if (err && err.naame === 'UsageError') {
         return res.badRequest(err);
       }
       return res.serverError(err);
     }
-
   },
+
   //Method called for deleting a user data
   //Model models/User.js
   destroy: async (req, res) => {
@@ -178,8 +179,7 @@ module.exports = {
 
   //Method called for updating a user password data
   //Model models/User.js
-  updatepassword: async (req, res) => {
-
+  updatePassword: async (req, res) => {
     if (!req.param('id')) {
       return res.badRequest('Invalid request');
     }
@@ -277,9 +277,42 @@ module.exports = {
         req.body.avatar = '/' + newPath;
       }
 
+      let valid;
+      if (req.body.oldPassword !== '' && req.body.newPassword !== '') {
+        valid = await comparePasswords(req.body.oldPassword, user.password);
+
+        if (!valid) {
+          return res.status(200).json({
+            code: 'NOT_VALID_PASSWORD',
+          });
+        }
+
+        if (valid) {
+          req.body.password = await bcrypt.hash(req.body.newPassword, 10);
+        }
+      }
+
       user = await User.updateOne({id: user.id}).set(req.body);
 
-      return res.json(200, {
+      if (valid) {
+        if (user.phone) {
+          try {
+            let smsText = 'anonderbazar.com এ আপনার নতুন পাসওয়ার্ডটি হল: ' + req.body.newPassword;
+            SmsService.sendingOneSmsToOne([user.phone], smsText);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        if (user.email) {
+          try {
+            EmailService.sendPasswordResetMailUpdated(user, req.body.newPassword);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+
+      return res.status(200).json({
         user: user,
         token: jwToken.issue({id: user.id})
       });
@@ -296,7 +329,6 @@ module.exports = {
   },
 
   checkUsername: async (req, res) => {
-
     try {
       if (!req.body.username) {
         return res.status(422).json({

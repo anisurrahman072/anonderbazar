@@ -42,6 +42,8 @@ export class ProfileEditComponent implements OnInit {
     oldImages = [];
     validateForm: FormGroup;
     ImageFile: any;
+    oldPassword;
+    newPassword;
 
     //Event method for submitting the form
     submitForm = ($event, value) => {
@@ -57,6 +59,9 @@ export class ProfileEditComponent implements OnInit {
         formData.append('upazila_id', value.upazila_id);
         formData.append('zila_id', value.zila_id);
         formData.append('division_id', value.division_id);
+        formData.append('oldPassword', value.oldPassword);
+        formData.append('newPassword', value.newPassword);
+
         if (this.ImageFile) {
             formData.append('hasImage', 'true');
             formData.append('avatar', this.ImageFile, this.ImageFile.name);
@@ -67,12 +72,13 @@ export class ProfileEditComponent implements OnInit {
         this.userService.update(this.id, formData).subscribe(
             result => {
                 this._isSpinning = false;
-                this._notification.create(
-                    'success',
-                    'Update successful',
-                    this.data.name
-                );
-                this.router.navigate(['/dashboard/profile', this.id]);
+                // @ts-ignore
+                if (result && result.code && result.code === 'NOT_VALID_PASSWORD') {
+                    this._notification.create('error', 'Failed', 'Wrong old password');
+                } else {
+                    this._notification.create('success', 'Update successful', this.data.name);
+                    this.router.navigate(['/dashboard/profile', this.id]);
+                }
             },
             error => {
                 this._isSpinning = false;
@@ -111,7 +117,9 @@ export class ProfileEditComponent implements OnInit {
             upazila_id: ['', [Validators.required]],
             zila_id: ['', [Validators.required]],
             division_id: ['', [Validators.required]],
-            avatar: ['', []]
+            avatar: ['', []],
+            oldPassword: ['', []],
+            newPassword: ['', []],
         });
 
         this.areaService.getAllDivision().subscribe(

@@ -1,5 +1,6 @@
 exports.userRoutes = {
   'GET /api/v1/user/getUserWithDashboardData/:id': 'UserController.getUserWithDashboardData',
+  'PUT /api/v1/user/updatePassword/:id': 'UserController.updatePassword',
   'PUT /api/v1/user/getUserWithDashboardData/userPasswordUpdate': 'AuthController.userPasswordUpdate',
   'PUT /api/v1/auth/forgetPassword': 'AuthController.customerForgetPassword',
   'POST /api/v1/auth/warehouseSignup': 'AuthController.warehouseSignup',
@@ -11,4 +12,5 @@ exports.userRoutes = {
   'GET /api/v1/auth/verifyUserPhone': 'AuthController.verifyUserPhone',
   'GET /api/v1/auth/resendVerificationCode': 'AuthController.resendOTPCode',
   'PUT /api/v1/auth/passwordChange': 'AuthController.passwordChange',
+  'GET /api/v1/user/checkEmailPhone': 'AuthController.checkEmailPhone',
 };
