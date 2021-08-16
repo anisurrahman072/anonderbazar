@@ -71,7 +71,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
             .allRegularOffer(this.homeOfferLimit, this.homeOfferPage)
             .subscribe(result => {
                 this.loading = false;
-                console.log('getRegularOfferData', result);
+                /*console.log('getRegularOfferData', result);*/
                 this.regularOfferData = result.data;
                 this.regularOfferTotal = result.total;
                 this._isSpinning = false;
@@ -140,14 +140,14 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                             'Order Time': _moment(offerItem.orderCreatedAt).format('h:m a'),
                             'Order id': offerItem.order_id,
                             'SubOrder Id': offerItem.suborder_id,
-                            'Customer Name': offerItem.customer_name,
+                            'Customer Name': offerItem.customer_name ? offerItem.customer_name.split(',').join('/').trim() : 'N/a',
                             'Customer Phone': (offerItem.customer_phone) ? offerItem.customer_phone : 'N/a',
-                            'Customer Division': offerItem.division_name,
-                            'Customer District': offerItem.zila_name,
-                            'Customer Upazila': offerItem.upazila_name,
-                            'Customer House/Road/Block/Village': offerItem.address.split(',').join('/'),
-                            'Category': offerItem.categoryName,
-                            'product name': offerItem.product_name,
+                            'Customer Division': offerItem.division_name ? offerItem.division_name.split(',').join('/').trim() : 'N/a',
+                            'Customer District': offerItem.zila_name ? offerItem.zila_name.split(',').join('/').trim() : 'N/a',
+                            'Customer Upazila': offerItem.upazila_name ? offerItem.upazila_name.split(',').join('/').trim() : 'N/a',
+                            'Customer House/Road/Block/Village': offerItem.address ? offerItem.address.split(',').join('/').trim() : 'N/a',
+                            'Category': offerItem.categoryName ? offerItem.categoryName.split(',').join('-').trim() : 'N/a',
+                            'product name': offerItem.product_name ? offerItem.product_name.split(',').join('-').trim() : 'N/a',
                             'Product SKU': offerItem.product_code,
                             'MRP': offerItem.originalPrice,
                             'Vendor Price': offerItem.vendorPrice,
@@ -160,9 +160,9 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                             'Payment Amount': offerItem.paymentAmount,
                             'Transaction Time': _moment(offerItem.transactionTime).format('DD-MM-YYYY h:m a'),
                             'Remaining Amount': offerItem.dueAmount ? offerItem.dueAmount : 0,
-                            'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name : 'N/a',
+                            'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name.split(',').join('-').trim() : 'N/a',
                             'Vendor Phone': (offerItem.vendor_phone) ? offerItem.vendor_phone : 'N/a',
-                            'Vendor Address': offerItem.vendor_address.split(',').join('/'),
+                            'Vendor Address': offerItem.vendor_address ? offerItem.vendor_address.split(',').join('/').trim() : 'N/a',
                             'Suborder Status': typeof this.statusOptions[offerItem.sub_order_status] !== 'undefined' ? this.statusOptions[offerItem.sub_order_status] : 'Unrecognized Status',
                             'Suborder Changed By': ((offerItem.suborder_changed_by_name) ? offerItem.suborder_changed_by_name : ''),
                             'Order Status': typeof this.statusOptions[offerItem.order_status] !== 'undefined' ? this.statusOptions[offerItem.order_status] : 'Unrecognized Status',

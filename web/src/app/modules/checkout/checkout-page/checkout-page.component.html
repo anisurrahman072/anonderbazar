@@ -599,13 +599,15 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment"
+                                                  value="Nagad"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>
                                     </div>
-                                </mat-radio-button>-->
+                                </mat-radio-button>
                             </div>
+
                             <div class="radio2" *ngIf="isAllowedOfferPaymentGateway">
                                 <mat-radio-button
                                         *ngIf="!hideCashonDelivery && enabledPaymentMethods[CASH_PAYMENT_TYPE]
@@ -740,16 +742,17 @@
                                              alt="bKash"/>
                                     </div>
                                 </mat-radio-button>
-                                <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]" value="nagad">
+                                <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment
+                                                        && isAllowedNagadInOfferedProductPurchase"
+                                                  value="Nagad"  (click)="showOfflineForm(false)">
                                     <div class="payment-icon-container">
                                         <img src="../../../../assets/images/nagad.png" style="height: auto; width: 70%;"
                                              alt="nagad"/>
                                     </div>
-                                </mat-radio-button>-->
+                                </mat-radio-button>
                             </div>
                         </mat-radio-group>
                     </div>
-
 
 
                     <!--terms and conditions checkbox-->

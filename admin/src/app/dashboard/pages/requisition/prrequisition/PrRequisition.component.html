@@ -12,6 +12,7 @@
                           [(nzPageIndex)]="page"
                           [(nzPageSize)]="limit"
                           (nzPageIndexChange)="getPageData()"
+                          [nzBordered]="true"
                 >
                     <thead>
                     <tr>
@@ -37,7 +38,7 @@
                             <span> Created by </span>
                         </th>
                         <th>
-
+                            <span> Action </span>
                         </th>
                     </tr>
                     </thead>

@@ -65,7 +65,8 @@
                             <p *ngIf="isActiveBkash" class="paymentGatewayStyle">Bkash</p>
                             <p *ngIf="isActiveOffline" class="paymentGatewayStyle">Offline</p>
                             <p *ngIf="isActiveCashOnDelivery" class="paymentGatewayStyle">Cash on delivery</p>
-                            <p *ngIf="!isActiveSslCommerz && !isActiveBkash && !isActiveOffline && !isActiveCashOnDelivery"
+                            <p *ngIf="isActiveNagad" class="paymentGatewayStyle">Nagad</p>
+                            <p *ngIf="!isActiveSslCommerz && !isActiveBkash && !isActiveOffline && !isActiveCashOnDelivery && isActiveNagad"
                                class="paymentGatewayStyle" style="color: red;" >
                                 No Payment Gateway selected
                             </p>
@@ -178,6 +179,13 @@
                             Pay by Cash On Delivery
                         </div>
                     </div>
+                    <div nz-row style="margin: 15px 15px 0 0">
+                        <div nz-col [nzOffset]="7" [nzSpan]="12">
+                            <input formControlName="pay_by_nagad" type="checkbox" [checked]="isActiveNagad"
+                                   (change)="changeNagadActivation()">
+                            Pay by Nagad
+                        </div>
+                    </div>
                     <!-- Select Payment Gateway. END -->
 
 
@@ -217,15 +225,16 @@
                           [(nzPageIndex)]="anonderJhorOfferPage"
                           [(nzPageSize)]="anonderJhorOfferLimit"
                           (nzPageIndexChange)="getAllAnonderJhorOffersData()"
-                          [nzScroll]="{ x:'1000px',y: '350px'  }"
+                          [nzScroll]="{ x:'1600px',y: '800px'  }"
+                          [nzBordered]="true"
                 >
                     <thead>
                     <tr>
-                        <th nz-th [nzWidth]="'100px'">
+                        <th nz-th [nzWidth]="'100px'" style="text-align: center">
                             <span> ID </span>
                         </th>
 
-                        <th nz-th [nzWidth]="'200px'">
+                        <th nz-th [nzWidth]="'200px'" style="text-align: center">
                             <span> Offer Name </span>
                         </th>
                         <!--<th nz-th [nzWidth]="'150px'">
@@ -237,33 +246,30 @@
                         <th nz-th [nzWidth]="'150px'">
                             <span> Sub-Sub-Category </span>
                         </th>-->
-                        <th nz-th [nzWidth]="'200px'">
-                            <span> Start Time </span>
+                        <th nz-th [nzWidth]="'200px'" style="text-align: center">
+                            <span> Offer Duration </span>
                         </th>
-                        <th nz-th [nzWidth]="'200px'">
-                            <span> End Time </span>
-                        </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Discount Amount </span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Status </span>
                         </th>
-                        <th nz-th [nzWidth]="'200px'">
+                        <th nz-th [nzWidth]="'200px'" style="text-align: center">
                             <span>Force stopped</span>
                         </th>
-                        <th nz-th [nzWidth]="'150px'">
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             Action
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.id}}</nz-tag>
                         </td>
 
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.offer_name}}</nz-tag>
                         </td>
 
@@ -283,22 +289,19 @@
                             </ng-template>
                         </td>-->
 
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>
-                        </td>
-
-                        <td>
                             <nz-tag>{{datum.end_date | date : 'medium'}}</nz-tag>
                         </td>
 
-                        <td *ngIf="datum.calculation_type === 'percentage'">
+                        <td *ngIf="datum.calculation_type === 'percentage'" style="text-align: center">
                             <nz-tag>{{datum.discount_amount}} %</nz-tag>
                         </td>
-                        <td *ngIf="datum.calculation_type === 'absolute'">
+                        <td *ngIf="datum.calculation_type === 'absolute'" style="text-align: center">
                             <nz-tag>{{datum.discount_amount}} tk</nz-tag>
                         </td>
 
-                        <td>
+                        <td style="text-align: center">
                             <div *ngIf="datum.status; else inactive">
                                 <nz-switch [ngModel]="true"
                                            (ngModelChange)="offerActiveStatusChange($event, datum.id)">
@@ -311,7 +314,7 @@
                             </ng-template>
                         </td>
 
-                        <td>
+                        <td style="text-align: center">
                             <div *ngIf="datum.force_stop; else running">
                                 <nz-switch [ngModel]="true" nzCheckedChildren="forcefully stopped" nzUnCheckedChildren=""
                                            (ngModelChange)="offerForceStop($event, datum.id)">
@@ -324,7 +327,7 @@
                             </ng-template>
                         </td>
 
-                        <td>
+                        <td style="text-align: center">
                             <nz-button-group>
 
                                 <button nz-button [nzType]="'primary'" [nzSize]="'default'"

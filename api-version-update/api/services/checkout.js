@@ -1,3 +1,4 @@
+/*
 const moment = require('moment');
 const _ = require('lodash');
 const EmailService = require('./EmailService');
@@ -55,7 +56,7 @@ module.exports = {
       noShippingCharge,
     } = await sails.getDatastore()
       .transaction(async (db) => {
-        /****** Finalize Order -------------------------- */
+        /!****** Finalize Order -------------------------- *!/
         const {
           orderForMail,
           allCouponCodes,
@@ -135,7 +136,7 @@ module.exports = {
     return order.id;
   },
 
-  /*placeCashOnDeliveryOrder: async (authUser, orderDetails, addresses, globalConfigs, cart, courierCharge, cartItems) => {
+  /!*placeCashOnDeliveryOrder: async (authUser, orderDetails, addresses, globalConfigs, cart, courierCharge, cartItems) => {
     const {adminPaymentAddress, billingAddress, shippingAddress} = addresses;
     const {paymentType, grandOrderTotal, totalQuantity} = orderDetails;
 
@@ -194,7 +195,7 @@ module.exports = {
       });
     }
 
-  },*/
+  },*!/
 
   placeSSlCommerzOrder: async (authUser, orderDetails, addresses, globalConfigs) => {
 
@@ -270,22 +271,22 @@ module.exports = {
     post_body['product_category'] = 'Anonder Bazar';
     post_body['product_profile'] = 'General';
 
-    /*
+    /!*
     console.log('sslcommerz.init_transaction error', error);
       res.writeHead(301,
         {Location: sslWebUrl + '/checkout'}
       );
       res.end();
-   */
+   *!/
     console.log('post_body', post_body);
 
     const sslResponse = await sslcommerz.init_transaction(post_body);
     console.log('sslcommerz.init_transaction success', sslResponse);
-    /**
+    /!**
      * status: 'FAILED',
      failedreason: "Invalid Information! 'cus_email' is missing or empty.",
 
-     */
+     *!/
     if (sslResponse && sslResponse.status === 'FAILED') {
       throw new Error(sslResponse.failedreason);
     }
@@ -475,7 +476,7 @@ module.exports = {
     }).fetch();
 
 
-    /** Driver code for Nagad Integration */
+    /!** Driver code for Nagad Integration *!/
 
     let currentDate = new Date().toISOString().replace(/-/g, '');
     currentDate = currentDate.replace(/[T]+/g, '');
@@ -513,7 +514,7 @@ module.exports = {
 
     let result_Data = await HttpPostMethod(PostURL, PostData, ip);
 
-    /*if(result_Data && result_Data['sensitiveData'] && result_Data['signature']){
+    /!*if(result_Data && result_Data['sensitiveData'] && result_Data['signature']){
       if(result_Data['sensitiveData'] !== '' && result_Data['signature'] !== ''){
         let PlainResponse = JSON.parse(DecryptDataWithPrivateKey(result_Data['sensitiveData']));
 
@@ -546,10 +547,10 @@ module.exports = {
           }
         }
       }
-    }*/
+    }*!/
   },
 
-  /*createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
+  /!*createOrder: async function (db, customer, transDetails, addressIds, globalConfigs, productCourierCharge) {
 
     const {paymentType, paidAmount, sslCommerztranId, paymentResponse} = transDetails;
 
@@ -676,7 +677,7 @@ module.exports = {
       shippingAddress
     };
 
-  },*/
+  },*!/
 
   bKashSaveOrder: async function (bKashResponse, transactionLogId, transactionDetails, customer, globalConfigs) {
 
@@ -702,7 +703,7 @@ module.exports = {
       shippingAddress
     } = await sails.getDatastore()
       .transaction(async (db) => {
-        /****** Finalize Order -------------------------- */
+        /!****** Finalize Order -------------------------- *!/
 
         const {
           orderForMail,
@@ -779,3 +780,4 @@ module.exports = {
 
   }
 };
+*/

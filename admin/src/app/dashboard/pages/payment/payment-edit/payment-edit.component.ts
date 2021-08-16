@@ -57,7 +57,7 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.validateForm = this.fb.group({
             order_id: ['', [Validators.required]],
-            suborder_id: ['', [Validators.required]],
+            suborder_id: [''],
             payment_type: ['', [Validators.required]],
             payment_amount: ['', [Validators.required]],
             approval_status: ['', [Validators.required]],
@@ -79,7 +79,7 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
             this.paymentService.getByIdNoPop(this.id)
                 .subscribe(result => {
                     this.data = result;
-                    console.log('payment', this.data);
+                    /*console.log('payment', this.data);*/
                     this.paymentApprovalStatus = this.data.approval_status;
                     this.paymentType = this.data.payment_type;
 
@@ -95,7 +95,7 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
                     });
 
                     this.order_id = this.data.order_id;
-                    console.log(' this.order_id' ,  this.order_id);
+                    /*console.log(' this.order_id' ,  this.order_id);*/
                     this.customer = this.data.user_id;
                     this.currentUser = this.data.receiver_id;
                 });
@@ -138,7 +138,7 @@ export class PaymentEditComponent implements OnInit, OnDestroy {
     }
 
     orderChange($event) {
-        console.log('orderchange', $event);
+        /*console.log('orderchange', $event);*/
 
         if($event){
             const query = encodeURI($event);

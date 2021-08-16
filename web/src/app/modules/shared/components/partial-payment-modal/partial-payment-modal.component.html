@@ -153,7 +153,7 @@
                                                      alt="bKash"/>
                                             </div>
                                         </mat-radio-button>
-                                        <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]"
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment"
                                                           value="Nagad"
                                                           (click)="showOfflineForm(false)">
                                             <div class="payment-icon-container">
@@ -161,7 +161,7 @@
                                                      style="height: auto; width: 70%;"
                                                      alt="nagad"/>
                                             </div>
-                                        </mat-radio-button>-->
+                                        </mat-radio-button>
                                     </div>
                                     <div class="radio2" *ngIf="isAllowedOfferPaymentGateway">
                                         <mat-radio-button
@@ -297,7 +297,8 @@
                                                      alt="bKash"/>
                                             </div>
                                         </mat-radio-button>
-                                        <!--<mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE]"
+                                        <mat-radio-button *ngIf="enabledPaymentMethods[NAGAD_PAYMENT_TYPE] && showNagadPayment
+                                                        && isAllowedNagadInOfferedProductPurchase"
                                                           value="Nagad"
                                                           (click)="showOfflineForm(false)">
                                             <div class="payment-icon-container">
@@ -305,7 +306,7 @@
                                                      style="height: auto; width: 70%;"
                                                      alt="nagad"/>
                                             </div>
-                                        </mat-radio-button>-->
+                                        </mat-radio-button>
                                     </div>
                                 </mat-radio-group>
                             </div>

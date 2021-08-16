@@ -120,7 +120,7 @@ export class PrRequisitionComponent implements OnInit {
                 this.loading = false;
                 this.total = arg.total;
                 this.data = arg.data;
-                console.log(this.data);
+                /*console.log(this.data);*/
                 this._isSpinning = false;
             }, error => {
                 this.loading = false;
@@ -168,7 +168,7 @@ export class PrRequisitionComponent implements OnInit {
     generatePDF(data) {
         data.info = JSON.parse(data.info);
         data.items = JSON.parse(data.items);
-        console.log(data);
+        /*console.log(data);*/
         let docDefinition = {
             content: [
                 {

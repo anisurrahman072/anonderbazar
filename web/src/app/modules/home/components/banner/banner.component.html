@@ -1,47 +1,16 @@
 <section id="banner-section">
     <div class="container-fluid">
         <div class="row" style="">
-            <div class="col-sm-12 col-md-10 col-lg-10 col-xl-10 carousel-section">
-
-                <div id="slider" class="carousel slide" data-ride="carousel">
-
-                    <!-- Indicators -->
-                    <ul class="carousel-indicators">
-                        <li *ngFor="let slide of carouselBannerItems; let index = index" data-target="#slider" class="{{ (index == 0) ? 'active' : '' }}" attr.data-slide-to="{{index}}"></li>
-                    </ul>
-
-                    <!-- The slideshow -->
-                    <div class="carousel-inner">
-                        <div *ngFor="let slide of carouselBannerItems; let index = index"
-                             [class.active]="index == 0" class="carousel-item">
-                            <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="">
-                                <div *ngIf="slide.image_mobile; else mainImageTmp">
-                                    <picture>
-                                        <source srcset="{{IMAGE_ENDPOINT + slide?.image + IMAGE_EXT }}"
-                                                media="(min-width: 600px)"/>
-                                        <img src="{{IMAGE_ENDPOINT + slide?.image_mobile + IMAGE_EXT }}"
-                                             alt="Anonder Bazar Banner Image"/>
-                                    </picture>
-                                </div>
-                                <ng-template #mainImageTmp>
-                                    <div class="cate-img">
-                                        <img src="{{IMAGE_ENDPOINT + slide?.image + IMAGE_EXT }}"
-                                             alt="Anonder Bazar Banner Image">
-                                    </div>
-                                </ng-template>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Left and right controls -->
-                    <a class="carousel-control-prev" href="#slider" data-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </a>
-                    <a class="carousel-control-next" href="#slider" data-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </a>
+            <ng-container *ngIf="carouselOffers.length > 0; else fullSlider">
+                <div class="col-sm-12 col-md-10 col-lg-10 col-xl-10 carousel-section">
+                    <ng-template [ngTemplateOutlet]="mainSlider"></ng-template>
                 </div>
-            </div>
+            </ng-container>
+            <ng-template #fullSlider>
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 carousel-section">
+                    <ng-template [ngTemplateOutlet]="mainSlider"></ng-template>
+                </div>
+            </ng-template>
             <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 offer-section" style="">
                 <div style="height: 100%;" class="image-control">
                     <div class="image-contain">
@@ -55,5 +24,48 @@
                 </div>
             </div>
         </div>
+
+        <!--reusable main slider-->
+        <ng-template #mainSlider>
+            <div id="slider" class="carousel slide" data-ride="carousel">
+
+                <!-- Indicators -->
+                <ul class="carousel-indicators">
+                    <li *ngFor="let slide of carouselBannerItems; let index = index" data-target="#slider"
+                        class="{{ (index == 0) ? 'active' : '' }}" attr.data-slide-to="{{index}}"></li>
+                </ul>
+
+                <!-- The slideshow -->
+                <div class="carousel-inner">
+                    <div *ngFor="let slide of carouselBannerItems; let index = index"
+                         [class.active]="index == 0" class="carousel-item">
+                        <a href="{{slide.description.link}}" title="{{slide.description.linktext}}" style="">
+                            <div *ngIf="slide.image_mobile; else mainImageTmp">
+                                <picture>
+                                    <source srcset="{{IMAGE_ENDPOINT + slide?.image + IMAGE_EXT }}"
+                                            media="(min-width: 600px)"/>
+                                    <img src="{{IMAGE_ENDPOINT + slide?.image_mobile + IMAGE_EXT }}"
+                                         alt="Anonder Bazar Banner Image"/>
+                                </picture>
+                            </div>
+                            <ng-template #mainImageTmp>
+                                <div class="cate-img">
+                                    <img src="{{IMAGE_ENDPOINT + slide?.image + IMAGE_EXT }}"
+                                         alt="Anonder Bazar Banner Image">
+                                </div>
+                            </ng-template>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Left and right controls -->
+                <a class="carousel-control-prev" href="#slider" data-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#slider" data-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </a>
+            </div>
+        </ng-template>
     </div>
 </section>

@@ -42,7 +42,7 @@ export class AreaService {
     }
 
     getAllZilaByDivisionId(id): Observable<any> {
-        console.log('getAllZilaByDivisionId', id);
+        /*console.log('getAllZilaByDivisionId', id);*/
         if(!id || id === 'undefined'){
             return of([]);
         }
@@ -50,7 +50,7 @@ export class AreaService {
     }
 
     getAllUpazilaByZilaId(id): Observable<any> {
-        console.log('getAllUpazilaByZilaId', id);
+        /*console.log('getAllUpazilaByZilaId', id);*/
         if(!id || id === 'undefined'){
             return of([]);
         }

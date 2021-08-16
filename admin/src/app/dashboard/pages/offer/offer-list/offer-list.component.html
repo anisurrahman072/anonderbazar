@@ -18,75 +18,77 @@
                           [(nzPageIndex)]="homeOfferPage"
                           [(nzPageSize)]="homeOfferLimit"
                           (nzPageIndexChange)="getRegularOfferData()"
+                          [nzBordered]="true"
+                          [nzScroll]="{ x:'1600px',y: '800px'  }"
                 >
                     <thead>
                     <tr>
-                        <th>
+                        <th nz-th [nzWidth]="'100px'" style="text-align: center">
                             <span> ID </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'300px'" style="text-align: center">
                             <span> Title </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Discount </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Selection Type </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'200px'" style="text-align: center">
                             <span> Offer duration </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             <span> Frontend Position </span>
                         </th>
-                        <th>
+                        <th nz-th [nzWidth]="'100px'" style="text-align: center">
                             <span> Status </span>
                         </th>
 <!--                        <th>
                             <span> Description </span>
                         </th>-->
-                        <th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
                             Action
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr *ngFor="let datum of nzTable.data;let i=index">
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.id}}</nz-tag>
                         </td>
 
                         <td>
-                            <nz-tag>{{datum.title}}</nz-tag>
+                            <p>{{datum.title}}</p>
                         </td>
 
-                        <td *ngIf="datum.calculation_type === 'percentage' && datum.selection_type !== 'individual_product'">
+                        <td *ngIf="datum.calculation_type === 'percentage' && datum.selection_type !== 'individual_product'" style="text-align: center">
                             <nz-tag>{{datum.discount_amount}} %</nz-tag>
                         </td>
-                        <td *ngIf="datum.calculation_type === 'absolute'  && datum.selection_type !== 'individual_product'">
+                        <td *ngIf="datum.calculation_type === 'absolute'  && datum.selection_type !== 'individual_product'" style="text-align: center">
                             <nz-tag>{{datum.discount_amount}} tk</nz-tag>
                         </td>
 
-                        <td *ngIf="datum.selection_type === 'individual_product'">
+                        <td *ngIf="datum.selection_type === 'individual_product'" style="text-align: center">
                             <nz-tag >Per Product</nz-tag>
                         </td>
 
-                        <td *ngIf="datum.selection_type !== 'individual_product'">
+                        <td *ngIf="datum.selection_type !== 'individual_product'" style="text-align: center">
                             <nz-tag >{{datum.selection_type}}</nz-tag>
                         </td>
 
-                        <td *ngIf="datum.selection_type === 'individual_product'">
+                        <td *ngIf="datum.selection_type === 'individual_product'" style="text-align: center">
                             <nz-tag >Per Product</nz-tag>
                         </td>
 
-                        <td>
-                            <nz-tag>{{datum.start_date | date : 'medium'}}
-                                - {{datum.end_date | date : 'medium'}}</nz-tag>
+                        <td style="text-align: center">
+                            <nz-tag>{{datum.start_date | date : 'medium'}}</nz-tag>
+                            <nz-tag>{{datum.end_date | date : 'medium'}}</nz-tag>
                         </td>
-                        <td>
+                        <td style="text-align: center">
                             <nz-tag>{{datum.frontend_position}}</nz-tag>
                         </td>
-                        <td>
+                        <td style="text-align: center">
                             <div *ngIf="datum.offer_deactivation_time === null; else inactive">
                                 <nz-switch [ngModel]="true"
                                            (ngModelChange)="activeStatusChange($event, datum.id, datum.end_date)"
@@ -100,14 +102,14 @@
                             </ng-template>
                         </td>
                         <!--<td [innerHTML]="datum.description"></td>-->
-                        <td>
+                        <td style="text-align: center">
                             <nz-button-group>
 
                                 <button *ngIf="'offer-edit'|accessControl" (click)="canEdit(datum.id, datum.end_date)" nz-button
                                         [nzType]="'primary'" [nzSize]="'default'">
                                     <i class="anticon anticon-edit"></i>
                                 </button>
-                                <ng-container>
+                                <ng-container *ngIf="'offer-delete'|accessControl">
                                     <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
                                                    [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
                                                    (nzOnConfirm)="deleteRegularOffer(i,datum.id)">

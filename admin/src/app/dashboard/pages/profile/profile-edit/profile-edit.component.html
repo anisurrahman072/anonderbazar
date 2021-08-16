@@ -24,7 +24,9 @@
                                         <image-upload [max]="1" buttonCaption="Select picture"
                                                       dropBoxMessage="Drop Picture here"
                                                       clearButtonCaption="remove it?" (removed)="onRemoved($event)"
-                                                      [beforeUpload]="onBeforeUpload"></image-upload>
+                                                      [beforeUpload]="onBeforeUpload"
+                                                      [uploadedFiles]="ImageFile">
+                                        </image-upload>
                                     </div>
                                 </div>
                             </div>
@@ -32,8 +34,7 @@
                     </div>
                     <div class="col-md-8">
                         <div nz-row>
-                            <!--name start-->
-
+                            <!--username -->
                             <div nz-col [nzSpan]="7">
                                 <label> UserName </label>
                             </div>
@@ -51,9 +52,35 @@
                                 </div>
                             </div>
                         </div>
-                        <!--username -->
 
-                        <div nz-row>
+                        <!--password -->
+                        <div nz-row style="margin-top: 20px">
+                            <div nz-col [nzOffset]="7" [nzSpan]="12">
+                                <label> Change Password? </label>
+                            </div>
+                        </div>
+                        <div nz-row style="margin: 5px 0 10px 0">
+                            <div nz-col [nzSpan]="7">
+                                <label> Old Password </label>
+                            </div>
+                            <div nz-col [nzSpan]="12">
+                                <input nz-input [(ngModel)]="oldPassword" formControlName="oldPassword"
+                                       placeholder="Enter your old Password"
+                                       [nzSize]="'large'" type="password">
+                            </div>
+                        </div>
+                        <div nz-row style="margin: 10px 0 30px 0">
+                            <div nz-col [nzSpan]="7">
+                                <label> New Password </label>
+                            </div>
+                            <div nz-col [nzSpan]="12" style="margin-top: 10px">
+                                <input nz-input [(ngModel)]="newPassword" formControlName="newPassword" placeholder="Enter your new Password"
+                                       [nzSize]="'large'" type="password">
+                            </div>
+                        </div>
+
+                        <!--email-->
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> Email </label>
                             </div>
@@ -65,9 +92,9 @@
                                 </div>
                             </div>
                         </div>
-                        <!--email-->
 
-                        <div nz-row>
+                        <!--first_name-->
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label>First name</label>
                             </div>
@@ -80,9 +107,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!--first_name-->
 
-                        <div nz-row>
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label>Last name</label>
                             </div>
@@ -97,7 +123,7 @@
                         </div>
                         <!--last_name-->
 
-                        <div nz-row>
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> Phone Number </label>
                             </div>
@@ -121,7 +147,7 @@
                         </div>
                         <!--phone-->
 
-                        <div nz-row>
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> Gender </label>
                             </div>
@@ -140,7 +166,7 @@
                         </div>
                         <!--gender-->
 
-                        <div nz-row>
+                        <div nz-row style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> division </label>
                             </div>
@@ -161,7 +187,8 @@
                         </div>
                         <!--division_id-->
 
-                        <div nz-row [style.display]="validateForm.controls.division_id.value ? 'block' : 'none'">
+                        <div nz-row [style.display]="validateForm.controls.division_id.value ? 'block' : 'none'"
+                             style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> District </label>
                             </div>
@@ -180,7 +207,8 @@
                         </div>
                         <!--district_id-->
 
-                        <div nz-row [style.display]="validateForm.controls.zila_id.value ? 'block' : 'none'">
+                        <div nz-row [style.display]="validateForm.controls.zila_id.value ? 'block' : 'none'"
+                             style="margin: 10px 0 10px 0">
                             <div nz-col [nzSpan]="7">
                                 <label> Upazila </label>
                             </div>
@@ -199,11 +227,10 @@
                             </div>
                         </div>
                         <!--upazila_id-->
-
                     </div>
                 </div>
 
-                <div nz-row>
+                <div nz-row style="margin: 10px 0 10px 0">
                     <div nz-col [nzOffset]="7" [nzSpan]="12">
                         <button nz-button [nzType]="'primary'" [nzSize]="'large'" [disabled]="!validateForm.valid">Save
                         </button>&nbsp;

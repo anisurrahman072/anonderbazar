@@ -1,0 +1,90 @@
+<section>
+    <!--role management card-->
+    <nz-card class="card-height" nzTitle="Available User's Groups" [nzExtra]="group">
+        <ng-template #group>
+            <button *ngIf="'role-management-create'|accessControl" routerLink="/dashboard/role-management/create"
+                    nz-button
+                    [nzType]="'primary'" [nzSize]="'large'">
+                <i class="anticon anticon-download"></i><span>Add New</span>
+            </button>
+        </ng-template>
+        <ng-container>
+            <nz-spin [nzSpinning]="_isSpinning">
+                <nz-table #nzTable
+                          nzShowQuickJumper
+                          nzShowSizeChanger
+                          [nzFrontPagination]="false"
+                          [nzData]="groupsData"
+                          [nzLoading]="loading"
+                          [nzTotal]="totalGroups"
+                          [(nzPageIndex)]="groupsPage"
+                          [(nzPageSize)]="groupsLimit"
+                          (nzPageIndexChange)="getAllGroups()"
+                          [nzBordered]="true"
+                >
+                    <thead>
+                    <tr>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
+                            <span> Name </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
+                            <span> Description </span>
+                        </th>
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
+                            <span> No of Users </span>
+                        </th>
+                        <!--<th nz-th [nzWidth]="'200px'">
+                            <span>Permissions</span>
+                        </th>-->
+                        <th nz-th [nzWidth]="'150px'" style="text-align: center">
+                            Actions
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let datum of nzTable.data;let i=index">
+                        <td style="text-align: center">
+                            <nz-tag>{{datum.name}}</nz-tag>
+                        </td>
+                        <td style="text-align: center">
+                            <nz-tag>{{datum.description}}</nz-tag>
+                        </td>
+                        <td style="text-align: center">
+                            <nz-tag>{{datum.num_of_user}}</nz-tag>
+                        </td>
+                        <!--<td>
+                            <nz-tag>{{datum.accessList}}</nz-tag>
+                        </td>-->
+                        <td style="text-align: center">
+                            <nz-button-group>
+
+                                <button *ngIf="'role-management-edit' | accessControl" routerLink="/dashboard/role-management/edit/{{datum.id}}" nz-button
+                                        [nzType]="'primary'" [nzSize]="'default'">
+                                    <i class="anticon anticon-edit"></i>
+                                </button>
+                                <ng-container *ngIf="'role-management-delete'|accessControl">
+                                    <nz-popconfirm [nzTitle]="'Are you sure you want to delete?'"
+                                                   [nzOkText]="'Delete'" [nzCancelText]="'Cancel'"
+                                                   (nzOnConfirm)="deleteGroup(i,datum.id)">
+                                        <a nz-popconfirm>
+                                            <button nz-button [nzType]="'danger'" [nzSize]="'default'">
+                                                <i class="anticon anticon-delete "></i>
+                                            </button>
+
+                                        </a>
+                                    </nz-popconfirm>
+                                </ng-container>
+                                <!--<button *ngIf="'role-management-read' | accessControl"
+                                        nz-button [nzType]="'primary'" [nzSize]="'default'"
+                                        (click)="generateOfferExcelById(datum.id)" title="View Details">
+                                    <i class="anticon anticon-eye-o"></i>
+                                </button>-->
+                            </nz-button-group>
+                        </td>
+                    </tr>
+                    </tbody>
+                </nz-table>
+            </nz-spin>
+        </ng-container>
+    </nz-card>
+</section>

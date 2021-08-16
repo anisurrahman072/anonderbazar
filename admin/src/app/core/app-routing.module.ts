@@ -8,6 +8,7 @@ const routes: Routes = [
     {
         path: 'dashboard',
         canActivate: [AuthGuard, GroupGuard],
+        data: {accessData: 'dashboard-view'},
         loadChildren: '../dashboard/core/dashboard.module#DashboardModule'
     },
     {
@@ -16,7 +17,7 @@ const routes: Routes = [
         loadChildren: '../auth/core/auth.module#AuthModule'
     },
     {path: '', redirectTo: '/auth', pathMatch: 'full'},
-    {path: '**', redirectTo: '/'} 
+    {path: '**', redirectTo: '/'}
 ];
 
 @NgModule({

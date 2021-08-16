@@ -2,7 +2,7 @@
     <nz-card class="card-height" nzTitle="List of Attribute's Variant" [nzExtra]="extraTemplate">
         <ng-template #extraTemplate>
             <button *ngIf="'warehousevariant-create'|accessControl" routerLink="/dashboard/warehousevariant/create"
-                    nz-button [nzType]="'primary'" [nzSize]="'large'">
+                    nz-button [nzType]="'primary'" style="margin-right: 15px">
                 <i class="anticon anticon-download"></i>
                 <span> Add New </span>
             </button>
@@ -16,35 +16,37 @@
                   [nzTotal]="total"
                   [nzFrontPagination]="false"
                   (nzPageIndexChange)="getPageData($event)"
-                  [nzSize]="'default'">
+                  [nzSize]="'default'"
+                  [nzBordered]="true"
+        >
 
             <thead [nzSingleSort]="true" (nzSortChange)="sort($event) ">
             <tr>
-                <th>
+                <th style="text-align: center">
                     <span> Picture </span>
                 </th>
-                <th nzShowSort nzSortKey="name">
+                <th nzShowSort nzSortKey="name" style="text-align: center">
                     <span> Name </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Materials </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Amount </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Unit Name </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Unit price </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span> Brand </span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span>Shelf</span>
                 </th>
-                <th>
+                <th style="text-align: center">
                     <span>Read</span>
                 </th>
             </tr>
@@ -65,7 +67,7 @@
             </thead>
             <tbody>
             <tr *ngFor="let data of nzTable.data">
-                <td>
+                <td style="text-align: center">
                     <ng-container *ngIf="data.image; else noAvatar">
                         <nz-avatar [nzShape]="'square'" [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image" [nzSize]="'large'"
                                    [nzIcon]="'user'"></nz-avatar>
@@ -75,28 +77,28 @@
                                    [nzSrc]="IMAGE_THUMB_ENDPOINT+data.image"></nz-avatar>
                     </ng-template>
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.name}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{data.variant_id?.name}}
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.quantity}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.unit_name}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.unit_price}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.brand_id?.name}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-tag>{{data.rack}}</nz-tag>
                 </td>
-                <td>
+                <td style="text-align: center">
                     <nz-button-group>
                         <button *ngIf="'warehousevariant-read'|accessControl"
                                 [routerLink]="['/dashboard/warehousevariant/details/', data.id]" nz-button
