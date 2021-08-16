@@ -52,8 +52,8 @@ module.exports = {
     }
 
   },
-  findOne: async (req, res) => {
 
+  findOne: async (req, res) => {
     try {
       const user = await User.findOne({
         id: req.param('id')
@@ -78,14 +78,14 @@ module.exports = {
 
       return res.status(200).json(user);
 
-    } catch (error) {
-      if (error && error.naame === 'UsageError') {
+    } catch (err) {
+      if (err && err.naame === 'UsageError') {
         return res.badRequest(err);
       }
       return res.serverError(err);
     }
-
   },
+
   //Method called for deleting a user data
   //Model models/User.js
   destroy: async (req, res) => {
@@ -179,8 +179,7 @@ module.exports = {
 
   //Method called for updating a user password data
   //Model models/User.js
-  updatepassword: async (req, res) => {
-
+  updatePassword: async (req, res) => {
     if (!req.param('id')) {
       return res.badRequest('Invalid request');
     }
@@ -330,7 +329,6 @@ module.exports = {
   },
 
   checkUsername: async (req, res) => {
-
     try {
       if (!req.body.username) {
         return res.status(422).json({

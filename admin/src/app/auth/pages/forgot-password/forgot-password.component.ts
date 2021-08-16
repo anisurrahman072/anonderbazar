@@ -42,13 +42,13 @@ export class ForgotPasswordComponent implements OnInit {
         if (value.email && value.phone) {
             var email = '';
             this.userService.checkEmailPhone(value.email, value.phone).subscribe(result => {
-                let user = result.data[0];
+                let user = result.user;
                 if (user) {
-                    let resetpassword = this.generatePassword();
-                    this.userService.updatepassword(user.id, {password: resetpassword})
+                    let resetPassword = this.generatePassword();
+                    this.userService.updatePassword(user.id, {password: resetPassword})
                         .subscribe(arg => {
                             if (arg) {
-                                this._notification.create('success', 'Please check you email.', user.first_name);
+                                this._notification.create('success', 'Password Changed', 'You have been sent the new password, Please check your phone or email.');
                                 this.router.navigate(['/auth', arg]);
                             }
                         });

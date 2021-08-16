@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpBackend} from '@angular/common/http';
 import {environment} from "../../environments/environment";
 
 @Injectable({
@@ -13,8 +13,10 @@ export class UserService {
     private currentUser: any | boolean;
 
     constructor(private http: HttpClient,
-                private authService: AuthService) {
-
+                private httpClient: HttpClient,
+                private authService: AuthService,
+                private backend: HttpBackend) {
+        this.httpClient = new HttpClient(backend)
         this.currentUser = this.authService.getCurrentUser();
     }
 
@@ -85,8 +87,8 @@ export class UserService {
         return this.http.put(this.EndPoint + '/' + id, data);
     }
 
-    updatepassword(id: number, data: any) {
-        return this.http.put(this.EndPoint + '/updatepassword/' + id, data);
+    updatePassword(id: number, data: any) {
+        return this.http.put(this.EndPoint + '/updatePassword/' + id, data);
     }
 
     insert(data): Observable<any> {
@@ -110,6 +112,6 @@ export class UserService {
     }
 
     checkEmailPhone(email: string, phone: string): Observable<any> {
-        return this.http.get(`${this.EndPoint}?where={"deletedAt":null}&searchTermPhone=${phone}&searchTermEmail=${email}`);
+        return this.httpClient.get(`${this.EndPoint}/checkEmailPhone?phone=${phone}&email=${email}`);
     }
 }
