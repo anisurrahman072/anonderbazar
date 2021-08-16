@@ -20,6 +20,7 @@ const {verifyPayment} = require('../../libs/nagadHelper');
 module.exports = {
   callbackCheckout: async (req, res) => {
     let params = req.allParams();
+    console.log('Nagad Response Is: ', params);
     if (!params) {
       res.writeHead(301,
         {
@@ -55,7 +56,7 @@ module.exports = {
     } else if (params.status !== 'Success') {
       res.writeHead(301,
         {
-          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent('Payment not completed!')
+          Location: sslWebUrl + '/checkout?bKashError=' + encodeURIComponent(params.message)
         }
       );
       res.end();
