@@ -712,6 +712,8 @@ module.exports = {
            product_orders.status as order_status,
            product_orders.courier_charge as courier_charge,
            product_orders.total_price as total_price,
+           product_orders.order_type,
+           product_orders.paid_amount,
 
 
            product_orders.user_id,

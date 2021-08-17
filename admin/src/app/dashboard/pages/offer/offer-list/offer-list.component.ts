@@ -5,7 +5,7 @@ import {OfferService} from "../../../../services/offer.service";
 import moment from "moment";
 import {Router} from "@angular/router";
 import * as _moment from "moment";
-import {GLOBAL_CONFIGS} from "../../../../../environments/global_config";
+import {GLOBAL_CONFIGS, ORDER_TYPE} from "../../../../../environments/global_config";
 
 @Component({
     selector: 'app-offer-list',
@@ -157,7 +157,7 @@ export class OfferListComponent implements OnInit, AfterViewInit, OnDestroy {
                             'Grand Total': offerItem.total_price,
                             'Payment Method': offerItem.paymentType,
                             'Transaction ID': offerItem.transactionKey,
-                            'Payment Amount': offerItem.paymentAmount,
+                            'Payment Amount': offerItem.order_type === ORDER_TYPE.REGULAR_ORDER_TYPE ? 1 : 2,
                             'Transaction Time': _moment(offerItem.transactionTime).format('DD-MM-YYYY h:m a'),
                             'Remaining Amount': offerItem.dueAmount ? offerItem.dueAmount : 0,
                             'Vendor Name': offerItem.warehouse_name ? offerItem.warehouse_name.split(',').join('-').trim() : 'N/a',
