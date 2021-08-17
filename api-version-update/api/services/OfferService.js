@@ -51,13 +51,10 @@ module.exports = {
     }
   },
 
-  /**checking if the options have the offer time or not: for anonder jhor offers*/
+  /** checking if the options have the offer time or not: for anonder jhor offers*/
   anonderJhorOfferDurationCheck: async () => {
-    let rawAnonderJhorDataSql = `
-    SELECT * FROM anonder_jhor
-    WHERE id = 1 AND deleted_at IS NULL
-    `;
 
+    let rawAnonderJhorDataSql = ` SELECT * FROM anonder_jhor WHERE id = 1 AND deleted_at IS NULL`;
     let rawAnonderJhorData = await sails.sendNativeQuery(rawAnonderJhorDataSql, []);
     let anonderJhorData = rawAnonderJhorData.rows;
 
@@ -66,7 +63,8 @@ module.exports = {
       const presentTime = (new Date(Date.now())).getTime();
 
       if (anonderJhorEndDate < presentTime) {
-        anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});
+        /*anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});*/
+        await sails.sendNativeQuery(`UPDATE anonder_jhor SET status = 0 WHERE id = 1`);
       }
 
       let allAnonderJhorOffersSQL = `SELECT * FROM anonder_jhor_offers WHERE deleted_at IS NULL`;

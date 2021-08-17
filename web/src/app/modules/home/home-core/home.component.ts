@@ -81,7 +81,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 }
                 if (!___.isUndefined(results[2])) {
                     this.anonderJhorInfo = results[2].data;
-                    /*console.log('anonder jhor ifno: ', this.anonderJhorInfo);*/
+                    console.log('anonder jhor ifno: ', this.anonderJhorInfo);
                 }
             }, (error) => {
                 console.log(error);

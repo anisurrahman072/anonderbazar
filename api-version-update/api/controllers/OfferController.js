@@ -1020,7 +1020,7 @@ module.exports = {
       const time1 = performance.now();
       const finalCollectionOfProducts = await OfferService.getAllOfferedProducts();
       const time2 = performance.now();
-      console.log(`Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
+      console.log(`getAllOfferedProducts Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
 
       return res.status(200).json({
         success: true,
