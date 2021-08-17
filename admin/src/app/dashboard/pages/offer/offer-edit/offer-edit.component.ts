@@ -10,7 +10,6 @@ import moment from "moment";
 import * as ___ from 'lodash';
 import {ProductService} from "../../../../services/product.service";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {ImageService} from "../../../../services/image.service";
 import {DesignImagesService} from "../../../../services/design-images.service";
 import {ExportService} from "../../../../services/export.service";
 import {ExcelService} from "../../../../services/excel.service";
@@ -139,6 +138,7 @@ export class OfferEditComponent implements OnInit {
     isActiveBkash: boolean = false;
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
+    isActiveNagad: boolean = false;
 
     /** Image variables */
     hasImageFile: boolean = false;
@@ -186,6 +186,7 @@ export class OfferEditComponent implements OnInit {
             pay_by_bKash: ['', []],
             pay_by_offline: ['', []],
             pay_by_cashOnDelivery: ['', []],
+            pay_by_nagad: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
@@ -239,13 +240,15 @@ export class OfferEditComponent implements OnInit {
                         pay_by_sslcommerz: this.data.pay_by_sslcommerz,
                         pay_by_bKash: this.data.pay_by_bKash,
                         pay_by_offline: this.data.pay_by_offline,
-                        pay_by_cashOnDelivery: this.data.pay_by_cashOnDelivery
+                        pay_by_cashOnDelivery: this.data.pay_by_cashOnDelivery,
+                        pay_by_nagad: this.data.pay_by_nagad
                     };
 
                     this.isActiveSslCommerz = !!this.data.pay_by_sslcommerz;
                     this.isActiveBkash = !!this.data.pay_by_bKash;
                     this.isActiveOffline = !!this.data.pay_by_offline;
                     this.isActiveCashOnDelivery = !!this.data.pay_by_cashOnDelivery;
+                    this.isActiveNagad = !!this.data.pay_by_nagad;
 
                     this.validateForm.patchValue(payload);
 
@@ -299,6 +302,7 @@ export class OfferEditComponent implements OnInit {
         formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
         formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
         formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+        formData.append('pay_by_nagad', this.isActiveNagad ? "1" : "0");
 
         formData.append('showInHome', showInHome);
         formData.append('showInCarousel', showInCarousel);
@@ -1024,5 +1028,7 @@ export class OfferEditComponent implements OnInit {
     changeCashOnDeliveryActivation() {
         this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
     }
-
+    changeNagadActivation() {
+        this.isActiveNagad = !this.isActiveNagad;
+    }
 }

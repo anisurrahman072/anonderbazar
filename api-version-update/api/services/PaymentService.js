@@ -4,12 +4,14 @@ const moment = require('moment');
 const {CANCELED_ORDER} = require('../../libs/constants.js');
 const logger = require('../../libs/softbd-logger').Logger;
 const OfferService = require('../services/OfferService');
+const {ORDER_STATUSES, ORDER_STATUSES_INDEX} = require('../../libs/orders');
+const crypto = require('crypto');
 
 
 module.exports = {
-  generateRandomString: function () {
+  generateRandomString: function (length = 16) {
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-    let string_length = 16;
+    let string_length = length;
     let randomstring = '';
 
     for (let i = 0; i < string_length; i++) {
@@ -506,6 +508,72 @@ module.exports = {
     return allCouponCodes;
   },
 
+  /** Nagad helper methods. START */
+  encryptSensitiveData: function ({
+    sensitive_data,
+    public_key,
+  }) {
+
+    const buffer = Buffer.from(sensitive_data, 'utf8');
+
+    const encrypted = crypto.publicEncrypt(
+      {
+        key: public_key,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      buffer
+    );
+
+    return encrypted.toString('base64');
+  },
+
+  generateDigitalSignature: function ({
+    sensitive_data,
+    private_key,
+  }) {
+    const sign = crypto.createSign('RSA-SHA256');
+    sign.update(sensitive_data);
+    sign.end();
+
+    const signature = sign.sign(private_key);
+
+    return signature.toString('base64');
+  },
+
+  decryptSensitiveData: function ({
+    sensitive_data,
+    private_key,
+  }) {
+    // decode base 64
+    const buffer = Buffer.from(sensitive_data, 'base64');
+
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: private_key,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      buffer
+    );
+    return decrypted.toString();
+  },
+
+  isVerifiedDigitalSignature: function ({
+    sensitive_data,
+    signature,
+    public_key,
+  }) {
+    // decode base 64
+    const buffer = Buffer.from(signature, 'base64');
+
+    const verify = crypto.createVerify('RSA-SHA256');
+    verify.update(sensitive_data);
+    verify.end();
+
+    return verify.verify(public_key, buffer);
+  },
+  /** Nagad helper methods. END */
+
+  /** Send SMS methods. START */
   sendSms: async (authUser, order, allCouponCodes, shippingAddress) => {
     try {
       let smsPhone = authUser.phone;
@@ -563,6 +631,49 @@ module.exports = {
     }
   },
 
+  sendSmsForOrderStatusChange: async (order, authUser) => {
+    try {
+      let smsPhone = authUser.phone;
+      let statusName = ORDER_STATUSES_INDEX[order.status];
+      let smsText = '';
+
+      if(order.status === ORDER_STATUSES.pending){
+        smsText = `Dear customer, your order ${order.orderId} has been placed.Our customer service will contact you shortly. Please confirm your order.`;
+      } else if(order.status === ORDER_STATUSES.processing){
+        smsText = `Dear customer, your order ${order.orderId} has been selected for processing. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.returned){
+        smsText = `Dear customer, your order ${order.orderId} has been returned. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.lost){
+        smsText = `Dear customer, your order ${order.orderId} has been lost by courier. Sorry for the inconvenience.We are working to resolve this issue. Thanks for staying with us.`;
+      } else if(order.status === ORDER_STATUSES.refund_processing){
+        smsText = `Dear customer, your order ${order.orderId} has been selected for REFUND. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.refunded){
+        smsText = `Dear customer, your order ${order.orderId} has been settled. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.processed){
+        smsText = `Dear customer, your order ${order.orderId} has been processed. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.arrived_at_warehouse){
+        smsText = `Dear customer, your order ${order.orderId} has been arrived at warehouse. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.shipped){
+        smsText = `Dear customer, your order ${order.orderId} has been Shipped. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.delivered){
+        smsText = `Dear customer, your order ${order.orderId} has been Delivered. Thanks for staying with us. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.canceled){
+        smsText = `Dear customer, your order ${order.orderId} has been cancelled due to stock out. For more, please visit:https://www.anonderbazar.com`;
+      } else if(order.status === ORDER_STATUSES.confirmed){
+        smsText = `Dear customer, your order ${order.orderId} has been confirmed. For more, please visit:https://www.anonderbazar.com`;
+      } else {
+        smsText = `Dear Customer, Your order ${order.orderId} has been selected for ${statusName}`;
+      }
+
+      if (smsPhone) {
+        console.log('smsTxt', smsText);
+        SmsService.sendingOneSmsToOne([smsPhone], smsText);
+      }
+    } catch (err) {
+      logger.orderLog(authUser.id, 'SMS sending error', err);
+    }
+  },
+
   sendEmail: async (orderForMail) => {
     try {
       EmailService.orderSubmitMail(orderForMail);
@@ -570,5 +681,6 @@ module.exports = {
       console.log('Email Sending Error', err);
     }
   },
+  /** Send SMS methods. END */
 
 };

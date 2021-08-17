@@ -208,7 +208,7 @@ export class FixedProductCreateComponent implements OnInit {
         this.productService.insert(formData).subscribe(result => {
             this.isSubmit = true;
             this._spinning = false;
-            console.log(result);
+            /*console.log(result);*/
             if (result && result.data && result.data.id) {
                 this._notification.create(
                     'success',

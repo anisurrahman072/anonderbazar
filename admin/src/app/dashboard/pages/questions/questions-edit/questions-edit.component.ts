@@ -37,7 +37,7 @@ export class QuestionsEditComponent implements OnInit {
 
     ngOnInit() {
         this.currentUserData = this.authService.getCurrentUser();
-        console.log('current uuuuuuuuu: ', this.currentUserData);
+        /*console.log('current uuuuuuuuu: ', this.currentUserData);*/
 
         if (this.currentUserData.warehouse && this.currentUserData.warehouse.name) {
             this.asnweredBy = this.currentUserData.warehouse.name;
@@ -65,7 +65,7 @@ export class QuestionsEditComponent implements OnInit {
             answer: value.answer,
             answeredBy: this.asnweredBy
         }
-        console.log('datassssssssssssss:ansert ', this.answerData);
+        /*console.log('datassssssssssssss: ', this.answerData);*/
         this.questionsService.update(this.id, this.answerData)
             .subscribe(result => {
                 this._notification.create('success', 'Update success by ', this.asnweredBy);

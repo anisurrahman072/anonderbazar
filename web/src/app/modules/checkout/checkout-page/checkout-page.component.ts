@@ -47,6 +47,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     termsAndPolicy: boolean = false;
     showBkashPayment: boolean = false;
+    showNagadPayment: boolean = false;
+
     isDelivery = true;
     isPickup = false;
     cartData: any;
@@ -58,6 +60,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     IMAGE_EXT = GLOBAL_CONFIGS.productImageExtension;
     enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
+    private nagadTestUsers: any = GLOBAL_CONFIGS.nagadTestUsers;
 
     shippingFirstName: string;
     shippingLastName: string;
@@ -116,6 +119,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
     isAllowedBkashInOfferedProductPurchase = true;
     isAllowedOfflineInOfferedProductPurchase = true;
     isAllowedCashInDeliveryInOfferedProductPurchase = true;
+    isAllowedNagadInOfferedProductPurchase = true;
 
     isAllowedOfferPaymentGateway = false;
 
@@ -205,6 +209,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
                 this.showBkashPayment = this.bKashTestUsers.find((userId) => this.user_id == userId);
+                this.showNagadPayment = this.nagadTestUsers.find((userId) => this.user_id == userId);
             } else {
                 this.user_id = null;
             }
@@ -294,6 +299,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isAllowedBkashInOfferedProductPurchase = true;
         this.isAllowedOfflineInOfferedProductPurchase = true;
         this.isAllowedCashInDeliveryInOfferedProductPurchase = true;
+        this.isAllowedNagadInOfferedProductPurchase = true;
 
         this.isAllowedOfferPaymentGateway = false;
         this.isAllowedToProcessToPay = true;
@@ -330,6 +336,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 if(!this.offerData[productId].pay_by_cashOnDelivery){
                     this.isAllowedCashInDeliveryInOfferedProductPurchase = false;
+                }
+                if(!this.offerData[productId].pay_by_nagad){
+                    this.isAllowedNagadInOfferedProductPurchase = false;
                 }
             } else {
                 if(this.offerIdNumber){
@@ -821,6 +830,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (result && result.GatewayPageURL) {
                     this.store.dispatch(new fromStore.LoadCart());
                     window.location.href = result.GatewayPageURL;
+                } else if (result && result.status === 'Success' && result.callBackUrl) {
+                    this.store.dispatch(new fromStore.LoadCart());
+                    window.location.href = result.callBackUrl;
                 } else if (result && result.order_id) {
                     this.successOrderId = result.order_id;
                     this.store.dispatch(new fromStore.LoadCurrentUser());

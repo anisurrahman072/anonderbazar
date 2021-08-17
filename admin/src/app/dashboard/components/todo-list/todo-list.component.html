@@ -26,21 +26,22 @@
 
                 <div class="col-md-12">
                     <div class="heading-todo-news">
-                        <nz-table #nzTable [nzPageSize]="5" [nzData]="data" [nzLoading]="_isSpinning" nzShowQuickJumper>
+                        <nz-table #nzTable [nzPageSize]="5" [nzData]="data"
+                                  [nzLoading]="_isSpinning" nzShowQuickJumper [nzBordered]="true">
                             <thead>
                             <tr>
-                                <th><span> Order </span></th>
-                                <th><span> Buyer </span></th>
-                                <th><span> Product </span></th>
-                                <th><span> Amount </span></th>
-                                <th><span> Delivery Date </span></th>
-                                <th><span> Status </span></th>
-                                <th></th>
+                                <th style="text-align: center"><span> Order </span></th>
+                                <th style="text-align: center"><span> Buyer </span></th>
+                                <th style="text-align: center"><span> Product </span></th>
+                                <th style="text-align: center"><span> Amount </span></th>
+                                <th style="text-align: center"><span> Delivery Date </span></th>
+                                <th style="text-align: center"><span> Status </span></th>
+                                <th style="text-align: center"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr #dataFor *ngFor="let datum of nzTable.data; let i = index" >
-                                <td>
+                                <td style="text-align: center">
                                     <ng-container *ngIf="('order-read' | accessControl); else elseTemplate">
                                         {{ datum.order_id }}
                                     </ng-container>
@@ -48,17 +49,17 @@
                                         {{ datum.suborder_id }}
                                     </ng-template>
                                 </td>
-                                <td>
+                                <td style="text-align: center">
                                     <nz-tag>
                                         {{ datum.customer_name}}
                                     </nz-tag>
                                 </td>
 
-                                <td>{{ datum.product_name }}</td>
-                                <td>{{ datum.product_quantity }}</td>
-                                <td>{{ now }}</td>
-                                <td><i class="fa fa-circle text-success"></i></td>
-                                <td>
+                                <td style="text-align: center">{{ datum.product_name }}</td>
+                                <td style="text-align: center">{{ datum.product_quantity }}</td>
+                                <td style="text-align: center">{{ now }}</td>
+                                <td style="text-align: center"><i class="fa fa-circle text-success"></i></td>
+                                <td style="text-align: center">
                                     <button
                                             [routerLink]="['/dashboard/suborder/invoice/', datum.id]"
                                             nz-button [nzSize]="'default'"
@@ -98,21 +99,23 @@
 
                 <div class="col-md-12">
                     <div class="heading-todo-news">
-                        <nz-table #nzTables [nzPageSize]="5" [nzData]="newData" [nzLoading]="_isSpinning" nzShowQuickJumper>
+                        <nz-table #nzTables
+                                  [nzPageSize]="5" [nzData]="newData" [nzLoading]="_isSpinning"
+                                  nzShowQuickJumper [nzBordered]="true">
                             <thead>
                             <tr>
-                                <th><span> Order </span></th>
-                                <th><span> Buyer </span></th>
-                                <th><span> Product </span></th>
-                                <th><span> Quantity </span></th>
-                                <th><span> Delivery Date </span></th>
-                                <th><span> Status </span></th>
-                                <th></th>
+                                <th style="text-align: center"><span> Order </span></th>
+                                <th style="text-align: center"><span> Buyer </span></th>
+                                <th style="text-align: center"><span> Product </span></th>
+                                <th style="text-align: center"><span> Quantity </span></th>
+                                <th style="text-align: center"><span> Delivery Date </span></th>
+                                <th style="text-align: center"><span> Status </span></th>
+                                <th style="text-align: center"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr #dataFor *ngFor="let datum of nzTables.data; let i = index" >
-                                <td>
+                                <td style="text-align: center">
                                     <ng-container *ngIf="('order-read' | accessControl); else elseTemplate" >
                                         {{ datum.order_id }}
                                     </ng-container>
@@ -120,17 +123,17 @@
                                         {{ datum.suborder_id }}
                                     </ng-template>
                                 </td>
-                                <td>
+                                <td style="text-align: center">
                                     <nz-tag>
                                         {{ datum.customer_name}}
                                     </nz-tag>
                                 </td>
 
-                                <td>{{ datum.product_name }}</td>
-                                <td>{{ datum.product_quantity }}</td>
-                                <td>{{ datum.created_at | date }}</td>
-                                <td><i class="fa fa-circle text-success"></i></td>
-                                <td>
+                                <td style="text-align: center">{{ datum.product_name }}</td>
+                                <td style="text-align: center">{{ datum.product_quantity }}</td>
+                                <td style="text-align: center">{{ datum.created_at | date }}</td>
+                                <td style="text-align: center"><i class="fa fa-circle text-success"></i></td>
+                                <td style="text-align: center">
                                     <button
                                             [routerLink]="['/dashboard/suborder/invoice/', datum.suborder_id]"
                                             nz-button

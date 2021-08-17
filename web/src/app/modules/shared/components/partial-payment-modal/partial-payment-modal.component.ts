@@ -39,12 +39,16 @@ export class PartialPaymentModalComponent implements OnInit {
     NAGAD_PAYMENT_TYPE = PAYMENT_METHODS.NAGAD_PAYMENT_TYPE;
     OFFLINE_PAYMENT_TYPE = PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE;
     private bKashTestUsers: any = GLOBAL_CONFIGS.bkashTestUsers;
+    private nagadTestUsers: any = GLOBAL_CONFIGS.nagadTestUsers;
     private partialMinimumFirstPaymentAmount :any = GLOBAL_CONFIGS.partialMinimumFirstPaymentAmount;
 
     couponCashbackAmount: number = 0;
     currentUser$: Observable<User>;
     user_id: any;
+
     showBkashPayment: boolean = false;
+    showNagadPayment: boolean = false;
+
     paymentAmount: any = null;
     amountToPay: number;
     orderTotalPrice: number;
@@ -82,6 +86,7 @@ export class PartialPaymentModalComponent implements OnInit {
     isAllowedSslCommerzInOfferedProductPurchase = true;
     isAllowedBkashInOfferedProductPurchase = true;
     isAllowedOfflineInOfferedProductPurchase = true;
+    isAllowedNagadInOfferedProductPurchase = true;
 
     isAllowedOfferPaymentGateway = false;
 
@@ -133,7 +138,7 @@ export class PartialPaymentModalComponent implements OnInit {
                                 }
 
                                 if(item.offered_product && item.offered_product == true){
-                                    if(item.pay_by_sslcommerz || item.pay_by_bKash || item.pay_by_offline){
+                                    if(item.pay_by_sslcommerz || item.pay_by_bKash || item.pay_by_offline || item.pay_by_nagad){
                                         this.isAllowedOfferPaymentGateway = true;
                                     }
                                     if(!item.pay_by_sslcommerz){
@@ -144,6 +149,9 @@ export class PartialPaymentModalComponent implements OnInit {
                                     }
                                     if(!item.pay_by_offline){
                                         this.isAllowedOfflineInOfferedProductPurchase = false;
+                                    }
+                                    if(!item.pay_by_nagad){
+                                        this.isAllowedNagadInOfferedProductPurchase = false;
                                     }
                                 }
                             })
@@ -162,6 +170,7 @@ export class PartialPaymentModalComponent implements OnInit {
                     this.couponCashbackAmount = parseFloat(this.currentUser.couponLotteryCashback[0].amount);
                 }
                 this.showBkashPayment = this.bKashTestUsers.find((userId) => this.user_id == userId);
+                this.showNagadPayment = this.nagadTestUsers.find((userId) => this.user_id == userId);
             } else {
                 this.user_id = null;
             }
@@ -239,6 +248,24 @@ export class PartialPaymentModalComponent implements OnInit {
                         window.location.href = result.GatewayPageURL;
                     } else {
                         console.log('No gateway page to redirect');
+                    }
+                }, error => {
+                    this.onHidden();
+                    this.loaderService.hideLoader();
+                    console.log('ssl response with error', error);
+                    this._notify.error('Error occurred while making partial payment!', error);
+                })
+        }  else if (value.payment_method === this.NAGAD_PAYMENT_TYPE) {
+            this.orderService.makePartialPayment(this.currentOrderId, value)
+                .subscribe(result => {
+                    this.onHidden();
+                    this.loaderService.hideLoader();
+                    if (result && result.status === 'Success' && result.callBackUrl) {
+                        console.log('ssl response', result);
+                        window.location.href = result.callBackUrl;
+                    } else {
+                        console.log('No gateway page to redirect');
+                        this._notify.error('Error occurred while Nagad payment gateway initialization!');
                     }
                 }, error => {
                     this.onHidden();

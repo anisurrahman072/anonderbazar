@@ -145,6 +145,7 @@
                     Product Requisition
                 </a>
             </li>
+
             <li nz-menu-item *ngIf="'payment'|accessControl">
                 <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
                    routerLink="/dashboard/payment">
@@ -154,6 +155,7 @@
             </li>
         </ul>
     </li>
+
     <li nz-submenu *ngIf="'coupon-lottery'|accessControl">
         <span title>
             <i class="fa fa-truck"></i>
@@ -192,6 +194,7 @@
                 Courier Company List
             </li>
         </ul>
+
         <ul>
             <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
                 routerLink="/dashboard/courier/price" *ngIf="'courier-price-list'|accessControl">
@@ -199,6 +202,7 @@
                 Courier Price List
             </li>
         </ul>
+
         <ul>
             <li nz-menu-item routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
                 routerLink="/dashboard/courier/orderlist" *ngIf="'courier-order-list'|accessControl">
@@ -206,6 +210,7 @@
                 Courier Order List
             </li>
         </ul>
+
         <ul>
             <li nz-menu-item *ngIf="'courier-suborder-list'|accessControl">
                 <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:false}"
@@ -216,6 +221,7 @@
             </li>
         </ul>
     </li>
+
     <li nz-menu-item *ngIf="'cms'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/cms/home">
@@ -225,15 +231,15 @@
         </span>
         </a>
     </li>
-<!--    <li nz-menu-item *ngIf="'offer'|accessControl">
-        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
-           routerLink="/dashboard/offer">
-        <span>
-            <i class="fa fa-ravelry"></i>
-            <span class="nav-text">Offer</span>
-        </span>
-        </a>
-    </li>-->
+    <!--    <li nz-menu-item *ngIf="'offer'|accessControl">
+            <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+               routerLink="/dashboard/offer">
+            <span>
+                <i class="fa fa-ravelry"></i>
+                <span class="nav-text">Offer</span>
+            </span>
+            </a>
+        </li>-->
 
     <li nz-submenu *ngIf=" 'offer' | accessControl">
         <span title>
@@ -258,7 +264,7 @@
         </ul>
     </li>
 
-    <li nz-menu-item>
+    <li nz-menu-item *ngIf="'cms'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/usercms/post">
         <span>
@@ -267,6 +273,7 @@
         </span>
         </a>
     </li>
+
     <li nz-menu-item *ngIf="'investor'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/investor">
@@ -276,12 +283,33 @@
         </span>
         </a>
     </li>
+
     <li nz-menu-item *ngIf="'missing-orders'|accessControl">
         <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
            routerLink="/dashboard/missing-orders">
         <span>
             <i class="fa fa-ravelry"></i>
             <span class="nav-text">Missing Orders</span>
+        </span>
+        </a>
+    </li>
+
+    <li nz-menu-item *ngIf="'role-management'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/role-management">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">User's Groups</span>
+        </span>
+        </a>
+    </li>
+
+    <li nz-menu-item *ngIf="'admin-users'|accessControl">
+        <a routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{exact:true}"
+           routerLink="/dashboard/admin-users">
+        <span>
+            <i class="fa fa-ravelry"></i>
+            <span class="nav-text">Admin Users</span>
         </span>
         </a>
     </li>

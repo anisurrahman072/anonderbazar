@@ -109,6 +109,7 @@ export class OfferCreateComponent implements OnInit {
     isActiveBkash: boolean = false;
     isActiveOffline: boolean = false;
     isActiveCashOnDelivery: boolean = false;
+    isActiveNagad: boolean = false;
 
     constructor(
         private router: Router,
@@ -137,6 +138,7 @@ export class OfferCreateComponent implements OnInit {
             pay_by_bKash: ['', []],
             pay_by_offline: ['', []],
             pay_by_cashOnDelivery: ['', []],
+            pay_by_nagad: ['', []],
             offerStartDate: ['', Validators.required],
             offerEndDate: ['', Validators.required],
             showHome: ['', []],
@@ -179,6 +181,7 @@ export class OfferCreateComponent implements OnInit {
         formData.append('pay_by_bKash', this.isActiveBkash ? "1" : "0");
         formData.append('pay_by_offline', this.isActiveOffline ? "1" : "0");
         formData.append('pay_by_cashOnDelivery', this.isActiveCashOnDelivery ? "1" : "0");
+        formData.append('pay_by_nagad', this.isActiveNagad ? "1" : "0");
 
         formData.append('offerStartDate', moment(value.offerStartDate).format('YYYY-MM-DD HH:mm:ss'));
         formData.append('offerEndDate', moment(value.offerEndDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -882,5 +885,8 @@ export class OfferCreateComponent implements OnInit {
     }
     changeCashOnDeliveryActivation() {
         this.isActiveCashOnDelivery = !this.isActiveCashOnDelivery;
+    }
+    changeNagadActivation() {
+        this.isActiveNagad = !this.isActiveNagad;
     }
 }

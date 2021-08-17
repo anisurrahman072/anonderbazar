@@ -86,7 +86,7 @@ export class BulkUploadComponent implements OnInit {
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(
             warehouseId => {
                 this.currentWarehouseId = warehouseId || '';
-                console.log('this.currentWarehouseId', this.currentWarehouseId)
+                /*console.log('this.currentWarehouseId', this.currentWarehouseId)*/
             }
         );
     }
@@ -107,7 +107,7 @@ export class BulkUploadComponent implements OnInit {
                 delete productOb.warehouse_id;
             }
             const header: string[] = Object.getOwnPropertyNames(productOb);
-            console.log('header', header);
+            /*console.log('header', header);*/
 
             const importedData = data.slice(1);
             this.importProducts = importedData.map(arr => {
@@ -128,7 +128,7 @@ export class BulkUploadComponent implements OnInit {
                 return <ProductBulk>obj;
             });
 
-            console.log('this.importProducts', this.importProducts)
+            /*console.log('this.importProducts', this.importProducts)*/
             this.total = this.importProducts.length;
         };
         reader.readAsBinaryString(target.files[0]);
@@ -138,7 +138,7 @@ export class BulkUploadComponent implements OnInit {
     saveImportedProducts(isApproved: number = 0) {
         this.submitting = true;
         this._isSpinning = true;
-        console.log('this.importProducts', this.importProducts)
+        /*console.log('this.importProducts', this.importProducts)*/
         this.fileInputVariable.nativeElement.value = "";
         return this.productService.submitDataForBulkUpload(this.importProducts, isApproved).subscribe((result: any) => {
             this.submitting = false;

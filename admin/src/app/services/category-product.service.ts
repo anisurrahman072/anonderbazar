@@ -62,7 +62,7 @@ export class CategoryProductService {
     }
 
     getSubcategoryByCategoryId(id: string) {
-        console.log('parent_id', id);
+        /*console.log('parent_id', id);*/
         let parentId = parseInt(id, 10);
         if (!parentId) {
             parentId = 0;

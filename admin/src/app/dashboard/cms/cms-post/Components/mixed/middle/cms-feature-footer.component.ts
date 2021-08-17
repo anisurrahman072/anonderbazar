@@ -153,7 +153,7 @@ export class CmsFeatureFooterComponent implements OnInit {
     getData() {
         this.cmsService.getAllSearch({page: 'POST', section: 'HOME', subsection: 'MIDDLE'})
             .subscribe(result => {
-                console.log('getData', result)
+                /*console.log('getData', result)*/
                 this.cmsFeatureData = result;
             });
     }
@@ -163,7 +163,7 @@ export class CmsFeatureFooterComponent implements OnInit {
         this.currentFeatureId = i;
         this.id = cmsFeature.id;
         this.imageIndex = i;
-        console.log('showEditModal', cmsFeature);
+        /*console.log('showEditModal', cmsFeature);*/
         let editValue = cmsFeature.data_value[0];
         editValue.section = cmsFeature.section;
         editValue.sub_section = cmsFeature.sub_section;
@@ -187,7 +187,7 @@ export class CmsFeatureFooterComponent implements OnInit {
     //Event method for submitting the edit form
     submitEditForm = ($event, value) => {
         $event.preventDefault();
-        console.log('submitEditForm', value)
+        /*console.log('submitEditForm', value)*/
         this._isSpinning = true;
         for (const key in this.editValidateForm.controls) {
             this.editValidateForm.controls[key].markAsDirty();
@@ -212,7 +212,7 @@ export class CmsFeatureFooterComponent implements OnInit {
         }
 
         this.cmsService.customPostUpdate(formData).subscribe(result => {
-            console.log('customPostUpdate', result)
+            /*console.log('customPostUpdate', result)*/
             this.getData();
             this._isSpinning = false;
             this.isEditModalVisible = false;

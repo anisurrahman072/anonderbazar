@@ -216,7 +216,7 @@ export class UserCmsPostComponent implements OnInit {
         console.log(id);
         this.cmsPostData = null;
         this.cmsService.delete(id).subscribe(result => {
-            console.log('deleted', result);
+            /*console.log('deleted', result);*/
             this.getData();
         }, (error) => {
             console.log(error);

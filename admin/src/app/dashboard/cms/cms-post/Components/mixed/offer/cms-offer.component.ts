@@ -150,7 +150,7 @@ export class CmsOfferComponent implements OnInit {
         this.cmsService
             .getBySubSectionName('CATEGORY')
             .subscribe(result => {
-                console.log('getBySubSectionName', result);
+                /*console.log('getBySubSectionName', result);*/
                 this.cmsFeatureData = result;
                 this.cmsFeatureData.forEach(element => {
                     if (element.data_value[0].category_id) {

@@ -310,7 +310,8 @@ export class LoginMinComponent implements OnInit, OnDestroy {
             father_name: "",
             mother_name: "",
             dob: signupBirthDate,
-            active: 1
+            active: 1,
+            user_type: 'customer',
         };
 
 

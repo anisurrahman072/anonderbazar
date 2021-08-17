@@ -20,7 +20,7 @@ const routes: Routes = [
             {
                 path: 'details/:id',
                 canActivate: [AccessControl],
-                data: {accessData: 'craftsman-read'},
+                data: {accessData: 'craftsman-details'},
                 component: CraftsmanReadComponent,
             },
             {
