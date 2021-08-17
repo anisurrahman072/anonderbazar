@@ -12,6 +12,7 @@ const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
 const xl = require('excel4node');
 const {escapeExcel} = require('../../libs/helper');
 const _ = require('lodash');
+const {performance} = require('perf_hooks');
 
 module.exports = {
   /**Method for getting all the shop, brand and category */
@@ -64,7 +65,7 @@ module.exports = {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
-      if(!body.images || (body.images && JSON.parse(body.images).length === 0) ){
+      if (!body.images || (body.images && JSON.parse(body.images).length === 0)) {
         return res.badRequest('No image was uploaded');
       }
 
@@ -80,7 +81,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0 && products.length > 0){
+          if (codes && codes.length > 0 && products.length > 0) {
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -509,13 +510,13 @@ module.exports = {
       }*/
 
       let images;
-      if(body.images){
+      if (body.images) {
         images = JSON.parse(body.images);
       }
       console.log('Images are: ', images);
 
       let offerData = {image: {}};
-      if (images && images.image ) {
+      if (images && images.image) {
         offerData.image.image = images.image;
       } else {
         offerData.image.image = offer.image && offer.image.image ? offer.image.image : '';
@@ -1016,7 +1017,10 @@ module.exports = {
   /**model: Offer.js, RegularOfferProducts.js*/
   getAllOfferedProducts: async (req, res) => {
     try {
+      const time1 = performance.now();
       const finalCollectionOfProducts = await OfferService.getAllOfferedProducts();
+      const time2 = performance.now();
+      console.log(`Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
 
       return res.status(200).json({
         success: true,
