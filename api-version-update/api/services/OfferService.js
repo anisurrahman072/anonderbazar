@@ -34,7 +34,7 @@ module.exports = {
 
   /** checking if the options have the offer time or not: for regular offer */
   offerDurationCheck: async () => {
-    let rawAllOffersSql = `SELECT * FROM offers WHERE offer_deactivation_time IS NULL && deleted_at IS NULL`;
+    let rawAllOffersSql = `SELECT id, end_date, selection_type FROM offers WHERE offer_deactivation_time IS NULL && deleted_at IS NULL`;
     let rawAllOffers = await sails.sendNativeQuery(rawAllOffersSql, []);
     let allOffers = rawAllOffers.rows;
 
@@ -53,8 +53,7 @@ module.exports = {
 
   /** checking if the options have the offer time or not: for anonder jhor offers*/
   anonderJhorOfferDurationCheck: async () => {
-
-    let rawAnonderJhorDataSql = ` SELECT * FROM anonder_jhor WHERE id = 1 AND deleted_at IS NULL`;
+    let rawAnonderJhorDataSql = ` SELECT id, end_date, status FROM anonder_jhor WHERE id = 1 AND deleted_at IS NULL`;
     let rawAnonderJhorData = await sails.sendNativeQuery(rawAnonderJhorDataSql, []);
     let anonderJhorData = rawAnonderJhorData.rows;
 
@@ -66,7 +65,7 @@ module.exports = {
         await sails.sendNativeQuery(`UPDATE anonder_jhor SET status = 0 WHERE id = 1`);
       }
 
-      let allAnonderJhorOffersSQL = `SELECT * FROM anonder_jhor_offers WHERE status != 0 AND deleted_at IS NULL`;
+      let allAnonderJhorOffersSQL = `SELECT id, end_date FROM anonder_jhor_offers WHERE status != 0 AND deleted_at IS NULL`;
       let rawAllAnonderJhorOffers = await sails.sendNativeQuery(allAnonderJhorOffersSQL, []);
       let allAnonderJhorOffers = rawAllAnonderJhorOffers.rows;
 
