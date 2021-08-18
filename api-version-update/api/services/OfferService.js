@@ -99,6 +99,15 @@ module.exports = {
     _where.end_date = {'>=': presentTime};
 
     const requestedOffer = await Offer.find({where: _where});
+    /*console.log('requestedOffer offer: ', requestedOffer);*/
+
+
+    /*const rawSQL = `SELECT * FROM offers WHERE
+                  offer_deactivation_time IS NULL AND DATE(start_date) <= DATE(NOW())
+                  AND DATE(end_date) >= DATE(NOW()) AND deleted_at IS NULL;`;
+    const rawRequestedOffer = await sails.sendNativeQuery(rawSQL, []);
+    const requestedOffer1 = rawRequestedOffer.rows;
+    console.log('requestedOffer1: ', requestedOffer1);*/
 
     let _where1 = {};
     _where1.deletedAt = null;
