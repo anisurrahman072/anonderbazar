@@ -173,7 +173,8 @@
                             </p>
 
                             <!-- Only if Payment method is OFFLINE payment then this section will show START -->
-                            <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE"
+                            <div *ngIf="payment && payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE
+                                        && paymentDetails && paymentDetails.offline_payment_method"
                                  style="margin-top: 10px !important;">
                                 <h4>Offline payment method details</h4>
                                 <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
@@ -216,11 +217,13 @@
                             <p style="margin: 0;">Transaction time: {{allPaymentsLog[0].createdAt}}</p>
 
                             <!-- Only true if the payment is an Offline Payment START -->
-                            <div *ngIf="allPaymentsLog[0].details && allPaymentsLog[0].details.offline_payment_method">
+                            <div *ngIf="allPaymentsLog[0].details && (allPaymentsLog[0].details.offline_payment_method ||
+                                                allPaymentsLog[0].details.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE)">
                                 <p style="margin: 0;">Approval Status:
                                     <b>{{allPaymentsLog[0].approval_status | paymentApprovalStatus}}</b></p>
-                                <p style="margin: 0;">Offline payment
-                                    method: {{allPaymentsLog[0].details.offline_payment_method}}</p>
+                                <p style="margin: 0;" *ngIf="allPaymentsLog[0].details.offline_payment_method">
+                                    Offline payment method: {{allPaymentsLog[0].details.offline_payment_method}}
+                                </p>
 
                                 <div *ngIf="allPaymentsLog[0].details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
                                     <p style="margin: 0;">Transaction ID: {{allPaymentsLog[0].details.transactionId}}</p>
@@ -274,11 +277,13 @@
                                 <p style="margin: 0;">Transaction time: {{payment.createdAt}}</p>
 
                                 <!-- Only true if the payment is an Offline Payment START -->
-                                <div *ngIf="payment.details && payment.details.offline_payment_method">
+                                <div *ngIf="payment.details && (payment.details.offline_payment_method ||
+                                                payment.details.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE )">
                                     <p style="margin: 0;">Approval Status:
                                         <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
-                                    <p style="margin: 0;">Offline payment
-                                        method: {{payment.details.offline_payment_method}}</p>
+                                    <p style="margin: 0;" *ngIf="payment.details.offline_payment_method">
+                                        Offline payment method: {{payment.details.offline_payment_method}}
+                                    </p>
 
                                     <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
                                         <p style="margin: 0;">Transaction ID: {{payment.details.transactionId}}</p>
