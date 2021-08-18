@@ -62,12 +62,11 @@ module.exports = {
       const anonderJhorEndDate = anonderJhorData[0].end_date.getTime();
       const presentTime = (new Date(Date.now())).getTime();
 
-      if (anonderJhorEndDate < presentTime) {
-        /*anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});*/
+      if (anonderJhorEndDate < presentTime && anonderJhorData[0].status !== 0) {
         await sails.sendNativeQuery(`UPDATE anonder_jhor SET status = 0 WHERE id = 1`);
       }
 
-      let allAnonderJhorOffersSQL = `SELECT * FROM anonder_jhor_offers WHERE deleted_at IS NULL`;
+      let allAnonderJhorOffersSQL = `SELECT * FROM anonder_jhor_offers WHERE status != 0 AND deleted_at IS NULL`;
       let rawAllAnonderJhorOffers = await sails.sendNativeQuery(allAnonderJhorOffersSQL, []);
       let allAnonderJhorOffers = rawAllAnonderJhorOffers.rows;
 
