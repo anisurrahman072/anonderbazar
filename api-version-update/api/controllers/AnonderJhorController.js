@@ -14,7 +14,6 @@ const _ = require('lodash');
 const xl = require('excel4node');
 const {escapeExcel} = require('../../libs/helper');
 const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
-const {performance} = require('perf_hooks');
 
 module.exports = {
   getAnonderJhor: async (req, res) => {
@@ -603,10 +602,7 @@ module.exports = {
 
   getAnonderJhorInfo: async (req, res) => {
     try {
-      const time1 = performance.now();
       await OfferService.anonderJhorOfferDurationCheck();
-      const time2 = performance.now();
-      console.log(`getAnonderJhorInfo Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
 
       let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
       const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);

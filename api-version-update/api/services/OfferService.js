@@ -34,7 +34,7 @@ module.exports = {
 
   /** checking if the options have the offer time or not: for regular offer */
   offerDurationCheck: async () => {
-    let rawAllOffersSql = `SELECT * FROM offers WHERE deleted_at IS NULL`;
+    let rawAllOffersSql = `SELECT * FROM offers WHERE offer_deactivation_time IS NULL && deleted_at IS NULL`;
     let rawAllOffers = await sails.sendNativeQuery(rawAllOffersSql, []);
     let allOffers = rawAllOffers.rows;
 
@@ -43,7 +43,7 @@ module.exports = {
       const presentTime = (new Date(Date.now())).getTime();
 
       if (endDate < presentTime) {
-        if (allOffers[index].selection_type === 'Product wise') {
+        if (allOffers[index].selection_type === 'Product wise' || allOffers[index].selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: allOffers[index].id}).set({product_deactivation_time: new Date()});
         }
         await Offer.updateOne({id: allOffers[index].id}).set({offer_deactivation_time: new Date()});
