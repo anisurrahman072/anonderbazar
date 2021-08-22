@@ -203,7 +203,7 @@ module.exports.policies = {
     'create': ['isAuthorized', 'isAdminUser'],
     'update': ['isAuthorized', 'isAdminUser'],
     'destroy': ['isAuthorized', 'isAdminUser'],
-    'updateGlobalConfig': ['isAuthorized', 'isAdminUser', 'checkPermission(\'update-global-partial-payment-duration\')', 'checkPermission(\'update-global-shipping-charge\')'],
+    'updateGlobalConfig': ['isAuthorized', 'isAdminUser', 'checkPermission(\'update-global-partial-payment-duration\', \'update-global-shipping-charge\')'],
     'getShippingCharge': true,
   },
 
@@ -432,7 +432,7 @@ module.exports.policies = {
     'updateUserStatus': true,
     'find': true,
     'findOne': true,
-    'getAll': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse\')', 'checkPermission(\'warehouse-read\')'],
+    'getAll': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse\', \'warehouse-read\')'],
     'destroy': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-delete\')'],
     'createCustom': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-create\')'],
     'updateCustom': ['isAuthorized', 'isAdminUser', 'checkPermission(\'warehouse-edit\')'],

@@ -9,7 +9,7 @@
         <nz-spin [nzSpinning]="_isSpinning">
             <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
 
-                <div nz-row *ngIf="this.currentUser.group_id === 'admin'">
+                <div nz-row *ngIf="this.currentUser.userInfo.user_type === 'admin'">
                     <div nz-col [nzSpan]="7">
                         <label> Choose Vendor </label>
                     </div>
