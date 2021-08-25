@@ -120,7 +120,7 @@ module.exports = {
 
   getAllAnonderJhorOffersData: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let _pagination = pagination(req.query);
 
@@ -163,7 +163,7 @@ module.exports = {
 
   offerActiveStatusChange: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       const anonderJhorData = await AnonderJhor.findOne({id: 1});
       const presentTime = moment();
@@ -223,7 +223,7 @@ module.exports = {
 
   offerForceStop: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let anonderJhorData = await AnonderJhor.findOne({id: 1});
       const presentTime = moment();
@@ -447,7 +447,7 @@ module.exports = {
 
   getAnonderJhorOfferById: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
       let anonderJhorOffer = await AnonderJhorOffers.findOne({id: req.query.id})
         .populate('category_id')
         .populate('sub_category_id')
@@ -565,7 +565,7 @@ module.exports = {
 
   getAnonderJhorAndOffers: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let anonderJhor = await AnonderJhor.findOne({id: 1});
       let jhorStartTime = anonderJhor.start_date;
@@ -602,7 +602,7 @@ module.exports = {
 
   getAnonderJhorInfo: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
       const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);
@@ -625,7 +625,7 @@ module.exports = {
 
   getWebAnonderJhorOfferById: async (req, res) => {
     try {
-      await OfferService.anonderJhorOfferDurationCheck();
+      /*await OfferService.anonderJhorOfferDurationCheck();*/
 
       let webJhorOfferedProducts;
 

@@ -86,8 +86,8 @@ module.exports = {
   getAllOfferedProducts: async function () {
     let finalCollectionOfProducts = {};
 
-    await this.offerDurationCheck();
-    await this.anonderJhorOfferDurationCheck();
+    /*await this.offerDurationCheck();
+    await this.anonderJhorOfferDurationCheck();*/
 
     let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -352,7 +352,7 @@ module.exports = {
           }
 
           if (regularOffers[offer].selection_type === 'individual_product') {
-            console.log('regular offer info in inidi wise: ', regularOffers[offer]);
+            /*console.log('regular offer info in inidi wise: ', regularOffers[offer]);*/
             let rawSQL = `SELECT
                                   product_id
                               FROM
