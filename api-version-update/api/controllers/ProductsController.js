@@ -188,7 +188,8 @@ module.exports = {
     } catch (error) {
       console.log('error', error);
 
-      let message = 'Error in getting all products with pagination';
+      sails.log.error(`RequestUrl: ${req.path} ###### ${error}`);
+      let message = 'Error in getting all products with paginationtttttt';
       res.status(400).json({
         success: false,
         message,
