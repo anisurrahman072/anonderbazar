@@ -177,7 +177,7 @@ module.exports = {
       }
 */
       let offeredProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-      console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
+      // console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
 
       let previousCartItems = await CartItem.find({
         cart_id: req.body.cart_id,

@@ -793,7 +793,7 @@ module.exports = {
       /*await OfferService.offerDurationCheck();*/
 
       let webRegularOffers =  await sails.helpers.cacheRead('getWebRegularOffers');
-      console.log('######### getWebRegularOffers from cache ############', webRegularOffers);
+      // console.log('######### getWebRegularOffers from cache ############', webRegularOffers);
       if(!webRegularOffers){
         throw new Error('webRegularOffers not found!');
       }
@@ -1033,7 +1033,7 @@ module.exports = {
     try {
       const time1 = performance.now();
       const finalCollectionOfProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-      console.log('######### getAllOfferedProducts from cache ############', finalCollectionOfProducts);
+      // console.log('######### getAllOfferedProducts from cache ############', finalCollectionOfProducts);
       if(!finalCollectionOfProducts){
         throw new Error('getAllOfferedProducts not found!');
       }

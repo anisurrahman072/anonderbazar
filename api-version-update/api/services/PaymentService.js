@@ -195,7 +195,7 @@ module.exports = {
         let productFinalPrice = productUnitPrice * cartItem.product_quantity;
 
         let offerProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-        console.log('######### getAllOfferedProducts from cache ############', offerProducts);
+        // console.log('######### getAllOfferedProducts from cache ############', offerProducts);
 
         if ((offerProducts && !_.isUndefined(offerProducts[cartItem.product_id.id]) && offerProducts[cartItem.product_id.id])) {
           if (offerProducts && offerProducts[cartItem.product_id.id].calculation_type === 'absolute') {
@@ -267,7 +267,7 @@ module.exports = {
 
     if(cartItems && cartItems.length > 0){
       let offeredProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-      console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
+      // console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
 
       let len = cartItems.length;
       for(let i=0; i<len; i++){
@@ -353,7 +353,7 @@ module.exports = {
       }).fetch().usingConnection(db);
 
       let offeredProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
-      console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
+      // console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
 
       let suborderItemsTemp = [];
       for (let k = 0; k < cartItemsTemp.length; k++) {
