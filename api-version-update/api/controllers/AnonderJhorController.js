@@ -609,6 +609,9 @@ module.exports = {
 
       let anonderJhor = await sails.helpers.cacheRead('getAnonderJhorInfo');
       console.log('######### getAnonderJhorInfo from cache ############', anonderJhor);
+      if(!anonderJhor){
+        throw new Error('getAnonderJhorInfo not found!');
+      }
 
       res.status(200).json({
         success: true,
