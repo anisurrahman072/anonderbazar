@@ -604,9 +604,11 @@ module.exports = {
     try {
       /*await OfferService.anonderJhorOfferDurationCheck();*/
 
-      let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
-      const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);
-      let anonderJhor = anonderJhorRaw.rows;
+      /*let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
+      const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);*/
+
+      let anonderJhor = await sails.helpers.cacheRead('getAnonderJhorInfo');
+      console.log('######### getAnonderJhorInfo from cache ############', anonderJhor);
 
       res.status(200).json({
         success: true,

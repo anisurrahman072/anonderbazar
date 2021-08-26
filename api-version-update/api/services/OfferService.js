@@ -263,6 +263,33 @@ module.exports = {
     return finalCollectionOfProducts;
   },
 
+  /** This method will fetch Anonder Jhor Offer Info. START */
+  getAnonderJhorInfo: async function(){
+    let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
+    const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);
+    return anonderJhorRaw.rows;
+  },
+  /** This method will fetch Anonder Jhor Offer Info. END */
+
+  /** This method will fetch web regular offers. START */
+  getWebRegularOffers: async function(){
+    let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    let _where = {};
+    _where.start_date = {'<=': presentTime};
+    _where.end_date = {'>=': presentTime};
+    _where.offer_deactivation_time = null;
+    _where.deletedAt = null;
+
+    let webRegularOffers = await Offer.find({where: _where})
+      .sort([
+        {carousel_position: 'ASC'},
+        {frontend_position: 'ASC'},
+        {id: 'DESC'}
+      ]);
+    return webRegularOffers;
+  },
+  /** This method will fetch web regular offers. END */
+
   /** This method will return offer info of a product (If product exists in any of offer) */
   getProductOfferInfo: async function (product, offeredProducts) {
     /** global section */

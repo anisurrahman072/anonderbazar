@@ -791,19 +791,13 @@ module.exports = {
   webRegularOffers: async (req, res) => {
     try {
       /*await OfferService.offerDurationCheck();*/
-      let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-      let _where = {};
-      _where.start_date = {'<=': presentTime};
-      _where.end_date = {'>=': presentTime};
-      _where.offer_deactivation_time = null;
-      _where.deletedAt = null;
 
-      let webRegularOffers = await Offer.find({where: _where})
-        .sort([
-          {carousel_position: 'ASC'},
-          {frontend_position: 'ASC'},
-          {id: 'DESC'}
-        ]);
+      let webRegularOffers =  await sails.helpers.cacheRead('getWebRegularOffers');
+      console.log('######### getWebRegularOffers from cache ############', webRegularOffers);
+      if(!webRegularOffers){
+        sails.log.error('######### getWebRegularOffers from cache got Undefined ############');
+        throw new Error('webRegularOffers not found!');
+      }
 
       res.status(200).json({
         success: true,
@@ -1039,7 +1033,9 @@ module.exports = {
   getAllOfferedProducts: async (req, res) => {
     try {
       const time1 = performance.now();
-      const finalCollectionOfProducts = await OfferService.getAllOfferedProducts();
+      const finalCollectionOfProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
+      console.log('######### getAllOfferedProducts from cache ############', finalCollectionOfProducts);
+
       const time2 = performance.now();
       console.log(`getAllOfferedProducts Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
 
