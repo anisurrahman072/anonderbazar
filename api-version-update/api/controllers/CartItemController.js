@@ -176,7 +176,8 @@ module.exports = {
         return res.badRequest('Product stock is not sufficient enough.');
       }
 */
-      let offeredProducts = await OfferService.getAllOfferedProducts();
+      let offeredProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
+      // console.log('######### getAllOfferedProducts from cache ############', offeredProducts);
 
       let previousCartItems = await CartItem.find({
         cart_id: req.body.cart_id,
