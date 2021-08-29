@@ -110,9 +110,9 @@ export class ProductService {
             .map(response => response);
     }
 
-    getTopSellProducts(): Observable<any> {
+    getTopSellProducts(from): Observable<any> {
         return this.http
-            .get(this.EndPoint + '/getTopSellProducts')
+            .get(this.EndPoint + `/getTopSellProducts?from=${from}`)
     }
 
     getNewProducts(): Observable<any> {
