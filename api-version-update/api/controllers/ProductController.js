@@ -678,6 +678,10 @@ module.exports = {
             GROUP BY brand_id
       `;
 
+      if (req.query.requestFrom && req.query.requestFrom === 'homepage') {
+        rawSelect += 'LIMIT 12 OFFSET 0';
+      }
+
       const rawResult = await productNativeQuery(rawSelect, []);
       if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
         return res.status(200).json({
