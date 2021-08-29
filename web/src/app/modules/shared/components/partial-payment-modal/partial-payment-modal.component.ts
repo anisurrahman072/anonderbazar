@@ -20,6 +20,7 @@ import {AppSettings} from "../../../../config/app.config";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {FileHolder, UploadMetadata} from "angular2-image-upload";
+import {DesignimageService} from "../../../../services/designimage.service";
 
 @Component({
     selector: 'app-partial-payment-modal',
@@ -33,6 +34,7 @@ export class PartialPaymentModalComponent implements OnInit {
     partialPaymentForm: FormGroup;
     enabledPaymentMethods = GLOBAL_CONFIGS.activePaymentMethods;
 
+    IMAGE_ENDPOINT = AppSettings.IMAGE_ENDPOINT;
     CASHBACK_PAYMENT_TYPE = PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE;
     SSL_COMMERZ_PAYMENT_TYPE = PAYMENT_METHODS.SSL_COMMERZ_PAYMENT_TYPE;
     BKASH_PAYMENT_TYPE = PAYMENT_METHODS.BKASH_PAYMENT_TYPE;
@@ -69,9 +71,9 @@ export class PartialPaymentModalComponent implements OnInit {
     isBankDeposit: boolean = false;
     isMobileTransfer: boolean = false;
 
-    ImageFile: File = null;
-    BankDepositImageFile: File = null;
-    mobileTransferImageFile: File = null;
+    ImageFile = [];
+    storeImageFileName: File[] = [];
+    showImageMissingValidation: boolean = false;
 
     isSubmittedOfflinePaymentForm: boolean = false;
     isSubmittedCashInAdvanceImage: boolean = false;
@@ -101,7 +103,8 @@ export class PartialPaymentModalComponent implements OnInit {
         private modalService: BsModalService,
         private toastr: ToastrService,
         private router: Router,
-        private productService: ProductService
+        private productService: ProductService,
+        private designImagesService: DesignimageService
     ) {
     }
 
@@ -290,63 +293,22 @@ export class PartialPaymentModalComponent implements OnInit {
         }
         else if (value.payment_method === this.OFFLINE_PAYMENT_TYPE) {
             this.isSubmittedOfflinePaymentForm = true;
+
+            /** Add validation for offline-payment */
+            if(this.ImageFile.length <= 0){
+                this._notify.error('No money receipt uploaded!');
+                this.loaderService.hideLoader();
+                this.showImageMissingValidation = true;
+                return false;
+            }
+            /** END Validation */
+
             const formData: FormData = new FormData();
             formData.append('amount_to_pay', value.amount_to_pay);
             formData.append('payment_method', this.OFFLINE_PAYMENT_TYPE);
 
-            /** Add validation for offline-payment */
-            if (value.offlinePaymentMethods == 'bankTransfer') {
-                this.isSubmittedBankTransferForm = true;
-                if (!value.transactionIdForBank || !value.bankName || !value.branchName || !value.accountNumberForBank) {
-                    this.loaderService.hideLoader();
-                    return false;
-                }
-                formData.append('offlinePaymentMethod', 'bankTransfer');
-                let bankTransferInfo = {
-                    transactionId: value.transactionIdForBank,
-                    bankName: value.bankName,
-                    branchName: value.branchName,
-                    accountNumberForBank: value.accountNumberForBank
-                }
-                formData.append('bankTransfer', JSON.stringify(bankTransferInfo));
-            } else if (value.offlinePaymentMethods === 'cashInAdvance') {
-                this.isSubmittedCashInAdvanceImage = true;
-                formData.append('offlinePaymentMethod', 'cashInAdvance');
-                if (this.ImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.ImageFile, this.ImageFile.name);
-                } else {
-                    this.ImageFile = null;
-                    this.loaderService.hideLoader();
-                    return false;
-                }
-            } else if (value.offlinePaymentMethods === 'bankDeposit') {
-                this.isSubmittedBankDepositForm = true;
-                formData.append('offlinePaymentMethod', 'bankDeposit');
-                if (this.BankDepositImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.BankDepositImageFile, this.BankDepositImageFile.name);
-                } else {
-                    this.BankDepositImageFile = null;
-                    this.loaderService.hideLoader();
-                    return false;
-                }
-            } else if (value.offlinePaymentMethods === 'mobileTransfer') {
-                this.isSubmittedMobileTransferForm = true;
-                formData.append('offlinePaymentMethod', 'mobileTransfer');
-                if (this.mobileTransferImageFile) {
-                    formData.append('hasImage', 'true');
-                    formData.append('image', this.mobileTransferImageFile, this.mobileTransferImageFile.name);
-                } else {
-                    this.mobileTransferImageFile = null;
-                    this.loaderService.hideLoader();
-                    return false;
-                }
-            } else {
-                this.loaderService.hideLoader();
-                return false;
-            }
-            /** END Validation */
+            this.ImageFile = this.ImageFile.map(image => image.split(this.IMAGE_ENDPOINT)[1]);
+            formData.append('image', JSON.stringify(this.ImageFile));
 
             this.orderService.makePartialPayment(this.currentOrderId, formData)
                 .subscribe(data => {
@@ -422,50 +384,43 @@ export class PartialPaymentModalComponent implements OnInit {
     }
 
     onRemoved(file: FileHolder) {
-        this.ImageFile = null;
-    }
+        if(this.ImageFile.length > 0){
+            let imagePath = this.ImageFile[this.storeImageFileName.findIndex(e => e.name === file.file.name)];
 
-    onRemovedBankDepositSlip(file: FileHolder) {
-        this.BankDepositImageFile = null;
-    }
 
-    onRemovedMobileTransferSS(file: FileHolder) {
-        this.mobileTransferImageFile = null;
+            let formData = new FormData();
+            formData.append('oldImagePath', `${imagePath.split(this.IMAGE_ENDPOINT)[1]}`);
+
+            this.designImagesService.deleteImage(formData)
+                .subscribe(data => {
+                    this.ImageFile.splice(this.storeImageFileName.findIndex(e => e.name === file.file.name), 1);
+                    this.storeImageFileName.splice(this.storeImageFileName.findIndex(e => e.name === file.file.name), 1);
+                    if(this.ImageFile.length <= 0){
+                        this.showImageMissingValidation = true;
+                    }
+                    this.toastr.success("Successfully deleted image", "Success!", {});
+
+                }, error => {
+                    console.log("Error occurred: ", error);
+                    this.toastr.error("Error occurred while deleting image", "Error!", {});
+                })
+        }
     }
 
     onBeforeUpload = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
-            this.ImageFile = metadata.file;
-            return metadata;
-        }
-        else {
-            this.ImageFile = null;
-            return false;
-        }
-    };
+        let formData = new FormData();
+        formData.append('image', metadata.file, metadata.file.name);
 
-    onBeforeUploadBankaDepositSlip = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
-            this.BankDepositImageFile = metadata.file;
-            return metadata;
-        }
-        else {
-            this.BankDepositImageFile = null;
-            return false;
-        }
-    };
-
-    onBeforeUploadMobileTransferSS = (metadata: UploadMetadata) => {
-        let fileExtension = metadata.file.type;
-        if(fileExtension.includes("jpg") || fileExtension.includes("jpeg") || fileExtension.includes("png")){
-            this.mobileTransferImageFile = metadata.file;
-            return metadata;
-        }
-        else {
-            this.mobileTransferImageFile = null;
-            return false;
-        }
+        this.designImagesService.insertImage(formData)
+            .subscribe(data => {
+                this.ImageFile.push(this.IMAGE_ENDPOINT + data.path);
+                this.storeImageFileName.push(metadata.file);
+                this.showImageMissingValidation = false;
+                this.toastr.success("Successfully uploaded image", "Success!", {});
+            }, error => {
+                console.log("Error occurred: ", error);
+                this.toastr.error("Unstable Internet connection while uploading image", "Error!", {});
+            })
+        return metadata;
     };
 }

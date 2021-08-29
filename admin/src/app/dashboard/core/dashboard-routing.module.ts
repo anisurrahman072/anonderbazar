@@ -63,7 +63,7 @@ const routes: Routes = [
             },
             {
                 path: 'warehouse' /* /dashboard/warehouse   */,
-                canActivate: [IsAdmin],
+                /*canActivate: [IsAdmin],*/
                 loadChildren: '../pages/warehouse/warehouse.module#WarehouseModule'
             },
             {

@@ -3,11 +3,11 @@
         <ng-template #extra>
             <nz-button-group>
                 <button nz-button
-                        (click)='showCsvModal()' *ngIf="currentUser.group_id === 'admin'">
+                        (click)='showCsvModal()'>
                     <i class="anticon anticon-download"></i><span> Download CSV </span>
                 </button>
                 <button nz-button
-                        (click)='showPRModal()' *ngIf="currentUser.group_id === 'admin'">
+                        (click)='showPRModal()'>
                     <i class="anticon anticon-download"></i><span> Download PR</span>
                 </button>
                 <button nz-button (click)="resetAllFilter()">Clear filter</button>
@@ -82,7 +82,6 @@
                 <th></th>
                 <th>
                     <input nz-input placeholder="Vendor" [(ngModel)]="vendorNameValue"
-                           *ngIf="currentUser.group_id=='admin'"
                            (ngModelChange)="page=1; getSubOrderData()">
                 </th>
                 <th>
@@ -124,7 +123,7 @@
                 <td>{{data.total_quantity}}</td>
                 <td>{{data.total_price}}</td>
                 <td>
-                    <div *ngIf="currentUser.group_id === 'admin' && ('suborder-status-change'|accessControl); else loggedOut">
+                    <div *ngIf="('suborder-status-change'|accessControl); else loggedOut">
                         <span *ngIf="setStatus(i, data.status)"></span>
                         <nz-select [(ngModel)]="data.status"
                                    nzPlaceHolder="choose option"

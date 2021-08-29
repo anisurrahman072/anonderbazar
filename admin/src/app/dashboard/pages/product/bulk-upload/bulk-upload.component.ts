@@ -80,7 +80,7 @@ export class BulkUploadComponent implements OnInit {
 
         this.currentUser = this.authService.getCurrentUser();
 
-        if (this.currentUser.group_id === 'admin') {
+        if (this.currentUser.userInfo.user_type === 'admin') {
             this.isAdminUser = true;
         }
         this.currentWarehouseSubscriprtion = this.uiService.currentSelectedWarehouseInfo.subscribe(

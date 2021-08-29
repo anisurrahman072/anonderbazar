@@ -53,6 +53,7 @@ export class AdminUsersEditComponent implements OnInit {
     division;
     counter = 0;
     pass;
+    isDisabled = null;
 
     constructor(
         private router: Router,
@@ -101,7 +102,10 @@ export class AdminUsersEditComponent implements OnInit {
                 if (result) {
                     // @ts-ignore
                     this.data = result.data;
-                    console.log('pathc value: ', this.data);
+                    /*console.log('pathc value: ', this.data);*/
+                    if (this.data && this.data.username === 'admin') {
+                        this.isDisabled = true;
+                    }
                     this.validateForm.patchValue(this.data);
                     this.validateForm.controls.division_id.patchValue(this.data.division_id.id);
 
