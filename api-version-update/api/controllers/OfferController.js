@@ -12,13 +12,14 @@ const {columnsOfIndividualOfferProducts} = require('../../libs/offer');
 const xl = require('excel4node');
 const {escapeExcel} = require('../../libs/helper');
 const _ = require('lodash');
+const {performance} = require('perf_hooks');
 
 module.exports = {
-  /**Method for getting all the shop, brand and category */
+  /**Method for getting all the shop, brand and category to add a new offer on a particular shop, brand or category */
   getAllOptions: async (req, res) => {
     try {
       /**checking if the options have the offer time or not*/
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
 
       let allOptions;
       if (req.query.offerSelectionType && req.query.offerSelectionType === 'Vendor wise') {
@@ -64,7 +65,7 @@ module.exports = {
       let body = {...req.body};
       let upload_type = body.upload_type ? body.upload_type : '';
 
-      if(!body.images || (body.images && JSON.parse(body.images).length === 0) ){
+      if (!body.images || (body.images && JSON.parse(body.images).length === 0)) {
         return res.badRequest('No image was uploaded');
       }
 
@@ -80,7 +81,7 @@ module.exports = {
           const products = await Product.find({code: codes});
           let x = _.groupBy(products, 'code');
 
-          if(codes && codes.length > 0 && products.length > 0){
+          if (codes && codes.length > 0 && products.length > 0) {
             codes.forEach(code => {
               individualProductsIds.push(x[code][0].id);
             });
@@ -244,11 +245,11 @@ module.exports = {
     }
   },
 
-  /**Method called for getting all regular offer data*/
+  /**Method called for getting all regular offer data in admin section*/
   /**Model models/Offer.js*/
   allRegularOffer: async (req, res) => {
     try {
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
 
       let _pagination = pagination(req.query);
 
@@ -287,8 +288,8 @@ module.exports = {
     }
   },
 
-  /**Method called to delete a regular offer*/
-  /**model: RegularOfferProducts.js*/
+  /** Method called to delete a regular offer */
+  /** model: RegularOfferProducts.js */
   destroy: async (req, res) => {
     try {
       const regularOffer = await Offer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
@@ -309,9 +310,10 @@ module.exports = {
     }
   },
 
+  /** Method called to get a regular offer in order to edit in admin section */
   getRegularOfferById: async (req, res) => {
     try {
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
       let regularOffer = await Offer.findOne({id: req.query.id, deletedAt: null})
         .populate('category_id')
         .populate('subCategory_Id')
@@ -334,9 +336,10 @@ module.exports = {
     }
   },
 
+  /** Method called in the admin to see the products exists under an offer */
   getRelatedOfferProducts: async (req, res) => {
     try {
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
       let _pagination = pagination(req.query);
       let rawSQL = `
       SELECT
@@ -373,9 +376,10 @@ module.exports = {
     }
   },
 
+  /** Method called in admin section to get the individual offered products under an offer */
   getRelatedOfferIndividualProducts: async (req, res) => {
     try {
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
       let _pagination = pagination(req.query);
       let rawSQL = `
       SELECT
@@ -412,6 +416,7 @@ module.exports = {
     }
   },
 
+  /** Method called in admin section to remove a single product from an offer: product wise */
   removeProductFromOffer: async (req, res) => {
     try {
       const removedProduct = await RegularOfferProducts.updateOne({
@@ -427,6 +432,7 @@ module.exports = {
     }
   },
 
+  /** Method called in admin section to remove a single product from an offer: individual_product */
   removeIndividualProductFromOffer: async (req, res) => {
     try {
       const removedProduct = await RegularOfferProducts.updateOne({
@@ -442,6 +448,7 @@ module.exports = {
     }
   },
 
+  /** Method called in admin to update an offer */
   updateOffer: async (req, res) => {
     try {
       let body = {...req.body};
@@ -509,13 +516,13 @@ module.exports = {
       }*/
 
       let images;
-      if(body.images){
+      if (body.images) {
         images = JSON.parse(body.images);
       }
       console.log('Images are: ', images);
 
       let offerData = {image: {}};
-      if (images && images.image ) {
+      if (images && images.image) {
         offerData.image.image = images.image;
       } else {
         offerData.image.image = offer.image && offer.image.image ? offer.image.image : '';
@@ -707,6 +714,7 @@ module.exports = {
     }
   },
 
+  /** Method called in admin to show the already selected products when products are being selected to add to an offer */
   getSelectedProductsInfo: async (req, res) => {
     try {
 
@@ -744,6 +752,7 @@ module.exports = {
     }
   },
 
+  /** Method called from admin to change to the status of an offer */
   activeStatusChange: async (req, res) => {
     try {
       if (req.body.event) {
@@ -781,18 +790,13 @@ module.exports = {
   /**Method called from the web to get the regular offer data*/
   webRegularOffers: async (req, res) => {
     try {
-      await OfferService.offerDurationCheck();
+      /*await OfferService.offerDurationCheck();*/
 
-      let _where = {};
-      _where.deletedAt = null;
-      _where.offer_deactivation_time = null;
-
-      let webRegularOffers = await Offer.find({where: _where})
-        .sort([
-          {carousel_position: 'ASC'},
-          {frontend_position: 'ASC'},
-          {id: 'DESC'}
-        ]);
+      let webRegularOffers =  await sails.helpers.cacheRead('getWebRegularOffers');
+      // console.log('######### getWebRegularOffers from cache ############', webRegularOffers);
+      if(!webRegularOffers){
+        throw new Error('webRegularOffers not found!');
+      }
 
       res.status(200).json({
         success: true,
@@ -809,14 +813,31 @@ module.exports = {
     }
   },
 
-  /**Method called from the web to get the regular offer data with its related offered products data*/
+  /**Method called from the web to get the regular offer data with its related offered products data
+   * of a specific brand: web address: http://localhost:4200/offers/offered-products-brands/212/88*/
   webRegularOfferById: async (req, res) => {
     const brandId = parseInt(req.query.brandId);
 
     try {
-      await OfferService.offerDurationCheck();
-
+      /*await OfferService.offerDurationCheck();*/
       let webRegularOfferedProducts;
+
+      let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+      let _where = {};
+      _where.id = req.query.offerId;
+      _where.start_date = {'<=': presentTime};
+      _where.end_date = {'>=': presentTime};
+      _where.offer_deactivation_time = null;
+      _where.deletedAt = null;
+
+      const requestedOffer = await Offer.findOne({where: _where});
+
+      if (requestedOffer === undefined) {
+        return res.status(400).json({
+          success: false,
+          message: 'offer does not exists',
+        });
+      }
 
       let _sort = [];
       let sortData;
@@ -834,12 +855,6 @@ module.exports = {
           _sort.push(obj);
         }
       }
-
-      let _where = {};
-      _where.id = req.query.offerId;
-      _where.deletedAt = null;
-      _where.offer_deactivation_time = null;
-      const requestedOffer = await Offer.findOne({where: _where});
 
       /**if selection_type === 'Vendor wise'*/
       if (requestedOffer.selection_type === 'Vendor wise') {
@@ -1016,7 +1031,15 @@ module.exports = {
   /**model: Offer.js, RegularOfferProducts.js*/
   getAllOfferedProducts: async (req, res) => {
     try {
-      const finalCollectionOfProducts = await OfferService.getAllOfferedProducts();
+      const time1 = performance.now();
+      const finalCollectionOfProducts = await sails.helpers.cacheRead('getAllOfferedProducts');
+      // console.log('######### getAllOfferedProducts from cache ############', finalCollectionOfProducts);
+      if(!finalCollectionOfProducts){
+        throw new Error('getAllOfferedProducts not found!');
+      }
+
+      const time2 = performance.now();
+      console.log(`getAllOfferedProducts Time Elapsed: ${(time2 - time1) / 1000} seconds.`);
 
       return res.status(200).json({
         success: true,
@@ -1301,13 +1324,21 @@ module.exports = {
   /** Method for fetching offered products brands => used in web*/
   getOfferedProductsBrands: async (req, res) => {
     try {
-      let offerInfo = await Offer.findOne({id: req.query.offerId});
+      let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+
+      let _where = {};
+      _where.id = req.query.offerId;
+      _where.offer_deactivation_time = null;
+      _where.deletedAt = null;
+      _where.start_date = {'<=': presentTime};
+      _where.end_date = {'>=': presentTime};
+
+      let offerInfo = await Offer.findOne({where: _where});
       let brands;
 
       if (offerInfo === undefined) {
         return res.status(400).json({
           message: 'offer does not exists',
-          error
         });
       }
 

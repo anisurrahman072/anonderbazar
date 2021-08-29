@@ -10,7 +10,7 @@ module.exports = {
     let productUnitPrice = product.price;
 
     let variantAdditionalPrice = await PaymentService.calculateItemVariantPrice(product.itemVariant);
-    if(variantAdditionalPrice){
+    if (variantAdditionalPrice) {
       productUnitPrice += variantAdditionalPrice;
     }
     /*console.log('After calculate the variant price: ', productUnitPrice);*/
@@ -34,13 +34,16 @@ module.exports = {
 
   /** checking if the options have the offer time or not: for regular offer */
   offerDurationCheck: async () => {
-    let allOffers = await Offer.find({deletedAt: null});
+    let rawAllOffersSql = `SELECT id, end_date, selection_type FROM offers WHERE offer_deactivation_time IS NULL && deleted_at IS NULL`;
+    let rawAllOffers = await sails.sendNativeQuery(rawAllOffersSql, []);
+    let allOffers = rawAllOffers.rows;
+
     for (let index = 0; index < allOffers.length; index++) {
       const endDate = (allOffers[index].end_date).getTime();
       const presentTime = (new Date(Date.now())).getTime();
 
       if (endDate < presentTime) {
-        if (allOffers[index].selection_type === 'Product wise') {
+        if (allOffers[index].selection_type === 'Product wise' || allOffers[index].selection_type === 'individual_product') {
           await RegularOfferProducts.update({regular_offer_id: allOffers[index].id}).set({product_deactivation_time: new Date()});
         }
         await Offer.updateOne({id: allOffers[index].id}).set({offer_deactivation_time: new Date()});
@@ -48,23 +51,33 @@ module.exports = {
     }
   },
 
-  /**checking if the options have the offer time or not*/
+  /** checking if the options have the offer time or not: for anonder jhor offers*/
   anonderJhorOfferDurationCheck: async () => {
-    let anonderJhorData = await AnonderJhor.findOne({id: 1});
+    let rawAnonderJhorDataSql = ` SELECT id, end_date, status FROM anonder_jhor WHERE id = 1 AND deleted_at IS NULL`;
+    let rawAnonderJhorData = await sails.sendNativeQuery(rawAnonderJhorDataSql, []);
+    let anonderJhorData = rawAnonderJhorData.rows;
 
-    const anonderJhorEndDate = anonderJhorData.end_date.getTime();
-    const presentTime = (new Date(Date.now())).getTime();
+    if (anonderJhorData && anonderJhorData.length > 0) {
+      const anonderJhorEndDate = anonderJhorData[0].end_date.getTime();
+      const presentTime = (new Date(Date.now())).getTime();
 
-    if (anonderJhorEndDate < presentTime) {
-      anonderJhorData = await AnonderJhor.updateOne({id: 1}).set({status: 0});
-    }
+      if (anonderJhorEndDate < presentTime && anonderJhorData[0].status !== 0) {
+        await sails.sendNativeQuery(`UPDATE anonder_jhor SET status = 0 WHERE id = 1`);
+      }
 
-    let allAnonderJhorOffers = await AnonderJhorOffers.find({deletedAt: null});
-    for (let index = 0; index < allAnonderJhorOffers.length; index++) {
-      let offerEndTime = allAnonderJhorOffers[index].end_date;
-      if (offerEndTime < presentTime || anonderJhorData.status === 0) {
-        await AnonderJhorOffers.updateOne({id: allAnonderJhorOffers[index].id}).set({status: 0});
-        await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: allAnonderJhorOffers[index].id}).set({status: 0});
+      let allAnonderJhorOffersSQL = `SELECT id, end_date FROM anonder_jhor_offers WHERE status != 0 AND deleted_at IS NULL`;
+      let rawAllAnonderJhorOffers = await sails.sendNativeQuery(allAnonderJhorOffersSQL, []);
+      let allAnonderJhorOffers = rawAllAnonderJhorOffers.rows;
+
+      if (allAnonderJhorOffers && allAnonderJhorOffers.length > 0) {
+        for (let index = 0; index < allAnonderJhorOffers.length; index++) {
+          let offerEndTime = allAnonderJhorOffers[index].end_date.getTime();
+
+          if (offerEndTime < presentTime || anonderJhorData[0].status === 0) {
+            await AnonderJhorOffers.updateOne({id: allAnonderJhorOffers[index].id}).set({status: 0});
+            await AnonderJhorOfferedProducts.update({anonder_jhor_offer_id: allAnonderJhorOffers[index].id}).set({status: 0});
+          }
+        }
       }
     }
   },
@@ -73,8 +86,8 @@ module.exports = {
   getAllOfferedProducts: async function () {
     let finalCollectionOfProducts = {};
 
-    await this.offerDurationCheck();
-    await this.anonderJhorOfferDurationCheck();
+    /*await this.offerDurationCheck();
+    await this.anonderJhorOfferDurationCheck();*/
 
     let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -85,6 +98,15 @@ module.exports = {
     _where.end_date = {'>=': presentTime};
 
     const requestedOffer = await Offer.find({where: _where});
+    /*console.log('requestedOffer offer: ', requestedOffer);*/
+
+
+    /*const rawSQL = `SELECT * FROM offers WHERE
+                  offer_deactivation_time IS NULL AND DATE(start_date) <= DATE(NOW())
+                  AND DATE(end_date) >= DATE(NOW()) AND deleted_at IS NULL;`;
+    const rawRequestedOffer = await sails.sendNativeQuery(rawSQL, []);
+    const requestedOffer1 = rawRequestedOffer.rows;
+    console.log('requestedOffer1: ', requestedOffer1);*/
 
     let _where1 = {};
     _where1.deletedAt = null;
@@ -241,8 +263,35 @@ module.exports = {
     return finalCollectionOfProducts;
   },
 
+  /** This method will fetch Anonder Jhor Offer Info. START */
+  getAnonderJhorInfo: async function(){
+    let rawSQL = `SELECT * FROM anonder_jhor WHERE id = 1`;
+    const anonderJhorRaw = await sails.sendNativeQuery(rawSQL, []);
+    return anonderJhorRaw.rows;
+  },
+  /** This method will fetch Anonder Jhor Offer Info. END */
+
+  /** This method will fetch web regular offers. START */
+  getWebRegularOffers: async function(){
+    let presentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    let _where = {};
+    _where.start_date = {'<=': presentTime};
+    _where.end_date = {'>=': presentTime};
+    _where.offer_deactivation_time = null;
+    _where.deletedAt = null;
+
+    let webRegularOffers = await Offer.find({where: _where})
+      .sort([
+        {carousel_position: 'ASC'},
+        {frontend_position: 'ASC'},
+        {id: 'DESC'}
+      ]);
+    return webRegularOffers;
+  },
+  /** This method will fetch web regular offers. END */
+
   /** This method will return offer info of a product (If product exists in any of offer) */
-  getProductOfferInfo: async function(product, offeredProducts){
+  getProductOfferInfo: async function (product, offeredProducts) {
     /** global section */
 
     let itemId = product.id;
@@ -310,7 +359,7 @@ module.exports = {
           }
 
           if (regularOffers[offer].selection_type === 'Product wise') {
-            console.log('regular offer info in product wise: ', regularOffers[offer]);
+            /*console.log('regular offer info in product wise: ', regularOffers[offer]);*/
             let rawSQL = `SELECT
                                   product_id
                               FROM
@@ -330,7 +379,7 @@ module.exports = {
           }
 
           if (regularOffers[offer].selection_type === 'individual_product') {
-            console.log('regular offer info in inidi wise: ', regularOffers[offer]);
+            /*console.log('regular offer info in inidi wise: ', regularOffers[offer]);*/
             let rawSQL = `SELECT
                                   product_id
                               FROM
