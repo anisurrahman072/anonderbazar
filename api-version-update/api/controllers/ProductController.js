@@ -827,7 +827,11 @@ module.exports = {
           AND warehouse.status = 2
           AND products.approval_status = 2
         `;
-      _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
+      _where += ' GROUP BY productId ORDER BY total_quantity DESC';
+
+      if (req.query.skip && req.query.take) {
+        _where += ` LIMIT ${req.query.take} OFFSET ${req.query.skip}`;
+      }
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
 
