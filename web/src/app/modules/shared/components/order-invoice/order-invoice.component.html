@@ -153,7 +153,9 @@
                                 </p>
 
                                 <!-- Only if Payment method is OFFLINE payment then this section will show START -->
-                                <div *ngIf="payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE" style="margin-top: 20px !important;">
+                                <div *ngIf="payment.payment_type == PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE
+                                            && paymentDetails && paymentDetails.offline_payment_method"
+                                     style="margin-top: 20px !important;">
                                     <h5>Offline payment method details</h5>
                                     <div *ngIf="paymentDetails.offline_payment_method == 'bankTransfer'; else notBankTransfer">
                                         <p>Offline payment method: {{paymentDetails.offline_payment_method}}</p>
@@ -182,45 +184,50 @@
 
     <div *ngIf="allPaymentsLog && allPaymentsLog.length > 0">
         <mat-card-title>Transaction log</mat-card-title>
-        <mat-card class="example-card" *ngFor="let payment of allPaymentsLog;">
+
+        <!-- If Order is Regular Order. START -->
+        <mat-card class="example-card" *ngIf="data.order_type == ORDER_TYPE.REGULAR_ORDER">
             <mat-card-content class="mb-3">
                 <div style="display: flex; flex-direction: row; align-items: center;">
                     <div class="circle fa">
                         <i class="fa fa-check" aria-hidden="true"></i>
                     </div>
                     <div style="margin-left: 30px;">
-                        <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
-                        <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
-                        <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
-                                payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
-                                payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">Payment transaction: {{payment.transection_key}}</p>
-                        <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
+                        <p style="margin: 0px;">Payment method: {{allPaymentsLog[0].payment_type}}</p>
+                        <p style="margin: 0px;">Paid amount: {{data.paid_amount}}</p>
+                        <p style="margin: 0px;" *ngIf="allPaymentsLog[0].payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
+                                allPaymentsLog[0].payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
+                                allPaymentsLog[0].payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">Payment transaction: {{allPaymentsLog[0].transection_key}}</p>
+                        <p style="margin: 0px;">Transaction time: {{allPaymentsLog[0].createdAt}}</p>
 
                         <!-- Only true if the payment is an Offline Payment START -->
-                        <div *ngIf="payment.details && payment.details.offline_payment_method">
-                            <p style="margin: 0px;">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
-                            <p style="margin: 0px;">Offline payment method: {{payment.details.offline_payment_method}}</p>
+                        <div *ngIf="allPaymentsLog[0].details && (allPaymentsLog[0].details.offline_payment_method ||
+                                            allPaymentsLog[0].details.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE)">
+                            <p style="margin: 0px;">Approval Status: <b>{{allPaymentsLog[0].approval_status | paymentApprovalStatus}}</b></p>
+                            <p style="margin: 0px;"  *ngIf="allPaymentsLog[0].details.offline_payment_method">
+                                Offline payment method: {{allPaymentsLog[0].details.offline_payment_method}}
+                            </p>
 
-                            <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
-                                <p style="margin: 0px;" >Transaction ID: {{payment.details.transactionId}}</p>
-                                <p style="margin: 0px;" >Bank Name: {{payment.details.bankName}}</p>
-                                <p style="margin: 0px;" >Branch Name: {{payment.details.branchName}}</p>
-                                <p style="margin: 0px;" >Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
+                            <div *ngIf="allPaymentsLog[0].details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
+                                <p style="margin: 0px;" >Transaction ID: {{allPaymentsLog[0].details.transactionId}}</p>
+                                <p style="margin: 0px;" >Bank Name: {{allPaymentsLog[0].details.bankName}}</p>
+                                <p style="margin: 0px;" >Branch Name: {{allPaymentsLog[0].details.branchName}}</p>
+                                <p style="margin: 0px;" >Account Number For Bank: {{allPaymentsLog[0].details.accountNumberForBank}}</p>
                             </div>
                         </div>
 
                         <!-- If single money receipt found. START -->
-                        <div *ngIf="(payment.details && payment.details.money_receipt && !payment.details.moneyReceipts)"
-                             (click)="isAddModalVisible(modalContent, payment.details.money_receipt)"
+                        <div *ngIf="(allPaymentsLog[0].details && allPaymentsLog[0].details.money_receipt && !allPaymentsLog[0].details.moneyReceipts)"
+                             (click)="isAddModalVisible(modalContent, allPaymentsLog[0].details.money_receipt)"
                              style="cursor: pointer;">
-                            <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                            <img src="{{IMAGE_ENDPOINT + '/'+allPaymentsLog[0].details.money_receipt}}"
                                  alt="money-receipt" style="height: 100px;">
                         </div>
                         <!-- If single money receipt found. END -->
 
                         <!-- If multiple money receipt found. START -->
-                        <div *ngIf="(payment.details && payment.details.money_receipt && payment.details.moneyReceipts)" style="cursor: pointer; display: flex;">
-                            <div *ngFor="let receipt of payment.details.moneyReceipts"
+                        <div *ngIf="(allPaymentsLog[0].details && allPaymentsLog[0].details.money_receipt && allPaymentsLog[0].details.moneyReceipts)" style="cursor: pointer; display: flex;">
+                            <div *ngFor="let receipt of allPaymentsLog[0].details.moneyReceipts"
                                  (click)="isAddModalVisible(modalContent, receipt)" style="margin-right: 5px; ">
                                 <img src="{{IMAGE_ENDPOINT + receipt}}"
                                      alt="money-receipt" style="height: 100px;">
@@ -233,6 +240,67 @@
                 </div>
             </mat-card-content>
         </mat-card>
+        <!-- If Order is Regular Order. END -->
+
+        <!-- If Order is Partial Order. START -->
+        <ng-container *ngIf="data.order_type == ORDER_TYPE.PARTIAL_PAYMENT_ORDER">
+            <mat-card class="example-card" *ngFor="let payment of allPaymentsLog;">
+                <mat-card-content class="mb-3">
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <div class="circle fa">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        </div>
+                        <div style="margin-left: 30px;">
+                            <p style="margin: 0px;">Payment method: {{payment.payment_type}}</p>
+                            <p style="margin: 0px;">Paid amount: {{payment.payment_amount}}</p>
+                            <p style="margin: 0px;" *ngIf="payment.payment_type != PAYMENT_METHODS.CASH_PAYMENT_TYPE &&
+                                payment.payment_type != PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE  &&
+                                payment.payment_type != PAYMENT_METHODS.CASHBACK_PAYMENT_TYPE ">Payment transaction: {{payment.transection_key}}</p>
+                            <p style="margin: 0px;">Transaction time: {{payment.createdAt}}</p>
+
+                            <!-- Only true if the payment is an Offline Payment. START -->
+                            <div *ngIf="payment.details && (payment.details.offline_payment_method ||
+                                                payment.details.payment_type === PAYMENT_METHODS.OFFLINE_PAYMENT_TYPE)">
+                                <p style="margin: 0px;">Approval Status: <b>{{payment.approval_status | paymentApprovalStatus}}</b></p>
+                                <p style="margin: 0px;" *ngIf="payment.details.offline_payment_method">
+                                    Offline payment method: {{payment.details.offline_payment_method}}
+                                </p>
+
+                                <div *ngIf="payment.details.offline_payment_method === OFFLINE_PAYMENT_METHODS.BANK_TRANSFER">
+                                    <p style="margin: 0px;" >Transaction ID: {{payment.details.transactionId}}</p>
+                                    <p style="margin: 0px;" >Bank Name: {{payment.details.bankName}}</p>
+                                    <p style="margin: 0px;" >Branch Name: {{payment.details.branchName}}</p>
+                                    <p style="margin: 0px;" >Account Number For Bank: {{payment.details.accountNumberForBank}}</p>
+                                </div>
+                            </div>
+
+                            <!-- If single money receipt found. START -->
+                            <div *ngIf="(payment.details && payment.details.money_receipt && !payment.details.moneyReceipts)"
+                                 (click)="isAddModalVisible(modalContent, payment.details.money_receipt)"
+                                 style="cursor: pointer;">
+                                <img src="{{IMAGE_ENDPOINT + '/'+payment.details.money_receipt}}"
+                                     alt="money-receipt" style="height: 100px;">
+                            </div>
+                            <!-- If single money receipt found. END -->
+
+                            <!-- If multiple money receipt found. START -->
+                            <div *ngIf="(payment.details && payment.details.money_receipt && payment.details.moneyReceipts)" style="cursor: pointer; display: flex;">
+                                <div *ngFor="let receipt of payment.details.moneyReceipts"
+                                     (click)="isAddModalVisible(modalContent, receipt)" style="margin-right: 5px; ">
+                                    <img src="{{IMAGE_ENDPOINT + receipt}}"
+                                         alt="money-receipt" style="height: 100px;">
+                                </div>
+                            </div>
+                            <!-- If multiple money receipt found. END -->
+
+                            <!-- Only true if the payment is an Offline Payment END -->
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </ng-container>
+        <!-- If Order is Partial Order. END -->
+
     </div>
 </section>
 

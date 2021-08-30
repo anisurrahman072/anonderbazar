@@ -23,7 +23,7 @@ export class SectionBrandComponent implements OnInit {
                 let allBrandIds = brands.map(brand => {
                     return brand.id;
                 });
-                return this.productService.getCountByBrandIds(allBrandIds);
+                return this.productService.getCountByBrandIds('homepage', allBrandIds);
             })
             .subscribe((result: any) => {
                 const brandCount = result.data;
