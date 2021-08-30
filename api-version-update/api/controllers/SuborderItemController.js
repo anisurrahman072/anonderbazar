@@ -21,8 +21,13 @@ module.exports = {
       const user = await SuborderItem.updateOne(
         {id: req.param('id')},
       ).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(user);
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.json(error.status, {message: '', error, success: false});
     }
   },
@@ -112,6 +117,9 @@ module.exports = {
         subOrderStatuses = rawResultStatuses.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -121,6 +129,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,
@@ -266,9 +276,14 @@ module.exports = {
       */
 
       console.log('The result is: ', rawResult.rows);
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json(rawResult.rows);
     } catch (error) {
       console.log('THe error is: ', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json(error);
     }
   },
@@ -340,6 +355,9 @@ module.exports = {
         allSubOrderItems = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -348,6 +366,8 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all subOrder item List with pagination';
       return res.status(400).json({
         success: false,
@@ -431,6 +451,9 @@ module.exports = {
         return el;
       });
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborderItems,
@@ -438,6 +461,8 @@ module.exports = {
         data: allSubOrderItems
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All SubOrderItemList with pagination';
       res.status(400).json({
         success: false,

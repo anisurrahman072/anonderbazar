@@ -39,6 +39,9 @@ module.exports = {
 
       let totalGroups = await Group.count().where({deletedAt: null});
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalGroups,
@@ -51,6 +54,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Failed to get all all existing groups with pagination';
       res.status(400).json({
         success: false,
@@ -67,9 +72,14 @@ module.exports = {
       const time1 = performance.now();
 
       const group = await Group.updateOne({id: req.query.id}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, group);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         message: 'Failed to delete a group',
         error
@@ -99,6 +109,9 @@ module.exports = {
 
       let rawPermissions = await sails.sendNativeQuery(rawSQL, []);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully fetched all available group permissions',
@@ -107,6 +120,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to get all the available group permissions',
@@ -129,6 +144,9 @@ module.exports = {
 
       let group = await Group.create(body).fetch();
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully Created a new group',
@@ -137,6 +155,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to Created a new group',
@@ -152,6 +172,9 @@ module.exports = {
       const time1 = performance.now();
 
       let group = await Group.findOne({id: req.query.id});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully fetched group data by id',
@@ -160,6 +183,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to fetched group data by id',
@@ -184,6 +209,9 @@ module.exports = {
 
       let group = await Group.updateOne({id: id}).set(body);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         message: 'Successfully Created a new group',
@@ -192,6 +220,8 @@ module.exports = {
 
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to Created a new group',
@@ -226,12 +256,17 @@ module.exports = {
           isunique: false,
         });
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         isunique: true,
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       return res.status(400).json({
         success: false,
         isunique: false,

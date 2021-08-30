@@ -52,6 +52,9 @@ module.exports = {
 
       const questionedProducts = await sails.sendNativeQuery(finalSQL, []);
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         data: questionedProducts.rows,
@@ -59,6 +62,8 @@ module.exports = {
       });
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all questioned products';
       res.status(400).json({
         success: false,
@@ -76,12 +81,17 @@ module.exports = {
 
       await ProductQuestionAnswer.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'Question successfully deleted',
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to delete question',
@@ -123,12 +133,17 @@ module.exports = {
       const questionedProducts = await sails.sendNativeQuery(finalSQL, []);
       const questionedProduct = questionedProducts.rows;
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(200).json({
         success: true,
         questionedProduct,
         message: 'all questioned products with pagination',
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in read product';
       return res.status(400).json({
         success: false,
@@ -145,12 +160,17 @@ module.exports = {
       await ProductQuestionAnswer.updateOne({id: req.param('id')})
         .set({answer: req.body.answer, answered_by: req.body.answeredBy});
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json({
         success: true,
         message: 'Answer added successfully'
       });
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(400).json({
         success: false,
         message: 'Failed to add the answer',

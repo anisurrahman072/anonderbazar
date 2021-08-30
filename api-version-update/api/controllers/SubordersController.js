@@ -29,12 +29,17 @@ module.exports = {
           message: 'Mass update pr status successfully'
         });
       }
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.status(422).json({
         success: false,
         message: 'Error in Mass update pr status'
       });
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Mass update pr status';
       res.status(400).json({
         success: false,
@@ -242,6 +247,9 @@ module.exports = {
         });
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -254,6 +262,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all suborder with pagination';
       res.status(400).json({
         success: false,
@@ -374,6 +384,9 @@ module.exports = {
         suborders = rawResult.rows;
       }
 
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -386,6 +399,8 @@ module.exports = {
 
     } catch (error) {
       console.log('error', error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in getting all suborder with pagination';
       res.status(400).json({
         success: false,
@@ -558,6 +573,9 @@ module.exports = {
         });
         suborder.total_price = totalPrice;
       });
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       res.status(200).json({
         success: true,
         total: totalSuborder,
@@ -568,6 +586,8 @@ module.exports = {
         data: suborders
       });
     } catch (error) {
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       let message = 'Error in Get All Suborder with pagination';
       res.status(400).json({
         success: false,

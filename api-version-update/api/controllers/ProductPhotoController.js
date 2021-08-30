@@ -14,9 +14,14 @@ module.exports = {
       const time1 = performance.now();
 
       const productPhoto = await ProductPhoto.updateOne({id: req.param('id')}).set({deletedAt: new Date()});
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, productPhoto);
     } catch (error) {
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(error.status).json({error: error});
     }
   },
@@ -27,9 +32,14 @@ module.exports = {
       const time1 = performance.now();
 
       const productPhoto = await ProductPhoto.create(req.body).fetch();
+      const time2 = performance.now();
+      sails.log.info(`Request Uri: ${req.path}  ##########  Time Elapsed: ${(time2 - time1) / 1000} seconds`);
+
       return res.json(200, {productPhoto: productPhoto});
     }catch (error){
       console.log(error);
+      sails.log.error(`Request Uri: ${req.path} ########## ${error}`);
+
       res.status(error.status).json({error: error});
     }
   }
