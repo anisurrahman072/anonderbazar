@@ -459,7 +459,7 @@ module.exports = {
 
       let categories = await sails.helpers.cacheRead('allCategories');
       if(!categories){
-        categories = await CacheServiceuu.allCategories();
+        categories = await CacheService.allCategories();
         console.log('######## Server cache writing for allCategories ###########');
         await sails.helpers.cacheWrite('allCategories', 86400, JSON.stringify(categories));
       }
