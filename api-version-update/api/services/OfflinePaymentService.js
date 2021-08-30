@@ -41,26 +41,14 @@ module.exports = {
     console.log('Request body: ', requestBody);
 
     /** Creating payment details */
-    let paymentDetails = {
-      offline_payment_method: requestBody.offlinePaymentMethod
-    };
-
-    if (requestBody.offlinePaymentMethod === BANK_TRANSFER_OFFLINE_PAYMENT) {
-      paymentDetails = {
-        ...paymentDetails,
-        ...JSON.parse(requestBody.bankTransfer)
-      };
-    } else {
-      if (requestBody.hasImage === 'true') {
-        const uploaded = await uploadImages(requestFile('image'));
-        if (uploaded.length === 0) {
-          throw new Error('No image was uploaded');
-        }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-        paymentDetails.money_receipt = newPath;
-      }
+    if(!requestBody.image){
+      throw new Error('No money receipt was uploaded!');
     }
+
+    let paymentDetails = {
+      payment_type: OFFLINE_PAYMENT_TYPE,
+      money_receipt: requestBody.image
+    };
     /** END */
 
     const order =
@@ -111,26 +99,14 @@ module.exports = {
     }
 
     /** Creating payment details */
-    let paymentDetails = {
-      offline_payment_method: request.body.offlinePaymentMethod
-    };
-
-    if (request.body.offlinePaymentMethod === BANK_TRANSFER_OFFLINE_PAYMENT) {
-      paymentDetails = {
-        ...paymentDetails,
-        ...JSON.parse(request.body.bankTransfer)
-      };
-    } else {
-      if (request.body.hasImage === 'true') {
-        const uploaded = await uploadImages(request.file('image'));
-        if (uploaded.length === 0) {
-          throw new Error('No image was uploaded');
-        }
-        const newPath = uploaded[0].fd.split(/[\\//]+/).reverse()[0];
-
-        paymentDetails.money_receipt = newPath;
-      }
+    if(!request.body.image){
+      throw new Error('No money receipt was uploaded!');
     }
+
+    let paymentDetails = {
+      payment_type: OFFLINE_PAYMENT_TYPE,
+      money_receipt: request.body.image
+    };
     /** END */
 
     await sails.getDatastore()

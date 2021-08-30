@@ -28,7 +28,7 @@ export class BrandComponent implements OnInit {
                 let allBrandIds = this.dataBrandList.map(brand => {
                     return brand.id;
                 });
-                return this.productService.getCountByBrandIds(allBrandIds);
+                return this.productService.getCountByBrandIds('brandPage', allBrandIds);
             })
             .subscribe((counts) => {
                 let brandCounts = counts.data;

@@ -360,7 +360,12 @@ module.exports = {
 
   allCategories: async (req, res) => {
     try {
-      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2, show_in_nav: 1}).populate('offer_id');
+      let categories = await sails.helpers.cacheRead('allCategories');
+      if(!categories){
+        categories = await CacheService.allCategories();
+        console.log('######## Server cache writing for allCategories ###########');
+        await sails.helpers.cacheWrite('allCategories', 86400, JSON.stringify(categories));
+      }
       return res.json(categories);
     } catch (error) {
       return res.status(error.status).json({message: '', error, success: false});
@@ -389,18 +394,12 @@ module.exports = {
   //Model models/Category.js
   withSubcategoriesV2: async (req, res) => {
     try {
-      let categories = await Category.find({deletedAt: null, parent_id: 0, type_id: 2});
-
-      const parentCategoryIds = categories.map((cat) => cat.id);
-
-      const allSubCategories = await Category.find({deletedAt: null, parent_id: parentCategoryIds, type_id: 2});
-      const subCategoryIndexes = _.groupBy(allSubCategories, 'parent_id');
-
-      const allSubCategoriesIds = allSubCategories.map((cat) => cat.id);
-      const allSubSubCategories = await Category.find({deletedAt: null, parent_id: allSubCategoriesIds, type_id: 2});
-      const subSubCategoryIndexes = _.groupBy(allSubSubCategories, 'parent_id');
-
-      const allCategories = _.merge(subCategoryIndexes, subSubCategoryIndexes);
+      let allCategories = await sails.helpers.cacheRead('withSubcategoriesV2');
+      if(!allCategories){
+        allCategories = await CacheService.withSubcategoriesV2();
+        console.log('######## Server cache writing for withSubcategoriesV2 ###########');
+        await sails.helpers.cacheWrite('withSubcategoriesV2', 86400, JSON.stringify(allCategories));
+      }
       return res.json(allCategories);
     } catch (error) {
       return res.status(error.status).json({message: '', error, success: false});

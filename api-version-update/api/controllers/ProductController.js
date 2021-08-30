@@ -678,6 +678,10 @@ module.exports = {
             GROUP BY brand_id
       `;
 
+      if (req.query.requestFrom && req.query.requestFrom === 'homepage') {
+        rawSelect += 'LIMIT 12 OFFSET 0';
+      }
+
       const rawResult = await productNativeQuery(rawSelect, []);
       if (!(rawResult && rawResult.rows && rawResult.rows.length > 0)) {
         return res.status(200).json({
@@ -828,6 +832,14 @@ module.exports = {
           AND products.approval_status = 2
         `;
       _where += ' GROUP BY productId ORDER BY total_quantity DESC ';
+
+      if (req.query.skip && req.query.take) {
+        _where += ` LIMIT ${req.query.take} OFFSET ${req.query.skip}`;
+      }
+
+      if(req.query.from && req.query.from === 'homepage') {
+        _where += ` LIMIT 4 OFFSET 0 `;
+      }
 
       const rawResult = await orderNativeQuery(rawSelect + fromSQL + _where);
 

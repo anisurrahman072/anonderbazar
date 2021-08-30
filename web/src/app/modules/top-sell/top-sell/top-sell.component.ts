@@ -34,9 +34,9 @@ export class TopSellComponent implements OnInit {
             this.offerData = offerData;
         })
 
-        this.productService.getTopSellProducts().subscribe(arg => {
+        this.productService.getTopSellProducts('topsell').subscribe(arg => {
             this.topSellProducts = arg.data;
-
+            /*this is in the top sell page*/
             /** finding out the products exists in the offer store*/
             this.topSellProducts.forEach(product => {
                 if (this.offerData && this.offerData.finalCollectionOfProducts && product.id in this.offerData.finalCollectionOfProducts) {
